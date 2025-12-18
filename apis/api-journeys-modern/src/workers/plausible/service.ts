@@ -28,15 +28,21 @@ interface PlausibleCreateJourneySiteJob {
   journeyId: string
 }
 
+interface PlausibleCreateTemplateSiteJob {
+  __typename: 'plausibleCreateTemplateSite'
+  templateId: string
+}
+
 type PlausibleJob =
   | PlausibleCreateSitesJob
   | PlausibleCreateTeamSiteJob
   | PlausibleCreateJourneySiteJob
+  | PlausibleCreateTemplateSiteJob
 
 type MutationSiteCreateSuccess = {
   __typename: 'MutationSiteCreateSuccess'
   data: {
-    sharedLinks: Array<{ slug: string }>
+    sharedLinks?: Array<{ slug: string }>
   }
 }
 
@@ -50,7 +56,7 @@ type MutationSiteCreateResult =
   | MutationSiteCreateError
 
 export const SITE_CREATE = gql(`
-  mutation SiteCreate($input: SiteCreateInput!) {
+  mutation SiteCreate($input: SiteCreateInput!, $includeSharedLinks: Boolean = true) {
     siteCreate(input: $input) {
       ... on Error {
         message
@@ -71,7 +77,7 @@ export const SITE_CREATE = gql(`
             eventName
             __typename
           }
-          sharedLinks {
+          sharedLinks @include(if: $includeSharedLinks) {
             id
             slug
             __typename
@@ -82,7 +88,7 @@ export const SITE_CREATE = gql(`
   }
 `)
 
-const goals: Array<keyof JourneyPlausibleEvents> = [
+export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
   'footerThumbsDownButtonClick',
   'shareButtonClick',
@@ -104,7 +110,19 @@ const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoProgress50',
   'videoProgress75',
   'videoComplete',
-  'videoTrigger'
+  'videoTrigger',
+  'multiSelectSubmit',
+  // Capture events are triggered by journey events above
+  'prayerRequestCapture',
+  'christDecisionCapture',
+  'gospelStartCapture',
+  'gospelCompleteCapture',
+  'rsvpCapture',
+  'specialVideoStartCapture',
+  'specialVideoCompleteCapture',
+  'custom1Capture',
+  'custom2Capture',
+  'custom3Capture'
 ]
 
 const httpLink = createHttpLink({
@@ -132,16 +150,23 @@ function teamSiteId(teamId: string): string {
   return `api-journeys-team-${teamId}`
 }
 
+function templateSiteId(templateId: string): string {
+  return `api-journeys-template-${templateId}`
+}
+
 async function createSite(
-  domain: string
+  domain: string,
+  disableSharedLinks = false
 ): Promise<MutationSiteCreateResult | undefined> {
   const { data } = await client.mutate({
     mutation: SITE_CREATE,
     variables: {
       input: {
         domain,
-        goals: goals as string[]
-      }
+        goals: goals as string[],
+        disableSharedLinks
+      },
+      includeSharedLinks: !disableSharedLinks
     }
   })
   return data?.siteCreate
@@ -200,6 +225,43 @@ async function createTeamSite(
   logger?.info({ teamId }, 'team site created in Plausible')
 }
 
+async function createTemplateSite(
+  { templateId }: PlausibleCreateTemplateSiteJob,
+  logger?: Logger
+): Promise<void> {
+  // Verify the journey exists, is a template, and doesn't already have a template site
+  const journey = await prisma.journey.findFirst({
+    where: {
+      id: templateId,
+      template: true,
+      templateSite: { not: true }
+    },
+    select: { id: true }
+  })
+
+  if (journey == null) {
+    logger?.warn(
+      { templateId },
+      'Cannot create template site for journey. Make sure the journey exists, is a template, and does not already have a template site.'
+    )
+    return
+  }
+
+  const site = await createSite(templateSiteId(templateId), true)
+  if (site == null || site.__typename !== 'MutationSiteCreateSuccess') {
+    logger?.warn({ templateId }, 'failed to create template site in Plausible')
+    return
+  }
+
+  await prisma.journey.update({
+    where: { id: templateId },
+    data: {
+      templateSite: true
+    }
+  })
+  logger?.info({ templateId }, 'template site created in Plausible')
+}
+
 async function createSites(logger?: Logger): Promise<void> {
   logger?.info('creating team sites...')
   const teamIds = (
@@ -240,6 +302,29 @@ async function createSites(logger?: Logger): Promise<void> {
       )
     )
   }
+
+  logger?.info('creating template sites...')
+  const templateIds = (
+    await prisma.journey.findMany({
+      where: {
+        template: true,
+        templateSite: { not: true }
+      },
+      select: { id: true }
+    })
+  ).map(({ id }) => id)
+
+  for (const ids of chunk(templateIds, BATCH_SIZE)) {
+    await Promise.all(
+      ids.map(
+        async (templateId) =>
+          await createTemplateSite(
+            { __typename: 'plausibleCreateTemplateSite', templateId },
+            logger
+          )
+      )
+    )
+  }
 }
 
 export async function service(
@@ -255,6 +340,9 @@ export async function service(
       break
     case 'plausibleCreateJourneySite':
       await createJourneySite(job.data, logger)
+      break
+    case 'plausibleCreateTemplateSite':
+      await createTemplateSite(job.data, logger)
       break
     default:
       logger?.warn({ job: job.data }, 'unknown plausible job type')
