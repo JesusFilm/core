@@ -46,11 +46,6 @@ export function VideoBlock({
     [placement]
   )
 
-  const isExpanded = placement == 'singleVideo' || !collapsed
-  const aspectRatioClass = isExpanded
-    ? 'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]'
-    : 'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]'
-
   return (
     <div
       className={clsx(

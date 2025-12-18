@@ -143,9 +143,7 @@ describe('VideoCarouselCard', () => {
   })
 
   it('applies h-full min-h-full w-full classes to link/wrapper element', () => {
-    const { container } = render(
-      <VideoCarouselCard data={mockVideoData} active={false} />
-    )
+    render(<VideoCarouselCard data={mockVideoData} active={false} />)
 
     const linkElement = screen.getByRole('link')
     expect(linkElement).toHaveClass('h-full')

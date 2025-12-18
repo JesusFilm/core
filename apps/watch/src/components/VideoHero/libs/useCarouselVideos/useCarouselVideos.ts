@@ -1,14 +1,6 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-// Stable ref to avoid infinite useEffect loops when loadNextVideo is a dependency
-function useStableCallback<T extends (...args: any[]) => any>(callback: T): T {
-  const callbackRef = useRef(callback)
-  callbackRef.current = callback
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useCallback(((...args) => callbackRef.current(...args)) as T, [])
-}
-
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 import type { VideoCarouselSlide } from '../../../../types/inserts'
 
@@ -20,11 +12,9 @@ import {
 } from './queries'
 import {
   addToPersistentPlayedIds,
-  clearCurrentVideoSession,
   filterOutBlacklistedVideos,
   getDeterministicOffset,
   getPlaylistConfig,
-  getPoolKey,
   getRandomFromMultipleCollections,
   isPoolExhausted,
   isVideoAlreadyPlayed,
@@ -32,6 +22,14 @@ import {
   markPoolVideoPlayed,
   saveCurrentVideoSession
 } from './utils'
+
+// Stable ref to avoid infinite useEffect loops when loadNextVideo is a dependency
+function useStableCallback<T extends (...args: any[]) => any>(callback: T): T {
+  const callbackRef = useRef(callback)
+  callbackRef.current = callback
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useCallback(((...args) => callbackRef.current(...args)) as T, [])
+}
 
 export interface CarouselVideo {
   id: string
@@ -89,7 +87,6 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     return sessionState?.poolIndex ?? 0
   })
   const [loadingQueue, setLoadingQueue] = useState<Set<number>>(new Set())
-  const [error, setError] = useState<Error | null>(null)
 
   // Refs to avoid stale closures and infinite loops
   const videosRef = useRef(videos)
@@ -231,7 +228,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   )
 
   // Current pool with exhaustion checking and shortFilms injection
-  const { currentPool, effectivePoolIndex } = useMemo(() => {
+  const { effectivePoolIndex } = useMemo(() => {
     const sequenceLength = config.playlistSequence.length
 
     if (!countsData) {
@@ -697,7 +694,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     slides,
     videos,
     currentIndex,
-    error,
+    error: null,
     moveToNext,
     moveToPrevious,
     jumpToVideo,

@@ -11,12 +11,12 @@ import { useRefinementList } from 'react-instantsearch'
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
-import { useLatestVideos } from '../../../libs/useLatestVideos'
 import {
   type CoreVideo,
   transformAlgoliaVideos as transformItems
 } from '../../../libs/algolia/transformAlgoliaVideos'
 import { useLanguages } from '../../../libs/useLanguages'
+import { useLatestVideos } from '../../../libs/useLatestVideos'
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
 export function AlgoliaVideoGrid({

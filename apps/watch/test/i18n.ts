@@ -1,7 +1,9 @@
-import appWatchTranslations from '../../../libs/locales/en/apps-watch.json'
 import i18next, { createInstance } from 'i18next'
 // eslint-disable-next-line no-restricted-imports
 import { initReactI18next } from 'react-i18next'
+
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import appWatchTranslations from '../../../libs/locales/en/apps-watch.json'
 
 export const makeI18n = async (lng = 'en'): Promise<typeof i18next> => {
   const i18n = createInstance()

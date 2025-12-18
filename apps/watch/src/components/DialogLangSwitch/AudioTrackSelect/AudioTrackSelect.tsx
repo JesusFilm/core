@@ -1,18 +1,9 @@
 import { Languages } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useId, useMemo } from 'react'
-import { useInstantSearch } from 'react-instantsearch'
 
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { LanguageCommandSelect } from '../LanguageCommandSelect'
-
-function useSafeInstantSearch() {
-  try {
-    return useInstantSearch()
-  } catch {
-    return undefined
-  }
-}
 
 interface AudioTrackSelectProps {
   videoAudioLanguageIds?: string[]
@@ -46,23 +37,6 @@ export function AudioTrackSelect({
       ? languages.length
       : videoAudioLanguageIds.length
   }, [isLoading, videoAudioLanguageIds, languages.length])
-
-  const helperText = useMemo(() => {
-    if (isLoading) return t('Loading...')
-
-    if (videoAudioLanguageIds == null) return undefined
-
-    const available = videoAudioLanguageIds.length
-    if (
-      selectedOption != null &&
-      videoAudioLanguageIds.find((id) => id === selectedOption.id) == null
-    ) {
-      return t('This content is not available in {{language}}.', {
-        language: selectedOption.displayName
-      })
-    }
-    return undefined
-  }, [isLoading, t, videoAudioLanguageIds, selectedOption])
 
   function handleSelect(language: Language): void {
     onLanguageChange?.(language)

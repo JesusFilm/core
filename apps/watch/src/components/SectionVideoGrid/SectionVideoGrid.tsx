@@ -13,11 +13,10 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 import { cn } from '@core/shared/ui-modern/utils'
 
 import { blurImage } from '../../libs/blurhash'
-
 import {
   SectionVideoCollectionCarouselSource,
-  useSectionVideoCollectionCarouselContent,
-  extractVideosAndContainerSlugMap
+  extractVideosAndContainerSlugMap,
+  useSectionVideoCollectionCarouselContent
 } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 

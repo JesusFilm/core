@@ -1,13 +1,13 @@
 import { type ReactElement } from 'react'
 
-import { SectionVideoCarousel } from '../../SectionVideoCarousel'
-import { SectionVideoGrid } from '../../SectionVideoGrid'
 import {
   christmasAdventShowcaseSources,
   collectionLumo,
   collectionShowcaseSources,
   newBelieverCourse
 } from '../../PageCollections/collectionShowcaseConfig'
+import { SectionVideoCarousel } from '../../SectionVideoCarousel'
+import { SectionVideoGrid } from '../../SectionVideoGrid'
 
 interface CollectionsRailProps {
   languageId?: string

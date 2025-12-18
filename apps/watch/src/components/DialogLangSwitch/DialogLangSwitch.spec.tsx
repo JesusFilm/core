@@ -14,27 +14,6 @@ const useLanguagesMock = useLanguages as jest.MockedFunction<
   typeof useLanguages
 >
 
-beforeAll(() => {
-  class ResizeObserverMock {
-    observe(): void {}
-    unobserve(): void {}
-    disconnect(): void {}
-  }
-
-  // @ts-expect-error ResizeObserver is not defined in jsdom
-  global.ResizeObserver = ResizeObserverMock
-
-  if (
-    window.HTMLElement != null &&
-    window.HTMLElement.prototype.scrollIntoView == null
-  ) {
-    Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
-      configurable: true,
-      value: jest.fn()
-    })
-  }
-})
-
 describe('DialogLangSwitch', () => {
   const french = {
     id: '496',
@@ -44,6 +23,29 @@ describe('DialogLangSwitch', () => {
     englishName: { id: '496', value: 'French', primary: false },
     nativeName: { id: '496', value: 'Français', primary: true }
   }
+
+  beforeAll(() => {
+    class ResizeObserverMock {
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      observe(): void {}
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      unobserve(): void {}
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      disconnect(): void {}
+    }
+
+    global.ResizeObserver = ResizeObserverMock
+
+    if (
+      window.HTMLElement != null &&
+      window.HTMLElement.prototype.scrollIntoView == null
+    ) {
+      Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+        configurable: true,
+        value: jest.fn()
+      })
+    }
+  })
 
   beforeEach(() => {
     jest.clearAllMocks()

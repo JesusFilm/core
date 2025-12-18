@@ -52,23 +52,6 @@ export function SubtitlesSelect({
       : videoSubtitleLanguageIds.length
   }, [isLoading, videoSubtitleLanguageIds, languages.length])
 
-  const helperText = useMemo(() => {
-    if (isLoading) return t('Loading...')
-
-    if (videoSubtitleLanguageIds == null) return undefined
-
-    const available = videoSubtitleLanguageIds.length
-    if (
-      selectedOption != null &&
-      videoSubtitleLanguageIds.find((id) => id === selectedOption.id) == null
-    ) {
-      return t('Subtitles are not available in {{language}}.', {
-        language: selectedOption.displayName
-      })
-    }
-    return undefined
-  }, [isLoading, t, videoSubtitleLanguageIds, selectedOption])
-
   function handleSubtitleLanguageChange(language: Language): void {
     onLanguageChange?.(language.id)
   }

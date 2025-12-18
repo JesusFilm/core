@@ -13,9 +13,9 @@ import { useWatch } from '../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../types/inserts'
 
-import { VideoControls } from './VideoControls'
-import { MuxInsertLogoOverlay } from './MuxInsertLogoOverlay'
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
+import { MuxInsertLogoOverlay } from './MuxInsertLogoOverlay'
+import { VideoControls } from './VideoControls'
 
 import 'video.js/dist/video-js.css'
 import 'videojs-mux'
@@ -214,11 +214,11 @@ export function VideoBlockPlayer({
 
           // Now dispose safely
           currentPlayer.dispose()
-        } catch (error) {
+        } catch {
           // Fallback to basic disposal if proper cleanup fails
           try {
             playerRef.current.dispose()
-          } catch (fallbackError) {
+          } catch {
             // Continue if disposal fails
           }
         }
@@ -360,7 +360,7 @@ export function VideoBlockPlayer({
         if (playerRef.current) {
           try {
             playerRef.current.dispose()
-          } catch (error) {
+          } catch {
             // Error during player disposal
           }
           playerRef.current = null
@@ -370,7 +370,7 @@ export function VideoBlockPlayer({
     }
 
     // Execute the async setup
-    setupPlayer()
+    void setupPlayer()
   }, [
     currentMuxInsert?.id,
     variant?.hls,
@@ -469,9 +469,6 @@ export function VideoBlockPlayer({
     (mute || (subtitleOn ?? false)) &&
     !(placement === 'singleVideo' && wasUnmuted)
 
-  const isVideoExpanded = placement == 'singleVideo' || !collapsed
-  const objectFitClass = isVideoExpanded ? 'object-contain' : 'object-cover'
-
   return (
     <>
       <div
@@ -523,14 +520,18 @@ export function VideoBlockPlayer({
               data-testid="VideoBlockPlayerError"
             >
               <div>
+                {/* eslint-disable-next-line i18next/no-literal-string */}
                 <div className="mb-2 text-lg font-semibold">Video Error</div>
                 <div className="text-sm opacity-90">{mediaError.message}</div>
-                {process.env.NODE_ENV === 'development' && (
-                  <div className="mt-2 text-xs opacity-75">
-                    Code: {(mediaError as any).code} | Video ID:{' '}
-                    {(mediaError as any).videoId}
-                  </div>
-                )}
+                {process.env.NODE_ENV === 'development' &&
+                  'code' in mediaError &&
+                  typeof mediaError.code === 'number' &&
+                  'videoId' in mediaError &&
+                  typeof mediaError.videoId === 'string' && (
+                    <div className="mt-2 text-xs opacity-75">
+                      {`Code: ${mediaError.code} | Video ID: ${mediaError.videoId}`}
+                    </div>
+                  )}
               </div>
             </div>
           )}

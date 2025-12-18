@@ -31,8 +31,8 @@ import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { Button } from '@core/shared/ui-modern/components/button'
 import { Skeleton } from '@core/shared/ui-modern/components/skeleton'
-
 import { cn } from '@core/shared/ui-modern/utils'
+
 import { usePlayer } from '../../../../libs/playerContext'
 import { useVideo } from '../../../../libs/videoContext'
 import { useLanguageActions } from '../../../../libs/watchContext'

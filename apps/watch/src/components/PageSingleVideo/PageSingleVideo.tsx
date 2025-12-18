@@ -44,10 +44,8 @@ export function PageSingleVideo(): ReactElement {
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
-  const [isFullscreen, setIsFullscreen] = useState(false)
 
   // State for managing current playing content (video or Mux insert)
-  const [currentPlayingId, setCurrentPlayingId] = useState<string>(id) // Default to main video
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0)
 
   const variantSlug = container?.variant?.slug ?? variant?.slug
@@ -78,9 +76,8 @@ export function PageSingleVideo(): ReactElement {
     return currentVideoInChildren?.id ?? childrenSlides[0]?.id ?? id
   }, [childrenSlides, id])
 
-  // Sync currentPlayingId with the current video when carousel loads or video changes
+  // Sync currentSlideIndex with the current video when carousel loads or video changes
   useEffect(() => {
-    setCurrentPlayingId(id)
     if (childrenSlides.length > 0) {
       const currentVideoIndex = childrenSlides.findIndex(
         (slide) => slide.id === id
@@ -151,15 +148,11 @@ export function PageSingleVideo(): ReactElement {
     const nextIndex = currentSlideIndex + 1
     if (nextIndex < childrenSlides.length) {
       setCurrentSlideIndex(nextIndex)
-      setCurrentPlayingId(childrenSlides[nextIndex].id)
     } else {
       setCurrentSlideIndex(0)
-      setCurrentPlayingId(childrenSlides[0]?.id || id)
     }
   }, [currentSlideIndex, childrenSlides, id])
 
-  // Get current playing content (no Mux inserts on single video page)
-  const currentSlide = childrenSlides[currentSlideIndex]
   const currentMuxInsert = null // Always null on single video page since we don't use Mux inserts
 
   const handleFreeResourceClick = () => {
@@ -221,7 +214,7 @@ export function PageSingleVideo(): ReactElement {
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter
-        isFullscreen={isFullscreen}
+        isFullscreen
       >
         <ContentPageBlurFilter>
           {(children.length > 0 ||

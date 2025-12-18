@@ -3,9 +3,9 @@ import { useRefinementList } from 'react-instantsearch'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
-import { useLatestVideos } from '../../../libs/useLatestVideos'
 import { type CoreVideo } from '../../../libs/algolia/transformAlgoliaVideos'
 import { useLanguages } from '../../../libs/useLanguages'
+import { useLatestVideos } from '../../../libs/useLatestVideos'
 
 import { AlgoliaVideoGrid } from './AlgoliaVideoGrid'
 

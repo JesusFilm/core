@@ -6,6 +6,7 @@ import { ThemeMode } from '@core/shared/ui/themes'
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
 import { WatchProvider } from '../../libs/watchContext'
+import { Footer } from '../Footer/Footer'
 import { Header } from '../LegacyHeader'
 import { SearchComponent } from '../SearchComponent'
 
@@ -13,8 +14,6 @@ import { CollectionsRail } from './CollectionsRail'
 import { ContainerWithMedia } from './ContainerWithMedia'
 import { SectionPromo } from './SectionPromo'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
-
-import { Footer } from '../Footer/Footer'
 
 interface PageMainProps {
   languageId?: string | undefined

@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { screen, userEvent } from '@storybook/test'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'

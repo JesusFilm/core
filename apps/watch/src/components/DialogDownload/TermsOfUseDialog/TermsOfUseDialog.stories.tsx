@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
+import noop from 'lodash/noop'
 
 import { watchConfig } from '../../../libs/storybook'
 
@@ -24,8 +25,8 @@ export const Default = {
   ...Template,
   args: {
     open: true,
-    onClose: () => {},
-    onSubmit: () => {}
+    onClose: noop,
+    onSubmit: noop
   }
 }
 

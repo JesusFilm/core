@@ -219,7 +219,7 @@ export const isPoolExhausted = (
     const effectiveTotal = availableCount ?? childrenCount
 
     return uniqueVideosPlayed >= effectiveTotal
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -248,7 +248,7 @@ export const markPoolVideoPlayed = (poolId: string, videoId?: string): void => {
       poolPlayedVideos.push(videoId)
       sessionStorage.setItem(poolVideosKey, JSON.stringify(poolPlayedVideos))
     }
-  } catch (error) {
+  } catch {
     // Fall back to old method
     const poolKey = `pool-${poolId}`
     const poolPlayedKey = `${poolKey}-played`
@@ -307,7 +307,7 @@ export const loadCurrentVideoSession = (): SessionVideoState | null => {
     }
 
     return sessionState
-  } catch (error) {
+  } catch {
     sessionStorage.removeItem('carousel-current-video')
     return null
   }

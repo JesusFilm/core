@@ -45,7 +45,7 @@ export function VideoTitle({
   onSkip
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { label, variant: videoVariant, slug } = useVideo()
+  const { label, variant: videoVariant } = useVideo()
   const {
     state: { play, active, loading, mute, volume }
   } = usePlayer()

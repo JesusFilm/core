@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import Player from 'video.js/dist/types/player'
 
 import { PlayerProvider } from '../../../../libs/playerContext'

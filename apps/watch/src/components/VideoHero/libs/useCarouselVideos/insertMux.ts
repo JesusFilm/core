@@ -176,7 +176,7 @@ function getSessionSeed(): string | undefined {
     const seed = generateSessionSeed()
     sessionStorage.setItem(`${STORAGE_KEY}-seed`, seed)
     return seed
-  } catch (error) {
+  } catch {
     return undefined
   }
 }
@@ -197,7 +197,7 @@ function getStoredPlayback(insertId: string): string | null {
 
     const parsed = JSON.parse(raw) as Record<string, string>
     return parsed[insertId] ?? null
-  } catch (error) {
+  } catch {
     return null
   }
 }
@@ -211,7 +211,7 @@ function storePlayback(insertId: string, playbackId: string): void {
       raw != null ? (JSON.parse(raw) as Record<string, string>) : {}
     parsed[insertId] = playbackId
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
-  } catch (error) {
+  } catch {
     // Ignore storage errors (e.g. Safari private mode)
   }
 }
