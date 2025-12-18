@@ -17,6 +17,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
@@ -25,14 +26,12 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
 import logoGray from '../../../../public/logo-grayscale.svg'
+import { TemplateAggregateAnalytics } from '../../TemplateAggregateAnalytics'
 
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
-import { TemplateAggregateAnalytics } from '../../TemplateAggregateAnalytics'
-
-import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 
 interface JourneyCardProps {
   journey: Journey

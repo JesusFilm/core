@@ -1,11 +1,13 @@
 import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
-import { Item } from '../Editor/Toolbar/Items/Item'
 
 import Data1Icon from '@core/shared/ui/icons/Data1'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
-import { useTranslation } from 'next-i18next'
+
+import { Item } from '../Editor/Toolbar/Items/Item'
+
 import { localizeAndRound } from './localizeAndRound'
 
 export function TemplateAggregateAnalytics(): ReactElement {
