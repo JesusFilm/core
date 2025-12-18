@@ -6,7 +6,7 @@ export function getWatchUrl(
   variantSlug: string | undefined
 ): string {
   if (!variantSlug) {
-    return '/watch'
+    return '/'
   }
 
   if (
@@ -14,13 +14,13 @@ export function getWatchUrl(
     label !== undefined &&
     ![VideoLabel.collection, VideoLabel.series].includes(label)
   ) {
-    return `/watch/${containerSlug}.html/${variantSlug}.html`
+    return `/${containerSlug}.html/${variantSlug}.html`
   }
 
   const [videoId, languageId] = variantSlug.split('/')
   if (!videoId || !languageId) {
-    return '/watch'
+    return '/'
   }
 
-  return `/watch/${videoId}.html/${languageId}.html`
+  return `/${videoId}.html/${languageId}.html`
 }

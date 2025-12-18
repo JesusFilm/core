@@ -16,6 +16,7 @@ interface ItemProps {
   onClick?: (event: MouseEvent<HTMLElement>) => void
   count?: number | string
   countLabel?: string
+  MenuItemProps?: ComponentProps<typeof MenuItem>
 }
 
 export function Item({
@@ -26,7 +27,8 @@ export function Item({
   ButtonProps,
   onClick,
   count,
-  countLabel
+  countLabel,
+  MenuItemProps
 }: ItemProps): ReactElement {
   switch (variant) {
     case 'icon-button': {
@@ -109,6 +111,7 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
+          {...MenuItemProps}
         >
           <ListItemIcon
             sx={{

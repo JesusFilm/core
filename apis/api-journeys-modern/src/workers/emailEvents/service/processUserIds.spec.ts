@@ -120,7 +120,8 @@ describe('processUserIds', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    showAssistant: null
+    showAssistant: null,
+    templateSite: null
   }
 
   it('should return an array of user IDs when visitor interaction email is true', () => {
