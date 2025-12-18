@@ -8,6 +8,7 @@ import {
   useHits,
   useInstantSearch,
   useMenu,
+  useRefinementList,
   useSearchBox
 } from 'react-instantsearch'
 
@@ -28,6 +29,9 @@ const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
 >
 const mockUseMenu = useMenu as jest.MockedFunction<typeof useMenu>
+const mockUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
 const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
   typeof useInstantSearch
 >
@@ -87,6 +91,11 @@ describe('PageVideos', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseMenu.mockReturnValue({
+      items: [],
+      refine: jest.fn()
+    } as unknown as RefinementListRenderState)
+
+    mockUseRefinementList.mockReturnValue({
       items: [],
       refine: jest.fn()
     } as unknown as RefinementListRenderState)

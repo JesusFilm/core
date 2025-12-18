@@ -8,6 +8,27 @@ import { VideoGrid } from './VideoGrid'
 
 jest.mock('react-instantsearch')
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+jest.mock('../../libs/blurhash', () => ({
+  useBlurhash: jest.fn(() => ({
+    blurhash: null,
+    dominantColor: null,
+    isLoading: false,
+    error: null
+  })),
+  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+}))
+jest.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: jest.fn(() => ({
+    thumbnailUrl: null,
+    isLoading: false,
+    error: null
+  }))
+}))
+jest.mock('../../libs/watchContext', () => ({
+  useWatch: jest.fn(() => ({
+    state: { audioLanguageId: '529' }
+  }))
+}))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos

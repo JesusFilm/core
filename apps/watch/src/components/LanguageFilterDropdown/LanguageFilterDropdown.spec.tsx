@@ -4,19 +4,6 @@ import userEvent from '@testing-library/user-event'
 import { LanguageFilterDropdown } from './LanguageFilterDropdown'
 
 describe('LanguageFilterDropdown', () => {
-  beforeAll(() => {
-    class MockResizeObserver {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      observe(): void {}
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      unobserve(): void {}
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      disconnect(): void {}
-    }
-    global.ResizeObserver = MockResizeObserver
-    window.HTMLElement.prototype.scrollIntoView = jest.fn()
-  })
-
   it('renders placeholder when no selection is provided', () => {
     render(
       <LanguageFilterDropdown

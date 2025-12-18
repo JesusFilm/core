@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs'
+
 import { encode } from 'blurhash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
@@ -20,9 +22,18 @@ jest.mock('sharp', () => {
   return jest.fn(() => mockSharp)
 })
 
+// Mock fs module
+jest.mock('fs', () => ({
+  readFileSync: jest.fn()
+}))
+
 // Mock fetch
 const mockFetch = jest.fn()
 global.fetch = mockFetch
+
+const mockReadFileSync = readFileSync as jest.MockedFunction<
+  typeof readFileSync
+>
 
 describe('Blurhash API', () => {
   let mockEncode: jest.Mock
@@ -31,6 +42,18 @@ describe('Blurhash API', () => {
     jest.clearAllMocks()
     mockEncode = encode as jest.Mock
     mockEncode.mockReturnValue('UWE2^XE2M{t7~XIoaeofS%n}s:S4A0xZj[R*')
+    mockReadFileSync.mockReturnValue(Buffer.from('mock image data'))
+    // Reset sharp mock to default implementation
+    ;(sharp as unknown as jest.Mock).mockReset()
+    ;(sharp as unknown as jest.Mock).mockImplementation(() => ({
+      resize: jest.fn().mockReturnThis(),
+      raw: jest.fn().mockReturnThis(),
+      ensureAlpha: jest.fn().mockReturnThis(),
+      toBuffer: jest.fn().mockResolvedValue({
+        data: new Uint8ClampedArray(32 * 32 * 4),
+        info: { width: 32, height: 32 }
+      })
+    }))
   })
 
   afterEach(() => {

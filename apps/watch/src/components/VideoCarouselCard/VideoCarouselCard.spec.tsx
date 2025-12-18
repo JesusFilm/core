@@ -28,6 +28,35 @@ jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
+jest.mock('../../libs/blurhash', () => ({
+  useBlurhash: jest.fn(() => ({
+    blurhash: null,
+    dominantColor: null,
+    isLoading: false,
+    error: null
+  })),
+  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+}))
+
+jest.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: jest.fn(() => ({
+    thumbnailUrl: 'test-image.jpg',
+    isLoading: false,
+    error: null
+  }))
+}))
+
+jest.mock('../../libs/watchContext', () => ({
+  useWatch: jest.fn(() => ({
+    state: { audioLanguageId: '529' }
+  }))
+}))
+
+jest.mock('../../libs/playerContext', () => ({
+  usePlayer: jest.fn(),
+  useThrottledPlayerProgress: jest.fn(() => 0)
+}))
+
 const mockUsePlayer = usePlayer as jest.MockedFunction<typeof usePlayer>
 
 // Create mock data using UnifiedCardData format

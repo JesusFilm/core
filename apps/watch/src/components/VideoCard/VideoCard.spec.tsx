@@ -18,6 +18,18 @@ jest.mock('../../libs/blurhash', () => ({
   })),
   blurImage: jest.fn(() => 'data:image/webp;base64,test')
 }))
+jest.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: jest.fn(() => ({
+    thumbnailUrl: null,
+    isLoading: false,
+    error: null
+  }))
+}))
+jest.mock('../../libs/watchContext', () => ({
+  useWatch: jest.fn(() => ({
+    state: { audioLanguageId: '529' }
+  }))
+}))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos

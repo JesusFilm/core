@@ -24,29 +24,6 @@ describe('DialogLangSwitch', () => {
     nativeName: { id: '496', value: 'Français', primary: true }
   }
 
-  beforeAll(() => {
-    class ResizeObserverMock {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      observe(): void {}
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      unobserve(): void {}
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      disconnect(): void {}
-    }
-
-    global.ResizeObserver = ResizeObserverMock
-
-    if (
-      window.HTMLElement != null &&
-      window.HTMLElement.prototype.scrollIntoView == null
-    ) {
-      Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
-        configurable: true,
-        value: jest.fn()
-      })
-    }
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
     useLanguagesMock.mockReturnValue({

@@ -15,9 +15,16 @@ describe('ContentHeader', () => {
   })
 
   it('renders the header with a logo', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
     render(
       <VideoProvider value={{ content: videos[0] }}>
-        <ContentHeader />
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
       </VideoProvider>
     )
 
@@ -25,7 +32,7 @@ describe('ContentHeader', () => {
     expect(header).toBeInTheDocument()
 
     const link = screen.getByRole('link')
-    expect(link).toHaveAttribute('href', '/')
+    expect(link).toHaveAttribute('href', '/watch')
   })
 
   it('should be visible when video is not playing', () => {
@@ -93,27 +100,48 @@ describe('ContentHeader', () => {
   })
 
   it('should have the correct href when languageSlug is provided', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
     render(
       <VideoProvider value={{ content: videos[0] }}>
-        <ContentHeader languageSlug="french" />
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader languageSlug="french" />
+        </PlayerProvider>
       </VideoProvider>
     )
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/french.html')
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/watch/french.html')
   })
 
   it('should not change the href when languageSlug is english', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
     render(
       <VideoProvider value={{ content: videos[0] }}>
-        <ContentHeader languageSlug="english" />
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader languageSlug="english" />
+        </PlayerProvider>
       </VideoProvider>
     )
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/')
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/watch')
   })
 
   it('should apply drop-shadow-xs class to Globe icon', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
     const { container } = render(
       <VideoProvider value={{ content: videos[0] }}>
-        <ContentHeader />
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
       </VideoProvider>
     )
 

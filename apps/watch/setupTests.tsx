@@ -28,6 +28,27 @@ Object.defineProperty(
 
 jest.mock('next/router', () => require('next-router-mock'))
 
+// Mock ResizeObserver for components that use it
+class ResizeObserverMock {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+global.ResizeObserver = ResizeObserverMock
+
+// Mock scrollIntoView for better test compatibility
+if (
+  window.HTMLElement != null &&
+  window.HTMLElement.prototype.scrollIntoView == null
+) {
+  Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+    configurable: true,
+    writable: true,
+    value: jest.fn()
+  })
+}
+
 if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })
 
