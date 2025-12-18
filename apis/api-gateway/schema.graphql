@@ -114,7 +114,6 @@ type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(g
 
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
-  sitesAddGoals(input: SitesAddGoalsInput!) : MutationSitesAddGoalsResult! @join__field(graph: API_ANALYTICS) 
   """
   blockDelete returns the updated sibling blocks on successful delete
   """
@@ -542,10 +541,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
   data: Site!
-}
-
-type MutationSitesAddGoalsSuccess @join__type(graph: API_ANALYTICS)  {
-  data: Int!
 }
 
 type Site @join__type(graph: API_ANALYTICS)  {
@@ -3203,8 +3198,6 @@ interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
 
-union MutationSitesAddGoalsResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSitesAddGoalsSuccess")  = Error | MutationSitesAddGoalsSuccess
-
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
 union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
@@ -3597,6 +3590,7 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   videoProgress75 @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videoComplete @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videoTrigger @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  multiSelectSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
   prayerRequestCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
   christDecisionCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
   gospelStartCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3738,10 +3732,6 @@ input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
   disableSharedLinks: Boolean
-}
-
-input SitesAddGoalsInput @join__type(graph: API_ANALYTICS)  {
-  goals: [String!]!
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
