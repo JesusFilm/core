@@ -75,6 +75,7 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress50: VideoProgressEventCreateInput & Props
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
+  multiselectSubmit: MultiselectSubmissionEventCreateInput & Props
   videoTrigger: Props
   // Capture events are triggered by journey events above
   prayerRequestCapture: Props

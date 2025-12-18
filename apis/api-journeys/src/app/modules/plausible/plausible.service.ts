@@ -25,6 +25,7 @@ export type PlausibleJob =
   | PlausibleCreateSitesJob
   | PlausibleCreateTemplateSiteJob
 
+//TODO: add multiselectSubmit
 export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
   'footerThumbsDownButtonClick',
