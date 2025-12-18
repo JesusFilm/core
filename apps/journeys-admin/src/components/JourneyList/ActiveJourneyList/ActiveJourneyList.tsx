@@ -11,6 +11,10 @@ import { ReactElement, useEffect, useState } from 'react'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
@@ -25,23 +29,6 @@ const Dialog = dynamic(
   { ssr: false }
 )
 
-export const ARCHIVE_ACTIVE_JOURNEYS = gql`
-  mutation ArchiveActiveJourneys($ids: [ID!]!) {
-    journeysArchive(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
-export const TRASH_ACTIVE_JOURNEYS = gql`
-  mutation TrashActiveJourneys($ids: [ID!]!) {
-    journeysTrash(ids: $ids) {
-      id
-      status
-    }
-  }
-`
 export function ActiveJourneyList({
   user,
   sortOrder,

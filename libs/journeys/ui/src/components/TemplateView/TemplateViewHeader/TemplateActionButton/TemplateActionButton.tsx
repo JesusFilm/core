@@ -7,21 +7,25 @@ import { CreateJourneyButton } from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
 
 interface TemplateActionButtonProps {
+  variant?: 'menu-item' | 'button'
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
+  handleCloseMenu?: () => void
 }
 
 export function TemplateActionButton({
+  variant = 'button',
   signedIn,
-  openTeamDialogOnSignIn = false
+  openTeamDialogOnSignIn = false,
+  handleCloseMenu
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
 
   if (journey != null && isJourneyCustomizable(journey)) {
-    return <UseThisTemplateButton signedIn={signedIn} />
+    return <UseThisTemplateButton variant={variant} signedIn={signedIn} />
   }
 
-  if (journey == null) {
+  if (journey == null && variant === 'button') {
     return (
       <Skeleton
         sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
@@ -32,8 +36,10 @@ export function TemplateActionButton({
 
   return (
     <CreateJourneyButton
+      variant={variant}
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
+      handleCloseMenu={handleCloseMenu}
     />
   )
 }
