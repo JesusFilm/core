@@ -39,7 +39,7 @@ export function ContentHeader({
   return (
     <div
       data-testid="ContentHeader"
-      className={`responsive-container absolute left-0 right-0 top-0 z-[99] flex h-[100px] w-full flex-row items-center justify-between gap-4 transition-opacity duration-[225ms] lg:h-[200px] ${
+      className={`responsive-container absolute top-0 right-0 left-0 z-[99] flex h-[100px] w-full flex-row items-center justify-between gap-4 transition-opacity duration-[225ms] lg:h-[200px] ${
         visible ? 'opacity-100' : 'opacity-0'
       } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
@@ -67,7 +67,7 @@ export function ContentHeader({
           tabIndex={0}
           className="text-white hover:bg-white/10"
         >
-          <Globe className="drop-shadow-xs h-5 w-5" />
+          <Globe className="h-5 w-5 drop-shadow-xs" />
         </Button>
         <DialogLangSwitch open={isDialogOpen} handleClose={handleCloseDialog} />
       </>

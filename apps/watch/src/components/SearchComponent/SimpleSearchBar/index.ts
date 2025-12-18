@@ -1,2 +1,1 @@
 export { SimpleSearchBar } from './SimpleSearchBar'
-

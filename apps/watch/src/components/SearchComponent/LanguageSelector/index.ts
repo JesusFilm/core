@@ -1,2 +1,1 @@
 export { LanguageSelector } from './LanguageSelector'
-
