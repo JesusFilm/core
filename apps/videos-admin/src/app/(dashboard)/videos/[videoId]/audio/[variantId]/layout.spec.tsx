@@ -198,7 +198,11 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
   }),
-  usePathname: () => '/test-path'
+  usePathname: () => '/test-path',
+  useParams: () => ({
+    videoId: 'video-456',
+    variantId: 'variant-123'
+  })
 }))
 
 // Mock useSuspenseQuery

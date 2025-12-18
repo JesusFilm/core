@@ -19,9 +19,9 @@ import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement, ReactNode, use, useEffect, useState } from 'react'
+import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -87,8 +87,12 @@ const validationSchema = object({
 export default function VariantDialog(
   props: VariantDialogProps
 ): ReactElement | null {
-  const { children, params } = props
-  const { variantId, videoId } = use(params)
+  const { children } = props
+  const routeParams = useParams()
+  const { variantId, videoId } = routeParams as {
+    variantId: string
+    videoId: string
+  }
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
