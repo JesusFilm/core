@@ -200,7 +200,7 @@ export function ImageUpload({
           {hasError
             ? getErrorMessage(errorCode)
             : t(
-                'You can upload PNG, JPG, GIF, SVG, or HEIC files. Max file size: 10 MB'
+                'Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB'
               )}
         </Typography>
       </Stack>
