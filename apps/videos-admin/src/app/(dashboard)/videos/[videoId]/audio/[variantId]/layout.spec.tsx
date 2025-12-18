@@ -303,7 +303,10 @@ describe('VariantDialog', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VariantDialog
-            params={{ variantId: mockVariantId, videoId: mockVideoId }}
+            params={Promise.resolve({
+              variantId: mockVariantId,
+              videoId: mockVideoId
+            })}
           >
             <div>Child content</div>
           </VariantDialog>
