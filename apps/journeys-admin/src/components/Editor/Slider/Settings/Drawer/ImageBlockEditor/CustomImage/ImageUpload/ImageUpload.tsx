@@ -75,6 +75,7 @@ export function ImageUpload({
           setSuccess(false)
           setUploading?.(false)
           setErrorCode(cloudflareError as ErrorCode)
+          return
         }
 
         const src = `https://imagedelivery.net/${
