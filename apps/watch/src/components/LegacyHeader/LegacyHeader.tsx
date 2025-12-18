@@ -9,10 +9,10 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 
 /**
- * Props for the Header component.
- * @interface HeaderProps
+ * Props for the LegacyHeader component.
+ * @interface LegacyHeaderProps
  */
-interface HeaderProps {
+interface LegacyHeaderProps {
   /** Theme mode to apply to the header. */
   themeMode?: ThemeMode
   hideTopAppBar?: boolean
@@ -22,16 +22,16 @@ interface HeaderProps {
 }
 
 /**
- * Header component for the application.
+ * LegacyHeader component for the application.
  *
  * Renders a swipeable drawer for navigation menu.
  *
- * @param {HeaderProps} props - Component props.
- * @returns {ReactElement} Rendered Header component.
+ * @param {LegacyHeaderProps} props - Component props.
+ * @returns {ReactElement} Rendered LegacyHeader component.
  */
-export function Header({
+export function LegacyHeader({
   themeMode = ThemeMode.light
-}: HeaderProps): ReactElement {
+}: LegacyHeaderProps): ReactElement {
   /** State to control the drawer open/closed state. */
   const [drawerOpen, setDrawerOpen] = useState(false)
 

@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
-import { Header } from './LegacyHeader'
+import { LegacyHeader } from '.'
 
 jest.mock('@mui/material/useScrollTrigger', () => ({
   __esModule: true,
@@ -11,7 +11,7 @@ jest.mock('@mui/material/useScrollTrigger', () => ({
 
 const useScrollTriggerMock = useScrollTrigger as jest.Mock
 
-describe('Header', () => {
+describe('LegacyHeader', () => {
   beforeEach(() => {
     useScrollTriggerMock.mockReset()
   })
@@ -19,18 +19,16 @@ describe('Header', () => {
   it('should render header drawer', () => {
     render(
       <MockedProvider>
-        <Header />
+        <LegacyHeader />
       </MockedProvider>
     )
-    expect(
-      screen.getByTestId('HeaderMenuPanel', { hidden: true })
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('HeaderMenuPanel')).toBeInTheDocument()
   })
 
   it('should hide bottom app bar', () => {
     render(
       <MockedProvider>
-        <Header hideBottomAppBar />
+        <LegacyHeader hideBottomAppBar />
       </MockedProvider>
     )
     expect(screen.queryByTestId('BottomAppBar')).not.toBeInTheDocument()
@@ -39,7 +37,7 @@ describe('Header', () => {
   it('should hide spacer', () => {
     render(
       <MockedProvider>
-        <Header hideSpacer />
+        <LegacyHeader hideSpacer />
       </MockedProvider>
     )
     expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
@@ -48,7 +46,7 @@ describe('Header', () => {
   it('should hide top app bar', () => {
     render(
       <MockedProvider>
-        <Header hideTopAppBar />
+        <LegacyHeader hideTopAppBar />
       </MockedProvider>
     )
     expect(screen.queryByTestId('TopAppBar')).not.toBeInTheDocument()

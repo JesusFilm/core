@@ -6,8 +6,8 @@ import { ThemeMode } from '@core/shared/ui/themes'
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
 import { WatchProvider } from '../../libs/watchContext'
-import { Footer } from '../Footer/Footer'
-import { Header } from '../LegacyHeader'
+import { Footer } from '../Footer'
+import { LegacyHeader } from '../LegacyHeader'
 import { SearchComponent } from '../SearchComponent'
 
 import { CollectionsRail } from './CollectionsRail'
@@ -46,7 +46,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
 
   return (
     <div>
-      <Header themeMode={ThemeMode.dark} />
+      <LegacyHeader themeMode={ThemeMode.dark} />
       <Index indexName={indexName}>
         <SearchComponent languageId={languageId} />
       </Index>

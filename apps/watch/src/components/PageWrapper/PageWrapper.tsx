@@ -9,7 +9,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Footer } from '../Footer'
-import { Header } from '../LegacyHeader'
+import { LegacyHeader } from '../LegacyHeader'
 
 interface PageWrapperProps {
   hero?: ReactNode
@@ -34,7 +34,7 @@ export function PageWrapper({
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
-      {hideHeader !== true && <Header themeMode={headerThemeMode} />}
+      {hideHeader !== true && <LegacyHeader themeMode={headerThemeMode} />}
       <Stack
         justifyContent="space-between"
         sx={{

@@ -6,12 +6,12 @@ import { ThemeMode } from '@core/shared/ui/themes'
 
 import { watchConfig } from '../../libs/storybook'
 
-import { Header } from './Header'
+import { LegacyHeader } from './LegacyHeader'
 
-const HeaderStory: Meta<typeof Header> = {
+const LegacyHeaderStory: Meta<typeof LegacyHeader> = {
   ...watchConfig,
-  component: Header,
-  title: 'Watch/Header',
+  component: LegacyHeader,
+  title: 'Watch/LegacyHeader',
   parameters: {
     layout: 'fullscreen'
   }
@@ -24,18 +24,18 @@ const trueHeaderItemsFlags = {
   products: true
 }
 
-const Template: StoryObj<typeof Header> = {
-  render: () => <Header themeMode={ThemeMode.light} />
+const Template: StoryObj<typeof LegacyHeader> = {
+  render: () => <LegacyHeader themeMode={ThemeMode.light} />
 }
 
-const WithFlagsTemplate: StoryObj<typeof Header> = {
+const WithFlagsTemplate: StoryObj<typeof LegacyHeader> = {
   render: () => (
     <FlagsProvider
       flags={{
         ...trueHeaderItemsFlags
       }}
     >
-      <Header themeMode={ThemeMode.light} />
+      <LegacyHeader themeMode={ThemeMode.light} />
     </FlagsProvider>
   )
 }
@@ -73,4 +73,4 @@ export const OpenPanel = {
   }
 }
 
-export default HeaderStory
+export default LegacyHeaderStory

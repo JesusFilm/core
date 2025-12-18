@@ -846,6 +846,7 @@ export function VideoControls({
                     id={play ? 'pause-button' : 'play-button'}
                     onClick={play ? handlePause : handlePlay}
                     variant="ghost"
+                    aria-label={play ? 'pause' : 'play'}
                   >
                     {isSeekLoading ? (
                       <Loader2 className="h-6 w-6 animate-spin" />

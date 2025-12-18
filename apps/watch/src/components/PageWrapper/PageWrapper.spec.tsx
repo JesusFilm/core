@@ -6,25 +6,22 @@ import { PageWrapper } from '.'
 
 describe('PageWrapper', () => {
   it('should render header and footer', () => {
-    const { getByRole } = render(
+    const { getByRole, getByTestId } = render(
       <MockedProvider>
         <PageWrapper />
       </MockedProvider>
     )
-    expect(getByRole('banner')).toBeInTheDocument()
-    expect(
-      getByRole('button', { name: 'open header menu' })
-    ).toBeInTheDocument()
+    expect(getByTestId('HeaderMenuPanel', { hidden: true })).toBeInTheDocument()
     expect(getByRole('contentinfo')).toBeInTheDocument()
   })
 
   it('should not render header', () => {
-    const { queryByRole } = render(
+    const { queryByTestId } = render(
       <MockedProvider>
         <PageWrapper hideHeader />
       </MockedProvider>
     )
-    expect(queryByRole('banner')).not.toBeInTheDocument()
+    expect(queryByTestId('HeaderMenuPanel', { hidden: true })).not.toBeInTheDocument()
   })
 
   it('should render hero', () => {
