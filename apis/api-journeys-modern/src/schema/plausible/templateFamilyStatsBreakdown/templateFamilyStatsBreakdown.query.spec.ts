@@ -712,5 +712,4 @@ describe('templateFamilyStatsBreakdown', () => {
       })
     ])
   })
-
 })
