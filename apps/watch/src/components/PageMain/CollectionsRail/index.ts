@@ -1,2 +1,1 @@
 export { CollectionsRail } from './CollectionsRail'
-

@@ -1,2 +1,1 @@
 export { MuxVideoFallback } from './MuxVideoFallback'
-

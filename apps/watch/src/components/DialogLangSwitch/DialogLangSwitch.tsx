@@ -92,7 +92,7 @@ export function DialogLangSwitch({
       <DialogPortal>
         <DialogOverlay className="blured-bg z-[100] bg-stone-900/5" />
         <DialogContent
-          className="[&>button]:right-18 [&>button]:scale-175 fixed inset-0 left-0 z-[101] flex max-w-none translate-x-0 translate-y-0 items-center justify-center overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 [&>button]:top-24 [&>button]:cursor-pointer"
+          className="fixed inset-0 left-0 z-[101] flex max-w-none translate-x-0 translate-y-0 items-center justify-center overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 [&>button]:top-24 [&>button]:right-18 [&>button]:scale-175 [&>button]:cursor-pointer"
           aria-label="Language Settings"
         >
           <div className="mx-auto w-full max-w-md px-4">
@@ -116,14 +116,14 @@ export function DialogLangSwitch({
               <div className="mx-6 flex justify-end gap-4 pt-6">
                 <button
                   onClick={handleCloseDialog}
-                  className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-transparent px-4 py-2 text-sm font-bold uppercase tracking-wider text-white/50 transition-colors duration-200 hover:text-[#cb333b]"
+                  className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-transparent px-4 py-2 text-sm font-bold tracking-wider text-white/50 uppercase transition-colors duration-200 hover:text-[#cb333b]"
                 >
                   {t('Close')}
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={Object.keys(pendingChanges).length === 0}
-                  className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold uppercase tracking-wider text-gray-900 transition-colors duration-200 hover:bg-[#cb333b] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {t('Apply')}
                 </button>

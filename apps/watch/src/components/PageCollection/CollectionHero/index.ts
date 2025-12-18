@@ -1,2 +1,1 @@
 export { CollectionHero } from './CollectionHero'
-

@@ -57,7 +57,7 @@ export interface GetLatestVideos_videos {
    * The number of published child videos associated with this video
    */
   childrenCount: number;
-  publishedAt: string | null;
+  publishedAt: any | null;
 }
 
 export interface GetLatestVideos {
@@ -69,4 +69,3 @@ export interface GetLatestVideosVariables {
   languageId?: string | null;
   limit?: number | null;
 }
-
