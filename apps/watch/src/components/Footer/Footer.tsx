@@ -11,6 +11,13 @@ import { FooterLink } from './FooterLink'
 export function Footer(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
+  const gitSha =
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ??
+    process.env.VERCEL_GIT_COMMIT_SHA ??
+    ''
+  const shortSha = gitSha ? gitSha.substring(0, 7).toLowerCase() : 'dev'
+  const projectInfo = `Watch (${shortSha})`
+
   const navigationLinks = [
     { name: t('Share', { lng: 'en' }), href: '/partners/share/' },
     { name: t('Watch', { lng: 'en' }), href: '/watch/' },
@@ -29,22 +36,22 @@ export function Footer(): ReactElement {
     {
       name: 'X (Twitter)',
       href: 'https://twitter.com/jesusfilm',
-      icon: '/watch/assets/footer/x-twitter.svg'
+      icon: '/watch/images/footer/x-twitter.svg'
     },
     {
       name: 'Facebook',
       href: 'https://www.facebook.com/jesusfilm',
-      icon: '/watch/assets/footer/facebook.svg'
+      icon: '/watch/images/footer/facebook.svg'
     },
     {
       name: 'Instagram',
       href: 'https://www.instagram.com/jesusfilm',
-      icon: '/watch/assets/footer/instagram.svg'
+      icon: '/watch/images/footer/instagram.svg'
     },
     {
       name: 'YouTube',
       href: 'https://www.youtube.com/user/jesusfilm',
-      icon: '/watch/assets/footer/youtube.svg'
+      icon: '/watch/images/footer/youtube.svg'
     }
   ]
 
@@ -75,7 +82,7 @@ export function Footer(): ReactElement {
           <FooterLink
             url="/"
             label="Jesus Film logo"
-            src="/watch/assets/footer/jesus-film-logo.png"
+            src="/watch/images/footer/jesus-film-logo.png"
             width={60}
             height={60}
             sx={{ lineHeight: 0 }}
@@ -163,45 +170,56 @@ export function Footer(): ReactElement {
           gap={5}
           rowGap={8}
         >
-          <Stack
-            direction="row"
-            justifyContent={{ xs: 'center', sm: 'flex-start' }}
-            flexGrow={1}
-            alignItems="center"
-            divider={<Divider orientation="vertical" flexItem />}
-            gap={5}
-          >
-            {/* Address and Contact */}
-            <Stack>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('100 Lake Hart Drive', { lng: 'en' })}
-              </Typography>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Orlando, FL, 32832', { lng: 'en' })}
-              </Typography>
-            </Stack>
+          <Stack direction="column">
+            <Stack
+              direction="row"
+              justifyContent={{ xs: 'center', sm: 'flex-start' }}
+              flexGrow={1}
+              alignItems="flex-start"
+              divider={<Divider orientation="vertical" flexItem />}
+              gap={5}
+            >
+              {/* Address and Contact */}
+              <Stack>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('100 Lake Hart Drive', { lng: 'en' })}
+                </Typography>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('Orlando, FL, 32832', { lng: 'en' })}
+                </Typography>
+              </Stack>
 
-            <Stack>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Office: (407) 826-2300', { lng: 'en' })}
-              </Typography>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Fax: (407) 826-2375', { lng: 'en' })}
-              </Typography>
+              <Stack>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('Office: (407) 826-2300', { lng: 'en' })}
+                </Typography>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('Fax: (407) 826-2375', { lng: 'en' })}
+                </Typography>
+              </Stack>
+              {/* Legal Links */}
+              <Stack>
+                <FooterLink
+                  url="/privacy/"
+                  label={t('Privacy Policy', { lng: 'en' })}
+                  sx={{ fontSize: 12, lineHeight: 1.2 }}
+                />
+                <FooterLink
+                  url="/legal/"
+                  label={t('Legal Statement', { lng: 'en' })}
+                  sx={{ fontSize: 12, lineHeight: 1.2 }}
+                />
+              </Stack>
             </Stack>
-            {/* Legal Links */}
-            <Stack>
-              <FooterLink
-                url="/privacy/"
-                label={t('Privacy Policy', { lng: 'en' })}
-                sx={{ fontSize: 12, lineHeight: 1.2 }}
-              />
-              <FooterLink
-                url="/legal/"
-                label={t('Legal Statement', { lng: 'en' })}
-                sx={{ fontSize: 12, lineHeight: 1.2 }}
-              />
-            </Stack>
+            <Typography
+              variant="h6"
+              fontSize={12}
+              lineHeight={1.2}
+              color="textSecondary"
+              sx={{ opacity: 0.6 }}
+            >
+              {projectInfo}
+            </Typography>
           </Stack>
           {/* Newsletter Section */}
           <Stack flexGrow={1} alignItems={{ xs: 'center', sm: 'flex-end' }}>

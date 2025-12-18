@@ -4,11 +4,11 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
-import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
+import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
@@ -19,7 +19,8 @@ const trashedJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -37,7 +38,8 @@ const noJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -95,7 +97,8 @@ describe('TrashedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -132,7 +135,8 @@ describe('TrashedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -170,7 +174,8 @@ describe('TrashedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {

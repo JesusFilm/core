@@ -55,7 +55,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-import { PlausibleJob } from '../plausible/plausible.consumer'
+import { PlausibleJob } from '../plausible/plausible.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 type BlockWithAction = Block & { action: BlockAction | null }
@@ -459,7 +459,8 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string
+    @Args('teamId') teamId: string,
+    @Args('forceNonTemplate') forceNonTemplate?: boolean
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -581,6 +582,8 @@ export class JourneyResolver {
         journeyId: duplicateJourneyId
       })
     )
+    const isLocalTemplate = journey.teamId !== 'jfp-team' && journey.template
+    const duplicateAsTemplate = forceNonTemplate ? false : isLocalTemplate
 
     let retry = true
     while (retry) {
@@ -610,7 +613,7 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
-                template: false,
+                template: duplicateAsTemplate,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),
@@ -1034,11 +1037,15 @@ export class JourneyResolver {
         }
       }
     })
+    const isGlobalTemplate = journey?.team?.id === 'jfp-team'
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+    if (
+      isGlobalTemplate &&
+      ability.cannot(Action.Manage, subject('Journey', journey), 'template')
+    )
       throw new GraphQLError(
         'user is not allowed to change journey to or from a template',
         {

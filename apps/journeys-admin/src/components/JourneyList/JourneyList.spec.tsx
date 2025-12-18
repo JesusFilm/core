@@ -13,7 +13,8 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => {
     return {
       query: {
-        tab: 'active'
+        status: 'active',
+        type: 'journeys'
       },
       push: jest.fn(),
       events: {
@@ -68,7 +69,7 @@ describe('JourneyList', () => {
 
   it('should show add journey button on active tab', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'active' },
+      query: { status: 'active', type: 'journeys' },
       events: {
         on: jest.fn(),
         off: jest.fn()
@@ -88,7 +89,7 @@ describe('JourneyList', () => {
 
   it('should hide add journey button on trashed tab', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'trashed' },
+      query: { status: 'trashed', type: 'journeys' },
       events: {
         on: jest.fn(),
         off: jest.fn()
@@ -108,7 +109,27 @@ describe('JourneyList', () => {
 
   it('should hide add journey button on archived tab', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'archived' },
+      query: { status: 'archived', type: 'journeys' },
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
+    } as unknown as NextRouter)
+    const { queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('button', { name: 'Add' })).toBeNull()
+  })
+
+  it('should hide add journey button when type is templates', () => {
+    mockedUseRouter.mockReturnValue({
+      query: { status: 'active', type: 'templates' },
       events: {
         on: jest.fn(),
         off: jest.fn()
@@ -131,7 +152,7 @@ describe('JourneyList', () => {
     const offMock = jest.fn()
 
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'active' },
+      query: { status: 'active', type: 'journeys' },
       events: {
         on: onMock,
         off: offMock
@@ -159,7 +180,7 @@ describe('JourneyList', () => {
     const offMock = jest.fn()
 
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'active' },
+      query: { status: 'active', type: 'journeys' },
       events: {
         on: onMock,
         off: offMock
@@ -187,7 +208,7 @@ describe('JourneyList', () => {
     const offMock = jest.fn()
 
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'active' },
+      query: { status: 'active', type: 'journeys' },
       events: {
         on: onMock,
         off: offMock
