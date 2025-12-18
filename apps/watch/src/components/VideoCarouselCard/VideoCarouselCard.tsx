@@ -7,14 +7,14 @@ import { ReactElement, memo, useState } from 'react'
 import Play3 from '@core/shared/ui/icons/Play3'
 
 import { blurImage, useBlurhash } from '../../libs/blurhash'
-import { usePlayer, useThrottledPlayerProgress } from '../../libs/playerContext'
+import { useThrottledPlayerProgress } from '../../libs/playerContext'
 import { useThumbnailUrl } from '../../libs/thumbnail'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useWatch } from '../../libs/watchContext'
 import { UnifiedCardData } from '../../types/inserts'
 
-interface VideoCardProps {
+interface VideoCarouselCardProps {
   data: UnifiedCardData
   containerSlug?: string
   active: boolean
@@ -183,13 +183,13 @@ const CardContent = memo(function CardContent({
   )
 })
 
-export function VideoCard({
+export function VideoCarouselCard({
   data,
   containerSlug,
   active,
   transparent = false,
   onVideoSelect
-}: VideoCardProps): ReactElement {
+}: VideoCarouselCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { label } = getLabelDetails(t, data.label)
   const href = getWatchUrl(containerSlug, data.label, data.variant?.slug)

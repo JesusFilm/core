@@ -12,7 +12,7 @@ import {
   transformMuxSlide,
   transformVideoChild
 } from '../../../src/types/inserts'
-import { VideoCard as CarouselVideoCard } from '../CarouselVideoCard/VideoCard'
+import { VideoCarouselCard } from '../VideoCarouselCard'
 
 export interface VideoCarouselProps {
   slides: VideoCarouselSlide[]
@@ -108,7 +108,7 @@ export function VideoCarousel({
               return (
                 <SwiperSlide
                   key={slide.id}
-                  className={`!h-34 mr-2 flex max-w-[140px] flex-col md:mr-3 md:max-w-[260px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`mr-2 flex !h-34 max-w-[140px] flex-col md:mr-3 md:max-w-[260px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`VideoCarouselSlide-${slide.id}`}
                 >
                   <div
@@ -119,7 +119,7 @@ export function VideoCarousel({
                         : 'opacity-60 hover:opacity-80'
                     )}
                   >
-                    <CarouselVideoCard
+                    <VideoCarouselCard
                       data={unifiedData}
                       containerSlug={containerSlug}
                       active={slide.id === activeVideoId}

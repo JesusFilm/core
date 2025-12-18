@@ -3,13 +3,13 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 
-import { VideoCard } from './VideoCard'
+import { VideoCarouselCard } from '.'
 
-type StoryArgs = ComponentPropsWithoutRef<typeof VideoCard>
+type StoryArgs = ComponentPropsWithoutRef<typeof VideoCarouselCard>
 
 const meta = {
-  title: 'VideoCard',
-  component: VideoCard
+  title: 'VideoCarouselCard',
+  component: VideoCarouselCard
 } satisfies Meta<StoryArgs>
 
 export default meta
