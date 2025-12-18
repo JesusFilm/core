@@ -314,6 +314,7 @@ describe('ImageUpload', () => {
     expect(setUploading).toHaveBeenCalledWith(false)
     expect(onChange).not.toHaveBeenCalled()
   })
+
   it('should handle Cloudflare error response', async () => {
     const cfErrorResponse = {
       result: {
@@ -387,8 +388,5 @@ describe('ImageUpload', () => {
     })
 
     expect(setUploading).toHaveBeenCalledWith(false)
-
   })
 })
-
-
