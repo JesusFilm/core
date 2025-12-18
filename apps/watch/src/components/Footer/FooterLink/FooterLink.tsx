@@ -57,7 +57,7 @@ export function FooterLink({
         rel={rel}
         data-testid="FooterLink"
         className={cn(
-          'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+          'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
           className
         )}
       >
@@ -72,7 +72,7 @@ export function FooterLink({
       rel={rel}
       data-testid="FooterLink"
       className={cn(
-        'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+        'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
         className
       )}
     >

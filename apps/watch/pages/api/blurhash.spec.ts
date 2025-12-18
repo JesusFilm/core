@@ -1,8 +1,11 @@
 import { readFileSync } from 'fs'
 
 import { encode } from 'blurhash'
+import { HttpResponse, delay, http } from 'msw'
 import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
+
+import { server } from '../../test/mswServer'
 
 import handler from './blurhash'
 
@@ -26,10 +29,6 @@ jest.mock('sharp', () => {
 jest.mock('fs', () => ({
   readFileSync: jest.fn()
 }))
-
-// Mock fetch
-const mockFetch = jest.fn()
-global.fetch = mockFetch
 
 const mockReadFileSync = readFileSync as jest.MockedFunction<
   typeof readFileSync
@@ -92,16 +91,20 @@ describe('Blurhash API', () => {
 
     it('should allow GET method', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-1'
       })
       const res = createMockResponse()
 
-      // Mock successful fetch and sharp processing
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       const mockSharpInstance = {
         resize: jest.fn().mockReturnThis(),
@@ -199,15 +202,20 @@ describe('Blurhash API', () => {
 
     it('should allow images.unsplash.com', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-2'
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       const mockSharpInstance = {
         resize: jest.fn().mockReturnThis(),
@@ -243,11 +251,16 @@ describe('Blurhash API', () => {
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://cdn.sanity.io/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       const mockSharpInstance = {
         resize: jest.fn().mockReturnThis(),
@@ -283,11 +296,16 @@ describe('Blurhash API', () => {
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('http://localhost:3000/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       const mockSharpInstance = {
         resize: jest.fn().mockReturnThis(),
@@ -321,15 +339,20 @@ describe('Blurhash API', () => {
   describe('Image Fetching', () => {
     it('should return 408 for request timeout', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-3'
       })
       const res = createMockResponse()
 
-      mockFetch.mockImplementationOnce(() => {
-        const controller = new AbortController()
-        setTimeout(() => controller.abort(), 100)
-        return Promise.reject(new Error('AbortError'))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', async () => {
+          await delay('infinite')
+          return HttpResponse.arrayBuffer(new ArrayBuffer(100), {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       await handler(req, res)
 
@@ -337,19 +360,19 @@ describe('Blurhash API', () => {
       expect(res.json).toHaveBeenCalledWith({
         error: 'Request timeout - image took too long to fetch'
       })
-    })
+    }, 15000)
 
     it('should return 400 for HTTP error responses', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-4'
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found'
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          return HttpResponse.json({}, { status: 404, statusText: 'Not Found' })
+        })
+      )
 
       await handler(req, res)
 
@@ -361,15 +384,19 @@ describe('Blurhash API', () => {
 
     it('should return 400 for non-image content types', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-5'
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'text/html' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          return HttpResponse.text('<html></html>', {
+            headers: {
+              'Content-Type': 'text/html'
+            }
+          })
+        })
+      )
 
       await handler(req, res)
 
@@ -383,15 +410,20 @@ describe('Blurhash API', () => {
   describe('Blurhash Generation', () => {
     it('should return successful blurhash and dominant color', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-6'
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       const mockSharpInstance = {
         resize: jest.fn().mockReturnThis(),
@@ -431,15 +463,20 @@ describe('Blurhash API', () => {
 
     it('should return 400 for unsupported image format', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-7'
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
       ;(sharp as unknown as jest.Mock).mockImplementationOnce(() => {
         throw new Error('Input buffer contains unsupported image format')
       })
@@ -454,11 +491,15 @@ describe('Blurhash API', () => {
 
     it('should return 500 for generic errors', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-8'
       })
       const res = createMockResponse()
 
-      mockFetch.mockRejectedValueOnce(new Error('Network error'))
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          return HttpResponse.error()
+        })
+      )
 
       await handler(req, res)
 
@@ -472,15 +513,20 @@ describe('Blurhash API', () => {
   describe('Cache Headers', () => {
     it('should set correct cache headers for successful responses', async () => {
       const req = createMockRequest('GET', {
-        imageUrl: 'https://images.unsplash.com/photo-123'
+        imageUrl: 'https://images.unsplash.com/photo-9'
       })
       const res = createMockResponse()
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        headers: { get: () => 'image/jpeg' },
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
-      })
+      server.use(
+        http.get('https://images.unsplash.com/*', () => {
+          const mockImageBuffer = new ArrayBuffer(100)
+          return HttpResponse.arrayBuffer(mockImageBuffer, {
+            headers: {
+              'Content-Type': 'image/jpeg'
+            }
+          })
+        })
+      )
 
       const mockSharpInstance = {
         resize: jest.fn().mockReturnThis(),

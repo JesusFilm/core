@@ -89,13 +89,10 @@ async function fetchImageWithTimeout(
     return arrayBuffer
   } catch (error) {
     clearTimeout(timeoutId)
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        throw new Error('Request timeout')
-      }
-      throw error
+    if ('name' in error && error.name === 'AbortError') {
+      throw new Error('Request timeout')
     }
-    throw new Error('Failed to fetch image')
+    throw error
   }
 }
 
@@ -220,7 +217,10 @@ const generateBlurhashCached = async (
   const processingPromise = (async () => {
     try {
       // Fetch image with timeout
-      const imageBuffer = await fetchImageWithTimeout(imageUrl, 10000)
+      const imageBuffer = await fetchImageWithTimeout(
+        imageUrl,
+        process.env.NODE_ENV === 'test' ? 500 : 10000
+      )
       const buffer = Buffer.from(imageBuffer)
 
       // Generate blurhash and dominant color
