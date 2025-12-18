@@ -2522,12 +2522,8 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
   journeyId: String!
   journeyName: String!
   teamName: String!
-  status: JourneyStatus!
+  status: JourneyStatus
   stats: [TemplateFamilyStatsEventResponse!]!
-  """
-  The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment
-  """
-  journeyUrl: String!
 }
 
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {

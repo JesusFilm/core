@@ -1,17 +1,23 @@
 import { User } from '@core/yoga/firebaseClient'
 
 import { Action, ability, subject } from '../../../../lib/auth/ability'
-import { TemplateFamilyStatsBreakdownResponse } from '../../plausible'
+import {
+  TemplateFamilyStatsBreakdownResponse,
+  TemplateFamilyStatsEventResponse
+} from '../../plausible'
 import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
-import { buildJourneyUrl } from './buildJourneyUrls'
 import { TransformedResult } from './transformBreakdownResults'
+
+export const UNKNOWN_JOURNEYS_AGGREGATE_ID = '__unknown_journeys__'
 
 /**
  * Adds journey and team names to transformed results based on user permissions.
- * Journeys the user can read will show their actual names, while inaccessible
- * journeys will be labeled as "unknown journey" with an index. Teams are similarly
- * labeled based on whether the user can access any journey in that team.
+ * Journeys the user can read will show their actual names.
+ *
+ * Journeys the user cannot read are aggregated into a single "unknown" row
+ * (instead of splitting them into separate unknown journeys/teams).
+ *
  * Filters out results for journeys that cannot be matched.
  *
  * @param transformedResults - The transformed breakdown results with journey IDs and stats
@@ -25,92 +31,74 @@ export function addPermissionsAndNames(
   user: User
 ): TemplateFamilyStatsBreakdownResponse[] {
   const journeyById = new Map(journeys.map((journey) => [journey.id, journey]))
-  const teamNameMap = buildTeamNameMap(journeys, user)
 
-  let anonymousJourneyIndex = 0
+  const results: TemplateFamilyStatsBreakdownResponse[] = []
 
-  return transformedResults
-    .filter((transformedResult) => {
-      // Filter out events where we can't match a journey
-      return journeyById.has(transformedResult.journeyId)
-    })
-    .map((transformedResult) => {
-      const journey = journeyById.get(transformedResult.journeyId)!
+  const unknownStatsByEvent = new Map<string, number>()
+  const unknownEventOrder: string[] = []
+  let hasUnknownJourneys = false
 
-      const userCanReadJourney = ability(
-        Action.Read,
-        subject('Journey', journey),
-        user
-      )
+  for (const transformedResult of transformedResults) {
+    const journey = journeyById.get(transformedResult.journeyId)
+    // Filter out events where we can't match a journey
+    if (journey == null) continue
 
-      const customDomains = journey.team?.customDomains ?? []
-      const journeyUrl = buildJourneyUrl(journey.slug, customDomains)
+    const userCanReadJourney = ability(
+      Action.Read,
+      subject('Journey', journey),
+      user
+    )
 
-      if (userCanReadJourney) {
-        return {
-          journeyId: transformedResult.journeyId,
-          journeyName: journey.title ?? 'Untitled Journey',
-          teamName: journey.team?.title ?? 'No Team',
-          status: journey.status,
-          stats: transformedResult.stats,
-          journeyUrl
-        }
-      }
-
-      anonymousJourneyIndex++
-      return {
+    if (userCanReadJourney) {
+      results.push({
         journeyId: transformedResult.journeyId,
-        journeyName: `unknown journey ${anonymousJourneyIndex}`,
-        teamName: teamNameMap.get(journey.teamId) ?? 'No Team',
+        journeyName: journey.title ?? 'Untitled Journey',
+        teamName: journey.team?.title ?? 'No Team',
         status: journey.status,
-        stats: transformedResult.stats,
-        journeyUrl
-      }
-    })
-}
-
-/**
- * Builds a map of team IDs to team names based on user permissions.
- * If the user can read any journey in a team, the actual team name is used.
- * Otherwise, teams are labeled as "unknown team" with an index.
- *
- * @param journeys - Array of journeys with ACL information
- * @param user - The current user for permission checking
- * @returns Map of team ID (or null) to team name string
- */
-function buildTeamNameMap(
-  journeys: JourneyWithAcl[],
-  user: User
-): Map<string | null, string> {
-  const teamNameMap = new Map<string | null, string>()
-  const teamIdToJourneys = new Map<string, JourneyWithAcl[]>()
-
-  for (const journey of journeys) {
-    if (journey.teamId == null) {
-      teamNameMap.set(null, 'No Team')
+        stats: transformedResult.stats
+      })
       continue
     }
 
-    if (!teamIdToJourneys.has(journey.teamId)) {
-      teamIdToJourneys.set(journey.teamId, [])
-    }
-    teamIdToJourneys.get(journey.teamId)!.push(journey)
-  }
-
-  let anonymousTeamIndex = 0
-  for (const [teamId, teamJourneys] of teamIdToJourneys.entries()) {
-    const userCanReadAnyJourneyInTeam = teamJourneys.some((journey) =>
-      ability(Action.Read, subject('Journey', journey), user)
+    // Aggregate unreadable journeys into a single row
+    hasUnknownJourneys = true
+    mergeStatsIntoAggregate(
+      transformedResult.stats,
+      unknownStatsByEvent,
+      unknownEventOrder
     )
-
-    if (userCanReadAnyJourneyInTeam) {
-      const teamName = teamJourneys[0].team?.title ?? 'No Team'
-      teamNameMap.set(teamId, teamName)
-    } else {
-      anonymousTeamIndex++
-      teamNameMap.set(teamId, `unknown team ${anonymousTeamIndex}`)
-    }
   }
 
-  return teamNameMap
+  if (hasUnknownJourneys) {
+    results.push({
+      journeyId: UNKNOWN_JOURNEYS_AGGREGATE_ID,
+      journeyName: 'Unknown journeys',
+      teamName: 'Unknown teams',
+      // Aggregated row can contain mixed statuses; don't report a single status.
+      status: null,
+      stats: unknownEventOrder.map((event) => ({
+        event: event as TemplateFamilyStatsEventResponse['event'],
+        visitors: unknownStatsByEvent.get(event) ?? 0
+      }))
+    })
+  }
+
+  return results
+}
+
+function mergeStatsIntoAggregate(
+  stats: TemplateFamilyStatsEventResponse[],
+  visitorsByEvent: Map<string, number>,
+  eventOrder: string[]
+): void {
+  for (const stat of stats) {
+    const event = String(stat.event)
+    if (!visitorsByEvent.has(event)) {
+      eventOrder.push(event)
+    }
+    visitorsByEvent.set(
+      event,
+      (visitorsByEvent.get(event) ?? 0) + stat.visitors
+    )
+  }
 }

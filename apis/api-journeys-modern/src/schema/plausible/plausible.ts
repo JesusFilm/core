@@ -48,9 +48,8 @@ export interface TemplateFamilyStatsBreakdownResponse {
   journeyId: string
   journeyName: string
   teamName: string
-  status: PrismaJourneyStatus
+  status: PrismaJourneyStatus | null
   stats: TemplateFamilyStatsEventResponse[]
-  journeyUrl: string
 }
 
 export interface TemplateFamilyStatsAggregateResponse {
@@ -243,19 +242,13 @@ export const TemplateFamilyStatsBreakdownResponseRef = builder
       }),
       status: t.field({
         type: JourneyStatus,
-        nullable: false,
+        nullable: true,
         resolve: (parent) => parent.status
       }),
       stats: t.field({
         type: [TemplateFamilyStatsEventResponseRef],
         nullable: false,
         resolve: (parent) => parent.stats
-      }),
-      journeyUrl: t.string({
-        nullable: false,
-        description:
-          'The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment',
-        resolve: (parent) => parent.journeyUrl
       })
     })
   })
