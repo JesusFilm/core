@@ -114,6 +114,11 @@ export function ImageUpload({
           'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
         )
       }
+      case ErrorCode.FileInvalidType: {
+        return t(
+          "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)"
+        )
+      }
       default: {
         return t('Something went wrong, try again')
       }
@@ -201,7 +206,7 @@ export function ImageUpload({
           {hasError
             ? getErrorMessage(errorCode)
             : t(
-                'Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB'
+                'Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB'
               )}
         </Typography>
       </Stack>
