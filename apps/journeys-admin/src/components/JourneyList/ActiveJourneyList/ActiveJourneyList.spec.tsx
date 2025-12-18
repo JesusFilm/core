@@ -10,12 +10,11 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, oldJourney } from '../journeyListData'
-
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from './ActiveJourneyList'
+} from '../JourneyListContent/JourneyListContent'
+import { defaultJourney, oldJourney } from '../journeyListData'
 
 import { ActiveJourneyList } from '.'
 
