@@ -1,6 +1,6 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Jugador",
+    "pageTitle": "Reproductor",
     "description": "Navega a /pl/[playlistId] para ver una lista de reproducción"
   },
   "Metadata": {
