@@ -60,22 +60,6 @@ function getLocaleFromPath(pathname: string): string | undefined {
   return localeEntry?.locale
 }
 
-function getLocaleFromGeoHeaders(req: NextRequest): string | undefined {
-  const country =
-    req.headers.get('cf-ipcountry') ||
-    req.headers.get('x-vercel-ip-country') ||
-    undefined
-
-  if (!country) return undefined
-
-  const countryCode = country.toUpperCase()
-  const localeEntry = Object.values(LANGUAGE_MAPPINGS).find((mapping) =>
-    mapping.geoLocations.includes(countryCode)
-  )
-
-  return localeEntry?.locale
-}
-
 function getBrowserLanguage(req: NextRequest): string {
   const acceptedLanguagesHeader = req.headers.get('accept-language')
   if (acceptedLanguagesHeader == null) return DEFAULT_LOCALE
@@ -107,10 +91,6 @@ function getLocale(
   const browserLocale = getBrowserLanguage(req)
   if (browserLocale != null && browserLocale !== DEFAULT_LOCALE)
     return browserLocale
-
-  // Priority 4: Geolocation (only check if no other locale found)
-  const geoLocale = getLocaleFromGeoHeaders(req)
-  if (geoLocale != null && geoLocale !== DEFAULT_LOCALE) return geoLocale
 }
 
 export const config = {

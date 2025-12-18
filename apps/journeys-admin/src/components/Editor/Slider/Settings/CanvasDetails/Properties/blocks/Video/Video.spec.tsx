@@ -10,6 +10,7 @@ import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../..
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Video } from './Video'
 
@@ -66,7 +67,9 @@ describe('Video', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <Video {...video} />
+          <MuxVideoUploadProvider>
+            <Video {...video} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -100,10 +103,12 @@ describe('Video', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
-            <Video {...video} />
-            <TestEditorState />
-          </EditorProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider>
+              <Video {...video} />
+              <TestEditorState />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
