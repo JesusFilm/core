@@ -306,7 +306,9 @@ describe('ImageUpload', () => {
     await waitFor(() => {
       expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
       expect(
-        screen.getByText('File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)')
+        screen.getByText(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+        )
       ).toBeInTheDocument()
       expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
     })
@@ -389,6 +391,7 @@ describe('ImageUpload', () => {
 
     expect(setUploading).toHaveBeenCalledWith(false)
   })
+
   it('should clear error when retrying with valid file after error', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,

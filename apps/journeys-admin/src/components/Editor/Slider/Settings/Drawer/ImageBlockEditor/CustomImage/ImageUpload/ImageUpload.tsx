@@ -116,7 +116,7 @@ export function ImageUpload({
       }
       case ErrorCode.FileInvalidType: {
         return t(
-          "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)"
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
         )
       }
       default: {
