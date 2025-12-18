@@ -263,7 +263,9 @@ export function VideoBlockPlayer({
 
       player.ready(() => {
         // Immediately hide native subtitles to prevent flash before custom overlay renders
-        const textTracks = player.textTracks?.()
+        const textTracks = (
+          player as Player & { textTracks?: () => TextTrackList }
+        ).textTracks?.()
         if (textTracks != null) {
           for (let i = 0; i < textTracks.length; i++) {
             const track = textTracks[i]

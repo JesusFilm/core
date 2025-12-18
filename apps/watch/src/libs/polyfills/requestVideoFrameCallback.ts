@@ -1,6 +1,8 @@
 // Polyfill for requestVideoFrameCallback
 // This API is used by video.js for subtitle synchronization but is not supported in all browsers
 
+export {}
+
 declare global {
   interface VideoFrameCallbackMetadata {
     mediaTime: number
@@ -9,7 +11,6 @@ declare global {
     width: number
     height: number
     presentationTime: number
-    expectedPresentationTime: number
     refreshRate?: number
   }
 
@@ -74,7 +75,6 @@ if (
         width: video.videoWidth || 0,
         height: video.videoHeight || 0,
         presentationTime: timestamp,
-        expectedPresentationTime: timestamp,
         refreshRate: 60 // Assume 60fps
       }
 

@@ -3,7 +3,12 @@ import { useRouter } from 'next/router'
 import { useEffect, useMemo } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
-import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import type {
+  VideoChildFields,
+  VideoChildFields_imageAlt,
+  VideoChildFields_snippet,
+  VideoChildFields_title
+} from '../../../__generated__/VideoChildFields'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 
@@ -205,10 +210,16 @@ function buildVideoSnapshot(
     __typename: 'Video',
     id: node.id,
     label: node.label,
-    title: mapTextFields(node.title, 'VideoTitle'),
+    title: mapTextFields(node.title, 'VideoTitle') as VideoChildFields_title[],
     images,
-    imageAlt: mapTextFields(node.imageAlt, 'VideoImageAlt'),
-    snippet: mapTextFields(node.snippet, 'VideoSnippet'),
+    imageAlt: mapTextFields(
+      node.imageAlt,
+      'VideoImageAlt'
+    ) as VideoChildFields_imageAlt[],
+    snippet: mapTextFields(
+      node.snippet,
+      'VideoSnippet'
+    ) as VideoChildFields_snippet[],
     slug: node.slug,
     variant:
       node.variant != null
