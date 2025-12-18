@@ -44,14 +44,14 @@ export function ContentHeader({
       } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
       <NextLink
-        href={`/watch${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
+        href={`/${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
         locale={false}
         aria-label="Go to Watch home"
         className="flex-shrink-0"
       >
         <Image
           src="/watch/images/jesusfilm-sign.svg"
-          alt="JesusFilm Project"
+          alt="Jesus Film Project"
           width={70}
           height={70}
           className="max-w-[50px] lg:max-w-[70px]"

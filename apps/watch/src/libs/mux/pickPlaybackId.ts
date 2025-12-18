@@ -13,11 +13,6 @@ export function pickPlaybackId(
 ): PickPlaybackIdResult {
   const { value, index } = randomPick(playbackIds, options)
 
-  if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line no-console -- development tracing for editors
-    console.debug('[mux] Selected playback ID', { value, index })
-  }
-
   return {
     playbackId: value,
     index

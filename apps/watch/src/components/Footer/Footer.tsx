@@ -6,6 +6,39 @@ import { FooterLink } from './FooterLink'
 export function Footer(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
+  const gitSha =
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ??
+    process.env.VERCEL_GIT_COMMIT_SHA ??
+    ''
+  const shortSha =
+    gitSha && process.env.NODE_ENV != 'test'
+      ? gitSha.substring(0, 7).toLowerCase()
+      : 'dev'
+  const projectInfo = `Watch (${shortSha})`
+
+  const socialLinks = [
+    {
+      name: 'X (Twitter)',
+      href: 'https://x.com/jesusfilm',
+      icon: '/watch/images/footer/x-twitter.svg'
+    },
+    {
+      name: 'Facebook',
+      href: 'https://www.facebook.com/jesusfilm',
+      icon: '/watch/images/footer/facebook.svg'
+    },
+    {
+      name: 'Instagram',
+      href: 'https://www.instagram.com/jesusfilm',
+      icon: '/watch/images/footer/instagram.svg'
+    },
+    {
+      name: 'YouTube',
+      href: 'https://www.youtube.com/user/jesusfilm',
+      icon: '/watch/images/footer/youtube.svg'
+    }
+  ]
+
   const navigationLinks = [
     { name: t('Share', { lng: 'en' }), href: '/partners/share' },
     { name: t('Watch', { lng: 'en' }), href: '/watch' },
@@ -30,66 +63,66 @@ export function Footer(): ReactElement {
       className="relative z-100 bg-white text-neutral-900"
       data-testid="Footer"
     >
-      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
-        <div className="flex flex-col gap-6 border-b border-stone-200 pb-8 md:flex-row md:items-center md:justify-between">
-          <div className="flex justify-center md:justify-start">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-7 px-4 py-9">
+        <div className="flex flex-col items-center gap-6 lg:flex-row lg:justify-between">
+          <FooterLink
+            href="/"
+            label="Jesus Film logo"
+            src="/watch/images/footer/jesus-film-logo.png"
+            width={60}
+            height={60}
+          />
+          <div className="flex flex-col items-center gap-6 lg:flex-row">
+            <div className="mr-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 lg:justify-start">
+              {socialLinks.map((link) => (
+                <FooterLink
+                  key={link.name}
+                  href={link.href}
+                  label={link.name}
+                  src={link.icon}
+                  target="_blank"
+                  width={32}
+                  height={32}
+                  labelClassName="h-[32px] w-[32px]"
+                  noFollow
+                />
+              ))}
+            </div>
+            <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-semibold lg:justify-start">
+              {navigationLinks.map((link) => (
+                <FooterLink
+                  key={link.name}
+                  href={link.href}
+                  label={link.name}
+                  labelClassName="text-sm font-semibold leading-6 text-neutral-900"
+                />
+              ))}
+            </nav>
             <FooterLink
-              url="/"
-              label="Jesus Film logo"
-              src="/watch/images/footer/jesus-film-logo.png"
-              width={60}
-              height={60}
-              className="rounded-md bg-white p-1 shadow-[0_4px_18px_rgba(0,0,0,0.08)]"
-            />
-          </div>
-
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-semibold md:justify-start">
-            {navigationLinks.map((link) => (
-              <FooterLink
-                key={link.name}
-                url={link.href}
-                label={link.name}
-                labelClassName="text-sm font-semibold leading-6 text-neutral-900"
-              />
-            ))}
-          </nav>
-
-          <div className="flex justify-center md:justify-end">
-            <FooterLink
-              url="/how-to-help/ways-to-donate/give-now?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=/dev/special/thank-you-refer/social-share/"
+              href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=/dev/special/thank-you-refer/social-share/"
               label={t('Give Now', { lng: 'en' })}
-              className="rounded-full bg-[#c72e2c] px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_25px_rgba(199,46,44,0.35)] transition hover:bg-[#ad2625] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c72e2c]"
-              labelClassName="text-sm font-semibold leading-6 text-white"
+              className="bg-primary w-[100px] justify-center rounded-full py-1 transition hover:bg-[#ad2625]"
+              labelClassName="text-lg text-white"
             />
           </div>
         </div>
-
-        <div className="flex flex-col gap-6 text-sm leading-6 text-neutral-700 sm:flex-row sm:flex-wrap sm:items-start sm:gap-10">
-          <div className="flex flex-col gap-1 border-stone-200 pt-4 text-center sm:text-left">
-            <span className="font-semibold text-neutral-900">
-              {t('100 Lake Hart Drive', { lng: 'en' })}
-            </span>
-            <span className="font-semibold text-neutral-900">
-              {t('Orlando, FL, 32832', { lng: 'en' })}
-            </span>
+        <div className="flex flex-row justify-center gap-4 text-xs font-semibold text-neutral-900 lg:justify-start">
+          <div className="flex flex-col border-stone-200">
+            <span>{t('100 Lake Hart Drive', { lng: 'en' })}</span>
+            <span>{t('Orlando, FL, 32832', { lng: 'en' })}</span>
+            <span className="opacity-60">{projectInfo}</span>
           </div>
-
-          <div className="flex flex-col gap-1 border-t border-stone-200 pt-4 text-center sm:border-t-0 sm:border-l sm:pl-6 sm:text-left">
-            <span className="font-semibold text-neutral-900">
-              {t('Office: (407) 826-2300', { lng: 'en' })}
-            </span>
-            <span className="font-semibold text-neutral-900">
-              {t('Fax: (407) 826-2375', { lng: 'en' })}
-            </span>
+          <div className="flex flex-col border-l border-stone-200 pl-4">
+            <span>{t('Office: (407) 826-2300', { lng: 'en' })}</span>
+            <span>{t('Fax: (407) 826-2375', { lng: 'en' })}</span>
           </div>
-
-          <div className="flex flex-col gap-1 border-t border-stone-200 pt-4 text-center sm:border-t-0 sm:border-l sm:pl-6 sm:text-left">
+          <div className="flex flex-col border-l border-stone-200 pl-4">
             {legalLinks.map((link) => (
               <FooterLink
                 key={link.name}
-                url={link.href}
+                href={link.href}
                 label={link.name}
-                labelClassName="text-sm font-semibold leading-6 text-neutral-900"
+                labelClassName="text-xs"
               />
             ))}
           </div>

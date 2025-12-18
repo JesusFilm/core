@@ -82,26 +82,27 @@ export function DialogDownload({
   }
   const time = secondsToTimeFormat(variant?.duration ?? 0)
 
-  const filteredDownloads = useMemo(
-    () =>
-      downloads.filter(({ quality }) =>
-        Object.keys(qualityEnumToOrder).includes(quality)
-      ) as {
-        __typename: 'VideoVariantDownload'
-        quality: keyof typeof qualityEnumToOrder
-        size: number
-        url: string
-      }[],
-    [downloads]
-  )
-
-  const sortedDownloads = useMemo(
-    () =>
-      [...filteredDownloads].sort(
-        (a, b) => qualityEnumToOrder[a.quality] - qualityEnumToOrder[b.quality]
-      ),
-    [filteredDownloads]
-  )
+  const sortedDownloads = useMemo(() => {
+    const filtered = downloads.filter(({ quality }) =>
+      Object.keys(qualityEnumToOrder).includes(quality)
+    ) as {
+      __typename: 'VideoVariantDownload'
+      quality: keyof typeof qualityEnumToOrder
+      size: number
+      url: string
+    }[]
+    const sorted = filtered.sort(
+      (a, b) => qualityEnumToOrder[a.quality] - qualityEnumToOrder[b.quality]
+    )
+    const seenUrls = new Set<string>()
+    return sorted.filter((download) => {
+      if (seenUrls.has(download.url)) {
+        return false
+      }
+      seenUrls.add(download.url)
+      return true
+    })
+  }, [downloads])
 
   useEffect(() => {
     if (open) {
@@ -164,6 +165,7 @@ export function DialogDownload({
   }
 
   const canDownload = agreedToTerms && selectedFile !== ''
+
   const isMuxStream = selectedFile.startsWith('https://stream.mux.com/')
 
   const getDisabledTooltipMessage = (): string => {
@@ -342,9 +344,10 @@ export function DialogDownload({
                       <SelectItem
                         key={downloadOption.quality}
                         value={downloadOption.url}
-                        className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                        className="cursor-pointer"
                       >
                         <span>{getQualityLabel(downloadOption.quality)}</span>
+                        &nbsp;
                         <span className="text-white/70">
                           ({formatBytes(downloadOption.size)})
                         </span>
@@ -369,7 +372,7 @@ export function DialogDownload({
                     onCheckedChange={(checked) =>
                       setAgreedToTerms(checked === true)
                     }
-                    className="mt-1 border-white/50 data-[state=checked]:bg-white data-[state=checked]:text-gray-900"
+                    className="mt-0.5 border-white/50 data-[state=checked]:bg-white data-[state=checked]:text-gray-900"
                   />
                   <div>
                     <div className="text-sm text-stone-200">

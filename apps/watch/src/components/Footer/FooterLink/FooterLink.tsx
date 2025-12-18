@@ -5,7 +5,7 @@ import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 import { cn } from '@core/shared/ui-modern/utils'
 
 interface FooterLinkProps {
-  url: string
+  href: string
   label: string
   className?: string
   labelClassName?: string
@@ -17,7 +17,7 @@ interface FooterLinkProps {
 }
 
 export function FooterLink({
-  url,
+  href,
   label,
   className,
   labelClassName,
@@ -28,7 +28,6 @@ export function FooterLink({
   noFollow = false
 }: FooterLinkProps): ReactElement {
   const rel = noFollow ? 'nofollow noopener' : 'noopener'
-  const isExternal = /^https?:\/\//.test(url)
   const content =
     src == null ? (
       <span
@@ -45,30 +44,14 @@ export function FooterLink({
         width={width ?? 32}
         height={height ?? 32}
         alt={label}
-        className="h-auto w-auto"
+        className={cn('h-auto w-auto', labelClassName)}
       />
     )
 
-  if (isExternal) {
-    return (
-      <a
-        href={url}
-        target={target}
-        rel={rel}
-        data-testid="FooterLink"
-        className={cn(
-          'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
-          className
-        )}
-      >
-        {content}
-      </a>
-    )
-  }
-
   return (
-    <Link
-      href={url}
+    <a
+      href={href}
+      target={target}
       rel={rel}
       data-testid="FooterLink"
       className={cn(
@@ -77,6 +60,6 @@ export function FooterLink({
       )}
     >
       {content}
-    </Link>
+    </a>
   )
 }

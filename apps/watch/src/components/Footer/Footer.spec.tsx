@@ -39,7 +39,7 @@ describe('Footer', () => {
     expect(giveNowButtons.length).toBeGreaterThan(0)
     expect(giveNowButtons[0].closest('a')).toHaveAttribute(
       'href',
-      '/how-to-help/ways-to-donate/give-now?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=/dev/special/thank-you-refer/social-share/'
+      'https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=/dev/special/thank-you-refer/social-share/'
     )
   })
 
@@ -58,8 +58,8 @@ describe('Footer', () => {
     const faxLines = screen.getAllByText('Fax: (407) 826-2375')
     expect(faxLines.length).toBeGreaterThan(0)
 
-    const resources = screen.getAllByText('Resources (ff1fd50)')
-    expect(resources.length).toBeGreaterThan(0)
+    const watch = screen.getAllByText('Watch (dev)')
+    expect(watch.length).toBeGreaterThan(0)
   })
 
   it('renders legal links', () => {
@@ -80,15 +80,12 @@ describe('Footer', () => {
     )
   })
 
-  it('does not render newsletter or social links', () => {
+  it('renderssocial links', () => {
     render(<Footer />)
 
-    expect(
-      screen.queryByText('Sign Up For Our Newsletter')
-    ).not.toBeInTheDocument()
-    expect(screen.queryByAltText('X (Twitter)')).not.toBeInTheDocument()
-    expect(screen.queryByAltText('Facebook')).not.toBeInTheDocument()
-    expect(screen.queryByAltText('Instagram')).not.toBeInTheDocument()
-    expect(screen.queryByAltText('YouTube')).not.toBeInTheDocument()
+    expect(screen.getByAltText('X (Twitter)')).toBeInTheDocument()
+    expect(screen.getByAltText('Facebook')).toBeInTheDocument()
+    expect(screen.getByAltText('Instagram')).toBeInTheDocument()
+    expect(screen.getByAltText('YouTube')).toBeInTheDocument()
   })
 })

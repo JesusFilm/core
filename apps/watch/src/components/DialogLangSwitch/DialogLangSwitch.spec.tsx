@@ -97,7 +97,7 @@ describe('DialogLangSwitch', () => {
       </MockedProvider>
     )
 
-    const closeButton = screen.getByRole('button', { name: /close/i })
+    const closeButton = screen.getAllByRole('button', { name: 'Close' })[0]
     await userEvent.click(closeButton)
 
     expect(mockHandleClose).toHaveBeenCalled()
@@ -141,7 +141,8 @@ describe('DialogLangSwitch', () => {
         <WatchProvider
           initialState={{
             subtitleLanguageId: '529',
-            videoSubtitleLanguageIds: ['529', '496']
+            videoSubtitleLanguageIds: ['529', '496'],
+            subtitleOn: true
           }}
         >
           <DialogLangSwitch open />
@@ -175,7 +176,7 @@ describe('DialogLangSwitch', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('checkbox')).toBeChecked()
+    expect(screen.getByRole('switch', { name: 'Show subtitles' })).toBeChecked()
   })
 
   it('should render subtitle checkbox unchecked if subtitleOn is false', async () => {
@@ -187,6 +188,8 @@ describe('DialogLangSwitch', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('checkbox')).not.toBeChecked()
+    expect(
+      screen.getByRole('switch', { name: 'Show subtitles' })
+    ).not.toBeChecked()
   })
 })

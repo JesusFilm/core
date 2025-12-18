@@ -54,15 +54,21 @@ describe('DialogDownload', () => {
   it('downloads selected videos after accepting terms', async () => {
     renderDialog()
 
-    const downloadButton = screen.getByRole('button', { name: 'Download' })
+    const downloadButton1 = screen.getByRole('button', { name: 'Download' })
 
-    expect(downloadButton).toBeDisabled()
+    expect(downloadButton1).toBeDisabled()
 
-    fireEvent.click(screen.getByLabelText('I agree to the'))
+    const checkbox = screen.getByRole('checkbox', { name: 'I agree to the' })
 
-    expect(downloadButton).not.toBeDisabled()
+    expect(checkbox).not.toBeChecked()
+    expect(checkbox).not.toBeDisabled()
 
-    fireEvent.click(downloadButton)
+    fireEvent.click(checkbox)
+
+    let downloadButton2 = screen.getByRole('button', { name: 'Download' })
+    expect(downloadButton2).not.toBeDisabled()
+
+    fireEvent.click(downloadButton2)
 
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledWith(

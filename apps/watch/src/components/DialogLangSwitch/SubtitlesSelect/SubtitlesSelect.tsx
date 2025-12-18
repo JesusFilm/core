@@ -73,6 +73,7 @@ export function SubtitlesSelect({
             {t('Subtitles')}
             <Switch
               id="show-subtitles"
+              aria-label="Show subtitles"
               checked={subtitleOn}
               onCheckedChange={handleSubtitlesOnChange}
               disabled={subtitleCount === 0}
@@ -84,7 +85,10 @@ export function SubtitlesSelect({
           </span>
         </label>
         {!isLoading && subtitleCount > 0 && (
-          <span className="text-sm text-stone-400">
+          <span
+            className="text-sm text-stone-400"
+            data-testid="SubtitlesSelectLanguageCount"
+          >
             {t('{{count}} languages', { count: subtitleCount })}
           </span>
         )}

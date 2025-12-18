@@ -54,7 +54,7 @@ export function AudioTrackSelect({
         {!isLoading && languageCount > 0 && (
           <span
             className="text-sm text-stone-400"
-            data-testid="AudioTrackSelectNativeName"
+            data-testid="AudioTrackSelectLanguageCount"
           >
             {t('{{count}} languages', { count: languageCount })}
           </span>

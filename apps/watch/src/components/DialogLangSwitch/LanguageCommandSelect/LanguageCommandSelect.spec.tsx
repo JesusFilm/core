@@ -96,7 +96,7 @@ describe('LanguageCommandSelect', () => {
 
     // The checkmark should be visible for the selected option
     const checkIcon = screen
-      .getAllByRole('img', { hidden: true })
+      .getAllByTestId('LanguageCommandSelectCheckmark')
       .find((icon) => icon.classList.contains('opacity-100'))
     expect(checkIcon).toBeInTheDocument()
   })

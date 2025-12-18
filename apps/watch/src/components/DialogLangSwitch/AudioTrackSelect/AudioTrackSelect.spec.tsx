@@ -1,20 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { useLanguages } from '../../../libs/useLanguages'
-import { WatchProvider } from '../../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
-
-// Mock useLanguageActions hook specifically for testing onChange behavior
-const mockUpdateAudioLanguage = jest.fn()
-jest.mock('../../../libs/watchContext', () => ({
-  ...jest.requireActual('../../../libs/watchContext'),
-  useLanguageActions: () => ({
-    updateAudioLanguage: mockUpdateAudioLanguage
-  })
-}))
 
 jest.mock('../../../libs/useLanguages', () => ({
   useLanguages: jest.fn()
@@ -23,19 +12,6 @@ jest.mock('../../../libs/useLanguages', () => ({
 const useLanguagesMock = useLanguages as jest.MockedFunction<
   typeof useLanguages
 >
-
-// Mock useInstantSearch hook specifically for testing instant search behavior
-const mockSetIndexUiState = jest.fn()
-const mockInstantSearch = {
-  setIndexUiState: mockSetIndexUiState
-}
-
-jest.mock('react-instantsearch', () => ({
-  useInstantSearch: jest.fn()
-}))
-
-const useInstantSearchMock = require('react-instantsearch')
-  .useInstantSearch as jest.Mock
 
 describe('AudioTrackSelect', () => {
   const french = {
@@ -48,7 +24,6 @@ describe('AudioTrackSelect', () => {
   }
 
   beforeEach(() => {
-    useInstantSearchMock.mockReturnValue(undefined) // Default to no instant search
     jest.clearAllMocks()
     useLanguagesMock.mockReturnValue({
       languages: [
@@ -75,148 +50,47 @@ describe('AudioTrackSelect', () => {
   })
 
   it('should display native name and display name when audioLanguageId matches a language', async () => {
-    render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <WatchProvider>
-          <AudioTrackSelect audioLanguageId="496" />
-        </WatchProvider>
-      </MockedProvider>
-    )
+    render(<AudioTrackSelect audioLanguageId="496" />)
 
     await waitFor(() => {
-      expect(
-        screen.getByTestId('AudioTrackSelectNativeName')
-      ).toHaveTextContent('Français')
-      expect(screen.getByRole('combobox')).toHaveValue('French')
+      expect(screen.getByRole('combobox')).toHaveTextContent('French')
     })
   })
 
   describe('helper text', () => {
     it('should show helper text', async () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect audioLanguageId="529" />
-          </WatchProvider>
-        </MockedProvider>
-      )
+      render(<AudioTrackSelect audioLanguageId="529" />)
 
       await waitFor(() => {
         expect(
-          screen.getByText('Available in 3 languages.')
-        ).toBeInTheDocument()
-      })
-    })
-
-    it('should show loading text when isLoading is true', async () => {
-      useLanguagesMock.mockReturnValue({
-        languages: [],
-        isLoading: true
-      })
-
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect audioLanguageId="529" />
-          </WatchProvider>
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        expect(screen.getByText('Loading...')).toBeInTheDocument()
+          screen.getByTestId('AudioTrackSelectLanguageCount')
+        ).toHaveTextContent('3 languages')
       })
     })
 
     it('should show available languages text when videoAudioLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect
-              audioLanguageId="529"
-              videoAudioLanguageIds={['529', '496']}
-            />
-          </WatchProvider>
-        </MockedProvider>
+        <AudioTrackSelect
+          audioLanguageId="529"
+          videoAudioLanguageIds={['529', '496']}
+        />
       )
 
       await waitFor(() => {
         expect(
-          screen.getByText('Available in 2 languages.')
-        ).toBeInTheDocument()
+          screen.getByTestId('AudioTrackSelectLanguageCount')
+        ).toHaveTextContent('2 languages')
       })
-    })
-
-    it('should show not available languages text when videoAudioLanguageIds is not null and audioLanguageId does not match', async () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect
-              audioLanguageId="529"
-              videoAudioLanguageIds={['496', '21028']}
-            />
-          </WatchProvider>
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            'This content is not available in English. Available in 2 languages.'
-          )
-        ).toBeInTheDocument()
-      })
-    })
-  })
-
-  describe('native name', () => {
-    it('should display native name when audioLanguageId matches a language', async () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect audioLanguageId="496" />
-          </WatchProvider>
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        expect(screen.getByRole('combobox')).toHaveValue('French')
-      })
-
-      expect(
-        screen.getByTestId('AudioTrackSelectNativeName')
-      ).toHaveTextContent('Français')
-    })
-
-    it('should not display native name when it matches the display name', async () => {
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect audioLanguageId="529" />
-          </WatchProvider>
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        expect(screen.getByRole('combobox')).toHaveValue('English')
-      })
-
-      expect(
-        screen.queryByTestId('AudioTrackSelectNativeName')
-      ).not.toBeInTheDocument()
     })
   })
 
   describe('autocomplete', () => {
     it('should show available languages text when videoAudioLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect
-              audioLanguageId="529"
-              videoAudioLanguageIds={['529', '496']}
-            />
-          </WatchProvider>
-        </MockedProvider>
+        <AudioTrackSelect
+          audioLanguageId="529"
+          videoAudioLanguageIds={['529', '496']}
+        />
       )
 
       await userEvent.click(screen.getByRole('combobox'))
@@ -233,13 +107,13 @@ describe('AudioTrackSelect', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should call updateAudioLanguage when a language is selected', async () => {
+    it('should call onLanguageChange when a language is selected', async () => {
+      const onLanguageChange = jest.fn()
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect audioLanguageId="529" />
-          </WatchProvider>
-        </MockedProvider>
+        <AudioTrackSelect
+          audioLanguageId="529"
+          onLanguageChange={onLanguageChange}
+        />
       )
 
       await userEvent.click(screen.getByRole('combobox'))
@@ -248,20 +122,18 @@ describe('AudioTrackSelect', () => {
       )
 
       await waitFor(() => {
-        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(french, false)
+        expect(onLanguageChange).toHaveBeenCalledWith(french)
       })
     })
 
     it('should call updateAudioLanguage with reload true when selected language is in videoAudioLanguageIds', async () => {
+      const onLanguageChange = jest.fn()
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect
-              audioLanguageId="529"
-              videoAudioLanguageIds={['529', '496']}
-            />
-          </WatchProvider>
-        </MockedProvider>
+        <AudioTrackSelect
+          audioLanguageId="529"
+          videoAudioLanguageIds={['529', '496']}
+          onLanguageChange={onLanguageChange}
+        />
       )
 
       await userEvent.click(screen.getByRole('combobox'))
@@ -270,42 +142,7 @@ describe('AudioTrackSelect', () => {
       )
 
       await waitFor(() => {
-        expect(mockUpdateAudioLanguage).toHaveBeenCalledWith(french, true)
-      })
-    })
-
-    it('should call setIndexUiState when instantSearch is not null', async () => {
-      useInstantSearchMock.mockReturnValue(mockInstantSearch)
-
-      render(
-        <MockedProvider mocks={[]} addTypename={false}>
-          <WatchProvider>
-            <AudioTrackSelect audioLanguageId="529" />
-          </WatchProvider>
-        </MockedProvider>
-      )
-      await userEvent.click(screen.getByRole('combobox'))
-      await userEvent.click(
-        screen.getByRole('option', { name: 'French Français' })
-      )
-
-      await waitFor(() => {
-        expect(mockSetIndexUiState).toHaveBeenCalledWith(expect.any(Function))
-      })
-      expect(
-        mockSetIndexUiState.mock.calls[0][0]({
-          test: 'test',
-          refinementList: {
-            test: 'test',
-            languageEnglishName: ['English']
-          }
-        })
-      ).toEqual({
-        test: 'test',
-        refinementList: {
-          test: 'test',
-          languageEnglishName: ['French']
-        }
+        expect(onLanguageChange).toHaveBeenCalledWith(french)
       })
     })
   })

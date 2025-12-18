@@ -150,6 +150,7 @@ export function LanguageCommandSelect({
                         )}
                     </div>
                     <Check
+                      data-testid="LanguageCommandSelectCheckmark"
                       className={cn(
                         'ml-2 h-5 w-5',
                         selectedOption?.id === option.id

@@ -167,8 +167,6 @@ export function SectionVideoGrid({
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  console.log('section id:', id, 'isBackgroundVisible:', isBackgroundVisible)
-
   // Initialize with default background if available
   useEffect(() => {
     if (defaultBackgroundImageUrl != null) {

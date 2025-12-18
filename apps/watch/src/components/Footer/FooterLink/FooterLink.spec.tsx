@@ -4,7 +4,7 @@ import { FooterLink } from './FooterLink'
 
 describe('FooterLink', () => {
   it('should have text link', () => {
-    const { getByRole } = render(<FooterLink url="/about/" label="About Us" />)
+    const { getByRole } = render(<FooterLink href="/about/" label="About Us" />)
     const el = getByRole('link', { name: 'About Us' })
     expect(el).toHaveAttribute('href', '/about/')
     expect(el).not.toHaveAttribute('target')
@@ -15,7 +15,7 @@ describe('FooterLink', () => {
   it('should have image link', () => {
     const { getByRole } = render(
       <FooterLink
-        url="https://www.facebook.com/jesusfilm"
+        href="https://www.facebook.com/jesusfilm"
         label="Facebook"
         src="/footer/facebook.svg"
         width={24}
@@ -35,7 +35,7 @@ describe('FooterLink', () => {
   it('should apply custom styles when className props are provided', () => {
     const { getByTestId, getByText } = render(
       <FooterLink
-        url="/"
+        href="/"
         label="Jesus Film logo"
         className="rounded-full"
         labelClassName="text-blue-500"
