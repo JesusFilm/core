@@ -110,7 +110,7 @@ export function ImageUpload({
     switch (errorCode) {
       case ErrorCode.FileTooLarge: {
         return t(
-          'File size exceeds the maximum allowed size (10MB). Please choose a smaller file'
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
         )
       }
       default: {
