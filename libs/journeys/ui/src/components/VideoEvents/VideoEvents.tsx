@@ -461,6 +461,28 @@ export function VideoEvents({
               })
             }
           })
+          // TODO: update once types are set
+          const metaAction = action?.start.metaAction
+          if (metaAction != null) {
+            const metaActionKey = keyify({
+              stepId: input.stepId ?? '',
+              event: metaAction,
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+            plausible(metaAction, {
+              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+              props: {
+                ...input,
+                key: metaActionKey,
+                simpleKey: metaActionKey,
+                templateKey: templateKeyify({
+                  event: metaAction,
+                  journeyId: journey?.id
+                })
+              }
+            })
+          }
         }
         sendGTMEvent({
           event: 'video_start',
@@ -710,7 +732,7 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
           plausible('videoComplete', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
@@ -733,6 +755,29 @@ export function VideoEvents({
               })
             }
           })
+          // TODO: update once types are set
+          const metaAction = action?.end.metaAction
+          if (metaAction != null) {
+            const metaActionKey = keyify({
+              stepId: input.stepId ?? '',
+              event: metaAction,
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+            plausible(metaAction, {
+              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+              props: {
+                ...input,
+                key: metaActionKey,
+                simpleKey: metaActionKey,
+                templateKey: templateKeyify({
+                  event: metaAction,
+                  journeyId: journey?.id
+                })
+              }
+            })
+          }
+        }
         sendGTMEvent({
           event: 'video_complete',
           eventId: id,

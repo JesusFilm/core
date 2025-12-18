@@ -208,6 +208,33 @@ export function Button({
             })
           }
         })
+        // TODO: update once types are set
+        const metaAction = activeBlock.action?.metAction
+        if (metaAction != null) {
+          plausible(metaAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: metaAction,
+                blockId: input.blockId,
+                target: action,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: metaAction,
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: metaAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       addEventToDataLayer(id)
     }
@@ -227,7 +254,7 @@ export function Button({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
         plausible('chatButtonClick', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
@@ -252,6 +279,34 @@ export function Button({
             })
           }
         })
+        // TODO: update once types are set
+        const metaAction = activeBlock.action?.metAction
+        if (metaAction != null) {
+          plausible(metaAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: metaAction,
+                blockId: input.blockId,
+                target: action,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: metaAction,
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: metaAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
+      }
       addEventToDataLayer(id)
     }
   }

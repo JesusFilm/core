@@ -93,6 +93,28 @@ export function Step({
             })
           }
         })
+        // TODO: update once types are set
+        const metaAction = activeJourneyStep?.metaAction
+        if (metaAction != null) {
+          const metaActionKey = keyify({
+            stepId: input.blockId,
+            event: metaAction,
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
+          plausible(metaAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: metaActionKey,
+              simpleKey: metaActionKey,
+              templateKey: templateKeyify({
+                event: metaAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'step_view',
