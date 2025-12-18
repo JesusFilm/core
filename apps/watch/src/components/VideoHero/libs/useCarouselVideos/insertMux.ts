@@ -1,7 +1,7 @@
 import muxConfig from '../../../../../config/video-inserts.mux.json'
-import { buildPlaybackUrls } from '../../../../lib/mux/buildPlaybackUrls'
-import { pickPlaybackId } from '../../../../lib/mux/pickPlaybackId'
-import { parseInsertMuxConfig } from '../../../../lib/validation/insertMux.schema'
+import { buildPlaybackUrls } from '../../../../libs/mux/buildPlaybackUrls'
+import { parseInsertMuxConfig } from '../../../../libs/mux/parseInsertMuxConfig'
+import { pickPlaybackId } from '../../../../libs/mux/pickPlaybackId'
 import {
   type CarouselMuxSlide,
   type CarouselVideoLike,

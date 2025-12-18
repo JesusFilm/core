@@ -2,7 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 
-import { cn } from '../../../libs/cn/cn'
+import { cn } from '@core/shared/ui-modern/utils'
 
 interface FooterLinkProps {
   url: string

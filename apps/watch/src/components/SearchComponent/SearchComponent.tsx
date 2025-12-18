@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { cn } from '../../libs/cn/cn'
+import { cn } from '@core/shared/ui-modern/utils'
 
 import { useFloatingSearchOverlay } from './hooks/useFloatingSearchOverlay'
 import { SearchOverlay } from './SearchOverlay'

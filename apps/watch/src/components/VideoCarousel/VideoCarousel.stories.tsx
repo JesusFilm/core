@@ -9,7 +9,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { watchConfig } from '../../libs/storybook/config'
 import { videos } from '../Videos/__generated__/testData'
-import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
+import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'
 
 import { VideoCarousel } from './VideoCarousel'
 

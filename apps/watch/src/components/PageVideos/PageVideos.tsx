@@ -13,8 +13,8 @@ import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
 import { FilterList } from './FilterList'
-import { VideosHero } from './Hero'
-import { VideosSubHero } from './SubHero'
+import { VideosHero } from './VideosHero'
+import { VideosSubHero } from './VideosSubHero'
 
 export function PageVideos(): ReactElement {
   const { data: languagesData, loading: languagesLoading } =

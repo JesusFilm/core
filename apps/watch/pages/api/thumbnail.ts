@@ -19,7 +19,7 @@ function getCacheVersion(filePath: string): string {
     // Convert public URL path to filesystem path using absolute path
     const fullPath = join(
       process.cwd(),
-      filePath.replace('/images/thumbnails/', 'public/images/thumbnails/')
+      filePath.replace('/images/thumbnails/', '/public/images/thumbnails/')
     )
     const stats = statSync(fullPath)
     return stats.mtime.getTime().toString()

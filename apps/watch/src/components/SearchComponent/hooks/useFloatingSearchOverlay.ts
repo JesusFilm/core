@@ -9,8 +9,8 @@ import {
 } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
-import { useTrendingSearches } from '../../../hooks/useTrendingSearches'
 import { usePlayer } from '../../../libs/playerContext'
+import { useTrendingSearches } from '../../../libs/useTrendingSearches'
 
 export interface UseFloatingSearchOverlayResult {
   searchInputRef: React.RefObject<HTMLInputElement | null>

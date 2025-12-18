@@ -1,0 +1,2 @@
+export { SearchResultsLayout } from './SearchResultsLayout'
+

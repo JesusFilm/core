@@ -1,0 +1,2 @@
+export { CollectionsRail } from './CollectionsRail'
+

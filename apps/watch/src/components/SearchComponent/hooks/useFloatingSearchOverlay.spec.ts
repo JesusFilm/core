@@ -6,7 +6,7 @@ import { useFloatingSearchOverlay } from './useFloatingSearchOverlay'
 let mockUseTrendingSearches: jest.Mock
 let mockUseSearchBox: jest.Mock
 
-jest.mock('../../../hooks/useTrendingSearches', () => ({
+jest.mock('../../../libs/useTrendingSearches', () => ({
   useTrendingSearches: (...args: unknown[]) => mockUseTrendingSearches(...args)
 }))
 

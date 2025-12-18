@@ -3,7 +3,7 @@ import { useRefinementList } from 'react-instantsearch'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
-import { useLatestVideos } from '../../../hooks/useLatestVideos'
+import { useLatestVideos } from '../../../libs/useLatestVideos'
 import { type CoreVideo } from '../../../libs/algolia/transformAlgoliaVideos'
 import { useLanguages } from '../../../libs/useLanguages'
 
@@ -14,7 +14,7 @@ jest.mock('react-instantsearch', () => ({
 }))
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 jest.mock('../../../libs/useLanguages')
-jest.mock('../../../hooks/useLatestVideos')
+jest.mock('../../../libs/useLatestVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos

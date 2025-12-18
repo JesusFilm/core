@@ -1,0 +1,2 @@
+export { CollectionHero } from './CollectionHero'
+

@@ -1,0 +1,2 @@
+export { CollectionMetadata } from './CollectionMetadata'
+

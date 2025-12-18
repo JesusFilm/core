@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../__generated__/VideoContentFields'
 
-import { BibleCitationCard } from './BibleCitationsCard/BibleCitationCard'
+import { BibleCitationCard } from './BibleCitationCard'
 import { FreeResourceCard, type FreeResourceProps } from './FreeResourceCard'
 
 const bibleImages = [

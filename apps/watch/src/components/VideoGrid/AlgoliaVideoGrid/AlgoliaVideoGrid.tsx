@@ -11,7 +11,7 @@ import { useRefinementList } from 'react-instantsearch'
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
-import { useLatestVideos } from '../../../hooks/useLatestVideos'
+import { useLatestVideos } from '../../../libs/useLatestVideos'
 import {
   type CoreVideo,
   transformAlgoliaVideos as transformItems
