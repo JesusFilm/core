@@ -43,7 +43,8 @@ export function TemplateView({
         template: true,
         orderByRecent: true,
         tagIds,
-        limit: 10
+        limit: 10,
+        teamId: 'jfp-team'
       }
     }
   })
