@@ -109,7 +109,7 @@ describe('useWatchHeroCarousel', () => {
       duration: '0:00'
     }
 
-    usePlayerMock.mockReturnValue({ state: playerState })
+    usePlayerMock.mockReturnValue({ state: playerState, dispatch: jest.fn() })
     useCarouselVideosMock.mockReturnValue({
       slides: [...muxSlides, ...videoSlides],
       videos: [videoOne, videoTwo],
@@ -246,7 +246,7 @@ describe('useWatchHeroCarousel', () => {
 
     act(() => {
       playerState = { ...playerState, progress: 96 }
-      usePlayerMock.mockReturnValue({ state: playerState })
+      usePlayerMock.mockReturnValue({ state: playerState, dispatch: jest.fn() })
       rerender()
     })
 

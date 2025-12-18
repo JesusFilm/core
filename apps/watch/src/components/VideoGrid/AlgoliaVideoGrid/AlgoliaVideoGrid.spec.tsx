@@ -66,7 +66,7 @@ describe('AlgoliaVideoGrid', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockedUseRefinementList.mockReturnValue({ items: [] })
+    mockedUseRefinementList.mockReturnValue({ items: [] } as any)
     mockedUseLanguages.mockReturnValue({ languages: [], isLoading: false })
     mockedUseLatestVideos.mockReturnValue({
       videos: [],
@@ -188,7 +188,7 @@ describe('AlgoliaVideoGrid', () => {
           count: 10
         }
       ] as any
-    })
+    } as any)
     mockedUseLanguages.mockReturnValue({
       languages: [
         {

@@ -13,7 +13,6 @@ describe('LanguageFilterDropdown', () => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       disconnect(): void {}
     }
-    // @ts-expect-error - jsdom does not implement ResizeObserver
     global.ResizeObserver = MockResizeObserver
     window.HTMLElement.prototype.scrollIntoView = jest.fn()
   })

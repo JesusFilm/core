@@ -1,11 +1,11 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { VideoLabel } from '../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
 import {
   LanguageFilterDropdown,
   type LanguageFilterOption
-} from '../LanguageFilterDropdown'
+} from '../../LanguageFilterDropdown/LanguageFilterDropdown'
 
 interface CollectionMetadataProps {
   title: string

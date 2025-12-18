@@ -113,7 +113,7 @@ export function transformMuxSlide(slide: CarouselMuxSlide): UnifiedCardData {
       { mobileCinematicHigh: slide.posterOverride ?? slide.urls.poster }
     ],
     imageAlt: [{ value: slide.overlay.description }],
-    label: slide.overlay.label,
+    label: slide.overlay.label as VideoLabel,
     slug: slide.id, // Use ID as slug for mux inserts
     variant: { slug: slide.id },
     isMuxInsert: true,
@@ -127,11 +127,13 @@ export function transformVideoChild(video: VideoChildFields): UnifiedCardData {
   return {
     id: video.id,
     title: video.title,
-    images: video.images,
+    images: video.images.filter(
+      (image) => image.mobileCinematicHigh != null
+    ) as { mobileCinematicHigh: string }[],
     imageAlt: video.imageAlt,
     label: video.label,
     slug: video.slug,
-    variant: video.variant,
+    variant: video.variant ?? undefined,
     isMuxInsert: false
   }
 }

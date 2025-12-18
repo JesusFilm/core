@@ -14,8 +14,9 @@ import {
   DialogTitle
 } from '@core/shared/ui-modern/components/dialog'
 
-interface TermsOfUseDialogProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {
+interface TermsOfUseDialogProps {
+  open?: boolean
+  onClose?: () => void
   onSubmit: () => void
 }
 
@@ -28,20 +29,24 @@ export function TermsOfUseDialog({
   return (
     <Dialog
       open={open ?? false}
-      onOpenChange={(isOpen) => !isOpen && onClose?.()}
+      onOpenChange={(isOpen) => {
+        if (!isOpen && onClose) {
+          onClose()
+        }
+      }}
     >
       <DialogPortal>
         <DialogOverlay className="blured-bg z-[100] bg-stone-900/40" />
         <DialogContent
           data-testid="TermsOfUseDialog"
           showCloseButton={false}
-          className="fixed left-1/2 top-1/2 z-[101] w-full max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl"
+          className="fixed top-1/2 left-1/2 z-[101] w-full max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl"
         >
-          <DialogClose className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none">
+          <DialogClose className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none">
             <span className="sr-only">{t('Close')}</span>
           </DialogClose>
           <DialogHeader className="space-y-2 pr-10 text-left">
-            <DialogTitle className="text-2xl font-bold leading-tight">
+            <DialogTitle className="text-2xl leading-tight font-bold">
               {t('Terms of Use')}
             </DialogTitle>
             <DialogDescription className="sr-only">
@@ -169,7 +174,7 @@ export function TermsOfUseDialog({
             </Button>
             <Button
               type="button"
-              className="rounded-full bg-white px-5 py-2 text-sm font-bold uppercase tracking-wider text-gray-900 transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+              className="rounded-full bg-white px-5 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
               onClick={onSubmit}
             >
               {t('Accept')}

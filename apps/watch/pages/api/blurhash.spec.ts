@@ -96,8 +96,12 @@ describe('Blurhash API', () => {
         toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpInstance)
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpForColor)
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpInstance
+      )
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpForColor
+      )
 
       await handler(req, res)
 
@@ -198,8 +202,12 @@ describe('Blurhash API', () => {
         toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpInstance)
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpForColor)
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpInstance
+      )
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpForColor
+      )
 
       await handler(req, res)
 
@@ -234,8 +242,12 @@ describe('Blurhash API', () => {
         toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpInstance)
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpForColor)
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpInstance
+      )
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpForColor
+      )
 
       await handler(req, res)
 
@@ -270,8 +282,12 @@ describe('Blurhash API', () => {
         toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpInstance)
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpForColor)
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpInstance
+      )
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpForColor
+      )
 
       await handler(req, res)
 
@@ -370,8 +386,12 @@ describe('Blurhash API', () => {
         toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpInstance)
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpForColor)
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpInstance
+      )
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpForColor
+      )
 
       await handler(req, res)
 
@@ -397,7 +417,7 @@ describe('Blurhash API', () => {
         headers: { get: () => 'image/jpeg' },
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
       })
-      ;(sharp as jest.Mock).mockImplementationOnce(() => {
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(() => {
         throw new Error('Input buffer contains unsupported image format')
       })
 
@@ -455,8 +475,12 @@ describe('Blurhash API', () => {
         toBuffer: jest.fn().mockResolvedValue(new Uint8Array(100 * 100 * 3))
       }
 
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpInstance)
-      ;(sharp as jest.Mock).mockImplementationOnce(() => mockSharpForColor)
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpInstance
+      )
+      ;(sharp as unknown as jest.Mock).mockImplementationOnce(
+        () => mockSharpForColor
+      )
 
       await handler(req, res)
 

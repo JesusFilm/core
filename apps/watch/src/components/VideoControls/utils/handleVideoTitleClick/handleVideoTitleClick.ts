@@ -1,6 +1,6 @@
 import Player from 'video.js/dist/types/player'
 
-import { PlayerAction } from '../../../../../libs/playerContext/PlayerContext'
+import { PlayerAction } from '../../../../libs/playerContext'
 
 interface HandleVideoTitleClickProps {
   player?: Player

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { Language } from '../../libs/useLanguages'
+import { Language } from '../../../libs/useLanguages'
 
 import { LanguageCommandSelect } from './LanguageCommandSelect'
 

@@ -100,7 +100,8 @@ const defaultMocks = [
 describe('useCarouselVideos', () => {
   const createDefaultConfig = () => ({
     playlistSequence: [['collection1'], ['collection2']],
-    blacklistedVideoIds: []
+    blacklistedVideoIds: [],
+    version: '1.0.0'
   })
   let apolloMocks = [...defaultMocks]
 

@@ -5,11 +5,11 @@ import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
-import { blurImage, useBlurhash } from '../../libs/blurhash'
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
-import { useVideo } from '../../libs/videoContext'
-import { ContentHeader } from '../ContentHeader'
-import { HeroOverlay } from '../HeroOverlay'
+import { blurImage, useBlurhash } from '../../../libs/blurhash'
+import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
+import { useVideo } from '../../../libs/videoContext'
+import { ContentHeader } from '../../ContentHeader/ContentHeader'
+import { HeroOverlay } from '../../HeroOverlay/HeroOverlay'
 
 interface CollectionHeroProps {
   languageSlug?: string

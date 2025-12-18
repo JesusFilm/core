@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 
-import { PlayerProvider } from '../../../../libs/playerContext/PlayerContext'
-import { VideoProvider } from '../../../../libs/videoContext'
-import { WatchProvider } from '../../../../libs/watchContext'
-import { videos } from '../../../Videos/__generated__/testData'
+import { PlayerProvider } from '../../../libs/playerContext'
+import { VideoProvider } from '../../../libs/videoContext'
+import { WatchProvider } from '../../../libs/watchContext'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoBlockPlayer } from './VideoBlockPlayer'
 

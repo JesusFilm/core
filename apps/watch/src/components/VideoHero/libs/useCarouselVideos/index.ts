@@ -1,7 +1,6 @@
 export {
   useCarouselVideos,
   type UseCarouselVideosReturn,
-  type CarouselVideo,
-  type VideoCarouselSlide
+  type CarouselVideo
 } from './useCarouselVideos'
 export { getPlaylistConfig, type PlaylistConfig } from './utils'
