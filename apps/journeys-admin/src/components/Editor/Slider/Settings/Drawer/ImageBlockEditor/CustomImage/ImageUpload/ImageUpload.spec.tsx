@@ -245,7 +245,6 @@ describe('ImageUpload', () => {
 
     const inputEl = screen.getByTestId('drop zone')
 
-    // Create a file larger than 10 MB (10485760 bytes)
     const largeFile = new File([new ArrayBuffer(11000000)], 'large-image.png', {
       type: 'image/png'
     })
@@ -269,7 +268,6 @@ describe('ImageUpload', () => {
     expect(setUploading).toHaveBeenCalledWith(false)
     expect(onChange).not.toHaveBeenCalled()
 
-    // Upload file button should be enabled after error
     expect(
       screen.getByRole('button', { name: 'Upload file' })
     ).not.toBeDisabled()
@@ -292,7 +290,6 @@ describe('ImageUpload', () => {
 
     const inputEl = screen.getByTestId('drop zone')
 
-    // Create a PDF file which is not in the accepted types
     const pdfFile = new File([new Blob(['file'])], 'document.pdf', {
       type: 'application/pdf'
     })
@@ -433,7 +430,6 @@ describe('ImageUpload', () => {
 
     const inputEl = screen.getByTestId('drop zone')
 
-    // Step 1: Trigger a file too large error
     const largeFile = new File([new ArrayBuffer(11000000)], 'large-image.png', {
       type: 'image/png'
     })
@@ -445,7 +441,6 @@ describe('ImageUpload', () => {
 
     fireEvent.drop(inputEl)
 
-    // Verify error is displayed
     await waitFor(() => {
       expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
       expect(
@@ -455,7 +450,6 @@ describe('ImageUpload', () => {
       ).toBeInTheDocument()
     })
 
-    // Step 2: Upload a valid file
     const validFile = new File([new Blob(['file'])], 'valid-image.png', {
       type: 'image/png'
     })
@@ -467,7 +461,6 @@ describe('ImageUpload', () => {
 
     fireEvent.drop(inputEl)
 
-    // Step 3: Verify error is cleared and success is shown
     await waitFor(() => {
       expect(screen.queryByText('Upload Failed!')).not.toBeInTheDocument()
       expect(
