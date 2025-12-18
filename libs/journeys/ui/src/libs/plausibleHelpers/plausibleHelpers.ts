@@ -62,6 +62,7 @@ export interface JourneyPlausibleEvents extends Events {
   buttonClick: ButtonClickEventCreateInput & Props
   chatButtonClick: ChatOpenEventCreateInput & Props
   footerChatButtonClick: ChatOpenEventCreateInput & Props
+  multiSelectSubmit: MultiselectSubmissionEventCreateInput & Props
   radioQuestionSubmit: RadioQuestionSubmissionEventCreateInput & Props
   signUpSubmit: SignUpSubmissionEventCreateInput & Props
   textResponseSubmit: TextResponseSubmissionEventCreateInput & Props
@@ -76,6 +77,17 @@ export interface JourneyPlausibleEvents extends Events {
   videoComplete: VideoCompleteEventCreateInput & Props
   multiselectSubmit: MultiselectSubmissionEventCreateInput & Props
   videoTrigger: Props
+  // Capture events are triggered by journey events above
+  prayerRequestCapture: Props
+  christDecisionCapture: Props
+  gospelStartCapture: Props
+  gospelCompleteCapture: Props
+  rsvpCapture: Props
+  specialVideoStartCapture: Props
+  specialVideoCompleteCapture: Props
+  custom1Capture: Props
+  custom2Capture: Props
+  custom3Capture: Props
 }
 
 interface KeyifyProps {

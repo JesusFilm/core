@@ -16,7 +16,7 @@ describe('CollectionsHeader', () => {
 
     render(<CollectionsHeader feedbackButtonLabel="Feedback" />)
 
-    const header = screen.getByRole('img', { name: 'JesusFilm Project' })
+    const header = screen.getByRole('img', { name: 'Jesus Film Project' })
     expect(header).toBeInTheDocument()
 
     const link = screen.getByRole('link')

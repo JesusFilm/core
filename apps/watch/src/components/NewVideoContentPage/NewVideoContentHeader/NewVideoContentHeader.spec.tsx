@@ -57,7 +57,7 @@ describe('NewVideoContentHeader', () => {
 
     expect(screen.getByRole('link', { name: 'JESUS' })).toHaveAttribute(
       'href',
-      '/watch/jesus'
+      '/jesus'
     )
     expect(
       screen.getByRole('button', { name: 'Watch Full Film' })
@@ -77,7 +77,7 @@ describe('NewVideoContentHeader', () => {
 
     expect(screen.getByRole('link', { name: 'LUMO' })).toHaveAttribute(
       'href',
-      '/watch/lumo'
+      '/lumo'
     )
     expect(screen.getByRole('button', { name: 'See All' })).toBeInTheDocument()
     expect(screen.getByText('Clip 3 of 20')).toBeInTheDocument()

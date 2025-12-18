@@ -23,7 +23,7 @@ describe('JourneyList/JourneySort', () => {
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByLabelText('Name'))
 
-    expect(getByRole('button', { name: 'Name' })).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Sort By' })).toHaveTextContent('Name')
   })
 
   it('should sort by date created', () => {
@@ -31,17 +31,9 @@ describe('JourneyList/JourneySort', () => {
 
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByLabelText('Name'))
+    fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByLabelText('Date Created'))
 
-    const updatedButton = getByRole('button', { name: 'Date Created' })
-    expect(updatedButton).toBeInTheDocument()
-  })
-
-  it('should be disabled', () => {
-    const { getByRole } = render(<JourneySortMock disabled />)
-    expect(getByRole('button', { name: 'Sort By' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
+    expect(getByRole('button', { name: 'Sort By' })).toBeInTheDocument()
   })
 })

@@ -139,7 +139,10 @@ describe('Toolbar', () => {
   it('should render NextSteps logo on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
-    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
+      'href',
+      '/?type=journeys'
+    )
   })
 
   it('should render Back to Home tooltip on hover', async () => {
@@ -148,6 +151,35 @@ describe('Toolbar', () => {
     await waitFor(() => {
       expect(screen.getByText('Back to Home')).toBeInTheDocument()
     })
+  })
+
+  it('should navigate to journeys tab for regular journey', () => {
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
+      'href',
+      '/?type=journeys'
+    )
+  })
+
+  it('should navigate to templates tab for local template', () => {
+    const localTemplateJourney = {
+      journey: {
+        ...defaultJourney.journey,
+        template: true,
+        team: {
+          id: 'team-123',
+          title: 'Team Title',
+          publicTitle: 'Public Title',
+          __typename: 'Team'
+        }
+      } as unknown as Journey,
+      variant: 'admin'
+    }
+    render(toolbar(localTemplateJourney))
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
+      'href',
+      '/?type=templates'
+    )
   })
 
   it('should render help scout beacon', () => {
