@@ -390,6 +390,7 @@ describe('ImageUpload', () => {
     })
 
     expect(setUploading).toHaveBeenCalledWith(false)
+    expect(onChange).not.toHaveBeenCalled()
   })
 
   it('should clear error when retrying with valid file after error', async () => {

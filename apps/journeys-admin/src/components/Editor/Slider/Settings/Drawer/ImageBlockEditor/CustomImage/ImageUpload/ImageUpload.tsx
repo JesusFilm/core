@@ -70,7 +70,7 @@ export function ImageUpload({
         ).json()
 
         response.success === true ? setSuccess(true) : setSuccess(false)
-        if (response.errors.length !== 0) {
+        if (response.errors?.length) {
           const cloudflareError = response.errors[0].code
           setSuccess(false)
           setUploading?.(false)
