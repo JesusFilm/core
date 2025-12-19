@@ -7,6 +7,7 @@ const { composePlugins, withNx } = require('@nx/next')
  **/
 const nextConfig = {
   nx: {},
+  typedRoutes: true,
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions

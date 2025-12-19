@@ -47,6 +47,7 @@ const nextConfig = {
   nx: {
     svgr: false
   },
+  typedRoutes: true,
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions

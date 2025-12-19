@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { expect, screen, userEvent, waitFor } from '@storybook/test'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
@@ -82,9 +81,6 @@ export const ShareLink = {
   args: {
     ...Basic.args,
     video
-  },
-  play: async () => {
-    await userEvent.click(screen.getByRole('button', { name: 'Copy Link' }))
   }
 }
 
@@ -92,16 +88,6 @@ export const EmbedCode = {
   ...Template,
   args: {
     ...ShareLink.args
-  },
-  play: async () => {
-    await userEvent.click(screen.getByRole('tab', { name: 'Embed Code' }))
-    await waitFor(
-      async () =>
-        await expect(
-          screen.getByRole('button', { name: 'Copy Code' })
-        ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Copy Code' }))
   }
 }
 

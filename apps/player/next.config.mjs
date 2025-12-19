@@ -47,6 +47,7 @@ const nextConfig = {
     }
   },
   nx: {},
+  typedRoutes: true,
   reactCompiler: true,
   productionBrowserSourceMaps: true,
   typescript: {

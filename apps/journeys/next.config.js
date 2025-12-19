@@ -9,6 +9,7 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   nx: {},
   i18n,
+  typedRoutes: true,
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
