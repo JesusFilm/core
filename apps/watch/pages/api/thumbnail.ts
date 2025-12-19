@@ -19,7 +19,10 @@ function getCacheVersion(filePath: string): string {
     // Convert public URL path to filesystem path using absolute path
     const fullPath = join(
       process.cwd(),
-      filePath.replace('/images/thumbnails/', '/public/images/thumbnails/')
+      filePath.replace(
+        '/watch/images/thumbnails/',
+        '/public/images/thumbnails/'
+      )
     )
     const stats = statSync(fullPath)
     return stats.mtime.getTime().toString()
@@ -69,7 +72,7 @@ function findLocalThumbnail(
     for (const ext of SUPPORTED_EXTENSIONS) {
       const filePath = join(publicDir, `${pattern}.${ext}`)
       if (existsSync(filePath)) {
-        return `/images/thumbnails/${pattern}.${ext}`
+        return `/watch/images/thumbnails/${pattern}.${ext}`
       }
     }
   }
@@ -139,7 +142,6 @@ export default async function handler(
       validatedVariantSlug,
       validatedLanguageId
     )
-
     if (localThumbnail) {
       // Set cache headers for performance (client-side caching)
       res.setHeader(

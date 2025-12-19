@@ -8,16 +8,12 @@ Click on 'Jesus Calms the Storm Jesus Calms the Storm Chapter
 Verify URL is correct
 */
 test('Chapter', async ({ page }) => {
-  // Set test time out as it has video
-  test.setTimeout(3 * 60 * 1000)
-
   await page.goto('/watch')
 
   const jesusCalmsStormButton = page.getByRole('button', {
     name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
   })
 
-  // Wait for the element to be properly interactive
   await jesusCalmsStormButton.waitFor({ state: 'visible' })
   await expect(jesusCalmsStormButton).toBeEnabled()
 

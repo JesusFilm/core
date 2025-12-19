@@ -25,7 +25,7 @@ const ALLOWED_DOMAINS = [
 
 function isValidUrl(urlString: string): boolean {
   // Allow local thumbnail URLs (relative paths to thumbnails directory)
-  if (urlString.startsWith('/assets/thumbnails/')) {
+  if (urlString.startsWith('/watch/images/thumbnails/')) {
     return true
   }
 
@@ -58,7 +58,9 @@ async function fetchImageWithTimeout(
       const filePath = join(
         process.cwd(),
         'public',
-        cleanUrl.replace(/^\//, '')
+        'images',
+        'thumbnails',
+        cleanUrl.replace('/watch/images/thumbnails/', '')
       )
       const buffer = readFileSync(filePath)
       clearTimeout(timeoutId)
