@@ -1,0 +1,1 @@
+export { CategoryGrid } from './CategoryGrid'
