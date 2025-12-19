@@ -40,7 +40,6 @@ export function ContainerWithMedia({
       {activeVideo != null && (
         <VideoProvider value={{ content: activeVideo }}>
           <VideoBlock
-            isPreview
             placement="carouselItem"
             currentMuxInsert={currentMuxInsert}
             onMuxInsertComplete={onMuxInsertComplete}

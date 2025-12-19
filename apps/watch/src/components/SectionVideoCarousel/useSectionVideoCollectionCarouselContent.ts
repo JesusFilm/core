@@ -160,7 +160,6 @@ function buildVideoSnapshot(
         __typename: typename,
         value: field.value
       }))
-
     if (mapped.length > 0) return mapped
 
     if (typename === 'VideoTitle') {
@@ -366,11 +365,12 @@ export function useSectionVideoCollectionCarouselContent({
   defaultCtaLabel,
   languageId: providedLanguageId
 }: UseSectionVideoCollectionCarouselContentOptions): SectionVideoCollectionCarouselContentResult {
-  const locale = useMemo(() => {
-    if (providedLanguageId != null) return null
-    if (typeof window === 'undefined') return 'en' // SSR fallback
-    return useRouter().locale
-  }, [providedLanguageId])
+  const locale =
+    providedLanguageId != null
+      ? null
+      : typeof window === 'undefined'
+        ? 'en'
+        : useRouter().locale
 
   const languageId = providedLanguageId ?? getLanguageIdFromLocale(locale)
 

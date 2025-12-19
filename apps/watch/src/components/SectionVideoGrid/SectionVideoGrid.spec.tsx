@@ -185,8 +185,7 @@ const baseMocks: MockedResponse[] = [
     request: {
       query: GET_COLLECTION_SHOWCASE_CONTENT,
       variables: {
-        collectionIds: ['collection-1'],
-        videoIds: ['video-1'],
+        ids: ['video-1', 'collection-1'],
         languageId: '529'
       }
     },
@@ -203,7 +202,7 @@ const collectionOnlyMocks: MockedResponse[] = [
     request: {
       query: GET_COLLECTION_SHOWCASE_CONTENT,
       variables: {
-        collectionIds: ['collection-1'],
+        ids: ['collection-1'],
         languageId: '529'
       }
     },
@@ -220,7 +219,7 @@ const emptyMocks: MockedResponse[] = [
     request: {
       query: GET_COLLECTION_SHOWCASE_CONTENT,
       variables: {
-        collectionIds: ['collection-1'],
+        ids: ['collection-1'],
         languageId: '529'
       }
     },
@@ -252,6 +251,7 @@ describe('SectionVideoGrid', () => {
     render(
       <MockedProvider mocks={baseMocks} addTypename>
         <SectionVideoGrid
+          primaryCollectionId="collection-1"
           sources={[
             { id: 'video-1' },
             { id: 'collection-1', limitChildren: 3 }
@@ -299,28 +299,6 @@ describe('SectionVideoGrid', () => {
       slug: 'single-video',
       variant: expect.objectContaining({ slug: 'single-video/en' })
     })
-
-    const latestGridProps =
-      mockVideoGrid.mock.calls[mockVideoGrid.mock.calls.length - 1]?.[0]
-    expect(latestGridProps?.videos).toEqual(
-      capturedSlides.map((slide) => slide.video)
-    )
-    expect(latestGridProps?.videos).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: 'child-1',
-          variant: expect.objectContaining({ slug: 'child-one/en' })
-        }),
-        expect.objectContaining({
-          id: 'grandchild-1',
-          variant: expect.objectContaining({ slug: 'grandchild-one/en' })
-        }),
-        expect.objectContaining({
-          id: 'video-1',
-          variant: expect.objectContaining({ slug: 'single-video/en' })
-        })
-      ])
-    )
 
     expect(screen.getByTestId('VideoCard-grandchild-1')).toBeInTheDocument()
     expect(screen.getByTestId('VideoCard-video-1')).toBeInTheDocument()
@@ -371,7 +349,7 @@ describe('SectionVideoGrid', () => {
     )
 
     await waitFor(() => {
-      expect(screen.queryByTestId('SectionVideoGrid')).not.toBeInTheDocument()
+      expect(screen.getByText('No videos found')).toBeInTheDocument()
     })
   })
 

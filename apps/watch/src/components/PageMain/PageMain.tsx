@@ -1,13 +1,10 @@
 import { type ReactElement } from 'react'
 import { Index } from 'react-instantsearch'
 
-import { ThemeMode } from '@core/shared/ui/themes'
-
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { Footer } from '../Footer'
-import { LegacyHeader } from '../LegacyHeader'
 import { SearchComponent } from '../SearchComponent'
 
 import { CollectionsRail } from './CollectionsRail'
