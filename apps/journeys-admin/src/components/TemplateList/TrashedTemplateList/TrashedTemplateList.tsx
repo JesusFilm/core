@@ -15,12 +15,12 @@ import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
-import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
-import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
+import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 
 const Dialog = dynamic(
   async () =>
@@ -39,7 +39,8 @@ export function TrashedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {

@@ -1,1 +1,0 @@
-export { ResourceSections } from './ResourceSections'

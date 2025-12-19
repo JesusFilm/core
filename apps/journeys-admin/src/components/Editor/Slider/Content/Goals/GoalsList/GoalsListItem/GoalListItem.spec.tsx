@@ -36,7 +36,7 @@ describe('GoalListItem', () => {
       </Table>
     )
 
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
     expect(screen.getAllByTestId('MessageChat1Icon')).toHaveLength(2)
     expect(screen.getByText(goal?.url)).toBeInTheDocument()
     expect(screen.getByText('Appears on card')).toBeInTheDocument()

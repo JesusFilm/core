@@ -156,7 +156,7 @@ describe('ImageUpload', () => {
         focalTop: 50
       })
     )
-    expect(screen.getByText('Upload successful!')).toBeInTheDocument()
+    expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
   })
 
   it('should render loading state', () => {
@@ -226,5 +226,256 @@ describe('ImageUpload', () => {
     fireEvent.drop(inputEl)
     await waitFor(() => expect(setUploading).toHaveBeenCalled())
     expect(screen.getByText('Uploading...')).toBeInTheDocument()
+  })
+
+  it('should handle file too large error', async () => {
+    const onChange = jest.fn()
+    const setUploading = jest.fn()
+
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+
+    const largeFile = new File([new ArrayBuffer(11000000)], 'large-image.png', {
+      type: 'image/png'
+    })
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [largeFile]
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      ).toBeInTheDocument()
+      expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    })
+
+    expect(setUploading).toHaveBeenCalledWith(false)
+    expect(onChange).not.toHaveBeenCalled()
+
+    expect(
+      screen.getByRole('button', { name: 'Upload file' })
+    ).not.toBeDisabled()
+  })
+
+  it('should handle wrong file type error', async () => {
+    const onChange = jest.fn()
+    const setUploading = jest.fn()
+
+    render(
+      <MockedProvider>
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+
+    const pdfFile = new File([new Blob(['file'])], 'document.pdf', {
+      type: 'application/pdf'
+    })
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [pdfFile]
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+        )
+      ).toBeInTheDocument()
+      expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    })
+
+    expect(setUploading).toHaveBeenCalledWith(false)
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('should handle Cloudflare error response', async () => {
+    const cfErrorResponse = {
+      result: {
+        id: 'uploadId'
+      },
+      errors: [
+        {
+          code: 5000,
+          message: 'Upload failed'
+        }
+      ],
+      messages: [],
+      success: false
+    }
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfErrorResponse)
+    } as unknown as Response)
+
+    const onChange = jest.fn()
+    const setUploading = jest.fn()
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [
+        new File([new Blob(['file'])], 'testFile.png', {
+          type: 'image/png'
+        })
+      ]
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+      expect(
+        screen.getByText('Something went wrong, try again')
+      ).toBeInTheDocument()
+      expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    })
+
+    expect(setUploading).toHaveBeenCalledWith(false)
+    expect(onChange).not.toHaveBeenCalled()
+  })
+
+  it('should clear error when retrying with valid file after error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const onChange = jest.fn()
+    const setUploading = jest.fn()
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+            },
+            result: {
+              data: {
+                createCloudflareUploadByFile: {
+                  id: 'uploadId',
+                  uploadUrl: 'https://upload.imagedelivery.net/uploadId',
+                  userId: 'userId',
+                  __typename: 'CloudflareImage'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <ImageUpload
+          onChange={onChange}
+          setUploading={setUploading}
+          loading={false}
+          selectedBlock={imageBlock}
+        />
+      </MockedProvider>
+    )
+
+    const inputEl = screen.getByTestId('drop zone')
+
+    const largeFile = new File([new ArrayBuffer(11000000)], 'large-image.png', {
+      type: 'image/png'
+    })
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [largeFile],
+      configurable: true
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      ).toBeInTheDocument()
+    })
+
+    const validFile = new File([new Blob(['file'])], 'valid-image.png', {
+      type: 'image/png'
+    })
+
+    Object.defineProperty(inputEl, 'files', {
+      value: [validFile],
+      configurable: true
+    })
+
+    fireEvent.drop(inputEl)
+
+    await waitFor(() => {
+      expect(screen.queryByText('Upload Failed!')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      ).not.toBeInTheDocument()
+      expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
+    })
+
+    expect(onChange).toHaveBeenCalledWith({
+      src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
+      scale: 100,
+      focalLeft: 50,
+      focalTop: 50
+    })
   })
 })
