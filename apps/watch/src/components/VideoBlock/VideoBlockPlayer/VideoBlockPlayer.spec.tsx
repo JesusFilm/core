@@ -23,7 +23,7 @@ jest.mock('video.js', () => {
     src: jest.fn(),
     ready: jest.fn((callback) => {
       if (callback) {
-        setTimeout(callback, 0)
+        setTimeout(() => callback(), 0)
       }
     }),
     el: jest.fn(() => ({
