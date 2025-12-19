@@ -1,8 +1,25 @@
 import { Img } from '@react-email/components'
 import { ReactElement } from 'react'
 
-export function EmailLogo(): ReactElement {
-  return <Img src="https://your.nextstep.is/LogoHorizontal.png" />
+import { type Logo } from '../../types'
+
+export function EmailLogo({
+  logo = 'NextSteps'
+}: {
+  logo?: Logo
+}): ReactElement {
+  let logoUrl: string
+  switch (logo) {
+    case 'JesusFilmApp':
+      logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
+      break
+    case 'NextSteps':
+    default:
+      logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
+      break
+  }
+
+  return <Img src={logoUrl} />
 }
 
 export default EmailLogo
