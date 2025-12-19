@@ -30,7 +30,7 @@ describe('NewVideoContentHeader', () => {
     childrenCount: 61,
     variant: {
       ...(videos.find(({ id }) => id === '1_jf-0-0')?.variant as VideoVariant),
-      slug: 'jesus'
+      slug: 'jesus/english'
     }
   }
 
@@ -40,7 +40,7 @@ describe('NewVideoContentHeader', () => {
     variant: {
       ...(videos.find(({ id }) => id === 'LUMOCollection')
         ?.variant as VideoVariant),
-      slug: 'lumo'
+      slug: 'lumo/english'
     }
   }
 
@@ -57,7 +57,7 @@ describe('NewVideoContentHeader', () => {
 
     expect(screen.getByRole('link', { name: 'JESUS' })).toHaveAttribute(
       'href',
-      '/jesus'
+      '/jesus.html/english.html'
     )
     expect(
       screen.getByRole('link', { name: 'Watch Full Film' })
@@ -79,7 +79,7 @@ describe('NewVideoContentHeader', () => {
 
     expect(screen.getByRole('link', { name: 'LUMO' })).toHaveAttribute(
       'href',
-      '/lumo'
+      '/lumo.html/english.html'
     )
     expect(screen.getByRole('link', { name: 'See All' })).toBeInTheDocument()
     expect(

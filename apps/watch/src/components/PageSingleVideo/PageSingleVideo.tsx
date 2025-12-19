@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
-import { ThemeMode } from '@core/shared/ui/themes'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__generated__/VideoContentFields'
 import { useVideoChildren } from '../../libs/useVideoChildren'
@@ -211,8 +210,7 @@ export function PageSingleVideo(): ReactElement {
             onMuxInsertComplete={handleMuxInsertComplete}
           />
         }
-        headerThemeMode={ThemeMode.dark}
-        hideHeader
+        data-testid="PageSingleVideo"
         hideFooter
         isFullscreen
       >

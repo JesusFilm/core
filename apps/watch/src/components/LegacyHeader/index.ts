@@ -1,1 +1,0 @@
-export { LegacyHeader } from './LegacyHeader'

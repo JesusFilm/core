@@ -5,51 +5,41 @@ import { render, screen } from '@testing-library/react'
 import { PageWrapper } from '.'
 
 describe('PageWrapper', () => {
-  it('should render header and footer', () => {
-    const { getByRole, getByTestId } = render(
+  it('should render footer', () => {
+    render(
       <MockedProvider>
         <PageWrapper />
       </MockedProvider>
     )
-    expect(getByTestId('HeaderMenuPanel', { hidden: true })).toBeInTheDocument()
-    expect(getByRole('contentinfo')).toBeInTheDocument()
+    expect(screen.getByTestId('Footer')).toBeInTheDocument()
   })
 
-  it('should not render header', () => {
-    const { queryByTestId } = render(
+  it('should not render footer', () => {
+    render(
       <MockedProvider>
-        <PageWrapper hideHeader />
+        <PageWrapper hideFooter />
       </MockedProvider>
     )
-    expect(queryByTestId('HeaderMenuPanel', { hidden: true })).not.toBeInTheDocument()
+    expect(screen.queryByTestId('Footer')).not.toBeInTheDocument()
   })
 
   it('should render hero', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <PageWrapper hero={<Box data-testid="hero" />} />
       </MockedProvider>
     )
-    expect(getByTestId('hero')).toBeInTheDocument()
+    expect(screen.getByTestId('hero')).toBeInTheDocument()
   })
 
   it('should render children', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <PageWrapper>
           <Box data-testid="content" />
         </PageWrapper>
       </MockedProvider>
     )
-    expect(getByTestId('content')).toBeInTheDocument()
-  })
-
-  it('should not render header spacer', () => {
-    render(
-      <MockedProvider>
-        <PageWrapper hideHeaderSpacer />
-      </MockedProvider>
-    )
-    expect(screen.queryByTestId('HeaderSpacer')).not.toBeInTheDocument()
+    expect(screen.getByTestId('content')).toBeInTheDocument()
   })
 })

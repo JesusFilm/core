@@ -8,19 +8,19 @@ import { ContentHeader } from '../ContentHeader'
 
 import { VideoBlockPlayer } from './VideoBlockPlayer'
 
-export function VideoBlock({
-  isPreview = false,
-  placement = 'singleVideo',
-  currentMuxInsert,
-  onMuxInsertComplete,
-  onSkipActiveVideo
-}: {
-  isPreview?: boolean
+interface VideoBlockProps {
   placement?: 'carouselItem' | 'singleVideo'
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
   onSkipActiveVideo?: () => void
-}): ReactElement {
+}
+
+export function VideoBlock({
+  placement = 'singleVideo',
+  currentMuxInsert,
+  onMuxInsertComplete,
+  onSkipActiveVideo
+}: VideoBlockProps): ReactElement {
   const { variant } = useVideo()
   const {
     state: { mute }

@@ -46,7 +46,6 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
 
   return (
     <div>
-      <LegacyHeader themeMode={ThemeMode.dark} />
       <Index indexName={indexName}>
         <SearchComponent languageId={languageId} />
       </Index>

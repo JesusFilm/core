@@ -26,7 +26,7 @@ export function PageCollections(): ReactElement {
           feedbackButtonLabel="Donner un Avis"
         />
       }
-      hideHeader
+      data-testid="PageCollections"
       hideFooter
     >
       <PageCollectionsContent>

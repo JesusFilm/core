@@ -6,6 +6,7 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoBlockPlayer } from './VideoBlockPlayer'
+import { MockedProvider } from '@apollo/client/testing'
 
 jest.mock('video.js', () => {
   const mockPlayer = {
@@ -46,13 +47,15 @@ describe('VideoBlockPlayer', () => {
 
   it('should render video container', () => {
     render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <PlayerProvider>
-          <WatchProvider>
-            <VideoBlockPlayer {...defaultProps} />
-          </WatchProvider>
-        </PlayerProvider>
-      </VideoProvider>
+      <MockedProvider mocks={[]}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider>
+            <WatchProvider>
+              <VideoBlockPlayer {...defaultProps} />
+            </WatchProvider>
+          </PlayerProvider>
+        </VideoProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('VideoBlockPlayerContainer')).toBeInTheDocument()
@@ -60,13 +63,15 @@ describe('VideoBlockPlayer', () => {
 
   it('should apply height 120% when collapsed is true', () => {
     const { container } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <PlayerProvider>
-          <WatchProvider>
-            <VideoBlockPlayer {...defaultProps} collapsed={true} />
-          </WatchProvider>
-        </PlayerProvider>
-      </VideoProvider>
+      <MockedProvider mocks={[]}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider>
+            <WatchProvider>
+              <VideoBlockPlayer {...defaultProps} collapsed={true} />
+            </WatchProvider>
+          </PlayerProvider>
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const videoElement = container.querySelector(
@@ -78,13 +83,15 @@ describe('VideoBlockPlayer', () => {
 
   it('should apply height 100% when collapsed is false', () => {
     const { container } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <PlayerProvider>
-          <WatchProvider>
-            <VideoBlockPlayer {...defaultProps} collapsed={false} />
-          </WatchProvider>
-        </PlayerProvider>
-      </VideoProvider>
+      <MockedProvider mocks={[]}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider>
+            <WatchProvider>
+              <VideoBlockPlayer {...defaultProps} collapsed={false} />
+            </WatchProvider>
+          </PlayerProvider>
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const videoElement = container.querySelector(
@@ -96,17 +103,19 @@ describe('VideoBlockPlayer', () => {
 
   it('should apply height 120% when collapsed is true for carouselItem placement', () => {
     const { container } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <PlayerProvider>
-          <WatchProvider>
-            <VideoBlockPlayer
-              {...defaultProps}
-              collapsed={true}
-              placement="carouselItem"
-            />
-          </WatchProvider>
-        </PlayerProvider>
-      </VideoProvider>
+      <MockedProvider mocks={[]}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider>
+            <WatchProvider>
+              <VideoBlockPlayer
+                {...defaultProps}
+                collapsed={true}
+                placement="carouselItem"
+              />
+            </WatchProvider>
+          </PlayerProvider>
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const videoElement = container.querySelector(
@@ -118,17 +127,19 @@ describe('VideoBlockPlayer', () => {
 
   it('should apply height 100% when collapsed is false for carouselItem placement', () => {
     const { container } = render(
-      <VideoProvider value={{ content: videos[0] }}>
-        <PlayerProvider>
-          <WatchProvider>
-            <VideoBlockPlayer
-              {...defaultProps}
-              collapsed={false}
-              placement="carouselItem"
-            />
-          </WatchProvider>
-        </PlayerProvider>
-      </VideoProvider>
+      <MockedProvider mocks={[]}>
+        <VideoProvider value={{ content: videos[0] }}>
+          <PlayerProvider>
+            <WatchProvider>
+              <VideoBlockPlayer
+                {...defaultProps}
+                collapsed={false}
+                placement="carouselItem"
+              />
+            </WatchProvider>
+          </PlayerProvider>
+        </VideoProvider>
+      </MockedProvider>
     )
 
     const videoElement = container.querySelector(

@@ -82,7 +82,7 @@ export function PageCollections(): ReactElement {
           feedbackButtonLabel="Give Feedback"
         />
       }
-      hideHeader
+      data-testid="PageCollections"
       hideFooter
     >
       <PageCollectionsContent>

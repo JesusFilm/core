@@ -420,9 +420,7 @@ describe('SectionVideoCarousel', () => {
     )
 
     await waitFor(() => {
-      expect(
-        screen.queryByTestId('SectionVideoCarousel')
-      ).not.toBeInTheDocument()
+      expect(screen.getByText('No videos found')).toBeInTheDocument()
     })
   })
 })

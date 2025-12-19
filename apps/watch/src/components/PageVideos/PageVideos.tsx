@@ -11,6 +11,7 @@ import { ThemeMode } from '@core/shared/ui/themes'
 import type { GetLanguages } from '../../../__generated__/GetLanguages'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
+import { ContentHeader } from '../ContentHeader/ContentHeader'
 
 import { FilterList } from './FilterList'
 import { VideosHero } from './VideosHero'
@@ -23,12 +24,8 @@ export function PageVideos(): ReactElement {
     })
 
   return (
-    <PageWrapper
-      hero={<VideosHero />}
-      testId="PageVideos"
-      headerThemeMode={ThemeMode.dark}
-      hideHeaderSpacer
-    >
+    <PageWrapper hero={<VideosHero />} data-testid="PageVideos">
+      <ContentHeader isPersistent />
       <Container maxWidth="xxl">
         <VideosSubHero />
       </Container>

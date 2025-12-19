@@ -138,8 +138,7 @@ export function PageCollection(): ReactElement {
             onShare={() => setShowShare(true)}
           />
         }
-        headerThemeMode={ThemeMode.dark}
-        hideHeader
+        data-testid="PageCollection"
         hideFooter
       >
         <ContentPageBlurFilter>

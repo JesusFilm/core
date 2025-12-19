@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
+import { MockedProvider } from '@apollo/client/testing'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PlayerProvider } from '../../libs/playerContext'
@@ -9,7 +10,7 @@ import { useLanguages } from '../../libs/useLanguages'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
-import { PageCollection } from './PageCollection'
+import { PageCollection } from '.'
 
 jest.mock('../SectionVideoGrid', () => ({
   SectionVideoGrid: ({ primaryCollectionId, languageId }: any) => (
@@ -18,18 +19,6 @@ jest.mock('../SectionVideoGrid', () => ({
       data-primary={primaryCollectionId}
       data-language={languageId ?? ''}
     />
-  )
-}))
-
-jest.mock('../LanguageFilterDropdown', () => ({
-  LanguageFilterDropdown: ({ onSelect, selectedValue }: any) => (
-    <button
-      type="button"
-      data-testid="LanguageFilterDropdown"
-      onClick={() => onSelect('spanish')}
-    >
-      {selectedValue}
-    </button>
   )
 }))
 
@@ -70,33 +59,34 @@ describe('PageCollection', () => {
     await mockRouter.push('/watch/worth-episode-2.html/english.html')
 
     render(
-      <SnackbarProvider>
-        <PlayerProvider>
-          <VideoProvider value={{ content: collectionVideo }}>
-            <PageCollection />
-          </VideoProvider>
-        </PlayerProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: collectionVideo }}>
+              <PageCollection />
+            </VideoProvider>
+          </PlayerProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByTestId('CollectionMetadata')).toBeInTheDocument()
     expect(screen.getByText('Languages')).toBeInTheDocument()
-    expect(screen.getByTestId('LanguageFilterDropdown')).toHaveTextContent(
-      'english'
-    )
   })
 
   it('passes ids to SectionVideoGrid', async () => {
     await mockRouter.push('/watch/worth-episode-2.html/english.html')
 
     render(
-      <SnackbarProvider>
-        <PlayerProvider>
-          <VideoProvider value={{ content: collectionVideo }}>
-            <PageCollection />
-          </VideoProvider>
-        </PlayerProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: collectionVideo }}>
+              <PageCollection />
+            </VideoProvider>
+          </PlayerProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     const grid = screen.getByTestId('SectionVideoGrid')
@@ -108,13 +98,15 @@ describe('PageCollection', () => {
     await mockRouter.push('/watch/worth-episode-2.html/english.html')
 
     render(
-      <SnackbarProvider>
-        <PlayerProvider>
-          <VideoProvider value={{ content: collectionVideo }}>
-            <PageCollection />
-          </VideoProvider>
-        </PlayerProvider>
-      </SnackbarProvider>
+      <MockedProvider>
+        <SnackbarProvider>
+          <PlayerProvider>
+            <VideoProvider value={{ content: collectionVideo }}>
+              <PageCollection />
+            </VideoProvider>
+          </PlayerProvider>
+        </SnackbarProvider>
+      </MockedProvider>
     )
 
     await userEvent.click(screen.getByRole('button', { name: /share/i }))

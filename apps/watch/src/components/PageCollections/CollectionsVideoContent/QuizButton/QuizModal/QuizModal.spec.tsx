@@ -9,7 +9,7 @@ describe('QuizModal', () => {
     mockOnClose.mockClear()
   })
 
-  test('should render when open is true', () => {
+  it('should render when open is true', () => {
     render(<QuizModal open={true} onClose={mockOnClose} />)
 
     const modal = screen.getByTestId('QuizModal')
@@ -17,7 +17,7 @@ describe('QuizModal', () => {
     expect(modal).toBeVisible()
   })
 
-  test('should render iframe with correct source', () => {
+  it('should render iframe with correct source', () => {
     render(<QuizModal open={true} onClose={mockOnClose} />)
 
     const iframe = screen.getByTestId('QuizIframe')
@@ -29,16 +29,16 @@ describe('QuizModal', () => {
     expect(iframe).toHaveClass('border-0 w-full h-full')
   })
 
-  test('should call onClose when close button is clicked', () => {
+  it('should call onClose when close button is clicked', () => {
     render(<QuizModal open onClose={mockOnClose} />)
 
-    const closeButton = screen.getByRole('button', { name: 'close' })
+    const closeButton = screen.getByRole('button', { name: 'Close' })
     fireEvent.click(closeButton)
 
     expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
-  test('should call onClose when escape key is pressed', () => {
+  it('should call onClose when escape key is pressed', () => {
     render(<QuizModal open onClose={mockOnClose} />)
 
     fireEvent.keyDown(document, {

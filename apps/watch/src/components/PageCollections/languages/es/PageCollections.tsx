@@ -83,7 +83,7 @@ export function PageCollections(): ReactElement {
           feedbackButtonLabel="Dar Comentarios"
         />
       }
-      hideHeader
+      data-testid="PageCollections"
       hideFooter
     >
       <PageCollectionsContent>
