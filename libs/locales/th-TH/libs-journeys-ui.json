@@ -35,6 +35,8 @@
   "Topics, holidays, felt needs, collections": "หัวข้อ วันหยุด ความต้องการ คอลเลคชัน",
   "Audience": "กลุ่มเป้าหมาย",
   "Genre": "ประเภท",
+  "Quick Start": "เริ่มต้นอย่างรวดเร็ว",
+  "Website": "เว็บไซต์",
   "{{ date }} ● {{ displayLanguage }}": "{{ วันที่ }} ● {{ ภาษาที่แสดง }}",
   "Featured & New": "แนะนำ & ใหม่",
   "Most Relevant": "ที่เกี่ยวข้องสุด",
