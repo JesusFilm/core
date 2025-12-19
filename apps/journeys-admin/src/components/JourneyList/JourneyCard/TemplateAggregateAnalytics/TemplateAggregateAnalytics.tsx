@@ -6,7 +6,7 @@ import Data1Icon from '@core/shared/ui/icons/Data1'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 
-import { Item } from '../Editor/Toolbar/Items/Item'
+import { Item } from '../../../Editor/Toolbar/Items/Item'
 
 import { localizeAndRound } from './localizeAndRound'
 

@@ -26,7 +26,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
 import logoGray from '../../../../public/logo-grayscale.svg'
-import { TemplateAggregateAnalytics } from '../../TemplateAggregateAnalytics'
+import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
@@ -389,34 +389,4 @@ export function JourneyCard({
       </>
     </Card>
   )
-}
-
-{
-  /* <Box
-sx={{
-  position: 'absolute',
-  bottom: { xs: 8, sm: 3 },
-  left: { xs: 7, sm: 6 },
-  right: { xs: 10, sm: 7 },
-  zIndex: 3
-}}
->
- // <JourneyCardInfo journey={journey} variant={variant} />
-<Stack
-  direction="row"
-  gap={1}
-  justifyContent="space-between"
-  alignItems="center"
->
-  <TemplateAggregateAnalytics />
-  <Button
-    startIcon={<BarGroup3Icon />}
-    color="primary"
-    sx={{ alignSelf: 'flex-end' }}
-  >
-    {`${t('Metrics')}`}
-  </Button>
-</Stack>
-</Box> 
-*/
 }
