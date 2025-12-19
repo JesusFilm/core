@@ -4,11 +4,10 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { GET_COLLECTION_SHOWCASE_CONTENT } from '../SectionVideoCarousel/queries'
 import type { SectionVideoCollectionCarouselSlide } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
-
-import { SectionVideoGrid } from '.'
-
 // eslint-disable-next-line import/no-namespace
 import * as carouselContentHook from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
+
+import { SectionVideoGrid } from '.'
 
 const originalUseCarouselContent =
   carouselContentHook.useSectionVideoCollectionCarouselContent

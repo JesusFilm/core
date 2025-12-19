@@ -65,7 +65,7 @@ describe('DialogDownload', () => {
 
     fireEvent.click(checkbox)
 
-    let downloadButton2 = screen.getByRole('button', { name: 'Download' })
+    const downloadButton2 = screen.getByRole('button', { name: 'Download' })
     expect(downloadButton2).not.toBeDisabled()
 
     fireEvent.click(downloadButton2)

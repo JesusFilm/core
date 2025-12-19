@@ -2,13 +2,13 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
+
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 import type { SectionVideoCollectionCarouselSlide } from './useSectionVideoCollectionCarouselContent'
-
-import { SectionVideoCarousel } from '.'
-
 // eslint-disable-next-line import/no-namespace
 import * as carouselContentHook from './useSectionVideoCollectionCarouselContent'
+
+import { SectionVideoCarousel } from '.'
 
 const originalUseCarouselContent =
   carouselContentHook.useSectionVideoCollectionCarouselContent

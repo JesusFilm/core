@@ -6,12 +6,11 @@ import Stack from '@mui/material/Stack'
 import { type ReactElement } from 'react'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
-import { ThemeMode } from '@core/shared/ui/themes'
 
 import type { GetLanguages } from '../../../__generated__/GetLanguages'
+import { ContentHeader } from '../ContentHeader/ContentHeader'
 import { PageWrapper } from '../PageWrapper'
 import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
-import { ContentHeader } from '../ContentHeader/ContentHeader'
 
 import { FilterList } from './FilterList'
 import { VideosHero } from './VideosHero'

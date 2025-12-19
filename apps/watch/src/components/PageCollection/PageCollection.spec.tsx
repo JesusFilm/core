@@ -1,8 +1,8 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
-import { MockedProvider } from '@apollo/client/testing'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PlayerProvider } from '../../libs/playerContext'

@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 
 import { PlayerProvider } from '../../../libs/playerContext'
@@ -6,21 +7,42 @@ import { WatchProvider } from '../../../libs/watchContext'
 import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoBlockPlayer } from './VideoBlockPlayer'
-import { MockedProvider } from '@apollo/client/testing'
 
 jest.mock('video.js', () => {
+  const originalModule = jest.requireActual('video.js')
   const mockPlayer = {
     on: jest.fn(),
     off: jest.fn(),
     dispose: jest.fn(),
     muted: jest.fn(),
-    play: jest.fn(),
+    play: jest.fn().mockReturnValue(Promise.resolve()),
     pause: jest.fn(),
     currentTime: jest.fn(),
     volume: jest.fn(),
-    userActive: jest.fn()
+    userActive: jest.fn(),
+    src: jest.fn(),
+    ready: jest.fn((callback) => {
+      if (callback) {
+        setTimeout(callback, 0)
+      }
+    }),
+    el: jest.fn(() => ({
+      classList: {
+        add: jest.fn(),
+        remove: jest.fn()
+      }
+    })),
+    error: jest.fn(() => null),
+    paused: jest.fn(() => false),
+    textTracks: jest.fn(() => ({
+      length: 0
+    }))
   }
-  return jest.fn(() => mockPlayer)
+  return {
+    ...originalModule,
+    __esModule: true,
+    default: jest.fn(() => mockPlayer)
+  }
 })
 
 jest.mock('./VideoControls', () => ({

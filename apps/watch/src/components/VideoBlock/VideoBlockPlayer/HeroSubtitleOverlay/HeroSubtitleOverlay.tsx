@@ -75,6 +75,7 @@ function extractSegmentsFromCue(
   }))
 }
 
+// styles for this component appear in the globals.css file
 export function HeroSubtitleOverlay({
   player,
   subtitleLanguageId,
@@ -236,54 +237,20 @@ export function HeroSubtitleOverlay({
   if (!shouldRender) return null
 
   return (
-    <>
-      <div
-        className="pointer-events-none absolute inset-x-0 top-1/2 z-2 flex min-h-[120px] -translate-y-1/2 justify-center px-6 md:top-auto md:bottom-[0px] md:translate-y-0"
-        aria-live="polite"
-      >
-        <div className="flex max-w-4xl flex-col justify-center text-center text-white md:-mr-20 md:max-w-[400px] lg:max-w-none">
-          {segments[currentSegmentIndex] != null && (
-            <span
-              key={segments[currentSegmentIndex].id}
-              className="hero-subtitle-line mx-auto px-6 py-4 text-2xl leading-tight font-bold tracking-wider uppercase text-shadow-lg md:font-mono md:text-lg md:font-semibold md:normal-case lg:text-xl"
-            >
-              {segments[currentSegmentIndex].text}
-            </span>
-          )}
-        </div>
+    <div
+      className="pointer-events-none absolute inset-x-0 top-1/2 z-2 flex min-h-[120px] -translate-y-1/2 justify-center px-6 md:top-auto md:bottom-[0px] md:translate-y-0"
+      aria-live="polite"
+    >
+      <div className="flex max-w-4xl flex-col justify-center text-center text-white md:-mr-20 md:max-w-[400px] lg:max-w-none">
+        {segments[currentSegmentIndex] != null && (
+          <span
+            key={segments[currentSegmentIndex].id}
+            className="hero-subtitle-line mx-auto px-6 py-4 text-2xl leading-tight font-bold tracking-wider uppercase text-shadow-lg md:font-mono md:text-lg md:font-semibold md:normal-case lg:text-xl"
+          >
+            {segments[currentSegmentIndex].text}
+          </span>
+        )}
       </div>
-      <style jsx global>{`
-        @keyframes heroSubtitleFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(12px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .hero-subtitle-line {
-          display: inline-block;
-          animation: heroSubtitleFadeIn 280ms ease-out forwards;
-          will-change: transform, opacity;
-        }
-
-        .hero-hide-native-subtitles .vjs-text-track-display,
-        .hero-hide-native-subtitles ::cue {
-          display: none !important;
-          visibility: hidden !important;
-          opacity: 0 !important;
-        }
-
-        /* Additional aggressive hiding for any subtitle elements */
-        .hero-hide-native-subtitles video::cue {
-          display: none !important;
-          visibility: hidden !important;
-          opacity: 0 !important;
-        }
-      `}</style>
-    </>
+    </div>
   )
 }

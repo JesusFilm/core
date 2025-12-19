@@ -3,8 +3,6 @@ import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useCallback, useMemo, useState } from 'react'
 
-import { ThemeMode } from '@core/shared/ui/themes'
-
 import { useLanguages } from '../../libs/useLanguages'
 import { useVariantLanguagesIdAndSlugQuery } from '../../libs/useVariantLanguagesIdAndSlugQuery'
 import { useVideo } from '../../libs/videoContext'

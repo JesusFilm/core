@@ -1,5 +1,5 @@
 import { Trans, useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import { Button } from '@core/shared/ui-modern/components/button'
 import {

@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { useThumbnailUrl } from '../../libs/thumbnail'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCard } from '.'
-import { useThumbnailUrl } from '../../libs/thumbnail'
 
 jest.mock('../../libs/blurhash', () => ({
   useBlurhash: jest.fn(() => ({

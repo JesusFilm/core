@@ -123,7 +123,7 @@ describe('VideoBlock', () => {
   })
 
   it('renders with singleVideo placement by default', () => {
-    const { container } = renderVideoBlock()
+    renderVideoBlock()
 
     const hero = screen.getByTestId('ContentHero')
     expect(hero).toHaveClass('aspect-[var(--ratio-sm-expanded)]')
@@ -234,10 +234,7 @@ describe('VideoBlock', () => {
   })
 
   it('applies collapsed aspect ratio classes for carouselItem when collapsed', () => {
-    const { container } = renderVideoBlock(
-      { placement: 'carouselItem' },
-      { mute: true }
-    )
+    renderVideoBlock({ placement: 'carouselItem' }, { mute: true })
 
     const hero = screen.getByTestId('ContentHero')
     expect(hero).toHaveClass('aspect-[var(--ratio-sm)]')
@@ -245,10 +242,7 @@ describe('VideoBlock', () => {
   })
 
   it('applies expanded aspect ratio classes for carouselItem when not collapsed', () => {
-    const { container } = renderVideoBlock(
-      { placement: 'carouselItem' },
-      { mute: false }
-    )
+    renderVideoBlock({ placement: 'carouselItem' }, { mute: false })
 
     const hero = screen.getByTestId('ContentHero')
     expect(hero).toHaveClass('aspect-[var(--ratio-sm-expanded)]')
