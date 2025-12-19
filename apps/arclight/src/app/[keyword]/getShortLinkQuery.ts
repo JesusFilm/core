@@ -15,5 +15,3 @@ export const GET_SHORT_LINK_QUERY = graphql(`
     }
   }
 `)
-
-

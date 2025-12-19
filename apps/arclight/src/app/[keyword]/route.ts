@@ -7,6 +7,7 @@ import { ResultOf } from '@core/shared/gql'
 import { getApolloClient } from '../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
+
 import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
 
 const app = new OpenAPIHono().basePath('/')
