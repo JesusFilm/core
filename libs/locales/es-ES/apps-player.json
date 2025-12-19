@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Reproductor",
+    "description": "Navega a /pl/[playlistId] para ver una lista de reproducción"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Proyecto Película Jesús"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Lista de reproducción",
+    "pageTitle": "{title} por {name}",
+    "thisPlaylistIsEmpty": "Esta lista de reproducción está vacía",
+    "defaultDescription": "Tu amigo ha compartido estos vídeos para animarte. Pulsa play para ver historias edificantes sobre cómo encontrar la paz en Jesús.",
+    "description": "Tu amigo {name} ha compartido estos vídeos para animarte. Pulsa play para ver historias edificantes sobre cómo encontrar la paz en Jesús."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "No hay vídeo disponible"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Sin miniatura"
+  },
+  "StudyQuestions": {
+    "title": "Preguntas de estudio"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Para ver este vídeo, activa JavaScript y considera la posibilidad de actualizar a un navegador web <link>compatible con vídeo HTML5</link>."
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Tu amigo <strong>{name}</strong> ha compartido contigo estos vídeos para animarte. La mejor forma de ver estos vídeos es descargando nuestra app.",
+    "downloadOnAppStore": "Descargar en App Store",
+    "getItOnGooglePlay": "Consíguelo en Google Play"
+  }
+}
