@@ -14,13 +14,16 @@ import {
 import { OnboardingTemplateCard } from './OnboardingTemplateCard'
 
 describe('OnboardingTemplateCard', () => {
-  const journey: Journey = {
+  const journey = {
     __typename: 'Journey',
     id: 'template-id',
     title: 'A Template Heading',
     description: null,
     slug: 'default',
     template: true,
+    website: false,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
     language: {
       __typename: 'Language',
       id: '529',
@@ -55,7 +58,7 @@ describe('OnboardingTemplateCard', () => {
     createdAt: '2023-08-14T04:24:24.392Z',
     featuredAt: '2023-08-14T04:24:24.392Z',
     updatedAt: '2023-08-14T04:24:24.392Z'
-  }
+  } as unknown as Journey
 
   it('should render OnboardingTemplateCard', async () => {
     const result = jest.fn(() => ({ data: { journey } }))
