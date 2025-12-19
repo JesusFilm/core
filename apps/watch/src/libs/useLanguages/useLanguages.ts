@@ -26,7 +26,10 @@ export interface Language {
 }
 
 export function useLanguages(): { languages: Language[]; isLoading: boolean } {
-  const { data, isLoading } = useSWR<string[][]>('/api/languages', fetcher)
+  const { data, isLoading } = useSWR<string[][]>(
+    '/watch/api/languages',
+    fetcher
+  )
   const { i18n } = useTranslation()
   const [languages, setLanguages] = useState<Language[]>([])
 
