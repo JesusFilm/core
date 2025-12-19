@@ -265,7 +265,7 @@ IMPORTANT: When you see {{ anything }}, copy it EXACTLY as-is to the output with
 `
 
   const { object } = await generateObject({
-    model: google('gemini-2.0-flash'),
+    model: google('gemini-2.5-flash'),
     messages: [
       {
         role: 'system',
