@@ -1,0 +1,152 @@
+import { render, screen } from '@testing-library/react'
+
+import {
+  PlayerProvider,
+  PlayerState
+} from '../../libs/playerContext/PlayerContext'
+import { VideoProvider } from '../../libs/videoContext'
+import { videos } from '../Videos/__generated__/testData'
+
+import { ContentHeader } from './ContentHeader'
+
+describe('ContentHeader', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('renders the header with a logo', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+
+    const header = screen.getByRole('img', { name: 'Jesus Film Project' })
+    expect(header).toBeInTheDocument()
+
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute('href', '/')
+  })
+
+  it('should be visible when video is not playing', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: true,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-100')
+  })
+
+  it('should be hidden when video is playing and not active', () => {
+    const initialState: Partial<PlayerState> = {
+      play: true,
+      active: false,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-0')
+  })
+
+  it('should be visible when video is playing and active', () => {
+    const initialState: Partial<PlayerState> = {
+      play: true,
+      active: true,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-100')
+  })
+
+  it('should be visible when video is loading', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: true
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByTestId('ContentHeader')).toHaveClass('opacity-100')
+  })
+
+  it('should have the correct href when languageSlug is provided', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader languageSlug="french" />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/french.html')
+  })
+
+  it('should not change the href when languageSlug is english', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader languageSlug="english" />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/')
+  })
+
+  it('should apply drop-shadow-xs class to Globe icon', () => {
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
+    const { container } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+
+    const globeIcon = container.querySelector('.drop-shadow-xs')
+    expect(globeIcon).toBeInTheDocument()
+    expect(globeIcon).toHaveClass('drop-shadow-xs')
+  })
+})
