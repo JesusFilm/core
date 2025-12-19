@@ -28,7 +28,6 @@ interface VideoCardProps {
   onHoverImageChange?: (
     data?: { imageUrl: string; blurhash: string; dominantColor: string } | null
   ) => void
-  variant?: string
 }
 
 export function getSlug(
@@ -159,7 +158,7 @@ export function VideoCard({
                 data-testid="VideoCardBlurhash"
               />
             )}
-            {thumbnailUrl ? (
+            {thumbnailUrl != null ? (
               <Image
                 src={thumbnailUrl}
                 alt={imageAlt}

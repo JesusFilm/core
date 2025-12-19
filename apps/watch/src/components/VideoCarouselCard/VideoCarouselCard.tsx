@@ -66,7 +66,7 @@ const CardContent = memo(function CardContent({
   // Otherwise use original imageSrc for blurhash generation
   // Strip query parameters for local thumbnails since blurhash API reads from disk
   const blurhashImageUrl =
-    thumbnailUrl !== imageSrc
+    thumbnailUrl != null && thumbnailUrl !== imageSrc
       ? thumbnailUrl.split('?')[0] // Remove cache-busting parameters for blurhash generation
       : imageSrc
   const { blurhash, dominantColor } = useBlurhash(blurhashImageUrl)

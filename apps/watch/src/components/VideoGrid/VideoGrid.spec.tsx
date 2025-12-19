@@ -105,13 +105,7 @@ describe('VideoGrid', () => {
     render(<VideoGrid videos={[]} loading />)
 
     expect(
-      screen.queryAllByTestId('VideoTitleSkeleton').length
-    ).toBeGreaterThan(0)
-    expect(
       screen.queryAllByTestId('VideoImageSkeleton').length
-    ).toBeGreaterThan(0)
-    expect(
-      screen.queryAllByTestId('VideoVariantDurationSkeleton').length
     ).toBeGreaterThan(0)
   })
 

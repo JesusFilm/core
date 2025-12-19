@@ -4,51 +4,14 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import { GET_COLLECTION_SHOWCASE_CONTENT } from '../SectionVideoCarousel/queries'
 import type { SectionVideoCollectionCarouselSlide } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
+
+import { SectionVideoGrid } from '.'
+
 // eslint-disable-next-line import/no-namespace
 import * as carouselContentHook from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 
-import { SectionVideoGrid } from './SectionVideoGrid'
-
 const originalUseCarouselContent =
   carouselContentHook.useSectionVideoCollectionCarouselContent
-
-const mockVideoGrid = jest.fn()
-
-jest.mock('../VideoGrid/VideoGrid', () => ({
-  VideoGrid: (props: any) => {
-    mockVideoGrid(props)
-    const videos = props.videos ?? []
-    return (
-      <div data-testid="VideoGridMock">
-        {props.loading && videos.length === 0 ? (
-          <div className="animate-pulse" data-testid="VideoGridSkeleton" />
-        ) : null}
-        {videos.map((video: any) => (
-          <div key={video.id} data-testid={`VideoCard-${video.id}`} />
-        ))}
-      </div>
-    )
-  }
-}))
-
-jest.mock('@core/shared/ui/icons/Icon', () => ({
-  Icon: () => <div data-testid="MockIcon" />
-}))
-
-jest.mock('next-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, string>) => {
-      if (key === 'Watch {{title}}') {
-        return `Watch ${options?.title ?? ''}`
-      }
-      return key
-    }
-  })
-}))
-
-jest.mock('next/router', () => ({
-  useRouter: () => ({ locale: 'en' })
-}))
 
 let capturedSlides: SectionVideoCollectionCarouselSlide[] = []
 
@@ -229,8 +192,7 @@ const baseMocks: MockedResponse[] = [
     },
     result: {
       data: {
-        collections: [collectionMock],
-        videos: [singleVideo]
+        videos: [collectionMock, singleVideo]
       }
     }
   }
@@ -247,8 +209,7 @@ const collectionOnlyMocks: MockedResponse[] = [
     },
     result: {
       data: {
-        collections: [collectionMock],
-        videos: []
+        videos: [collectionMock]
       }
     }
   }
@@ -265,13 +226,6 @@ const emptyMocks: MockedResponse[] = [
     },
     result: {
       data: {
-        collections: [
-          {
-            ...collectionMock,
-            children: [],
-            childrenCount: 0
-          }
-        ],
         videos: []
       }
     }
@@ -280,7 +234,6 @@ const emptyMocks: MockedResponse[] = [
 
 describe('SectionVideoGrid', () => {
   beforeEach(() => {
-    mockVideoGrid.mockClear()
     capturedSlides = []
     jest
       .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
@@ -308,9 +261,8 @@ describe('SectionVideoGrid', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('VideoCard-child-1')).toBeInTheDocument()
+      expect(screen.getByTestId('VideoCard-video-1')).toBeInTheDocument()
     )
-    await waitFor(() => expect(mockVideoGrid).toHaveBeenCalled())
 
     expect(capturedSlides).toHaveLength(3)
 

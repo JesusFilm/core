@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { getThumbnailUrl } from './getThumbnailUrl'
 
 interface UseThumbnailUrlReturn {
-  thumbnailUrl: string
+  thumbnailUrl: string | null
   isLoading: boolean
   error: Error | null
 }

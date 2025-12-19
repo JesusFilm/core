@@ -2,10 +2,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
-
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
-import { SectionVideoCarousel } from './SectionVideoCarousel'
 import type { SectionVideoCollectionCarouselSlide } from './useSectionVideoCollectionCarouselContent'
+
+import { SectionVideoCarousel } from '.'
+
 // eslint-disable-next-line import/no-namespace
 import * as carouselContentHook from './useSectionVideoCollectionCarouselContent'
 
@@ -24,17 +25,6 @@ jest.mock('../VideoCard', () => ({
 
 jest.mock('@core/shared/ui/icons/Icon', () => ({
   Icon: () => <div data-testid="MockIcon" />
-}))
-
-jest.mock('next-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string, options?: Record<string, string>) => {
-      if (key === 'Watch {{title}}') {
-        return `Watch ${options?.title ?? ''}`
-      }
-      return key
-    }
-  })
 }))
 
 jest.mock('next/router', () => ({
@@ -213,15 +203,13 @@ const baseMocks: MockedResponse[] = [
     request: {
       query: GET_COLLECTION_SHOWCASE_CONTENT,
       variables: {
-        collectionIds: ['collection-1'],
-        videoIds: ['video-1'],
+        ids: ['video-1', 'collection-1'],
         languageId: '529'
       }
     },
     result: {
       data: {
-        collections: [collectionMock],
-        videos: [singleVideo]
+        videos: [collectionMock, singleVideo]
       }
     }
   }
@@ -232,14 +220,13 @@ const collectionOnlyMocks: MockedResponse[] = [
     request: {
       query: GET_COLLECTION_SHOWCASE_CONTENT,
       variables: {
-        collectionIds: ['collection-1'],
+        ids: ['collection-1'],
         languageId: '529'
       }
     },
     result: {
       data: {
-        collections: [collectionMock],
-        videos: []
+        videos: [collectionMock]
       }
     }
   }
@@ -250,19 +237,12 @@ const emptyMocks: MockedResponse[] = [
     request: {
       query: GET_COLLECTION_SHOWCASE_CONTENT,
       variables: {
-        collectionIds: ['collection-1'],
+        ids: ['collection-1'],
         languageId: '529'
       }
     },
     result: {
       data: {
-        collections: [
-          {
-            ...collectionMock,
-            children: [],
-            childrenCount: 0
-          }
-        ],
         videos: []
       }
     }
@@ -290,6 +270,7 @@ describe('SectionVideoCarousel', () => {
     render(
       <MockedProvider mocks={baseMocks} addTypename>
         <SectionVideoCarousel
+          primaryCollectionId="collection-1"
           sources={[
             { id: 'video-1' },
             { id: 'collection-1', limitChildren: 3 }
@@ -300,29 +281,28 @@ describe('SectionVideoCarousel', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByTestId('SectionVideoCarouselSlide-child-1')
+        screen.getByTestId('SectionVideoCarouselSlide-video-1')
       ).toBeInTheDocument()
     )
     await waitFor(() => expect(mockVideoCard).toHaveBeenCalled())
 
-    const childSlide = capturedSlides.find((slide) => slide.id === 'child-1')
+    const childSlide = capturedSlides.find((slide) => slide.id === 'video-1')
     expect(childSlide).toMatchObject({
-      containerSlug: 'collection-slug',
-      variantSlug: 'child-one/en'
+      containerSlug: undefined,
+      variantSlug: 'single-video/en'
     })
     expect(childSlide?.video).toMatchObject({
-      slug: 'child-one',
-      variant: expect.objectContaining({ slug: 'child-one/en' }),
+      slug: 'single-video',
+      variant: expect.objectContaining({ slug: 'single-video/en' }),
       images: expect.arrayContaining([
         expect.objectContaining({
-          mobileCinematicHigh: 'https://example.com/child-one.jpg'
+          mobileCinematicHigh: 'https://example.com/single-video.jpg'
         })
       ]),
       imageAlt: expect.arrayContaining([
-        expect.objectContaining({ value: 'Child One Alt' })
+        expect.objectContaining({ value: 'Single Alt' })
       ])
     })
-
     const grandchildSlide = capturedSlides.find(
       (slide) => slide.id === 'grandchild-1'
     )
@@ -351,7 +331,18 @@ describe('SectionVideoCarousel', () => {
       ([props]) => props.video?.id === 'child-1'
     )?.[0]
     expect(childCardProps?.containerSlug).toBe('collection-slug')
-    expect(childCardProps?.video).toBe(childSlide?.video)
+    expect(childCardProps?.video).toMatchObject({
+      slug: 'child-one',
+      variant: expect.objectContaining({ slug: 'child-one/en' }),
+      images: expect.arrayContaining([
+        expect.objectContaining({
+          mobileCinematicHigh: 'https://example.com/child-one.jpg'
+        })
+      ]),
+      imageAlt: expect.arrayContaining([
+        expect.objectContaining({ value: 'Child One Alt' })
+      ])
+    })
 
     const grandchildCardProps = mockVideoCard.mock.calls.find(
       ([props]) => props.video?.id === 'grandchild-1'

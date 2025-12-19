@@ -24,16 +24,18 @@ jest.mock('swiper/modules', () => ({
   Mousewheel: {}
 }))
 
-jest.mock('../CarouselVideoCard/VideoCard', () => ({
-  VideoCard: ({ data, active, onVideoSelect }: any) => (
-    <div
-      data-testid={`VideoCard-${data.id}`}
-      data-active={active}
-      onClick={() => onVideoSelect?.(data.id)}
-    >
-      {typeof data.title === 'string' ? data.title : data.title[0]?.value}
-    </div>
-  )
+jest.mock('../VideoCarouselCard/VideoCarouselCard', () => ({
+  VideoCarouselCard: ({ data, active, onVideoSelect }: any) => {
+    return (
+      <div
+        data-testid={`VideoCarouselCard-${data.id}`}
+        data-active={active}
+        onClick={() => onVideoSelect?.(data.id)}
+      >
+        {typeof data.title === 'string' ? data.title : data.title[0]?.value}
+      </div>
+    )
+  }
 }))
 
 describe('VideoCarousel', () => {
@@ -107,8 +109,8 @@ describe('VideoCarousel', () => {
     const slide1 = screen.getByTestId('VideoCarouselSlide-video-1')
     const slide2 = screen.getByTestId('VideoCarouselSlide-video-2')
 
-    expect(slide1.parentElement).toHaveClass('opacity-100')
-    expect(slide2.parentElement).toHaveClass('opacity-60')
+    expect(slide1.children[0]).toHaveClass('opacity-100')
+    expect(slide2.children[0]).toHaveClass('opacity-60')
   })
 
   it('should call onVideoSelect when provided and video card is clicked', () => {
@@ -124,10 +126,10 @@ describe('VideoCarousel', () => {
       />
     )
 
-    const videoCard = screen.getByTestId('VideoCard-video-2')
+    const videoCard = screen.getByTestId('VideoCarouselCard-1_jf-0-0')
     videoCard.click()
 
-    expect(mockOnVideoSelect).toHaveBeenCalledWith('video-2')
+    expect(mockOnVideoSelect).toHaveBeenCalledWith('1_jf-0-0')
   })
 
   it('should work without onVideoSelect prop', () => {
@@ -141,7 +143,7 @@ describe('VideoCarousel', () => {
     )
 
     expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
-    expect(screen.getByTestId('VideoCard-video-1')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoCarouselCard-1_jf-0-0')).toBeInTheDocument()
   })
 
   it('should apply correct CSS classes', () => {

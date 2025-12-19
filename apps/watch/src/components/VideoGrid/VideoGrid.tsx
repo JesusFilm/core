@@ -101,23 +101,27 @@ export function VideoGrid({
         })}
       {loading && videos?.length === 0 && (
         <>
-          <div className="w-full">
+          <div className="w-full" data-testid="VideoImageSkeleton">
             <div
               className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
             />
           </div>
-          <div className="w-full">
+          <div className="w-full" data-testid="VideoImageSkeleton">
             <div
               className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
             />
           </div>
-          <div className="hidden w-full md:block">
+          <div
+            className="hidden w-full md:block"
+            data-testid="VideoImageSkeleton"
+          >
             <div
               className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
             />
           </div>
           <div
             className={`hidden w-full ${orientation === 'vertical' ? 'md:block' : 'xl:block'}`}
+            data-testid="VideoImageSkeleton"
           >
             <div
               className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
@@ -125,12 +129,18 @@ export function VideoGrid({
           </div>
           {orientation === 'vertical' ? null : (
             <div className="hidden w-full 2xl:block">
-              <div className="aspect-video w-full animate-pulse rounded-lg bg-white/10" />
+              <div
+                className="aspect-video w-full animate-pulse rounded-lg bg-white/10"
+                data-testid="VideoImageSkeleton"
+              />
             </div>
           )}
           {orientation === 'vertical' ? null : (
             <div className="3xl:block hidden w-full">
-              <div className="aspect-video w-full animate-pulse rounded-lg bg-white/10" />
+              <div
+                className="aspect-video w-full animate-pulse rounded-lg bg-white/10"
+                data-testid="VideoImageSkeleton"
+              />
             </div>
           )}
         </>

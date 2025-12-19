@@ -58,9 +58,6 @@ export function VideoTitle({
         ? true
         : false
 
-  // console.log('mute', mute)
-  // console.log('volume', volume)
-
   // For carousel preview, use undefined containerSlug if it's the default 'watch' value
   // This ensures getWatchUrl uses the variant slug format instead
   const effectiveContainerSlug =

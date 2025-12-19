@@ -44,7 +44,11 @@ export function ContentHeader({
       } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
       <NextLink
-        href={`/${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
+        href={
+          languageSlug != null && languageSlug !== 'english'
+            ? `/${languageSlug}.html`
+            : '/'
+        }
         locale={false}
         aria-label="Go to Watch home"
         className="flex-shrink-0"

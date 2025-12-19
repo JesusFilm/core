@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
-import { usePlayer } from '../../libs/playerContext'
+import { usePlayer, useThrottledPlayerProgress } from '../../libs/playerContext'
 import { UnifiedCardData } from '../../types/inserts'
 
 import { VideoCarouselCard } from '.'
@@ -22,10 +22,6 @@ jest.mock('../../libs/utils/getLabelDetails/getLabelDetails', () => ({
 
 jest.mock('../../libs/utils/getWatchUrl', () => ({
   getWatchUrl: () => '/watch/test-video'
-}))
-
-jest.mock('next-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key })
 }))
 
 jest.mock('../../libs/blurhash', () => ({
@@ -58,6 +54,10 @@ jest.mock('../../libs/playerContext', () => ({
 }))
 
 const mockUsePlayer = usePlayer as jest.MockedFunction<typeof usePlayer>
+const useThrottledPlayerProgressMock =
+  useThrottledPlayerProgress as jest.MockedFunction<
+    typeof useThrottledPlayerProgress
+  >
 
 // Create mock data using UnifiedCardData format
 const mockVideoData: UnifiedCardData = {
@@ -95,15 +95,13 @@ describe('VideoCarouselCard', () => {
   })
 
   it('shows progress overlay when active and progress > 5', () => {
-    mockUsePlayer.mockReturnValue({
-      state: { progress: 25 }
-    } as any)
+    useThrottledPlayerProgressMock.mockReturnValue(25)
 
     render(<VideoCarouselCard data={mockVideoData} active={true} />)
 
     const progressOverlay = screen.getByTestId('ProgressOverlay')
     expect(progressOverlay).toBeInTheDocument()
-    expect(progressOverlay).toHaveStyle('width: 25%')
+    expect(progressOverlay).toHaveStyle('transform: scale3d(0.25, 1, 1)')
   })
 
   it('calls onVideoSelect when clicked in interactive mode', () => {

@@ -209,7 +209,6 @@ const generateBlurhashCached = async (
   const existingPromise = processingCache.get(cacheKey)
 
   if (existingPromise) {
-    console.log(`Reusing existing blurhash generation for: ${imageUrl}`)
     return existingPromise
   }
 
