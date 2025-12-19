@@ -55,6 +55,6 @@ test('Filters', async ({ page }) => {
   await page.waitForURL(/configure.*languageId.*subtitles/)
 
   await expect(page).toHaveURL(
-    '/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'
+    '/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&configure%5Bfilters%5D=NOT%20restrictViewPlatforms%3Awatch%20AND%20published%3Atrue%20AND%20videoPublished%3Atrue&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'
   )
 })
