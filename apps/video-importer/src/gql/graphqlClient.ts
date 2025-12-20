@@ -1,10 +1,12 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { GraphQLClient } from 'graphql-request'
 
-import { firebaseClient } from '../services/firebase'
+import { getFirebaseClient } from '../services/firebase'
 
-const GRAPHQL_ENDPOINT = process.env.GRAPHQL_ENDPOINT
-if (!GRAPHQL_ENDPOINT) {
+function getGraphqlEndpoint(): string {
+  const endpoint = process.env.GRAPHQL_ENDPOINT
+  if (endpoint) return endpoint
+
   throw new Error(
     '[video-importer] GRAPHQL_ENDPOINT environment variable must be set.'
   )
@@ -37,7 +39,7 @@ async function getFirebaseJwtToken(): Promise<string> {
     )
   }
 
-  const auth = getAuth(firebaseClient)
+  const auth = getAuth(getFirebaseClient())
   const userCredential = await signInWithEmailAndPassword(auth, email, password)
   cachedJwtToken = await userCredential.user.getIdToken()
   cachedJwtTokenIssueTime = Date.now()
@@ -50,7 +52,7 @@ export async function getGraphQLClient(): Promise<GraphQLClient> {
     if (cachedGraphQLClient && cachedGraphQLClientToken === jwtToken) {
       return cachedGraphQLClient
     }
-    cachedGraphQLClient = new GraphQLClient(GRAPHQL_ENDPOINT!, {
+    cachedGraphQLClient = new GraphQLClient(getGraphqlEndpoint(), {
       headers: {
         Authorization: `JWT ${jwtToken}`,
         'x-graphql-client-name': 'video-importer'

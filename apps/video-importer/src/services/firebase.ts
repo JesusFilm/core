@@ -1,24 +1,21 @@
 import { getApp, getApps, initializeApp } from 'firebase/app'
 import 'dotenv/config'
 
-const requiredEnvVars = [
-  'FIREBASE_API_KEY',
-  'FIREBASE_AUTH_DOMAIN',
-  'FIREBASE_PROJECT_ID',
-  'FIREBASE_APP_ID'
-]
+function requireEnvVar(name: string): string {
+  const value = process.env[name]
+  if (value) return value
+  throw new Error(`Missing required environment variable: ${name}`)
+}
 
-for (const envVar of requiredEnvVars) {
-  if (!process.env[envVar]) {
-    throw new Error(`Missing required environment variable: ${envVar}`)
+export function getFirebaseClient() {
+  if (getApps().length > 0) return getApp()
+
+  const firebaseConfig = {
+    apiKey: requireEnvVar('FIREBASE_API_KEY'),
+    authDomain: requireEnvVar('FIREBASE_AUTH_DOMAIN'),
+    projectId: requireEnvVar('FIREBASE_PROJECT_ID'),
+    appId: requireEnvVar('FIREBASE_APP_ID')
   }
-}
 
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  appId: process.env.FIREBASE_APP_ID
+  return initializeApp(firebaseConfig)
 }
-export const firebaseClient =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApp()

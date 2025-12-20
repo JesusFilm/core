@@ -1,38 +1,45 @@
-import { createReadStream } from 'fs'
-
-import {
-  HeadObjectCommand,
-  PutObjectCommand,
-  S3Client
-} from '@aws-sdk/client-s3'
-import { Upload } from '@aws-sdk/lib-storage'
+import { S3Client } from 'bun'
 
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_CLOUDFLARE_R2_ASSET } from '../gql/mutations'
 import { R2Asset } from '../types'
 
-if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
+function getR2Endpoint(): string {
+  const endpoint = process.env.CLOUDFLARE_R2_ENDPOINT
+  if (endpoint) return endpoint
   throw new Error('CLOUDFLARE_R2_ENDPOINT environment variable is required')
 }
-if (!process.env.CLOUDFLARE_R2_ACCESS_KEY_ID) {
-  throw new Error(
-    'CLOUDFLARE_R2_ACCESS_KEY_ID environment variable is required'
-  )
-}
-if (!process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY) {
-  throw new Error(
-    'CLOUDFLARE_R2_SECRET_ACCESS_KEY environment variable is required'
-  )
+
+function getR2Credentials(): { accessKeyId: string; secretAccessKey: string } {
+  const accessKeyId = process.env.CLOUDFLARE_R2_ACCESS_KEY_ID
+  if (!accessKeyId) {
+    throw new Error(
+      'CLOUDFLARE_R2_ACCESS_KEY_ID environment variable is required'
+    )
+  }
+
+  const secretAccessKey = process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
+  if (!secretAccessKey) {
+    throw new Error(
+      'CLOUDFLARE_R2_SECRET_ACCESS_KEY environment variable is required'
+    )
+  }
+
+  return { accessKeyId, secretAccessKey }
 }
 
-const s3Client = new S3Client({
-  region: 'auto',
-  endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-    secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
-  }
-})
+function getR2BucketClient(bucket: string): S3Client {
+  const { accessKeyId, secretAccessKey } = getR2Credentials()
+
+  return new S3Client({
+    accessKeyId,
+    secretAccessKey,
+    endpoint: getR2Endpoint(),
+    // Cloudflare R2 uses "auto" region in most S3-compatible SDKs
+    region: 'auto',
+    bucket
+  })
+}
 
 export async function createR2Asset({
   fileName,
@@ -98,93 +105,41 @@ export async function uploadToR2({
   const key = url.pathname.substring(1)
 
   console.log(
-    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2 using multipart...`
+    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2...`
   )
 
-  await uploadViaMultipart(bucket, key, filePath, contentType)
-  console.log('[R2 Service] Multipart upload completed')
+  const r2BucketClient = getR2BucketClient(bucket)
+  const bytesWritten = await r2BucketClient.write(key, Bun.file(filePath), {
+    type: contentType,
+    // Match prior behavior (20MB parts, queueSize=2) for large files
+    partSize: 20 * 1024 * 1024,
+    queueSize: 2
+  })
+
+  console.log(`[R2 Service] Upload completed (${bytesWritten} bytes written)`)
 
   // Verify the uploaded file is retrievable
-  await verifyFileUpload(bucket, key, contentLength)
+  await verifyFileUpload(r2BucketClient, key, contentLength)
   console.log('[R2 Service] File verification completed')
 }
 
-async function uploadViaMultipart(
-  bucket: string,
-  key: string,
-  filePath: string,
-  contentType: string
-): Promise<void> {
-  console.log('[R2 Service] Starting multipart upload...')
-
-  const fileStream = createReadStream(filePath, {
-    highWaterMark: 5 * 1024 * 1024, // 5MB chunks
-    autoClose: true
-  })
-
-  const upload = new Upload({
-    client: s3Client,
-    params: {
-      Bucket: bucket,
-      Key: key,
-      Body: fileStream,
-      ContentType: contentType
-    },
-    queueSize: 2,
-    partSize: 20 * 1024 * 1024, // 20MB parts
-    leavePartsOnError: false
-  })
-
-  let lastPercent = 0
-  let lastLogTime = Date.now()
-
-  upload.on('httpUploadProgress', (progress) => {
-    if (progress.loaded && progress.total) {
-      const percent = Math.floor((progress.loaded / progress.total) * 100)
-      const now = Date.now()
-
-      if (percent >= lastPercent + 10 || now - lastLogTime > 120000) {
-        const uploadedMB = (progress.loaded / 1024 / 1024).toFixed(1)
-        const totalMB = (progress.total / 1024 / 1024).toFixed(1)
-        console.log(
-          `[R2 Service] Upload progress: ${percent}% (${uploadedMB}/${totalMB} MB)`
-        )
-        lastPercent = percent
-        lastLogTime = now
-      }
-    }
-  })
-
-  await upload.done()
-}
-
 async function verifyFileUpload(
-  bucket: string,
+  r2BucketClient: S3Client,
   key: string,
   expectedContentLength: number
 ): Promise<void> {
   console.log('[R2 Service] Verifying uploaded file...')
 
   try {
-    const headObjectCommand = new HeadObjectCommand({
-      Bucket: bucket,
-      Key: key
-    })
-
-    const response = await s3Client.send(headObjectCommand)
-
-    if (!response.ContentLength) {
-      throw new Error('File verification failed: No content length returned')
-    }
-
-    if (response.ContentLength !== expectedContentLength) {
+    const uploadedSize = await r2BucketClient.size(key)
+    if (uploadedSize !== expectedContentLength) {
       throw new Error(
-        `File verification failed: Expected ${expectedContentLength} bytes, got ${response.ContentLength} bytes`
+        `File verification failed: Expected ${expectedContentLength} bytes, got ${uploadedSize} bytes`
       )
     }
 
     console.log(
-      `[R2 Service] File verification successful: ${response.ContentLength} bytes`
+      `[R2 Service] File verification successful: ${uploadedSize} bytes`
     )
   } catch (error) {
     console.error('[R2 Service] File verification failed:', error)
@@ -206,25 +161,12 @@ export async function uploadFileToR2Direct({
   contentType: string
 }): Promise<string> {
   console.log(`[R2 Service] Uploading file to R2: ${key}`)
-  const fileStream = createReadStream(filePath)
-  await s3Client.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: fileStream,
-      ContentType: contentType
-    })
-  )
+  const r2BucketClient = getR2BucketClient(bucket)
+  await r2BucketClient.write(key, Bun.file(filePath), { type: contentType })
 
   console.log(`[R2 Service] Direct upload completed: ${key}`)
 
-  if (!process.env.CLOUDFLARE_R2_ENDPOINT) {
-    throw new Error(
-      'CLOUDFLARE_R2_ENDPOINT is required for public URL generation'
-    )
-  }
-
-  const publicBaseUrl = `https://${bucket}.${new URL(process.env.CLOUDFLARE_R2_ENDPOINT).hostname}`
+  const publicBaseUrl = `https://${bucket}.${new URL(getR2Endpoint()).hostname}`
 
   return `${publicBaseUrl.replace(/\/$/, '')}/${key}`
 }
