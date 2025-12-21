@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../../../libs/plausibleHelpers'
+import { keyify, templateKeyify } from '../../../../libs/plausibleHelpers'
 import { StepFields } from '../../../Step/__generated__/StepFields'
 
 import { ShareButton } from './ShareButton'
@@ -128,12 +128,18 @@ describe('ShareButton', () => {
         key: keyify({
           stepId: 'block.id',
           event: 'shareButtonClick',
-          blockId: 'block.id'
+          blockId: 'block.id',
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'block.id',
           event: 'shareButtonClick',
-          blockId: 'block.id'
+          blockId: 'block.id',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'shareButtonClick',
+          journeyId: 'journey.id'
         })
       }
     })
