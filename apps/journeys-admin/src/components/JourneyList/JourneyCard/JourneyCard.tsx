@@ -26,12 +26,12 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../__generated__/GetAdminJourneys'
 import logoGray from '../../../../public/logo-grayscale.svg'
-import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
 import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
 interface JourneyCardProps {
   journey: Journey

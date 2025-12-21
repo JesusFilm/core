@@ -1,11 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 
-import { IdType } from '../../../../../__generated__/globalTypes'
 import {
   GetTemplateFamilyStatsAggregate,
   GetTemplateFamilyStatsAggregateVariables
 } from '../../../../../__generated__/GetTemplateFamilyStatsAggregate'
+import { IdType } from '../../../../../__generated__/globalTypes'
 
 import {
   GET_TEMPLATE_FAMILY_STATS_AGGREGATE,
