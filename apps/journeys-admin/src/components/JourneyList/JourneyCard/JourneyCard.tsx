@@ -373,7 +373,7 @@ export function JourneyCard({
               justifyContent="space-between"
               alignItems="center"
             >
-              <TemplateAggregateAnalytics />
+              <TemplateAggregateAnalytics journeyId={journey.id} />
               <Button
                 startIcon={<BarGroup3Icon />}
                 color="primary"

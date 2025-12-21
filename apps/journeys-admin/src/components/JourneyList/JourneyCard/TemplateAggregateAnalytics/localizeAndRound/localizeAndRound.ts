@@ -77,7 +77,11 @@ function formatMillion(value: number): string {
   return `${rounded}M`
 }
 
-export function localizeAndRound(value: number, locale: string = 'en'): string {
+export function localizeAndRound(
+  value?: number,
+  locale: string = 'en'
+): string | undefined {
+  if (value == null) return undefined
   // For numbers less than 10,000, return as-is with locale formatting
   if (value < MIN_FORMATTED_VALUE) {
     return value.toLocaleString(locale)
