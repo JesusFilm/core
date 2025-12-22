@@ -16,6 +16,7 @@ import { getJourneyStatsBreakdown } from '../service'
 
 import {
   TransformedResult,
+  UNKNOWN_JOURNEYS_AGGREGATE_ID,
   addPermissionsAndNames,
   filterPageVisitors,
   getJourneysResponses,
@@ -38,7 +39,6 @@ export type JourneyWithAcl = Prisma.JourneyGetPayload<{
     team: {
       include: {
         userTeams: true
-        customDomains: true
       }
     }
   }
@@ -139,23 +139,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
             userJourneys: true,
             team: {
               include: {
-                userTeams: true,
-                customDomains: {
-                  where: {
-                    OR: [
-                      { routeAllTeamJourneys: true },
-                      {
-                        journeyCollection: {
-                          journeyCollectionJourneys: {
-                            some: {
-                              journeyId: { in: journeyIds }
-                            }
-                          }
-                        }
-                      }
-                    ]
-                  }
-                }
+                userTeams: true
               }
             }
           }
@@ -188,6 +172,15 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         journeysResponses.map((item) => [item.journeyId, item.visitors])
       )
 
+      const unreadableJourneyIds = new Set(
+        journeys
+          .filter(
+            (journey) =>
+              !ability(Action.Read, subject('Journey', journey), context.user)
+          )
+          .map((journey) => journey.id)
+      )
+
       const resultsWithPermissions = addPermissionsAndNames(
         transformedResults,
         journeys,
@@ -197,7 +190,14 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       return resultsWithPermissions.map((result) => {
         const stats = [...result.stats]
 
-        const journeyVisitorsCount = visitorsByJourneyId.get(result.journeyId)
+        const journeyVisitorsCount =
+          result.journeyId === UNKNOWN_JOURNEYS_AGGREGATE_ID
+            ? Array.from(unreadableJourneyIds).reduce(
+                (sum, journeyId) =>
+                  sum + (visitorsByJourneyId.get(journeyId) ?? 0),
+                0
+              )
+            : visitorsByJourneyId.get(result.journeyId)
         if (allowedEvents == null || allowedEvents.has('journeyVisitors')) {
           const existingIndex = stats.findIndex(
             (stat) => stat.event === 'journeyVisitors'
@@ -216,7 +216,14 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           }
         }
 
-        const responsesCount = responsesByJourneyId.get(result.journeyId)
+        const responsesCount =
+          result.journeyId === UNKNOWN_JOURNEYS_AGGREGATE_ID
+            ? Array.from(unreadableJourneyIds).reduce(
+                (sum, journeyId) =>
+                  sum + (responsesByJourneyId.get(journeyId) ?? 0),
+                0
+              )
+            : responsesByJourneyId.get(result.journeyId)
         if (allowedEvents == null || allowedEvents.has('journeyResponses')) {
           const existingIndex = stats.findIndex(
             (stat) => stat.event === 'journeyResponses'

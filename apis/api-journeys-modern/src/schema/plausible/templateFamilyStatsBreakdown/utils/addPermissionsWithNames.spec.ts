@@ -1,8 +1,10 @@
 import { ability } from '../../../../lib/auth/ability'
 import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
-import { addPermissionsAndNames } from './addPermissionsWithNames'
-import { buildJourneyUrl } from './buildJourneyUrls'
+import {
+  UNKNOWN_JOURNEYS_AGGREGATE_ID,
+  addPermissionsAndNames
+} from './addPermissionsWithNames'
 import { TransformedResult } from './transformBreakdownResults'
 
 jest.mock('../../../../lib/auth/ability', () => ({
@@ -11,26 +13,13 @@ jest.mock('../../../../lib/auth/ability', () => ({
   subject: jest.fn((type, object) => ({ subject: type, object }))
 }))
 
-jest.mock('./buildJourneyUrls', () => ({
-  buildJourneyUrl: jest.fn()
-}))
-
 const mockAbility = ability as jest.MockedFunction<typeof ability>
-const mockBuildJourneyUrl = buildJourneyUrl as jest.MockedFunction<
-  typeof buildJourneyUrl
->
 
 describe('addPermissionsAndNames', () => {
   const mockUser = { id: 'user-1' } as any
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockBuildJourneyUrl.mockImplementation((slug, customDomains) => {
-      if (customDomains != null && customDomains.length > 0) {
-        return `https://${customDomains[0].name}/${slug}`
-      }
-      return `https://your.nextstep.is/${slug}`
-    })
   })
 
   it('should return journey and team names for journeys the current user has access to', () => {
@@ -52,7 +41,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey One',
         teamId: 'team-1',
         status: 'published',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
+        team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
       {
@@ -61,7 +50,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey Two',
         teamId: 'team-2',
         status: 'published',
-        team: { title: 'Team Two', userTeams: [], customDomains: [] },
+        team: { title: 'Team Two', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl
     ]
@@ -80,16 +69,14 @@ describe('addPermissionsAndNames', () => {
         journeyName: 'Journey One',
         teamName: 'Team One',
         status: 'published',
-        stats: [{ event: 'buttonClick', visitors: 10 }],
-        journeyUrl: 'https://your.nextstep.is/journey-one'
+        stats: [{ event: 'buttonClick', visitors: 10 }]
       },
       {
         journeyId: 'journey-2',
         journeyName: 'Journey Two',
         teamName: 'Team Two',
         status: 'published',
-        stats: [{ event: 'pageview', visitors: 5 }],
-        journeyUrl: 'https://your.nextstep.is/journey-two'
+        stats: [{ event: 'pageview', visitors: 5 }]
       }
     ])
   })
@@ -113,7 +100,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey One',
         teamId: 'team-1',
         status: 'draft',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
+        team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
       {
@@ -122,7 +109,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey Two',
         teamId: 'team-1',
         status: 'draft',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
+        team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl
     ]
@@ -137,102 +124,14 @@ describe('addPermissionsAndNames', () => {
 
     expect(result).toEqual([
       {
-        journeyId: 'journey-1',
-        journeyName: 'unknown journey 1',
-        teamName: 'unknown team 1',
-        status: 'draft',
-        stats: [{ event: 'buttonClick', visitors: 10 }],
-        journeyUrl: 'https://your.nextstep.is/journey-one'
-      },
-      {
-        journeyId: 'journey-2',
-        journeyName: 'unknown journey 2',
-        teamName: 'unknown team 1',
-        status: 'draft',
-        stats: [{ event: 'pageview', visitors: 5 }],
-        journeyUrl: 'https://your.nextstep.is/journey-two'
-      }
-    ])
-  })
-
-  it('should group unknown teams together', () => {
-    const transformedResults: TransformedResult[] = [
-      {
-        journeyId: 'journey-1',
-        stats: [{ event: 'buttonClick', visitors: 10 }]
-      },
-      {
-        journeyId: 'journey-2',
-        stats: [{ event: 'pageview', visitors: 5 }]
-      },
-      {
-        journeyId: 'journey-3',
-        stats: [{ event: 'videoPlay', visitors: 3 }]
-      }
-    ]
-
-    const journeys: JourneyWithAcl[] = [
-      {
-        id: 'journey-1',
-        slug: 'journey-one',
-        title: 'Journey One',
-        teamId: 'team-1',
-        status: 'published',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
-        userJourneys: []
-      } as unknown as JourneyWithAcl,
-      {
-        id: 'journey-2',
-        slug: 'journey-two',
-        title: 'Journey Two',
-        teamId: 'team-1',
-        status: 'published',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
-        userJourneys: []
-      } as unknown as JourneyWithAcl,
-      {
-        id: 'journey-3',
-        slug: 'journey-three',
-        title: 'Journey Three',
-        teamId: 'team-2',
-        status: 'published',
-        team: { title: 'Team Two', userTeams: [], customDomains: [] },
-        userJourneys: []
-      } as unknown as JourneyWithAcl
-    ]
-
-    mockAbility.mockReturnValue(false)
-
-    const result = addPermissionsAndNames(
-      transformedResults,
-      journeys,
-      mockUser
-    )
-
-    expect(result).toEqual([
-      {
-        journeyId: 'journey-1',
-        journeyName: 'unknown journey 1',
-        teamName: 'unknown team 1',
-        status: 'published',
-        stats: [{ event: 'buttonClick', visitors: 10 }],
-        journeyUrl: 'https://your.nextstep.is/journey-one'
-      },
-      {
-        journeyId: 'journey-2',
-        journeyName: 'unknown journey 2',
-        teamName: 'unknown team 1',
-        status: 'published',
-        stats: [{ event: 'pageview', visitors: 5 }],
-        journeyUrl: 'https://your.nextstep.is/journey-two'
-      },
-      {
-        journeyId: 'journey-3',
-        journeyName: 'unknown journey 3',
-        teamName: 'unknown team 2',
-        status: 'published',
-        stats: [{ event: 'videoPlay', visitors: 3 }],
-        journeyUrl: 'https://your.nextstep.is/journey-three'
+        journeyId: UNKNOWN_JOURNEYS_AGGREGATE_ID,
+        journeyName: 'Unknown journeys',
+        teamName: 'Unknown teams',
+        status: null,
+        stats: [
+          { event: 'buttonClick', visitors: 10 },
+          { event: 'pageview', visitors: 5 }
+        ]
       }
     ])
   })
@@ -264,7 +163,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey One',
         teamId: 'team-1',
         status: 'published',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
+        team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
       {
@@ -273,7 +172,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey Two',
         teamId: 'team-1',
         status: 'draft',
-        team: { title: 'Team One', userTeams: [], customDomains: [] },
+        team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
       {
@@ -282,7 +181,7 @@ describe('addPermissionsAndNames', () => {
         title: 'Journey Three',
         teamId: 'team-2',
         status: 'published',
-        team: { title: 'Team Two', userTeams: [], customDomains: [] },
+        team: { title: 'Team Two', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
       {
@@ -313,81 +212,25 @@ describe('addPermissionsAndNames', () => {
         journeyName: 'Journey One',
         teamName: 'Team One',
         status: 'published',
-        stats: [{ event: 'buttonClick', visitors: 10 }],
-        journeyUrl: 'https://your.nextstep.is/journey-one'
-      },
-      {
-        journeyId: 'journey-2',
-        journeyName: 'unknown journey 1',
-        teamName: 'Team One',
-        status: 'draft',
-        stats: [{ event: 'pageview', visitors: 5 }],
-        journeyUrl: 'https://your.nextstep.is/journey-two'
+        stats: [{ event: 'buttonClick', visitors: 10 }]
       },
       {
         journeyId: 'journey-3',
         journeyName: 'Journey Three',
         teamName: 'Team Two',
         status: 'published',
-        stats: [{ event: 'videoPlay', visitors: 3 }],
-        journeyUrl: 'https://your.nextstep.is/journey-three'
+        stats: [{ event: 'videoPlay', visitors: 3 }]
       },
       {
-        journeyId: 'journey-4',
-        journeyName: 'unknown journey 2',
-        teamName: 'No Team',
-        status: 'archived',
-        stats: [{ event: 'signUpSubmit', visitors: 2 }],
-        journeyUrl: 'https://your.nextstep.is/journey-four'
+        journeyId: UNKNOWN_JOURNEYS_AGGREGATE_ID,
+        journeyName: 'Unknown journeys',
+        teamName: 'Unknown teams',
+        status: null,
+        stats: [
+          { event: 'pageview', visitors: 5 },
+          { event: 'signUpSubmit', visitors: 2 }
+        ]
       }
-    ])
-  })
-
-  it('should build URL with custom domain when available', () => {
-    const transformedResults: TransformedResult[] = [
-      {
-        journeyId: 'journey-1',
-        stats: [{ event: 'buttonClick', visitors: 10 }]
-      }
-    ]
-
-    const journeys: JourneyWithAcl[] = [
-      {
-        id: 'journey-1',
-        slug: 'my-journey',
-        title: 'Journey One',
-        teamId: 'team-1',
-        status: 'published',
-        team: {
-          title: 'Team One',
-          userTeams: [],
-          customDomains: [{ name: 'custom-domain.com' }]
-        },
-        userJourneys: []
-      } as unknown as JourneyWithAcl
-    ]
-
-    mockAbility.mockReturnValue(true)
-    mockBuildJourneyUrl.mockReturnValue('https://custom-domain.com/my-journey')
-
-    const result = addPermissionsAndNames(
-      transformedResults,
-      journeys,
-      mockUser
-    )
-
-    expect(result).toEqual([
-      {
-        journeyId: 'journey-1',
-        journeyName: 'Journey One',
-        teamName: 'Team One',
-        status: 'published',
-        stats: [{ event: 'buttonClick', visitors: 10 }],
-        journeyUrl: 'https://custom-domain.com/my-journey'
-      }
-    ])
-    expect(mockBuildJourneyUrl).toHaveBeenCalledWith('my-journey', [
-      { name: 'custom-domain.com' }
     ])
   })
 })
