@@ -1,6 +1,5 @@
 import { promises } from 'fs'
 import path from 'path'
-import 'dotenv/config'
 
 import { Command } from 'commander'
 

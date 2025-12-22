@@ -1,40 +1,15 @@
 import { S3Client } from 'bun'
 
+import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_CLOUDFLARE_R2_ASSET } from '../gql/mutations'
 import { R2Asset } from '../types'
 
-function getR2Endpoint(): string {
-  const endpoint = process.env.CLOUDFLARE_R2_ENDPOINT
-  if (endpoint) return endpoint
-  throw new Error('CLOUDFLARE_R2_ENDPOINT environment variable is required')
-}
-
-function getR2Credentials(): { accessKeyId: string; secretAccessKey: string } {
-  const accessKeyId = process.env.CLOUDFLARE_R2_ACCESS_KEY_ID
-  if (!accessKeyId) {
-    throw new Error(
-      'CLOUDFLARE_R2_ACCESS_KEY_ID environment variable is required'
-    )
-  }
-
-  const secretAccessKey = process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
-  if (!secretAccessKey) {
-    throw new Error(
-      'CLOUDFLARE_R2_SECRET_ACCESS_KEY environment variable is required'
-    )
-  }
-
-  return { accessKeyId, secretAccessKey }
-}
-
 function getR2BucketClient(bucket: string): S3Client {
-  const { accessKeyId, secretAccessKey } = getR2Credentials()
-
   return new S3Client({
-    accessKeyId,
-    secretAccessKey,
-    endpoint: getR2Endpoint(),
+    accessKeyId: env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+    secretAccessKey: env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+    endpoint: env.CLOUDFLARE_R2_ENDPOINT,
     // Cloudflare R2 uses "auto" region in most S3-compatible SDKs
     region: 'auto',
     bucket
@@ -105,7 +80,7 @@ export async function uploadToR2({
   const key = url.pathname.substring(1)
 
   console.log(
-    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2...`
+    `[R2 Service] Uploading ${(contentLength / 1024 / 1024).toFixed(1)}MB to R2 using multipart...`
   )
 
   const r2BucketClient = getR2BucketClient(bucket)
@@ -166,7 +141,7 @@ export async function uploadFileToR2Direct({
 
   console.log(`[R2 Service] Direct upload completed: ${key}`)
 
-  const publicBaseUrl = `https://${bucket}.${new URL(getR2Endpoint()).hostname}`
+  const publicBaseUrl = `https://${bucket}.${new URL(env.CLOUDFLARE_R2_ENDPOINT).hostname}`
 
   return `${publicBaseUrl.replace(/\/$/, '')}/${key}`
 }
