@@ -11,6 +11,7 @@ import {
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
@@ -50,6 +51,14 @@ const CardStyling = dynamic(
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardStyling/CardStyling" */ './CardStyling'
     ).then((mod) => mod.CardStyling),
+  { ssr: false }
+)
+
+const MetaAction = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/MetaAction/MetaAction" */ '../../controls/MetaAction'
+    ).then((mod) => mod.MetaAction),
   { ssr: false }
 )
 
@@ -121,6 +130,16 @@ export function Card({
 
   return (
     <Box data-testid="CardProperties">
+      {journey?.template && (
+        <Accordion
+          icon={<ActivityIcon />}
+          id={`${id}-meta-action`}
+          name={t('Tracking')}
+          value={t('None')}
+        >
+          <MetaAction />
+        </Accordion>
+      )}
       <Accordion
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-layout`}

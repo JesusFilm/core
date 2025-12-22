@@ -1,0 +1,1 @@
+export { getNewAction } from './getNewAction'

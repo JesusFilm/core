@@ -104,6 +104,19 @@ describe('Card', () => {
       ).toBeInTheDocument()
     })
 
+    it('shows meta action when template', async () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: true }
+      })
+      const trackingButton = screen.getByText('Tracking')
+      fireEvent.click(trackingButton)
+      await waitFor(() => {
+        expect(screen.getByTestId('MetaActionSelect')).toBeInTheDocument()
+      })
+    })
+
     it('shows default attributes when no props provided', () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />)

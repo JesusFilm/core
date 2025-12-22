@@ -9,6 +9,7 @@ import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { Icon, IconName } from './Icon'
 
 const iconNames: IconName[] = [
+  'Activity',
   'AddSquare2',
   'AddSquare4',
   'AlertCircle',

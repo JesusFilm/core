@@ -5,6 +5,8 @@ import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
@@ -15,6 +17,7 @@ import {
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
+import { MetaAction } from '../../controls/MetaAction'
 
 import { RadioOptionImage } from './RadioOptionImage/RadioOptionImage'
 
@@ -24,6 +27,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
   const selectedAction = getAction(t, props.action?.__typename)
 
   const flatten = useCallback((children: TreeBlock[]): TreeBlock[] => {
@@ -53,6 +57,16 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
 
   return (
     <Box data-testid="RadioOptionProperties">
+      {journey?.template && (
+        <Accordion
+          icon={<ActivityIcon />}
+          id={`${props.id}-meta-action`}
+          name={t('Tracking')}
+          value={t('None')}
+        >
+          <MetaAction />
+        </Accordion>
+      )}
       <Accordion
         id={`${props.id}-radio-option-action`}
         icon={<LinkIcon />}
