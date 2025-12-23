@@ -1,6 +1,8 @@
 import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
+import { env } from '../env'
+
 import { connection } from './lib/connection'
 import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
@@ -82,12 +84,6 @@ async function main(): Promise<void> {
       await import(
         /* webpackChunkName: 'shortlinkUpdater' */
         './shortlinkUpdater'
-      )
-    )
-    run(
-      await import(
-        /* webpackChunkName: 'e2eCleanup' */
-        './e2eCleanup'
       )
     )
   }
