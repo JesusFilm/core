@@ -1,5 +1,6 @@
 import { ApolloQueryResult } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
@@ -16,6 +17,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
@@ -29,6 +31,7 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
 interface JourneyCardProps {
   journey: Journey
@@ -62,8 +65,7 @@ export function JourneyCard({
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
 
-  // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
-  const TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES =
+  const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'
 
   useEffect(() => {
@@ -96,7 +98,6 @@ export function JourneyCard({
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
-        height: TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES ? '90%' : '100%',
         boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
@@ -356,19 +357,35 @@ export function JourneyCard({
             <JourneyCardText journey={journey} />
           </CardContent>
         </CardActionArea>
-        {!TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES && (
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: { xs: 8, sm: 3 },
-              left: { xs: 7, sm: 6 },
-              right: { xs: 10, sm: 7 },
-              zIndex: 3
-            }}
-          >
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: { xs: 8, sm: 3 },
+            left: { xs: 7, sm: 6 },
+            right: { xs: 10, sm: 7 },
+            zIndex: 3
+          }}
+        >
+          {isTemplateCard ? (
+            <Stack
+              direction="row"
+              gap={1}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TemplateAggregateAnalytics journeyId={journey.id} />
+              <Button
+                startIcon={<BarGroup3Icon />}
+                color="primary"
+                sx={{ alignSelf: 'flex-end' }}
+              >
+                {`${t('Metrics')}`}
+              </Button>
+            </Stack>
+          ) : (
             <JourneyCardInfo journey={journey} variant={variant} />
-          </Box>
-        )}
+          )}
+        </Box>
       </>
     </Card>
   )

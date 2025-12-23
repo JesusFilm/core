@@ -88,25 +88,33 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
 function transformBreakdownResults(
   breakdownResults: PlausibleStatsResponse[]
 ): { childJourneysCount: number; totalJourneysViews: number } {
-  const uniqueSlugs = new Set<string>()
-  let totalJourneysViews = 0
+  const slugMaxVisitors = new Map<string, number>()
 
   for (const result of breakdownResults) {
     const property = result.property ?? ''
-    const slashCount = (property.match(/\//g) ?? []).length
 
-    if (slashCount === 1 && property.startsWith('/')) {
-      const slug = property.slice(1)
+    if (property.startsWith('/')) {
+      const afterFirstSlash = property.slice(1)
+      const nextSlashIndex = afterFirstSlash.indexOf('/')
+      const slug =
+        nextSlashIndex === -1
+          ? afterFirstSlash
+          : afterFirstSlash.slice(0, nextSlashIndex)
       if (!slug) continue
-      uniqueSlugs.add(slug)
 
       const visitors = result.visitors ?? 0
-      totalJourneysViews += visitors
+      const currentMax = slugMaxVisitors.get(slug) ?? 0
+      slugMaxVisitors.set(slug, Math.max(currentMax, visitors))
     }
   }
 
+  const totalJourneysViews = Array.from(slugMaxVisitors.values()).reduce(
+    (sum, maxVisitors) => sum + maxVisitors,
+    0
+  )
+
   return {
-    childJourneysCount: uniqueSlugs.size,
+    childJourneysCount: slugMaxVisitors.size,
     totalJourneysViews
   }
 }
