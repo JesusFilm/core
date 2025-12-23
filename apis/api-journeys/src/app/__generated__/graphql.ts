@@ -17,6 +17,11 @@ export enum ThemeName {
     base = "base"
 }
 
+export enum ContactActionType {
+    call = "call",
+    text = "text"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -153,7 +158,8 @@ export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction",
-    PhoneAction = "PhoneAction"
+    PhoneAction = "PhoneAction",
+    ChatAction = "ChatAction"
 }
 
 export enum MessagePlatform {
@@ -194,6 +200,7 @@ export enum MessagePlatform {
 }
 
 export enum IntegrationType {
+    google = "google",
     growthSpaces = "growthSpaces"
 }
 
@@ -507,23 +514,6 @@ export class CustomDomainUpdateInput {
     routeAllTeamJourneys?: Nullable<boolean>;
 }
 
-export class ButtonClickEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    action?: Nullable<ButtonAction>;
-    actionValue?: Nullable<string>;
-}
-
-export class ChatOpenEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    value?: Nullable<MessagePlatform>;
-}
-
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -676,6 +666,7 @@ export class JourneysFilter {
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
     fromTemplateId?: Nullable<string>;
+    teamId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
@@ -753,6 +744,7 @@ export class JourneyEventsFilter {
     typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
     periodRangeEnd?: Nullable<DateTime>;
+    includeUnconnectedCards?: Nullable<boolean>;
 }
 
 export class JourneyNotificationUpdateInput {
@@ -784,6 +776,7 @@ export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
     hasPollAnswers?: Nullable<boolean>;
+    hasMultiselectSubmission?: Nullable<boolean>;
     hasTextResponse?: Nullable<boolean>;
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
@@ -794,29 +787,6 @@ export class JourneysEmailPreferenceUpdateInput {
     email: string;
     preference: string;
     value: boolean;
-}
-
-export class PlausibleStatsAggregateFilter {
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    filters?: Nullable<string>;
-    interval?: Nullable<string>;
-}
-
-export class PlausibleStatsBreakdownFilter {
-    property: string;
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    limit?: Nullable<number>;
-    page?: Nullable<number>;
-    filters?: Nullable<string>;
-}
-
-export class PlausibleStatsTimeseriesFilter {
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    filters?: Nullable<string>;
-    interval?: Nullable<string>;
 }
 
 export class QrCodesFilter {
@@ -936,6 +906,20 @@ export class PhoneAction implements Action {
     gtmEventName?: Nullable<string>;
     phone: string;
     countryCode: string;
+    contactAction: ContactActionType;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
+}
+
+export class ChatAction implements Action {
+    __typename?: 'ChatAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    chatUrl: string;
+    target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class Journey {
@@ -971,6 +955,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    templateSite?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;
@@ -1036,14 +1021,6 @@ export abstract class IQuery {
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
     abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
-
-    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
-
-    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
-
-    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
-
-    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract qrCode(id: string): QrCode | Promise<QrCode>;
 
@@ -1139,10 +1116,6 @@ export abstract class IMutation {
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
 
-    abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
-
-    abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
-
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
     abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
@@ -1181,11 +1154,9 @@ export abstract class IMutation {
 
     abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
-    abstract integrationDelete(id: string): Integration | Promise<Integration>;
-
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1357,6 +1328,25 @@ export class ImageBlock implements Block {
     focalLeft?: Nullable<number>;
 }
 
+export class MultiselectBlock implements Block {
+    __typename?: 'MultiselectBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    max?: Nullable<number>;
+    min?: Nullable<number>;
+}
+
+export class MultiselectOptionBlock implements Block {
+    __typename?: 'MultiselectOptionBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+}
+
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
@@ -1467,6 +1457,8 @@ export class VideoBlock implements Block {
     duration?: Nullable<number>;
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
+    subtitleLanguage?: Nullable<Language>;
+    showGeneratedSubtitles?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1537,6 +1529,15 @@ export class ChatOpenEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     messagePlatform?: Nullable<MessagePlatform>;
+}
+
+export class MultiselectSubmissionEvent implements Event {
+    __typename?: 'MultiselectSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class JourneyViewEvent implements Event {
@@ -1693,13 +1694,22 @@ export class Host {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGoogle implements Integration {
+    __typename?: 'IntegrationGoogle';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    user?: Nullable<User>;
+    accountEmail?: Nullable<string>;
+}
+
 export class IntegrationGrowthSpaces implements Integration {
     __typename?: 'IntegrationGrowthSpaces';
     id: string;
     team: Team;
     type: IntegrationType;
-    accessId: string;
-    accessSecretPart: string;
+    accessId?: Nullable<string>;
+    accessSecretPart?: Nullable<string>;
     routes: IntegrationGrowthSpacesRoute[];
 }
 
@@ -1844,6 +1854,7 @@ export class JourneyVisitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    lastMultiselectSubmission?: Nullable<string>;
     events: Event[];
     visitor: Visitor;
 }
@@ -1865,39 +1876,6 @@ export class JourneysEmailPreference {
     email: string;
     unsubscribeAll: boolean;
     accountNotifications: boolean;
-}
-
-export class PlausibleStatsAggregateValue {
-    __typename?: 'PlausibleStatsAggregateValue';
-    value: number;
-    change?: Nullable<number>;
-}
-
-export class PlausibleStatsAggregateResponse {
-    __typename?: 'PlausibleStatsAggregateResponse';
-    visitors?: Nullable<PlausibleStatsAggregateValue>;
-    visits?: Nullable<PlausibleStatsAggregateValue>;
-    pageviews?: Nullable<PlausibleStatsAggregateValue>;
-    viewsPerVisit?: Nullable<PlausibleStatsAggregateValue>;
-    bounceRate?: Nullable<PlausibleStatsAggregateValue>;
-    visitDuration?: Nullable<PlausibleStatsAggregateValue>;
-    events?: Nullable<PlausibleStatsAggregateValue>;
-    conversionRate?: Nullable<PlausibleStatsAggregateValue>;
-    timeOnPage?: Nullable<PlausibleStatsAggregateValue>;
-}
-
-export class PlausibleStatsResponse {
-    __typename?: 'PlausibleStatsResponse';
-    property: string;
-    visitors?: Nullable<number>;
-    visits?: Nullable<number>;
-    pageviews?: Nullable<number>;
-    viewsPerVisit?: Nullable<number>;
-    bounceRate?: Nullable<number>;
-    visitDuration?: Nullable<number>;
-    events?: Nullable<number>;
-    conversionRate?: Nullable<number>;
-    timeOnPage?: Nullable<number>;
 }
 
 export class QrCode {

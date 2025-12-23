@@ -52,7 +52,7 @@ function TemplateDetailsPage(): ReactElement {
       <JourneyProvider
         value={{
           journey: data?.journey,
-          variant: 'admin'
+          variant: 'customize'
         }}
       >
         <PageWrapper
@@ -85,7 +85,7 @@ function TemplateDetailsPage(): ReactElement {
           }
           showAppHeader={userSignedIn}
           showNavBar={userSignedIn}
-          background="background.paper"
+          backgroundColor="background.paper"
         >
           <Box
             sx={{
@@ -122,7 +122,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   resolvedUrl,
   params
 }) => {
-  const { redirect, apolloClient, translations } = await initAndAuthApp({
+  const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -156,7 +156,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
         where: {
           template: true,
           orderByRecent: true,
-          tagIds
+          tagIds,
+          teamId: 'jfp-team'
         }
       }
     })
@@ -179,6 +180,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   return {
     props: {
       ...translations,
+      flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }

@@ -4,6 +4,7 @@ import Divider from '@mui/material/Divider'
 import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import forIn from 'lodash/forIn'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -20,6 +21,7 @@ interface CheckboxState {
   ChatOpenEvent: boolean
   TextResponseSubmissionEvent: boolean
   RadioQuestionSubmissionEvent: boolean
+  MultiselectSubmissionEvent: boolean
   ButtonClickEvent: boolean
   SignUpSubmissionEvent: boolean
   VideoStartEvent: boolean
@@ -54,6 +56,7 @@ export function FilterForm({
     ChatOpenEvent: true,
     TextResponseSubmissionEvent: true,
     RadioQuestionSubmissionEvent: true,
+    MultiselectSubmissionEvent: true,
     ButtonClickEvent: true,
     SignUpSubmissionEvent: true,
     VideoStartEvent: true,
@@ -89,6 +92,8 @@ export function FilterForm({
         return t('Text Submission')
       case 'RadioQuestionSubmissionEvent':
         return t('Poll Selection')
+      case 'MultiselectSubmissionEvent':
+        return t('Multiselect Submission')
       case 'ButtonClickEvent':
         return t('Button Click')
       case 'SignUpSubmissionEvent':
@@ -125,6 +130,7 @@ export function FilterForm({
       ChatOpenEvent: checked,
       TextResponseSubmissionEvent: checked,
       RadioQuestionSubmissionEvent: checked,
+      MultiselectSubmissionEvent: checked,
       ButtonClickEvent: checked,
       SignUpSubmissionEvent: checked,
       VideoStartEvent: checked,
@@ -170,7 +176,21 @@ export function FilterForm({
           label={t('All')}
         />
         <Divider sx={{ my: 1 }} />
-
+        <CheckboxOption
+          checked
+          onChange={() => undefined}
+          disabled
+          label={
+            <Box>
+              <Typography variant="body2">{t('Contact Data')}</Typography>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                {t(
+                  'All contact data (name, email, phone) is exported by default'
+                )}
+              </Typography>
+            </Box>
+          }
+        />
         {/* Regular events */}
         {REGULAR_EVENT_KEYS.map((event) => (
           <CheckboxOption
@@ -206,7 +226,7 @@ export function FilterForm({
               onChange={(checked) => {
                 handleSelectAllVideoEvents(checked)
               }}
-              label={t('Video Events')}
+              label={t('Video Interactions')}
               onClick={(e) => e.stopPropagation()}
               indeterminate={videoEventsSelected === 'some'}
             />

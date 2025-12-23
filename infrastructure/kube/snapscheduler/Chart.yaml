@@ -1,0 +1,11 @@
+apiVersion: v2
+name: snapscheduler-app
+description: Backube SnapScheduler
+type: application
+version: 0.1.0
+appVersion: 'v3.5.0'
+
+dependencies:
+  - name: snapscheduler
+    version: '3.5.0'
+    repository: https://backube.github.io/helm-charts/

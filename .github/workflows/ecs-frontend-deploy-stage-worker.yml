@@ -39,6 +39,8 @@ on:
         required: true
       DOPPLER_JOURNEYS_ADMIN_TOKEN:
         required: true
+      DOPPLER_PLAYER_TOKEN:
+        required: true
       DOPPLER_WATCH_TOKEN:
         required: true
       DOPPLER_WATCH_MODERN_TOKEN:
@@ -97,6 +99,11 @@ jobs:
           cat $GITHUB_OUTPUT
         id: affected-apps
 
+      - name: Prisma Generate
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: prisma-generate
+          all: true
       - name: Build ${{ inputs.name }}
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
@@ -111,6 +118,7 @@ jobs:
           DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+          DOPPLER_PLAYER_TOKEN: ${{ secrets.DOPPLER_PLAYER_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}

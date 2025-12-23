@@ -1,6 +1,6 @@
 import type { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import type { ComponentPropsWithRef } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

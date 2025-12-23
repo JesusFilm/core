@@ -1,0 +1,45 @@
+import Skeleton from '@mui/material/Skeleton'
+import { ReactElement } from 'react'
+
+import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
+import { useJourney } from '../../../../libs/JourneyProvider'
+import { CreateJourneyButton } from '../../CreateJourneyButton'
+import { UseThisTemplateButton } from '../../UseThisTemplateButton'
+
+interface TemplateActionButtonProps {
+  variant?: 'menu-item' | 'button'
+  signedIn?: boolean
+  openTeamDialogOnSignIn?: boolean
+  handleCloseMenu?: () => void
+}
+
+export function TemplateActionButton({
+  variant = 'button',
+  signedIn,
+  openTeamDialogOnSignIn = false,
+  handleCloseMenu
+}: TemplateActionButtonProps): ReactElement {
+  const { journey } = useJourney()
+
+  if (journey != null && isJourneyCustomizable(journey)) {
+    return <UseThisTemplateButton variant={variant} signedIn={signedIn} />
+  }
+
+  if (journey == null && variant === 'button') {
+    return (
+      <Skeleton
+        sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
+        data-testid="UseThisTemplateButtonSkeleton"
+      />
+    )
+  }
+
+  return (
+    <CreateJourneyButton
+      variant={variant}
+      signedIn={signedIn}
+      openTeamDialogOnSignIn={openTeamDialogOnSignIn}
+      handleCloseMenu={handleCloseMenu}
+    />
+  )
+}

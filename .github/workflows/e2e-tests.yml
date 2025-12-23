@@ -39,9 +39,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app:
-          [
-            'arclight',
+        app: [
+            # 'arclight', # disable arclight from daily preview E2E (no Vercel DB access)
             'docs',
             'journeys',
             'journeys-admin',
@@ -141,6 +140,14 @@ jobs:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
+          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
+          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
+          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
+          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
+          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
+          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
+          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -196,6 +203,14 @@ jobs:
           DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
+          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
+          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
+          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
+          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
+          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
+          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
+          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}

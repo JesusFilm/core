@@ -202,6 +202,10 @@ export const JourneyRef = builder.prismaObject('Journey', {
     strategySlug: t.exposeString('strategySlug', {
       nullable: true
     }),
+    templateSite: t.exposeBoolean('templateSite', {
+      nullable: true,
+      description: 'used to see if a template has a site created for it'
+    }),
     plausibleToken: t.exposeString('plausibleToken', {
       nullable: true,
       description: 'used in a plausible share link to embed report'
@@ -211,6 +215,23 @@ export const JourneyRef = builder.prismaObject('Journey', {
     }),
     journeyTheme: t.relation('journeyTheme', {
       nullable: true
+    }),
+    blockTypenames: t.field({
+      type: ['String'],
+      nullable: false,
+      description:
+        'Distinct block typenames present on this journey (non-deleted blocks only)',
+      resolve: async (journey) => {
+        const blocks = await prisma.block.findMany({
+          where: { journeyId: journey.id, deletedAt: null },
+          select: { typename: true },
+          distinct: ['typename']
+        })
+        return blocks
+          .map((b) => b.typename)
+          .filter((t): t is string => t != null && t !== '')
+          .sort()
+      }
     })
   })
 })

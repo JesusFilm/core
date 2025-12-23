@@ -17,5 +17,17 @@ export const ACTION_FIELDS = gql`
       customizable
       parentStepId
     }
+    ... on ChatAction {
+      chatUrl
+      customizable
+      parentStepId
+    }
+    ... on PhoneAction {
+      phone
+      countryCode
+      contactAction
+      customizable
+      parentStepId
+    }
   }
 `

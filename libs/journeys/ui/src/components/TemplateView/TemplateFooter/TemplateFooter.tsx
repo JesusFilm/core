@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { CreateJourneyButton } from '../CreateJourneyButton'
+import { TemplateActionButton } from '../TemplateViewHeader/TemplateActionButton'
 
 interface TemplateFooterProps {
   signedIn?: boolean
@@ -39,7 +39,7 @@ export function TemplateFooter({
       >
         {t('Use this template to make it your journey')}
       </Typography>
-      <CreateJourneyButton signedIn={signedIn} />
+      <TemplateActionButton signedIn={signedIn} />
     </Stack>
   )
 }

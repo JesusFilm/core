@@ -63,7 +63,9 @@ import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
+import { ChatNode } from './nodes/ChatNode'
 import { LinkNode } from './nodes/LinkNode'
+import { PhoneNode } from './nodes/PhoneNode'
 import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import {
@@ -534,6 +536,8 @@ export function JourneyFlow(): ReactElement {
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
       Link: LinkNode,
+      Chat: ChatNode,
+      Phone: PhoneNode,
       Referrer: ReferrerNode
     }),
     []
@@ -570,6 +574,8 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
+  const isLocalTemplate =
+    journey?.team?.id !== 'jfp-team' && journey?.template === true
   return (
     <Box
       sx={{
@@ -618,18 +624,21 @@ export function JourneyFlow(): ReactElement {
                 <NewStepButton disabled={steps == null || loading} />
               )}
             </Panel>
-            {editorAnalytics && (
-              <Panel position="top-left">
-                <>
-                  <AnalyticsOverlaySwitch />
-                  <Fade in={showAnalytics} unmountOnExit>
-                    <Box>
-                      <JourneyAnalyticsCard />
-                    </Box>
-                  </Fade>
-                </>
-              </Panel>
-            )}
+            {/* Hide analytics overlay switch for local templates */}
+            {!isLocalTemplate &&
+              /* Only show analytics panel when editorAnalytics feature flag is enabled */
+              editorAnalytics && (
+                <Panel position="top-left">
+                  <>
+                    <AnalyticsOverlaySwitch />
+                    <Fade in={showAnalytics} unmountOnExit>
+                      <Box>
+                        <JourneyAnalyticsCard />
+                      </Box>
+                    </Fade>
+                  </>
+                </Panel>
+              )}
             <Controls handleReset={allBlockPositionUpdate} />
           </>
         )}

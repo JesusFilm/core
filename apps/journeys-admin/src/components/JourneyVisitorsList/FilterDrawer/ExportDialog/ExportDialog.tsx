@@ -1,31 +1,29 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
+import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 
+import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
 import { FilterForm } from './FilterForm'
-
-export const GET_JOURNEY_CREATED_AT = gql`
-  query GetJourneyCreatedAt($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      id
-      createdAt
-    }
-  }
-`
 
 interface ExportDialogProps {
   open: boolean
   onClose: () => void
   journeyId: string
+  availableBlockTypes: string[]
+  createdAt?: string | null
 }
 
 /**
@@ -37,37 +35,62 @@ interface ExportDialogProps {
 export function ExportDialog({
   open,
   onClose,
-  journeyId
+  journeyId,
+  availableBlockTypes,
+  createdAt
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents, downloading } = useJourneyEventsExport()
-  const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
-    variables: { id: journeyId }
-  })
+  const { exportJourneyEvents, downloading: eventsDownloading } =
+    useJourneyEventsExport()
+  const { exportJourneyContacts, downloading: contactsDownloading } =
+    useJourneyContactsExport()
+
+  const clampToToday = (date: Date | null): Date | null => {
+    if (date == null) return null
+    const now = new Date()
+    return date.getTime() > now.getTime() ? now : date
+  }
 
   const [startDate, setStartDate] = useState<Date | null>(() =>
-    journeyData?.journey?.createdAt
-      ? new Date(journeyData.journey.createdAt)
-      : null
+    createdAt != null ? clampToToday(new Date(String(createdAt))) : null
   )
-  const [endDate, setEndDate] = useState<Date | null>(new Date())
+  const [endDate, setEndDate] = useState<Date | null>(clampToToday(new Date()))
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
+  const [contactData, setContactData] = useState<string[]>([])
+  const [exportBy, setExportBy] = useState<string>('')
+  const [includeOldData, setIncludeOldData] = useState<boolean>(false)
+
   useEffect(() => {
-    if (journeyData?.journey?.createdAt != null) {
-      setStartDate(new Date(journeyData.journey.createdAt))
+    if (createdAt != null) {
+      const newStart = clampToToday(new Date(String(createdAt)))
+      setStartDate(newStart)
     }
-  }, [journeyData])
+  }, [createdAt])
 
   const handleExport = async (): Promise<void> => {
     try {
-      const filter = {
-        typenames: selectedEvents,
-        ...(startDate && { periodRangeStart: startDate.toISOString() }),
-        ...(endDate && { periodRangeEnd: endDate.toISOString() })
+      if (exportBy === 'Visitor Actions') {
+        const filter = {
+          typenames: selectedEvents,
+          ...(startDate && { periodRangeStart: startDate.toISOString() }),
+          ...(endDate && { periodRangeEnd: endDate.toISOString() })
+        }
+        await exportJourneyEvents({ journeyId, filter })
+      } else if (exportBy === 'Contact Data') {
+        const filter = {
+          typenames: contactData.filter(
+            (data) => data !== 'name' && data !== 'email' && data !== 'phone'
+          ),
+          ...(startDate && { periodRangeStart: startDate.toISOString() }),
+          ...(endDate && { periodRangeEnd: endDate.toISOString() }),
+          ...(includeOldData && { includeUnconnectedCards: true })
+        } as const
+        await exportJourneyContacts({
+          journeyId,
+          filter
+        })
       }
-
-      await exportJourneyEvents({ journeyId, filter })
       onClose()
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -90,8 +113,12 @@ export function ExportDialog({
           variant="contained"
           color="secondary"
           onClick={handleExport}
-          loading={downloading}
-          disabled={selectedEvents.length === 0}
+          loading={eventsDownloading || contactsDownloading}
+          disabled={
+            exportBy === '' ||
+            (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
+            (exportBy === 'Contact Data' && contactData.length === 0)
+          }
           sx={{
             mb: { xs: 0, sm: 3 },
             mr: { xs: 0, sm: 3 }
@@ -104,15 +131,69 @@ export function ExportDialog({
       <DateRangePicker
         startDate={startDate}
         endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
+        onStartDateChange={(d) => setStartDate(clampToToday(d))}
+        onEndDateChange={(d) => setEndDate(clampToToday(d))}
       />
-      <Box sx={{ pt: 4 }}>
-        <Typography variant="subtitle2" gutterBottom>
-          {t('Select visitor actions')}
+      <Box
+        sx={{
+          pt: 4,
+          pr: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}
+        >
+          {t('Export By:')}
         </Typography>
-        <FilterForm setSelectedEvents={setSelectedEvents} />
+        <FormControl fullWidth>
+          <Select
+            value={exportBy}
+            onChange={(e) => setExportBy(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': t('Export By:') }}
+            IconComponent={ChevronDown}
+            renderValue={(selected) => {
+              if (!selected) {
+                return t('Select Data')
+              }
+              return selected
+            }}
+          >
+            <MenuItem value="" disabled hidden>
+              {t('Select Data')}
+            </MenuItem>
+            <MenuItem value="Visitor Actions">{t('Visitor Actions')}</MenuItem>
+            <MenuItem value="Contact Data">{t('Contact Data')}</MenuItem>
+          </Select>
+        </FormControl>
       </Box>
+      {exportBy === 'Visitor Actions' && (
+        <Box sx={{ pt: 4 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select visitor actions:')}
+          </Typography>
+          <FilterForm setSelectedEvents={setSelectedEvents} />
+        </Box>
+      )}
+      {exportBy === 'Contact Data' && (
+        <Box sx={{ pt: 4 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select contact data:')}
+          </Typography>
+          <ContactDataForm
+            setSelectedFields={setContactData}
+            selectedFields={contactData}
+            includeOldData={includeOldData}
+            setIncludeOldData={setIncludeOldData}
+            availableBlockTypes={availableBlockTypes}
+          />
+        </Box>
+      )}
     </Dialog>
   )
 }

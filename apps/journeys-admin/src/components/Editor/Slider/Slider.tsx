@@ -102,6 +102,12 @@ export function Slider(): ReactElement {
     }
   }, [activeSlide])
 
+  useEffect(() => {
+    if (swiperRef.current != null) {
+      swiperRef.current.swiper.update()
+    }
+  }, [showAnalytics])
+
   function resetCanvasFocus(): void {
     if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
       dispatch({
@@ -154,6 +160,7 @@ export function Slider(): ReactElement {
       style={{
         height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`
       }}
+      className={showAnalytics === true ? 'swiper-no-swiping' : ''}
     >
       {/* back (mobile top) button */}
       <Box

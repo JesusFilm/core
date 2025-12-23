@@ -70,6 +70,7 @@ import Download2 from './Download2'
 import Drag from './Drag'
 import DuplicateCard from './DuplicateCard'
 import Edit2 from './Edit2'
+import Edit3 from './Edit3'
 import Ellipsis from './Ellipsis'
 import Email from './Email'
 import Embed from './Embed'
@@ -118,8 +119,10 @@ import Key1 from './Key1'
 import Key2 from './Key2'
 import Laptop1 from './Laptop1'
 import Layers4 from './Layers4'
+import Layout1 from './Layout1'
 import Layout2 from './Layout2'
 import LayoutScale from './LayoutScale'
+import LayoutTop from './LayoutTop'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
@@ -159,6 +162,7 @@ import Passport from './Passport'
 import Pause1 from './Pause1'
 import Pause2 from './Pause2'
 import Pause3 from './Pause3'
+import Phone from './Phone'
 import Play1 from './Play1'
 import Play2 from './Play2'
 import Play3 from './Play3'
@@ -194,6 +198,7 @@ import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
+import Translate from './Translate'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
@@ -292,6 +297,7 @@ export type IconName =
   | 'Drag'
   | 'DuplicateCard'
   | 'Edit2'
+  | 'Edit3'
   | 'Ellipsis'
   | 'Email'
   | 'Embed'
@@ -340,8 +346,10 @@ export type IconName =
   | 'Key2'
   | 'Laptop1'
   | 'Layers4'
+  | 'Layout1'
   | 'Layout2'
   | 'LayoutScale'
+  | 'LayoutTop'
   | 'Lightning2'
   | 'LightningCircleContained'
   | 'Line'
@@ -384,6 +392,7 @@ export type IconName =
   | 'Play1'
   | 'Play2'
   | 'Play3'
+  | 'Phone'
   | 'Plus1'
   | 'Plus2'
   | 'Plus3'
@@ -417,6 +426,7 @@ export type IconName =
   | 'ThumbsUp'
   | 'Tiktok'
   | 'Transform'
+  | 'Translate'
   | 'TrendDown1'
   | 'TwitterLogo'
   | 'Type1'
@@ -518,6 +528,7 @@ const iconComponents: IconComponents = {
   Drag,
   DuplicateCard,
   Edit2,
+  Edit3,
   Ellipsis,
   Email,
   Embed,
@@ -566,8 +577,10 @@ const iconComponents: IconComponents = {
   Key2,
   Laptop1,
   Layers4,
+  Layout1,
   Layout2,
   LayoutScale,
+  LayoutTop,
   Lightning2,
   LightningCircleContained,
   Line,
@@ -610,6 +623,7 @@ const iconComponents: IconComponents = {
   Play1,
   Play2,
   Play3,
+  Phone,
   Plus1,
   Plus2,
   Plus3,
@@ -643,6 +657,7 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Tiktok,
   Transform,
+  Translate,
   TrendDown1,
   TwitterLogo,
   Type1,
