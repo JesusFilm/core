@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
+import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_MUX_VIDEO_AND_QUEUE_UPLOAD } from '../gql/mutations'
 import { createR2Asset, uploadToR2 } from '../services/r2'
@@ -80,15 +81,10 @@ export async function processVideoFile(
     return
   }
 
-  if (!process.env.CLOUDFLARE_R2_BUCKET) {
-    console.error('CLOUDFLARE_R2_BUCKET is not set')
-    summary.failed++
-    return
-  }
   try {
     await uploadToR2({
       uploadUrl: r2Asset.uploadUrl,
-      bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      bucket: env.CLOUDFLARE_R2_BUCKET,
       filePath,
       contentType,
       contentLength

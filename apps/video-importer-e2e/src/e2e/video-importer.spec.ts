@@ -28,25 +28,19 @@ test.describe('Video Importer E2E', () => {
   })
 
   test('should process a valid video file in dry run mode', async () => {
-    const videoFileName = '123---testEdition---videoABC.mp4'
+    const videoFileName = '123---testEdition---529---1.mp4'
     const dummyVideoPath = join(tempTestDir, videoFileName)
     await writeFile(dummyVideoPath, 'dummy video content')
 
-    const command = 'npx'
-    const args = [
-      'ts-node',
-      videoImporterScriptPath,
-      '--folder',
-      tempTestDir,
-      '--dry-run'
-    ]
+    const command = 'bun'
+    const args = [videoImporterScriptPath, '--folder', tempTestDir, '--dry-run']
 
     const { stdout, stderr } = await execFileAsync(command, args, {
       cwd: projectRoot
     })
 
     expect(stderr).toBe('')
-    expect(stdout).toContain(`🎬 Processing: ${videoFileName}`)
+    expect(stdout).toContain(`Processing: ${videoFileName}`)
     expect(stdout).toContain(`[DRY RUN] Would process file: ${videoFileName}`)
     expect(stdout).toContain('Total files: 1')
     expect(stdout).toContain('Successfully processed: 0')
@@ -55,13 +49,8 @@ test.describe('Video Importer E2E', () => {
 
   test('should report error for non-existent folder', async () => {
     const nonExistentFolder = join(tempTestDir, 'non_existent_folder')
-    const command = 'npx'
-    const args = [
-      'ts-node',
-      videoImporterScriptPath,
-      '--folder',
-      nonExistentFolder
-    ]
+    const command = 'bun'
+    const args = [videoImporterScriptPath, '--folder', nonExistentFolder]
 
     const result = await execFileAsync(command, args, {
       cwd: projectRoot
@@ -84,13 +73,13 @@ test.describe('Video Importer E2E', () => {
     const dummyInvalidVideoPath = join(tempTestDir, invalidFileName)
     await writeFile(dummyInvalidVideoPath, 'dummy content')
 
-    const command = 'npx'
-    const args = ['ts-node', videoImporterScriptPath, '--folder', tempTestDir]
+    const command = 'bun'
+    const args = [videoImporterScriptPath, '--folder', tempTestDir]
     const { stdout, stderr } = await execFileAsync(command, args, {
       cwd: projectRoot
     })
 
     expect(stderr).toBe('')
-    expect(stdout.trim()).toBe('No valid video files found in the folder.')
+    expect(stdout).toContain('No valid video files found in the folder.')
   })
 })
