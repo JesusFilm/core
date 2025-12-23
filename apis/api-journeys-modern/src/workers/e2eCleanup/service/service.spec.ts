@@ -1,30 +1,49 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { UserJourneyRole } from '.prisma/api-journeys-modern-client'
+import { type UserJourneyRole } from '@core/prisma/journeys/client'
 
-import { prismaMock } from '../../../../test/prismaMock'
+import { prismaMock as mockPrisma } from '../../../../test/prismaMock'
 
 import { service } from './service'
 
-// Mock prismaUsers
-const mockPrismaUsers = {
+type PrismaUsersClientMock = {
   user: {
-    findMany: jest.fn(),
-    delete: jest.fn()
+    findMany: jest.Mock
+    delete: jest.Mock
   }
 }
 
-jest.mock('@core/prisma-users/client', () => ({
-  prismaUsers: mockPrismaUsers
-}))
+type TransactionClientMock = {
+  event: { deleteMany: jest.Mock }
+  journey: { delete: jest.Mock }
+}
+
+jest.mock(
+  '@core/prisma-users/client',
+  () => ({
+    prismaUsers: {
+      user: {
+        findMany: jest.fn(),
+        delete: jest.fn()
+      }
+    }
+  }),
+  { virtual: true }
+)
 
 describe('E2E Cleanup Service', () => {
   let mockLogger: Logger
-  let mockTx: any
+  let mockTx: TransactionClientMock
+  let prismaUsers: PrismaUsersClientMock
 
   beforeEach(() => {
     jest.clearAllMocks()
+    prismaUsers = (
+      jest.requireMock('@core/prisma-users/client') as unknown as {
+        prismaUsers: PrismaUsersClientMock
+      }
+    ).prismaUsers
     mockLogger = {
       info: jest.fn(),
       debug: jest.fn(),
@@ -39,9 +58,9 @@ describe('E2E Cleanup Service', () => {
     }
 
     // Mock the transaction to execute the callback with the mock transaction client
-    prismaMock.$transaction.mockImplementation(async (callback, options) => {
-      return await callback(mockTx)
-    })
+    mockPrisma.$transaction.mockImplementation(
+      async (callback: any) => await callback(mockTx)
+    )
   })
 
   describe('service', () => {
@@ -53,7 +72,7 @@ describe('E2E Cleanup Service', () => {
           email: 'playwright123@example.com'
         },
         {
-          id: 'user-2', 
+          id: 'user-2',
           userId: 'playwright-user-2',
           email: 'playwright456@example.com'
         }
@@ -78,7 +97,7 @@ describe('E2E Cleanup Service', () => {
           title: 'Test Journey 2',
           userJourneys: [
             {
-              userId: 'playwright-user-2', 
+              userId: 'playwright-user-2',
               role: UserJourneyRole.owner
             }
           ]
@@ -96,10 +115,10 @@ describe('E2E Cleanup Service', () => {
       ]
 
       // Mock finding playwright users
-      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      prismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
 
       // Mock finding journeys for each user
-      prismaMock.journey.findMany
+      mockPrisma.journey.findMany
         .mockResolvedValueOnce(user1Journeys as any)
         .mockResolvedValueOnce(user2Journeys as any)
 
@@ -108,7 +127,7 @@ describe('E2E Cleanup Service', () => {
       mockTx.journey.delete.mockResolvedValue({})
 
       // Mock user deletion
-      mockPrismaUsers.user.delete.mockResolvedValue({})
+      prismaUsers.user.delete.mockResolvedValue({})
 
       const job = {
         data: {
@@ -121,7 +140,7 @@ describe('E2E Cleanup Service', () => {
       await service(job, mockLogger)
 
       // Should find playwright users with correct filters
-      expect(mockPrismaUsers.user.findMany).toHaveBeenCalledWith({
+      expect(prismaUsers.user.findMany).toHaveBeenCalledWith({
         where: {
           createdAt: {
             lt: expect.any(Date)
@@ -151,8 +170,8 @@ describe('E2E Cleanup Service', () => {
       })
 
       // Should find journeys for each user
-      expect(prismaMock.journey.findMany).toHaveBeenCalledTimes(2)
-      expect(prismaMock.journey.findMany).toHaveBeenNthCalledWith(1, {
+      expect(mockPrisma.journey.findMany).toHaveBeenCalledTimes(2)
+      expect(mockPrisma.journey.findMany).toHaveBeenNthCalledWith(1, {
         where: {
           userJourneys: {
             some: {
@@ -164,7 +183,7 @@ describe('E2E Cleanup Service', () => {
           }
         }
       })
-      expect(prismaMock.journey.findMany).toHaveBeenNthCalledWith(2, {
+      expect(mockPrisma.journey.findMany).toHaveBeenNthCalledWith(2, {
         where: {
           userJourneys: {
             some: {
@@ -178,7 +197,7 @@ describe('E2E Cleanup Service', () => {
       })
 
       // Should delete journeys in transactions (3 total journeys)
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(3)
+      expect(mockPrisma.$transaction).toHaveBeenCalledTimes(3)
       expect(mockTx.event.deleteMany).toHaveBeenCalledTimes(3)
       expect(mockTx.journey.delete).toHaveBeenCalledTimes(3)
 
@@ -205,11 +224,11 @@ describe('E2E Cleanup Service', () => {
       })
 
       // Should delete both users
-      expect(mockPrismaUsers.user.delete).toHaveBeenCalledTimes(2)
-      expect(mockPrismaUsers.user.delete).toHaveBeenNthCalledWith(1, {
+      expect(prismaUsers.user.delete).toHaveBeenCalledTimes(2)
+      expect(prismaUsers.user.delete).toHaveBeenNthCalledWith(1, {
         where: { id: 'user-1' }
       })
-      expect(mockPrismaUsers.user.delete).toHaveBeenNthCalledWith(2, {
+      expect(prismaUsers.user.delete).toHaveBeenNthCalledWith(2, {
         where: { id: 'user-2' }
       })
     })
@@ -236,8 +255,8 @@ describe('E2E Cleanup Service', () => {
         }
       ]
 
-      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
-      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
+      prismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      mockPrisma.journey.findMany.mockResolvedValue(userJourneys as any)
 
       const job = {
         data: {
@@ -250,12 +269,14 @@ describe('E2E Cleanup Service', () => {
       await service(job, mockLogger)
 
       // Should find users and journeys
-      expect(mockPrismaUsers.user.findMany).toHaveBeenCalled()
-      expect(prismaMock.journey.findMany).toHaveBeenCalled()
+      expect(prismaUsers.user.findMany).toHaveBeenCalled()
+      expect(mockPrisma.journey.findMany).toHaveBeenCalled()
 
       // Should not perform any deletions
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
-      expect(mockPrismaUsers.user.delete).not.toHaveBeenCalled()
+      expect(mockPrisma.$transaction).not.toHaveBeenCalled()
+      expect(mockTx.event.deleteMany).not.toHaveBeenCalled()
+      expect(mockTx.journey.delete).not.toHaveBeenCalled()
+      expect(prismaUsers.user.delete).not.toHaveBeenCalled()
     })
 
     it('should handle users with no journeys', async () => {
@@ -267,8 +288,8 @@ describe('E2E Cleanup Service', () => {
         }
       ]
 
-      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
-      prismaMock.journey.findMany.mockResolvedValue([]) // No journeys
+      prismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      mockPrisma.journey.findMany.mockResolvedValue([]) // No journeys
 
       const job = {
         data: {
@@ -281,12 +302,12 @@ describe('E2E Cleanup Service', () => {
       await service(job, mockLogger)
 
       // Should still delete the user even if they have no journeys
-      expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
+      expect(prismaUsers.user.delete).toHaveBeenCalledWith({
         where: { id: 'user-1' }
       })
 
       // Should not call transaction since no journeys to delete
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(mockPrisma.$transaction).not.toHaveBeenCalled()
     })
 
     it('should handle journey deletion errors gracefully', async () => {
@@ -311,12 +332,12 @@ describe('E2E Cleanup Service', () => {
         }
       ]
 
-      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
-      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
+      prismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      mockPrisma.journey.findMany.mockResolvedValue(userJourneys as any)
 
       // Mock transaction to fail
       const transactionError = new Error('Journey deletion failed')
-      prismaMock.$transaction.mockRejectedValue(transactionError)
+      mockPrisma.$transaction.mockRejectedValueOnce(transactionError)
 
       const job = {
         data: {
@@ -329,13 +350,13 @@ describe('E2E Cleanup Service', () => {
       await service(job, mockLogger)
 
       // Should still delete the user
-      expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
+      expect(prismaUsers.user.delete).toHaveBeenCalledWith({
         where: { id: 'user-1' }
       })
     })
 
     it('should use default cleanup hours when not specified', async () => {
-      mockPrismaUsers.user.findMany.mockResolvedValue([])
+      prismaUsers.user.findMany.mockResolvedValue([])
 
       const job = {
         data: {
@@ -347,16 +368,16 @@ describe('E2E Cleanup Service', () => {
 
       // Should use 24 hours as default by checking the date filter
       const expectedCutoffTime = Date.now() - 24 * 60 * 60 * 1000
-      const actualCall = mockPrismaUsers.user.findMany.mock.calls[0][0]
+      const actualCall = prismaUsers.user.findMany.mock.calls[0][0]
       const actualCutoffTime = actualCall.where.createdAt.lt.getTime()
-      
+
       // Allow for small time difference due to test execution time
       expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
     })
 
     it('should handle service errors gracefully', async () => {
       const error = new Error('Database error')
-      mockPrismaUsers.user.findMany.mockRejectedValue(error)
+      prismaUsers.user.findMany.mockRejectedValue(error)
 
       const job = {
         data: {
@@ -391,12 +412,12 @@ describe('E2E Cleanup Service', () => {
         }
       ]
 
-      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
-      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
+      prismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
+      mockPrisma.journey.findMany.mockResolvedValue(userJourneys as any)
 
       mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
       mockTx.journey.delete.mockResolvedValue({})
-      mockPrismaUsers.user.delete.mockResolvedValue({})
+      prismaUsers.user.delete.mockResolvedValue({})
 
       const job = {
         data: {
@@ -409,7 +430,7 @@ describe('E2E Cleanup Service', () => {
       await service(job, mockLogger)
 
       // Should call transaction with timeout option
-      expect(prismaMock.$transaction).toHaveBeenCalledWith(
+      expect(mockPrisma.$transaction).toHaveBeenCalledWith(
         expect.any(Function),
         { timeout: 30000 }
       )
@@ -417,7 +438,7 @@ describe('E2E Cleanup Service', () => {
 
     it('should filter users by correct time cutoff', async () => {
       const olderThanHours = 48
-      mockPrismaUsers.user.findMany.mockResolvedValue([])
+      prismaUsers.user.findMany.mockResolvedValue([])
 
       const job = {
         data: {
@@ -431,9 +452,9 @@ describe('E2E Cleanup Service', () => {
 
       // Should use the specified hours for the cutoff date
       const expectedCutoffTime = Date.now() - olderThanHours * 60 * 60 * 1000
-      const actualCall = mockPrismaUsers.user.findMany.mock.calls[0][0]
+      const actualCall = prismaUsers.user.findMany.mock.calls[0][0]
       const actualCutoffTime = actualCall.where.createdAt.lt.getTime()
-      
+
       // Allow for small time difference due to test execution time
       expect(Math.abs(actualCutoffTime - expectedCutoffTime)).toBeLessThan(1000)
     })

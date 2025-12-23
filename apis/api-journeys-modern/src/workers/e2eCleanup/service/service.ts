@@ -1,8 +1,8 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { UserJourneyRole, prisma } from '@core/prisma-journeys/client'
-import { prismaUsers } from '@core/prisma-users/client'
+import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
+import { prisma as prismaUsers } from '@core/prisma/users/client'
 
 interface E2eCleanupJob {
   __typename: 'e2eCleanup'
@@ -74,52 +74,57 @@ export async function service(
         where: {
           userJourneys: {
             some: {
-              AND: [
-                { role: UserJourneyRole.owner },
-                { userId: user.userId }
-              ]
+              AND: [{ role: UserJourneyRole.owner }, { userId: user.userId }]
             }
           }
         }
       })
-    
-      logger?.info(`Found ${journeys.length} total test journeys for user ${user.email}`)
+
+      logger?.info(
+        `Found ${journeys.length} total test journeys for user ${user.email}`
+      )
 
       if (dryRun) {
         logger?.info('DRY RUN: Would delete the following journeys:')
-        journeys.forEach(journey => {
+        journeys.forEach((journey) => {
           logger?.info(`Journey: "${journey.title}" (${journey.id})`)
         })
         return
       }
 
       // 3. Delete journeys one at a time
-      
+
       for (const journey of journeys) {
         logger?.info(`🗑️ Deleting journey "${journey.title}" (${journey.id})`)
-        
-        try {
-          await prisma.$transaction(async (tx) => {
-            // Delete events first (don't cascade from journey deletion)
-            await tx.event.deleteMany({
-              where: { journeyId: journey.id }
-            })
 
-            // Delete the journey - this will cascade delete everything else
-            await tx.journey.delete({
-              where: { id: journey.id }
-            })
-          }, {
-            timeout: 30000 // 30 seconds per journey
-          })
+        try {
+          await prisma.$transaction(
+            async (tx) => {
+              // Delete events first (don't cascade from journey deletion)
+              await tx.event.deleteMany({
+                where: { journeyId: journey.id }
+              })
+
+              // Delete the journey - this will cascade delete everything else
+              await tx.journey.delete({
+                where: { id: journey.id }
+              })
+            },
+            {
+              timeout: 30000 // 30 seconds per journey
+            }
+          )
 
           deletedCount++
           logger?.info(`✅ Deleted journey "${journey.title}" (${journey.id})`)
         } catch (error) {
-          logger?.warn({ journeyId: journey.id, error }, `Failed to delete journey "${journey.title}"`)
+          logger?.warn(
+            { journeyId: journey.id, error },
+            `Failed to delete journey "${journey.title}"`
+          )
         }
       }
-      
+
       // 4. Delete User
       logger?.info(`🗑️ Deleting user ${user.email}`)
       await prismaUsers.user.delete({
@@ -127,7 +132,7 @@ export async function service(
       })
       logger?.info(`✅ Deleted user ${user.email}`)
     }
-    
+
     logger?.info(`Successfully deleted ${deletedCount} test journeys`)
     logger?.info('E2E cleanup completed successfully')
   } catch (error) {
