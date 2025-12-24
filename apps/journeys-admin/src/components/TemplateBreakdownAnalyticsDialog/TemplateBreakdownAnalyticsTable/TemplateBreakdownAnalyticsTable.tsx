@@ -94,7 +94,7 @@ export function TemplateBreakdownAnalyticsTable({
   }
 
   if (loading === true || error != null || processedData == null) {
-    return null
+    return <Box data-testid="template-breakdown-analytics-table-empty" />
   }
 
   const { totalRow, regularRows, restrictedRow, columnsWithZeros } =
@@ -116,212 +116,217 @@ export function TemplateBreakdownAnalyticsTable({
   }
 
   return (
-    <TableContainer
-      sx={{
-        maxHeight: 600,
-        overflow: 'auto'
-      }}
-    >
-      <Table stickyHeader size="small">
-        <TableHead>
-          <TableRow>
-            {visibleColumnHeaders.map((header) => (
-              <TableCell
-                key={header.id}
-                sx={{
-                  backgroundColor: 'background.paper',
-                  fontWeight: 'bold'
-                }}
-              >
-                <TableSortLabel
-                  active={orderBy === header.id}
-                  direction={orderBy === header.id ? order : 'asc'}
-                  onClick={() => handleRequestSort(header.id)}
-                >
-                  <Box>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                      {header.id === 'views' && orderBy === 'views'
-                        ? order === 'desc'
-                          ? '↑ '
-                          : '↓ '
-                        : ''}
-                      {header.label}
-                    </Typography>
-                    {header.subtitle != null && (
-                      <Typography
-                        variant="caption"
-                        sx={{ color: 'text.secondary', display: 'block' }}
-                      >
-                        {header.subtitle}
-                      </Typography>
-                    )}
-                  </Box>
-                </TableSortLabel>
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {/* Total Row */}
-          <TableRow
-            sx={{
-              backgroundColor: 'action.hover',
-              '& .MuiTableCell-root': {
-                fontWeight: 'bold',
-                backgroundColor: 'action.hover',
-                position: 'sticky',
-                top: 53,
-                zIndex: 1
-              }
-            }}
-          >
-            <TableCell>
-              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                {totalRow.journeyName}
-              </Typography>
-            </TableCell>
-            {renderNumericCell('views', totalRow.views)}
-            {renderNumericCell('responses', totalRow.responses)}
-            {renderNumericCell(
-              'christDecisionCapture',
-              totalRow.christDecisionCapture
-            )}
-            {renderNumericCell(
-              'prayerRequestCapture',
-              totalRow.prayerRequestCapture
-            )}
-            {renderNumericCell(
-              'specialVideoStartCapture',
-              totalRow.specialVideoStartCapture
-            )}
-            {renderNumericCell(
-              'specialVideoCompleteCapture',
-              totalRow.specialVideoCompleteCapture
-            )}
-            {renderNumericCell(
-              'gospelStartCapture',
-              totalRow.gospelStartCapture
-            )}
-            {renderNumericCell(
-              'gospelCompleteCapture',
-              totalRow.gospelCompleteCapture
-            )}
-            {renderNumericCell('rsvpCapture', totalRow.rsvpCapture)}
-            {renderNumericCell('custom1Capture', totalRow.custom1Capture)}
-            {renderNumericCell('custom2Capture', totalRow.custom2Capture)}
-            {renderNumericCell('custom3Capture', totalRow.custom3Capture)}
-          </TableRow>
-
-          {/* Regular Rows */}
-          {displayRows.map((row) => (
-            <TableRow key={row.journeyId} hover>
-              <TableCell>
-                <Link
-                  component={NextLink}
-                  href={`/journeys/${row.journeyId}`}
-                  sx={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <Typography variant="body2">{row.journeyName}</Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: 'text.secondary', display: 'block' }}
-                  >
-                    {row.teamName}
-                  </Typography>
-                </Link>
-              </TableCell>
-              {renderNumericCell('views', row.views)}
-              {renderNumericCell('responses', row.responses)}
-              {renderNumericCell(
-                'christDecisionCapture',
-                row.christDecisionCapture
-              )}
-              {renderNumericCell(
-                'prayerRequestCapture',
-                row.prayerRequestCapture
-              )}
-              {renderNumericCell(
-                'specialVideoStartCapture',
-                row.specialVideoStartCapture
-              )}
-              {renderNumericCell(
-                'specialVideoCompleteCapture',
-                row.specialVideoCompleteCapture
-              )}
-              {renderNumericCell('gospelStartCapture', row.gospelStartCapture)}
-              {renderNumericCell(
-                'gospelCompleteCapture',
-                row.gospelCompleteCapture
-              )}
-              {renderNumericCell('rsvpCapture', row.rsvpCapture)}
-              {renderNumericCell('custom1Capture', row.custom1Capture)}
-              {renderNumericCell('custom2Capture', row.custom2Capture)}
-              {renderNumericCell('custom3Capture', row.custom3Capture)}
-            </TableRow>
-          ))}
-
-          {/* Restricted Row */}
-          {restrictedRow != null && (
+    <Box data-testid="template-breakdown-analytics-table">
+      <TableContainer
+        sx={{
+          maxHeight: 600,
+          overflow: 'auto'
+        }}
+      >
+        <Table stickyHeader size="small">
+          <TableHead>
             <TableRow>
+              {visibleColumnHeaders.map((header) => (
+                <TableCell
+                  key={header.id}
+                  sx={{
+                    backgroundColor: 'background.paper',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  <TableSortLabel
+                    active={orderBy === header.id}
+                    direction={orderBy === header.id ? order : 'asc'}
+                    onClick={() => handleRequestSort(header.id)}
+                  >
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                        {header.id === 'views' && orderBy === 'views'
+                          ? order === 'desc'
+                            ? '↑ '
+                            : '↓ '
+                          : ''}
+                        {header.label}
+                      </Typography>
+                      {header.subtitle != null && (
+                        <Typography
+                          variant="caption"
+                          sx={{ color: 'text.secondary', display: 'block' }}
+                        >
+                          {header.subtitle}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableSortLabel>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {/* Total Row */}
+            <TableRow
+              sx={{
+                backgroundColor: 'action.hover',
+                '& .MuiTableCell-root': {
+                  fontWeight: 'bold',
+                  backgroundColor: 'action.hover',
+                  position: 'sticky',
+                  top: 53,
+                  zIndex: 1
+                }
+              }}
+            >
               <TableCell>
-                <Box>
-                  <Typography
-                    variant="body2"
-                    sx={{ color: 'text.secondary', fontWeight: 'bold' }}
-                  >
-                    Restricted teams
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: 'text.secondary', display: 'block' }}
-                  >
-                    This data is from teams you don't have access to.
-                  </Typography>
-                </Box>
+                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                  {totalRow.journeyName}
+                </Typography>
               </TableCell>
-              {renderNumericCell('views', restrictedRow.views)}
-              {renderNumericCell('responses', restrictedRow.responses)}
+              {renderNumericCell('views', totalRow.views)}
+              {renderNumericCell('responses', totalRow.responses)}
               {renderNumericCell(
                 'christDecisionCapture',
-                restrictedRow.christDecisionCapture
+                totalRow.christDecisionCapture
               )}
               {renderNumericCell(
                 'prayerRequestCapture',
-                restrictedRow.prayerRequestCapture
+                totalRow.prayerRequestCapture
               )}
               {renderNumericCell(
                 'specialVideoStartCapture',
-                restrictedRow.specialVideoStartCapture
+                totalRow.specialVideoStartCapture
               )}
               {renderNumericCell(
                 'specialVideoCompleteCapture',
-                restrictedRow.specialVideoCompleteCapture
+                totalRow.specialVideoCompleteCapture
               )}
               {renderNumericCell(
                 'gospelStartCapture',
-                restrictedRow.gospelStartCapture
+                totalRow.gospelStartCapture
               )}
               {renderNumericCell(
                 'gospelCompleteCapture',
-                restrictedRow.gospelCompleteCapture
+                totalRow.gospelCompleteCapture
               )}
-              {renderNumericCell('rsvpCapture', restrictedRow.rsvpCapture)}
-              {renderNumericCell(
-                'custom1Capture',
-                restrictedRow.custom1Capture
-              )}
-              {renderNumericCell(
-                'custom2Capture',
-                restrictedRow.custom2Capture
-              )}
-              {renderNumericCell(
-                'custom3Capture',
-                restrictedRow.custom3Capture
-              )}
+              {renderNumericCell('rsvpCapture', totalRow.rsvpCapture)}
+              {renderNumericCell('custom1Capture', totalRow.custom1Capture)}
+              {renderNumericCell('custom2Capture', totalRow.custom2Capture)}
+              {renderNumericCell('custom3Capture', totalRow.custom3Capture)}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+
+            {/* Regular Rows */}
+            {displayRows.map((row) => (
+              <TableRow key={row.journeyId} hover>
+                <TableCell>
+                  <Link
+                    component={NextLink}
+                    href={`/journeys/${row.journeyId}`}
+                    sx={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <Typography variant="body2">{row.journeyName}</Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary', display: 'block' }}
+                    >
+                      {row.teamName}
+                    </Typography>
+                  </Link>
+                </TableCell>
+                {renderNumericCell('views', row.views)}
+                {renderNumericCell('responses', row.responses)}
+                {renderNumericCell(
+                  'christDecisionCapture',
+                  row.christDecisionCapture
+                )}
+                {renderNumericCell(
+                  'prayerRequestCapture',
+                  row.prayerRequestCapture
+                )}
+                {renderNumericCell(
+                  'specialVideoStartCapture',
+                  row.specialVideoStartCapture
+                )}
+                {renderNumericCell(
+                  'specialVideoCompleteCapture',
+                  row.specialVideoCompleteCapture
+                )}
+                {renderNumericCell(
+                  'gospelStartCapture',
+                  row.gospelStartCapture
+                )}
+                {renderNumericCell(
+                  'gospelCompleteCapture',
+                  row.gospelCompleteCapture
+                )}
+                {renderNumericCell('rsvpCapture', row.rsvpCapture)}
+                {renderNumericCell('custom1Capture', row.custom1Capture)}
+                {renderNumericCell('custom2Capture', row.custom2Capture)}
+                {renderNumericCell('custom3Capture', row.custom3Capture)}
+              </TableRow>
+            ))}
+
+            {/* Restricted Row */}
+            {restrictedRow != null && (
+              <TableRow>
+                <TableCell>
+                  <Box>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary', fontWeight: 'bold' }}
+                    >
+                      Restricted teams
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: 'text.secondary', display: 'block' }}
+                    >
+                      This data is from teams you don't have access to.
+                    </Typography>
+                  </Box>
+                </TableCell>
+                {renderNumericCell('views', restrictedRow.views)}
+                {renderNumericCell('responses', restrictedRow.responses)}
+                {renderNumericCell(
+                  'christDecisionCapture',
+                  restrictedRow.christDecisionCapture
+                )}
+                {renderNumericCell(
+                  'prayerRequestCapture',
+                  restrictedRow.prayerRequestCapture
+                )}
+                {renderNumericCell(
+                  'specialVideoStartCapture',
+                  restrictedRow.specialVideoStartCapture
+                )}
+                {renderNumericCell(
+                  'specialVideoCompleteCapture',
+                  restrictedRow.specialVideoCompleteCapture
+                )}
+                {renderNumericCell(
+                  'gospelStartCapture',
+                  restrictedRow.gospelStartCapture
+                )}
+                {renderNumericCell(
+                  'gospelCompleteCapture',
+                  restrictedRow.gospelCompleteCapture
+                )}
+                {renderNumericCell('rsvpCapture', restrictedRow.rsvpCapture)}
+                {renderNumericCell(
+                  'custom1Capture',
+                  restrictedRow.custom1Capture
+                )}
+                {renderNumericCell(
+                  'custom2Capture',
+                  restrictedRow.custom2Capture
+                )}
+                {renderNumericCell(
+                  'custom3Capture',
+                  restrictedRow.custom3Capture
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }
