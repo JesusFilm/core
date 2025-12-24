@@ -2,7 +2,7 @@ name: autofix.ci
 on:
   workflow_call:
   push:
-    branches: [main, feature/*]
+    branches: [main]
   pull_request:
     branches: [main, feature/*]
   merge_group:
@@ -32,7 +32,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:

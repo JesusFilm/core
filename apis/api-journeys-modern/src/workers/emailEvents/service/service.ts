@@ -3,7 +3,7 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { ResultOf, graphql } from '@core/shared/gql'
+import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 import {
   ApiUsersJob,
@@ -11,16 +11,17 @@ import {
 } from '@core/yoga/emailEvents/types'
 
 import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
+import { env } from '../../../env'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { processUserIds } from './processUserIds'
 
 const httpLink = new HttpLink({
-  uri: process.env.GATEWAY_URL,
+  uri: env.GATEWAY_URL,
   headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? '',
+    'interop-token': env.INTEROP_TOKEN,
     'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+    'x-graphql-client-version': env.SERVICE_VERSION
   }
 })
 
@@ -70,10 +71,10 @@ async function visitorEventEmails(
       if (data?.user == null) return
 
       const analyticsUrl = `${
-        process.env.JOURNEYS_ADMIN_URL ?? ''
+        env.JOURNEYS_ADMIN_URL
       }/reports/visitors/${visitor.id}?journeyId=${journey.id}`
       const unsubscribeUrl = `${
-        process.env.JOURNEYS_ADMIN_URL ?? ''
+        env.JOURNEYS_ADMIN_URL
       }/journeys/${journey.id}?manageAccess=true`
 
       const text = await render(

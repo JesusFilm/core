@@ -262,6 +262,7 @@ export interface JourneysFilter {
   limit?: number | null;
   orderByRecent?: boolean | null;
   fromTemplateId?: string | null;
+  teamId?: string | null;
 }
 
 export interface JourneysQueryOptions {

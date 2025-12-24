@@ -26,6 +26,8 @@ export const loadJourneyLocaleResources = async (
   setResources: Dispatch<SetStateAction<Record<string, Record<string, any>>>>,
   directoryLocale: string
 ): Promise<void> => {
+  if (LOCALE_MAP[locale] == null) return
+
   try {
     const [uiResources, adminResources] = await Promise.all([
       import(

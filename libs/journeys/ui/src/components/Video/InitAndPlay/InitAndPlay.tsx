@@ -16,7 +16,12 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+import {
+  VideoFields_mediaVideo,
+  VideoFields_subtitleLanguage
+} from '../__generated__/VideoFields'
+import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
+import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
@@ -43,6 +48,8 @@ interface InitAndPlayProps {
   title: string | null
   mediaVideo: VideoFields_mediaVideo | null
   videoVariantLanguageId: string | null
+  subtitleLanguage: VideoFields_subtitleLanguage | null
+  showGeneratedSubtitles?: boolean | null
 }
 
 export function InitAndPlay({
@@ -65,13 +72,20 @@ export function InitAndPlay({
   activeStep = false,
   title,
   mediaVideo,
-  videoVariantLanguageId
+  videoVariantLanguageId,
+  subtitleLanguage,
+  showGeneratedSubtitles
 }: InitAndPlayProps): ReactElement {
   const { journey, variant } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
   const playerInitializedRef = useRef(false)
+
+  const youtubeVideoId =
+    source === VideoBlockSource.youTube && mediaVideo?.__typename === 'YouTube'
+      ? mediaVideo.id
+      : null
 
   const muxMetadata = useMemo(() => {
     return journey != null
@@ -251,6 +265,32 @@ export function InitAndPlay({
       player.pause()
     }
   }, [activeStep, player, selectedBlock])
+
+  // Set subtitles and closed captions when loaded
+  useEffect(() => {
+    if (player == null || player?.readyState() !== 4) return
+
+    if (source === VideoBlockSource.youTube) {
+      extractYouTubeCaptionsAndAddTextTracks({
+        player,
+        subtitleLanguage
+      })
+    }
+    if (source === VideoBlockSource.mux) {
+      const tracks = getCaptionsAndSubtitleTracks(player)
+      tracks.forEach((track) => {
+        if (
+          track.kind === 'subtitles'
+          // add this check in once subtitleLanguage gets mutated
+          //  &&
+          // track.language === subtitleLanguage?.bcp47
+        ) {
+          track.mode = showGeneratedSubtitles ? 'showing' : 'hidden'
+        }
+      })
+    }
+    // player ready state is needed in deps array to ensure useEffect is fired at correct time
+  }, [player, source, subtitleLanguage, player?.readyState()])
 
   return <></>
 }

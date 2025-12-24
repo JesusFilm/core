@@ -128,7 +128,8 @@ const journeyDuplicateMock: MockLink.MockedResponse<JourneyDuplicate> = {
     data: {
       journeyDuplicate: {
         __typename: 'Journey',
-        id: ONBOARDING_TEMPLATE_ID
+        id: ONBOARDING_TEMPLATE_ID,
+        template: false
       }
     }
   }

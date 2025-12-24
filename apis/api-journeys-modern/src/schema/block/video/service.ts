@@ -4,6 +4,8 @@ import { z } from 'zod'
 
 import { ResultOf, graphql } from '@core/shared/gql'
 
+import { env } from '../../../env'
+
 export const videoBlockYouTubeSchema = z.object({
   videoId: z
     .string({
@@ -66,10 +68,10 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
     }
 > {
   const httpLink = new HttpLink({
-    uri: process.env.GATEWAY_URL,
+    uri: env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys',
-      'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      'x-graphql-client-version': env.SERVICE_VERSION
     }
   })
   const apollo = new ApolloClient({
@@ -113,7 +115,7 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
 }> {
   const query = new URLSearchParams({
     part: 'snippet,contentDetails',
-    key: process.env.FIREBASE_API_KEY ?? '',
+    key: env.FIREBASE_API_KEY,
     id: videoId
   }).toString()
   const videosData: YoutubeVideosData = await (

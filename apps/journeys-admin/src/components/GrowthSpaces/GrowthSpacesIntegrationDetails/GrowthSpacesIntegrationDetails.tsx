@@ -142,12 +142,17 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
   }
 
   useEffect(() => {
-    const selectedIntegration = (data?.integrations ?? []).find(
-      (integration) => integration?.id === integrationId
-    ) as any
-    if (selectedIntegration != null) {
-      setAccessId(selectedIntegration?.accessId)
-      setAccessSecret(selectedIntegration?.accessSecretPart)
+    const selectedIntegration = data?.integrations?.find(
+      (integration) =>
+        integration.id === integrationId &&
+        integration.__typename === 'IntegrationGrowthSpaces'
+    )
+    if (
+      selectedIntegration != null &&
+      selectedIntegration.__typename === 'IntegrationGrowthSpaces'
+    ) {
+      setAccessId(selectedIntegration.accessId ?? undefined)
+      setAccessSecret(selectedIntegration.accessSecretPart ?? undefined)
     }
   }, [data?.integrations, integrationId])
 

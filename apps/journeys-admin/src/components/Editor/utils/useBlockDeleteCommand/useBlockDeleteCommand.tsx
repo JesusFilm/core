@@ -18,6 +18,7 @@ import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
+import { useMuxVideoUpload } from '../../../MuxVideoUploadProvider'
 
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
@@ -49,6 +50,7 @@ export function useBlockDeleteCommand(): {
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
   const [journeyUpdate] = useJourneyUpdateMutation()
+  const { cancelUploadForBlock } = useMuxVideoUpload()
 
   const [updateMultiselectBlock] = useMutation(MULTISELECT_BLOCK_UPDATE)
 
@@ -117,6 +119,8 @@ export function useBlockDeleteCommand(): {
         undo: {}
       },
       execute() {
+        cancelUploadForBlock(currentBlock)
+
         const nextSelectedStep =
           stepSiblingsAfterDelete.find(
             ({ parentOrder }) => parentOrder === deletedBlockParentOrder

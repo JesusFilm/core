@@ -13,8 +13,11 @@ import {
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 import { videoItems } from '../../VideoLibrary/data'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+
+import { GET_VIDEO_VARIANT_LANGUAGES } from './SourceFromLocal/SourceFromLocal'
 
 import { Source } from '.'
 
@@ -85,6 +88,36 @@ const getVideoMock = {
   }
 }
 
+const getVideoVariantLanguagesMock = {
+  request: {
+    query: GET_VIDEO_VARIANT_LANGUAGES,
+    variables: {
+      id: 'videoId'
+    }
+  },
+  result: {
+    data: {
+      video: {
+        id: 'videoId',
+        variant: {
+          id: 'variantA'
+        },
+        variantLanguages: [
+          {
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
 describe('Source', () => {
   const push = jest.fn()
   const on = jest.fn()
@@ -125,9 +158,11 @@ describe('Source', () => {
 
     render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
-        <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
-          <Source selectedBlock={null} onChange={onChange} />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+            <Source selectedBlock={null} onChange={onChange} />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -140,14 +175,17 @@ describe('Source', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
-      expect(onChange).toHaveBeenCalledWith({
-        duration: 144,
-        videoId: 'videoId',
-        videoVariantLanguageId: '529',
-        source: VideoBlockSource.internal,
-        startAt: 0,
-        endAt: 144
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          duration: 144,
+          videoId: 'videoId',
+          videoVariantLanguageId: '529',
+          source: VideoBlockSource.internal,
+          startAt: 0,
+          endAt: 144
+        },
+        true
+      )
     )
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -164,34 +202,37 @@ describe('Source', () => {
     const onChange = jest.fn()
     render(
       <MockedProvider>
-        <Source
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.youTube,
-            mediaVideo: null,
-            objectFit: null,
-            subtitleLanguage: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onChange={onChange}
-        />
+        <MuxVideoUploadProvider>
+          <Source
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description:
+                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+              duration: 348,
+              endAt: 348,
+              fullsize: true,
+              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: 'What is the Bible?',
+              videoId: 'ak06MSETeo4',
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.youTube,
+              mediaVideo: null,
+              objectFit: null,
+              subtitleLanguage: null,
+              showGeneratedSubtitles: null,
+              posterBlockId: 'poster1.id',
+              children: []
+            }}
+            onChange={onChange}
+          />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -220,37 +261,40 @@ describe('Source', () => {
 
     render(
       <MockedProvider>
-        <Source
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.youTube,
-            mediaVideo: {
-              __typename: 'YouTube',
-              id: 'ak06MSETeo4'
-            },
-            objectFit: null,
-            subtitleLanguage: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onChange={onChange}
-        />
+        <MuxVideoUploadProvider>
+          <Source
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description:
+                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+              duration: 348,
+              endAt: 348,
+              fullsize: true,
+              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: 'What is the Bible?',
+              videoId: 'ak06MSETeo4',
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.youTube,
+              mediaVideo: {
+                __typename: 'YouTube',
+                id: 'ak06MSETeo4'
+              },
+              objectFit: null,
+              subtitleLanguage: null,
+              showGeneratedSubtitles: null,
+              posterBlockId: 'poster1.id',
+              children: []
+            }}
+            onChange={onChange}
+          />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -269,5 +313,256 @@ describe('Source', () => {
       expect(screen.getByText('Video Details')).toBeInTheDocument()
     )
     expect(screen.getByText('What is the Bible?')).toBeInTheDocument()
+  })
+
+  it('shows SourceFromLocal when source is internal with videoId', async () => {
+    const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider mocks={[getVideoVariantLanguagesMock]}>
+        <MuxVideoUploadProvider>
+          <EditorProvider>
+            <Source
+              selectedBlock={{
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                description: 'A local video',
+                duration: 120,
+                endAt: 120,
+                fullsize: true,
+                image: 'https://example.com/image.jpg',
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                title: 'Local Video Title',
+                videoId: 'videoId',
+                videoVariantLanguageId: '529',
+                parentOrder: 0,
+                action: null,
+                source: VideoBlockSource.internal,
+                mediaVideo: {
+                  __typename: 'Video',
+                  id: 'videoId',
+                  images: [
+                    {
+                      __typename: 'CloudflareImage',
+                      mobileCinematicHigh: 'https://example.com/thumbnail.jpg'
+                    }
+                  ],
+                  title: [
+                    { __typename: 'VideoTitle', value: 'Local Video Title' }
+                  ],
+                  variant: null,
+                  variantLanguages: []
+                },
+                objectFit: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                posterBlockId: null,
+                children: []
+              }}
+              onChange={onChange}
+            />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoSource')).toBeInTheDocument()
+    )
+  })
+
+  it('shows SourceFromMux when source is mux', async () => {
+    const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider>
+            <Source
+              selectedBlock={{
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                description: 'A Mux video',
+                duration: 180,
+                endAt: 180,
+                fullsize: true,
+                image: 'https://example.com/mux-image.jpg',
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                title: 'Mux Video Title',
+                videoId: 'muxVideoId',
+                videoVariantLanguageId: null,
+                parentOrder: 0,
+                action: null,
+                source: VideoBlockSource.mux,
+                mediaVideo: null,
+                objectFit: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                posterBlockId: null,
+                children: []
+              }}
+              onChange={onChange}
+            />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByText('Mux Video Title')).toBeInTheDocument()
+    )
+    expect(screen.getByText('Custom Video')).toBeInTheDocument()
+  })
+
+  it('shows SourceEmpty when selectedBlock is null', async () => {
+    const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <Source selectedBlock={null} onChange={onChange} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByText('Select Video')).toBeInTheDocument()
+    )
+  })
+
+  it('shows SourceEmpty when source is internal without videoId', async () => {
+    const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <EditorProvider>
+          <Source
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description: '',
+              duration: 0,
+              endAt: 0,
+              fullsize: true,
+              image: null,
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: null,
+              videoId: null,
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.internal,
+              mediaVideo: null,
+              objectFit: null,
+              subtitleLanguage: null,
+              showGeneratedSubtitles: false,
+              posterBlockId: null,
+              children: []
+            }}
+            onChange={onChange}
+          />
+        </EditorProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByText('Select Video')).toBeInTheDocument()
+    )
+  })
+
+  it('opens VideoLibrary dialog when card is clicked', async () => {
+    const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+            <Source selectedBlock={null} onChange={onChange} />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('card click area')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('card click area'))
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'video-library' }
+        },
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
+
+  it('renders VideoLibrary component when open is true', async () => {
+    const onChange = jest.fn()
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+            <Source selectedBlock={null} onChange={onChange} />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('card click area')).toBeInTheDocument()
+    )
+    expect(screen.queryByText('Video Library')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('card click area'))
+    await waitFor(() => {
+      expect(screen.getByText('Video Library')).toBeInTheDocument()
+    })
   })
 })

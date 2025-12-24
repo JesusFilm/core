@@ -125,7 +125,7 @@ describe('PageWrapper', () => {
       ).not.toBeInTheDocument()
 
       fireEvent.click(getByTestId('NavigationListItemToggle'))
-      expect(getByText('Discover')).toBeInTheDocument()
+      expect(getByText('Projects')).toBeInTheDocument()
     })
   })
 })

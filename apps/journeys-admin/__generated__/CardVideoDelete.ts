@@ -16,6 +16,7 @@ export interface CardVideoDelete_video_ImageBlock {
 export interface CardVideoDelete_video_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_title {
@@ -110,6 +111,8 @@ export interface CardVideoDelete_video_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction | CardVideoDelete_video_VideoBlock_action_ChatAction | CardVideoDelete_video_VideoBlock_action_PhoneAction;
@@ -182,6 +185,7 @@ export interface CardVideoDelete_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardVideoDelete_video_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardVideoDelete_video_VideoBlock_mediaVideo | null;
   /**

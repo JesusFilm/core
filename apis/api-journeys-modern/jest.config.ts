@@ -22,7 +22,8 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/test/prismaMock.ts'],
   transformIgnorePatterns: ['node_modules/(?!(@react-email/render)/)'],
   moduleNameMapper: {
-    '@react-email/render': '<rootDir>/test/reactEmailRenderMock.ts'
+    '@react-email/render': '<rootDir>/test/reactEmailRenderMock.ts',
+    '^.+/env$': '<rootDir>/test/env.mock.ts'
   }
 }
 

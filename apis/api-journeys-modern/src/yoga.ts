@@ -17,9 +17,10 @@ import { prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
+import { env } from './env'
 import { logger } from './logger'
 import { schema } from './schema'
-import { Context } from './schema/builder'
+import { Context } from './schema/authScopes'
 
 export const cache = createInMemoryCache()
 
@@ -68,7 +69,7 @@ export const yoga = createYoga<
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
-          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+          secret: env.GATEWAY_HMAC_SECRET
         })
       : {},
     useReadinessCheck({
@@ -80,7 +81,15 @@ export const yoga = createYoga<
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
           session: () => null,
-          cache
+          cache,
+          ttlPerSchemaCoordinate: {
+            'Journey.blockTypenames': 0,
+            'Query.googleSheetsSyncs': 0,
+            'Query.journeysPlausibleStatsAggregate': 5000,
+            'Query.journeysPlausibleStatsBreakdown': 5000,
+            'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
+            'Query.journeysPlausibleStatsTimeseries': 5000
+          }
         })
       : {}
   ]

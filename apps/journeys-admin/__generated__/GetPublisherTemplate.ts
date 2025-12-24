@@ -71,6 +71,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action = GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_ChatAction | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_PhoneAction;
@@ -223,6 +225,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action = GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_ChatAction | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_PhoneAction;
@@ -291,6 +295,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action = GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_ChatAction | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_PhoneAction;
@@ -377,6 +383,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title {
@@ -471,6 +478,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_ChatAction | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_PhoneAction;
@@ -543,6 +552,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo | null;
   /**
@@ -592,6 +602,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction = GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_ChatAction | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_PhoneAction;

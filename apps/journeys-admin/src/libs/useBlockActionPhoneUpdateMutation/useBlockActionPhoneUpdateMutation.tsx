@@ -20,6 +20,8 @@ export const BLOCK_ACTION_PHONE_UPDATE = gql`
       phone
       countryCode
       contactAction
+      customizable
+      parentStepId
     }
   }
 `
@@ -35,6 +37,8 @@ export function useBlockActionPhoneUpdateMutation(
     phone: string,
     countryCode: string,
     contactAction: ContactActionType,
+    customizable: boolean | null,
+    parentStepId: string | null,
     options?: MutationFunctionOptions<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
@@ -52,6 +56,8 @@ export function useBlockActionPhoneUpdateMutation(
     phone: string,
     countryCode: string,
     contactAction: ContactActionType,
+    customizable: boolean | null,
+    parentStepId: string | null,
     options?: MutationFunctionOptions<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
@@ -61,7 +67,7 @@ export function useBlockActionPhoneUpdateMutation(
       ...options,
       variables: {
         id: block.id,
-        input: { phone, countryCode, contactAction }
+        input: { phone, countryCode, contactAction, customizable, parentStepId }
       },
       optimisticResponse: {
         blockUpdatePhoneAction: {
@@ -70,7 +76,9 @@ export function useBlockActionPhoneUpdateMutation(
           gtmEventName: '',
           phone,
           countryCode,
-          contactAction
+          contactAction,
+          customizable,
+          parentStepId
         }
       },
       update(cache, { data }) {

@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 
 import {
   GetIntegration_integrations as Integration,
-  GetIntegration_integrations_routes as Route
+  GetIntegration_integrations_IntegrationGrowthSpaces_routes as Route
 } from '../../../__generated__/GetIntegration'
 import { IntegrationType } from '../../../__generated__/globalTypes'
 

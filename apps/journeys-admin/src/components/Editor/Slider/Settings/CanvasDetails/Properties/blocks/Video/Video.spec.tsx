@@ -8,6 +8,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Video } from './Video'
 
@@ -32,6 +33,7 @@ describe('Video', () => {
     image: null,
     objectFit: null,
     subtitleLanguage: null,
+    showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
@@ -63,7 +65,9 @@ describe('Video', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <Video {...video} />
+          <MuxVideoUploadProvider>
+            <Video {...video} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -76,10 +80,12 @@ describe('Video', () => {
     const { getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider>
-            <Video {...video} />
-            <TestEditorState />
-          </EditorProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider>
+              <Video {...video} />
+              <TestEditorState />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

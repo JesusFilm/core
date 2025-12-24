@@ -13,12 +13,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { JourneyCard } from '../../JourneyList/JourneyCard'
+import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
-import { JourneyCard } from '../../JourneyList/JourneyCard'
-import type { JourneyListProps } from '../../JourneyList/JourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 
@@ -39,7 +39,8 @@ export function ArchivedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {

@@ -14,6 +14,7 @@ import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
@@ -61,7 +62,12 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -83,7 +89,12 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -107,7 +118,12 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -130,7 +146,12 @@ describe('VideoControls', () => {
       .mockImplementationOnce(() => player)
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -150,7 +171,12 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -171,7 +197,13 @@ describe('VideoControls', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} muted />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          muted
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -193,7 +225,13 @@ describe('VideoControls', () => {
 
     render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} muted />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          muted
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -205,25 +243,29 @@ describe('VideoControls', () => {
 
     await waitFor(() => expect(muteStub).toHaveBeenCalled())
 
-    // Add a small delay to allow the state to update
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    await waitFor(
-      () => {
-        // Try to find either button, and as long as one exists, the test passes
-        const pauseButtons = screen.queryAllByRole('button', {
-          name: /bar-play-button|center-pause-button/
-        })
-        expect(pauseButtons.length).toBeGreaterThan(0)
-      },
-      { timeout: 5000 }
-    )
+    await act(async () => {
+      await waitFor(
+        () => {
+          // Try to find either button, and as long as one exists, the test passes
+          const pauseButtons = screen.queryAllByRole('button', {
+            name: /bar-play-button|center-pause-button/
+          })
+          expect(pauseButtons.length).toBeGreaterThan(0)
+        },
+        { timeout: 5000 }
+      )
+    })
   })
 
   it('should show video settings button by default', () => {
     render(
       <MockedProvider>
-        <VideoControls player={player} startAt={0} endAt={10} />
+        <VideoControls
+          player={player}
+          startAt={0}
+          endAt={10}
+          source={VideoBlockSource.internal}
+        />
       </MockedProvider>
     )
 
@@ -242,7 +284,12 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls
+            player={player}
+            startAt={0}
+            endAt={10}
+            source={VideoBlockSource.internal}
+          />
         </MockedProvider>
       )
 
@@ -263,7 +310,12 @@ describe('VideoControls', () => {
 
       const { getByRole } = render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls
+            player={player}
+            startAt={0}
+            endAt={10}
+            source={VideoBlockSource.internal}
+          />
         </MockedProvider>
       )
 
@@ -284,7 +336,12 @@ describe('VideoControls', () => {
 
       render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls
+            player={player}
+            startAt={0}
+            endAt={10}
+            source={VideoBlockSource.internal}
+          />
         </MockedProvider>
       )
 
@@ -305,7 +362,12 @@ describe('VideoControls', () => {
 
       render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls
+            player={player}
+            startAt={0}
+            endAt={10}
+            source={VideoBlockSource.internal}
+          />
         </MockedProvider>
       )
 
@@ -320,7 +382,12 @@ describe('VideoControls', () => {
     it('should show video settings button', () => {
       render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls
+            player={player}
+            startAt={0}
+            endAt={10}
+            source={VideoBlockSource.internal}
+          />
         </MockedProvider>
       )
 
@@ -347,7 +414,12 @@ describe('VideoControls', () => {
         <MockedProvider>
           <div className="step active-card">
             <div className="card MuiPaper-root">
-              <VideoControls player={player} startAt={0} endAt={10} />
+              <VideoControls
+                player={player}
+                startAt={0}
+                endAt={10}
+                source={VideoBlockSource.internal}
+              />
             </div>
           </div>
         </MockedProvider>
@@ -372,7 +444,12 @@ describe('VideoControls', () => {
 
       render(
         <MockedProvider>
-          <VideoControls player={player} startAt={0} endAt={10} />
+          <VideoControls
+            player={player}
+            startAt={0}
+            endAt={10}
+            source={VideoBlockSource.internal}
+          />
         </MockedProvider>
       )
 
@@ -388,7 +465,12 @@ describe('VideoControls', () => {
       const { getByRole, queryByRole } = render(
         <MockedProvider>
           <JourneyProvider value={{ variant: 'embed' }}>
-            <VideoControls player={player} startAt={0} endAt={10} />
+            <VideoControls
+              player={player}
+              startAt={0}
+              endAt={10}
+              source={VideoBlockSource.internal}
+            />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -405,7 +487,12 @@ describe('VideoControls', () => {
         <MockedProvider>
           <div className="step active-card">
             <div className="card MuiPaper-root">
-              <VideoControls player={player} startAt={0} endAt={10} />
+              <VideoControls
+                player={player}
+                startAt={0}
+                endAt={10}
+                source={VideoBlockSource.internal}
+              />
             </div>
           </div>
         </MockedProvider>

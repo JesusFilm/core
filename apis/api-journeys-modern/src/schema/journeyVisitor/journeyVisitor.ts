@@ -1,4 +1,3 @@
-import { stringify } from 'csv-stringify'
 import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
@@ -8,7 +7,38 @@ import { builder } from '../builder'
 import { MessagePlatform } from '../enums'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
+import { computeConnectedBlockIds } from './export/connectivity'
+import { createCsvStringifier, sanitizeCSVCell } from './export/csv'
+import {
+  formatDateYmdInTimeZone,
+  parseDateInTimeZoneToUtc
+} from './export/date'
+import {
+  type BaseColumnLabelResolver,
+  type JourneyExportColumn,
+  buildHeaderRows,
+  buildJourneyExportColumns,
+  getCardHeading as getCardHeadingHelper
+} from './export/headings'
+import {
+  type SimpleBlock,
+  buildRenderTree,
+  computeOrderIndex
+} from './export/order'
 import { JourneyVisitorExportSelect } from './inputs'
+
+const journeyBlockSelect = {
+  id: true,
+  typename: true,
+  parentBlockId: true,
+  parentOrder: true,
+  nextBlockId: true,
+  action: true,
+  content: true,
+  x: true,
+  y: true,
+  deletedAt: true
+} as const
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
   shareable: true,
@@ -84,7 +114,6 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
     events: t.relation('events', { nullable: false })
   })
 })
-
 builder.asEntity(JourneyVisitorRef, {
   key: builder.selection<{ visitorId: string; journeyId: string }>(
     'visitorId journeyId'
@@ -103,24 +132,19 @@ builder.asEntity(JourneyVisitorRef, {
     })
   }
 })
-
 interface JourneyVisitorExportRow {
-  id: string
-  createdAt: string
-  name: string
-  email: string
-  phone: string
+  date: string
   [key: string]: string
 }
 
 async function* getJourneyVisitors(
   journeyId: string,
   eventWhere: Prisma.EventWhereInput,
+  timezone: string,
   batchSize: number = 1000
 ): AsyncGenerator<JourneyVisitorExportRow> {
   let offset = 0
   let hasMore = true
-
   while (hasMore) {
     const journeyVisitors = await prisma.journeyVisitor.findMany({
       where: {
@@ -137,20 +161,13 @@ async function* getJourneyVisitors(
       select: {
         id: true,
         createdAt: true,
-        visitor: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true
-          }
-        },
         events: {
           where: eventWhere,
           select: {
             blockId: true,
             label: true,
-            value: true
+            value: true,
+            typename: true
           },
           orderBy: {
             createdAt: 'asc'
@@ -158,40 +175,43 @@ async function* getJourneyVisitors(
         }
       }
     })
-
     if (journeyVisitors.length === 0) {
       hasMore = false
       break
     }
-
     for (const journeyVisitor of journeyVisitors) {
+      // Format date in user's timezone to match frontend display
+      const date = formatDateYmdInTimeZone(journeyVisitor.createdAt, timezone)
       const row: JourneyVisitorExportRow = {
-        id: journeyVisitor.visitor.id,
-        createdAt: journeyVisitor.createdAt.toISOString(),
-        name: journeyVisitor.visitor.name || '',
-        email: journeyVisitor.visitor.email || '',
-        phone: journeyVisitor.visitor.phone || ''
+        date
       }
-
+      // Group events by blockId-label key and collect values deterministically
+      const eventValuesByKey = new Map<string, string[]>()
       journeyVisitor.events.forEach((event) => {
-        if (event.blockId && event.label) {
-          const key = `${event.blockId}-${event.label}`
-          if (row[key]) {
-            row[key] += `; ${event.value!}`
-          } else {
-            row[key] = event.value!
+        if (event.blockId) {
+          // Normalize label to match header key format
+          const normalizedLabel = (event.label ?? '')
+            .replace(/\s+/g, ' ')
+            .trim()
+          const key = `${event.blockId}-${normalizedLabel}`
+          const eventValue = event.value ?? ''
+          if (!eventValuesByKey.has(key)) {
+            eventValuesByKey.set(key, [])
           }
+          eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-
+      // Join values with a fixed separator and sanitize for CSV
+      eventValuesByKey.forEach((values, key) => {
+        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
+        row[key] = sanitizedValues.join('; ')
+      })
       yield row
     }
-
     offset += batchSize
     hasMore = journeyVisitors.length === batchSize
   }
 }
-
 builder.queryField('journeyVisitorExport', (t) => {
   return t
     .withAuth({
@@ -204,9 +224,16 @@ builder.queryField('journeyVisitorExport', (t) => {
       args: {
         journeyId: t.arg.id({ required: true }),
         filter: t.arg({ type: JourneyEventsFilter, required: false }),
-        select: t.arg({ type: JourneyVisitorExportSelect, required: false })
+        select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
+        timezone: t.arg.string({
+          required: false,
+          description:
+            'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
+        })
       },
-      resolve: async (_, { journeyId, filter, select }, context) => {
+      resolve: async (_, { journeyId, filter, select, timezone }, context) => {
+        // Use user's timezone or default to UTC
+        const userTimezone = timezone ?? 'UTC'
         const journey = await prisma.journey.findUnique({
           where: {
             id: journeyId
@@ -215,22 +242,15 @@ builder.queryField('journeyVisitorExport', (t) => {
             team: { include: { userTeams: true } },
             userJourneys: true,
             blocks: {
-              select: {
-                id: true
-              },
-              orderBy: {
-                updatedAt: 'asc'
-              }
+              select: journeyBlockSelect
             }
           }
         })
-
         if (!journey) {
           throw new GraphQLError('Journey not found', {
             extensions: { code: 'NOT_FOUND' }
           })
         }
-
         if (
           !ability(Action.Export, subject('Journey', journey), context.user)
         ) {
@@ -238,24 +258,64 @@ builder.queryField('journeyVisitorExport', (t) => {
             extensions: { code: 'FORBIDDEN' }
           })
         }
+        // Build a map of blocks (non-deleted only) and compute renderer-aligned order
+        const journeyBlocks = journey.blocks.filter((b) => b.deletedAt == null)
+        const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
 
+        const simpleBlocks: SimpleBlock[] = journeyBlocks.map((b) => ({
+          id: b.id,
+          typename: b.typename,
+          parentBlockId: b.parentBlockId ?? null,
+          parentOrder: b.parentOrder ?? null
+        }))
+        const treeRoots = buildRenderTree(simpleBlocks)
+        const orderIndex = computeOrderIndex(treeRoots)
+
+        const includeOld = filter?.includeUnconnectedCards === true
+        const connectedAllowedBlockIds = computeConnectedBlockIds({
+          journeyBlocks
+        })
+        const allowedBlockIds =
+          includeOld === true
+            ? new Set(simpleBlocks.map((b) => b.id))
+            : connectedAllowedBlockIds
+
+        // Build base event filter and apply connectivity filter by default
         const eventWhere: Prisma.EventWhereInput = {
           journeyId: journeyId,
-          blockId: { not: null },
-          label: { not: null }
+          blockId:
+            includeOld === true
+              ? { not: null }
+              : { in: Array.from(allowedBlockIds) }
         }
 
+        // Filter by typenames - if provided use those, otherwise default to submission events only
         if (filter?.typenames && filter.typenames.length > 0) {
           eventWhere.typename = { in: filter.typenames }
+        } else {
+          // Default: only include submission events (exclude view/navigation events)
+          eventWhere.typename = {
+            in: [
+              'RadioQuestionSubmissionEvent',
+              'MultiselectSubmissionEvent',
+              'TextResponseSubmissionEvent',
+              'SignUpSubmissionEvent'
+            ]
+          }
         }
-
         if (filter?.periodRangeStart || filter?.periodRangeEnd) {
           eventWhere.createdAt = {}
           if (filter.periodRangeStart) {
-            eventWhere.createdAt.gte = filter.periodRangeStart
+            eventWhere.createdAt.gte = parseDateInTimeZoneToUtc(
+              filter.periodRangeStart,
+              userTimezone
+            )
           }
           if (filter.periodRangeEnd) {
-            eventWhere.createdAt.lte = filter.periodRangeEnd
+            eventWhere.createdAt.lte = parseDateInTimeZoneToUtc(
+              filter.periodRangeEnd,
+              userTimezone
+            )
           }
         }
 
@@ -269,55 +329,77 @@ builder.queryField('journeyVisitorExport', (t) => {
           distinct: ['blockId', 'label']
         })
 
-        // TODO: sort blockIds based on order the block appears in the journey
-        const blockIds = journey.blocks.map((block) => block.id)
+        // Normalize labels and deduplicate by normalized key
+        const headerMap = new Map<string, { blockId: string; label: string }>()
+        blockHeadersResult
+          .filter((header) => header.blockId != null)
+          .forEach((header) => {
+            const normalizedLabel = (header.label ?? '')
+              .replace(/\s+/g, ' ')
+              .trim()
+            const key = `${header.blockId}-${normalizedLabel}`
+            // Only add if not already present (handles duplicates with different whitespace)
+            if (!headerMap.has(key)) {
+              headerMap.set(key, {
+                blockId: header.blockId!,
+                label: normalizedLabel
+              })
+            }
+          })
+        const normalizedBlockHeaders = Array.from(headerMap.values())
 
-        // Build headers: visitor info + dynamic block columns
-        const blockHeaders = blockHeadersResult
-          .sort(
-            (a, b) =>
-              blockIds.findIndex((blockId) => blockId === a.blockId) -
-              blockIds.findIndex((blockId) => blockId === b.blockId)
-          )
-          .map((item) => ({
-            key: `${item.blockId!}-${item.label!}`,
-            header: item.label!
-          }))
+        const getCardHeading = (blockId: string | null | undefined) =>
+          getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
 
-        const columns = [
-          { key: 'id' },
-          select?.createdAt !== false ? { key: 'createdAt' } : null,
-          select?.name !== false ? { key: 'name' } : null,
-          select?.email !== false ? { key: 'email' } : null,
-          select?.phone !== false ? { key: 'phone' } : null,
-          ...(filter?.typenames == null || filter.typenames.length > 0
-            ? blockHeaders
-            : [])
-        ].filter((value) => value != null)
+        const baseColumns: JourneyExportColumn[] = [
+          { key: 'date', label: 'Date', blockId: null, typename: '' }
+        ]
+        const columns = buildJourneyExportColumns({
+          baseColumns,
+          blockHeaders: normalizedBlockHeaders,
+          journeyBlocks,
+          orderIndex
+        })
 
+        const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
+          column,
+          userTimezone
+        }) => {
+          if (column.key === 'date') {
+            return userTimezone !== 'UTC' && userTimezone !== ''
+              ? `Date (${userTimezone})`
+              : 'Date'
+          }
+          return column.label
+        }
+
+        const { headerRow } = buildHeaderRows({
+          columns,
+          userTimezone,
+          getCardHeading,
+          baseColumnLabelResolver: resolveBaseColumnLabel
+        })
         // Stream rows directly to CSV without collecting in memory
-        const stringifier = stringify({
-          header: true,
-          columns
-        })
+        const { stringifier, onEndPromise, getContent } = createCsvStringifier(
+          columns.map((col) => ({ key: col.key }))
+        )
 
-        const onEndPromise = new Promise((resolve) => {
-          stringifier.on('end', resolve)
-        })
+        // Write the header row (sanitized)
+        const sanitizedHeaderRow = headerRow.map((cell) =>
+          sanitizeCSVCell(cell)
+        )
+        stringifier.write(sanitizedHeaderRow)
 
-        let csvContent: string = ''
-        stringifier.on('data', (chunk) => {
-          csvContent += chunk
-        })
-
-        for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
+        for await (const row of getJourneyVisitors(
+          journeyId,
+          eventWhere,
+          userTimezone
+        )) {
           stringifier.write(row)
         }
         stringifier.end()
-
         await onEndPromise
-
-        return csvContent
+        return getContent()
       }
     })
 })

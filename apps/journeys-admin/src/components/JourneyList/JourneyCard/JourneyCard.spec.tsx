@@ -5,7 +5,15 @@ import { SnackbarProvider } from 'notistack'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, fakeDate, journeyWithImage } from '../journeyListData'
+import {
+  customizableTemplateJourney,
+  customizableWebsiteTemplateJourney,
+  defaultJourney,
+  fakeDate,
+  journeyWithImage,
+  publishedLocalTemplate,
+  websiteJourney
+} from '../journeyListData'
 
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
@@ -112,5 +120,110 @@ describe('JourneyCard', () => {
 
     expect(screen.getByTestId('new-journey-badge')).toBeInTheDocument()
     expect(screen.getByText('New')).toBeInTheDocument()
+  })
+
+  it('should show quick start badge when journey is template and customizable', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={customizableTemplateJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardQuickStartBadge')).toBeInTheDocument()
+    expect(screen.getByText('Quick Start')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyCardWebsiteBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Website')).not.toBeInTheDocument()
+  })
+
+  it('should show website badge when journey is website', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={websiteJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardWebsiteBadge')).toBeInTheDocument()
+    expect(screen.getByText('Website')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyCardQuickStartBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Quick Start')).not.toBeInTheDocument()
+  })
+
+  it('should show both badges when journey is template and customizable and website', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={customizableWebsiteTemplateJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardQuickStartBadge')).toBeInTheDocument()
+    expect(screen.getByText('Quick Start')).toBeInTheDocument()
+    expect(screen.getByTestId('JourneyCardWebsiteBadge')).toBeInTheDocument()
+    expect(screen.getByText('Website')).toBeInTheDocument()
+  })
+
+  it('should not show badges when journey is not template and customizable and website', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(
+      screen.queryByTestId('JourneyCardQuickStartBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Quick Start')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyCardWebsiteBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Website')).not.toBeInTheDocument()
+  })
+
+  it('should show journey analytics for default journey card', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardInfo')).toBeInTheDocument()
+  })
+
+  // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
+  it('TEMP - should not show journey analytics for local template card', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={publishedLocalTemplate} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.queryByTestId('JourneyCardInfo')).not.toBeInTheDocument()
   })
 })

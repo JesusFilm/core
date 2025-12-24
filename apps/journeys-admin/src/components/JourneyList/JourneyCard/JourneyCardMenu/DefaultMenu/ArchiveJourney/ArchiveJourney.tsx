@@ -50,7 +50,7 @@ export function ArchiveJourney({
   disabled = false
 }: ArchiveJourneyProps): ReactElement {
   const router = useRouter()
-  const activeTab = router?.query.tab?.toString() ?? 'active'
+  const activeTab = router?.query.status?.toString() ?? 'active'
   const { t } = useTranslation('apps-journeys-admin')
   const [loading, setLoading] = useState(false)
   const previousStatus = published

@@ -12,6 +12,7 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactAc
 export interface CoverVideoBlockUpdate_videoBlockUpdate_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
@@ -106,6 +107,8 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CoverVideoBlockUpdate_videoBlockUpdate_action = CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CoverVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction | CoverVideoBlockUpdate_videoBlockUpdate_action_ChatAction | CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction;
@@ -178,6 +181,7 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CoverVideoBlockUpdate_videoBlockUpdate_subtitleLanguage | null;
   mediaVideo: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**

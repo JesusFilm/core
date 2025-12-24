@@ -57,6 +57,8 @@ export interface CardIntroRestore_subtitle_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_subtitle_ButtonBlock_action = CardIntroRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_ButtonBlock_action_LinkAction | CardIntroRestore_subtitle_ButtonBlock_action_EmailAction | CardIntroRestore_subtitle_ButtonBlock_action_ChatAction | CardIntroRestore_subtitle_ButtonBlock_action_PhoneAction;
@@ -209,6 +211,8 @@ export interface CardIntroRestore_subtitle_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_subtitle_RadioOptionBlock_action = CardIntroRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_RadioOptionBlock_action_LinkAction | CardIntroRestore_subtitle_RadioOptionBlock_action_EmailAction | CardIntroRestore_subtitle_RadioOptionBlock_action_ChatAction | CardIntroRestore_subtitle_RadioOptionBlock_action_PhoneAction;
@@ -277,6 +281,8 @@ export interface CardIntroRestore_subtitle_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_subtitle_SignUpBlock_action = CardIntroRestore_subtitle_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_SignUpBlock_action_LinkAction | CardIntroRestore_subtitle_SignUpBlock_action_EmailAction | CardIntroRestore_subtitle_SignUpBlock_action_ChatAction | CardIntroRestore_subtitle_SignUpBlock_action_PhoneAction;
@@ -363,6 +369,7 @@ export interface CardIntroRestore_subtitle_TypographyBlock {
 export interface CardIntroRestore_subtitle_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -457,6 +464,8 @@ export interface CardIntroRestore_subtitle_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_subtitle_VideoBlock_action = CardIntroRestore_subtitle_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_subtitle_VideoBlock_action_LinkAction | CardIntroRestore_subtitle_VideoBlock_action_EmailAction | CardIntroRestore_subtitle_VideoBlock_action_ChatAction | CardIntroRestore_subtitle_VideoBlock_action_PhoneAction;
@@ -529,6 +538,7 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_subtitle_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
@@ -578,6 +588,8 @@ export interface CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_Phone
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction = CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -645,6 +657,8 @@ export interface CardIntroRestore_title_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_title_ButtonBlock_action = CardIntroRestore_title_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_title_ButtonBlock_action_LinkAction | CardIntroRestore_title_ButtonBlock_action_EmailAction | CardIntroRestore_title_ButtonBlock_action_ChatAction | CardIntroRestore_title_ButtonBlock_action_PhoneAction;
@@ -797,6 +811,8 @@ export interface CardIntroRestore_title_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_title_RadioOptionBlock_action = CardIntroRestore_title_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_title_RadioOptionBlock_action_LinkAction | CardIntroRestore_title_RadioOptionBlock_action_EmailAction | CardIntroRestore_title_RadioOptionBlock_action_ChatAction | CardIntroRestore_title_RadioOptionBlock_action_PhoneAction;
@@ -865,6 +881,8 @@ export interface CardIntroRestore_title_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_title_SignUpBlock_action = CardIntroRestore_title_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_title_SignUpBlock_action_LinkAction | CardIntroRestore_title_SignUpBlock_action_EmailAction | CardIntroRestore_title_SignUpBlock_action_ChatAction | CardIntroRestore_title_SignUpBlock_action_PhoneAction;
@@ -951,6 +969,7 @@ export interface CardIntroRestore_title_TypographyBlock {
 export interface CardIntroRestore_title_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -1045,6 +1064,8 @@ export interface CardIntroRestore_title_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_title_VideoBlock_action = CardIntroRestore_title_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_title_VideoBlock_action_LinkAction | CardIntroRestore_title_VideoBlock_action_EmailAction | CardIntroRestore_title_VideoBlock_action_ChatAction | CardIntroRestore_title_VideoBlock_action_PhoneAction;
@@ -1117,6 +1138,7 @@ export interface CardIntroRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_title_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_title_VideoBlock_mediaVideo | null;
   /**
@@ -1166,6 +1188,8 @@ export interface CardIntroRestore_title_VideoTriggerBlock_triggerAction_PhoneAct
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_title_VideoTriggerBlock_triggerAction = CardIntroRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_title_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_title_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_title_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_title_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1233,6 +1257,8 @@ export interface CardIntroRestore_body_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_body_ButtonBlock_action = CardIntroRestore_body_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_body_ButtonBlock_action_LinkAction | CardIntroRestore_body_ButtonBlock_action_EmailAction | CardIntroRestore_body_ButtonBlock_action_ChatAction | CardIntroRestore_body_ButtonBlock_action_PhoneAction;
@@ -1385,6 +1411,8 @@ export interface CardIntroRestore_body_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_body_RadioOptionBlock_action = CardIntroRestore_body_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_body_RadioOptionBlock_action_LinkAction | CardIntroRestore_body_RadioOptionBlock_action_EmailAction | CardIntroRestore_body_RadioOptionBlock_action_ChatAction | CardIntroRestore_body_RadioOptionBlock_action_PhoneAction;
@@ -1453,6 +1481,8 @@ export interface CardIntroRestore_body_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_body_SignUpBlock_action = CardIntroRestore_body_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_body_SignUpBlock_action_LinkAction | CardIntroRestore_body_SignUpBlock_action_EmailAction | CardIntroRestore_body_SignUpBlock_action_ChatAction | CardIntroRestore_body_SignUpBlock_action_PhoneAction;
@@ -1539,6 +1569,7 @@ export interface CardIntroRestore_body_TypographyBlock {
 export interface CardIntroRestore_body_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_title {
@@ -1633,6 +1664,8 @@ export interface CardIntroRestore_body_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_body_VideoBlock_action = CardIntroRestore_body_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_body_VideoBlock_action_LinkAction | CardIntroRestore_body_VideoBlock_action_EmailAction | CardIntroRestore_body_VideoBlock_action_ChatAction | CardIntroRestore_body_VideoBlock_action_PhoneAction;
@@ -1705,6 +1738,7 @@ export interface CardIntroRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_body_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_body_VideoBlock_mediaVideo | null;
   /**
@@ -1754,6 +1788,8 @@ export interface CardIntroRestore_body_VideoTriggerBlock_triggerAction_PhoneActi
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_body_VideoTriggerBlock_triggerAction = CardIntroRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_body_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_body_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_body_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_body_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1821,6 +1857,8 @@ export interface CardIntroRestore_button_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_button_ButtonBlock_action = CardIntroRestore_button_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_button_ButtonBlock_action_LinkAction | CardIntroRestore_button_ButtonBlock_action_EmailAction | CardIntroRestore_button_ButtonBlock_action_ChatAction | CardIntroRestore_button_ButtonBlock_action_PhoneAction;
@@ -1973,6 +2011,8 @@ export interface CardIntroRestore_button_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_button_RadioOptionBlock_action = CardIntroRestore_button_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_button_RadioOptionBlock_action_LinkAction | CardIntroRestore_button_RadioOptionBlock_action_EmailAction | CardIntroRestore_button_RadioOptionBlock_action_ChatAction | CardIntroRestore_button_RadioOptionBlock_action_PhoneAction;
@@ -2041,6 +2081,8 @@ export interface CardIntroRestore_button_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_button_SignUpBlock_action = CardIntroRestore_button_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_button_SignUpBlock_action_LinkAction | CardIntroRestore_button_SignUpBlock_action_EmailAction | CardIntroRestore_button_SignUpBlock_action_ChatAction | CardIntroRestore_button_SignUpBlock_action_PhoneAction;
@@ -2127,6 +2169,7 @@ export interface CardIntroRestore_button_TypographyBlock {
 export interface CardIntroRestore_button_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -2221,6 +2264,8 @@ export interface CardIntroRestore_button_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_button_VideoBlock_action = CardIntroRestore_button_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_button_VideoBlock_action_LinkAction | CardIntroRestore_button_VideoBlock_action_EmailAction | CardIntroRestore_button_VideoBlock_action_ChatAction | CardIntroRestore_button_VideoBlock_action_PhoneAction;
@@ -2293,6 +2338,7 @@ export interface CardIntroRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_button_VideoBlock_mediaVideo | null;
   /**
@@ -2342,6 +2388,8 @@ export interface CardIntroRestore_button_VideoTriggerBlock_triggerAction_PhoneAc
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_button_VideoTriggerBlock_triggerAction = CardIntroRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_button_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_button_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_button_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_button_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -2409,6 +2457,8 @@ export interface CardIntroRestore_startIcon_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_startIcon_ButtonBlock_action = CardIntroRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_ButtonBlock_action_LinkAction | CardIntroRestore_startIcon_ButtonBlock_action_EmailAction | CardIntroRestore_startIcon_ButtonBlock_action_ChatAction | CardIntroRestore_startIcon_ButtonBlock_action_PhoneAction;
@@ -2561,6 +2611,8 @@ export interface CardIntroRestore_startIcon_RadioOptionBlock_action_PhoneAction 
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_startIcon_RadioOptionBlock_action = CardIntroRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_RadioOptionBlock_action_LinkAction | CardIntroRestore_startIcon_RadioOptionBlock_action_EmailAction | CardIntroRestore_startIcon_RadioOptionBlock_action_ChatAction | CardIntroRestore_startIcon_RadioOptionBlock_action_PhoneAction;
@@ -2629,6 +2681,8 @@ export interface CardIntroRestore_startIcon_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_startIcon_SignUpBlock_action = CardIntroRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_SignUpBlock_action_LinkAction | CardIntroRestore_startIcon_SignUpBlock_action_EmailAction | CardIntroRestore_startIcon_SignUpBlock_action_ChatAction | CardIntroRestore_startIcon_SignUpBlock_action_PhoneAction;
@@ -2715,6 +2769,7 @@ export interface CardIntroRestore_startIcon_TypographyBlock {
 export interface CardIntroRestore_startIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -2809,6 +2864,8 @@ export interface CardIntroRestore_startIcon_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_startIcon_VideoBlock_action = CardIntroRestore_startIcon_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_startIcon_VideoBlock_action_LinkAction | CardIntroRestore_startIcon_VideoBlock_action_EmailAction | CardIntroRestore_startIcon_VideoBlock_action_ChatAction | CardIntroRestore_startIcon_VideoBlock_action_PhoneAction;
@@ -2881,6 +2938,7 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
@@ -2930,6 +2988,8 @@ export interface CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_Phon
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction = CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -2997,6 +3057,8 @@ export interface CardIntroRestore_endIcon_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_endIcon_ButtonBlock_action = CardIntroRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_ButtonBlock_action_LinkAction | CardIntroRestore_endIcon_ButtonBlock_action_EmailAction | CardIntroRestore_endIcon_ButtonBlock_action_ChatAction | CardIntroRestore_endIcon_ButtonBlock_action_PhoneAction;
@@ -3149,6 +3211,8 @@ export interface CardIntroRestore_endIcon_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_endIcon_RadioOptionBlock_action = CardIntroRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_RadioOptionBlock_action_LinkAction | CardIntroRestore_endIcon_RadioOptionBlock_action_EmailAction | CardIntroRestore_endIcon_RadioOptionBlock_action_ChatAction | CardIntroRestore_endIcon_RadioOptionBlock_action_PhoneAction;
@@ -3217,6 +3281,8 @@ export interface CardIntroRestore_endIcon_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_endIcon_SignUpBlock_action = CardIntroRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_SignUpBlock_action_LinkAction | CardIntroRestore_endIcon_SignUpBlock_action_EmailAction | CardIntroRestore_endIcon_SignUpBlock_action_ChatAction | CardIntroRestore_endIcon_SignUpBlock_action_PhoneAction;
@@ -3303,6 +3369,7 @@ export interface CardIntroRestore_endIcon_TypographyBlock {
 export interface CardIntroRestore_endIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -3397,6 +3464,8 @@ export interface CardIntroRestore_endIcon_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_endIcon_VideoBlock_action = CardIntroRestore_endIcon_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_endIcon_VideoBlock_action_LinkAction | CardIntroRestore_endIcon_VideoBlock_action_EmailAction | CardIntroRestore_endIcon_VideoBlock_action_ChatAction | CardIntroRestore_endIcon_VideoBlock_action_PhoneAction;
@@ -3469,6 +3538,7 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
@@ -3518,6 +3588,8 @@ export interface CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneA
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction = CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -3585,6 +3657,8 @@ export interface CardIntroRestore_video_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_video_ButtonBlock_action = CardIntroRestore_video_ButtonBlock_action_NavigateToBlockAction | CardIntroRestore_video_ButtonBlock_action_LinkAction | CardIntroRestore_video_ButtonBlock_action_EmailAction | CardIntroRestore_video_ButtonBlock_action_ChatAction | CardIntroRestore_video_ButtonBlock_action_PhoneAction;
@@ -3737,6 +3811,8 @@ export interface CardIntroRestore_video_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_video_RadioOptionBlock_action = CardIntroRestore_video_RadioOptionBlock_action_NavigateToBlockAction | CardIntroRestore_video_RadioOptionBlock_action_LinkAction | CardIntroRestore_video_RadioOptionBlock_action_EmailAction | CardIntroRestore_video_RadioOptionBlock_action_ChatAction | CardIntroRestore_video_RadioOptionBlock_action_PhoneAction;
@@ -3805,6 +3881,8 @@ export interface CardIntroRestore_video_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_video_SignUpBlock_action = CardIntroRestore_video_SignUpBlock_action_NavigateToBlockAction | CardIntroRestore_video_SignUpBlock_action_LinkAction | CardIntroRestore_video_SignUpBlock_action_EmailAction | CardIntroRestore_video_SignUpBlock_action_ChatAction | CardIntroRestore_video_SignUpBlock_action_PhoneAction;
@@ -3891,6 +3969,7 @@ export interface CardIntroRestore_video_TypographyBlock {
 export interface CardIntroRestore_video_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_title {
@@ -3985,6 +4064,8 @@ export interface CardIntroRestore_video_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_video_VideoBlock_action = CardIntroRestore_video_VideoBlock_action_NavigateToBlockAction | CardIntroRestore_video_VideoBlock_action_LinkAction | CardIntroRestore_video_VideoBlock_action_EmailAction | CardIntroRestore_video_VideoBlock_action_ChatAction | CardIntroRestore_video_VideoBlock_action_PhoneAction;
@@ -4057,6 +4138,7 @@ export interface CardIntroRestore_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_video_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_video_VideoBlock_mediaVideo | null;
   /**
@@ -4106,6 +4188,8 @@ export interface CardIntroRestore_video_VideoTriggerBlock_triggerAction_PhoneAct
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroRestore_video_VideoTriggerBlock_triggerAction = CardIntroRestore_video_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardIntroRestore_video_VideoTriggerBlock_triggerAction_LinkAction | CardIntroRestore_video_VideoTriggerBlock_triggerAction_EmailAction | CardIntroRestore_video_VideoTriggerBlock_triggerAction_ChatAction | CardIntroRestore_video_VideoTriggerBlock_triggerAction_PhoneAction;

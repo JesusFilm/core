@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
@@ -92,6 +92,7 @@ export function Details({
   helperInfo,
   enableIconSelect
 }: DetailsProps): ReactElement {
+  const [open, setOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyChatButtonUpdate] = useMutation<JourneyChatButtonUpdate>(
@@ -307,12 +308,19 @@ export function Details({
     }
   }
 
+  function handleClick(): void {
+    if (!open) setOpen(true)
+  }
+
   return (
     <Box sx={{ px: 6 }} data-testid="ChatOptionDetails">
       <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
         {enableIconSelect && (
           <FormControl variant="filled" fullWidth hiddenLabel>
             <Select
+              open={open}
+              onClose={() => setOpen(false)}
+              onClick={handleClick}
               labelId="icon-select"
               value={currentPlatform}
               displayEmpty

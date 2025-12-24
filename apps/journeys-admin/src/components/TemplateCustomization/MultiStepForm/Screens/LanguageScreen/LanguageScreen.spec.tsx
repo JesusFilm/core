@@ -102,11 +102,15 @@ const mockJourneyDuplicate: MockLink.MockedResponse<
 > = {
   request: {
     query: JOURNEY_DUPLICATE,
-    variables: { id: 'journeyId', teamId: 'teamId1' }
+    variables: { id: 'journeyId', teamId: 'teamId1', forceNonTemplate: true }
   },
   result: {
     data: {
-      journeyDuplicate: { id: 'new-journey-id', __typename: 'Journey' }
+      journeyDuplicate: {
+        id: 'new-journey-id',
+        __typename: 'Journey',
+        template: false
+      }
     }
   }
 }
@@ -226,7 +230,8 @@ describe('LanguageScreen', () => {
               ...mockJourneyDuplicate.request,
               variables: {
                 id: 'journey-2', // This should match the Spanish language journey ID
-                teamId: 'teamId1'
+                teamId: 'teamId1',
+                forceNonTemplate: true
               }
             },
             result: mockJourneyDuplicateMockResult

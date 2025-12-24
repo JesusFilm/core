@@ -46,6 +46,7 @@ function TemplateEditPage(): ReactElement {
   const isPublisher = publisherData?.getUserRole?.roles?.includes(
     Role.publisher
   )
+  const isGlobalTemplate = data?.publisherTemplate?.team?.id === 'jfp-team'
 
   const searchClient = useInstantSearchClient()
 
@@ -62,7 +63,7 @@ function TemplateEditPage(): ReactElement {
         filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm"
         hitsPerPage={5}
       />
-      {isPublisher === true && (
+      {(isPublisher || !isGlobalTemplate) && (
         <>
           <NextSeo
             title={
@@ -78,7 +79,7 @@ function TemplateEditPage(): ReactElement {
           />
         </>
       )}
-      {data?.publisherTemplate != null && isPublisher !== true && (
+      {isGlobalTemplate && !isPublisher && (
         <>
           <NextSeo title={t('Access Denied')} />
           <PublisherInvite />

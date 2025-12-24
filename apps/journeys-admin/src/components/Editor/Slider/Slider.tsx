@@ -104,6 +104,12 @@ export function Slider(): ReactElement {
     }
   }, [activeSlide])
 
+  useEffect(() => {
+    if (swiperRef.current != null) {
+      swiperRef.current.swiper.update()
+    }
+  }, [showAnalytics])
+
   function resetCanvasFocus(): void {
     if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
       dispatch({

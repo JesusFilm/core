@@ -21,13 +21,21 @@ import {
   BlockActionLinkUpdate,
   BlockActionLinkUpdateVariables
 } from '../../../../../../__generated__/BlockActionLinkUpdate'
-import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
+import {
+  BlockActionPhoneUpdate,
+  BlockActionPhoneUpdateVariables
+} from '../../../../../../__generated__/BlockActionPhoneUpdate'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../../__generated__/globalTypes'
 import {
   JourneyChatButtonUpdate,
   JourneyChatButtonUpdateVariables
 } from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { BLOCK_ACTION_EMAIL_UPDATE } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../libs/useBlockActionLinkUpdateMutation'
+import { BLOCK_ACTION_PHONE_UPDATE } from '../../../../../libs/useBlockActionPhoneUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { JourneyLink } from '../../../utils/getJourneyLinks'
 
@@ -319,5 +327,178 @@ describe('LinksScreen', () => {
       // expect(chatUpdateMock.result).toHaveBeenCalled()
       expect(handleNext).toHaveBeenCalled()
     })
+  })
+
+  it('accepts phone numbers and calls phone update mutation', async () => {
+    const handleNext = jest.fn()
+    const journeyWithPhone = {
+      ...defaultJourney,
+      id: 'journey-id',
+      blocks: [
+        {
+          id: 'step-1',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: 's1',
+          children: []
+        },
+        {
+          id: 'btn-phone',
+          __typename: 'ButtonBlock',
+          parentBlockId: 'step-1',
+          parentOrder: 0,
+          label: 'Call Us',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+6434953',
+            countryCode: 'NZ',
+            contactAction: ContactActionType.call,
+            parentStepId: 'step-1',
+            customizable: true
+          }
+        }
+      ]
+    } as unknown as Journey
+
+    const phoneUpdateMock: MockedResponse<
+      BlockActionPhoneUpdate,
+      BlockActionPhoneUpdateVariables
+    > = {
+      request: {
+        query: BLOCK_ACTION_PHONE_UPDATE,
+        variables: {
+          id: 'btn-phone',
+          input: {
+            phone: '+64987654321',
+            countryCode: 'NZ',
+            contactAction: ContactActionType.call,
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          blockUpdatePhoneAction: {
+            __typename: 'PhoneAction',
+            parentBlockId: 'btn-phone',
+            gtmEventName: '',
+            phone: '+64987654321',
+            countryCode: 'NZ',
+            contactAction: ContactActionType.call,
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        }
+      }))
+    }
+
+    await act(async () => {
+      render(
+        <MockedProvider mocks={[phoneUpdateMock]}>
+          <JourneyProvider
+            value={{ journey: journeyWithPhone, variant: 'admin' }}
+          >
+            <LinksScreen
+              handleNext={handleNext}
+              handleScreenNavigation={jest.fn()}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    const phoneLabel = screen.getByText('Call Us')
+    expect(phoneLabel).toBeInTheDocument()
+    const phoneNumberInput = screen.getByRole('textbox', {
+      name: 'Phone Number'
+    })
+    fireEvent.change(phoneNumberInput, { target: { value: '987654321' } })
+    fireEvent.blur(phoneNumberInput)
+
+    // Wait for React to finish updating parent Formik state
+    await waitFor(() => {
+      expect(phoneNumberInput).toHaveValue('987654321')
+    })
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() => {
+      expect(phoneUpdateMock.result).toHaveBeenCalled()
+      expect(handleNext).toHaveBeenCalled()
+    })
+  })
+
+  it('shows validation error for invalid phone input', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney,
+                id: 'journey-id',
+                blocks: [
+                  {
+                    id: 'step-1',
+                    __typename: 'StepBlock',
+                    parentBlockId: null,
+                    parentOrder: 0,
+                    locked: false,
+                    nextBlockId: null,
+                    slug: 's1',
+                    children: []
+                  },
+                  {
+                    id: 'btn-phone',
+                    __typename: 'ButtonBlock',
+                    parentBlockId: 'step-1',
+                    parentOrder: 0,
+                    label: 'Support',
+                    action: {
+                      __typename: 'PhoneAction',
+                      phone: '+123456789',
+                      countryCode: 'US',
+                      contactAction: ContactActionType.call,
+                      parentStepId: 'step-1',
+                      customizable: true
+                    }
+                  }
+                ]
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <LinksScreen
+              handleNext={jest.fn()}
+              handleScreenNavigation={jest.fn()}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    const phoneLabel = screen.getByText('Support')
+    expect(phoneLabel).toBeInTheDocument()
+    const phoneNumberInput = screen.getByRole('textbox', {
+      name: 'Phone Number'
+    })
+    fireEvent.change(phoneNumberInput, { target: { value: 'not-a-phone' } })
+    fireEvent.blur(phoneNumberInput)
+
+    // Wait for React to finish updating parent Formik state
+    await waitFor(() => {
+      expect(phoneNumberInput).toHaveValue('not-a-phone')
+    })
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    await waitFor(() =>
+      expect(
+        screen.getByText('Phone number must use valid digits.')
+      ).toBeInTheDocument()
+    )
   })
 })

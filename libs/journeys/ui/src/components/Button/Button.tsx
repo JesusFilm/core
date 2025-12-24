@@ -21,6 +21,7 @@ import {
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
+import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -28,7 +29,6 @@ import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
 
 import {
   ButtonClickEventCreate,
@@ -129,13 +129,13 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const endIcon = children.find(
+    (block) => block.id === endIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -262,10 +262,6 @@ export function Button({
     }
   }
 
-  function isEmptyForm(): boolean {
-    return Object.values(formik.values as string).every((value) => value === '')
-  }
-
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
@@ -274,10 +270,10 @@ export function Button({
       e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (!isEmptyForm()) {
-        if (Object.keys(errors).length > 0) return
-        await formik.submitForm()
-      }
+      // Always call submitForm() to touch all fields, ensuring validation errors are displayed.
+      // Per Formik docs, submitForm() will abort submission if validation errors exist.
+      await formik.submitForm()
+      if (Object.keys(errors).length > 0) return
     }
 
     const hasMessagePlatform = messagePlatform != null

@@ -7,7 +7,7 @@ import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdmin
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultTemplate, fakeDate, oldTemplate } from '../data'
@@ -19,7 +19,8 @@ const archivedJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.archived],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -34,7 +35,8 @@ const noJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.archived],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -87,7 +89,8 @@ describe('ArchivedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.archived],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -124,7 +127,8 @@ describe('ArchivedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.archived],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {

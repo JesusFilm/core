@@ -58,6 +58,9 @@ describe('TemplateSections', () => {
     status: JourneyStatus.published,
     seoTitle: null,
     seoDescription: null,
+    website: false,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
     userJourneys: []
   }
 
@@ -173,7 +176,8 @@ describe('TemplateSections', () => {
         where: {
           template: true,
           orderByRecent: true,
-          languageIds: ['529']
+          languageIds: ['529'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -193,7 +197,8 @@ describe('TemplateSections', () => {
           template: true,
           orderByRecent: true,
           tagIds: [addiction.id, acceptance.id],
-          languageIds: ['529']
+          languageIds: ['529'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -213,7 +218,8 @@ describe('TemplateSections', () => {
         where: {
           template: true,
           orderByRecent: true,
-          languageIds: ['529', '5441']
+          languageIds: ['529', '5441'],
+          teamId: 'jfp-team'
         }
       }
     },

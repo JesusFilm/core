@@ -50,7 +50,8 @@ describe('TemplateView', () => {
         where: {
           template: true,
           orderByRecent: true,
-          tagIds: ['tag.id']
+          tagIds: ['tag.id'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -256,7 +257,8 @@ describe('TemplateView', () => {
                   template: true,
                   orderByRecent: true,
                   tagIds: ['tag.id'],
-                  limit: 10
+                  limit: 10,
+                  teamId: 'jfp-team'
                 }
               }
             },

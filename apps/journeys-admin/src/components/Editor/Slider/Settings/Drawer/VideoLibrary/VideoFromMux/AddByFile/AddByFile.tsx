@@ -1,79 +1,53 @@
-import { gql } from '@apollo/client'
-import { useLazyQuery, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { UpChunk } from '@mux/upchunk'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
-import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
-
-import { fileToMuxUpload } from './utils/addByFileUtils'
-
-export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
-  mutation CreateMuxVideoUploadByFileMutation($name: String!) {
-    createMuxVideoUploadByFile(name: $name) {
-      uploadUrl
-      id
-    }
-  }
-`
-
-export const GET_MY_MUX_VIDEO_QUERY = gql`
-  query GetMyMuxVideoQuery($id: ID!) {
-    getMyMuxVideo(id: $id) {
-      id
-      assetId
-      playbackId
-      readyToStream
-    }
-  }
-`
+import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
+import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
 
 interface AddByFileProps {
-  onChange: (id: string) => void
+  onChange: (id: string, shouldCloseDrawer?: boolean) => void
 }
 
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+  const rawLanguageCode = journey?.language?.bcp47
+  const isValidLanguage = validateMuxLanguage(rawLanguageCode)
+  const languageCode =
+    isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
+  const languageName = journey?.language?.name?.find(
+    (name) => name.primary
+  )?.value
 
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [fileRejected, setfileRejected] = useState(false)
-  const [fileTooLarge, setfileTooLarge] = useState(false)
-  const [tooManyFiles, settooManyFiles] = useState(false)
-  const [fileInvalidType, setfileInvalidType] = useState(false)
-  const [error, setError] = useState<Error>()
-  const [progress, setProgress] = useState(0)
+  const { getUploadStatus, addUploadTask } = useMuxVideoUpload()
 
-  function resetUploadStatus(): void {
-    setUploading(false)
-    setProcessing(false)
-    setProgress(0)
-  }
+  const videoBlockId = selectedBlock?.id ?? null
+  const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
 
-  const [createMuxVideoUploadByFile, { data }] =
-    useMutation<CreateMuxVideoUploadByFileMutation>(
-      CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
-    )
-  const [getMyMuxVideo, { stopPolling, data: muxData }] =
-    useLazyQuery<GetMyMuxVideoQuery>(GET_MY_MUX_VIDEO_QUERY)
+  const [fileRejected, setFileRejected] = useState(false)
+  const [fileTooLarge, setFileTooLarge] = useState(false)
+  const [tooManyFiles, setTooManyFiles] = useState(false)
+  const [fileInvalidType, setFileInvalidType] = useState(false)
 
-  useEffect(() => {
-    if (processing && data?.createMuxVideoUploadByFile?.id != null) {
-      void getMyMuxVideo({
-        variables: { id: data.createMuxVideoUploadByFile.id }
-      })
-    }
-  }, [processing, getMyMuxVideo, data?.createMuxVideoUploadByFile?.id])
+  const uploading = uploadTask?.status === 'uploading'
+  const processing = uploadTask?.status === 'processing'
+  const waiting = uploadTask?.status === 'waiting'
+  const error = uploadTask?.error
+  const progress = uploadTask?.progress ?? 0
 
   useEffect(() => {
     const video = muxData?.getMyMuxVideo
@@ -89,60 +63,50 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   }, [muxData, stopPolling, onChange])
 
   const onDrop = async (): Promise<void> => {
-    setfileTooLarge(false)
-    settooManyFiles(false)
-    setfileInvalidType(false)
-    setfileRejected(false)
-    setError(undefined)
-  }
-
-  function uploadVideo(
-    file: File,
-    data: CreateMuxVideoUploadByFileMutation
-  ): void {
-    setUploading(true)
-    const upload = UpChunk.createUpload({
-      file,
-      endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
-      chunkSize: 5120
-    })
-    upload.on('success', (): void => {
-      setUploading(false)
-      setProcessing(true)
-    })
-    upload.on('error', (err): void => {
-      setError(err.detail)
-      resetUploadStatus()
-    })
-    upload.on('progress', (progress): void => {
-      setProgress(progress.detail)
-    })
+    setFileRejected(false)
+    setFileTooLarge(false)
+    setTooManyFiles(false)
+    setFileInvalidType(false)
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
-    if (files.length > 0) {
-      const { data } = await createMuxVideoUploadByFile(
-        fileToMuxUpload(files[0])
-      )
-
-      if (
-        data?.createMuxVideoUploadByFile?.uploadUrl != null &&
-        data?.createMuxVideoUploadByFile?.id != null
-      ) {
-        uploadVideo(files[0], data)
+    if (files.length > 0 && videoBlockId != null) {
+      // Check if task already exists
+      if (uploadTask != null) {
+        // Task already exists, don't add another
+        return
       }
+
+      // Add upload task
+      addUploadTask(
+        videoBlockId,
+        files[0],
+        languageCode,
+        languageName,
+        (videoId) => {
+          // Always call onChange to persist the mutation
+          // Don't close drawer, user may have navigated to different block during upload
+          // and closing drawer would interrupt their workflow.
+          const shouldCloseDrawer = false
+          onChange(videoId, shouldCloseDrawer)
+        }
+      )
     }
   }
 
   const onDropRejected = async (
     fileRejections: FileRejection[]
   ): Promise<void> => {
-    setfileRejected(true)
-    fileRejections.forEach(({ file, errors }) => {
+    setFileRejected(true)
+    setFileTooLarge(false)
+    setTooManyFiles(false)
+    setFileInvalidType(false)
+
+    fileRejections.forEach(({ errors }) => {
       errors.forEach((e) => {
-        if (e.code === 'file-invalid-type') setfileInvalidType(true)
-        if (e.code === 'file-too-large') setfileTooLarge(true)
-        if (e.code === 'too-many-files') settooManyFiles(true)
+        if (e.code === 'file-invalid-type') setFileInvalidType(true)
+        if (e.code === 'file-too-large') setFileTooLarge(true)
+        if (e.code === 'too-many-files') setTooManyFiles(true)
       })
     })
   }
@@ -156,7 +120,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     maxSize: 1000000000,
     accept: {
       'video/*': []
-    }
+    },
+    disabled: videoBlockId == null || uploadTask != null
   })
 
   const noBorder = error != null || uploading || fileRejected
@@ -189,7 +154,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           flexDirection: 'column',
           alignItems: 'center'
         }}
-        {...getRootProps({ isDragAccept })}
+        {...getRootProps()}
       >
         <input {...getInputProps()} />
         {error != null || fileRejected ? (
@@ -206,10 +171,12 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           }
           sx={{ pb: 4 }}
         >
+          {waiting && t('Waiting in queue...')}
           {uploading && t('Uploading...')}
           {processing && t('Processing...')}
           {(error != null || fileRejected) && t('Upload Failed!')}
-          {!uploading &&
+          {!waiting &&
+            !uploading &&
             !processing &&
             !fileRejected &&
             error == null &&
@@ -243,10 +210,10 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         )}
       </Stack>
 
-      {uploading || processing ? (
+      {waiting || uploading || processing ? (
         <Box sx={{ width: '100%', mt: 4 }}>
           <LinearProgress
-            variant={processing ? 'indeterminate' : 'determinate'}
+            variant={processing || waiting ? 'indeterminate' : 'determinate'}
             value={progress}
             sx={{ height: 32, borderRadius: 2 }}
           />
@@ -257,6 +224,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           color="secondary"
           variant="outlined"
           onClick={open}
+          disabled={videoBlockId == null || uploadTask != null}
           sx={{
             mt: 4,
             height: 32,
@@ -269,7 +237,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
             fontSize={14}
             sx={{ color: 'secondary.main' }}
           >
-            {t('Upload file')}
+            {videoBlockId == null
+              ? t('Select a video block first')
+              : t('Upload file')}
           </Typography>
         </Button>
       )}

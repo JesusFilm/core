@@ -13,12 +13,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { JourneyCard } from '../../JourneyList/JourneyCard'
+import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
-import { JourneyCard } from '../../JourneyList/JourneyCard'
-import type { JourneyListProps } from '../../JourneyList/JourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 import {
@@ -47,7 +47,8 @@ export function ActiveTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [archive] = useMutation<
     ArchiveActiveJourneys,
@@ -55,7 +56,7 @@ export function ActiveTemplateList({
   >(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
-        enqueueSnackbar(t('Journeys Archived'), {
+        enqueueSnackbar(t('Templates Archived'), {
           variant: 'success'
         })
         void refetch()
@@ -68,7 +69,7 @@ export function ActiveTemplateList({
   >(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys Trashed'), {
+        enqueueSnackbar(t('Templates Trashed'), {
           variant: 'success'
         })
         void refetch()

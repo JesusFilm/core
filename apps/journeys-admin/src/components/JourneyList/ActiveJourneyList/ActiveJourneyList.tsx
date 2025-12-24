@@ -12,10 +12,22 @@ import { ReactElement, useEffect, useState } from 'react'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
+import {
+  ArchiveActiveJourneys,
+  ArchiveActiveJourneysVariables
+} from '../../../../__generated__/ArchiveActiveJourneys'
+import {
+  TrashActiveJourneys,
+  TrashActiveJourneysVariables
+} from '../../../../__generated__/TrashActiveJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -26,31 +38,6 @@ const Dialog = dynamic(
   { ssr: false }
 )
 
-export const ARCHIVE_ACTIVE_JOURNEYS = gql`
-  mutation ArchiveActiveJourneys($ids: [ID!]!) {
-    journeysArchive(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
-export const TRASH_ACTIVE_JOURNEYS = gql`
-  mutation TrashActiveJourneys($ids: [ID!]!) {
-    journeysTrash(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-import {
-  ArchiveActiveJourneys,
-  ArchiveActiveJourneysVariables
-} from '../../../../__generated__/ArchiveActiveJourneys'
-import {
-  TrashActiveJourneys,
-  TrashActiveJourneysVariables
-} from '../../../../__generated__/TrashActiveJourneys'
 export function ActiveJourneyList({
   user,
   sortOrder,
@@ -172,7 +159,7 @@ export function ActiveJourneyList({
           <ActivePriorityList
             journeys={data.journeys}
             sortOrder={sortOrder}
-            refetch={refetch as unknown as (() => Promise<unknown>)}
+            refetch={refetch as unknown as () => Promise<unknown>}
             user={user}
           />
           {data.journeys.length === 0 && (

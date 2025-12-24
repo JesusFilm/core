@@ -71,6 +71,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_ac
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_PhoneAction;
@@ -223,6 +225,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_PhoneAction;
@@ -291,6 +295,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_ac
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_PhoneAction;
@@ -377,6 +383,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo_Video_title {
@@ -471,6 +478,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_act
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_PhoneAction;
@@ -543,6 +552,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo | null;
   /**
@@ -592,6 +602,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBl
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction = GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction;

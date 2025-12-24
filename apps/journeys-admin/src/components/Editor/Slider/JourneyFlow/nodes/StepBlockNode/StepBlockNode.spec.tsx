@@ -424,4 +424,46 @@ describe('StepBlockNode', () => {
       screen.queryByTestId('BaseNodeLeftHandle-shown')
     ).not.toBeInTheDocument()
   })
+
+  it('should display step slug', () => {
+    const props = {
+      id: 'step.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: 'my-step-slug',
+      children: []
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...defaultJourney, website: true } }}
+        >
+          <ReactFlowProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step],
+                selectedStep: step,
+                activeContent: ActiveContent.Canvas
+              }}
+            >
+              <StepBlockNode {...props} />
+            </EditorProvider>
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('my-step-slug')).toBeInTheDocument()
+  })
 })

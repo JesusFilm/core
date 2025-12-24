@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
@@ -32,7 +33,9 @@ describe('StepBlockNodeMenu', () => {
     const { getByTestId, getByRole, queryByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -59,7 +62,9 @@ describe('StepBlockNodeMenu', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -75,7 +80,9 @@ describe('StepBlockNodeMenu', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

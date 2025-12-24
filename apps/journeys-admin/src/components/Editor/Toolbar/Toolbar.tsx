@@ -164,6 +164,14 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
+  // Determine the home href based on journey properties
+  // Local templates: template === true AND team.id !== "jfp-team" → templates tab
+  // Regular journeys: template === false → journeys tab
+  const homeHref =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+      ? '/?type=templates'
+      : '/?type=journeys'
+
   return (
     <Stack
       data-testid="Toolbar"
@@ -173,35 +181,28 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       sx={{
         height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
-        px: { xs: 2, sm: 4 },
+        px: { xs: 2, sm: 5 },
         flexShrink: 0
       }}
     >
-      <IconButton
-        component={NextLink}
-        href="/"
-        data-testid="NextStepsLogo"
-        disableRipple
-      >
-        <Image
-          src={logo}
-          alt="Next Steps"
-          height={32}
-          width={32}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
-        />
-      </IconButton>
-      <Tooltip title={t('See all journeys')} placement="bottom" arrow>
+      <Tooltip title={t('Back to Home')} placement="bottom" arrow>
         <IconButton
           component={NextLink}
-          href="/"
-          data-testid="ToolbarBackButton"
-          disabled={isNavigating}
+          href={homeHref}
+          data-testid="NextStepsLogo"
+          disableRipple
+          sx={{ p: '10px', ':active': { filter: 'brightness(0.85)' } }}
         >
-          <FormatListBulletedIcon />
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={32}
+            width={45}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </IconButton>
       </Tooltip>
       <Stack
@@ -252,16 +253,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               {journey?.primaryImageBlock?.src == null ? (
                 <GridEmptyIcon color="secondary" />
               ) : (
-                <Image
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt}
-                  width={50}
-                  height={50}
-                  style={{
-                    borderRadius: '4px',
-                    objectFit: 'cover'
-                  }}
-                />
+                <Box width={50} height={50} sx={{ position: 'relative' }}>
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt}
+                    fill
+                    sizes="50px"
+                    style={{
+                      borderRadius: '4px',
+                      objectFit: 'cover'
+                    }}
+                  />
+                </Box>
               )}
             </Box>
           </Button>

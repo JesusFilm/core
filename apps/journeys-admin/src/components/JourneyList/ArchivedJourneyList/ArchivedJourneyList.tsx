@@ -16,8 +16,20 @@ import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
+import {
+  RestoreArchivedJourneys,
+  RestoreArchivedJourneysVariables
+} from '../../../../__generated__/RestoreArchivedJourneys'
+import {
+  TrashArchivedJourneys,
+  TrashArchivedJourneysVariables
+} from '../../../../__generated__/TrashArchivedJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -27,32 +39,6 @@ const Dialog = dynamic(
     ).then((mod) => mod.Dialog),
   { ssr: false }
 )
-
-export const RESTORE_ARCHIVED_JOURNEYS = gql`
-  mutation RestoreArchivedJourneys($ids: [ID!]!) {
-    journeysRestore(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
-export const TRASH_ARCHIVED_JOURNEYS = gql`
-  mutation TrashArchivedJourneys($ids: [ID!]!) {
-    journeysTrash(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-import {
-  RestoreArchivedJourneys,
-  RestoreArchivedJourneysVariables
-} from '../../../../__generated__/RestoreArchivedJourneys'
-import {
-  TrashArchivedJourneys,
-  TrashArchivedJourneysVariables
-} from '../../../../__generated__/TrashArchivedJourneys'
 
 export function ArchivedJourneyList({
   user,
@@ -191,7 +177,7 @@ export function ArchivedJourneyList({
                   <JourneyCard
                     key={journey.id}
                     journey={journey}
-                    refetch={refetch as unknown as (() => Promise<unknown>)}
+                    refetch={refetch as unknown as () => Promise<unknown>}
                   />
                 </JourneyProvider>
               </Grid>

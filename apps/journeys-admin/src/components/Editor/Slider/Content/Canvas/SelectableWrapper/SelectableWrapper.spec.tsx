@@ -22,6 +22,7 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 import { SelectableWrapper } from '.'
 
@@ -193,25 +194,27 @@ describe('SelectableWrapper', () => {
               ]
             }}
           >
-            <SelectableWrapper block={imageBlock}>
-              <Image {...imageBlock} alt="imageAlt" />
-            </SelectableWrapper>
-            {/* Video */}
-            <SelectableWrapper block={typographyBlock}>
-              <Typography {...typographyBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={buttonBlock}>
-              <Button {...buttonBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={signUpBlock}>
-              <SignUp {...signUpBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={imageBlock}>
+                <Image {...imageBlock} alt="imageAlt" />
+              </SelectableWrapper>
+              {/* Video */}
+              <SelectableWrapper block={typographyBlock}>
+                <Typography {...typographyBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={buttonBlock}>
+                <Button {...buttonBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={signUpBlock}>
+                <SignUp {...signUpBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -261,12 +264,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -291,12 +296,14 @@ describe('SelectableWrapper', () => {
               steps: [step([multiselectQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={multiselectQuestionBlock}>
-              <MultiselectQuestion
-                {...multiselectQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={multiselectQuestionBlock}>
+                <MultiselectQuestion
+                  {...multiselectQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -323,12 +330,14 @@ describe('SelectableWrapper', () => {
               steps: [step([multiselectQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={multiselectQuestionBlock}>
-              <MultiselectQuestion
-                {...multiselectQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={multiselectQuestionBlock}>
+                <MultiselectQuestion
+                  {...multiselectQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -356,12 +365,14 @@ describe('SelectableWrapper', () => {
               steps: [step([multiselectQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={multiselectQuestionBlock}>
-              <MultiselectQuestion
-                {...multiselectQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={multiselectQuestionBlock}>
+                <MultiselectQuestion
+                  {...multiselectQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -389,12 +400,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -422,12 +435,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <MuxVideoUploadProvider>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>

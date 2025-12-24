@@ -11,6 +11,7 @@ import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import {
   JourneyViewEventCreate,
   JourneyViewEventCreateVariables
@@ -24,7 +25,7 @@ import {
   VisitorUpdateForCurrentUser,
   VisitorUpdateForCurrentUserVariables
 } from '../../../__generated__/VisitorUpdateForCurrentUser'
-import { basic } from '../../libs/testData/storyData'
+import { basic, videoBlocks } from '../../libs/testData/storyData'
 import {
   JOURNEY_VIEW_EVENT_CREATE,
   JOURNEY_VISITOR_UPDATE
@@ -210,5 +211,111 @@ describe('WebView', () => {
     expect(screen.getByTestId('JourneysStepHeader')).toBeInTheDocument()
     expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
     expect(screen.getByText('Step 1')).toBeInTheDocument()
+  })
+
+  it('should not render step footer if there is a video block', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <WebView
+              blocks={videoBlocks}
+              stepBlock={videoBlocks[0] as TreeBlock<StepFields>}
+            />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('JourneysStepFooter')).not.toBeInTheDocument()
+  })
+
+  it('should render step footer if there is a background video block', () => {
+    const backgroundVideoBlocks: TreeBlock[] = [
+      {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: null,
+        slug: null,
+        children: [
+          {
+            id: 'card1.id',
+            __typename: 'CardBlock',
+            parentBlockId: 'step1.id',
+            parentOrder: 0,
+            backgroundColor: null,
+            backdropBlur: null,
+            coverBlockId: 'video1.id',
+            themeMode: null,
+            themeName: null,
+            fullscreen: false,
+            children: [
+              {
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                autoplay: true,
+                muted: true,
+                videoId: '5I69DCxYbBg',
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.youTube,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                mediaVideo: {
+                  __typename: 'YouTube',
+                  id: '5I69DCxYbBg'
+                },
+                endAt: null,
+                startAt: 0,
+                posterBlockId: null,
+                fullsize: true,
+                action: null,
+                objectFit: null,
+                showGeneratedSubtitles: null,
+                subtitleLanguage: null,
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <WebView
+              blocks={backgroundVideoBlocks}
+              stepBlock={backgroundVideoBlocks[0] as TreeBlock<StepFields>}
+            />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
+  })
+
+  it('should have active-card class for fullscreen support', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const activeCard = document.querySelector('.active-card')
+    expect(activeCard).toBeInTheDocument()
   })
 })

@@ -17,6 +17,7 @@ export interface CoverBlockRestore_blockRestore_StepBlock {
 export interface CoverBlockRestore_blockRestore_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {
@@ -111,6 +112,8 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction | CoverBlockRestore_blockRestore_VideoBlock_action_ChatAction | CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction;
@@ -183,6 +186,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CoverBlockRestore_blockRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo | null;
   /**

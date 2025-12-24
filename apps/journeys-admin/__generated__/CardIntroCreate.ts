@@ -110,6 +110,8 @@ export interface CardIntroCreate_button_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction | CardIntroCreate_button_action_ChatAction | CardIntroCreate_button_action_PhoneAction;
@@ -199,6 +201,8 @@ export interface CardIntroCreate_buttonBlockUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction | CardIntroCreate_buttonBlockUpdate_action_ChatAction | CardIntroCreate_buttonBlockUpdate_action_PhoneAction;
@@ -230,6 +234,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
 export interface CardIntroCreate_video_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroCreate_video_mediaVideo_Video_title {
@@ -324,6 +329,8 @@ export interface CardIntroCreate_video_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardIntroCreate_video_action = CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction | CardIntroCreate_video_action_ChatAction | CardIntroCreate_video_action_PhoneAction;
@@ -396,6 +403,7 @@ export interface CardIntroCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroCreate_video_subtitleLanguage | null;
   mediaVideo: CardIntroCreate_video_mediaVideo | null;
   /**

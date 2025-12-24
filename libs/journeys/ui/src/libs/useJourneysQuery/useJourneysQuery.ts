@@ -28,6 +28,15 @@ export const GET_JOURNEYS = gql`
       seoTitle
       seoDescription
       template
+      website
+      journeyCustomizationDescription
+      journeyCustomizationFields {
+        id
+        journeyId
+        key
+        value
+        defaultValue
+      }
       userJourneys {
         id
         role

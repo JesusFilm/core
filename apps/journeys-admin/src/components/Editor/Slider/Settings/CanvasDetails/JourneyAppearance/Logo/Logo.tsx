@@ -78,7 +78,7 @@ export function Logo(): ReactElement {
       journeyId: journey.id,
       parentBlockId: null,
       alt: input.alt ?? 'journey logo',
-      scale: 1
+      scale: 100
     }
 
     const journeyUpdateInput: JourneyUpdateInput = {
@@ -95,7 +95,7 @@ export function Logo(): ReactElement {
       width: imageBlockCreateInput.width ?? 0,
       height: imageBlockCreateInput.height ?? 0,
       blurhash: imageBlockCreateInput.blurhash ?? '',
-      scale: null,
+      scale: 100,
       focalLeft: 50,
       focalTop: 50
     }

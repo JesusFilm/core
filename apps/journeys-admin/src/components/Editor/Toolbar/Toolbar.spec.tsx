@@ -140,7 +140,47 @@ describe('Toolbar', () => {
   it('should render NextSteps logo on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
-    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
+      'href',
+      '/?type=journeys'
+    )
+  })
+
+  it('should render Back to Home tooltip on hover', async () => {
+    render(toolbar(defaultJourney))
+    fireEvent.mouseOver(screen.getByTestId('NextStepsLogo'))
+    await waitFor(() => {
+      expect(screen.getByText('Back to Home')).toBeInTheDocument()
+    })
+  })
+
+  it('should navigate to journeys tab for regular journey', () => {
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
+      'href',
+      '/?type=journeys'
+    )
+  })
+
+  it('should navigate to templates tab for local template', () => {
+    const localTemplateJourney = {
+      journey: {
+        ...defaultJourney.journey,
+        template: true,
+        team: {
+          id: 'team-123',
+          title: 'Team Title',
+          publicTitle: 'Public Title',
+          __typename: 'Team'
+        }
+      } as unknown as Journey,
+      variant: 'admin'
+    }
+    render(toolbar(localTemplateJourney))
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
+      'href',
+      '/?type=templates'
+    )
   })
 
   it('should render help scout beacon', () => {
@@ -185,20 +225,6 @@ describe('Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByTestId('ToolbarMenuButton')).toBeInTheDocument()
     expect(screen.getByTestId('MoreIcon')).toBeInTheDocument()
-  })
-
-  it('should render all journeys button', () => {
-    render(toolbar(defaultJourney))
-    expect(screen.getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
-    expect(screen.getByTestId('FormatListBulletedIcon')).toBeInTheDocument()
-  })
-
-  it('should render journeys tooltip on hover', async () => {
-    render(toolbar(defaultJourney))
-    fireEvent.mouseOver(screen.getByTestId('ToolbarBackButton'))
-    await waitFor(() => {
-      expect(screen.getByText('See all journeys')).toBeInTheDocument()
-    })
   })
 
   it('should render journey image', () => {
