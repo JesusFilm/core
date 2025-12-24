@@ -15,7 +15,7 @@ export interface VideoExpandEventCreate_videoExpandEventCreate {
 }
 
 export interface VideoExpandEventCreate {
-  videoExpandEventCreate: VideoExpandEventCreate_videoExpandEventCreate;
+  videoExpandEventCreate: VideoExpandEventCreate_videoExpandEventCreate | null;
 }
 
 export interface VideoExpandEventCreateVariables {

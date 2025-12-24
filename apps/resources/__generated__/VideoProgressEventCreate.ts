@@ -15,7 +15,7 @@ export interface VideoProgressEventCreate_videoProgressEventCreate {
 }
 
 export interface VideoProgressEventCreate {
-  videoProgressEventCreate: VideoProgressEventCreate_videoProgressEventCreate;
+  videoProgressEventCreate: VideoProgressEventCreate_videoProgressEventCreate | null;
 }
 
 export interface VideoProgressEventCreateVariables {

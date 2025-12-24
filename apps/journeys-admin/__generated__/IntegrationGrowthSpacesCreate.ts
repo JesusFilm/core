@@ -31,7 +31,7 @@ export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate {
 }
 
 export interface IntegrationGrowthSpacesCreate {
-  integrationGrowthSpacesCreate: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate;
+  integrationGrowthSpacesCreate: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate | null;
 }
 
 export interface IntegrationGrowthSpacesCreateVariables {

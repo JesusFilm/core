@@ -13,7 +13,7 @@ export interface IntegrationGrowthSpacesDelete_integrationDelete {
 }
 
 export interface IntegrationGrowthSpacesDelete {
-  integrationDelete: IntegrationGrowthSpacesDelete_integrationDelete | null;
+  integrationDelete: IntegrationGrowthSpacesDelete_integrationDelete;
 }
 
 export interface IntegrationGrowthSpacesDeleteVariables {
