@@ -249,7 +249,7 @@ describe('IntegrationGrothSpacesService', () => {
               data: {
                 language: null
               }
-            } as unknown as ObservableQuery.Result<unknown>)
+            })
         )
       await service.addSubscriber(
         'journeyId',
@@ -281,7 +281,7 @@ describe('IntegrationGrothSpacesService', () => {
               data: {
                 language: null
               }
-            } as unknown as ObservableQuery.Result<unknown>)
+            })
         )
       await service.addSubscriber(
         'journeyId',
@@ -308,7 +308,7 @@ describe('IntegrationGrothSpacesService', () => {
                 bcp47: 'en'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       const consoleMock = jest.spyOn(global.console, 'error')
 
@@ -337,7 +337,7 @@ describe('IntegrationGrothSpacesService', () => {
                 bcp47: 'en'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       const consoleMock = jest.spyOn(console, 'error')
       mockAxiosPost.mockResolvedValue({})

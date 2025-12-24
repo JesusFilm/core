@@ -219,7 +219,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(teamRemoved)
       expect(sendEmail).not.toHaveBeenCalled()
@@ -237,7 +237,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
@@ -256,7 +256,7 @@ describe('EmailConsumer', () => {
             data: {
               user: undefined
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(teamInviteJob)
       expect(sendEmail).toHaveBeenCalled()
@@ -291,7 +291,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(teamInviteAccepted)
       expect(sendEmail).toHaveBeenCalledTimes(2)
@@ -319,7 +319,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(teamInviteAccepted)
       expect(sendEmail).not.toHaveBeenCalled()
@@ -337,7 +337,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyAccessRequest)
       expect(sendEmail).toHaveBeenCalled()
@@ -365,7 +365,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyAccessRequest)
       expect(sendEmail).not.toHaveBeenCalled()
@@ -383,7 +383,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyRequestApproved)
       expect(sendEmail).toHaveBeenCalled()
@@ -411,7 +411,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyRequestApproved)
       expect(sendEmail).not.toHaveBeenCalled()
@@ -429,7 +429,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyEditJob)
       expect(sendEmail).toHaveBeenCalled()
@@ -448,7 +448,7 @@ describe('EmailConsumer', () => {
             data: {
               user: undefined
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyEditJob)
       expect(sendEmail).toHaveBeenCalled()
@@ -476,7 +476,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
       await service(journeyEditJob)
       expect(sendEmail).not.toHaveBeenCalled()

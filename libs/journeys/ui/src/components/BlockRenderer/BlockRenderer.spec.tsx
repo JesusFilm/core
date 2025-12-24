@@ -442,7 +442,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -459,7 +459,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -501,7 +501,7 @@ describe('BlockRenderer', () => {
       children: [option, { ...option, id: 'option2', label: 'multi option 2' }]
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <BlockRenderer block={block} />
         </SnackbarProvider>
@@ -522,7 +522,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByRole } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={{ ...block }}
           wrappers={{

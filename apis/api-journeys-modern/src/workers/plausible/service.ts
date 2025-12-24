@@ -1,16 +1,11 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink,
-  gql
-} from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
 import chunk from 'lodash/chunk'
 import { Logger } from 'pino'
 
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 import { prisma } from '@core/prisma/journeys/client'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { env } from '../../env'
 
@@ -39,24 +34,11 @@ type PlausibleJob =
   | PlausibleCreateJourneySiteJob
   | PlausibleCreateTemplateSiteJob
 
-type MutationSiteCreateSuccess = {
-  __typename: 'MutationSiteCreateSuccess'
-  data: {
-    sharedLinks?: Array<{ slug: string }>
-  }
-}
-
-type MutationSiteCreateError = {
-  __typename: 'Error'
-  message?: string | null
-}
-
-type MutationSiteCreateResult =
-  | MutationSiteCreateSuccess
-  | MutationSiteCreateError
-
-export const SITE_CREATE = gql(`
-  mutation SiteCreate($input: SiteCreateInput!, $includeSharedLinks: Boolean = true) {
+export const SITE_CREATE = graphql(`
+  mutation SiteCreate(
+    $input: SiteCreateInput!
+    $includeSharedLinks: Boolean = true
+  ) {
     siteCreate(input: $input) {
       ... on Error {
         message
@@ -125,7 +107,7 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'custom3Capture'
 ]
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   fetch,
   headers: {
@@ -135,7 +117,7 @@ const httpLink = createHttpLink({
   }
 })
 
-const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
+const client: ApolloClient = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache()
 })
@@ -157,7 +139,7 @@ function templateSiteId(templateId: string): string {
 async function createSite(
   domain: string,
   disableSharedLinks = false
-): Promise<MutationSiteCreateResult | undefined> {
+): Promise<ResultOf<typeof SITE_CREATE>['siteCreate'] | undefined> {
   const { data } = await client.mutate({
     mutation: SITE_CREATE,
     variables: {

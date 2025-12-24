@@ -9,6 +9,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { getTopSpokenLanguages } from '../../../../libs/algolia/getTopSpokenLanguages'
 import { useSearchBar } from '../../../../libs/algolia/SearchBarProvider'
 import { useCountryQuery } from '../../../../libs/useCountryQuery'
+import { GetCountry_country } from '../../../../libs/useCountryQuery/__generated__/GetCountry'
 
 interface CountryLanguageSelectorProps {
   countryCode?: string
@@ -26,7 +27,7 @@ export function CountryLanguageSelector({
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
   const spokenLanguages = getTopSpokenLanguages({
-    country: (data?.country as any) ?? null,
+    country: (data?.country as GetCountry_country) ?? null,
     availableLanguages: items
   })
 

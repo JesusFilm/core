@@ -15,6 +15,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
+import { JourneyAiTranslateCreateSubscriptionVariables } from '../../../libs/useJourneyAiTranslateSubscription/__generated__/JourneyAiTranslateCreateSubscription'
 
 interface CreateJourneyButtonProps {
   variant?: 'menu-item' | 'button'
@@ -72,7 +73,8 @@ export function CreateJourneyButton({
 
   // Set up the subscription for translation
   const { data: translationData } = useJourneyAiTranslateSubscription({
-    variables: translationVariables as any,
+    variables:
+      translationVariables as JourneyAiTranslateCreateSubscriptionVariables,
     skip: !translationVariables,
     onComplete: () => {
       enqueueSnackbar(t('Journey Translated'), {

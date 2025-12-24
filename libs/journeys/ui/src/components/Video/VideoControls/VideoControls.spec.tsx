@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   act,
   cleanup,

@@ -96,7 +96,7 @@ describe('QrCodeService', () => {
                 data: shortLink
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       const result = await service.getShortLink('shortLinkId')
@@ -110,7 +110,7 @@ describe('QrCodeService', () => {
             data: {
               shortLink: notFoundError
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await expect(service.getShortLink('shortLinkId')).rejects.toThrow(
@@ -134,7 +134,7 @@ describe('QrCodeService', () => {
             data: {
               shortLinkCreate
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       const result = await service.createShortLink({
@@ -152,7 +152,7 @@ describe('QrCodeService', () => {
             data: {
               shortLinkCreate: notUniqueError
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await expect(
@@ -171,7 +171,7 @@ describe('QrCodeService', () => {
             data: {
               shortLinkCreate: zodError
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await expect(
@@ -199,7 +199,7 @@ describe('QrCodeService', () => {
             data: {
               shortLinkUpdate
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       const result = await service.updateShortLink({
@@ -219,7 +219,7 @@ describe('QrCodeService', () => {
                 message: 'Not found error message'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await expect(
@@ -240,7 +240,7 @@ describe('QrCodeService', () => {
                 message: 'Zod error message'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await expect(
@@ -267,7 +267,7 @@ describe('QrCodeService', () => {
             data: {
               shortLinkDelete
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       const result = await service.deleteShortLink('shortLinkId')
@@ -284,7 +284,7 @@ describe('QrCodeService', () => {
                 message: 'Not found error message'
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await expect(service.deleteShortLink('shortLinkId')).rejects.toThrow(
@@ -417,7 +417,7 @@ describe('QrCodeService', () => {
                 data: shortLink
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await service.updateTeamShortLinks('teamId', 'newDomain')
@@ -443,7 +443,7 @@ describe('QrCodeService', () => {
                 data: shortLink
               }
             }
-          } as unknown as ObservableQuery.Result<unknown>)
+          })
       )
 
       await service.updateJourneyShortLink('toJourneyId', 'newJourneySlug')

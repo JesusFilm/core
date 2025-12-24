@@ -1,9 +1,9 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
+import { graphql } from 'gql.tada'
 import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
-import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getVideo } from '../../../schema/mux/video/service'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
@@ -55,7 +55,7 @@ async function getLanguageSlug(
   let apollo: ApolloClient | null = null
   try {
     apollo = createLanguageClient()
-    const { data } = await apollo.query<ResultOf<typeof GET_LANGUAGE_SLUG>>({
+    const { data } = await apollo.query<any>({
       query: GET_LANGUAGE_SLUG,
       variables: { languageId },
       fetchPolicy: 'no-cache'

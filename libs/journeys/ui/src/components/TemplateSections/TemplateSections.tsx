@@ -9,7 +9,10 @@ import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import {
+  GetJourneys_journeys,
+  GetJourneys_journeys as Journey
+} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
@@ -46,11 +49,14 @@ export function TemplateSections({
   const { collection, contents } = useMemo(() => {
     const contents: Contents = {}
     let collection: Journey[] = []
-    const journeys = ((data as any)?.journeys as any[]) ?? []
+    const journeys = data?.journeys as GetJourneys_journeys[]
     if (journeys.length > 0) {
       const featuredAndNew = [
         ...journeys.filter(({ featuredAt }) => featuredAt != null),
-        ...take(journeys.filter(({ featuredAt }) => featuredAt == null), 10)
+        ...take(
+          journeys.filter(({ featuredAt }) => featuredAt == null),
+          10
+        )
       ]
       const mostRelevant = journeys.filter(({ tags }) =>
         tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))

@@ -22,6 +22,7 @@ import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateTags } from './TemplateTags'
 import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
+import { GetJourneys_journeys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 interface TemplateViewProps {
   authUser?: User
@@ -49,7 +50,7 @@ export function TemplateView({
     }
   })
 
-  const relatedJourneys = (data?.journeys as any[] | undefined)?.filter(
+  const relatedJourneys = (data?.journeys as GetJourneys_journeys[])?.filter(
     ({ id }) => id !== journey?.id
   )
 
