@@ -85,7 +85,7 @@ describe('OnboardingTemplateCard', () => {
       expect(
         screen.getByRole('img').attributes.getNamedItem('src')?.value
       ).toBe(
-        '/_next/image?url=https%3A%2F%2Fimages.unsplash.com%2Fphoto-1508363778367-af363f107cbb%3Fixlib%3Drb-1.2.1%26q%3D80%26fm%3Djpg%26crop%3Dentropy%26cs%3Dtinysrgb%26dl%3Dchester-wade-hLP7lVm4KUE-unsplash.jpg%26w%3D1920&w=3840&q=75'
+        'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
       )
     )
     expect(screen.getAllByText('A Template Heading')[0]).toBeInTheDocument()
