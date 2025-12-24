@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
+import { ApolloClient, ObservableQuery } from '@apollo/client'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
@@ -249,7 +249,7 @@ describe('IntegrationGrothSpacesService', () => {
               data: {
                 language: null
               }
-            } as unknown as ApolloQueryResult<unknown>)
+            })
         )
       await service.addSubscriber(
         'journeyId',
@@ -281,7 +281,7 @@ describe('IntegrationGrothSpacesService', () => {
               data: {
                 language: null
               }
-            } as unknown as ApolloQueryResult<unknown>)
+            })
         )
       await service.addSubscriber(
         'journeyId',
@@ -308,7 +308,7 @@ describe('IntegrationGrothSpacesService', () => {
                 bcp47: 'en'
               }
             }
-          } as unknown as ApolloQueryResult<unknown>)
+          })
       )
       const consoleMock = jest.spyOn(global.console, 'error')
 
@@ -337,7 +337,7 @@ describe('IntegrationGrothSpacesService', () => {
                 bcp47: 'en'
               }
             }
-          } as unknown as ApolloQueryResult<unknown>)
+          })
       )
       const consoleMock = jest.spyOn(console, 'error')
       mockAxiosPost.mockResolvedValue({})

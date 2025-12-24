@@ -22,6 +22,7 @@ import { TemplatePreviewTabs } from './TemplatePreviewTabs'
 import { TemplateTags } from './TemplateTags'
 import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
+import { GetJourneys_journeys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 
 interface TemplateViewProps {
   authUser?: User
@@ -49,7 +50,9 @@ export function TemplateView({
     }
   })
 
-  const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
+  const relatedJourneys = (data?.journeys as GetJourneys_journeys[])?.filter(
+    ({ id }) => id !== journey?.id
+  )
 
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
@@ -141,8 +144,10 @@ export function TemplateView({
           {relatedJourneys != null && relatedJourneys.length >= 1 && (
             <ContentCarousel
               heading={t('Related Templates')}
-              items={relatedJourneys}
-              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              items={relatedJourneys as any}
+              renderItem={(itemProps) => (
+                <TemplateGalleryCard {...(itemProps as any)} />
+              )}
               breakpoints={swiperBreakpoints}
               cardSpacing={{
                 xs: 1,

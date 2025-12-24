@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 
 import {
@@ -168,7 +169,7 @@ describe('TemplateSections', () => {
     }
   ]
 
-  const getJourneysMock: MockedResponse<GetJourneys> = {
+  const getJourneysMock: MockLink.MockedResponse<GetJourneys> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -187,7 +188,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
+  const getJourneysWithTagIdsMock: MockLink.MockedResponse<GetJourneys> = {
     ...getJourneysMock,
     request: {
       ...getJourneysMock.request,
@@ -210,7 +211,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysWithLanguageIdsMock: MockedResponse<GetJourneys> = {
+  const getJourneysWithLanguageIdsMock: MockLink.MockedResponse<GetJourneys> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -251,7 +252,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
+  const getJourneysEmptyMock: MockLink.MockedResponse<GetJourneys> = {
     ...getJourneysMock,
     result: {
       data: {

@@ -1,7 +1,7 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Logger } from 'pino'
 
-import { graphql } from '@core/shared/gql'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 export const GET_LANGUAGES = graphql(`
   query getLanguages {
@@ -19,12 +19,12 @@ export const GET_LANGUAGES = graphql(`
   }
 `)
 
-function createApolloClient(): ApolloClient<any> {
+function createApolloClient(): ApolloClient {
   if (!process.env.GATEWAY_URL) {
     throw new Error('GATEWAY_URL environment variable is required')
   }
 
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-media',
@@ -55,18 +55,18 @@ interface LanguageRecord {
 }
 
 export async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
-  let apollo: ApolloClient<any> | null = null
+  let apollo: ApolloClient | null = null
 
   try {
     apollo = createApolloClient()
 
-    const { data } = await apollo.query({
+    const { data } = await apollo.query<ResultOf<typeof GET_LANGUAGES>>({
       query: GET_LANGUAGES,
       fetchPolicy: 'no-cache'
     })
 
     const languagesRecord: LanguageRecord = {}
-    data.languages.forEach((language) => {
+    data?.languages.forEach((language) => {
       languagesRecord[language.id] = {
         english: language.name.find(({ language }) => language.id === '529')
           ?.value,

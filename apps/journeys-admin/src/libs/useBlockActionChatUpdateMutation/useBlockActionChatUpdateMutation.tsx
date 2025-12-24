@@ -1,10 +1,9 @@
+import { FetchResult, gql } from '@apollo/client'
 import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+  useMutation,
+  type MutationFunctionOptions,
+  type MutationResult
+} from '@apollo/client/react'
 
 import {
   BlockActionChatUpdate,

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -59,7 +59,7 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   children: []
 }
 
-export const mockStepBlockCreateFromSocialPreview: MockedResponse<
+export const mockStepBlockCreateFromSocialPreview: MockLink.MockedResponse<
   StepBlockCreateFromSocialPreview,
   StepBlockCreateFromSocialPreviewVariables
 > = {
@@ -92,7 +92,7 @@ export const mockStepBlockCreateFromSocialPreview: MockedResponse<
   }
 }
 
-export const mockStepBlockDeleteFromSocialPreview: MockedResponse<
+export const mockStepBlockDeleteFromSocialPreview: MockLink.MockedResponse<
   StepBlockDeleteFromSocialPreview,
   StepBlockDeleteFromSocialPreviewVariables
 > = {
@@ -113,29 +113,31 @@ export const mockStepBlockDeleteFromSocialPreview: MockedResponse<
   }
 }
 
-export const deleteStepMock: MockedResponse<BlockDelete, BlockDeleteVariables> =
-  {
-    request: {
-      query: BLOCK_DELETE,
-      variables: {
-        id: mockNewStepBlock.id
-      }
-    },
-    result: {
-      data: {
-        blockDelete: [
-          {
-            __typename: 'StepBlock',
-            id: mockNewStepBlock.id,
-            parentOrder: mockNewStepBlock.parentOrder,
-            nextBlockId: null
-          }
-        ]
-      }
+export const deleteStepMock: MockLink.MockedResponse<
+  BlockDelete,
+  BlockDeleteVariables
+> = {
+  request: {
+    query: BLOCK_DELETE,
+    variables: {
+      id: mockNewStepBlock.id
+    }
+  },
+  result: {
+    data: {
+      blockDelete: [
+        {
+          __typename: 'StepBlock',
+          id: mockNewStepBlock.id,
+          parentOrder: mockNewStepBlock.parentOrder,
+          nextBlockId: null
+        }
+      ]
     }
   }
+}
 
-export const mockStepBlockRestoreFromSocialPreview: MockedResponse<
+export const mockStepBlockRestoreFromSocialPreview: MockLink.MockedResponse<
   StepBlockRestoreFromSocialPreview,
   StepBlockRestoreFromSocialPreviewVariables
 > = {

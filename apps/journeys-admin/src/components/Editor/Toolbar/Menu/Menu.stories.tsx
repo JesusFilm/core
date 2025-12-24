@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 import { screen, userEvent } from 'storybook/test'
@@ -21,7 +21,7 @@ const Demo: Meta<typeof Menu> = {
   title: 'Journeys-Admin/Editor/Toolbar/Menu'
 }
 
-const getUserRoleMock: MockedResponse<GetRole> = {
+const getUserRoleMock: MockLink.MockedResponse<GetRole> = {
   request: {
     query: GET_ROLE
   },

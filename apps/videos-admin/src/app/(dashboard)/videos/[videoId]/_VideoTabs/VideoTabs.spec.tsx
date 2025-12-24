@@ -1,10 +1,6 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus, OperationVariables } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
@@ -107,15 +103,15 @@ const setupMock = (data: any) => {
     networkStatus: NetworkStatus.ready,
     client: {} as any,
     previousData: null,
-    called: true,
     startPolling: jest.fn(),
     stopPolling: jest.fn(),
     subscribeToMore: jest.fn(),
     updateQuery: jest.fn(),
     observable: {} as any,
     reobserve: jest.fn(),
-    variables: {}
-  } as QueryResult<any, OperationVariables>)
+    variables: {},
+    dataState: 'complete'
+  } as any)
 }
 
 describe('VideoTabView', () => {

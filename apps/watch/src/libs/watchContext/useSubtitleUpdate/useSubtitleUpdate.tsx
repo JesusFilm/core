@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import { useCallback } from 'react'
 import Player from 'video.js/dist/types/player'
 

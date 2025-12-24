@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -21,6 +21,14 @@ import {
 } from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
+import {
+  ArchiveActiveJourneys,
+  ArchiveActiveJourneysVariables
+} from '../../../../__generated__/ArchiveActiveJourneys'
+import {
+  TrashActiveJourneys,
+  TrashActiveJourneysVariables
+} from '../../../../__generated__/TrashActiveJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -42,7 +50,10 @@ export function ActiveTemplateList({
     template: true,
     teamId: 'jfp-team'
   })
-  const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
+  const [archive] = useMutation<
+    ArchiveActiveJourneys,
+    ArchiveActiveJourneysVariables
+  >(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
         enqueueSnackbar(t('Templates Archived'), {
@@ -52,7 +63,10 @@ export function ActiveTemplateList({
       }
     }
   })
-  const [trash] = useMutation(TRASH_ACTIVE_JOURNEYS, {
+  const [trash] = useMutation<
+    TrashActiveJourneys,
+    TrashActiveJourneysVariables
+  >(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Templates Trashed'), {
@@ -71,7 +85,7 @@ export function ActiveTemplateList({
     try {
       await archive({
         variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
+          ids: data?.journeys?.map((journey) => journey.id) ?? []
         }
       })
     } catch (error) {
@@ -89,7 +103,7 @@ export function ActiveTemplateList({
     try {
       await trash({
         variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
+          ids: data?.journeys?.map((journey) => journey.id) ?? []
         }
       })
     } catch (error) {

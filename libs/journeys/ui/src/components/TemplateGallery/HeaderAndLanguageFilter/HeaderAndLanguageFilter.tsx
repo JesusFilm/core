@@ -23,6 +23,7 @@ import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
+import { GetLanguages_languages } from '../../../libs/useLanguagesQuery/__generated__/GetLanguages'
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -204,7 +205,9 @@ export function HeaderAndLanguageFilter({
   })
 
   const languageOptions = convertLanguagesToOptions(
-    data?.languages.filter(({ id }) => selectedLanguageIds?.includes(id))
+    (data?.languages as GetLanguages_languages[]).filter(({ id }) =>
+      selectedLanguageIds?.includes(id)
+    )
   )
 
   const languageNames = languageOptions.map(
@@ -241,7 +244,7 @@ export function HeaderAndLanguageFilter({
 
   const options = useMemo(() => {
     return (
-      data?.languages?.map(({ id, name }) => {
+      (data?.languages as GetLanguages_languages[]).map(({ id, name }) => {
         const localLanguageName = name.find(({ primary }) => !primary)?.value
         const nativeLanguageName = name.find(({ primary }) => primary)?.value
 

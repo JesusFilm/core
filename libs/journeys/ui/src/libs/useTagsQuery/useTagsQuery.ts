@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { useMemo } from 'react'
 
 import { GetTags, GetTags_tags as Tag } from './__generated__/GetTags'
@@ -19,7 +20,7 @@ export const GET_TAGS = gql`
 
 type ChildTag = Tag & { parentId: string }
 
-export function useTagsQuery(): QueryResult<GetTags> & {
+export function useTagsQuery(): useQuery.Result<GetTags> & {
   parentTags: Tag[]
   childTags: ChildTag[]
 } {

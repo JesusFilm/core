@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
 import {
@@ -8,7 +8,7 @@ import {
 
 import { STEP_AND_CARD_BLOCK_CREATE } from './useStepAndCardBlockCreateMutation'
 
-export const stepAndCardBlockCreateMock: MockedResponse<
+export const stepAndCardBlockCreateMock: MockLink.MockedResponse<
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 > = {

@@ -1,5 +1,5 @@
-import { LazyQueryResultTuple, useLazyQuery } from '@apollo/client'
-import { useState } from 'react'
+import { useLazyQuery } from '@apollo/client/react'
+import { useEffect, useState } from 'react'
 
 import {
   GetUserTeamsAndInvites,
@@ -8,7 +8,7 @@ import {
 import { GET_USER_TEAMS_AND_INVITES } from '../useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 export function useUserTeamsAndInvitesLazyQuery(): {
-  query: LazyQueryResultTuple<
+  query: useLazyQuery.ResultTuple<
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
   >
@@ -18,14 +18,18 @@ export function useUserTeamsAndInvitesLazyQuery(): {
   const query = useLazyQuery<
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
-  >(GET_USER_TEAMS_AND_INVITES, {
-    onCompleted: ({ userTeams, userTeamInvites }) => {
+  >(GET_USER_TEAMS_AND_INVITES)
+
+  useEffect(() => {
+    const result = query[1]
+    if (result.data != null) {
+      const { userTeams, userTeamInvites } = result.data
       setEmails([
         ...userTeams.map(({ user: { email } }) => email.toLowerCase()),
         ...userTeamInvites.map(({ email }) => email.toLowerCase())
       ])
     }
-  })
+  }, [query])
 
   return {
     query,

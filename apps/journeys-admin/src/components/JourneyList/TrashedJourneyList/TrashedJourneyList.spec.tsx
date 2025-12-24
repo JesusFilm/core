@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
@@ -28,7 +29,7 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const trashedJourneysMock: MockedResponse<
+const trashedJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -57,7 +58,7 @@ const trashedJourneysMock: MockedResponse<
   }
 }
 
-const noJourneysMock: MockedResponse<
+const noJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {

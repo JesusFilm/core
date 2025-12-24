@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -116,7 +117,7 @@ global.fetch = jest.fn(
     })
 ) as jest.Mock
 
-const mocks: MockedResponse[] = [
+const mocks: MockLink.MockedResponse[] = [
   {
     request: {
       query: JOURNEY_VISITOR_UPDATE,

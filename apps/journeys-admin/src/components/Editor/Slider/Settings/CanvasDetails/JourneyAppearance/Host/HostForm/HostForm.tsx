@@ -1,10 +1,5 @@
-import {
-  ApolloCache,
-  LazyQueryHookExecOptions,
-  QueryResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, gql } from '@apollo/client'
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -43,12 +38,8 @@ export const DELETE_HOST = gql`
 interface HostFormTabProps {
   handleSelection: (value: 'selection' | 'list') => void
   getAllTeamHostsQuery: (
-    options?:
-      | Partial<
-          LazyQueryHookExecOptions<GetAllTeamHosts, GetAllTeamHostsVariables>
-        >
-      | undefined
-  ) => Promise<QueryResult<GetAllTeamHosts, GetAllTeamHostsVariables>>
+    options?: { variables?: GetAllTeamHostsVariables }
+  ) => Promise<unknown>
 }
 
 export function HostForm({
@@ -77,10 +68,7 @@ export function HostForm({
       try {
         await hostDelete({
           variables: { id: host.id, teamId: journey.team.id },
-          update(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            cache: ApolloCache<any>
-          ) {
+          update(cache: ApolloCache) {
             cache.evict({
               id: cache.identify({ __typename: 'Host', id: host.id })
             })

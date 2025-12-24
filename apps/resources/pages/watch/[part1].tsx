@@ -1,4 +1,5 @@
-import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
@@ -139,7 +140,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
       serverState,
       languageEnglishName: language.englishName?.value ?? '',
       languageId: language.id,
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-resources'],

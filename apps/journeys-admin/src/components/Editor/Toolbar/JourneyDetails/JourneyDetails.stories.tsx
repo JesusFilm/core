@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryFn, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
@@ -25,7 +25,10 @@ const JourneyDetailsStory: Meta<typeof JourneyDetails> = {
   }
 }
 
-const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
+const getLanguagesMock: MockLink.MockedResponse<
+  GetLanguages,
+  GetLanguagesVariables
+> = {
   request: {
     query: GET_LANGUAGES,
     variables: {

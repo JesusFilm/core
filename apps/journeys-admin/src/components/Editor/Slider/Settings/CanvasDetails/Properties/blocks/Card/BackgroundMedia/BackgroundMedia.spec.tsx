@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -151,7 +152,7 @@ const image: TreeBlock<ImageBlock> = {
   focalTop: 50
 }
 
-const coverVideoBlockDeleteMock: MockedResponse<
+const coverVideoBlockDeleteMock: MockLink.MockedResponse<
   CoverBlockDelete,
   CoverBlockDeleteVariables
 > = {
@@ -180,7 +181,7 @@ const coverVideoBlockDeleteMock: MockedResponse<
   }
 }
 
-const coverVideoBlockRestoreMock: MockedResponse<
+const coverVideoBlockRestoreMock: MockLink.MockedResponse<
   CoverBlockRestore,
   CoverBlockRestoreVariables
 > = {
@@ -203,7 +204,7 @@ const coverVideoBlockRestoreMock: MockedResponse<
   }
 }
 
-const coverImageBlockDeleteMock: MockedResponse<
+const coverImageBlockDeleteMock: MockLink.MockedResponse<
   CoverBlockDelete,
   CoverBlockDeleteVariables
 > = {
@@ -232,7 +233,7 @@ const coverImageBlockDeleteMock: MockedResponse<
   }
 }
 
-const coverImageBlockRestoreMock: MockedResponse<
+const coverImageBlockRestoreMock: MockLink.MockedResponse<
   CoverBlockRestore,
   CoverBlockRestoreVariables
 > = {

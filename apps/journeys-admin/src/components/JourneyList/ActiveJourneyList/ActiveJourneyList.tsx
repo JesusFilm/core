@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
@@ -19,6 +20,14 @@ import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
+import {
+  ArchiveActiveJourneys,
+  ArchiveActiveJourneysVariables
+} from '../../../../__generated__/ArchiveActiveJourneys'
+import {
+  TrashActiveJourneys,
+  TrashActiveJourneysVariables
+} from '../../../../__generated__/TrashActiveJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -40,7 +49,10 @@ export function ActiveJourneyList({
     status: [JourneyStatus.draft, JourneyStatus.published],
     useLastActiveTeamId: true
   })
-  const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
+  const [archive] = useMutation<
+    ArchiveActiveJourneys,
+    ArchiveActiveJourneysVariables
+  >(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
         enqueueSnackbar(t('Journeys Archived'), {
@@ -50,7 +62,10 @@ export function ActiveJourneyList({
       }
     }
   })
-  const [trash] = useMutation(TRASH_ACTIVE_JOURNEYS, {
+  const [trash] = useMutation<
+    TrashActiveJourneys,
+    TrashActiveJourneysVariables
+  >(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
@@ -67,14 +82,15 @@ export function ActiveJourneyList({
 
   async function handleArchiveSubmit(): Promise<void> {
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
+      const journeyIds = (data?.journeys ?? [])
+        .filter((j) => j != null)
+        .filter((journey) =>
+          (journey?.userJourneys ?? []).some(
+            (userJourney) => userJourney?.user?.id === (user?.id ?? '')
+          )
         )
-        .map((journey) => journey.id)
+        .map((journey) => journey?.id)
+        .filter((id): id is string => typeof id === 'string')
       await archive({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -89,14 +105,15 @@ export function ActiveJourneyList({
 
   async function handleTrashSubmit(): Promise<void> {
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
+      const journeyIds = (data?.journeys ?? [])
+        .filter((j) => j != null)
+        .filter((journey) =>
+          (journey?.userJourneys ?? []).some(
+            (userJourney) => userJourney?.user?.id === (user?.id ?? '')
+          )
         )
-        .map((journey) => journey.id)
+        .map((journey) => journey?.id)
+        .filter((id): id is string => typeof id === 'string')
       await trash({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -142,7 +159,7 @@ export function ActiveJourneyList({
           <ActivePriorityList
             journeys={data.journeys}
             sortOrder={sortOrder}
-            refetch={refetch}
+            refetch={refetch as unknown as () => Promise<unknown>}
             user={user}
           />
           {data.journeys.length === 0 && (

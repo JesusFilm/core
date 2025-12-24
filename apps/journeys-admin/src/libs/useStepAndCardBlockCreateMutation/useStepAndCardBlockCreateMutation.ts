@@ -1,10 +1,5 @@
-import {
-  ApolloCache,
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -34,8 +29,7 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
 `
 
 export function stepBlockCreateUpdate(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cache: ApolloCache<any>,
+  cache: ApolloCache,
   data: StepAndCardBlockCreate | null | undefined,
   journeyId: string | null | undefined
 ): void {
@@ -83,11 +77,14 @@ export function stepBlockCreateUpdate(
 }
 
 export function useStepAndCardBlockCreateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     StepAndCardBlockCreate,
     StepAndCardBlockCreateVariables
   >
-): MutationTuple<StepAndCardBlockCreate, StepAndCardBlockCreateVariables> {
+): useMutation.ResultTuple<
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+> {
   const { journey } = useJourney()
   const mutation = useMutation<
     StepAndCardBlockCreate,

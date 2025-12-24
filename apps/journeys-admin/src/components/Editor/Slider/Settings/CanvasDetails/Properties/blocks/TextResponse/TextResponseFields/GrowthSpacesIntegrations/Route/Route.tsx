@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -70,7 +71,7 @@ export function Route(): ReactElement {
     return block?.__typename === 'TextResponseBlock'
   }
 
-  const selectedIntegration = data?.integrations.find(
+  const selectedIntegration = data?.integrations?.find(
     isMatchingGrowthSpacesIntegration
   )
 

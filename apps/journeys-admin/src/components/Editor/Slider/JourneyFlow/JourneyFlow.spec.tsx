@@ -1,5 +1,6 @@
-import { MutationResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import type { useMutation } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
@@ -24,6 +25,7 @@ import {
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
+import { StepBlockPositionUpdate } from '../../../../../__generated__/StepBlockPositionUpdate'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
@@ -96,7 +98,7 @@ describe('JourneyFlow', () => {
     } as unknown as NextRouter)
   })
 
-  const mockGetStepBlocksWithPosition: MockedResponse<
+  const mockGetStepBlocksWithPosition: MockLink.MockedResponse<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
   > = {
@@ -162,11 +164,11 @@ describe('JourneyFlow', () => {
     }))
     const result = jest.fn().mockReturnValue({ data: { blocks } })
     const mockUpdate = jest.fn()
-    const mockResult = jest.fn() as unknown as MutationResult
+    const mockResult = jest.fn() as unknown as useMutation.Result
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
-    ])
+    ] as unknown as ReturnType<typeof useStepBlockPositionUpdateMutation>)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -229,11 +231,11 @@ describe('JourneyFlow', () => {
       .fn()
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
     const mockUpdate = jest.fn()
-    const mockResult = jest.fn() as unknown as MutationResult
+    const mockResult = jest.fn() as unknown as useMutation.Result
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
-    ])
+    ] as unknown as ReturnType<typeof useStepBlockPositionUpdateMutation>)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -329,11 +331,11 @@ describe('JourneyFlow', () => {
 
     // Mock for journey update
     const mockJourneyUpdate = jest.fn()
-    const mockJourneyResult = jest.fn() as unknown as MutationResult
+    const mockJourneyResult = jest.fn() as unknown as useMutation.Result
     mockUseJourneyUpdateMutation.mockReturnValue([
       mockJourneyUpdate,
       mockJourneyResult
-    ])
+    ] as unknown as ReturnType<typeof useJourneyUpdateMutation>)
 
     const initialSocialNodeX = 100
     const initialSocialNodeY = 200

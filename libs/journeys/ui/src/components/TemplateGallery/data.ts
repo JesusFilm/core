@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   JourneyStatus,
@@ -162,7 +162,7 @@ const journeys: Journey[] = [
   }
 ]
 
-export const getJourneysMock: MockedResponse<
+export const getJourneysMock: MockLink.MockedResponse<
   GetJourneys,
   GetJourneysVariables
 > = {
@@ -183,7 +183,7 @@ export const getJourneysMock: MockedResponse<
   }
 }
 
-export const getJourneysMockWithAcceptanceTag: MockedResponse<
+export const getJourneysMockWithAcceptanceTag: MockLink.MockedResponse<
   GetJourneys,
   GetJourneysVariables
 > = {
@@ -205,7 +205,7 @@ export const getJourneysMockWithAcceptanceTag: MockedResponse<
   }
 }
 
-export const getJourneysMockWithoutTagsEnglish: MockedResponse<
+export const getJourneysMockWithoutTagsEnglish: MockLink.MockedResponse<
   GetJourneys,
   GetJourneysVariables
 > = {
@@ -227,7 +227,7 @@ export const getJourneysMockWithoutTagsEnglish: MockedResponse<
   }
 }
 
-export const getJourneysMockWithoutTagsFrench: MockedResponse<
+export const getJourneysMockWithoutTagsFrench: MockLink.MockedResponse<
   GetJourneys,
   GetJourneysVariables
 > = {
@@ -249,7 +249,7 @@ export const getJourneysMockWithoutTagsFrench: MockedResponse<
   }
 }
 
-export const getJourneysWithoutLanguageIdsMock: MockedResponse<
+export const getJourneysWithoutLanguageIdsMock: MockLink.MockedResponse<
   GetJourneys,
   GetJourneysVariables
 > = {
@@ -269,7 +269,7 @@ export const getJourneysWithoutLanguageIdsMock: MockedResponse<
   }
 }
 
-export const getLanguagesMock: MockedResponse<GetLanguages> = {
+export const getLanguagesMock: MockLink.MockedResponse<GetLanguages> = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -359,7 +359,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
   }
 }
 
-export const getTagsMock: MockedResponse<GetTags> = {
+export const getTagsMock: MockLink.MockedResponse<GetTags> = {
   request: {
     query: GET_TAGS
   },

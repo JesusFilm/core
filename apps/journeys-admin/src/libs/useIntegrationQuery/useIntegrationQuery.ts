@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   GetIntegration,
@@ -38,9 +39,12 @@ export const GET_INTEGRATION = gql`
 
 export function useIntegrationQuery(
   variables?: GetIntegrationVariables
-): QueryResult<GetIntegration, GetIntegrationVariables> {
+): useQuery.Result<GetIntegration, GetIntegrationVariables> {
+  const hasTeamId = variables?.teamId != null
   return useQuery<GetIntegration, GetIntegrationVariables>(GET_INTEGRATION, {
-    variables,
-    skip: variables?.teamId == null
+    variables: hasTeamId
+      ? (variables as GetIntegrationVariables)
+      : ({} as GetIntegrationVariables),
+    skip: !hasTeamId
   })
 }

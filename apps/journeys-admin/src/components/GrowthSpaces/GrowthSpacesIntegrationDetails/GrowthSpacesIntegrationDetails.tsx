@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -141,7 +142,7 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
   }
 
   useEffect(() => {
-    const selectedIntegration = data?.integrations.find(
+    const selectedIntegration = data?.integrations?.find(
       (integration) =>
         integration.id === integrationId &&
         integration.__typename === 'IntegrationGrowthSpaces'

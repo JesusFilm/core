@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import mockRouter from 'next-router-mock'
@@ -20,7 +21,7 @@ jest.mock('./GoogleSheetsSyncDialog', () => ({
 }))
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-const mockJourneyCreatedAt: MockedResponse = {
+const mockJourneyCreatedAt: MockLink.MockedResponse = {
   request: {
     query: GET_JOURNEY_BLOCK_TYPENAMES,
     variables: { id: 'journey1' }

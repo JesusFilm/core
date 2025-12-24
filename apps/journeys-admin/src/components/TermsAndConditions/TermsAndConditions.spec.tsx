@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User, useUser } from 'next-firebase-auth'
@@ -38,23 +39,24 @@ jest.mock('next-firebase-auth', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
 
-const journeyProfileCreateMock: MockedResponse<JourneyProfileCreate> = {
-  request: {
-    query: JOURNEY_PROFILE_CREATE
-  },
-  result: {
-    data: {
-      journeyProfileCreate: {
-        __typename: 'JourneyProfile',
-        id: 'profile.id',
-        userId: 'userId',
-        acceptedTermsAt: 'date'
+const journeyProfileCreateMock: MockLink.MockedResponse<JourneyProfileCreate> =
+  {
+    request: {
+      query: JOURNEY_PROFILE_CREATE
+    },
+    result: {
+      data: {
+        journeyProfileCreate: {
+          __typename: 'JourneyProfile',
+          id: 'profile.id',
+          userId: 'userId',
+          acceptedTermsAt: 'date'
+        }
       }
     }
   }
-}
 
-const teamCreateMock: MockedResponse<TeamCreate> = {
+const teamCreateMock: MockLink.MockedResponse<TeamCreate> = {
   request: {
     query: TEAM_CREATE,
     variables: {
@@ -78,7 +80,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
   }
 }
 
-const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -94,26 +96,27 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-  request: {
-    query: UPDATE_LAST_ACTIVE_TEAM_ID,
-    variables: {
-      input: {
-        lastActiveTeamId: 'teamId1'
+const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+  {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: {
+        input: {
+          lastActiveTeamId: 'teamId1'
+        }
       }
-    }
-  },
-  result: {
-    data: {
-      journeyProfileUpdate: {
-        __typename: 'JourneyProfile',
-        id: 'teamId1'
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          __typename: 'JourneyProfile',
+          id: 'teamId1'
+        }
       }
     }
   }
-}
 
-const journeyDuplicateMock: MockedResponse<JourneyDuplicate> = {
+const journeyDuplicateMock: MockLink.MockedResponse<JourneyDuplicate> = {
   request: {
     query: JOURNEY_DUPLICATE,
     variables: {
@@ -412,29 +415,30 @@ describe('TermsAndConditions', () => {
       query: { redirect: null }
     } as unknown as NextRouter)
 
-    const teamCreateMockWithEmailUsername: MockedResponse<TeamCreate> = {
-      request: {
-        query: TEAM_CREATE,
-        variables: {
-          input: {
-            title: 'testuser & Team',
-            publicTitle: 't Team'
+    const teamCreateMockWithEmailUsername: MockLink.MockedResponse<TeamCreate> =
+      {
+        request: {
+          query: TEAM_CREATE,
+          variables: {
+            input: {
+              title: 'testuser & Team',
+              publicTitle: 't Team'
+            }
           }
-        }
-      },
-      result: {
-        data: {
-          teamCreate: {
-            id: 'teamId1',
-            title: 'testuser & Team',
-            publicTitle: 't Team',
-            __typename: 'Team',
-            userTeams: [],
-            customDomains: []
+        },
+        result: {
+          data: {
+            teamCreate: {
+              id: 'teamId1',
+              title: 'testuser & Team',
+              publicTitle: 't Team',
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: []
+            }
           }
         }
       }
-    }
 
     const journeyProfileCreateMockResult = jest
       .fn()

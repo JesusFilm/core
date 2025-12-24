@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 import { expect, screen, waitFor } from 'storybook/test'
@@ -23,14 +23,13 @@ const meta: Meta<typeof ScanCount> = {
     layout: 'fullscreen'
   }
 }
-const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
   GetPlausibleJourneyQrCodeScans,
   GetPlausibleJourneyQrCodeScansVariables
 > = {
   request: {
     query: GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS
   },
-  variableMatcher: (variables) => true,
   result: {
     data: {
       journeysPlausibleStatsAggregate: {

@@ -1,4 +1,5 @@
-import { LazyQueryResultTuple, gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 
 import {
   GetUserInvites,
@@ -19,12 +20,9 @@ export const GET_USER_INVITES = gql`
 
 export function useUserInvitesLazyQuery(
   variables?: GetUserInvitesVariables
-): LazyQueryResultTuple<GetUserInvites, GetUserInvitesVariables> {
+): useLazyQuery.ResultTuple<GetUserInvites, GetUserInvitesVariables> {
   const query = useLazyQuery<GetUserInvites, GetUserInvitesVariables>(
-    GET_USER_INVITES,
-    {
-      variables
-    }
+    GET_USER_INVITES
   )
 
   return query

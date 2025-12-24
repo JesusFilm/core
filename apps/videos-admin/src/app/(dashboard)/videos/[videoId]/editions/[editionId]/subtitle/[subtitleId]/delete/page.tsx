@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 

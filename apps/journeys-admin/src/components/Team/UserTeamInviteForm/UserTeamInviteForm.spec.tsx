@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
@@ -32,7 +33,7 @@ jest.mock('../../../libs/useCurrentUserLazyQuery', () => ({
 const user1 = { id: 'userId', email: 'siyangguccigang@example.com' }
 
 describe('UserTeamInviteForm', () => {
-  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
@@ -57,29 +58,30 @@ describe('UserTeamInviteForm', () => {
     }
   }
 
-  const userTeamInviteCreateMock: MockedResponse<UserTeamInviteCreate> = {
-    request: {
-      query: USER_TEAM_INVITE_CREATE,
-      variables: {
-        teamId: 'teamId',
-        input: {
-          email: 'johnTHEgeronimo@example.com'
+  const userTeamInviteCreateMock: MockLink.MockedResponse<UserTeamInviteCreate> =
+    {
+      request: {
+        query: USER_TEAM_INVITE_CREATE,
+        variables: {
+          teamId: 'teamId',
+          input: {
+            email: 'johnTHEgeronimo@example.com'
+          }
         }
-      }
-    },
-    result: {
-      data: {
-        userTeamInviteCreate: {
-          __typename: 'UserTeamInvite',
-          email: 'johnTHEgeronimo@example.com',
-          id: 'inviteId2',
-          teamId: 'teamId'
+      },
+      result: {
+        data: {
+          userTeamInviteCreate: {
+            __typename: 'UserTeamInvite',
+            email: 'johnTHEgeronimo@example.com',
+            id: 'inviteId2',
+            teamId: 'teamId'
+          }
         }
       }
     }
-  }
 
-  const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
+  const getUserTeamMock1: MockLink.MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
       variables: { teamId: 'teamId' }

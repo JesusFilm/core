@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -105,7 +105,7 @@ const TestWrapper = ({
   children: React.ReactNode
   mocks: any[]
 }) => (
-  <MockedProvider mocks={mocks} addTypename={false}>
+  <MockedProvider mocks={mocks}>
     <SnackbarProvider>
       <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
     </SnackbarProvider>

@@ -50,7 +50,8 @@ export const getServerSideProps = withUserTokenSSR({
     query: GET_TEAMS
   })
 
-  if (getTeams.teams.length === 1 && query?.journeyId != null) {
+  const teams = getTeams?.teams ?? []
+  if (teams.length === 1 && query?.journeyId != null && teams[0]?.id != null) {
     const { data: journeyDuplicate } = await apolloClient.mutate<
       JourneyDuplicate,
       JourneyDuplicateVariables
@@ -58,7 +59,7 @@ export const getServerSideProps = withUserTokenSSR({
       mutation: JOURNEY_DUPLICATE,
       variables: {
         id: query.journeyId.toString(),
-        teamId: getTeams.teams[0].id
+        teamId: teams[0].id as string
       }
     })
     if (journeyDuplicate?.journeyDuplicate.id != null) {
