@@ -21,6 +21,15 @@ export interface GetJourneys_journeys_language {
   name: GetJourneys_journeys_language_name[];
 }
 
+export interface GetJourneys_journeys_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface GetJourneys_journeys_userJourneys_user {
   __typename: "User";
   id: string;
@@ -99,6 +108,9 @@ export interface GetJourneys_journeys {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
+  website: boolean | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: GetJourneys_journeys_journeyCustomizationFields[];
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetJourneys_journeys_primaryImageBlock | null;
   tags: GetJourneys_journeys_tags[];
