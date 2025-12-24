@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./glob
 // ====================================================
 
 export interface CardVideoRestore_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoTriggerBlock" | "GridContainerBlock" | "GridItemBlock";
 }
 
 export interface CardVideoRestore_video_VideoBlock_subtitleLanguage {

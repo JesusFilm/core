@@ -13,7 +13,7 @@ export interface GetJourneyVisitorsCountWithTextResponses {
   /**
    * Get a JourneyVisitor count by JourneyVisitorFilter
    */
-  journeyVisitorCount: number;
+  journeyVisitorCount: number | null;
 }
 
 export interface GetJourneyVisitorsCountWithTextResponsesVariables {

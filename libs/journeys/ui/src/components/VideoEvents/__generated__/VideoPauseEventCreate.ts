@@ -15,7 +15,7 @@ export interface VideoPauseEventCreate_videoPauseEventCreate {
 }
 
 export interface VideoPauseEventCreate {
-  videoPauseEventCreate: VideoPauseEventCreate_videoPauseEventCreate;
+  videoPauseEventCreate: VideoPauseEventCreate_videoPauseEventCreate | null;
 }
 
 export interface VideoPauseEventCreateVariables {

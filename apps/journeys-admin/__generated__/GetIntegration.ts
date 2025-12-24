@@ -53,7 +53,7 @@ export interface GetIntegration_integrations_IntegrationGoogle {
 export type GetIntegration_integrations = GetIntegration_integrations_IntegrationGrowthSpaces | GetIntegration_integrations_IntegrationGoogle;
 
 export interface GetIntegration {
-  integrations: GetIntegration_integrations[];
+  integrations: GetIntegration_integrations[] | null;
 }
 
 export interface GetIntegrationVariables {

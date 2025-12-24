@@ -15,7 +15,7 @@ export interface SignUpSubmissionEventCreate_signUpSubmissionEventCreate {
 }
 
 export interface SignUpSubmissionEventCreate {
-  signUpSubmissionEventCreate: SignUpSubmissionEventCreate_signUpSubmissionEventCreate;
+  signUpSubmissionEventCreate: SignUpSubmissionEventCreate_signUpSubmissionEventCreate | null;
 }
 
 export interface SignUpSubmissionEventCreateVariables {

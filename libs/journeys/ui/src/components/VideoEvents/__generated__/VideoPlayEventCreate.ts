@@ -15,7 +15,7 @@ export interface VideoPlayEventCreate_videoPlayEventCreate {
 }
 
 export interface VideoPlayEventCreate {
-  videoPlayEventCreate: VideoPlayEventCreate_videoPlayEventCreate;
+  videoPlayEventCreate: VideoPlayEventCreate_videoPlayEventCreate | null;
 }
 
 export interface VideoPlayEventCreateVariables {

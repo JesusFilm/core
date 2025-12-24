@@ -15,7 +15,7 @@ export interface IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate {
 }
 
 export interface IntegrationGrowthSpacesUpdate {
-  integrationGrowthSpacesUpdate: IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate;
+  integrationGrowthSpacesUpdate: IntegrationGrowthSpacesUpdate_integrationGrowthSpacesUpdate | null;
 }
 
 export interface IntegrationGrowthSpacesUpdateVariables {

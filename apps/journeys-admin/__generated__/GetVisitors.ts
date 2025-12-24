@@ -49,7 +49,7 @@ export interface GetVisitors_visitors_edges {
   /**
    * The item at the end of the edge.
    */
-  node: GetVisitors_visitors_edges_node;
+  node: GetVisitors_visitors_edges_node | null;
   /**
    * A cursor for use in pagination.
    */
@@ -77,7 +77,7 @@ export interface GetVisitors_visitors {
   /**
    * A list of edges.
    */
-  edges: GetVisitors_visitors_edges[];
+  edges: (GetVisitors_visitors_edges | null)[] | null;
   /**
    * Information to aid in pagination.
    */

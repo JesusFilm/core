@@ -13,7 +13,7 @@ export interface DeleteHost_hostDelete {
 }
 
 export interface DeleteHost {
-  hostDelete: DeleteHost_hostDelete;
+  hostDelete: DeleteHost_hostDelete | null;
 }
 
 export interface DeleteHostVariables {

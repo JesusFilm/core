@@ -13,7 +13,7 @@ export interface UserJourneyRequest_userJourneyRequest {
 }
 
 export interface UserJourneyRequest {
-  userJourneyRequest: UserJourneyRequest_userJourneyRequest;
+  userJourneyRequest: UserJourneyRequest_userJourneyRequest | null;
 }
 
 export interface UserJourneyRequestVariables {

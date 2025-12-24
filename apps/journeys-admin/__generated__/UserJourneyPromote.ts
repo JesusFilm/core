@@ -29,7 +29,7 @@ export interface UserJourneyPromote_userJourneyPromote {
 }
 
 export interface UserJourneyPromote {
-  userJourneyPromote: UserJourneyPromote_userJourneyPromote;
+  userJourneyPromote: UserJourneyPromote_userJourneyPromote | null;
 }
 
 export interface UserJourneyPromoteVariables {

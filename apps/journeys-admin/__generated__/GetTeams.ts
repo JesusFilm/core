@@ -13,5 +13,5 @@ export interface GetTeams_teams {
 }
 
 export interface GetTeams {
-  teams: GetTeams_teams[];
+  teams: GetTeams_teams[] | null;
 }

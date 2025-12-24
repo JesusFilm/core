@@ -1,4 +1,4 @@
-export { ButtonAlignment } from './buttonAlignment'
-export { ButtonColor } from './buttonColor'
-export { ButtonSize } from './buttonSize'
-export { ButtonVariant } from './buttonVariant'
+export { ButtonAlignment, type ButtonAlignmentType } from './buttonAlignment'
+export { ButtonColor, type ButtonColorType } from './buttonColor'
+export { ButtonSize, type ButtonSizeType } from './buttonSize'
+export { ButtonVariant, type ButtonVariantType } from './buttonVariant'

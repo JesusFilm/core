@@ -16,7 +16,7 @@ export interface UserJourneyApprove_userJourneyApprove {
 }
 
 export interface UserJourneyApprove {
-  userJourneyApprove: UserJourneyApprove_userJourneyApprove;
+  userJourneyApprove: UserJourneyApprove_userJourneyApprove | null;
 }
 
 export interface UserJourneyApproveVariables {

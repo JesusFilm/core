@@ -47,7 +47,7 @@ export interface CreateJourneyCollection_customDomainUpdate {
 
 export interface CreateJourneyCollection {
   journeyCollectionCreate: CreateJourneyCollection_journeyCollectionCreate;
-  customDomainUpdate: CreateJourneyCollection_customDomainUpdate;
+  customDomainUpdate: CreateJourneyCollection_customDomainUpdate | null;
 }
 
 export interface CreateJourneyCollectionVariables {

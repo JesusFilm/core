@@ -13,7 +13,7 @@ export interface JourneyChatButtonRemove_chatButtonRemove {
 }
 
 export interface JourneyChatButtonRemove {
-  chatButtonRemove: JourneyChatButtonRemove_chatButtonRemove;
+  chatButtonRemove: JourneyChatButtonRemove_chatButtonRemove | null;
 }
 
 export interface JourneyChatButtonRemoveVariables {

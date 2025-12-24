@@ -33,7 +33,7 @@ export interface CreateCustomDomain_customDomainCreate {
 }
 
 export interface CreateCustomDomain {
-  customDomainCreate: CreateCustomDomain_customDomainCreate;
+  customDomainCreate: CreateCustomDomain_customDomainCreate | null;
 }
 
 export interface CreateCustomDomainVariables {

@@ -15,7 +15,7 @@ export interface VideoStartEventCreate_videoStartEventCreate {
 }
 
 export interface VideoStartEventCreate {
-  videoStartEventCreate: VideoStartEventCreate_videoStartEventCreate;
+  videoStartEventCreate: VideoStartEventCreate_videoStartEventCreate | null;
 }
 
 export interface VideoStartEventCreateVariables {

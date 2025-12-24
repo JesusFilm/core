@@ -15,7 +15,7 @@ export interface StepViewEventCreate_stepViewEventCreate {
 }
 
 export interface StepViewEventCreate {
-  stepViewEventCreate: StepViewEventCreate_stepViewEventCreate;
+  stepViewEventCreate: StepViewEventCreate_stepViewEventCreate | null;
 }
 
 export interface StepViewEventCreateVariables {

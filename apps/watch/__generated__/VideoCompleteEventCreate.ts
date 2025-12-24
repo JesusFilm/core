@@ -15,7 +15,7 @@ export interface VideoCompleteEventCreate_videoCompleteEventCreate {
 }
 
 export interface VideoCompleteEventCreate {
-  videoCompleteEventCreate: VideoCompleteEventCreate_videoCompleteEventCreate;
+  videoCompleteEventCreate: VideoCompleteEventCreate_videoCompleteEventCreate | null;
 }
 
 export interface VideoCompleteEventCreateVariables {

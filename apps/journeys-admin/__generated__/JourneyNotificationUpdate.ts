@@ -20,7 +20,7 @@ export interface JourneyNotificationUpdate_journeyNotificationUpdate {
 }
 
 export interface JourneyNotificationUpdate {
-  journeyNotificationUpdate: JourneyNotificationUpdate_journeyNotificationUpdate;
+  journeyNotificationUpdate: JourneyNotificationUpdate_journeyNotificationUpdate | null;
 }
 
 export interface JourneyNotificationUpdateVariables {

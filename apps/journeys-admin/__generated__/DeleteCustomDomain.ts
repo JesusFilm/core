@@ -13,7 +13,7 @@ export interface DeleteCustomDomain_customDomainDelete {
 }
 
 export interface DeleteCustomDomain {
-  customDomainDelete: DeleteCustomDomain_customDomainDelete;
+  customDomainDelete: DeleteCustomDomain_customDomainDelete | null;
 }
 
 export interface DeleteCustomDomainVariables {

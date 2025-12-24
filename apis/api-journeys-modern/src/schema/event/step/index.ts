@@ -1,4 +1,6 @@
 import './stepViewEvent'
 import './stepNextEvent'
 import './stepPreviousEvent'
-import './inputs'
+import './stepViewEventCreate.mutation'
+import './stepNextEventCreate.mutation'
+import './stepPreviousEventCreate.mutation'

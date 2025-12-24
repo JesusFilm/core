@@ -47,7 +47,7 @@ export interface GetVisitorForDetails {
   /**
    * Get a single visitor
    */
-  visitor: GetVisitorForDetails_visitor;
+  visitor: GetVisitorForDetails_visitor | null;
 }
 
 export interface GetVisitorForDetailsVariables {

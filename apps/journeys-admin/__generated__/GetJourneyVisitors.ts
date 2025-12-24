@@ -91,7 +91,7 @@ export interface GetJourneyVisitors_visitors_edges {
   /**
    * The item at the end of the edge.
    */
-  node: GetJourneyVisitors_visitors_edges_node;
+  node: GetJourneyVisitors_visitors_edges_node | null;
 }
 
 export interface GetJourneyVisitors_visitors_pageInfo {
@@ -115,7 +115,7 @@ export interface GetJourneyVisitors_visitors {
   /**
    * A list of edges.
    */
-  edges: GetJourneyVisitors_visitors_edges[];
+  edges: (GetJourneyVisitors_visitors_edges | null)[] | null;
   /**
    * Information to aid in pagination.
    */

@@ -41,7 +41,7 @@ export interface VisitorUpdate {
   /**
    * Update a visitor
    */
-  visitorUpdate: VisitorUpdate_visitorUpdate;
+  visitorUpdate: VisitorUpdate_visitorUpdate | null;
 }
 
 export interface VisitorUpdateVariables {

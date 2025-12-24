@@ -22,7 +22,7 @@ export interface UserTeamUpdate_userTeamUpdate {
 }
 
 export interface UserTeamUpdate {
-  userTeamUpdate: UserTeamUpdate_userTeamUpdate;
+  userTeamUpdate: UserTeamUpdate_userTeamUpdate | null;
 }
 
 export interface UserTeamUpdateVariables {
