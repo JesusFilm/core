@@ -39,11 +39,9 @@ export function Action(): ReactElement {
   const chatActionRef = useRef<TextFieldFormRef | null>(null)
 
   // Add addtional types here to use this component for that block
-  const selectedBlock = stateSelectedBlock as
-    | TreeBlock<ButtonBlock>
-    | TreeBlock<SignUpBlock>
-    | TreeBlock<VideoBlock>
-    | undefined
+  const selectedBlock = stateSelectedBlock as TreeBlock<
+    ButtonBlock | VideoBlock | SignUpBlock
+  >
   const [action, setAction] = useState<ActionValue>(
     getAction(t, selectedBlock?.action?.__typename).value
   )
@@ -130,7 +128,7 @@ export function Action(): ReactElement {
         {isChat && <ChatAction ref={chatActionRef} />}
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail || isChat) && journey?.template && (
+        {(isLink || isEmail || isChat || isPhone) && journey?.template && (
           <CustomizationToggle />
         )}
       </Stack>

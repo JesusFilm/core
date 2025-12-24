@@ -125,7 +125,6 @@ export function ImageBlockEditor({
             onDelete={onDelete}
             loading={uploading != null ? uploading : loading}
             showAdd={showAdd}
-            error={error}
           />
         </Box>
         <Box

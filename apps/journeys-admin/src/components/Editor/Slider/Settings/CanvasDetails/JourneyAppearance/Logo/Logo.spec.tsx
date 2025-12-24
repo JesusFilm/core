@@ -69,7 +69,7 @@ describe('Logo', () => {
     parentBlockId: null,
     src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
     alt: 'public',
-    scale: 1,
+    scale: 100,
     parentOrder: null,
     width: 1,
     height: 1,
@@ -448,96 +448,6 @@ describe('Logo', () => {
       fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
     )
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-
-    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
-  })
-
-  it('should update logo scale', async () => {
-    const journey = {
-      ...defaultJourney,
-      logoImageBlock: imageBlock
-    }
-    const updateMock = getImageBlockUpdateMock(
-      imageBlock.id,
-      {
-        scale: 50
-      },
-      true
-    )
-
-    render(
-      <MockedProvider
-        mocks={[
-          createCloudflareUploadByUrlMock,
-          listUnsplashCollectionPhotosMock,
-          updateMock
-        ]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <CommandProvider>
-            <Logo />
-          </CommandProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
-    await waitFor(() =>
-      fireEvent.change(screen.getByLabelText('size-slider'), {
-        target: { value: 50 }
-      })
-    )
-
-    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
-  })
-
-  it('should undo logo scale update', async () => {
-    const journey = {
-      ...defaultJourney,
-      logoImageBlock: imageBlock
-    }
-    const updateMock = getImageBlockUpdateMock(
-      imageBlock.id,
-      {
-        scale: 50
-      },
-      true
-    )
-    const undoMock = getImageBlockUpdateMock(
-      imageBlock.id,
-      {
-        scale: 1
-      },
-      true
-    )
-
-    render(
-      <MockedProvider
-        mocks={[
-          createCloudflareUploadByUrlMock,
-          listUnsplashCollectionPhotosMock,
-          listUnsplashCollectionPhotosMock,
-          updateMock,
-          undoMock
-        ]}
-      >
-        <JourneyProvider value={{ journey }}>
-          <CommandProvider>
-            <CommandUndoItem variant="button" />
-            <Logo />
-          </CommandProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
-    await waitFor(() =>
-      fireEvent.change(screen.getByLabelText('size-slider'), {
-        target: { value: 50 }
-      })
-    )
-    await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     await waitFor(() => expect(undoMock.result).toHaveBeenCalled())

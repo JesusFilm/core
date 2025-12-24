@@ -1,36 +1,27 @@
-import { GraphQLError, GraphQLResolveInfo, Kind, SelectionNode } from 'graphql'
-import pull from 'lodash/pull'
-import snakeCase from 'lodash/snakeCase'
+import { JourneyStatus as PrismaJourneyStatus } from '@core/prisma/journeys/client'
 
-import { prisma } from '@core/prisma/journeys/client'
-
+import { goals } from '../../workers/plausible/service'
 import { builder } from '../builder'
-import { IdType } from '../journey/enums/idType'
+import { JourneyStatus } from '../journey/enums'
 
-import {
-  PlausibleStatsAggregateFilter,
-  PlausibleStatsBreakdownFilter,
-  PlausibleStatsTimeseriesFilter
-} from './inputs'
-
-interface PlausibleStatsAggregateValue {
+export interface PlausibleStatsAggregateValue {
   value: number
   change?: number | null
 }
 
-interface PlausibleStatsAggregateResponse {
-  visitors: PlausibleStatsAggregateValue
-  visits: PlausibleStatsAggregateValue
-  pageviews: PlausibleStatsAggregateValue
-  viewsPerVisit: PlausibleStatsAggregateValue
-  bounceRate: PlausibleStatsAggregateValue
-  visitDuration: PlausibleStatsAggregateValue
-  events: PlausibleStatsAggregateValue
-  conversionRate: PlausibleStatsAggregateValue
-  timeOnPage: PlausibleStatsAggregateValue
+export interface PlausibleStatsAggregateResponse {
+  visitors?: PlausibleStatsAggregateValue
+  visits?: PlausibleStatsAggregateValue
+  pageviews?: PlausibleStatsAggregateValue
+  viewsPerVisit?: PlausibleStatsAggregateValue
+  bounceRate?: PlausibleStatsAggregateValue
+  visitDuration?: PlausibleStatsAggregateValue
+  events?: PlausibleStatsAggregateValue
+  conversionRate?: PlausibleStatsAggregateValue
+  timeOnPage?: PlausibleStatsAggregateValue
 }
 
-interface PlausibleStatsResponse {
+export interface PlausibleStatsResponse {
   property: string
   visitors?: number | null
   visits?: number | null
@@ -41,6 +32,30 @@ interface PlausibleStatsResponse {
   events?: number | null
   conversionRate?: number | null
   timeOnPage?: number | null
+}
+
+export interface TemplateFamilyStatsEventResponse {
+  event:
+    | (typeof goals)[number]
+    | 'chatsClicked'
+    | 'linksClicked'
+    | 'journeyVisitors'
+    | 'journeyResponses'
+  visitors: number
+}
+
+export interface TemplateFamilyStatsBreakdownResponse {
+  journeyId: string
+  journeyName: string
+  teamName: string
+  status: PrismaJourneyStatus | null
+  stats: TemplateFamilyStatsEventResponse[]
+}
+
+export interface TemplateFamilyStatsAggregateResponse {
+  childJourneysCount: number
+  totalJourneysViews: number
+  totalJourneysResponses: number
 }
 
 export const PlausibleStatsAggregateValueRef = builder
@@ -66,38 +81,60 @@ export const PlausibleStatsAggregateResponseRef = builder
     fields: (t) => ({
       visitors: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description: 'The number of unique visitors.',
         resolve: (parent) => parent.visitors
       }),
       visits: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description: 'The number of visits/sessions.',
         resolve: (parent) => parent.visits
       }),
       pageviews: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description: 'The number of pageview events.',
         resolve: (parent) => parent.pageviews
       }),
       viewsPerVisit: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description:
+          'The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints.',
         resolve: (parent) => parent.viewsPerVisit
       }),
       bounceRate: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description: 'Bounce rate percentage.',
         resolve: (parent) => parent.bounceRate
       }),
       visitDuration: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description: 'Visit duration in seconds.',
         resolve: (parent) => parent.visitDuration
       }),
       events: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description:
+          'The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard.',
         resolve: (parent) => parent.events
       }),
       conversionRate: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description:
+          'The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint.',
         resolve: (parent) => parent.conversionRate
       }),
       timeOnPage: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
+        description:
+          'The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.',
         resolve: (parent) => parent.timeOnPage
       })
     })
@@ -110,222 +147,130 @@ export const PlausibleStatsResponseRef = builder
     fields: (t) => ({
       property: t.string({
         nullable: false,
+        description:
+          'On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.',
         resolve: (parent) => parent.property
       }),
       visitors: t.int({
         nullable: true,
+        description: 'The number of unique visitors.',
         resolve: (parent) => parent.visitors
       }),
       visits: t.int({
         nullable: true,
+        description: 'The number of visits/sessions.',
         resolve: (parent) => parent.visits
       }),
       pageviews: t.int({
         nullable: true,
+        description: 'The number of pageview events.',
         resolve: (parent) => parent.pageviews
       }),
       viewsPerVisit: t.float({
         nullable: true,
+        description:
+          'The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints.',
         resolve: (parent) => parent.viewsPerVisit
       }),
       bounceRate: t.int({
         nullable: true,
+        description: 'Bounce rate percentage.',
         resolve: (parent) => parent.bounceRate
       }),
       visitDuration: t.int({
         nullable: true,
+        description: 'Visit duration in seconds.',
         resolve: (parent) => parent.visitDuration
       }),
       events: t.int({
         nullable: true,
+        description:
+          'The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard.',
         resolve: (parent) => parent.events
       }),
       conversionRate: t.int({
         nullable: true,
+        description:
+          'The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint.',
         resolve: (parent) => parent.conversionRate
       }),
       timeOnPage: t.float({
         nullable: true,
+        description:
+          'The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.',
         resolve: (parent) => parent.timeOnPage
       })
     })
   })
 
-// Helper functions to extract metrics from GraphQL info
-function getFieldNames(selections: ReadonlyArray<SelectionNode>): string[] {
-  const fieldNames: string[] = []
-
-  for (const selection of selections) {
-    if (selection.kind === Kind.FIELD && selection.name.value) {
-      fieldNames.push(selection.name.value)
-    } else if (
-      selection.kind === Kind.INLINE_FRAGMENT &&
-      selection.selectionSet
-    ) {
-      fieldNames.push(...getFieldNames(selection.selectionSet.selections))
-    } else if (selection.kind === Kind.FRAGMENT_SPREAD) {
-      // For fragment spreads, fall back to requesting common metrics
-      fieldNames.push('visitors', 'visits', 'pageviews', 'events')
-    }
-  }
-
-  return fieldNames
-}
-
-function getMetrics(info: GraphQLResolveInfo): string {
-  const fieldNames = getFieldNames(
-    info.fieldNodes[0]?.selectionSet?.selections ?? []
+export const TemplateFamilyStatsEventResponseRef = builder
+  .objectRef<TemplateFamilyStatsEventResponse>(
+    'TemplateFamilyStatsEventResponse'
   )
-  const metrics = pull(fieldNames, '__typename', 'property')
-  return metrics.map(snakeCase).join(',') || 'visitors'
-}
-
-// Helper function to load journey with permissions
-async function loadJourney(id: string, idType: 'databaseId' | 'slug' | null) {
-  const actualIdType: 'databaseId' | 'slug' = idType ?? 'slug'
-  const whereClause = actualIdType === 'slug' ? { slug: id } : { id }
-
-  const journey = await prisma.journey.findUnique({
-    where: whereClause,
-    include: {
-      team: { include: { userTeams: true } },
-      userJourneys: true
-    }
-  })
-
-  if (!journey) {
-    throw new GraphQLError('journey not found', {
-      extensions: { code: 'NOT_FOUND' }
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      event: t.string({
+        nullable: false,
+        resolve: (parent) => parent.event as string
+      }),
+      visitors: t.int({
+        nullable: false,
+        resolve: (parent) => parent.visitors
+      })
     })
-  }
-
-  return journey
-}
-
-// Mock Plausible service functions (in a real implementation, these would call the actual Plausible API)
-async function getStatsAggregate(
-  journeyId: string,
-  metrics: string,
-  params: any
-): Promise<PlausibleStatsAggregateResponse> {
-  // Mock implementation - replace with actual Plausible API calls
-  const mockValue: PlausibleStatsAggregateValue = { value: 0, change: 0 }
-  return {
-    visitors: mockValue,
-    visits: mockValue,
-    pageviews: mockValue,
-    viewsPerVisit: mockValue,
-    bounceRate: mockValue,
-    visitDuration: mockValue,
-    events: mockValue,
-    conversionRate: mockValue,
-    timeOnPage: mockValue
-  }
-}
-
-async function getStatsBreakdown(
-  journeyId: string,
-  metrics: string,
-  params: any
-): Promise<PlausibleStatsResponse[]> {
-  // Mock implementation - replace with actual Plausible API calls
-  return []
-}
-
-async function getStatsTimeseries(
-  journeyId: string,
-  metrics: string,
-  params: any
-): Promise<PlausibleStatsResponse[]> {
-  // Mock implementation - replace with actual Plausible API calls
-  return []
-}
-
-// Queries
-builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
-  t.withAuth({ isAuthenticated: true }).int({
-    override: {
-      from: 'api-journeys'
-    },
-    args: {
-      id: t.arg.id({ required: true }),
-      idType: t.arg({ type: IdType, required: false })
-    },
-    resolve: async (_parent, args, context) => {
-      const { id, idType = 'slug' } = args
-      const journey = await loadJourney(id, idType)
-
-      // Mock implementation - replace with actual Plausible API call
-      return 0
-    }
   })
-)
 
-builder.queryField('journeysPlausibleStatsAggregate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
-    type: PlausibleStatsAggregateResponseRef,
-    args: {
-      id: t.arg.id({ required: true }),
-      idType: t.arg({ type: IdType, required: false }),
-      where: t.arg({ type: PlausibleStatsAggregateFilter, required: true })
-    },
-    resolve: async (_parent, args, context, info) => {
-      const { id, idType = 'slug', where } = args
-      const journey = await loadJourney(id, idType)
-
-      const metrics = getMetrics(info)
-      const result = await getStatsAggregate(journey.id, metrics, where)
-
-      return result
-    }
+export const TemplateFamilyStatsBreakdownResponseRef = builder
+  .objectRef<TemplateFamilyStatsBreakdownResponse>(
+    'TemplateFamilyStatsBreakdownResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      journeyId: t.string({
+        nullable: false,
+        resolve: (parent) => parent.journeyId
+      }),
+      journeyName: t.string({
+        nullable: false,
+        resolve: (parent) => parent.journeyName
+      }),
+      teamName: t.string({
+        nullable: false,
+        resolve: (parent) => parent.teamName
+      }),
+      status: t.field({
+        type: JourneyStatus,
+        nullable: true,
+        resolve: (parent) => parent.status
+      }),
+      stats: t.field({
+        type: [TemplateFamilyStatsEventResponseRef],
+        nullable: false,
+        resolve: (parent) => parent.stats
+      })
+    })
   })
-)
 
-builder.queryField('journeysPlausibleStatsBreakdown', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
-    type: [PlausibleStatsResponseRef],
-    args: {
-      id: t.arg.id({ required: true }),
-      idType: t.arg({ type: IdType, required: false }),
-      where: t.arg({ type: PlausibleStatsBreakdownFilter, required: true })
-    },
-    resolve: async (_parent, args, context, info) => {
-      const { id, idType = 'slug', where } = args
-      const journey = await loadJourney(id, idType)
-
-      const metrics = getMetrics(info)
-      const result = await getStatsBreakdown(journey.id, metrics, where)
-
-      return result
-    }
+export const TemplateFamilyStatsAggregateResponseRef = builder
+  .objectRef<TemplateFamilyStatsAggregateResponse>(
+    'TemplateFamilyStatsAggregateResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      childJourneysCount: t.int({
+        nullable: false,
+        resolve: (parent) => parent.childJourneysCount
+      }),
+      totalJourneysViews: t.int({
+        nullable: false,
+        resolve: (parent) => parent.totalJourneysViews
+      }),
+      totalJourneysResponses: t.int({
+        nullable: false,
+        resolve: (parent) => parent.totalJourneysResponses
+      })
+    })
   })
-)
-
-builder.queryField('journeysPlausibleStatsTimeseries', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
-    type: [PlausibleStatsResponseRef],
-    args: {
-      id: t.arg.id({ required: true }),
-      idType: t.arg({ type: IdType, required: false }),
-      where: t.arg({ type: PlausibleStatsTimeseriesFilter, required: true })
-    },
-    resolve: async (_parent, args, context, info) => {
-      const { id, idType = 'slug', where } = args
-      const journey = await loadJourney(id, idType)
-
-      const metrics = getMetrics(info)
-      const result = await getStatsTimeseries(journey.id, metrics, where)
-
-      return result
-    }
-  })
-)

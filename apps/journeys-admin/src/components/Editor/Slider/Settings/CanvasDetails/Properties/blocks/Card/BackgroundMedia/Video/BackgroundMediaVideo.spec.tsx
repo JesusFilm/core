@@ -45,6 +45,7 @@ import {
 import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
+import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -139,6 +140,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: 144,
   objectFit: null,
   image: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -436,13 +439,17 @@ describe('BackgroundMediaVideo', () => {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <ThemeProvider>
             <SnackbarProvider>
-              <EditorProvider initialState={{ selectedAttributeId: video.id }}>
-                <CommandProvider>
-                  <BackgroundMediaVideo cardBlock={card} />
-                  <CommandUndoItem variant="button" />
-                  <CommandRedoItem variant="button" />
-                </CommandProvider>
-              </EditorProvider>
+              <MuxVideoUploadProvider>
+                <EditorProvider
+                  initialState={{ selectedAttributeId: video.id }}
+                >
+                  <CommandProvider>
+                    <BackgroundMediaVideo cardBlock={card} />
+                    <CommandUndoItem variant="button" />
+                    <CommandRedoItem variant="button" />
+                  </CommandProvider>
+                </EditorProvider>
+              </MuxVideoUploadProvider>
             </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
@@ -566,15 +573,17 @@ describe('BackgroundMediaVideo', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ThemeProvider>
               <SnackbarProvider>
-                <EditorProvider
-                  initialState={{ selectedAttributeId: video.id }}
-                >
-                  <CommandProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                    <CommandUndoItem variant="button" />
-                    <CommandRedoItem variant="button" />
-                  </CommandProvider>
-                </EditorProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider
+                    initialState={{ selectedAttributeId: video.id }}
+                  >
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                      <CommandUndoItem variant="button" />
+                      <CommandRedoItem variant="button" />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
               </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
@@ -626,15 +635,17 @@ describe('BackgroundMediaVideo', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ThemeProvider>
               <SnackbarProvider>
-                <EditorProvider
-                  initialState={{ selectedAttributeId: video.id }}
-                >
-                  <CommandProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                    <CommandUndoItem variant="button" />
-                    <CommandRedoItem variant="button" />
-                  </CommandProvider>
-                </EditorProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider
+                    initialState={{ selectedAttributeId: video.id }}
+                  >
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                      <CommandUndoItem variant="button" />
+                      <CommandRedoItem variant="button" />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
               </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>

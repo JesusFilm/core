@@ -17,6 +17,7 @@ import { TeamInviteEmail } from '../../../emails/templates/TeamInvite'
 import { TeamInviteNoAccountEmail } from '../../../emails/templates/TeamInvite/TeamInviteNoAccount'
 import { TeamInviteAcceptedEmail } from '../../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../../emails/templates/TeamRemoved'
+import { env } from '../../../env'
 
 import {
   ApiJourneysJob,
@@ -29,11 +30,11 @@ import {
 } from './prisma.types'
 
 const httpLink = createHttpLink({
-  uri: process.env.GATEWAY_URL,
+  uri: env.GATEWAY_URL,
   headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? '',
+    'interop-token': env.INTEROP_TOKEN,
     'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+    'x-graphql-client-version': env.SERVICE_VERSION
   }
 })
 
@@ -134,9 +135,7 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
 }
 
 export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
-  const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/?activeTeam=${
-    job.data.team.id
-  }`
+  const url = `${env.JOURNEYS_ADMIN_URL}/?activeTeam=${job.data.team.id}`
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
@@ -215,9 +214,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
 export async function teamInviteAcceptedEmail(
   job: Job<TeamInviteAccepted>
 ): Promise<void> {
-  const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/?activeTeam=${
-    job.data.team.id
-  }`
+  const url = `${env.JOURNEYS_ADMIN_URL}/?activeTeam=${job.data.team.id}`
   const recipientUserTeams = job.data.team.userTeams.filter(
     (userTeam) => userTeam.role === UserTeamRole.manager
   )
@@ -414,7 +411,7 @@ export async function journeyEditInvite(
   })
 
   if (data.userByEmail == null) {
-    const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
+    const url = `${env.JOURNEYS_ADMIN_URL}/`
     const html = await render(
       JourneySharedNoAccountEmail({
         sender: job.data.sender,

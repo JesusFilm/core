@@ -7,6 +7,18 @@
 // GraphQL fragment: TranslatedJourney
 // ====================================================
 
+export interface TranslatedJourney_language_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface TranslatedJourney_language {
+  __typename: "Language";
+  id: string;
+  name: TranslatedJourney_language_name[];
+}
+
 export interface TranslatedJourney_blocks_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "VideoTriggerBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
@@ -48,6 +60,7 @@ export interface TranslatedJourney {
   title: string;
   description: string | null;
   languageId: string;
+  language: TranslatedJourney_language;
   updatedAt: any;
   blocks: TranslatedJourney_blocks[] | null;
 }

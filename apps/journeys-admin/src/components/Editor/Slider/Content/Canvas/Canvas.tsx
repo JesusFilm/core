@@ -25,6 +25,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
+import { CardSlugEdit } from './CardSlugEdit'
 import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
@@ -68,6 +69,9 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 
+  const showSlugEdit =
+    journey?.website === true && activeSlide === ActiveSlide.Content
+
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
   const [scale, setScale] = useState(initialScale)
@@ -91,6 +95,10 @@ export function Canvas(): ReactElement {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
+    })
+    dispatch({
+      type: 'SetSelectedBlockOnlyAction',
+      selectedBlock: selectedStep
     })
     const param = 'step-footer'
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -188,6 +196,7 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
+          <CardSlugEdit visible={showSlugEdit} />
           <Box
             data-testId="CanvasContainer"
             sx={{
@@ -320,6 +329,8 @@ export function Canvas(): ReactElement {
                                 ButtonWrapper: InlineEditWrapper,
                                 RadioQuestionWrapper: InlineEditWrapper,
                                 RadioOptionWrapper: InlineEditWrapper,
+                                MultiselectQuestionWrapper: InlineEditWrapper,
+                                MultiselectOptionWrapper: InlineEditWrapper,
                                 TextResponseWrapper: InlineEditWrapper,
                                 SignUpWrapper: InlineEditWrapper,
                                 VideoWrapper,

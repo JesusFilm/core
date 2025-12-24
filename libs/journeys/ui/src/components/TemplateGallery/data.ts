@@ -58,6 +58,9 @@ const defaultTemplate: Journey = {
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
+  website: false,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
   userJourneys: []
 }
 
@@ -296,7 +299,8 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
           '6788',
           '3804',
           '1927',
-          '1370'
+          '1370',
+          '1254'
         ]
       }
     }

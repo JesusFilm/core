@@ -1012,6 +1012,8 @@ export const videoBlocks: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'trigger.id',
@@ -1187,6 +1189,8 @@ export const videoBlocks: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'posterBlockId',
@@ -1254,6 +1258,8 @@ export const videoBlocks: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: []
           }
         ]
@@ -1308,6 +1314,8 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'trigger.id',
@@ -1468,6 +1476,8 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'posterBlockId',
@@ -1535,6 +1545,8 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: []
           }
         ]
@@ -1598,6 +1610,8 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'trigger.id',
@@ -1758,6 +1772,8 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'posterBlockId',
@@ -1825,6 +1841,8 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: []
           }
         ]
@@ -1937,6 +1955,8 @@ export const videoLoop: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'image1.id',
@@ -2009,6 +2029,8 @@ export const videoLoop: TreeBlock[] = [
               blockId: 'step2.id'
             },
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'image1.id',
@@ -2076,6 +2098,8 @@ export const videoLoop: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
             children: [
               {
                 id: 'image1.id',

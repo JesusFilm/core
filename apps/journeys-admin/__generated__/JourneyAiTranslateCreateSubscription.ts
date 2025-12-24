@@ -7,6 +7,18 @@
 // GraphQL subscription operation: JourneyAiTranslateCreateSubscription
 // ====================================================
 
+export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_language_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_language {
+  __typename: "Language";
+  id: string;
+  name: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_language_name[];
+}
+
 export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "VideoTriggerBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
@@ -48,6 +60,7 @@ export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSu
   title: string;
   description: string | null;
   languageId: string;
+  language: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_language;
   createdAt: any;
   updatedAt: any;
   blocks: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks[] | null;

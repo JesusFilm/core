@@ -10,8 +10,7 @@
 export interface GetJourneyAnalytics_journeySteps {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
    */
   property: string;
   /**
@@ -19,8 +18,7 @@ export interface GetJourneyAnalytics_journeySteps {
    */
   visitors: number | null;
   /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
+   * The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.
    */
   timeOnPage: number | null;
 }
@@ -28,8 +26,7 @@ export interface GetJourneyAnalytics_journeySteps {
 export interface GetJourneyAnalytics_journeyStepsActions {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
    */
   property: string;
   /**
@@ -41,8 +38,7 @@ export interface GetJourneyAnalytics_journeyStepsActions {
 export interface GetJourneyAnalytics_journeyReferrer {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
    */
   property: string;
   /**
@@ -54,8 +50,7 @@ export interface GetJourneyAnalytics_journeyReferrer {
 export interface GetJourneyAnalytics_journeyUtmCampaign {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
    */
   property: string;
   /**
@@ -67,8 +62,7 @@ export interface GetJourneyAnalytics_journeyUtmCampaign {
 export interface GetJourneyAnalytics_journeyVisitorsPageExits {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
    */
   property: string;
   /**
@@ -80,8 +74,7 @@ export interface GetJourneyAnalytics_journeyVisitorsPageExits {
 export interface GetJourneyAnalytics_journeyActionsSums {
   __typename: "PlausibleStatsResponse";
   /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
+   * On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
    */
   property: string;
   /**
@@ -117,10 +110,10 @@ export interface GetJourneyAnalytics {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeySteps: GetJourneyAnalytics_journeySteps[] | null;
   /**
@@ -136,10 +129,10 @@ export interface GetJourneyAnalytics {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeyStepsActions: GetJourneyAnalytics_journeyStepsActions[] | null;
   /**
@@ -155,10 +148,10 @@ export interface GetJourneyAnalytics {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeyReferrer: GetJourneyAnalytics_journeyReferrer[] | null;
   /**
@@ -174,10 +167,10 @@ export interface GetJourneyAnalytics {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeyUtmCampaign: GetJourneyAnalytics_journeyUtmCampaign[] | null;
   /**
@@ -193,10 +186,10 @@ export interface GetJourneyAnalytics {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeyVisitorsPageExits: GetJourneyAnalytics_journeyVisitorsPageExits[] | null;
   /**
@@ -212,10 +205,10 @@ export interface GetJourneyAnalytics {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeyActionsSums: GetJourneyAnalytics_journeyActionsSums[] | null;
   journeyAggregateVisitors: GetJourneyAnalytics_journeyAggregateVisitors | null;

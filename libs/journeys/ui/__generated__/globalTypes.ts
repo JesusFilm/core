@@ -262,6 +262,7 @@ export interface JourneysFilter {
   limit?: number | null;
   orderByRecent?: boolean | null;
   fromTemplateId?: string | null;
+  teamId?: string | null;
 }
 
 export interface JourneysQueryOptions {
@@ -274,6 +275,14 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

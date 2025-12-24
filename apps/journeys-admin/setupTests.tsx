@@ -39,6 +39,17 @@ Object.defineProperty(window.self, 'crypto', {
   }
 })
 
+Object.defineProperty(document, 'visibilityState', {
+  writable: true,
+  configurable: true,
+  value: 'visible'
+})
+Object.defineProperty(document, 'clearImmediate', {
+  writable: true,
+  configurable: true,
+  value: jest.fn()
+})
+
 beforeAll(() => mswServer.listen())
 afterEach(() => mswServer.resetHandlers())
 afterAll(() => mswServer.close())

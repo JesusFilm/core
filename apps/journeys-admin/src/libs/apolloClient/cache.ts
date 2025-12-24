@@ -24,6 +24,8 @@ export const cache = (): InMemoryCache =>
         'GridItemBlock',
         'IconBlock',
         'ImageBlock',
+        'MultiselectBlock',
+        'MultiselectOptionBlock',
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',
@@ -53,6 +55,9 @@ export const cache = (): InMemoryCache =>
             merge(existing, incoming) {
               return [...(existing ?? []), ...incoming]
             }
+          },
+          adminJourneys: {
+            keyArgs: ['status', 'template', 'teamId', 'useLastActiveTeamId']
           },
           adminJourney(_, { args, toReference }) {
             if (args?.idType === 'databaseId' && args?.id != null)

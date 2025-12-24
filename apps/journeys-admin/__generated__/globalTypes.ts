@@ -66,6 +66,11 @@ export enum EventType {
   VideoStartEvent = "VideoStartEvent",
 }
 
+export enum GoogleSheetExportMode {
+  create = "create",
+  existing = "existing",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -114,6 +119,7 @@ export enum IdType {
 }
 
 export enum IntegrationType {
+  google = "google",
   growthSpaces = "growthSpaces",
 }
 
@@ -416,6 +422,16 @@ export interface EmailActionInput {
   parentStepId?: string | null;
 }
 
+export interface GenerateSubtitlesInput {
+  languageCode: string;
+  languageName: string;
+}
+
+export interface GoogleSheetsSyncsFilter {
+  journeyId?: string | null;
+  integrationId?: string | null;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;
@@ -466,6 +482,12 @@ export interface ImageBlockUpdateInput {
   focalLeft?: number | null;
 }
 
+export interface IntegrationGoogleCreateInput {
+  teamId: string;
+  code: string;
+  redirectUri: string;
+}
+
 export interface IntegrationGrowthSpacesCreateInput {
   accessId: string;
   accessSecret: string;
@@ -506,6 +528,7 @@ export interface JourneyEventsFilter {
   typenames?: string[] | null;
   periodRangeStart?: any | null;
   periodRangeEnd?: any | null;
+  includeUnconnectedCards?: boolean | null;
 }
 
 export interface JourneyNotificationUpdateInput {
@@ -570,6 +593,13 @@ export interface JourneyUpdateInput {
   socialNodeY?: number | null;
 }
 
+export interface JourneyVisitorExportSelect {
+  name?: boolean | null;
+  email?: boolean | null;
+  phone?: boolean | null;
+  createdAt?: boolean | null;
+}
+
 export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
@@ -579,6 +609,14 @@ export interface JourneyVisitorFilter {
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
   countryCode?: string | null;
+}
+
+export interface JourneyVisitorGoogleSheetDestinationInput {
+  mode: GoogleSheetExportMode;
+  spreadsheetTitle?: string | null;
+  folderId?: string | null;
+  spreadsheetId?: string | null;
+  sheetName?: string | null;
 }
 
 export interface JourneysEmailPreferenceUpdateInput {
@@ -596,6 +634,7 @@ export interface JourneysFilter {
   limit?: number | null;
   orderByRecent?: boolean | null;
   fromTemplateId?: string | null;
+  teamId?: string | null;
 }
 
 export interface JourneysQueryOptions {
@@ -622,11 +661,45 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface MultiselectBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface MultiselectBlockUpdateInput {
+  parentBlockId?: string | null;
+  min?: number | null;
+  max?: number | null;
+}
+
+export interface MultiselectOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  label: string;
+}
+
+export interface MultiselectOptionBlockUpdateInput {
+  parentBlockId?: string | null;
+  label?: string | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
+}
+
 export interface PhoneActionInput {
   gtmEventName?: string | null;
   phone: string;
   countryCode: string;
   contactAction?: ContactActionType | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface QrCodeCreateInput {
@@ -837,6 +910,8 @@ export interface VideoBlockCreateInput {
   autoplay?: boolean | null;
   fullsize?: boolean | null;
   posterBlockId?: string | null;
+  subtitleLanguageId?: string | null;
+  showGeneratedSubtitles?: boolean | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -854,7 +929,9 @@ export interface VideoBlockUpdateInput {
   muted?: boolean | null;
   autoplay?: boolean | null;
   fullsize?: boolean | null;
+  subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
+  showGeneratedSubtitles?: boolean | null;
 }
 
 export interface VideoCollapseEventCreateInput {

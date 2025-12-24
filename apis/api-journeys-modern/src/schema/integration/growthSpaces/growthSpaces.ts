@@ -4,6 +4,7 @@ import { GraphQLError } from 'graphql'
 import { decryptSymmetric } from '@core/nest/common/crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
+import { env } from '../../../env'
 import { builder } from '../../builder'
 import { IntegrationRef } from '../integration'
 
@@ -24,7 +25,7 @@ export const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
   fields: (t) => ({
     accessId: t.exposeString('accessId'),
     accessSecretPart: t.exposeString('accessSecretPart'),
-    team: t.relation('team'),
+    team: t.relation('team', { nullable: false }),
     routes: t.field({
       type: [IntegrationGrowthSpacesRouteRef],
       resolve: async (integration) => {
@@ -51,12 +52,12 @@ export const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
           fullIntegration.accessSecretCipherText,
           fullIntegration.accessSecretIv,
           fullIntegration.accessSecretTag,
-          process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+          env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
         )
 
         try {
           const client = axios.create({
-            baseURL: process.env.GROWTH_SPACES_URL,
+            baseURL: env.GROWTH_SPACES_URL,
             headers: {
               'Access-Id': fullIntegration.accessId,
               'Access-Secret': accessSecret

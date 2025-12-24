@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -127,8 +127,10 @@ const iconNames: IconName[] = [
   'Key2',
   'Laptop1',
   'Layers4',
+  'Layout1',
   'Layout2',
   'LayoutScale',
+  'LayoutTop',
   'Lightning2',
   'LightningCircleContained',
   'Line',
@@ -207,6 +209,7 @@ const iconNames: IconName[] = [
   'ThumbsUp',
   'Tiktok',
   'Transform',
+  'Translate',
   'TrendDown1',
   'TwitterLogo',
   'Type1',
