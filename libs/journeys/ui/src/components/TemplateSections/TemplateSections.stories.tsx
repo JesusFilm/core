@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -69,6 +69,9 @@ const defaultTemplate: Journey = {
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
+  website: false,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
   userJourneys: []
 }
 

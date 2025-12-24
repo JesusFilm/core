@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
 import { NextRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -26,6 +27,7 @@ import { StepFields as StepBlock } from '../../../../../__generated__/StepFields
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
@@ -121,17 +123,21 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <FlagsProvider flags={{ editorAnalytics: true }}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <EditorProvider
-              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
-            >
-              <Box sx={{ width: '100vw', height: '100vh' }}>
-                <JourneyFlow />
-              </Box>
-            </EditorProvider>
-          </JourneyProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -164,25 +170,29 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney
-            }
-          }}
-        >
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney
+              }
             }}
           >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandUndoItem variant="button" />
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow
+              }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <CommandUndoItem variant="button" />
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -227,23 +237,27 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney
-            }
-          }}
-        >
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney
+              }
+            }}
           >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandUndoItem variant="button" />
-              <CommandRedoItem variant="button" />
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <CommandUndoItem variant="button" />
+                  <CommandRedoItem variant="button" />
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -326,25 +340,29 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney,
-              socialNodeX: initialSocialNodeX,
-              socialNodeY: initialSocialNodeY
-            }
-          }}
-        >
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney,
+                socialNodeX: initialSocialNodeX,
+                socialNodeY: initialSocialNodeY
+              }
+            }}
           >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandUndoItem variant="button" />
-              <CommandRedoItem variant="button" />
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <CommandUndoItem variant="button" />
+                  <CommandRedoItem variant="button" />
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -403,19 +421,23 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow,
-              showAnalytics: true
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow,
+                showAnalytics: true
+              }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -429,24 +451,189 @@ describe('JourneyFlow', () => {
   it('should change background color when in analytics mode', () => {
     render(
       <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow,
-              showAnalytics: true
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow,
+                showAnalytics: true
+              }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
     expect(screen.getByTestId('rf__background')).toHaveStyle({
       'background-color': 'rgb(222, 232, 239)'
     })
+  })
+
+  it('should hide analytics panel for local templates', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const localTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'my-team-id',
+        title: 'My Team',
+        publicTitle: null
+      },
+      template: true
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: localTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show analytics panel for global templates', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const jfpTeamTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'jfp-team',
+        title: 'JFP Team',
+        publicTitle: null
+      },
+      template: true
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: jfpTeamTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show analytics panel for journeys', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const jfpTeamTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'my-team',
+        title: 'My Team',
+        publicTitle: null
+      },
+      template: false
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: jfpTeamTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+    ).toBeInTheDocument()
+  })
+
+  it('should hide analytics panel when editorAnalytics feature flag is false', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: false }}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
   })
 })

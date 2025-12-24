@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryFn, StoryObj } from '@storybook/react/*'
+import { Meta, StoryFn, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'

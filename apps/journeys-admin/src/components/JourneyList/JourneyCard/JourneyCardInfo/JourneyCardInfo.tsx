@@ -21,6 +21,7 @@ export function JourneyCardInfo({
   variant
 }: JourneyCardInfoProps): ReactElement {
   let inviteRequested: UserJourney[] | undefined
+  const isTemplate = journey.template
   if (
     variant === JourneyCardVariant.actionRequired &&
     journey.userJourneys != null
@@ -40,14 +41,16 @@ export function JourneyCardInfo({
       data-testid="JourneyCardInfo"
     >
       <Stack flexDirection="row" gap={1} sx={{ mt: 1 }}>
-        <AnalyticsItem variant="icon-button" fromJourneyList={true} />
         <ResponsesItem variant="icon-button" fromJourneyList={true} />
+        <AnalyticsItem variant="icon-button" fromJourneyList={true} />
       </Stack>
-      <AccessAvatars
-        journeyId={journey.id}
-        userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
-        size="xsmall"
-      />
+      {!isTemplate && (
+        <AccessAvatars
+          journeyId={journey.id}
+          userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
+          size="xsmall"
+        />
+      )}
     </Stack>
   )
 }

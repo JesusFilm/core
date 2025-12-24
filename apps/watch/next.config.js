@@ -2,6 +2,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
 const { composePlugins, withNx } = require('@nx/next')
+const path = require('path')
 
 const { i18n } = require('./next-i18next.config')
 
@@ -30,7 +31,9 @@ const nextConfig = {
         hostname: `customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com`
-      }
+      },
+      // Mux video service
+      { protocol: 'https', hostname: 'image.mux.com' }
     ],
     minimumCacheTTL: 31536000
   },
@@ -44,8 +47,6 @@ const nextConfig = {
     }
   },
   nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
     svgr: false
   },
   productionBrowserSourceMaps: true,
@@ -57,7 +58,7 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui'],
+  transpilePackages: ['shared-ui', 'ui-modern'],
   outputFileTracingExcludes: {
     '*': [
       'node_modules/@swc/core-linux-x64-gnu',
@@ -65,21 +66,39 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
+  webpack(config) {
+    // make /assets/* in CSS work inside Nx monorepo
+    config.resolve.alias['/assets'] = path.resolve(__dirname, 'public/assets')
+
+    // Configure SVGR manually to replace deprecated NX SVGR support
+    // SVGs can be imported as React components or as URLs
+    config.module.rules.push({
+      test: /\.svg$/i,
+      type: 'asset',
+      resourceQuery: /url/ // *.svg?url
+    })
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      resourceQuery: { not: [/url/] }, // exclude if *.svg?url
+      use: ['@svgr/webpack']
+    })
+
+    return config
+  },
+  basePath: '/watch',
+  // eslint-disable-next-line @typescript-eslint/require-await
   async redirects() {
     return [
       {
         source: '/',
         destination: '/watch',
-        permanent: false
+        permanent: false,
+        basePath: false
       },
       {
-        source: '/bin/jf/watch.html/:videoId/:languageId',
-        destination: '/api/jf/watch.html/:videoId/:languageId',
-        permanent: false
-      },
-      {
-        source: '/watch/easter',
-        destination: '/watch/easter.html/english.html',
+        source: '/easter',
+        destination: '/easter.html/english.html',
         permanent: true
       }
     ]

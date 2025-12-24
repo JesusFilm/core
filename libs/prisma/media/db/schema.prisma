@@ -31,36 +31,63 @@ enum ImageAspectRatio {
 }
 
 model CloudflareImage {
-  id          String            @id @default(uuid())
-  uploadUrl   String?
-  userId      String
-  createdAt   DateTime          @default(now())
-  uploaded    Boolean           @default(false)
-  updatedAt   DateTime          @default(now()) @updatedAt
-  aspectRatio ImageAspectRatio?
-  videoId     String?
-  video       Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  id                  String            @id @default(uuid())
+  uploadUrl           String?
+  userId              String
+  createdAt           DateTime          @default(now())
+  uploaded            Boolean           @default(false)
+  updatedAt           DateTime          @default(now()) @updatedAt
+  aspectRatio         ImageAspectRatio?
+  videoId             String?
+  video               Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  blurhash            String?
+  blurhashAttemptedAt DateTime?
 
   @@index([userId])
+  @@index([blurhashAttemptedAt])
 }
 
 model MuxVideo {
-  id            String         @id @default(uuid())
-  playbackId    String?        @unique
+  id            String             @id @default(uuid())
+  playbackId    String?            @unique
   uploadUrl     String?
-  uploadId      String?        @unique
-  assetId       String?        @unique
+  uploadId      String?            @unique
+  assetId       String?            @unique
   userId        String
   name          String?
-  duration      Int            @default(0)
-  downloadable  Boolean        @default(false)
-  createdAt     DateTime       @default(now())
-  readyToStream Boolean        @default(false)
-  updatedAt     DateTime       @default(now()) @updatedAt
+  duration      Int                @default(0)
+  downloadable  Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+  readyToStream Boolean            @default(false)
+  updatedAt     DateTime           @default(now()) @updatedAt
   videoVariants VideoVariant[]
+  subtitles     MuxSubtitleTrack[]
 
   @@index(userId(type: Hash))
   @@index(assetId(type: Hash))
+}
+
+enum MuxSubtitleTrackSource {
+  uploaded
+  generated
+}
+
+enum MuxSubtitleTrackStatus {
+  processing
+  ready
+  errored
+}
+
+model MuxSubtitleTrack {
+  id         String                 @id @default(uuid())
+  trackId    String                 @unique
+  source     MuxSubtitleTrackSource
+  status     MuxSubtitleTrackStatus
+  bcp47      String
+  muxVideoId String
+  muxVideo   MuxVideo               @relation(fields: [muxVideoId], references: [id], onDelete: Cascade)
+
+  @@index(trackId(type: Hash))
 }
 
 model CloudflareR2 {

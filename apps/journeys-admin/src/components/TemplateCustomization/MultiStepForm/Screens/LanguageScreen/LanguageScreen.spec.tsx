@@ -1,41 +1,41 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor, fireEvent, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
-import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import {
-  mockChildJourneys,
-  mockChildVariables
-} from '../../../../../libs/useGetChildTemplateJourneyLanguages/useGetChildTemplateJourneyLanguages.mock'
-import {
-  mockParentJourneys,
-  mockParentVariables
-} from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
-import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
-import { GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 
-import { LanguageScreen } from './LanguageScreen'
-import { NextRouter, useRouter } from 'next/router'
-import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import {
-  JourneyDuplicate,
-  JourneyDuplicateVariables
-} from '../../../../../../__generated__/JourneyDuplicate'
 import {
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetChildJourneysFromTemplateId'
+import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GetParentJourneysFromTemplateId,
   GetParentJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetParentJourneysFromTemplateId'
+import {
+  JourneyDuplicate,
+  JourneyDuplicateVariables
+} from '../../../../../../__generated__/JourneyDuplicate'
+import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
+import {
+  mockChildJourneys,
+  mockChildVariables
+} from '../../../../../libs/useGetChildTemplateJourneyLanguages/useGetChildTemplateJourneyLanguages.mock'
+import { GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
+import {
+  mockParentJourneys,
+  mockParentVariables
+} from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
+
+import { LanguageScreen } from './LanguageScreen'
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
@@ -101,11 +101,15 @@ const mockJourneyDuplicate: MockedResponse<
 > = {
   request: {
     query: JOURNEY_DUPLICATE,
-    variables: { id: 'journeyId', teamId: 'teamId1' }
+    variables: { id: 'journeyId', teamId: 'teamId1', forceNonTemplate: true }
   },
   result: {
     data: {
-      journeyDuplicate: { id: 'new-journey-id', __typename: 'Journey' }
+      journeyDuplicate: {
+        id: 'new-journey-id',
+        __typename: 'Journey',
+        template: false
+      }
     }
   }
 }
@@ -115,6 +119,7 @@ describe('LanguageScreen', () => {
   const handleScreenNavigation = jest.fn()
 
   let push: jest.Mock
+
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()
@@ -224,7 +229,8 @@ describe('LanguageScreen', () => {
               ...mockJourneyDuplicate.request,
               variables: {
                 id: 'journey-2', // This should match the Spanish language journey ID
-                teamId: 'teamId1'
+                teamId: 'teamId1',
+                forceNonTemplate: true
               }
             },
             result: mockJourneyDuplicateMockResult

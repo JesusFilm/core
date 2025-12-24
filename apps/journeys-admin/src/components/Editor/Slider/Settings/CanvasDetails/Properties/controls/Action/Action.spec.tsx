@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -8,14 +9,13 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
+import { blockActionChatUpdateMock } from '../../../../../../../../libs/useBlockActionChatUpdateMutation/useBlockActionChatUpdateMutation.mock'
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
+import { blockActionEmailUpdateMock } from '../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
+import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 
 import { Action } from './Action'
 import { steps } from './data'
-
-import { blockActionEmailUpdateMock } from '../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
-import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
-import userEvent from '@testing-library/user-event'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -50,6 +50,16 @@ describe('Action', () => {
     }
   } as TreeBlock<ButtonBlock>
 
+  const buttonBlockWithChatAction = {
+    ...selectedBlock,
+    action: {
+      __typename: 'ChatAction',
+      chatUrl: 'https://chat.example.com',
+      customizable: false,
+      parentStepId: selectedStep?.id
+    }
+  } as TreeBlock<ButtonBlock>
+
   it('shows no action by default', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -73,7 +83,7 @@ describe('Action', () => {
     )
   })
 
-  it('shows url input text box when URL/Website is selected', async () => {
+  it('shows url input text box when Website is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <Action />
@@ -81,13 +91,27 @@ describe('Action', () => {
     )
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
-    fireEvent.click(getByRole('option', { name: 'URL/Website' }))
+    fireEvent.click(getByRole('option', { name: 'Website' }))
     await waitFor(() =>
       expect(getByText('Paste URL here...')).toBeInTheDocument()
     )
   })
 
-  it('shows customization toggle when URL/Website is selected', async () => {
+  it('shows chat input text box when Chat is selected', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <Action />
+      </MockedProvider>
+    )
+    fireEvent.mouseDown(getByRole('combobox'))
+    await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
+    fireEvent.click(getByRole('option', { name: 'Chat' }))
+    await waitFor(() =>
+      expect(getByText('Paste chat URL here...')).toBeInTheDocument()
+    )
+  })
+
+  it('shows customization toggle when Website is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -127,9 +151,9 @@ describe('Action', () => {
 
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
-      expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
+      expect(getByRole('option', { name: 'Website' })).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('option', { name: 'URL/Website' }))
+    fireEvent.click(getByRole('option', { name: 'Website' }))
 
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
@@ -191,37 +215,23 @@ describe('Action', () => {
     })
   })
 
-  it('shows focus text input on select change to email or url', async () => {
-    const { getByRole } = render(
+  it('shows customization toggle when Chat is selected', async () => {
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              ...blockActionEmailUpdateMock.request,
+              ...blockActionChatUpdateMock.request,
               variables: {
                 id: 'button1.id',
                 input: {
-                  email: 'test@example.com',
+                  chatUrl: 'https://chat.example.com',
                   customizable: false,
                   parentStepId: 'step1.id'
                 }
               }
             },
-            result: blockActionEmailUpdateMock.result
-          },
-          {
-            request: {
-              ...blockActionLinkUpdateMock.request,
-              variables: {
-                id: 'button1.id',
-                input: {
-                  url: 'https://example.com',
-                  customizable: false,
-                  parentStepId: 'step1.id'
-                }
-              }
-            },
-            result: blockActionLinkUpdateMock.result
+            result: blockActionChatUpdateMock.result
           }
         ]}
       >
@@ -233,7 +243,7 @@ describe('Action', () => {
         >
           <EditorProvider
             initialState={{
-              selectedBlock: buttonBlockWithEmailAction,
+              selectedBlock: buttonBlockWithChatAction,
               selectedStep
             }}
           >
@@ -243,30 +253,21 @@ describe('Action', () => {
       </MockedProvider>
     )
 
-    // starts at email as default so we have to assert URL first
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
-      expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
+      expect(getByRole('option', { name: 'Chat' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'URL/Website' }))
-    await waitFor(() =>
-      expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
-    )
+    fireEvent.click(getByRole('option', { name: 'Chat' }))
 
-    // then switch to email
-    fireEvent.mouseDown(getByRole('combobox'))
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
-    )
-    userEvent.click(getByRole('option', { name: 'Email' }))
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('textbox', { name: 'Paste Email here...' })
-      ).toHaveFocus()
-    )
+        getByRole('checkbox', { name: 'Toggle customizable' })
+      ).toBeInTheDocument()
+    })
   })
 
-  it('should filter out LinkAction and EmailAction options for submit buttons', async () => {
+  it('should filter out LinkAction, EmailAction, and ChatAction options for submit buttons', async () => {
     const submitButtonBlock = {
       ...selectedBlock,
       submitEnabled: true
@@ -282,8 +283,9 @@ describe('Action', () => {
 
     fireEvent.mouseDown(screen.getByRole('combobox'))
 
-    expect(screen.queryByText('URL/Website')).not.toBeInTheDocument()
+    expect(screen.queryByText('Website')).not.toBeInTheDocument()
     expect(screen.queryByText('Send Email')).not.toBeInTheDocument()
+    expect(screen.queryByText('Chat')).not.toBeInTheDocument()
 
     expect(screen.getByRole('option', { name: 'None' })).toBeInTheDocument()
     expect(
@@ -347,9 +349,9 @@ describe('Action', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('URL/Website')).toBeInTheDocument()
+    expect(getByText('Website')).toBeInTheDocument()
 
-    expect(getByRole('combobox')).toHaveTextContent('URL/Website')
+    expect(getByRole('combobox')).toHaveTextContent('Website')
     fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())

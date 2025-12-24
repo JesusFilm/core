@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { ReactElement } from 'react'
 import {
   InstantSearchApi,
   useInfiniteHits,
@@ -10,10 +11,15 @@ import {
 } from 'react-instantsearch'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { EditorProvider, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource
+} from '../../../../../../../../../../__generated__/globalTypes'
+import { MuxVideoUploadProvider } from '../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
@@ -52,6 +58,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -179,7 +187,9 @@ describe('VideoOptions', () => {
         source: VideoBlockSource.internal,
         startAt: 0,
         endAt: 144,
-        duration: 144
+        duration: 144,
+        subtitleLanguageId: null,
+        showGeneratedSubtitles: null
       }
     }
     render(
@@ -196,16 +206,18 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -249,7 +261,9 @@ describe('VideoOptions', () => {
                   source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
-                  duration: 144
+                  duration: 144,
+                  subtitleLanguageId: null,
+                  showGeneratedSubtitles: null
                 }
               }
             },
@@ -266,7 +280,8 @@ describe('VideoOptions', () => {
                   duration: null,
                   videoId: null,
                   videoVariantLanguageId: '529',
-                  source: VideoBlockSource.internal
+                  source: VideoBlockSource.internal,
+                  showGeneratedSubtitles: null
                 }
               }
             },
@@ -274,17 +289,19 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <CommandUndoItem variant="button" />
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <CommandUndoItem variant="button" />
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -299,5 +316,68 @@ describe('VideoOptions', () => {
     await waitFor(() => expect(result1).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('it should reset subtitle language id and show generated subtitles when selecting different video', async () => {
+    const videoBlockResult = jest.fn(() => {
+      return {
+        data: {
+          videoBlockUpdate: video
+        }
+      }
+    })
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const videoBlockUpdateVariables = {
+      id: video.id,
+      input: {
+        videoId: 'videoId',
+        videoVariantLanguageId: '529',
+        source: VideoBlockSource.internal,
+        startAt: 0,
+        endAt: 144,
+        duration: 144,
+        subtitleLanguageId: null,
+        showGeneratedSubtitles: null
+      }
+    }
+    render(
+      <MockedProvider
+        mocks={[
+          { ...getVideoMock, result },
+
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: videoBlockUpdateVariables
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
+    )
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
+    await waitFor(() =>
+      expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
+    await waitFor(() =>
+      expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
+    )
   })
 })

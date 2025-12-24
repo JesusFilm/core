@@ -34,6 +34,13 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
         title
         description
         languageId
+        language {
+          id
+          name {
+            value
+            primary
+          }
+        }
         createdAt
         updatedAt
         blocks {
@@ -78,6 +85,13 @@ export function updateCacheWithTranslatedJourney(
           title
           description
           languageId
+          language {
+            id
+            name {
+              value
+              primary
+            }
+          }
           updatedAt
           blocks {
             id
@@ -103,6 +117,7 @@ export function updateCacheWithTranslatedJourney(
         title: translatedJourney.title,
         description: translatedJourney.description,
         languageId: translatedJourney.languageId,
+        language: translatedJourney.language,
         updatedAt: translatedJourney.updatedAt,
         blocks: translatedJourney.blocks,
         __typename: 'Journey'

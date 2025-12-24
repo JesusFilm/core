@@ -22,6 +22,7 @@ import {
   selectedStep
 } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { restoreStepMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { DeleteBlock } from './DeleteBlock'
@@ -64,7 +65,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="button" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="button" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -112,7 +115,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="list-item" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -165,7 +170,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="button" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="button" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -176,12 +183,6 @@ describe('DeleteBlock', () => {
       screen.getByTestId('Trash2Icon')
     )
     await userEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
@@ -225,7 +226,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="list-item" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -233,12 +236,6 @@ describe('DeleteBlock', () => {
     )
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
     await waitFor(() =>
@@ -253,7 +250,9 @@ describe('DeleteBlock', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DeleteBlock variant="button" />
+          <MuxVideoUploadProvider>
+            <DeleteBlock variant="button" />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -264,7 +263,9 @@ describe('DeleteBlock', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DeleteBlock variant="button" disabled />
+          <MuxVideoUploadProvider>
+            <DeleteBlock variant="button" disabled />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -354,20 +355,16 @@ describe('DeleteBlock', () => {
                 steps: [passedInStep, selectedStep]
               }}
             >
-              <TestEditorState />
-              <DeleteBlock variant="list-item" block={passedInStep} />
+              <MuxVideoUploadProvider>
+                <TestEditorState />
+                <DeleteBlock variant="list-item" block={passedInStep} />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() =>
       expect(passedInStepDeleteMock.result).toHaveBeenCalled()
@@ -423,8 +420,10 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="list-item" />
-              <CommandUndoItem variant="button" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" />
+                <CommandUndoItem variant="button" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -432,12 +431,6 @@ describe('DeleteBlock', () => {
     )
     // delete the card
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
     await waitFor(() =>

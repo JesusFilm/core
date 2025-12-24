@@ -11,15 +11,16 @@ import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+
+import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -122,7 +123,7 @@ export function LanguageScreen({
       } = values
       const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
       const { data: duplicateData } = await journeyDuplicate({
-        variables: { id: journeyId, teamId }
+        variables: { id: journeyId, teamId, forceNonTemplate: true }
       })
       if (duplicateData?.journeyDuplicate == null) {
         enqueueSnackbar(

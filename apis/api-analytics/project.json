@@ -84,6 +84,12 @@
       "options": {
         "command": "codecov -f coverage/apis/api-analytics/cobertura-coverage.xml -F apps.api-analytics"
       }
+    },
+    "sites-add-goals": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -P apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/scripts/sites-add-goals.ts"
+      }
     }
   }
 }

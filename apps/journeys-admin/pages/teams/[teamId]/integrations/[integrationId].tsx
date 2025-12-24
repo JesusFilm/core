@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -7,22 +8,27 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, Suspense } from 'react'
 
+import { GoogleIntegrationDetails } from '../../../../src/components/Google'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 
 function IntegrationPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
+  const { query } = useRouter()
+  const { data } = useIntegrationQuery({ teamId: query.teamId as string })
+  const selected = data?.integrations.find((i) => i.id === query.integrationId)
 
   return (
     <>
-      <NextSeo title={t('Growth Spaces')} />
+      <NextSeo title={t('Integration')} />
       <PageWrapper
-        title={t('Growth Spaces')}
+        title={t('Integration')}
         user={user}
         backHrefHistory
         mainHeaderChildren={
@@ -48,7 +54,15 @@ function IntegrationPage(): ReactElement {
           </Stack>
         }
       >
-        <GrowthSpacesIntegrationDetails />
+        {selected != null && (
+          <>
+            {selected?.type === 'google' ? (
+              <GoogleIntegrationDetails />
+            ) : (
+              <GrowthSpacesIntegrationDetails />
+            )}
+          </>
+        )}
       </PageWrapper>
     </>
   )
