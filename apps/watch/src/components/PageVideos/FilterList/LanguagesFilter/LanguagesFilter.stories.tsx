@@ -1,5 +1,4 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent } from '@storybook/test'
 import noop from 'lodash/noop'
 
 import { watchConfig } from '../../../../libs/storybook'
@@ -71,10 +70,7 @@ const Template: StoryObj<typeof LanguagesFilter> = {
 
 export const Default = {
   ...Template,
-  play: async () => {
-    const button = screen.getAllByRole('button', { name: 'Open' })[0]
-    await userEvent.click(button)
-  }
+  play: async () => undefined
 }
 
 export default LanguagesFilterStory

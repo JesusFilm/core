@@ -19,7 +19,7 @@ import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import { object, string } from 'yup'
@@ -38,10 +38,10 @@ import { bytesToSize } from './download/_bytesToSize/bytesToSize'
 
 interface VariantDialogProps {
   children: ReactNode
-  params: {
+  params: Promise<{
     variantId: string
     videoId: string
-  }
+  }>
 }
 
 const GET_ADMIN_VIDEO_VARIANT = graphql(`
@@ -84,10 +84,15 @@ const validationSchema = object({
   published: string().required()
 })
 
-export default function VariantDialog({
-  children,
-  params: { variantId, videoId }
-}: VariantDialogProps): ReactElement | null {
+export default function VariantDialog(
+  props: VariantDialogProps
+): ReactElement | null {
+  const { children } = props
+  const routeParams = useParams()
+  const { variantId, videoId } = routeParams as {
+    variantId: string
+    videoId: string
+  }
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
