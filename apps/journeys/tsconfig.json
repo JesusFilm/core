@@ -20,7 +20,6 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
-    ".next/types/**/*.ts",
     "next-env.d.ts",
     "postcss.config.mjs"
   ],
