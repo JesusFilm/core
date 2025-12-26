@@ -21,9 +21,6 @@ describe('OnboardingTemplateCard', () => {
     description: null,
     slug: 'default',
     template: true,
-    website: false,
-    journeyCustomizationDescription: null,
-    journeyCustomizationFields: [],
     language: {
       __typename: 'Language',
       id: '529',
