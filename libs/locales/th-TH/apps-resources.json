@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "ลองดีไซน์ใหม่",
+  "Better search, languages, and collections.": "การค้นหาที่ดีขึ้น ภาษา และคอลเลกชัน",
+  "Better search. Better language support. Better collections.": "การค้นหาที่ดีขึ้น. การรองรับภาษาที่ดีขึ้น. คอลเล็กชันที่ดีขึ้น.",
+  "New Design": "การออกแบบใหม่",
   "close": "ปิด",
   "No Downloads Available": "ไม่มีการดาวน์โหลดให้ใช้",
   "Highest": "สูงสุด",
@@ -36,8 +40,6 @@
   "Language": "ภาษา",
   "Subtitles are not available in {{language}}.": "ไม่มีคำบรรยายใน {{language}}",
   "Subtitles": "คำบรรยาย",
-  "Available Languages": "ภาษาที่ใช้ได้",
-  "Other Languages": "ภาษาอื่น ๆ",
   "Show subtitles": "แสดงคำบรรยาย",
   "Read more...": "อ่านเพิ่มเติม...",
   "Related questions": "คำถามที่เกี่ยวข้อง",
@@ -92,9 +94,5 @@
   "Short Film": "ภาพยนตร์สั้น",
   "Behind The Scenes": "เบื้องหลัง",
   "Trailer": "ตัวอย่างภาพยนตร์",
-  "Available in {{count}} languages._other": "มีให้บริการใน {{count}} ภาษา",
-  "Better search. Better language support. Better collections.": "การค้นหาที่ดียิ่งขึ้น การรองรับภาษาที่ดียิ่งขึ้น คอลเลกชันที่ดียิ่งขึ้น",
-  "Better search, languages, and collections.": "การค้นหา ภาษา และคอลเลกชันที่ดียิ่งขึ้น",
-  "Try the new design.": "ลองใช้การออกแบบใหม่",
-  "New Design": "การออกแบบใหม่"
+  "Available in {{count}} languages._other": "มีให้บริการใน {{count}} ภาษา"
 }

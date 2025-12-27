@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "试试新设计。",
+  "Better search, languages, and collections.": "更好的搜索、语言和收藏。",
+  "Better search. Better language support. Better collections.": "更好的搜索。更好的语言支持。更好的收藏",
+  "New Design": "全新设计",
   "close": "关闭",
   "No Downloads Available": "无下载",
   "Highest": "最高",
@@ -36,8 +40,6 @@
   "Language": "语言",
   "Subtitles are not available in {{language}}.": "{{language}}中没有字幕。",
   "Subtitles": "字幕",
-  "Available Languages": "可用语言",
-  "Other Languages": "其他语言",
   "Show subtitles": "显示字幕",
   "Read more...": "阅读全文...",
   "Related questions": "相关问题",
@@ -46,7 +48,7 @@
   "Have a private discussion with someone who is ready to listen.": "与愿意倾听的人进行私下讨论。",
   "Chat with a person": "与人聊天",
   "Ask a Bible question": "提出圣经问题",
-  "Clip ": "夹子 ",
+  "Clip ": "片段 ",
   " of ": " 的 ",
   "If you could ask the creator of this video a question, what would it be?": "如果可以问这段视频的创作者一个问题，你会问什么？",
   "Bible Quotes": "圣经名言",
@@ -65,7 +67,7 @@
   "Discussion Questions": "讨论问题",
   "Watch Full Film": "观看完整影片",
   "See All": "查看全部",
-  "Play": "游戏",
+  "Play": "播放",
   "Play Video": "播放视频",
   "{{ duration }} min": "{{ duration }} 分钟",
   "Play with sound": "播放声音",
@@ -92,9 +94,5 @@
   "Short Film": "短片",
   "Behind The Scenes": "幕后花絮",
   "Trailer": "预告片",
-  "Available in {{count}} languages._other": "{{count}} 语言版本。",
-  "Better search. Better language support. Better collections.": "更好的搜索。更好的语言支持。更好的收藏。",
-  "Better search, languages, and collections.": "更好的搜索、语言和收藏。",
-  "Try the new design.": "试试新设计。",
-  "New Design": "新设计"
+  "Available in {{count}} languages._other": "{{count}} 语言版本。"
 }
