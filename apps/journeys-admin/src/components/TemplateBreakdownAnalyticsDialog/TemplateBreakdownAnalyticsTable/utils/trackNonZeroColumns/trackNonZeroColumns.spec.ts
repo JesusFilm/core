@@ -1,9 +1,12 @@
 import { NUMERIC_COLUMNS } from '../constants'
-import { ProcessedRow } from '../types'
+import { ProcessedRow, SortableColumn } from '../types'
+
 import { trackNonZeroColumns } from './trackNonZeroColumns'
 
 describe('trackNonZeroColumns', () => {
-  const createMockProcessedRow = (overrides: Partial<ProcessedRow> = {}): ProcessedRow => ({
+  const createMockProcessedRow = (
+    overrides: Partial<ProcessedRow> = {}
+  ): ProcessedRow => ({
     __typename: 'TemplateFamilyStatsBreakdownResponse',
     journeyId: 'journey-1',
     journeyName: 'Test Journey',
@@ -26,7 +29,7 @@ describe('trackNonZeroColumns', () => {
   })
 
   it('should track columns with non-zero values', () => {
-    const columnsWithNonZero = new Set<string>()
+    const columnsWithNonZero = new Set<SortableColumn>()
     const row = createMockProcessedRow({
       views: 100,
       responses: 50,
@@ -42,7 +45,7 @@ describe('trackNonZeroColumns', () => {
   })
 
   it('should not track columns with zero values', () => {
-    const columnsWithNonZero = new Set<string>()
+    const columnsWithNonZero = new Set<SortableColumn>()
     const row = createMockProcessedRow({
       views: 100,
       responses: 0,
@@ -58,7 +61,7 @@ describe('trackNonZeroColumns', () => {
   })
 
   it('should skip columns that are already tracked', () => {
-    const columnsWithNonZero = new Set<string>(['views', 'responses'])
+    const columnsWithNonZero = new Set<SortableColumn>(['views', 'responses'])
     const row = createMockProcessedRow({
       views: 100,
       responses: 50,
@@ -74,7 +77,7 @@ describe('trackNonZeroColumns', () => {
   })
 
   it('should early exit when all columns are already tracked', () => {
-    const columnsWithNonZero = new Set<string>(NUMERIC_COLUMNS)
+    const columnsWithNonZero = new Set<SortableColumn>(NUMERIC_COLUMNS)
     const row = createMockProcessedRow({
       views: 100
     })
@@ -86,7 +89,7 @@ describe('trackNonZeroColumns', () => {
   })
 
   it('should early exit when all columns are found in a single row', () => {
-    const columnsWithNonZero = new Set<string>()
+    const columnsWithNonZero = new Set<SortableColumn>()
     const row = createMockProcessedRow({
       views: 1,
       responses: 1,
@@ -111,7 +114,7 @@ describe('trackNonZeroColumns', () => {
   })
 
   it('should handle all zeros correctly', () => {
-    const columnsWithNonZero = new Set<string>()
+    const columnsWithNonZero = new Set<SortableColumn>()
     const row = createMockProcessedRow()
 
     trackNonZeroColumns(row, columnsWithNonZero)
@@ -119,4 +122,3 @@ describe('trackNonZeroColumns', () => {
     expect(columnsWithNonZero.size).toBe(0)
   })
 })
-
