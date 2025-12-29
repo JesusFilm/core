@@ -3,7 +3,7 @@ on:
   push:
     branches: [never]
   # push:
-  #   branches: [main, feature/*]
+  #   branches: [main]
   # pull_request:
   #   branches: [main, feature/*]
   #   types: [labeled, synchronize]

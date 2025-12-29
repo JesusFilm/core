@@ -27,6 +27,7 @@ Object.defineProperty(
 )
 
 jest.mock('next/router', () => require('next-router-mock'))
+jest.mock('next/compat/router', () => require('next-router-mock'))
 
 if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })

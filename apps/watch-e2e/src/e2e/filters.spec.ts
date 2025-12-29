@@ -3,15 +3,13 @@ import { expect, test } from '@playwright/test'
 /* 
 Test a Filters:
 
-Navigate to home page 
+Navigate to 'Videos' page
 Click on 'Seel All' button
 Select 'Telugu' audion & 'English' subtitles
 Check the URL has correct parameters
 */
 test('Filters', async ({ page }) => {
-  await page.goto('/watch')
-
-  await page.getByTestId('SeeAllVideos').click()
+  await page.goto('/watch/videos')
 
   // Choose audio language
   await page
@@ -54,7 +52,7 @@ test('Filters', async ({ page }) => {
   await page.press('body', 'Tab')
 
   // Wait for the URL to be updated with filter parameters
-  await page.waitForURL(/configure.*languageId.*subtitles/, { timeout: 20000 })
+  await page.waitForURL(/configure.*languageId.*subtitles/)
 
   await expect(page).toHaveURL(
     '/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&configure%5Bfilters%5D=NOT%20restrictViewPlatforms%3Awatch%20AND%20published%3Atrue%20AND%20videoPublished%3Atrue&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'

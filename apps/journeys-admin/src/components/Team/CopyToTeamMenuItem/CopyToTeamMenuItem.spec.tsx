@@ -120,7 +120,8 @@ describe('CopyToTeamMenuItem', () => {
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId',
-          __typename: 'Journey'
+          __typename: 'Journey',
+          template: false
         }
       }
     }))
@@ -626,7 +627,8 @@ describe('CopyToTeamMenuItem', () => {
         data: {
           journeyDuplicate: {
             id: '',
-            __typename: 'Journey'
+            __typename: 'Journey',
+            template: false
           }
         }
       }
