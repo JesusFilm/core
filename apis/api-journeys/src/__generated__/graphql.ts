@@ -3274,6 +3274,7 @@ export enum PlausibleEvent {
   JourneyResponses = 'journeyResponses',
   JourneyVisitors = 'journeyVisitors',
   LinksClicked = 'linksClicked',
+  MultiSelectSubmit = 'multiSelectSubmit',
   NavigateNextStep = 'navigateNextStep',
   NavigatePreviousStep = 'navigatePreviousStep',
   Pageview = 'pageview',
@@ -4658,10 +4659,8 @@ export type TemplateFamilyStatsBreakdownResponse = {
   __typename?: 'TemplateFamilyStatsBreakdownResponse';
   journeyId: Scalars['String']['output'];
   journeyName: Scalars['String']['output'];
-  /** The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment */
-  journeyUrl: Scalars['String']['output'];
   stats: Array<TemplateFamilyStatsEventResponse>;
-  status: JourneyStatus;
+  status?: Maybe<JourneyStatus>;
   teamName: Scalars['String']['output'];
 };
 
