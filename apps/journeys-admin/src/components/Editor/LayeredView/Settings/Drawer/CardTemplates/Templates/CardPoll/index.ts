@@ -1,0 +1,1 @@
+export { CardPoll } from './CardPoll'

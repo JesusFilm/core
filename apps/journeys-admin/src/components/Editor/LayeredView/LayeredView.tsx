@@ -2,6 +2,9 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { ReactElement, useState } from 'react'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
+import { JourneyFlow } from './JourneyFlow'
+import { Content } from './Content'
+import { Settings } from './Settings'
 
 export function LayeredView(): ReactElement {
   const [showItem1, setShowItem1] = useState(false)
@@ -44,8 +47,8 @@ export function LayeredView(): ReactElement {
         position: 'relative'
       }}
     >
-      <div>LayeredView</div>
-      <Box
+      <JourneyFlow />
+      {/* <Box
         data-testid="main body"
         onClick={handleMainBodyClick}
         sx={{
@@ -71,8 +74,9 @@ export function LayeredView(): ReactElement {
             Close All
           </Button>
         )}
-      </Box>
-      {showItem1 && (
+      </Box> */}
+      <Content />
+      {/* {showItem1 && (
         <Box
           data-testid="item 1"
           position="absolute"
@@ -103,40 +107,41 @@ export function LayeredView(): ReactElement {
             ×
           </Button>
         </Box>
-      )}
+      )} */}
       {showItem1 && (
-        <Box
-          data-testid="item 2"
-          position="absolute"
-          top={0}
-          right={0}
-          sx={{
-            height: '100px',
-            width: '100px',
-            backgroundColor: 'green',
-            zIndex: 10,
-            transform: showItem2 ? 'translateX(0)' : 'translateX(100%)',
-            transition: 'transform 0.3s ease-in-out',
-            pointerEvents: showItem2 ? 'auto' : 'none'
-          }}
-        >
-          {showItem2 && (
-            <Button
-              onClick={handleItem2Close}
-              sx={{
-                position: 'absolute',
-                top: 4,
-                right: 4,
-                zIndex: 20,
-                minWidth: 'auto',
-                padding: '2px 4px',
-                fontSize: '10px'
-              }}
-            >
-              ×
-            </Button>
-          )}
-        </Box>
+        <Settings />
+        // <Box
+        //   data-testid="item 2"
+        //   position="absolute"
+        //   top={0}
+        //   right={0}
+        //   sx={{
+        //     height: '100px',
+        //     width: '100px',
+        //     backgroundColor: 'green',
+        //     zIndex: 10,
+        //     transform: showItem2 ? 'translateX(0)' : 'translateX(100%)',
+        //     transition: 'transform 0.3s ease-in-out',
+        //     pointerEvents: showItem2 ? 'auto' : 'none'
+        //   }}
+        // >
+        //   {showItem2 && (
+        //     <Button
+        //       onClick={handleItem2Close}
+        //       sx={{
+        //         position: 'absolute',
+        //         top: 4,
+        //         right: 4,
+        //         zIndex: 20,
+        //         minWidth: 'auto',
+        //         padding: '2px 4px',
+        //         fontSize: '10px'
+        //       }}
+        //     >
+        //       ×
+        //     </Button>
+        //   )}
+        // </Box>
       )}
     </Box>
   )

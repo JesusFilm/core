@@ -1,0 +1,96 @@
+import { MockedProvider } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
+
+import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+
+jest.mock('@core/shared/ui/deviceUtils', () => {
+  return {
+    isIOSTouchScreen: jest.fn()
+  }
+})
+
+describe('StepBlockNodeMenu', () => {
+  const step: TreeBlock<StepBlock> = {
+    id: 'step1.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    nextBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    slug: null,
+    children: []
+  }
+
+  beforeEach(() => jest.clearAllMocks())
+
+  it('should open menu on click', async () => {
+    const { getByTestId, getByRole, queryByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('EditStepFab')).toBeInTheDocument()
+    })
+    expect(queryByTestId('StepBlockNodeMenu')).not.toBeInTheDocument()
+
+    fireEvent.click(getByTestId('EditStepFab'))
+    await waitFor(() => {
+      expect(queryByTestId('StepBlockNodeMenu')).toBeInTheDocument()
+    })
+    expect(
+      getByRole('menuitem', { name: 'Duplicate Card' })
+    ).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+
+    // fab should disappear when menu is opened
+    expect(getByTestId('EditStepFab')).not.toBeVisible()
+  })
+
+  it('should have edit-step id on fab', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('EditStepFab')).toBeInTheDocument()
+    })
+    const fab = screen.getByTestId('EditStepFab')
+    expect(fab).toHaveAttribute('id', 'edit-step')
+  })
+
+  it('should have StepBlockNodeMenuIcon id on fab icon', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('EditStepFabIcon')).toBeInTheDocument()
+    })
+    const fabIcon = screen.getByTestId('EditStepFabIcon')
+    expect(fabIcon).toHaveAttribute('id', 'StepBlockNodeMenuIcon')
+  })
+})

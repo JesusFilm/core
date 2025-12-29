@@ -1,0 +1,1 @@
+export { DisplayTitle } from './DisplayTitle'
