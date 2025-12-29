@@ -1,6 +1,4 @@
 import Grid from '@mui/material/GridLegacy'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
@@ -11,7 +9,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
-import { DrawerTitle } from '../../Drawer'
+import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
@@ -44,21 +42,7 @@ export function AddBlock(): ReactElement {
   }
 
   return (
-    <Stack
-      component={Paper}
-      elevation={0}
-      sx={{
-        height: '100%',
-        borderRadius: 3,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-        overflowY: 'auto'
-      }}
-      border={1}
-      borderColor="divider"
-      data-testid="SettingsDrawer"
-    >
-      <DrawerTitle title={t('Add a block')} onClose={onClose} />
+    <Drawer title={t('Add a block')} onClose={onClose}>
       <Grid p={5} container spacing={4}>
         <Grid item xs={6} md={12}>
           <NewTypographyButton />
@@ -85,6 +69,6 @@ export function AddBlock(): ReactElement {
           <NewSpacerButton />
         </Grid>
       </Grid>
-    </Stack>
+    </Drawer>
   )
 }

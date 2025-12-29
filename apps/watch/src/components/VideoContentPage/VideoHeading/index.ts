@@ -1,1 +1,0 @@
-export { VideoHeading } from './VideoHeading'
