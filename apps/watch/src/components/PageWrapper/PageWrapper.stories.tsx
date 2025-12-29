@@ -27,6 +27,7 @@ const Template: StoryObj<typeof PageWrapper> = {
       }}
     >
       <PageWrapper
+        data-testid="PageWrapper"
         hero={
           <Box
             sx={{

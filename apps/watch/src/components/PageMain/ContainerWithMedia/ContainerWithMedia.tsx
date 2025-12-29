@@ -1,0 +1,64 @@
+import { type ReactElement, type ReactNode } from 'react'
+
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { VideoProvider } from '../../../libs/videoContext'
+import {
+  type CarouselMuxSlide,
+  type VideoCarouselSlide
+} from '../../../types/inserts'
+import { ContentPageBlurFilter } from '../../ContentPageBlurFilter'
+import { VideoBlock } from '../../VideoBlock'
+import { VideoCarousel } from '../../VideoCarousel'
+
+interface ContainerWithMediaProps {
+  slides: VideoCarouselSlide[]
+  activeVideoId?: string
+  activeVideo: VideoContentFields | null
+  currentMuxInsert: CarouselMuxSlide | null
+  loading: boolean
+  onSelectSlide: (slideId: string) => void
+  onMuxInsertComplete: () => void
+  onSkipActiveVideo?: () => void
+  children?: ReactNode
+  containerSlug?: string
+}
+
+export function ContainerWithMedia({
+  slides,
+  activeVideoId,
+  activeVideo,
+  currentMuxInsert,
+  loading,
+  onSelectSlide,
+  onMuxInsertComplete,
+  onSkipActiveVideo,
+  children,
+  containerSlug = 'watch'
+}: ContainerWithMediaProps): ReactElement {
+  return (
+    <>
+      {activeVideo != null && (
+        <VideoProvider value={{ content: activeVideo }}>
+          <VideoBlock
+            placement="carouselItem"
+            currentMuxInsert={currentMuxInsert}
+            onMuxInsertComplete={onMuxInsertComplete}
+            onSkipActiveVideo={onSkipActiveVideo}
+          />
+        </VideoProvider>
+      )}
+      <ContentPageBlurFilter>
+        <div>
+          <VideoCarousel
+            slides={slides}
+            containerSlug={containerSlug}
+            activeVideoId={activeVideoId ?? ''}
+            loading={loading}
+            onVideoSelect={onSelectSlide}
+          />
+        </div>
+        {children}
+      </ContentPageBlurFilter>
+    </>
+  )
+}
