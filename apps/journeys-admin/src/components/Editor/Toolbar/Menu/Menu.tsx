@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
@@ -44,8 +45,12 @@ export function Menu({ user }: MenuProps): ReactElement {
   const { journey } = useJourney()
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const { activeTeam } = useTeam()
+  const sharedWithMeTeam = activeTeam?.id == null
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const isTemplate = journey?.template === true
+  const isLocalTemplate = isTemplate && journey?.team?.id !== 'jfp-team'
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -86,15 +91,20 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && <JourneyDetails />}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
         {!mdUp && <Divider data-testid="details-menu-divider" />}
-        {journey?.template === true && (
+        {isTemplate && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
-        <AccessItem variant="menu-item" onClose={handleCloseMenu} />
-        {!mdUp && journey?.template !== true && (
-          <AnalyticsItem variant="menu-item" />
+        {!isLocalTemplate && (
+          <AccessItem variant="menu-item" onClose={handleCloseMenu} />
         )}
-        {journey?.template !== true && isPublisher === true && (
-          <CreateTemplateItem variant="menu-item" />
+        {!mdUp && !isTemplate && <AnalyticsItem variant="menu-item" />}
+        {!sharedWithMeTeam && !isTemplate && (
+          <>
+            <CreateTemplateItem variant="menu-item" globalPublish={false} />
+            {isPublisher === true && (
+              <CreateTemplateItem variant="menu-item" globalPublish={true} />
+            )}
+          </>
         )}
         {!mdUp && (
           <>
@@ -107,10 +117,9 @@ export function Menu({ user }: MenuProps): ReactElement {
           </>
         )}
         {journey != null && mdUp && <Divider data-testid="menu-divider" />}
-        {journey != null &&
-          (journey?.template !== true || isPublisher != null) && (
-            <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
-          )}
+        {journey != null && (!isTemplate || isPublisher === true) && (
+          <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
+        )}
         {!mdUp && (
           <>
             <Divider data-testid="helpscout-menu-divider" />
