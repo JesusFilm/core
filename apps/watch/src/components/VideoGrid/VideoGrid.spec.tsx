@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -8,6 +8,27 @@ import { VideoGrid } from './VideoGrid'
 
 jest.mock('react-instantsearch')
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+jest.mock('../../libs/blurhash', () => ({
+  useBlurhash: jest.fn(() => ({
+    blurhash: null,
+    dominantColor: null,
+    isLoading: false,
+    error: null
+  })),
+  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+}))
+jest.mock('../../libs/thumbnail', () => ({
+  useThumbnailUrl: jest.fn(() => ({
+    thumbnailUrl: null,
+    isLoading: false,
+    error: null
+  }))
+}))
+jest.mock('../../libs/watchContext', () => ({
+  useWatch: jest.fn(() => ({
+    state: { audioLanguageId: '529' }
+  }))
+}))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
@@ -84,13 +105,7 @@ describe('VideoGrid', () => {
     render(<VideoGrid videos={[]} loading />)
 
     expect(
-      screen.queryAllByTestId('VideoTitleSkeleton').length
-    ).toBeGreaterThan(0)
-    expect(
       screen.queryAllByTestId('VideoImageSkeleton').length
-    ).toBeGreaterThan(0)
-    expect(
-      screen.queryAllByTestId('VideoVariantDurationSkeleton').length
     ).toBeGreaterThan(0)
   })
 
@@ -121,6 +136,67 @@ describe('VideoGrid', () => {
 
     render(<VideoGrid videos={[]} hasNoResults />)
 
-    expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
+    expect(screen.getByText('No videos found')).toBeInTheDocument()
+    expect(
+      screen.getByText('No catch here—try the other side of the boat.')
+    ).toBeInTheDocument()
+  })
+
+  it('should trigger search reset when try another search is clicked', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: true,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    const handleClearSearch = jest.fn()
+
+    render(
+      <VideoGrid videos={[]} hasNoResults onClearSearch={handleClearSearch} />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try another search' }))
+    expect(handleClearSearch).toHaveBeenCalled()
+  })
+
+  it('should render fallback videos when provided', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: true,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    render(
+      <VideoGrid videos={[]} hasNoResults fallbackVideos={videos.slice(0, 1)} />
+    )
+
+    expect(screen.getByText('Latest videos')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'JESUS' })
+    ).toBeInTheDocument()
+  })
+
+  it('should render sequence numbers when enabled', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: false,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    render(<VideoGrid videos={videos.slice(0, 2)} showSequenceNumbers />)
+
+    const sequenceBadges = screen.getAllByTestId('VideoCardSequenceNumber')
+    expect(sequenceBadges).toHaveLength(2)
+    expect(sequenceBadges[0]).toHaveTextContent('1')
+    expect(sequenceBadges[1]).toHaveTextContent('2')
   })
 })

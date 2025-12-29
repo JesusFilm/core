@@ -1,0 +1,10 @@
+aws-load-balancer-controller:
+  clusterName: jfp-eks-stage
+  region: us-east-2
+  vpcId: vpc-08eeff0fe23f23079
+
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller
+
+
