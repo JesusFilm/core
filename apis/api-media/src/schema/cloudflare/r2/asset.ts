@@ -372,23 +372,15 @@ builder.mutationFields((t) => ({
         ...input.parts
       ])
 
-      if (input.id != null) {
-        return await prisma.cloudflareR2.update({
-          ...query,
-          where: { id: input.id },
-          data: {}
-        })
+      if (input.id == null) {
+        throw new Error('Multipart upload record id is required to complete')
       }
 
-      const record = await prisma.cloudflareR2.findFirst({
-        where: { fileName: input.fileName }
+      return await prisma.cloudflareR2.update({
+        ...query,
+        where: { id: input.id },
+        data: {}
       })
-
-      if (record == null) {
-        throw new Error('Multipart upload record not found')
-      }
-
-      return record
     }
   }),
   cloudflareR2Delete: t.withAuth({ isPublisher: true }).prismaField({
