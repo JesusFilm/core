@@ -34,6 +34,10 @@ export function SelectableWrapper({
   const updateEditor = (block: TreeBlock): void => {
     dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
     dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Drawer
+    })
+    dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
@@ -42,10 +46,6 @@ export function SelectableWrapper({
   // TODO: Test dispatch via E2E
   // please check RadioOptionBlock or MultiselectOptionBlock events are being propogated properly i.e - can be re-ordered
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Drawer
-    })
     // Allow container questions to be selected; options should select themselves for inline editing
     if (
       block.__typename === 'RadioQuestionBlock' ||
@@ -73,6 +73,13 @@ export function SelectableWrapper({
       e.stopPropagation()
       // eslint-disable-next-line no-empty
       if (selectedBlock?.id === block.id && isInlineEditable) {
+        dispatch({
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Drawer
+        })
+        console.log(
+          '[handleSelectBlock] Block already selected and inline editable - no action (allow editing)'
+        )
       } else {
         updateEditor(block)
       }
