@@ -213,8 +213,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         height: '100%',
         minWidth: DRAWER_WIDTH,
         borderRadius: 3,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
+        // borderBottomLeftRadius: 0,
+        // borderBottomRightRadius: 0,
         overflow: 'hidden'
       }}
       border={1}

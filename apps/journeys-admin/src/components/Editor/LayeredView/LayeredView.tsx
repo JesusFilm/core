@@ -30,7 +30,7 @@ export function LayeredView(): ReactElement {
     activeSlide === ActiveSlide.Content || activeSlide === ActiveSlide.Drawer
   const drawerWidth =
     activeSlide === ActiveSlide.Drawer
-      ? `calc(${CARD_WIDTH}px + 40px + ${DRAWER_WIDTH}px)`
+      ? `calc(${CARD_WIDTH}px + 40px + ${DRAWER_WIDTH}px) + 16px`
       : `calc(${CARD_WIDTH}px + 40px)`
 
   return (
@@ -60,7 +60,11 @@ export function LayeredView(): ReactElement {
         <Stack direction="row" sx={{ width: drawerWidth, height: '100%' }}>
           {(activeSlide === ActiveSlide.Content ||
             activeSlide === ActiveSlide.Drawer) && <Content />}
-          {activeSlide === ActiveSlide.Drawer && <Settings />}
+          {activeSlide === ActiveSlide.Drawer && (
+            <Box sx={{ mr: 4 }}>
+              <Settings />
+            </Box>
+          )}
         </Stack>
       </Drawer>
     </Box>

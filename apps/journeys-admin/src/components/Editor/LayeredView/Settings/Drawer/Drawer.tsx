@@ -1,7 +1,7 @@
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import MuiDrawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import { type Theme, alpha } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
@@ -93,28 +93,22 @@ export function Drawer({
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   return (
-    <MuiDrawer
+    <Stack
       data-testid="SettingsDrawer"
-      anchor={mdUp ? 'right' : 'bottom'}
-      variant={open != null ? 'persistent' : 'permanent'}
-      SlideProps={{ appear: true }}
-      open={open}
-      elevation={0}
-      hideBackdrop
+      direction="column"
       sx={{
-        '& .MuiDrawer-paper': {
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 3,
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
-          width: { xs: 'auto', md: DRAWER_WIDTH },
-          left: { xs: 0, md: 'auto' },
-          top: { xs: 0, md: 32 },
-          right: { xs: 0, md: 32 },
-          bottom: 0,
-          height: 'calc(100% - 20px)'
-        }
+        position: 'fixed',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 3,
+        width: { xs: 'auto', md: DRAWER_WIDTH },
+        left: { xs: 0, md: 'auto' },
+        top: { xs: 0, md: 32 },
+        right: { xs: 0, md: 32 },
+        bottom: 0,
+        height: 'calc(100% - 20px)',
+        backgroundColor: 'background.paper',
+        zIndex: (theme) => theme.zIndex.drawer
       }}
     >
       <DrawerTitle title={title} onClose={onClose} />
@@ -125,6 +119,6 @@ export function Drawer({
       >
         {children}
       </Box>
-    </MuiDrawer>
+    </Stack>
   )
 }
