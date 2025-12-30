@@ -100,4 +100,3 @@ export function VideoPoller({
   // This component renders nothing - it's just for the polling logic
   return null
 }
-

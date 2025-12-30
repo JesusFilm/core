@@ -58,4 +58,3 @@ export function cancelUploadForBlock(
     return next
   })
 }
-

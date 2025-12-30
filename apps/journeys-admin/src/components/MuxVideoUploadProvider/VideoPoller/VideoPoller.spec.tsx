@@ -64,7 +64,10 @@ describe('VideoPoller', () => {
 
     render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <VideoPoller {...defaultProps} registerStopPolling={registerStopPolling} />
+        <VideoPoller
+          {...defaultProps}
+          registerStopPolling={registerStopPolling}
+        />
       </MockedProvider>
     )
 
@@ -207,5 +210,3 @@ describe('VideoPoller', () => {
     expect(container.firstChild).toBeNull()
   })
 })
-
-
