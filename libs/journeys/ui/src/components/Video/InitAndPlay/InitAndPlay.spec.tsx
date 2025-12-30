@@ -9,8 +9,6 @@ import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
-import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
@@ -308,7 +306,7 @@ describe('InitAndPlay', () => {
 
       expect(mockGetCaptionsAndSubtitleTracks).toHaveBeenCalledWith(player)
       expect(mockSubtitleTrack.mode).toBe('showing')
-      expect(mockCaptionTrack.mode).toBe('hidden')
+      expect(mockCaptionTrack.mode).toBe('showing')
     })
 
     it('should hide Mux subtitles when showGeneratedSubtitles is false', () => {
@@ -379,7 +377,7 @@ describe('InitAndPlay', () => {
       expect(subtitleTrack.mode).toBe('hidden')
     })
 
-    it('should only affect subtitle tracks, not caption tracks', () => {
+    it('should affect subtitle tracks and caption tracks', () => {
       const subtitleTrack = {
         ...mockSubtitleTrack,
         mode: 'hidden' as TextTrackMode
@@ -403,7 +401,7 @@ describe('InitAndPlay', () => {
       render(<InitAndPlay {...props} />)
 
       expect(subtitleTrack.mode).toBe('showing')
-      expect(captionTrack.mode).toBe('hidden')
+      expect(captionTrack.mode).toBe('showing')
     })
 
     it('should not process subtitles when player readyState is not 4', () => {

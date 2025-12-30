@@ -84,10 +84,19 @@ const validationSchema = object({
   published: string().required()
 })
 
-export default function VariantDialog({
-  children,
-  params: { variantId, videoId }
-}: VariantDialogProps): ReactElement | null {
+function VariantDialogContent({
+  variantId,
+  videoId,
+  children
+}: {
+  variantId: string
+  videoId: string
+  children: ReactNode
+}): ReactElement | null {
+  // Filter out source map requests and other invalid variant IDs
+  if (variantId.endsWith('.map') || variantId.includes('.js')) {
+    return null
+  }
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
@@ -308,5 +317,17 @@ export default function VariantDialog({
       </Dialog>
       {children}
     </>
+  )
+}
+
+export default function VariantDialog({
+  children,
+  params
+}: VariantDialogProps): ReactElement | null {
+  const { variantId, videoId } = params
+  return (
+    <VariantDialogContent variantId={variantId} videoId={videoId}>
+      {children}
+    </VariantDialogContent>
   )
 }
