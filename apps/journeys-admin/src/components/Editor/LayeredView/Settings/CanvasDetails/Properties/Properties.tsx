@@ -211,7 +211,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       elevation={0}
       sx={{
         height: '100%',
-        minWidth: DRAWER_WIDTH,
+        width: DRAWER_WIDTH,
         borderRadius: 3,
         // borderBottomLeftRadius: 0,
         // borderBottomRightRadius: 0,

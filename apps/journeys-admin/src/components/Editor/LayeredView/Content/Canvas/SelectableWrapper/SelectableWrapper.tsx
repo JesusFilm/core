@@ -65,7 +65,10 @@ export function SelectableWrapper({
 
       if (selectedBlock?.id === block.id) {
         // Must override RadioQuestionBlock or MultiselectBlock selected during event capture
-        dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+
+        // dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+        dispatch({ type: 'SetSelectedBlockOnlyAction', selectedBlock: block })
+        // updateEditor(block)
       } else if (parentSelected || siblingSelected) {
         updateEditor(block)
       }
@@ -77,9 +80,6 @@ export function SelectableWrapper({
           type: 'SetActiveSlideAction',
           activeSlide: ActiveSlide.Drawer
         })
-        console.log(
-          '[handleSelectBlock] Block already selected and inline editable - no action (allow editing)'
-        )
       } else {
         updateEditor(block)
       }

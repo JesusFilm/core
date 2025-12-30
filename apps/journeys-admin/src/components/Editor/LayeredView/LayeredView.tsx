@@ -13,6 +13,9 @@ import {
 import { DRAWER_WIDTH } from '../constants'
 import Stack from '@mui/material/Stack'
 
+const CARD_GAP = 40
+const DRAWER_GAP = 16
+
 export function LayeredView(): ReactElement {
   const {
     state: { activeSlide },
@@ -30,7 +33,7 @@ export function LayeredView(): ReactElement {
     activeSlide === ActiveSlide.Content || activeSlide === ActiveSlide.Drawer
   const drawerWidth =
     activeSlide === ActiveSlide.Drawer
-      ? `calc(${CARD_WIDTH}px + 40px + ${DRAWER_WIDTH}px) + 16px`
+      ? `calc(${CARD_WIDTH}px + ${CARD_GAP}px + ${DRAWER_WIDTH}px) + ${DRAWER_GAP}px`
       : `calc(${CARD_WIDTH}px + 40px)`
 
   return (
@@ -61,7 +64,7 @@ export function LayeredView(): ReactElement {
           {(activeSlide === ActiveSlide.Content ||
             activeSlide === ActiveSlide.Drawer) && <Content />}
           {activeSlide === ActiveSlide.Drawer && (
-            <Box sx={{ mr: 4 }}>
+            <Box sx={{ mr: `${DRAWER_GAP}px` }}>
               <Settings />
             </Box>
           )}
