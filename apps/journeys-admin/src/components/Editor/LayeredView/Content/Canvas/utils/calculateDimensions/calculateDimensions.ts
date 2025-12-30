@@ -11,6 +11,7 @@ export function calculateScale(ref: RefObject<HTMLDivElement | null>): number {
 
   const clientHeight =
     current.clientHeight / (CARD_HEIGHT + EDIT_TOOLBAR_HEIGHT)
+  console.log('clientHeight', current.clientHeight)
   return Math.min(clientHeight, 1)
 }
 

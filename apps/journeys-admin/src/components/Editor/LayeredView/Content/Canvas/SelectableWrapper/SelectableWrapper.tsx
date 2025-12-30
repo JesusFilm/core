@@ -3,7 +3,7 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { QuickControls } from '../QuickControls'
 
@@ -42,6 +42,10 @@ export function SelectableWrapper({
   // TODO: Test dispatch via E2E
   // please check RadioOptionBlock or MultiselectOptionBlock events are being propogated properly i.e - can be re-ordered
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Drawer
+    })
     // Allow container questions to be selected; options should select themselves for inline editing
     if (
       block.__typename === 'RadioQuestionBlock' ||

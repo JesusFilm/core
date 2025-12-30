@@ -12,6 +12,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { DrawerTitle } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
+import { DRAWER_WIDTH } from '../../../../constants'
 
 const Card = dynamic(
   async () =>
@@ -210,6 +211,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       elevation={0}
       sx={{
         height: '100%',
+        minWidth: DRAWER_WIDTH,
         borderRadius: 3,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,

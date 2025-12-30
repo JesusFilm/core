@@ -27,55 +27,64 @@ export function Content(): ReactElement {
   }
 
   return (
-    <TransitionGroup
-      component={Box}
+    // <TransitionGroup
+    //   component={Box}
+    //   sx={{
+    //     width: '100%',
+    //     height: '100%',
+    //     position: 'relative',
+    //     '& .journey-edit-content-component-enter': {
+    //       opacity: 0
+    //     },
+    //     '& .journey-edit-content-component-enter-active': {
+    //       opacity: 1
+    //     },
+    //     '& .journey-edit-content-component-enter-done': {
+    //       opacity: 1
+    //     },
+    //     '& .journey-edit-content-component-exit': {
+    //       opacity: 1
+    //     },
+    //     '& .journey-edit-content-component-exit-active': {
+    //       opacity: 0
+    //     }
+    //   }}
+    // >
+    // <CSSTransition
+    //   nodeRef={nodeRef}
+    //   key={activeContent}
+    //   timeout={600}
+    //   classNames="journey-edit-content-component"
+    // >
+    <Box
       sx={{
-        position: 'relative',
-        flexGrow: 1,
-        '& .journey-edit-content-component-enter': {
-          opacity: 0
-        },
-        '& .journey-edit-content-component-enter-active': {
-          opacity: 1
-        },
-        '& .journey-edit-content-component-enter-done': {
-          opacity: 1
-        },
-        '& .journey-edit-content-component-exit': {
-          opacity: 1
-        },
-        '& .journey-edit-content-component-exit-active': {
-          opacity: 0
-        }
+        width: '100%',
+        height: '100%',
+        position: 'relative'
       }}
     >
-      <CSSTransition
-        nodeRef={nodeRef}
-        key={activeContent}
-        timeout={600}
-        classNames="journey-edit-content-component"
+      <Box
+        ref={nodeRef}
+        data-testid="Content"
+        sx={{
+          // position: 'absolute',
+          // top: 0,
+          // right: 0,
+          // bottom: 0,
+          // left: 0,
+          userSelect: 'none',
+          display: 'flex',
+          justifyContent: 'space-between'
+          // transition: (theme) =>
+          //   `${theme.transitions.create('opacity', {
+          //     duration: 300
+          //   })}`
+        }}
       >
-        <Box
-          ref={nodeRef}
-          data-testid="Content"
-          sx={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0,
-            userSelect: 'none',
-            display: 'flex',
-            justifyContent: 'space-between',
-            transition: (theme) =>
-              `${theme.transitions.create('opacity', {
-                duration: 300
-              })}`
-          }}
-        >
-          {content}
-        </Box>
-      </CSSTransition>
-    </TransitionGroup>
+        {content}
+      </Box>
+    </Box>
+    // </CSSTransition>
+    // </TransitionGroup>
   )
 }

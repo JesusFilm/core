@@ -1,43 +1,37 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import { ReactElement, useState } from 'react'
+import Drawer from '@mui/material/Drawer'
+import { ReactElement } from 'react'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { JourneyFlow } from './JourneyFlow'
 import { Content } from './Content'
 import { Settings } from './Settings'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  CARD_HEIGHT,
+  CARD_WIDTH
+} from './Content/Canvas/utils/calculateDimensions'
+import { DRAWER_WIDTH } from '../constants'
+import Stack from '@mui/material/Stack'
 
 export function LayeredView(): ReactElement {
-  const [showItem1, setShowItem1] = useState(false)
-  const [showItem2, setShowItem2] = useState(false)
+  const {
+    state: { activeSlide },
+    dispatch
+  } = useEditor()
 
-  const handleMainBodyClick = () => {
-    if (!showItem1) {
-      setShowItem1(true)
-    }
+  const handleDrawerClose = () => {
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.JourneyFlow
+    })
   }
 
-  const handleItem1Click = () => {
-    if (!showItem2) {
-      setShowItem2(true)
-    }
-  }
-
-  const handleMainBodyClose = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    setShowItem1(false)
-    setShowItem2(false)
-  }
-
-  const handleItem1Close = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    setShowItem1(false)
-    setShowItem2(false)
-  }
-
-  const handleItem2Close = (event: React.MouseEvent) => {
-    event.stopPropagation()
-    setShowItem2(false)
-  }
+  const isDrawerOpen =
+    activeSlide === ActiveSlide.Content || activeSlide === ActiveSlide.Drawer
+  const drawerWidth =
+    activeSlide === ActiveSlide.Drawer
+      ? `calc(${CARD_WIDTH}px + 40px + ${DRAWER_WIDTH}px)`
+      : `calc(${CARD_WIDTH}px + 40px)`
 
   return (
     <Box
@@ -48,101 +42,27 @@ export function LayeredView(): ReactElement {
       }}
     >
       <JourneyFlow />
-      {/* <Box
-        data-testid="main body"
-        onClick={handleMainBodyClick}
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={handleDrawerClose}
+        data-testid="item 1"
         sx={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'red',
-          cursor: showItem1 ? 'default' : 'pointer',
-          position: 'relative'
+          '& .MuiDrawer-paper': {
+            height: `calc(${CARD_HEIGHT}px + 200px)`,
+            top: '50%',
+            transform: 'translateY(-50%) !important',
+            backgroundColor: 'transparent',
+            boxShadow: 'none'
+          }
         }}
       >
-        {showItem1 && (
-          <Button
-            onClick={handleMainBodyClose}
-            sx={{
-              position: 'absolute',
-              top: 8,
-              left: 8,
-              zIndex: 20,
-              minWidth: 'auto',
-              padding: '4px 8px'
-            }}
-          >
-            Close All
-          </Button>
-        )}
-      </Box> */}
-      <Content />
-      {/* {showItem1 && (
-        <Box
-          data-testid="item 1"
-          position="absolute"
-          top={0}
-          right={showItem2 ? '100px' : 0}
-          onClick={handleItem1Click}
-          sx={{
-            height: '100px',
-            width: '100px',
-            backgroundColor: 'blue',
-            zIndex: 10,
-            cursor: showItem2 ? 'default' : 'pointer',
-            transition: 'right 0.3s ease-in-out'
-          }}
-        >
-          <Button
-            onClick={handleItem1Close}
-            sx={{
-              position: 'absolute',
-              top: 4,
-              right: 4,
-              zIndex: 20,
-              minWidth: 'auto',
-              padding: '2px 4px',
-              fontSize: '10px'
-            }}
-          >
-            ×
-          </Button>
-        </Box>
-      )} */}
-      {showItem1 && (
-        <Settings />
-        // <Box
-        //   data-testid="item 2"
-        //   position="absolute"
-        //   top={0}
-        //   right={0}
-        //   sx={{
-        //     height: '100px',
-        //     width: '100px',
-        //     backgroundColor: 'green',
-        //     zIndex: 10,
-        //     transform: showItem2 ? 'translateX(0)' : 'translateX(100%)',
-        //     transition: 'transform 0.3s ease-in-out',
-        //     pointerEvents: showItem2 ? 'auto' : 'none'
-        //   }}
-        // >
-        //   {showItem2 && (
-        //     <Button
-        //       onClick={handleItem2Close}
-        //       sx={{
-        //         position: 'absolute',
-        //         top: 4,
-        //         right: 4,
-        //         zIndex: 20,
-        //         minWidth: 'auto',
-        //         padding: '2px 4px',
-        //         fontSize: '10px'
-        //       }}
-        //     >
-        //       ×
-        //     </Button>
-        //   )}
-        // </Box>
-      )}
+        <Stack direction="row" sx={{ width: drawerWidth, height: '100%' }}>
+          {(activeSlide === ActiveSlide.Content ||
+            activeSlide === ActiveSlide.Drawer) && <Content />}
+          {activeSlide === ActiveSlide.Drawer && <Settings />}
+        </Stack>
+      </Drawer>
     </Box>
   )
 }
