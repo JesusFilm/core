@@ -1,1 +1,0 @@
-export { clearPollingInterval } from './clearPollingInterval'
