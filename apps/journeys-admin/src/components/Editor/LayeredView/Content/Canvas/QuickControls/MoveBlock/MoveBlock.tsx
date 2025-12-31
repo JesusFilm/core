@@ -16,7 +16,7 @@ export function MoveBlock(): ReactElement {
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const {
     dispatch,
-    state: { selectedBlock, selectedStep }
+    state: { selectedBlock, selectedStep, activeSlide }
   } = useEditor()
   const { add } = useCommand()
 
@@ -39,7 +39,8 @@ export function MoveBlock(): ReactElement {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep,
-          selectedBlock
+          selectedBlock,
+          activeSlide
         })
         void blockOrderUpdate({
           variables: {

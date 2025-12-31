@@ -42,7 +42,7 @@ export function useBlockDeleteCommand(): {
 } {
   const { add } = useCommand()
   const {
-    state: { selectedStep, steps },
+    state: { selectedStep, steps, activeSlide },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -148,7 +148,7 @@ export function useBlockDeleteCommand(): {
                   : undefined,
               selectedStep,
               activeContent: ActiveContent.Canvas,
-              activeSlide: ActiveSlide.Content
+              activeSlide: activeSlide
             })
 
         void blockDelete(currentBlock, {

@@ -64,7 +64,7 @@ export function DuplicateBlock({
   }
 
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, activeSlide },
     dispatch
   } = useEditor()
   const { enqueueSnackbar } = useSnackbar()
@@ -104,7 +104,8 @@ export function DuplicateBlock({
       execute() {
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedBlockId: block.id
+          selectedBlockId: block.id,
+          activeSlide
         })
         void blockDuplicate({
           variables: {
