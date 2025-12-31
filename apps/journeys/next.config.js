@@ -9,6 +9,7 @@ const { i18n } = require('./next-i18next.config')
 const nextConfig = {
   nx: {},
   i18n,
+  typedRoutes: true,
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -32,10 +33,6 @@ const nextConfig = {
   typescript: {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
-  },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: ['journeys-ui'],
   outputFileTracingExcludes: {

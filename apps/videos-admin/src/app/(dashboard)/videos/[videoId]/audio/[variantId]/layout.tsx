@@ -19,7 +19,7 @@ import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { usePathname, useRouter } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import { object, string } from 'yup'
@@ -38,10 +38,10 @@ import { bytesToSize } from './download/_bytesToSize/bytesToSize'
 
 interface VariantDialogProps {
   children: ReactNode
-  params: {
+  params: Promise<{
     variantId: string
     videoId: string
-  }
+  }>
 }
 
 const GET_ADMIN_VIDEO_VARIANT = graphql(`
@@ -320,11 +320,11 @@ function VariantDialogContent({
   )
 }
 
-export default function VariantDialog({
+export default async function VariantDialog({
   children,
   params
-}: VariantDialogProps): ReactElement | null {
-  const { variantId, videoId } = params
+}: VariantDialogProps): Promise<ReactElement | null> {
+  const { variantId, videoId } = await params
   return (
     <VariantDialogContent variantId={variantId} videoId={videoId}>
       {children}

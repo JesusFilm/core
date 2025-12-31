@@ -402,6 +402,17 @@ export type CloudflareR2 = {
   userId: Scalars['ID']['output'];
 };
 
+export type CloudflareR2CompleteMultipartInput = {
+  /** Key of the multipart upload being completed */
+  fileName: Scalars['String']['input'];
+  /** CloudflareR2 id for the asset being uploaded */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** List of uploaded parts with their ETags */
+  parts: Array<CloudflareR2MultipartUploadedPartInput>;
+  /** Upload ID returned from create multipart upload */
+  uploadId: Scalars['String']['input'];
+};
+
 export type CloudflareR2CreateInput = {
   /** the size of the file that is being uploaded */
   contentLength: Scalars['BigInt']['input'];
@@ -414,6 +425,55 @@ export type CloudflareR2CreateInput = {
   originalFilename?: InputMaybe<Scalars['String']['input']>;
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
+};
+
+export type CloudflareR2MultipartPrepareInput = {
+  /** the size of the file that is being uploaded */
+  contentLength: Scalars['BigInt']['input'];
+  /** the type of file that is being uploaded. e.g. image or video/mp4 */
+  contentType: Scalars['String']['input'];
+  /** the name of the file that is being uploaded */
+  fileName: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
+  /** Optional preferred part size in bytes (minimum 5 MiB, capped to 10k parts) */
+  preferredPartSize?: InputMaybe<Scalars['Int']['input']>;
+  /** the id of the Video object this file relates to in the database */
+  videoId: Scalars['String']['input'];
+};
+
+/** Metadata returned when preparing a multipart upload for Cloudflare R2 */
+export type CloudflareR2MultipartPrepared = {
+  __typename?: 'CloudflareR2MultipartPrepared';
+  /** Object key for the multipart upload */
+  fileName?: Maybe<Scalars['String']['output']>;
+  /** CloudflareR2 record id */
+  id?: Maybe<Scalars['String']['output']>;
+  /** Part size in bytes */
+  partSize?: Maybe<Scalars['Int']['output']>;
+  /** Presigned URLs for each multipart part */
+  parts?: Maybe<Array<CloudflareR2MultipartPreparedPart>>;
+  /** Public URL for the completed asset */
+  publicUrl?: Maybe<Scalars['String']['output']>;
+  /** Upload ID for the multipart upload */
+  uploadId?: Maybe<Scalars['String']['output']>;
+};
+
+/** Presigned upload URL for a multipart part */
+export type CloudflareR2MultipartPreparedPart = {
+  __typename?: 'CloudflareR2MultipartPreparedPart';
+  /** 1-indexed part number */
+  partNumber?: Maybe<Scalars['Int']['output']>;
+  /** Presigned URL for the part */
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CloudflareR2MultipartUploadedPartInput = {
+  /** ETag returned after uploading the part */
+  eTag: Scalars['String']['input'];
+  /** 1-indexed part number for the multipart upload */
+  partNumber: Scalars['Int']['input'];
 };
 
 export enum ContactActionType {
@@ -1675,9 +1735,13 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  /** Complete a multipart upload and persist the asset record */
+  cloudflareR2CompleteMultipart: CloudflareR2;
   /** The endpoint to upload a file to Cloudflare R2 */
   cloudflareR2Create: CloudflareR2;
   cloudflareR2Delete: CloudflareR2;
+  /** Prepare a multipart upload for Cloudflare R2 and return presigned part URLs */
+  cloudflareR2MultipartPrepare: CloudflareR2MultipartPrepared;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -2029,6 +2093,11 @@ export type MutationChatOpenEventCreateArgs = {
 };
 
 
+export type MutationCloudflareR2CompleteMultipartArgs = {
+  input: CloudflareR2CompleteMultipartInput;
+};
+
+
 export type MutationCloudflareR2CreateArgs = {
   input: CloudflareR2CreateInput;
 };
@@ -2036,6 +2105,11 @@ export type MutationCloudflareR2CreateArgs = {
 
 export type MutationCloudflareR2DeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationCloudflareR2MultipartPrepareArgs = {
+  input: CloudflareR2MultipartPrepareInput;
 };
 
 

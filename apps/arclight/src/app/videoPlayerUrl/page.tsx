@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+
 import { graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../lib/apolloClient'
@@ -47,6 +49,18 @@ const GET_VIDEO_TITLE = graphql(`
   }
 `)
 
+type VideoPlayerUrlSearchParams = {
+  refId?: string
+  start?: string
+  end?: string
+  subon?: string
+  sublangids?: string
+}
+
+type VideoPlayerUrlPageProps = {
+  searchParams: Promise<VideoPlayerUrlSearchParams>
+}
+
 function handleSubtitles(
   subonRaw: string | null,
   sublangidsRaw: string | null
@@ -87,21 +101,10 @@ function handleSubtitles(
   return { activeSubLangId, acceptedSubLangIds }
 }
 
-export default async function Page(props: {
-  searchParams: Promise<{
-    refId?: string
-    start?: string
-    end?: string
-    subon?: string
-    sublangids?: string
-  }>
-}) {
+export default async function Page(props: VideoPlayerUrlPageProps) {
   const searchParams = await props.searchParams
   if (!searchParams.refId) {
-    return {
-      message: 'Missing refId parameter',
-      status: 404
-    }
+    notFound()
   }
 
   // Parse start and end times, ensuring they are valid numbers
@@ -112,24 +115,15 @@ export default async function Page(props: {
 
   // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    return {
-      message: 'Invalid start time parameter',
-      status: 400
-    }
+    return <p>Invalid start time parameter</p>
   }
 
   if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    return {
-      message: 'Invalid end time parameter',
-      status: 400
-    }
+    return <p>Invalid end time parameter</p>
   }
 
   if (startTime != null && endTime != null && endTime <= startTime) {
-    return {
-      message: 'End time must be greater than start time',
-      status: 400
-    }
+    return <p>End time must be greater than start time</p>
   }
 
   const { data } = await getApolloClient().query({
@@ -165,10 +159,7 @@ export default async function Page(props: {
     }))
 
   if (!hlsUrl) {
-    return {
-      message: 'No video URL found for ID: ' + searchParams.refId,
-      status: 404
-    }
+    notFound()
   }
 
   return (
