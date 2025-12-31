@@ -22,7 +22,7 @@ export function SocialPreview(): ReactElement {
   function handleSelect(): void {
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: ActiveSlide.Drawer
     })
   }
 
@@ -30,8 +30,9 @@ export function SocialPreview(): ReactElement {
     <>
       {mdUp ? (
         <Stack
-          height={736}
-          width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
+          height={342}
+          // width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
+          width="680px"
           data-testid="OuterStack"
           justifyContent="space-between"
           alignSelf="center"
@@ -43,32 +44,34 @@ export function SocialPreview(): ReactElement {
             data-testid="SocialPreview"
             height={682}
             width="100%"
+            // TODO: clicking outside should close the drawer, but the height from layered view is still too high. The height there is used to stretch the height of the JourneyFlow
+            gap={2}
+            sx={{
+              transform: 'translateY(50%)'
+            }}
           >
             <Stack
-              flexGrow={1}
+              width={300}
               alignItems="center"
               sx={{
                 cursor:
                   activeSlide === ActiveSlide.JourneyFlow
                     ? 'pointer'
                     : undefined,
-                flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
-                minWidth: 387,
                 transition: (theme) =>
-                  theme.transitions.create('flex-grow', { duration: 300 })
+                  theme.transitions.create('opacity', { duration: 300 })
               }}
             >
               <Post />
             </Stack>
             <Divider orientation="vertical" sx={{ height: 300 }} />
             <Stack
-              flexGrow={1}
+              width={387}
               alignItems="center"
               sx={{
-                flexGrow: 1,
-                opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
+                // opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
                 transition: (theme) =>
-                  theme.transitions.create(['flex-grow', 'opacity'], {
+                  theme.transitions.create('opacity', {
                     duration: 300
                   })
               }}

@@ -26,6 +26,7 @@ export function Post(): ReactElement {
       >
         <Typography
           variant="caption"
+          color="white"
           pb={4}
           textAlign="center"
           sx={{ fontSize: 16 }}

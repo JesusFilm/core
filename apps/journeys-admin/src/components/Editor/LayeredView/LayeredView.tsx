@@ -31,10 +31,12 @@ export function LayeredView(): ReactElement {
 
   const isDrawerOpen =
     activeSlide === ActiveSlide.Content || activeSlide === ActiveSlide.Drawer
-  const drawerWidth =
-    activeSlide === ActiveSlide.Drawer
-      ? `calc(${CARD_WIDTH}px + ${CARD_GAP}px + ${DRAWER_WIDTH}px) + ${DRAWER_GAP}px`
-      : `calc(${CARD_WIDTH}px + 40px)`
+  // const drawerWidth =
+  //   activeSlide === ActiveSlide.Drawer
+  //     ? `calc(${CARD_WIDTH}px + ${CARD_GAP}px + ${DRAWER_WIDTH}px) + ${DRAWER_GAP}px`
+  //     : `calc(${CARD_WIDTH}px + 40px)`
+
+  const drawerWidth = '100%'
 
   return (
     <Box

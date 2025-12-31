@@ -90,6 +90,7 @@ export function Message(): ReactElement {
       <Stack direction="column" justifyContent="start">
         <Typography
           variant="caption"
+          color="white"
           pb={4}
           textAlign="center"
           sx={{ fontSize: 16 }}
