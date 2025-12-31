@@ -21,6 +21,8 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
+    "**/*.d.ts",
+    "../../types/**/*.d.ts",
     "next-env.d.ts",
     "eslint.config.mjs"
   ],
