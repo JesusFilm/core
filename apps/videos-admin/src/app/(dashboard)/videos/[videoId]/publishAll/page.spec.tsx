@@ -74,7 +74,6 @@ describe('PublishAllChildrenDialog (route)', () => {
         }
       }
     })
-
     ;(useMutation as jest.Mock).mockReturnValueOnce([mockPublishChildren, {}])
     ;(useMutation as jest.Mock).mockReturnValue([
       mockPublishChildrenAndLanguages,
@@ -85,9 +84,7 @@ describe('PublishAllChildrenDialog (route)', () => {
   it('renders dialog with actions', () => {
     render(
       <MockedProvider>
-        <PublishAllChildrenDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
@@ -99,9 +96,7 @@ describe('PublishAllChildrenDialog (route)', () => {
   it('publishes parent and children when choosing Publish Children Only', async () => {
     render(
       <MockedProvider>
-        <PublishAllChildrenDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
@@ -124,9 +119,7 @@ describe('PublishAllChildrenDialog (route)', () => {
   it('publishes parent, children, and languages when choosing Publish Children + Languages', async () => {
     render(
       <MockedProvider>
-        <PublishAllChildrenDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
@@ -149,9 +142,7 @@ describe('PublishAllChildrenDialog (route)', () => {
   it('closes on Cancel', async () => {
     render(
       <MockedProvider>
-        <PublishAllChildrenDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 

@@ -52,9 +52,7 @@ describe('PublishAllAudioDialog (route)', () => {
   it('renders dialog and confirms', () => {
     render(
       <MockedProvider>
-        <PublishAllAudioDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllAudioDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
@@ -67,9 +65,7 @@ describe('PublishAllAudioDialog (route)', () => {
   it('publishes all draft variants on confirm', async () => {
     render(
       <MockedProvider>
-        <PublishAllAudioDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllAudioDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
@@ -95,9 +91,7 @@ describe('PublishAllAudioDialog (route)', () => {
   it('cancels and returns to audio tab', () => {
     render(
       <MockedProvider>
-        <PublishAllAudioDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllAudioDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
@@ -114,9 +108,7 @@ describe('PublishAllAudioDialog (route)', () => {
 
     render(
       <MockedProvider>
-        <PublishAllAudioDialog
-          params={{ videoId: 'video123' }}
-        />
+        <PublishAllAudioDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
