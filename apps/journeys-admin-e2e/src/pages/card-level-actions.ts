@@ -3,8 +3,8 @@
 /* eslint-disable playwright/no-wait-for-timeout */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import dayjs from 'dayjs'
 import type { Page } from '@playwright/test'
+import dayjs from 'dayjs'
 
 import testData from '../utils/testData.json'
 
