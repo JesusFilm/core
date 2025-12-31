@@ -63,6 +63,18 @@ describe('PublishAllChildrenDialog (route)', () => {
     })
 
     // Mutations: first for publishChildren, second for publishChildrenAndLanguages
+    mockPublishChildren.mockResolvedValue({
+      data: { videoPublishChildren: { publishedChildrenCount: 2 } }
+    })
+    mockPublishChildrenAndLanguages.mockResolvedValue({
+      data: {
+        videoPublishChildrenAndLanguages: {
+          publishedChildrenCount: 2,
+          publishedVariantsCount: 3
+        }
+      }
+    })
+
     ;(useMutation as jest.Mock).mockReturnValueOnce([mockPublishChildren, {}])
     ;(useMutation as jest.Mock).mockReturnValue([
       mockPublishChildrenAndLanguages,
@@ -74,7 +86,7 @@ describe('PublishAllChildrenDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllChildrenDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
@@ -88,7 +100,7 @@ describe('PublishAllChildrenDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllChildrenDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
@@ -113,7 +125,7 @@ describe('PublishAllChildrenDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllChildrenDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
@@ -138,7 +150,7 @@ describe('PublishAllChildrenDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllChildrenDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )

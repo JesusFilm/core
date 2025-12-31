@@ -53,7 +53,7 @@ describe('PublishAllAudioDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllAudioDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
@@ -68,7 +68,7 @@ describe('PublishAllAudioDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllAudioDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
@@ -96,7 +96,7 @@ describe('PublishAllAudioDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllAudioDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
@@ -115,7 +115,7 @@ describe('PublishAllAudioDialog (route)', () => {
     render(
       <MockedProvider>
         <PublishAllAudioDialog
-          params={Promise.resolve({ videoId: 'video123' })}
+          params={{ videoId: 'video123' }}
         />
       </MockedProvider>
     )
