@@ -5,6 +5,16 @@ export function getGoogleOAuthUrl(
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
   if (clientId == null) return undefined
 
+  const scopes = [
+    // OIDC
+    'openid',
+    'email',
+    // Drive access is limited to files the user selects/creates with our app
+    'https://www.googleapis.com/auth/drive.file',
+    // Needed for creating/updating spreadsheets for visitor sync
+    'https://www.googleapis.com/auth/spreadsheets'
+  ].join(' ')
+
   const origin =
     typeof window !== 'undefined' ? window.location.origin : undefined
   if (origin == null) return undefined
@@ -19,8 +29,7 @@ export function getGoogleOAuthUrl(
     client_id: clientId,
     redirect_uri: staticRedirectUri,
     response_type: 'code',
-    scope:
-      'openid email profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
+    scope: scopes,
     access_type: 'offline',
     include_granted_scopes: 'true',
     prompt: 'consent',

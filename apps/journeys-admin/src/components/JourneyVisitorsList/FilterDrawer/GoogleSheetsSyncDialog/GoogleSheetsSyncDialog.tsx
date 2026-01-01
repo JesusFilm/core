@@ -141,6 +141,30 @@ interface GoogleSheetsSyncDialogProps {
   journeyId: string
 }
 
+function parseGoogleSpreadsheetId(
+  input: string | undefined
+): string | undefined {
+  if (input == null) return
+  const trimmed = input.trim()
+  if (trimmed === '') return
+
+  // Common format: https://docs.google.com/spreadsheets/d/{spreadsheetId}/edit
+  const docsMatch = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/)
+  if (docsMatch?.[1] != null && docsMatch[1] !== '') return docsMatch[1]
+
+  // Drive "open" links: https://drive.google.com/open?id={fileId}
+  try {
+    const url = new URL(trimmed)
+    const idParam = url.searchParams.get('id')
+    if (idParam != null && idParam !== '') return idParam
+  } catch {
+    // Not a URL; treat as a raw ID below.
+  }
+
+  // Raw ID (best-effort): Drive file IDs are typically long and URL-safe.
+  if (/^[a-zA-Z0-9-_]{15,}$/.test(trimmed)) return trimmed
+}
+
 export function GoogleSheetsSyncDialog({
   open,
   onClose,
@@ -288,7 +312,8 @@ export function GoogleSheetsSyncDialog({
   async function handleOpenDrivePicker(
     mode: 'folder' | 'sheet',
     integrationId: string | undefined,
-    setFieldValue: (field: string, value: unknown) => void
+    setFieldValue: (field: string, value: unknown) => void,
+    preselectedFileId?: string
   ): Promise<void> {
     try {
       const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
@@ -331,7 +356,7 @@ export function GoogleSheetsSyncDialog({
               googleAny.picker.ViewId.FOLDERS
             ).setSelectFolderEnabled(true)
 
-      const picker = new googleAny.picker.PickerBuilder()
+      const pickerBuilder = new googleAny.picker.PickerBuilder()
         .setOAuthToken(oauthToken)
         .setDeveloperKey(apiKey)
         .addView(view)
@@ -357,7 +382,19 @@ export function GoogleSheetsSyncDialog({
             setPickerActive(false)
           }
         })
-        .build()
+
+      // Pre-navigate the picker to a specific file ID (introduced Jan 2025).
+      // We guard it to avoid breaking older picker versions.
+      if (
+        mode === 'sheet' &&
+        preselectedFileId != null &&
+        preselectedFileId !== '' &&
+        typeof pickerBuilder.setFileIds === 'function'
+      ) {
+        pickerBuilder.setFileIds([preselectedFileId])
+      }
+
+      const picker = pickerBuilder.build()
 
       picker.setVisible(true)
       elevatePickerZIndexWithRetries()
@@ -955,7 +992,8 @@ export function GoogleSheetsSyncDialog({
           folderId: undefined as string | undefined,
           folderName: undefined as string | undefined,
           existingSpreadsheetId: undefined as string | undefined,
-          existingSpreadsheetName: undefined as string | undefined
+          existingSpreadsheetName: undefined as string | undefined,
+          existingSpreadsheetLink: ''
         }}
         validationSchema={validationSchema}
         onSubmit={handleExportToSheets}
@@ -1253,35 +1291,60 @@ export function GoogleSheetsSyncDialog({
                           </Typography>
                         </Box>
                       ) : (
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          onClick={() =>
-                            handleOpenDrivePicker(
-                              'sheet',
-                              values.integrationId || undefined,
-                              setFieldValue
-                            )
-                          }
-                          sx={{
-                            fontSize: '15px',
-                            fontWeight: 600,
-                            lineHeight: '18px',
-                            justifyContent: 'flex-start',
-                            alignSelf: 'flex-start',
-                            px: '9px',
-                            py: '7px',
-                            borderWidth: 2,
-                            '&:hover': {
-                              borderWidth: 2
-                            }
-                          }}
-                        >
-                          {values.existingSpreadsheetId
-                            ? (values.existingSpreadsheetName ??
-                              values.existingSpreadsheetId)
-                            : t('Choose Spreadsheet')}
-                        </Button>
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => {
+                              const preselectedSpreadsheetId =
+                                parseGoogleSpreadsheetId(
+                                  values.existingSpreadsheetLink
+                                )
+                              void handleOpenDrivePicker(
+                                'sheet',
+                                values.integrationId || undefined,
+                                setFieldValue,
+                                preselectedSpreadsheetId
+                              )
+                            }}
+                            sx={{
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              lineHeight: '18px',
+                              justifyContent: 'flex-start',
+                              alignSelf: 'flex-start',
+                              px: '9px',
+                              py: '7px',
+                              borderWidth: 2,
+                              '&:hover': {
+                                borderWidth: 2
+                              }
+                            }}
+                          >
+                            {values.existingSpreadsheetId
+                              ? (values.existingSpreadsheetName ??
+                                values.existingSpreadsheetId)
+                              : t('Choose Spreadsheet')}
+                          </Button>
+                          <TextField
+                            name="existingSpreadsheetLink"
+                            value={values.existingSpreadsheetLink}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            label={t('Spreadsheet link (optional)')}
+                            placeholder={t(
+                              'Paste a Google Sheets link or spreadsheet ID'
+                            )}
+                            inputProps={{
+                              'aria-label': t('Spreadsheet link')
+                            }}
+                            fullWidth
+                            sx={{ mt: 2 }}
+                            helperText={t(
+                              'If provided, the picker will open directly to that spreadsheet.'
+                            )}
+                          />
+                        </Box>
                       )}
                       {values.googleMode === 'create' && (
                         <TextField
