@@ -55,7 +55,7 @@ describe('OnboardingTemplateCard', () => {
     createdAt: '2023-08-14T04:24:24.392Z',
     featuredAt: '2023-08-14T04:24:24.392Z',
     updatedAt: '2023-08-14T04:24:24.392Z'
-  }
+  } as unknown as Journey
 
   it('should render OnboardingTemplateCard', async () => {
     const result = jest.fn(() => ({ data: { journey } }))
