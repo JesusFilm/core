@@ -7,6 +7,9 @@ const { composePlugins, withNx } = require('@nx/next')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  // Enables Cache Components mode (Next.js 16+).
+  // See: https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents
+  cacheComponents: true,
   compiler: {
     emotion: true
   },

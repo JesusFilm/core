@@ -5,7 +5,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams, usePathname, useRouter } from 'next/navigation'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, Suspense, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import Plus2 from '@core/shared/ui/icons/Plus2'
@@ -33,6 +33,22 @@ const GET_EDITIONS = graphql(`
 `)
 
 export default function EditionsPage({ children }: EditionsPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <Section title="Editions">
+          <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
+            <Typography>Loading...</Typography>
+          </Box>
+        </Section>
+      }
+    >
+      <EditionsContent>{children}</EditionsContent>
+    </Suspense>
+  )
+}
+
+function EditionsContent({ children }: EditionsPageProps) {
   const router = useRouter()
   const { videoId } = useParams<{ videoId: string }>()
   const pathname = usePathname()
