@@ -317,7 +317,16 @@ export function AddVideoVariantDownloadDialogClient({
       validateOnChange={false}
       validateOnBlur
     >
-      {({ errors, touched, setFieldValue, handleChange, values, submitForm, isSubmitting, validateForm }) => (
+      {({
+        errors,
+        touched,
+        setFieldValue,
+        handleChange,
+        values,
+        submitForm,
+        isSubmitting,
+        validateForm
+      }) => (
         <Dialog
           open
           onClose={() => router.push(returnUrl, { scroll: false })}
@@ -411,5 +420,3 @@ export function AddVideoVariantDownloadDialogClient({
     </Formik>
   )
 }
-
-
