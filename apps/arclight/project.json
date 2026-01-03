@@ -29,7 +29,8 @@
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/arclight"
+        "outputPath": "dist/apps/arclight",
+        "webpack": true
       },
       "configurations": {
         "production": {}
