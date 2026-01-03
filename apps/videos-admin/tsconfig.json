@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "tsBuildInfoFile": "../../.cache/videos-admin/tsc/.tsbuildinfo",
     "strictNullChecks": true,
     "plugins": [
@@ -24,6 +26,8 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.jsx",
+    "**/*.d.ts",
+    "../../types/**/*.d.ts",
     "next-env.d.ts",
     "src/app/_ApolloProvider/ApolloProvider.tsx",
     "src/i18n.ts",
