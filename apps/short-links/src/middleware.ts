@@ -14,7 +14,7 @@ export const config = {
   ]
 }
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname
   const pathname = request.nextUrl.pathname
 
