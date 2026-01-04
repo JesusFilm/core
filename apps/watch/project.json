@@ -25,8 +25,7 @@
       "executor": "@nx/next:build",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/watch",
-        "webpack": true
+        "outputPath": "dist/apps/watch"
       },
       "configurations": {
         "production": {}

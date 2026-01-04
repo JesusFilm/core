@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import type { Page } from '@playwright/test'
+import { Page } from 'playwright-core'
 
 export class TopNav {
   readonly page: Page

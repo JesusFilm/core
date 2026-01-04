@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from '@storybook/test'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
@@ -48,6 +49,9 @@ export const AcceptedTerms = {
   ...Template,
   args: {
     ...Default.args
+  },
+  play: async () => {
+    await userEvent.click(screen.getByLabelText('I agree to the'))
   }
 }
 

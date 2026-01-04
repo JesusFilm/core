@@ -95,7 +95,7 @@ function handleRedirect(req: NextRequest, locale?: string): NextResponse {
   return response
 }
 
-export function proxy(req: NextRequest): NextResponse | undefined {
+export function middleware(req: NextRequest): NextResponse | undefined {
   if (
     req.nextUrl.pathname.startsWith('/_next') ||
     req.nextUrl.pathname.includes('/api/') ||

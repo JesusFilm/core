@@ -198,11 +198,7 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn()
   }),
-  usePathname: () => '/test-path',
-  useParams: () => ({
-    videoId: 'video-456',
-    variantId: 'variant-123'
-  })
+  usePathname: () => '/test-path'
 }))
 
 // Mock useSuspenseQuery
@@ -307,10 +303,7 @@ describe('VariantDialog', () => {
       <MockedProvider>
         <SnackbarProvider>
           <VariantDialog
-            params={Promise.resolve({
-              variantId: mockVariantId,
-              videoId: mockVideoId
-            })}
+            params={{ variantId: mockVariantId, videoId: mockVideoId }}
           >
             <div>Child content</div>
           </VariantDialog>

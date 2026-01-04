@@ -5,4 +5,8 @@ declare module '*.svg' {
   export const ReactComponent: any
   export default content
 }
-type DateTime = string
+export type DateTime = string
+
+declare global {
+  type DateTime = string
+}

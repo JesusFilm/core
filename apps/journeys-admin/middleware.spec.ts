@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 
-import { COOKIE_FINGERPRINT, proxy } from './proxy'
+import { COOKIE_FINGERPRINT, middleware } from './middleware'
 
 describe('middleware', () => {
   const url = 'http://localhost:4200/'
@@ -14,7 +14,7 @@ describe('middleware', () => {
         headers: new Headers({})
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(200)
@@ -31,7 +31,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
@@ -49,7 +49,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
@@ -67,7 +67,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBeUndefined()
       expect(result?.status).toBe(307) // checks for temporary redirect
@@ -89,7 +89,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
@@ -107,7 +107,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(
@@ -128,7 +128,7 @@ describe('middleware', () => {
         })
       })
       const req = new NextRequest(request, requestInit)
-      const result = await proxy(req)
+      const result = await middleware(req)
 
       expect(req.nextUrl.locale).toBe('en')
       expect(req.cookies.get('NEXT_LOCALE')?.value).toBe(

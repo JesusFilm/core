@@ -7,13 +7,15 @@ const { composePlugins, withNx } = require('@nx/next')
  **/
 const nextConfig = {
   nx: {},
-  typedRoutes: true,
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
   },
-  reactCompiler: true,
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: process.env.CI === 'true'
+  },
   outputFileTracingExcludes: {
     '*': [
       'node_modules/@swc/core-linux-x64-gnu',
@@ -22,7 +24,8 @@ const nextConfig = {
     ]
   },
   experimental: {
-    fallbackNodePolyfills: false
+    fallbackNodePolyfills: false,
+    reactCompiler: true
   }
 }
 

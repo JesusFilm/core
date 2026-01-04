@@ -83,10 +83,13 @@ const nextConfig = {
     ]
   },
   productionBrowserSourceMaps: true,
-  reactCompiler: true,
   typescript: {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: [
     'shared-ui',
@@ -102,6 +105,9 @@ const nextConfig = {
       'node_modules/@swc/core-linux-x64-musl',
       'node_modules/esbuild-linux-64/bin'
     ]
+  },
+  experimental: {
+    reactCompiler: true
   }
 }
 const plugins = [withNx]
