@@ -56,34 +56,47 @@ export function Goals(): ReactElement {
   console.log('hasGoals', hasGoals)
 
   return (
-    <Stack
-      width="670px"
-      direction="column"
-      data-testid="Goals"
-      sx={{
-        height: '100%',
-        mr: 5,
-        backgroundColor: 'white',
-        borderRadius: 3,
-        transform: hasGoals ? 'none' : 'translateY(50%)',
-        overflow: 'hidden'
-      }}
-    >
+    <>
       {journey != null &&
         (hasGoals ? (
           <Stack
+            width="670px"
             direction="column"
+            data-testid="Goals"
             sx={{
               height: '100%',
-              py: 6,
+              mr: 5,
+              backgroundColor: 'white',
+              borderRadius: 3,
               overflow: 'hidden'
             }}
           >
-            <GoalsList goals={goals} />
+            <Stack
+              direction="column"
+              sx={{
+                height: '100%',
+                py: 6,
+                overflow: 'hidden'
+              }}
+            >
+              <GoalsList goals={goals} />
+            </Stack>
           </Stack>
         ) : (
-          <GoalsBanner />
+          <Box
+            width="670px"
+            data-testid="Goals"
+            sx={{
+              mr: 5,
+              backgroundColor: 'white',
+              borderRadius: 3,
+              alignSelf: 'center',
+              py: 10
+            }}
+          >
+            <GoalsBanner />
+          </Box>
         ))}
-    </Stack>
+    </>
   )
 }
