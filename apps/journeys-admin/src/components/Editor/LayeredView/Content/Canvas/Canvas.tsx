@@ -126,6 +126,10 @@ export function Canvas(): ReactElement {
       selectedBlock: selectedStep
     })
     dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Drawer
+    })
+    dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
     })

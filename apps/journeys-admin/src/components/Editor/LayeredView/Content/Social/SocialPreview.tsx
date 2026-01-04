@@ -46,9 +46,6 @@ export function SocialPreview(): ReactElement {
             width="100%"
             // TODO: clicking outside should close the drawer, but the height from layered view is still too high. The height there is used to stretch the height of the JourneyFlow
             gap={2}
-            sx={{
-              transform: 'translateY(50%)'
-            }}
           >
             <Stack
               width={300}

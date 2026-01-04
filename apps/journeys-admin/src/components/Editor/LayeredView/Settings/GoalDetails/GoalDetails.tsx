@@ -55,11 +55,11 @@ export function GoalDetails(): ReactElement {
       borderColor="divider"
       data-testid="SettingsDrawer"
     >
-      {/* <DrawerTitle
+      <DrawerTitle
         data-testid="GoalDetails"
         title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
         onClose={onClose}
-      /> */}
+      />
       <Box
         sx={{ overflow: 'auto', height: '100%' }}
         data-testid="EditorActionDetails"
