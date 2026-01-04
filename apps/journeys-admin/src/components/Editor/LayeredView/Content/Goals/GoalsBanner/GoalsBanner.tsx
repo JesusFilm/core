@@ -50,15 +50,16 @@ export function GoalsBanner(): ReactElement {
       }}
       data-testid="ActionsBanner"
     >
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+      <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
         <Image
           src={goal}
           alt="goal"
           height={504}
           width={464}
           style={{
-            maxWidth: '100%',
-            height: 'auto'
+            maxWidth: '100%'
+            // height: '100%'
+            // height: 'auto'
           }}
         />
       </Box>

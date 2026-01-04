@@ -30,7 +30,7 @@ export function StrategyItem({
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: ActiveSlide.Drawer
     })
     closeMenu?.()
   }

@@ -67,18 +67,10 @@ export function Content(): ReactElement {
         ref={nodeRef}
         data-testid="Content"
         sx={{
-          // position: 'absolute',
-          // top: 0,
-          // right: 0,
-          // bottom: 0,
-          // left: 0,
           userSelect: 'none',
           display: 'flex',
-          justifyContent: 'space-between'
-          // transition: (theme) =>
-          //   `${theme.transitions.create('opacity', {
-          //     duration: 300
-          //   })}`
+          justifyContent: 'space-between',
+          height: '100%'
         }}
       >
         {content}

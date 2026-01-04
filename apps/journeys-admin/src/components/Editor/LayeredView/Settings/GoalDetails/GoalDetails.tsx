@@ -9,11 +9,13 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from '../Drawer'
+import { Drawer, DrawerTitle } from '../Drawer'
 
 import { ActionCards } from './ActionCards'
 import { ActionEditor } from './ActionEditor'
 import { ActionInformation } from './ActionInformation'
+import { DRAWER_WIDTH } from '../../../constants'
+import { Paper } from '@mui/material'
 
 export function GoalDetails(): ReactElement {
   const {
@@ -38,11 +40,26 @@ export function GoalDetails(): ReactElement {
   }
 
   return (
-    <Drawer
-      data-testid="GoalDetails"
-      title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
-      onClose={onClose}
+    <Stack
+      component={Paper}
+      elevation={0}
+      sx={{
+        height: '100%',
+        width: DRAWER_WIDTH,
+        borderRadius: 3,
+        // borderBottomLeftRadius: 0,
+        // borderBottomRightRadius: 0,
+        overflow: 'hidden'
+      }}
+      border={1}
+      borderColor="divider"
+      data-testid="SettingsDrawer"
     >
+      {/* <DrawerTitle
+        data-testid="GoalDetails"
+        title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
+        onClose={onClose}
+      /> */}
       <Box
         sx={{ overflow: 'auto', height: '100%' }}
         data-testid="EditorActionDetails"
@@ -59,6 +76,6 @@ export function GoalDetails(): ReactElement {
           <ActionInformation />
         )}
       </Box>
-    </Drawer>
+    </Stack>
   )
 }

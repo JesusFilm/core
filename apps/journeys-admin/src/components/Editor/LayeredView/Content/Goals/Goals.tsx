@@ -12,6 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GoalsBanner } from './GoalsBanner'
 import { GoalsList } from './GoalsList'
+import { Box } from '@mui/material'
 
 export interface Goal {
   url: string
@@ -51,20 +52,35 @@ export function Goals(): ReactElement {
       })
     return goals
   }, [journey?.blocks, dispatch, smUp])
+  const hasGoals = goals != null && goals.length > 0
+  console.log('hasGoals', hasGoals)
 
   return (
     <Stack
-      gap={2}
-      justifyContent={
-        goals != null && goals.length > 0 ? 'flex-start' : 'center'
-      }
-      py={6}
-      flexGrow={1}
+      width="670px"
+      direction="column"
       data-testid="Goals"
+      sx={{
+        height: '100%',
+        mr: 5,
+        backgroundColor: 'white',
+        borderRadius: 3,
+        transform: hasGoals ? 'none' : 'translateY(50%)',
+        overflow: 'hidden'
+      }}
     >
       {journey != null &&
-        (goals != null && goals.length > 0 ? (
-          <GoalsList goals={goals} />
+        (hasGoals ? (
+          <Stack
+            direction="column"
+            sx={{
+              height: '100%',
+              py: 6,
+              overflow: 'hidden'
+            }}
+          >
+            <GoalsList goals={goals} />
+          </Stack>
         ) : (
           <GoalsBanner />
         ))}
