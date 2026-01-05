@@ -32,11 +32,13 @@ import {
   getStepViewEventMock,
   imageBlock,
   journey,
+  mockMultiselectSubmissionEventCreate,
   mockStepNextEventCreate,
   mockTextResponse1SubmissionEventCreate,
   mockTextResponse2SubmissionEventCreate,
   mockTextResponseEmailSubmissionEventCreate,
   mockTextResponseSubmissionEventCreate,
+  multiselectBlock,
   step1,
   step2,
   step3,
@@ -273,6 +275,64 @@ describe('CardBlock', () => {
 
     await waitFor(() =>
       expect(mockTextResponseSubmissionEventCreate.result).toHaveBeenCalled()
+    )
+  })
+
+  it('should capture multiselect submission with plausible', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const multiselectCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [step1, multiselectBlock]
+    }
+
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    const { getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          mockMultiselectSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...multiselectCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('button', { name: 'Option 1' })
+      ).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Option 1' }))
+
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() =>
+      expect(mockMultiselectSubmissionEventCreate.result).toHaveBeenCalled()
+    )
+
+    await waitFor(() =>
+      expect(mockPlausible).toHaveBeenCalledWith(
+        'multiSelectSubmit',
+        expect.objectContaining({
+          u: expect.stringContaining(`${journey.id}/step1.id`),
+          props: expect.objectContaining({
+            blockId: 'multiselectBlockId',
+            values: ['Option 1'],
+            key: expect.any(String),
+            simpleKey: expect.any(String)
+          })
+        })
+      )
     )
   })
 

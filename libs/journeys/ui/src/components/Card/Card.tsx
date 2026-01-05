@@ -4,6 +4,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -13,6 +14,8 @@ import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
+import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
+import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -87,6 +90,7 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
+  const plausible = usePlausible<JourneyPlausibleEvents>()
 
   const [textResponseSubmissionEventCreate] =
     useMutation<TextResponseSubmissionEventCreate>(
@@ -239,15 +243,16 @@ export function Card({
               )
             : t('None')
         const id = uuidv4()
+        const input = {
+          id,
+          blockId,
+          stepId: activeBlock?.id,
+          label: heading,
+          values: valuesArray
+        }
         return multiselectSubmissionEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              stepId: activeBlock?.id,
-              label: heading,
-              values: valuesArray
-            }
+            input
           }
         }).then(() => {
           sendGTMEvent({
@@ -256,6 +261,24 @@ export function Card({
             blockId,
             stepName: heading
           })
+          if (journey != null) {
+            plausible('multiSelectSubmit', {
+              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+              props: {
+                ...input,
+                key: keyify({
+                  stepId: input.stepId ?? '',
+                  event: 'multiSelectSubmit',
+                  blockId: input.blockId
+                }),
+                simpleKey: keyify({
+                  stepId: input.stepId ?? '',
+                  event: 'multiSelectSubmit',
+                  blockId: input.blockId
+                })
+              }
+            })
+          }
           return id
         })
       })

@@ -17,6 +17,7 @@ import {
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',
   'buttonClick',
+  'multiSelectSubmit',
   'textResponseSubmit',
   'signupSubmit',
   'radioQuestionSubmit',

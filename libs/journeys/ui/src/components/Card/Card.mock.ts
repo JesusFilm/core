@@ -10,6 +10,8 @@ import {
 import { type TreeBlock } from '../../libs/block'
 import {
   BlockFields_CardBlock as CardBlock,
+  BlockFields_MultiselectBlock as MultiselectBlock,
+  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../libs/block/__generated__/BlockFields'
@@ -22,6 +24,7 @@ import { BUTTON_CLICK_EVENT_CREATE } from '../Button/Button'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
@@ -167,6 +170,34 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   integrationId: null,
   required: null,
   hideLabel: false
+}
+
+export const multiselectOption1: TreeBlock<MultiselectOptionBlock> = {
+  id: 'multiselectOption1.id',
+  __typename: 'MultiselectOptionBlock',
+  parentBlockId: 'multiselectBlockId',
+  parentOrder: 0,
+  label: 'Option 1',
+  children: []
+}
+
+export const multiselectOption2: TreeBlock<MultiselectOptionBlock> = {
+  id: 'multiselectOption2.id',
+  __typename: 'MultiselectOptionBlock',
+  parentBlockId: 'multiselectBlockId',
+  parentOrder: 1,
+  label: 'Option 2',
+  children: []
+}
+
+export const multiselectBlock: TreeBlock<MultiselectBlock> = {
+  id: 'multiselectBlockId',
+  __typename: 'MultiselectBlock',
+  parentBlockId: 'card1.id',
+  parentOrder: 1,
+  min: null,
+  max: null,
+  children: [multiselectOption1, multiselectOption2]
 }
 
 export const imageBlock: TreeBlock<ImageFields> = {
@@ -332,6 +363,28 @@ export const mockTextResponseSubmissionEventCreate = {
     data: {
       textResponseSubmissionEventCreate: {
         id: 'mocked-submission-id'
+      }
+    }
+  }))
+}
+
+export const mockMultiselectSubmissionEventCreate = {
+  request: {
+    query: MULTISELECT_SUBMISSION_EVENT_CREATE,
+    variables: {
+      input: {
+        id: 'uuid',
+        blockId: 'multiselectBlockId',
+        stepId: 'step1.id',
+        label: 'Step {{number}}',
+        values: ['Option 1']
+      }
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      multiselectSubmissionEventCreate: {
+        id: 'mocked-multiselect-submission-id'
       }
     }
   }))
