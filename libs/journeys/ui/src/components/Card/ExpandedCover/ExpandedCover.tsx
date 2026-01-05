@@ -55,10 +55,10 @@ export function ExpandedCover({
           loading="eager"
           placeholder="blur"
           blurDataURL={backgroundBlur}
-          layout="fill"
-          objectFit="cover"
-          objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+          fill
           sx={{
+            objectFit: 'cover',
+            objectPosition: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`,
             transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
             transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
           }}
