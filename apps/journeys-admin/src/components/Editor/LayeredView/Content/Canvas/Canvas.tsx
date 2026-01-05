@@ -90,7 +90,11 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetSelectedBlockOnlyAction',
-      selectedBlock: selectedStep
+      selectedBlock: undefined
+    })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Drawer
     })
     const param = 'step-footer'
     void router.push({ query: { ...router.query, param } }, undefined, {
