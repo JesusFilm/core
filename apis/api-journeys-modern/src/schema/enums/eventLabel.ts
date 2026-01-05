@@ -5,5 +5,3 @@ import { builder } from '../builder'
 export const BlockEventLabel = builder.enumType(PrismaEventLabel, {
   name: 'BlockEventLabel'
 })
-
-

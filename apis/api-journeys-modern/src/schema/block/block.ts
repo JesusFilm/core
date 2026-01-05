@@ -1,4 +1,5 @@
 import { builder } from '../builder'
+
 export const Block = builder.prismaInterface('Block', {
   name: 'Block',
   fields: (t) => ({
