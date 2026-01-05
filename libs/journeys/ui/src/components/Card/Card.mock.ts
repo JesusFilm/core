@@ -22,9 +22,9 @@ import {
 } from '../Button/__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE } from '../Button/Button'
 import { ImageFields } from '../Image/__generated__/ImageFields'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
-import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
