@@ -221,8 +221,8 @@ export const reducer = (
         selectedBlockId: action.selectedBlock?.id,
         selectedBlock: action.selectedBlock,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas,
-        activeSlide: ActiveSlide.Content
+        activeContent: ActiveContent.Canvas
+        // activeSlide: ActiveSlide.Content
       }
     case 'SetSelectedBlockOnlyAction':
       return {

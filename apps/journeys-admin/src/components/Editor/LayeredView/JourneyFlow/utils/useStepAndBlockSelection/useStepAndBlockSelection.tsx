@@ -1,4 +1,8 @@
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 export function useStepAndBlockSelection(): (stepId: string) => void {
   const {
@@ -19,6 +23,10 @@ export function useStepAndBlockSelection(): (stepId: string) => void {
         dispatch({
           type: 'SetSelectedBlockAction',
           selectedBlock: selectedStep
+        })
+        dispatch({
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Content
         })
         dispatch({
           type: 'SetSelectedAttributeIdAction',
