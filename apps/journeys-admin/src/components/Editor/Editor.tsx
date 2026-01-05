@@ -67,10 +67,11 @@ export function Editor({
             />
             <Hotkeys />
             <Toolbar user={user} />
-            <ToggleButton value={newFlow} onChange={() => setNewFlow(!newFlow)}>
+            {/* <ToggleButton value={newFlow} onChange={() => setNewFlow(!newFlow)}>
               {newFlow ? 'New Flow' : 'Old Flow'}
             </ToggleButton>
-            {newFlow ? <LayeredView /> : <Slider />}
+            {newFlow ? <LayeredView /> : <Slider />} */}
+            <LayeredView />
             <Fab variant="mobile" />
           </HotkeysProvider>
         </MuxVideoUploadProvider>
