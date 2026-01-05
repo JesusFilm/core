@@ -1,5 +1,4 @@
 import { builder } from '../../../builder'
-import { EventLabel } from '../../../enums'
 import { TypographyAlign } from '../enums/typographyAlign'
 import { TypographyColor } from '../enums/typographyColor'
 import { TypographyVariant } from '../enums/typographyVariant'
@@ -13,7 +12,6 @@ export const TypographyBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
-      eventLabel: t.field({ type: EventLabel, required: false }),
       content: t.string({ required: true }),
       variant: t.field({ type: TypographyVariant, required: false }),
       color: t.field({ type: TypographyColor, required: false }),

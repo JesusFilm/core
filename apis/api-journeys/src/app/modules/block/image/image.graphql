@@ -3,7 +3,6 @@ type ImageBlock implements Block @shareable {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  eventLabel: EventLabel @shareable
   src: String @shareable
   width: Int! @shareable
   height: Int! @shareable
@@ -25,7 +24,6 @@ input ImageBlockCreateInput {
   id: ID
   parentBlockId: ID
   journeyId: ID!
-  eventLabel: EventLabel
   src: String
   alt: String!
   """
@@ -46,7 +44,6 @@ input ImageBlockCreateInput {
 
 input ImageBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: EventLabel
   src: String
   alt: String
   """

@@ -3,7 +3,6 @@ type MultiselectBlock implements Block @shareable {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: EventLabel
   max: Int
   min: Int
 }

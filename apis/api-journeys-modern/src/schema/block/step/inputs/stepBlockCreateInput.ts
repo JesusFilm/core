@@ -1,11 +1,9 @@
 import { builder } from '../../../builder'
-import { EventLabel } from '../../../enums'
 
 export const StepBlockCreateInput = builder.inputType('StepBlockCreateInput', {
   fields: (t) => ({
     id: t.id({ required: false }),
     journeyId: t.id({ required: true }),
-    eventLabel: t.field({ type: EventLabel, required: false }),
     nextBlockId: t.id({ required: false }),
     locked: t.boolean({ required: false }),
     x: t.int({

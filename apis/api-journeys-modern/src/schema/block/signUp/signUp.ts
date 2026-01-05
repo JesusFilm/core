@@ -1,4 +1,5 @@
 import { builder } from '../../builder'
+import { BlockEventLabel } from '../../enums'
 import { Block } from '../block'
 
 export const SignUpBlock = builder.prismaObject('Block', {
@@ -7,6 +8,10 @@ export const SignUpBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'SignUpBlock',
   shareable: true,
   fields: (t) => ({
+    eventLabel: t.expose('eventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
     submitIconId: t.exposeID('submitIconId', {
       nullable: true
     }),

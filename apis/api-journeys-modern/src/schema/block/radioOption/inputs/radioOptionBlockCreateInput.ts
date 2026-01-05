@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { EventLabel } from '../../../enums'
+import { BlockEventLabel } from '../../../enums'
 
 export const RadioOptionBlockCreateInput = builder.inputType(
   'RadioOptionBlockCreateInput',
@@ -8,7 +8,7 @@ export const RadioOptionBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
-      eventLabel: t.field({ type: EventLabel, required: false }),
+      eventLabel: t.field({ type: BlockEventLabel, required: false }),
       label: t.string({ required: true })
     })
   }

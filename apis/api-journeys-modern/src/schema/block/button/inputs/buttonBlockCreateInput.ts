@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { EventLabel } from '../../../enums'
+import { BlockEventLabel } from '../../../enums'
 import { ButtonColor, ButtonSize, ButtonVariant } from '../enums'
 import { ButtonBlockSettingsInput } from '../inputs/buttonBlockSettingsInput'
 
@@ -10,7 +10,7 @@ export const ButtonBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
-      eventLabel: t.field({ type: EventLabel, required: false }),
+      eventLabel: t.field({ type: BlockEventLabel, required: false }),
       label: t.string({ required: true }),
       variant: t.field({ type: ButtonVariant, required: false }),
       color: t.field({ type: ButtonColor, required: false }),

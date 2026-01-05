@@ -38,7 +38,6 @@ type TypographyBlock implements Block @shareable {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  eventLabel: EventLabel @shareable
   content: String! @shareable
   variant: TypographyVariant @shareable
   color: TypographyColor @shareable
@@ -50,7 +49,6 @@ input TypographyBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: EventLabel
   content: String!
   variant: TypographyVariant
   color: TypographyColor
@@ -60,7 +58,6 @@ input TypographyBlockCreateInput {
 
 input TypographyBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: EventLabel
   content: String
   variant: TypographyVariant
   color: TypographyColor

@@ -3,10 +3,9 @@ interface Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: EventLabel
 }
 
-enum EventLabel {
+enum BlockEventLabel {
   custom1
   custom2
   custom3

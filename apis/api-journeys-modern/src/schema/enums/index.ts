@@ -1,3 +1,3 @@
 export { MessagePlatform } from './messagePlatform'
-export { EventLabel } from './eventLabel'
+export { BlockEventLabel } from './eventLabel'
 export { VideoBlockSource } from './videoBlockSource'

@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { EventLabel } from '../../../enums'
+import { BlockEventLabel } from '../../../enums'
 import { ThemeMode, ThemeName } from '../enums'
 
 export const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
@@ -7,7 +7,7 @@ export const CardBlockCreateInput = builder.inputType('CardBlockCreateInput', {
     id: t.id({ required: false }),
     journeyId: t.id({ required: true }),
     parentBlockId: t.id({ required: true }),
-    eventLabel: t.field({ type: EventLabel, required: false }),
+    eventLabel: t.field({ type: BlockEventLabel, required: false }),
     backgroundColor: t.string({
       required: false
     }),

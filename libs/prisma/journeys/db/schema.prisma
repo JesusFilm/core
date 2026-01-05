@@ -547,6 +547,7 @@ model Block {
   endIconId                  String?
   action                     Action?
   eventLabel                 EventLabel?
+  endEventLabel              EventLabel? // only used by video block
   backgroundColor            String?
   backdropBlur               Int?
   coverBlockId               String?              @unique
