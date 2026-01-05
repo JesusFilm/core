@@ -11,6 +11,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { OnConnect, useStore } from 'reactflow'
 
 import {
+  ActiveCanvasDetailsDrawer,
   ActiveContent,
   ActiveSlide,
   useEditor
@@ -48,26 +49,23 @@ export function SocialPreviewNode(): ReactElement {
   }, [showTooltip])
 
   function handleClick(): void {
-    if (activeContent !== ActiveContent.Social) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: undefined
-      })
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
-      })
-      dispatch({
-        type: 'SetActiveContentAction',
-        activeContent: ActiveContent.Social
-      })
-    } else {
-      dispatch({
-        type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
-      })
-    }
+    dispatch({
+      type: 'SetSelectedBlockAction',
+      selectedBlock: undefined
+    })
+    dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
+    dispatch({
+      type: 'SetActiveSlideAction',
+      activeSlide: ActiveSlide.Drawer
+    })
+    dispatch({
+      type: 'SetActiveContentAction',
+      activeContent: ActiveContent.Social
+    })
+    dispatch({
+      type: 'SetActiveCanvasDetailsDrawerAction',
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    })
   }
 
   async function handleSourceConnect(
