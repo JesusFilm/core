@@ -262,17 +262,19 @@ export function Card({
             stepName: heading
           })
           if (journey != null) {
+            const safeStepId = input.stepId ?? ''
             plausible('multiSelectSubmit', {
-              u: `${window.location.origin}/${journey.id}/${input.stepId}`,
+              u: `${window.location.origin}/${journey.id}/${safeStepId}`,
               props: {
                 ...input,
                 key: keyify({
-                  stepId: input.stepId ?? '',
+                  stepId: safeStepId,
                   event: 'multiSelectSubmit',
-                  blockId: input.blockId
+                  blockId: input.blockId,
+                  target: `values:${input.values.join('|')}`
                 }),
                 simpleKey: keyify({
-                  stepId: input.stepId ?? '',
+                  stepId: safeStepId,
                   event: 'multiSelectSubmit',
                   blockId: input.blockId
                 })
