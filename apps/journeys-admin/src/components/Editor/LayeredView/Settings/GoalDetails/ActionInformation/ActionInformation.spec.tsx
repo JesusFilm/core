@@ -1,0 +1,16 @@
+import { render } from '@testing-library/react'
+
+import { ActionInformation } from './ActionInformation'
+
+describe('ActionInformation', () => {
+  it('should render action information', () => {
+    const { getByText, getByTestId } = render(<ActionInformation />)
+    expect(getByText('What are Goals?')).toBeInTheDocument()
+    expect(getByText('Start a Chat')).toBeInTheDocument()
+    expect(getByText('Visit a Website')).toBeInTheDocument()
+    expect(getByText('Link to Bible')).toBeInTheDocument()
+    expect(getByTestId('MessageChat1Icon')).toBeInTheDocument()
+    expect(getByTestId('LinkAngledIcon')).toBeInTheDocument()
+    expect(getByTestId('BibleIcon')).toBeInTheDocument()
+  })
+})
