@@ -1,6 +1,7 @@
 type StepBlock implements Block @shareable {
   id: ID! @shareable
   journeyId: ID! @shareable
+  eventLabel: EventLabel @shareable
   """
   nextBlockId contains the preferred block to navigate to, users will have to
   manually set the next block they want to card to navigate to
@@ -36,6 +37,7 @@ type StepBlock implements Block @shareable {
 input StepBlockCreateInput {
   id: ID
   journeyId: ID!
+  eventLabel: EventLabel
   nextBlockId: ID
   locked: Boolean
   """
@@ -51,6 +53,7 @@ input StepBlockCreateInput {
 }
 
 input StepBlockUpdateInput {
+  eventLabel: EventLabel
   nextBlockId: ID
   locked: Boolean
   """

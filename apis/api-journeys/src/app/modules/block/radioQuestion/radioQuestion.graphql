@@ -3,6 +3,7 @@ type RadioQuestionBlock implements Block @shareable {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: EventLabel @shareable
   gridView: Boolean @shareable
 }
 
@@ -10,6 +11,7 @@ input RadioQuestionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: EventLabel
 }
 
 extend type Mutation {
@@ -19,6 +21,7 @@ extend type Mutation {
   radioQuestionBlockUpdate(
     id: ID!
     parentBlockId: ID!
+    eventLabel: EventLabel
     gridView: Boolean
   ): RadioQuestionBlock!
 }

@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { EventLabel } from '../../../enums'
 
 export const VideoTriggerBlockCreateInput = builder.inputType(
   'VideoTriggerBlockCreateInput',
@@ -7,6 +8,7 @@ export const VideoTriggerBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
+      eventLabel: t.field({ type: EventLabel, required: false }),
       triggerStart: t.int({
         required: false,
         description:

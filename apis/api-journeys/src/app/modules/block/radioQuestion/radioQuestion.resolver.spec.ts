@@ -119,10 +119,12 @@ describe('RadioQuestionBlockResolver', () => {
         ability,
         'blockId',
         'parentBlockId',
+        undefined,
         false
       )
       expect(service.update).toHaveBeenCalledWith('blockId', {
         parentBlockId: 'parentBlockId',
+        eventLabel: undefined,
         gridView: false
       })
     })
@@ -134,6 +136,7 @@ describe('RadioQuestionBlockResolver', () => {
           ability,
           'blockId',
           'parentBlockId',
+          undefined,
           false
         )
       ).rejects.toThrow('block not found')
@@ -146,6 +149,7 @@ describe('RadioQuestionBlockResolver', () => {
           ability,
           'blockId',
           'parentBlockId',
+          undefined,
           false
         )
       ).rejects.toThrow('user is not allowed to update block')

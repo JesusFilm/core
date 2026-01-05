@@ -3,6 +3,22 @@ interface Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: EventLabel
+}
+
+enum EventLabel {
+  custom1
+  custom2
+  custom3
+  decisionForChrist
+  gospelPresentationStart
+  gospelPresentationComplete
+  inviteFriend
+  prayerRequest
+  rsvp
+  share
+  videoStart
+  videoComplete
 }
 
 extend type Journey {

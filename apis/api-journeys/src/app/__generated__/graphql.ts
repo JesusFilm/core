@@ -22,6 +22,21 @@ export enum ContactActionType {
     text = "text"
 }
 
+export enum EventLabel {
+    custom1 = "custom1",
+    custom2 = "custom2",
+    custom3 = "custom3",
+    decisionForChrist = "decisionForChrist",
+    gospelPresentationStart = "gospelPresentationStart",
+    gospelPresentationComplete = "gospelPresentationComplete",
+    inviteFriend = "inviteFriend",
+    prayerRequest = "prayerRequest",
+    rsvp = "rsvp",
+    share = "share",
+    videoStart = "videoStart",
+    videoComplete = "videoComplete"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -297,6 +312,7 @@ export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -307,6 +323,7 @@ export class ButtonBlockCreateInput {
 
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     label?: Nullable<string>;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -321,6 +338,7 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
@@ -330,6 +348,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
@@ -342,12 +361,14 @@ export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
     journeyId: string;
+    eventLabel?: Nullable<EventLabel>;
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
 }
 
 export class IconBlockUpdateInput {
+    eventLabel?: Nullable<EventLabel>;
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
@@ -357,6 +378,7 @@ export class ImageBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId?: Nullable<string>;
     journeyId: string;
+    eventLabel?: Nullable<EventLabel>;
     src?: Nullable<string>;
     alt: string;
     blurhash?: Nullable<string>;
@@ -370,6 +392,7 @@ export class ImageBlockCreateInput {
 
 export class ImageBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     src?: Nullable<string>;
     alt?: Nullable<string>;
     blurhash?: Nullable<string>;
@@ -384,11 +407,13 @@ export class RadioOptionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
 }
 
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     label?: Nullable<string>;
     pollOptionImageBlockId?: Nullable<string>;
 }
@@ -397,17 +422,20 @@ export class RadioQuestionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
 }
 
 export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     submitLabel: string;
 }
 
 export class SignUpBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
@@ -416,17 +444,20 @@ export class SpacerBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     spacing?: Nullable<number>;
 }
 
 export class SpacerBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     spacing?: Nullable<number>;
 }
 
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
+    eventLabel?: Nullable<EventLabel>;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     x?: Nullable<number>;
@@ -434,6 +465,7 @@ export class StepBlockCreateInput {
 }
 
 export class StepBlockUpdateInput {
+    eventLabel?: Nullable<EventLabel>;
     nextBlockId?: Nullable<string>;
     locked?: Nullable<boolean>;
     x?: Nullable<number>;
@@ -451,11 +483,13 @@ export class TextResponseBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
 }
 
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     label?: Nullable<string>;
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
@@ -475,6 +509,7 @@ export class TypographyBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<EventLabel>;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -484,6 +519,7 @@ export class TypographyBlockCreateInput {
 
 export class TypographyBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<EventLabel>;
     content?: Nullable<string>;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -854,6 +890,7 @@ export interface Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
 }
 
 export interface Event {
@@ -1078,7 +1115,7 @@ export abstract class IMutation {
 
     abstract radioQuestionBlockCreate(input: RadioQuestionBlockCreateInput): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
-    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, gridView?: Nullable<boolean>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
+    abstract radioQuestionBlockUpdate(id: string, parentBlockId: string, eventLabel?: Nullable<EventLabel>, gridView?: Nullable<boolean>): RadioQuestionBlock | Promise<RadioQuestionBlock>;
 
     abstract signUpBlockCreate(input: SignUpBlockCreateInput): SignUpBlock | Promise<SignUpBlock>;
 
@@ -1253,6 +1290,7 @@ export class ButtonBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -1270,6 +1308,7 @@ export class CardBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
@@ -1284,6 +1323,7 @@ export class GridContainerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     gap: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
@@ -1296,6 +1336,7 @@ export class GridItemBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     xl: number;
     lg: number;
     sm: number;
@@ -1307,6 +1348,7 @@ export class IconBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
@@ -1318,6 +1360,7 @@ export class ImageBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     src?: Nullable<string>;
     width: number;
     height: number;
@@ -1334,6 +1377,7 @@ export class MultiselectBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     max?: Nullable<number>;
     min?: Nullable<number>;
 }
@@ -1344,6 +1388,7 @@ export class MultiselectOptionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
 }
 
@@ -1353,6 +1398,7 @@ export class RadioOptionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
     action?: Nullable<Action>;
     pollOptionImageBlockId?: Nullable<string>;
@@ -1364,6 +1410,7 @@ export class RadioQuestionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     gridView?: Nullable<boolean>;
 }
 
@@ -1373,6 +1420,7 @@ export class SignUpBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
@@ -1384,6 +1432,7 @@ export class SpacerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     spacing?: Nullable<number>;
 }
 
@@ -1391,6 +1440,7 @@ export class StepBlock implements Block {
     __typename?: 'StepBlock';
     id: string;
     journeyId: string;
+    eventLabel?: Nullable<EventLabel>;
     nextBlockId?: Nullable<string>;
     locked: boolean;
     parentBlockId?: Nullable<string>;
@@ -1406,6 +1456,7 @@ export class TextResponseBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     label: string;
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
@@ -1428,6 +1479,7 @@ export class TypographyBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     content: string;
     variant?: Nullable<TypographyVariant>;
     color?: Nullable<TypographyColor>;
@@ -1441,6 +1493,7 @@ export class VideoBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
     muted?: Nullable<boolean>;
@@ -1467,6 +1520,7 @@ export class VideoTriggerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<EventLabel>;
     triggerStart: number;
     action: Action;
 }

@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { EventLabel } from '../../../enums'
 import { TypographyAlign } from '../enums/typographyAlign'
 import { TypographyColor } from '../enums/typographyColor'
 import { TypographyVariant } from '../enums/typographyVariant'
@@ -10,6 +11,7 @@ export const TypographyBlockUpdateInput = builder.inputType(
   {
     fields: (t) => ({
       parentBlockId: t.id({ required: false }),
+      eventLabel: t.field({ type: EventLabel, required: false }),
       content: t.string({ required: false }),
       variant: t.field({ type: TypographyVariant, required: false }),
       color: t.field({ type: TypographyColor, required: false }),

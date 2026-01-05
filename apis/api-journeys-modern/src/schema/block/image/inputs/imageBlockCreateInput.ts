@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { EventLabel } from '../../../enums'
 
 export const ImageBlockCreateInput = builder.inputType(
   'ImageBlockCreateInput',
@@ -11,6 +12,7 @@ export const ImageBlockCreateInput = builder.inputType(
       }),
       parentBlockId: t.id({ required: false }),
       journeyId: t.id({ required: true }),
+      eventLabel: t.field({ type: EventLabel, required: false }),
       src: t.string({ required: false }),
       alt: t.string({ required: true }),
       blurhash: t.string({

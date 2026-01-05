@@ -1,4 +1,5 @@
 import { builder } from '../builder'
+import { EventLabel } from '../enums'
 
 export const Block = builder.prismaInterface('Block', {
   name: 'Block',
@@ -11,6 +12,10 @@ export const Block = builder.prismaInterface('Block', {
       nullable: true
     }),
     parentOrder: t.exposeInt('parentOrder', {
+      nullable: true
+    }),
+    eventLabel: t.expose('eventLabel', {
+      type: EventLabel,
       nullable: true
     })
   }),

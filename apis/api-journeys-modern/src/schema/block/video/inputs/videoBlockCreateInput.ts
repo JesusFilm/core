@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { VideoBlockSource } from '../../../enums'
+import { EventLabel, VideoBlockSource } from '../../../enums'
 import { VideoBlockObjectFit } from '../enums/videoObjectFit'
 
 export const VideoBlockCreateInput = builder.inputType(
@@ -9,6 +9,7 @@ export const VideoBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
+      eventLabel: t.field({ type: EventLabel, required: false }),
       videoId: t.id({ required: false }),
       videoVariantLanguageId: t.id({ required: false }),
       source: t.field({ type: VideoBlockSource, required: false }),

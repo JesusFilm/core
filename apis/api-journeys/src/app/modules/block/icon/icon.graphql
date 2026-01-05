@@ -45,6 +45,7 @@ type IconBlock implements Block @shareable {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: EventLabel @shareable
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
@@ -57,12 +58,14 @@ input IconBlockCreateInput {
   id: ID
   parentBlockId: ID!
   journeyId: ID!
+  eventLabel: EventLabel
   name: IconName
   color: IconColor
   size: IconSize
 }
 
 input IconBlockUpdateInput {
+  eventLabel: EventLabel
   name: IconName
   color: IconColor
   size: IconSize

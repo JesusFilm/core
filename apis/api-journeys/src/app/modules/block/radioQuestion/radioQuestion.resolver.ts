@@ -7,7 +7,10 @@ import omit from 'lodash/omit'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { Block } from '@core/prisma/journeys/client'
 
-import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
+import {
+  EventLabel,
+  RadioQuestionBlockCreateInput
+} from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
@@ -59,6 +62,7 @@ export class RadioQuestionBlockResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @Args('parentBlockId') parentBlockId: string,
+    @Args('eventLabel') eventLabel?: EventLabel,
     @Args('gridView') gridView?: boolean
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
@@ -81,6 +85,10 @@ export class RadioQuestionBlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.update(id, { parentBlockId, gridView })
+    return await this.blockService.update(id, {
+      parentBlockId,
+      eventLabel,
+      gridView
+    })
   }
 }

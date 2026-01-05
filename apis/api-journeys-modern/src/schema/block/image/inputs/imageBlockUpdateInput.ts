@@ -1,10 +1,12 @@
 import { builder } from '../../../builder'
+import { EventLabel } from '../../../enums'
 
 export const ImageBlockUpdateInput = builder.inputType(
   'ImageBlockUpdateInput',
   {
     fields: (t) => ({
       parentBlockId: t.id({ required: false }),
+      eventLabel: t.field({ type: EventLabel, required: false }),
       src: t.string({ required: false }),
       alt: t.string({ required: false }),
       blurhash: t.string({

@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { EventLabel } from '../../../enums'
 import { TextResponseType } from '../enums/textResponseType'
 
 export const TextResponseBlockUpdateInput = builder.inputType(
@@ -6,6 +7,7 @@ export const TextResponseBlockUpdateInput = builder.inputType(
   {
     fields: (t) => ({
       parentBlockId: t.id({ required: false }),
+      eventLabel: t.field({ type: EventLabel, required: false }),
       label: t.string({ required: false }),
       placeholder: t.string({ required: false }),
       required: t.boolean({ required: false }),

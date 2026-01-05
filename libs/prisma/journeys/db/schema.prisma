@@ -516,6 +516,21 @@ enum VideoBlockObjectFit {
   zoomed
 }
 
+enum EventLabel {
+  custom1
+  custom2
+  custom3
+  decisionForChrist
+  gospelPresentationStart
+  gospelPresentationComplete
+  inviteFriend
+  prayerRequest
+  rsvp
+  share
+  videoStart
+  videoComplete
+}
+
 model Block {
   id                         String               @id @default(uuid())
   typename                   String
@@ -531,6 +546,7 @@ model Block {
   startIconId                String?
   endIconId                  String?
   action                     Action?
+  eventLabel                 EventLabel?
   backgroundColor            String?
   backdropBlur               Int?
   coverBlockId               String?              @unique
