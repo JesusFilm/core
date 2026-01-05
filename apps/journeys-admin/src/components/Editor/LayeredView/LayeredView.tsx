@@ -62,14 +62,23 @@ export function LayeredView(): ReactElement {
           }
         }}
       >
-        <Stack direction="row" sx={{ width: drawerWidth, height: '100%' }}>
-          {(activeSlide === ActiveSlide.Content ||
-            activeSlide === ActiveSlide.Drawer) && <Content />}
-          {activeSlide === ActiveSlide.Drawer && (
-            <Box sx={{ mr: `${DRAWER_GAP}px` }}>
-              <Settings />
-            </Box>
-          )}
+        <Stack
+          direction="row"
+          sx={{
+            width: drawerWidth,
+            height: '100%',
+            transform:
+              activeSlide === ActiveSlide.Drawer
+                ? 'translateX(0)'
+                : `translateX(calc(${DRAWER_WIDTH}px + ${DRAWER_GAP}px))`,
+            opacity: isDrawerOpen ? 1 : 0,
+            transition: 'transform 200ms ease-in-out, opacity 500ms ease-in-out'
+          }}
+        >
+          <Content />
+          <Box sx={{ mr: `${DRAWER_GAP}px`, width: DRAWER_WIDTH }}>
+            <Settings />
+          </Box>
         </Stack>
       </Drawer>
     </Box>
