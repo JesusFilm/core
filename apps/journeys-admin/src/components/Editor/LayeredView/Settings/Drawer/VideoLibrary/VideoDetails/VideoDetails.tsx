@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -17,7 +18,8 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import { Drawer } from '../../Drawer'
+import { DRAWER_WIDTH } from '../../../../../constants'
+import { DrawerTitle } from '../../Drawer'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { MuxDetails } from '../VideoFromMux/MuxDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
@@ -110,61 +112,89 @@ export function VideoDetails({
   }
 
   return (
-    <Drawer
-      title={t('Video Details')}
-      open={open}
-      onClose={() => {
-        onClose(true)
-      }}
-    >
-      <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
-        {activeVideoBlock != null && (
-          <Stack
-            direction="row"
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              px: 6,
-              pt: 4
-            }}
-          >
-            <Button
-              startIcon={<Grid1Icon />}
-              size="small"
-              onClick={() => onClose(false)}
-            >
-              {t('Change Video')}
-            </Button>
-            <IconButton
-              onClick={handleClearVideo}
-              size="small"
-              aria-label="clear-video"
-            >
-              <Trash2Icon />
-            </IconButton>
-          </Stack>
-        )}
-        <Box
+    <>
+      {open && (
+        <Stack
+          component={Paper}
+          elevation={0}
           sx={{
-            flexGrow: 1,
-            overflow: 'auto',
-            mt: activeVideoBlock != null ? -6 : 0
+            position: 'fixed',
+            top: 0,
+            right: 16,
+            bottom: 0,
+            width: DRAWER_WIDTH,
+            borderRadius: 3,
+            overflow: 'hidden',
+            backgroundColor: 'background.paper',
+            zIndex: (theme) => theme.zIndex.drawer + 1
           }}
+          border={1}
+          borderColor="divider"
+          data-testid="SettingsDrawer"
         >
-          {/* render conditional to unmount details content if not open */}
-          {open && (
-            <Details
-              data-testid="DetailsContent"
-              key={activeVideoBlock?.videoId}
-              id={id}
-              open={open}
-              onSelect={handleSelect}
-              activeVideoBlock={activeVideoBlock}
-            />
-          )}
-        </Box>
-      </Stack>
-    </Drawer>
+          <DrawerTitle
+            title={t('Video Details')}
+            onClose={() => {
+              onClose(true)
+            }}
+          />
+          <Stack
+            data-testid="SettingsDrawerContent"
+            className="swiper-no-swiping"
+            flexGrow={1}
+            sx={{ overflow: 'auto', mb: { md: 4 } }}
+          >
+            <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
+              {activeVideoBlock != null && (
+                <Stack
+                  direction="row"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    px: 6,
+                    pt: 4
+                  }}
+                >
+                  <Button
+                    startIcon={<Grid1Icon />}
+                    size="small"
+                    onClick={() => onClose(false)}
+                  >
+                    {t('Change Video')}
+                  </Button>
+                  <IconButton
+                    onClick={handleClearVideo}
+                    size="small"
+                    aria-label="clear-video"
+                  >
+                    <Trash2Icon />
+                  </IconButton>
+                </Stack>
+              )}
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  overflow: 'auto',
+                  mt: activeVideoBlock != null ? -6 : 0
+                }}
+              >
+                {/* render conditional to unmount details content if not open */}
+                {open && (
+                  <Details
+                    data-testid="DetailsContent"
+                    key={activeVideoBlock?.videoId}
+                    id={id}
+                    open={open}
+                    onSelect={handleSelect}
+                    activeVideoBlock={activeVideoBlock}
+                  />
+                )}
+              </Box>
+            </Stack>
+          </Stack>
+        </Stack>
+      )}
+    </>
   )
 }
 

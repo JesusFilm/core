@@ -1,3 +1,5 @@
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
@@ -5,7 +7,8 @@ import { ReactElement, ReactNode } from 'react'
 
 import { Dialog as SharedUiDialog } from '@core/shared/ui/Dialog'
 
-import { Drawer } from '..'
+import { DrawerTitle } from '..'
+import { DRAWER_WIDTH } from '../../../../constants'
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { ImageBlockEditor } from '../ImageBlockEditor'
@@ -75,9 +78,38 @@ export function ImageLibrary({
   )
 
   return variant === 'drawer' ? (
-    <Drawer title={t('Image')} open={open} onClose={onClose}>
-      {children}
-    </Drawer>
+    <>
+      {open && (
+        <Stack
+          component={Paper}
+          elevation={0}
+          sx={{
+            position: 'fixed',
+            top: 0,
+            right: 16,
+            bottom: 0,
+            width: DRAWER_WIDTH,
+            borderRadius: 3,
+            overflow: 'hidden',
+            backgroundColor: 'background.paper',
+            zIndex: (theme) => theme.zIndex.drawer + 1
+          }}
+          border={1}
+          borderColor="divider"
+          data-testid="SettingsDrawer"
+        >
+          <DrawerTitle title={t('Image')} onClose={onClose} />
+          <Stack
+            data-testid="SettingsDrawerContent"
+            className="swiper-no-swiping"
+            flexGrow={1}
+            sx={{ overflow: 'auto', mb: { md: 4 } }}
+          >
+            {children}
+          </Stack>
+        </Stack>
+      )}
+    </>
   ) : (
     <Dialog open={open} onClose={onClose}>
       {children}
