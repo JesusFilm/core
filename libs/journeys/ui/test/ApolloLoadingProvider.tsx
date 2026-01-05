@@ -1,10 +1,10 @@
 import {
   ApolloClient,
   ApolloLink,
-  ApolloProvider,
   InMemoryCache,
   Observable
 } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import noop from 'lodash/noop'
 import { ReactElement, ReactNode } from 'react'
 

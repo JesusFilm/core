@@ -70,9 +70,7 @@ describe('initAndAuthApp', () => {
 
     // mock ApolloClient
     apolloClient = { mutate: jest.fn() }
-    createApolloClientMock.mockReturnValueOnce(
-      apolloClient as ApolloClient<NormalizedCacheObject>
-    )
+    createApolloClientMock.mockReturnValueOnce(apolloClient as ApolloClient)
 
     // mock checkConditionalRedirect
     checkConditionalRedirectMock.mockResolvedValueOnce({

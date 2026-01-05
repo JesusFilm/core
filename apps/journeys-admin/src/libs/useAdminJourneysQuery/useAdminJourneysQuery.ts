@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   GetAdminJourneys,
@@ -79,7 +80,7 @@ export const GET_ADMIN_JOURNEYS = gql`
 
 export function useAdminJourneysQuery(
   variables?: GetAdminJourneysVariables
-): QueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
+): useQuery.Result<GetAdminJourneys, GetAdminJourneysVariables> {
   const query = useQuery<GetAdminJourneys, GetAdminJourneysVariables>(
     GET_ADMIN_JOURNEYS,
     {

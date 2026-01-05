@@ -1,5 +1,6 @@
-import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -110,6 +111,7 @@ describe('VideoImageAlt', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
   })
@@ -166,6 +168,7 @@ describe('VideoImageAlt', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
 

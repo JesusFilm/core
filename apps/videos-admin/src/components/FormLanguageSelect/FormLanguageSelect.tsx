@@ -37,10 +37,10 @@ export function FormLanguageSelect({
 
   const filteredLanguages = useMemo(() => {
     if (!data?.languages || !existingLanguageIds) {
-      return data?.languages
+      return (data?.languages as any)
     }
 
-    return data.languages.filter((language) => {
+    return (data.languages as any[]).filter((language) => {
       // Always include the parent object's language (which is the initial language)
       if (
         parentObjectId &&
@@ -59,7 +59,7 @@ export function FormLanguageSelect({
       value={selectedLanguage}
       onChange={handleChange}
       loading={loading}
-      languages={filteredLanguages}
+      languages={filteredLanguages as any}
       renderInput={(params) => (
         <TextField
           {...params}

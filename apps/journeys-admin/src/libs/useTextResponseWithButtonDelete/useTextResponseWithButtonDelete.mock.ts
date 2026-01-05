@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   TextResponseWithButtonDelete,
@@ -7,7 +7,7 @@ import {
 
 import { TEXT_RESPONSE_WITH_BUTTON_DELETE } from './useTextResponseWithButtonDelete'
 
-export const textResponseWithButtonDeleteMock: MockedResponse<
+export const textResponseWithButtonDeleteMock: MockLink.MockedResponse<
   TextResponseWithButtonDelete,
   TextResponseWithButtonDeleteVariables
 > = {

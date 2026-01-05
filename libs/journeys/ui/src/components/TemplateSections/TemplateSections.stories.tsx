@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
@@ -172,7 +172,7 @@ const journeys: Journey[] = [
   }
 ]
 
-const getJourneysMock: MockedResponse<GetJourneys> = {
+const getJourneysMock: MockLink.MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -190,7 +190,7 @@ const getJourneysMock: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
+const getJourneysWithTagIdsMock: MockLink.MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -211,7 +211,7 @@ const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysWithInvalidTagIdsMock: MockedResponse<GetJourneys> = {
+const getJourneysWithInvalidTagIdsMock: MockLink.MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {

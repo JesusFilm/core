@@ -1,4 +1,5 @@
-import { gql, useSuspenseQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
 import Avatar from '@mui/material/Avatar'
 import Divider from '@mui/material/Divider'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -82,11 +83,8 @@ export function UserNavigation({
   const profileOpen = Boolean(profileAnchorEl)
 
   useEffect(() => {
-    switch (
-      user.id != null
-        ? getJourneyTooltip(journeysData.journeys, user.id)
-        : undefined
-    ) {
+    const journeys = journeysData?.journeys ?? []
+    switch (user.id != null ? getJourneyTooltip(journeys, user.id) : undefined) {
       case JourneyTooltip.newEditingRequest:
         setTooltip?.(t('New Editing Request'))
         break
@@ -94,7 +92,7 @@ export function UserNavigation({
         setTooltip?.(t('New Journey'))
         break
     }
-  }, [journeysData.journeys, user.id, t, setTooltip])
+  }, [journeysData?.journeys, user.id, t, setTooltip])
   function handleImpersonateClick(): void {
     setImpersonateOpen(true)
   }

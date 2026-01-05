@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -34,10 +35,8 @@ export function ApproveUser({
   journeyId
 }: ApproveUserProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [userJourneyApprove] = useMutation<UserJourneyApprove>(
-    USER_JOURNEY_APPROVE,
-    { variables: { id } }
-  )
+  const [userJourneyApprove] =
+    useMutation<UserJourneyApprove>(USER_JOURNEY_APPROVE)
 
   const [userInviteRemove] = useMutation<UserInviteRemove>(USER_INVITE_REMOVE)
 
@@ -62,10 +61,10 @@ export function ApproveUser({
     })
   }
 
-  const [loadUserInvites] = useUserInvitesLazyQuery({ journeyId })
+  const [loadUserInvites] = useUserInvitesLazyQuery()
 
   const handleClick = async (): Promise<void> => {
-    const result = await loadUserInvites()
+    const result = await loadUserInvites({ variables: { journeyId } })
     const userInvite = result.data?.userInvites?.find(
       (invite) => invite.email === email
     )
@@ -75,6 +74,7 @@ export function ApproveUser({
     }
 
     await userJourneyApprove({
+      variables: { id },
       optimisticResponse: {
         userJourneyApprove: {
           id,

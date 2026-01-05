@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -19,6 +19,7 @@ import {
 } from './NewMultiselectButton'
 
 import { NewMultiselectButton } from '.'
+import type { MockedResponse } from '@apollo/client/testing'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

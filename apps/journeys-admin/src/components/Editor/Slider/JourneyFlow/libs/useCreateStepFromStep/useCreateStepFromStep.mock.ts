@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -48,7 +48,7 @@ export const mockNewStepBlock: TreeBlock<StepBlock> = {
   slug: null
 }
 
-export const mockStepBlockCreateFromStep: MockedResponse<
+export const mockStepBlockCreateFromStep: MockLink.MockedResponse<
   StepBlockCreateFromStep,
   StepBlockCreateFromStepVariables
 > = {
@@ -107,7 +107,7 @@ export const mockStepBlockCreateFromStep: MockedResponse<
   }
 }
 
-export const mockStepBlockDeleteFromStep: MockedResponse<
+export const mockStepBlockDeleteFromStep: MockLink.MockedResponse<
   StepBlockDeleteFromStep,
   StepBlockDeleteFromStepVariables
 > = {
@@ -132,7 +132,7 @@ export const mockStepBlockDeleteFromStep: MockedResponse<
   }
 }
 
-export const mockStepBlockRestoreFromStep: MockedResponse<
+export const mockStepBlockRestoreFromStep: MockLink.MockedResponse<
   StepBlockRestoreFromStep,
   StepBlockRestoreFromStepVariables
 > = {

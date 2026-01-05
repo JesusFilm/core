@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { screen, userEvent } from 'storybook/test'
@@ -25,7 +25,7 @@ const TeamMenuStory: Meta<typeof TeamMenu> = {
   }
 }
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -50,21 +50,22 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        id: 'journeyProfileId',
-        lastActiveTeamId: null
+const getEmptyTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: {
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    },
+    result: {
+      data: {
+        teams: [],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
+          lastActiveTeamId: null
+        }
       }
     }
   }
-}
 
 const Template: StoryObj<typeof TeamMenu> = {
   render: () => (

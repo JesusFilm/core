@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 

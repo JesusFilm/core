@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -43,7 +44,7 @@ const { validateMuxLanguage } = jest.requireMock(
   '../../../../../../../libs/validateMuxLanguage'
 )
 
-const mockSubtitleTrackReady: MockedResponse = {
+const mockSubtitleTrackReady: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {

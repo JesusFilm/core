@@ -49,6 +49,19 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const error = uploadTask?.error
   const progress = uploadTask?.progress ?? 0
 
+  useEffect(() => {
+    const video = muxData?.getMyMuxVideo
+    if (
+      video?.playbackId != null &&
+      video?.assetId != null &&
+      video?.readyToStream
+    ) {
+      stopPolling?.()
+      onChange(video.id)
+      resetUploadStatus()
+    }
+  }, [muxData, stopPolling, onChange])
+
   const onDrop = async (): Promise<void> => {
     setFileRejected(false)
     setFileTooLarge(false)

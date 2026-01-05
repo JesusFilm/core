@@ -1,5 +1,7 @@
-import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { NetworkStatus } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { VideoInformation } from './VideoInformation'
@@ -37,7 +39,7 @@ const mockKeywordsData = {
   ]
 }
 
-const keywordsMock: MockedResponse = {
+const keywordsMock: MockLink.MockedResponse = {
   request: {
     query: GET_KEYWORDS
   },
@@ -85,6 +87,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn().mockResolvedValue({ data: mockVideoData })
     })
   })
@@ -131,6 +134,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn().mockResolvedValue({ data: incompleteVideoData })
     })
 
@@ -197,6 +201,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn().mockResolvedValue({ data: collectionVideoData })
     })
 
@@ -270,6 +275,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: mockRefetch
     })
 
@@ -375,6 +381,7 @@ describe('VideoInformation', () => {
         client: {} as any,
         error: undefined,
         networkStatus: NetworkStatus.ready,
+        dataState: 'complete',
         refetch: jest.fn()
       })
 
@@ -409,6 +416,7 @@ describe('VideoInformation', () => {
         client: {} as any,
         error: undefined,
         networkStatus: NetworkStatus.ready,
+        dataState: 'complete',
         refetch: jest.fn()
       })
 
@@ -443,6 +451,7 @@ describe('VideoInformation', () => {
         client: {} as any,
         error: undefined,
         networkStatus: NetworkStatus.ready,
+        dataState: 'complete',
         refetch: jest.fn()
       })
 

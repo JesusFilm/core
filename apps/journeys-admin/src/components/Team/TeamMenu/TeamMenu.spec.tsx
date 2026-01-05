@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
@@ -34,7 +35,7 @@ describe('TeamMenu', () => {
     jest.clearAllMocks()
   })
 
-  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
@@ -66,38 +67,39 @@ describe('TeamMenu', () => {
       }
     }
   }
-  const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-    request: {
-      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-    },
-    result: {
-      data: {
-        teams: [
-          {
-            id: 'teamId1',
-            title: 'Team Title',
-            publicTitle: null,
-            __typename: 'Team',
-            userTeams: [],
-            customDomains: []
-          },
-          {
-            id: 'teamId2',
-            title: 'Team Title2',
-            publicTitle: null,
-            __typename: 'Team',
-            userTeams: [],
-            customDomains: []
+  const getEmptyTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+    {
+      request: {
+        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+      },
+      result: {
+        data: {
+          teams: [
+            {
+              id: 'teamId1',
+              title: 'Team Title',
+              publicTitle: null,
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: []
+            },
+            {
+              id: 'teamId2',
+              title: 'Team Title2',
+              publicTitle: null,
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: []
+            }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
+            lastActiveTeamId: null
           }
-        ],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          id: 'journeyProfileId',
-          lastActiveTeamId: null
         }
       }
     }
-  }
 
   it('opens dialogs', async () => {
     mockedUseRouter.mockReturnValue({

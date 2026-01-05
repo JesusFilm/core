@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -81,7 +82,7 @@ describe('WebView', () => {
     })
   })
 
-  const visitorUpdateMock: MockedResponse<
+  const visitorUpdateMock: MockLink.MockedResponse<
     VisitorUpdateForCurrentUser,
     VisitorUpdateForCurrentUserVariables
   > = {
@@ -101,7 +102,7 @@ describe('WebView', () => {
     }))
   }
 
-  const journeyViewEventMock: MockedResponse<
+  const journeyViewEventMock: MockLink.MockedResponse<
     JourneyViewEventCreate,
     JourneyViewEventCreateVariables
   > = {
@@ -140,7 +141,7 @@ describe('WebView', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     mockUuidv4.mockReturnValueOnce('stepId')
 
-    const mockStepViewEventCreate: MockedResponse<
+    const mockStepViewEventCreate: MockLink.MockedResponse<
       StepViewEventCreate,
       StepViewEventCreateVariables
     > = {

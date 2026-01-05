@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -49,7 +50,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const mockGetLastActiveTeamIdAndTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
@@ -73,7 +74,7 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
-const mockGetChildJourneysFromTemplateId: MockedResponse<
+const mockGetChildJourneysFromTemplateId: MockLink.MockedResponse<
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 > = {
@@ -84,7 +85,7 @@ const mockGetChildJourneysFromTemplateId: MockedResponse<
   }
 }
 
-const mockGetParentJourneysFromTemplateId: MockedResponse<
+const mockGetParentJourneysFromTemplateId: MockLink.MockedResponse<
   GetParentJourneysFromTemplateId,
   GetParentJourneysFromTemplateIdVariables
 > = {
@@ -95,7 +96,7 @@ const mockGetParentJourneysFromTemplateId: MockedResponse<
   }
 }
 
-const mockJourneyDuplicate: MockedResponse<
+const mockJourneyDuplicate: MockLink.MockedResponse<
   JourneyDuplicate,
   JourneyDuplicateVariables
 > = {

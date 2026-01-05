@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -23,6 +24,21 @@ import { ExportDialog } from './ExportDialog'
 const mockOnClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
+const mockJourneyCreatedAt: MockLink.MockedResponse = {
+  request: {
+    query: GET_JOURNEY_CREATED_AT,
+    variables: { id: 'journey1' }
+  },
+  result: {
+    data: {
+      journey: {
+        id: 'journey1',
+        createdAt: journeyCreatedAt,
+        __typename: 'Journey'
+      }
+    }
+  }
+}
 
 const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery({
   journeyId: 'journey1',
@@ -71,7 +87,7 @@ describe('ExportDialog', () => {
   })
 
   describe('Visitor Actions', () => {
-    const getJourneyEventsMock: MockedResponse<
+    const getJourneyEventsMock: MockLink.MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -157,7 +173,7 @@ describe('ExportDialog', () => {
       EventType.VideoProgressEvent
     ]
 
-    const mockCreateEventsExportLogMutation: MockedResponse<
+    const mockCreateEventsExportLogMutation: MockLink.MockedResponse<
       CreateEventsExportLog,
       CreateEventsExportLogVariables
     > = {

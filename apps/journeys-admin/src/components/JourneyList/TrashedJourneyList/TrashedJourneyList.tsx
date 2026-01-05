@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -21,6 +22,14 @@ import {
 } from '../JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
+import {
+  RestoreTrashedJourneys,
+  RestoreTrashedJourneysVariables
+} from '../../../../__generated__/RestoreTrashedJourneys'
+import {
+  DeleteTrashedJourneys,
+  DeleteTrashedJourneysVariables
+} from '../../../../__generated__/DeleteTrashedJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -42,7 +51,10 @@ export function TrashedJourneyList({
     status: [JourneyStatus.trashed],
     useLastActiveTeamId: true
   })
-  const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
+  const [restoreTrashed] = useMutation<
+    RestoreTrashedJourneys,
+    RestoreTrashedJourneysVariables
+  >(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
@@ -52,7 +64,10 @@ export function TrashedJourneyList({
       }
     }
   })
-  const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
+  const [deleteTrashed] = useMutation<
+    DeleteTrashedJourneys,
+    DeleteTrashedJourneysVariables
+  >(DELETE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysDelete != null) {
         enqueueSnackbar(t('Journeys Deleted'), {
@@ -71,14 +86,15 @@ export function TrashedJourneyList({
 
   async function handleRestoreSubmit(): Promise<void> {
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
+      const journeyIds = (data?.journeys ?? [])
+        .filter((j) => j != null)
+        .filter((journey) =>
+          (journey?.userJourneys ?? []).some(
+            (userJourney) => userJourney?.user?.id === (user?.id ?? '')
+          )
         )
-        .map((journey) => journey.id)
+        .map((journey) => journey?.id)
+        .filter((id): id is string => typeof id === 'string')
       await restoreTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -93,14 +109,15 @@ export function TrashedJourneyList({
 
   async function handleDeleteSubmit(): Promise<void> {
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
+      const journeyIds = (data?.journeys ?? [])
+        .filter((j) => j != null)
+        .filter((journey) =>
+          (journey?.userJourneys ?? []).some(
+            (userJourney) => userJourney?.user?.id === (user?.id ?? '')
+          )
         )
-        .map((journey) => journey.id)
+        .map((journey) => journey?.id)
+        .filter((id): id is string => typeof id === 'string')
       await deleteTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -172,7 +189,7 @@ export function TrashedJourneyList({
                   <JourneyCard
                     key={journey.id}
                     journey={journey}
-                    refetch={refetch}
+                    refetch={refetch as unknown as (() => Promise<unknown>)}
                   />
                 </JourneyProvider>
               </Grid>

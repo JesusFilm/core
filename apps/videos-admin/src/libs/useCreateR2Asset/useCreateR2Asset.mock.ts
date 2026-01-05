@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   CREATE_CLOUDFLARE_R2_ASSET,
@@ -12,7 +12,7 @@ export const getCreateR2AssetMock = <
   T extends CreateCloudflareR2AssetVariables['input']
 >(
   input: T
-): MockedResponse<
+): MockLink.MockedResponse<
   CreateCloudflareR2Asset,
   CreateCloudflareR2AssetVariables
 > => ({

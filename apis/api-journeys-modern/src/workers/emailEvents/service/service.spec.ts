@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
+import { ApolloClient } from '@apollo/client'
 import { Job } from 'bullmq'
 
 import {
@@ -252,7 +252,7 @@ describe('EmailEventsConsumer', () => {
                 email: 'jron@example.com'
               }
             }
-          } as unknown as ApolloQueryResult<unknown>)
+          })
       )
 
       prismaMock.journey.findUnique.mockResolvedValueOnce(journey)

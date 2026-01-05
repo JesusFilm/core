@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql,  } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -89,7 +90,7 @@ export function useBlockDeleteCommand(): {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     const cachedStepWithXandY =
-      client.cache.extract()[`StepBlock:${selectedStep.id}`]
+      (client.cache.extract()[`StepBlock:${selectedStep.id}`] as any)
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )

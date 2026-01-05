@@ -93,7 +93,9 @@ export function ExportDialog({
       }
       onClose()
     } catch (error) {
-      enqueueSnackbar(error.message, {
+      const message =
+        error instanceof Error ? error.message : t('Something went wrong')
+      enqueueSnackbar(message, {
         variant: 'error'
       })
     }

@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
@@ -7,7 +7,7 @@ import {
   UserTeamRole,
   prisma
 } from '@core/prisma/journeys/client'
-import { graphql } from '@core/shared/gql'
+import { ResultOf, graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'
@@ -29,7 +29,7 @@ import {
   TeamRemoved
 } from './prisma.types'
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: env.GATEWAY_URL,
   headers: {
     'interop-token': env.INTEROP_TOKEN,
@@ -89,12 +89,12 @@ export async function service(job: Job<ApiJourneysJob>): Promise<void> {
 }
 
 export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<ResultOf<typeof GET_USER>>({
     query: GET_USER,
     variables: { userId: job.data.userId }
   })
 
-  if (data.user == null) throw new Error('User not found')
+  if (data?.user == null) throw new Error('User not found')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
@@ -149,12 +149,12 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
   )
     return
 
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<ResultOf<typeof GET_USER_BY_EMAIL>>({
     query: GET_USER_BY_EMAIL,
     variables: { email: job.data.email }
   })
 
-  if (data.userByEmail == null) {
+  if (data?.userByEmail == null) {
     const html = await render(
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
@@ -221,7 +221,7 @@ export async function teamInviteAcceptedEmail(
 
   const recipientEmails = await Promise.all(
     recipientUserTeams.map(async (userTeam) => {
-      const { data } = await apollo.query({
+      const { data } = await apollo.query<ResultOf<typeof GET_USER>>({
         query: GET_USER,
         variables: { userId: userTeam.userId }
       })
@@ -234,7 +234,7 @@ export async function teamInviteAcceptedEmail(
   }
 
   for (const recipient of recipientEmails) {
-    if (recipient.user == null) throw new Error('User not found')
+    if (recipient?.user == null) throw new Error('User not found')
 
     // check recipient preferences
     const preferences = await prisma.journeysEmailPreference.findFirst({
@@ -290,12 +290,12 @@ export async function journeyAccessRequest(
 
   if (recipientUserId == null) throw new Error('User not found')
 
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<ResultOf<typeof GET_USER>>({
     query: GET_USER,
     variables: { userId: recipientUserId }
   })
 
-  if (data.user == null) throw new Error('User not found')
+  if (data?.user == null) throw new Error('User not found')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
@@ -341,12 +341,12 @@ export async function journeyAccessRequest(
 export async function journeyRequestApproved(
   job: Job<JourneyRequestApproved>
 ): Promise<void> {
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<ResultOf<typeof GET_USER>>({
     query: GET_USER,
     variables: { userId: job.data.userId }
   })
 
-  if (data.user == null) throw new Error('User not found')
+  if (data?.user == null) throw new Error('User not found')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
@@ -405,12 +405,12 @@ export async function journeyEditInvite(
   )
     return
 
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<ResultOf<typeof GET_USER_BY_EMAIL>>({
     query: GET_USER_BY_EMAIL,
     variables: { email: job.data.email }
   })
 
-  if (data.userByEmail == null) {
+  if (data?.userByEmail == null) {
     const url = `${env.JOURNEYS_ADMIN_URL}/`
     const html = await render(
       JourneySharedNoAccountEmail({
