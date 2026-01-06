@@ -30,8 +30,8 @@ enum BlockEventLabel {
   prayerRequest
   rsvp
   share
-  videoStart
-  videoComplete
+  specialVideoStart
+  specialVideoComplete
 }
 
 input BlockUpdateActionInput {

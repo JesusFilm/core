@@ -116,8 +116,8 @@ export enum BlockEventLabel {
   PrayerRequest = 'prayerRequest',
   Rsvp = 'rsvp',
   Share = 'share',
-  VideoComplete = 'videoComplete',
-  VideoStart = 'videoStart'
+  SpecialVideoComplete = 'specialVideoComplete',
+  SpecialVideoStart = 'specialVideoStart'
 }
 
 export type BlockUpdateActionInput = {

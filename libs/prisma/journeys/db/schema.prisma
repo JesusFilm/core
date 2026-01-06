@@ -527,8 +527,8 @@ enum EventLabel {
   prayerRequest
   rsvp
   share
-  videoStart
-  videoComplete
+  specialVideoStart
+  specialVideoComplete
 }
 
 model Block {

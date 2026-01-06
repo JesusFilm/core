@@ -135,8 +135,8 @@ enum BlockEventLabel {
   prayerRequest
   rsvp
   share
-  videoStart
-  videoComplete
+  specialVideoStart
+  specialVideoComplete
 }
 
 type Journey

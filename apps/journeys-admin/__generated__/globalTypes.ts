@@ -18,8 +18,8 @@ export enum BlockEventLabel {
   prayerRequest = "prayerRequest",
   rsvp = "rsvp",
   share = "share",
-  videoComplete = "videoComplete",
-  videoStart = "videoStart",
+  specialVideoComplete = "specialVideoComplete",
+  specialVideoStart = "specialVideoStart",
 }
 
 export enum ButtonAction {
