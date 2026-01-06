@@ -1,7 +1,7 @@
 name: Main
 on:
   push:
-    branches: [main, feature/*]
+    branches: [main]
   pull_request:
     branches: [main, feature/*]
   merge_group:

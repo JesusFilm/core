@@ -21,7 +21,11 @@ import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import {
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import {
   ButtonFields,
@@ -342,12 +346,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'buttonClick',
+          target: actionToTarget(action),
+          journeyId: 'journey.id'
         })
       }
     })
@@ -426,12 +437,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'buttonClick',
+          target: actionToTarget(action),
+          journeyId: 'journey.id'
         })
       }
     })
@@ -653,12 +671,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -731,12 +756,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -811,12 +843,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
