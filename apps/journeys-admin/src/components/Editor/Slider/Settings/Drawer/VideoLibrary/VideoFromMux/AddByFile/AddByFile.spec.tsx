@@ -140,6 +140,7 @@ const TestWrapper = ({
               showGeneratedSubtitles: false,
               mediaVideo: null,
               eventLabel: null,
+              endEventLabel: null,
               children: []
             } as TreeBlock<VideoBlock>
           }}

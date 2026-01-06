@@ -71,6 +71,7 @@ const selectedVideoBlock: TreeBlock<VideoBlock> = {
   showGeneratedSubtitles: false,
   mediaVideo: null,
   eventLabel: null,
+  endEventLabel: null,
   children: []
 }
 

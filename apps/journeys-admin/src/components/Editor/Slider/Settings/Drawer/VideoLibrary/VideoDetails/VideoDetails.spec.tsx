@@ -63,6 +63,7 @@ describe('VideoDetails', () => {
     posterBlockId: 'imageBlockId',
     objectFit: null,
     eventLabel: null,
+    endEventLabel: null,
     children: [imageBlock]
   }
 

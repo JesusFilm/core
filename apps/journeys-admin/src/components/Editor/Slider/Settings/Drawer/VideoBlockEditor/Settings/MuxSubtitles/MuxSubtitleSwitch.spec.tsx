@@ -52,6 +52,7 @@ const mockVideoBlock: TreeBlock<VideoBlock> = {
   subtitleLanguage: null,
   showGeneratedSubtitles: false,
   eventLabel: null,
+  endEventLabel: null,
   mediaVideo: null
 }
 

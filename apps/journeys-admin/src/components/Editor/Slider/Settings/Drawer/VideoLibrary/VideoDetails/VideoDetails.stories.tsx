@@ -200,6 +200,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
   posterBlockId: 'imageBlockId',
   objectFit: null,
   eventLabel: null,
+  endEventLabel: null,
   children: [imageBlock]
 }
 

@@ -96,6 +96,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   },
   posterBlockId: 'poster1.id',
   eventLabel: null,
+  endEventLabel: null,
   children: []
 }
 
@@ -142,6 +143,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
   eventLabel: null,
+  endEventLabel: null,
   posterBlockId: 'poster1.id',
   children: []
 }

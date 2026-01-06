@@ -206,6 +206,7 @@ describe('VideoLibrary', () => {
                 objectFit: null,
                 posterBlockId: null,
                 eventLabel: null,
+                endEventLabel: null,
                 children: []
               }}
             />
@@ -264,6 +265,7 @@ describe('VideoLibrary', () => {
                 objectFit: null,
                 posterBlockId: null,
                 eventLabel: null,
+                endEventLabel: null,
                 children: []
               }}
             />
@@ -469,6 +471,7 @@ describe('VideoLibrary', () => {
                   showGeneratedSubtitles: null,
                   posterBlockId: 'poster1.id',
                   eventLabel: null,
+                  endEventLabel: null,
                   children: []
                 }}
                 onSelect={onSelect}
@@ -609,6 +612,7 @@ describe('VideoLibrary', () => {
       mediaVideo: null,
       posterBlockId: null,
       eventLabel: null,
+      endEventLabel: null,
       children: []
     }
 

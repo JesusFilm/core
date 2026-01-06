@@ -384,6 +384,7 @@ describe('Card', () => {
             action: null,
             objectFit: null,
             eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]

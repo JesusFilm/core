@@ -106,7 +106,8 @@ describe('CardVideo', () => {
             showGeneratedSubtitles: null,
             mediaVideo: null,
             action: null,
-            eventLabel: null
+            eventLabel: null,
+            endEventLabel: null
           }
         ]
       }
@@ -159,7 +160,8 @@ describe('CardVideo', () => {
           showGeneratedSubtitles: null,
           mediaVideo: null,
           action: null,
-          eventLabel: null
+          eventLabel: null,
+          endEventLabel: null
         }
       }
     }
@@ -201,7 +203,8 @@ describe('CardVideo', () => {
             showGeneratedSubtitles: null,
             mediaVideo: null,
             action: null,
-            eventLabel: null
+            eventLabel: null,
+            endEventLabel: null
           }
         ]
       }

@@ -77,6 +77,7 @@ const video: TreeBlock<VideoBlock> = {
   fullsize: true,
   action: null,
   eventLabel: null,
+  endEventLabel: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
