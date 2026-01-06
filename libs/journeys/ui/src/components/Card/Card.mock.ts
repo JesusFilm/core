@@ -20,6 +20,8 @@ import {
 } from '../Button/__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE } from '../Button/Button'
 import { ImageFields } from '../Image/__generated__/ImageFields'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
+import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
@@ -459,3 +461,27 @@ export const createMockButtonClickEvent = (
     }
   }))
 })
+
+export const mockMultiselectSubmissionEventCreate: MockedResponse<MultiselectSubmissionEventCreate> =
+  {
+    request: {
+      query: MULTISELECT_SUBMISSION_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'multiselectBlockId',
+          stepId: 'step1.id',
+          label: 'Step {{number}}',
+          values: ['Option 1', 'Option 2']
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        multiselectSubmissionEventCreate: {
+          id: 'uuid',
+          __typename: 'MultiselectSubmissionEvent'
+        }
+      }
+    }))
+  }

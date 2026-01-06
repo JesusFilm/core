@@ -13,7 +13,7 @@ import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import { keyify, templateKeyify } from '../../libs/plausibleHelpers'
 
 import { StepFields } from './__generated__/StepFields'
 import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
@@ -207,12 +207,18 @@ describe('Step', () => {
         key: keyify({
           stepId: 'Step1',
           event: 'pageview',
-          blockId: 'Step1'
+          blockId: 'Step1',
+          journeyId: 'journeyId'
         }),
         simpleKey: keyify({
           stepId: 'Step1',
           event: 'pageview',
-          blockId: 'Step1'
+          blockId: 'Step1',
+          journeyId: 'journeyId'
+        }),
+        templateKey: templateKeyify({
+          event: 'pageview',
+          journeyId: 'journeyId'
         })
       }
     })
@@ -247,12 +253,18 @@ describe('Step', () => {
         key: keyify({
           stepId: 'Step1',
           event: 'pageview',
-          blockId: 'Step1'
+          blockId: 'Step1',
+          journeyId: 'journeyId'
         }),
         simpleKey: keyify({
           stepId: 'Step1',
           event: 'pageview',
-          blockId: 'Step1'
+          blockId: 'Step1',
+          journeyId: 'journeyId'
+        }),
+        templateKey: templateKeyify({
+          event: 'pageview',
+          journeyId: 'journeyId'
         })
       }
     })
