@@ -40,6 +40,8 @@ type VideoBlock implements Block @key(fields: "id") @shareable {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
+  endEventLabel: BlockEventLabel @shareable
   """
   startAt dictates at which point of time the video should start playing
   """
