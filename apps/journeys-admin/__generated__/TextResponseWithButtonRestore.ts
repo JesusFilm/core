@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonRestore
@@ -85,6 +85,7 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_textResponse_ButtonBlock_action | null;
   settings: TextResponseWithButtonRestore_textResponse_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_CardBlock {
@@ -122,6 +123,7 @@ export interface TextResponseWithButtonRestore_textResponse_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_IconBlock {
@@ -230,6 +232,7 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
@@ -545,6 +548,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_textResponse_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -685,6 +689,7 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_button_ButtonBlock_action | null;
   settings: TextResponseWithButtonRestore_button_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_button_CardBlock {
@@ -722,6 +727,7 @@ export interface TextResponseWithButtonRestore_button_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_button_IconBlock {
@@ -830,6 +836,7 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
@@ -1145,6 +1152,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_button_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1285,6 +1293,7 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_startIcon_ButtonBlock_action | null;
   settings: TextResponseWithButtonRestore_startIcon_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_CardBlock {
@@ -1322,6 +1331,7 @@ export interface TextResponseWithButtonRestore_startIcon_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_IconBlock {
@@ -1430,6 +1440,7 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
@@ -1745,6 +1756,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_startIcon_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1885,6 +1897,7 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonRestore_endIcon_ButtonBlock_action | null;
   settings: TextResponseWithButtonRestore_endIcon_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_CardBlock {
@@ -1922,6 +1935,7 @@ export interface TextResponseWithButtonRestore_endIcon_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_IconBlock {
@@ -2030,6 +2044,7 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
@@ -2345,6 +2360,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_endIcon_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
