@@ -22,6 +22,7 @@ import {
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
+
 import {
   action,
   block,
