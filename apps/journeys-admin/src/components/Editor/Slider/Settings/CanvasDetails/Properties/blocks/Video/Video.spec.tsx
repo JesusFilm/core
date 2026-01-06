@@ -33,10 +33,10 @@ describe('Video', () => {
     image: null,
     objectFit: null,
     subtitleLanguage: null,
-  showGeneratedSubtitles: null,
-  eventLabel: null,
-  endEventLabel: null,
-  mediaVideo: {
+    showGeneratedSubtitles: null,
+    eventLabel: null,
+    endEventLabel: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
       title: [
