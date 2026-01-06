@@ -261,14 +261,14 @@ export function Card({
             props: {
               ...input,
               key: keyify({
-                stepId: input.blockId,
+                stepId: activeBlock?.id,
                 event: 'multiselectSubmit',
                 blockId: input.blockId,
                 target: option,
                 journeyId: journey.id
               }),
               simpleKey: keyify({
-                stepId: input.blockId,
+                stepId: activeBlock?.id,
                 event: 'multiselectSubmit',
                 blockId: input.blockId,
                 journeyId: journey.id

@@ -642,38 +642,53 @@ describe('CardBlock', () => {
       expect(mockMultiselectSubmissionEventCreate.result).toHaveBeenCalled()
     })
 
+    // Filter calls to only multiselectSubmit events
     await waitFor(() => {
-      expect(mockPlausible).toHaveBeenCalledTimes(2)
+      const multiselectSubmitCalls = mockPlausible.mock.calls.filter(
+        (call) => call[0] === 'multiselectSubmit'
+      )
+      expect(multiselectSubmitCalls.length).toBeGreaterThanOrEqual(2)
     })
+
+    const multiselectSubmitCalls = mockPlausible.mock.calls.filter(
+      (call) => call[0] === 'multiselectSubmit'
+    )
+    expect(multiselectSubmitCalls.length).toBe(2)
 
     // Verify first plausible event for Option 1
-    expect(mockPlausible).toHaveBeenNthCalledWith(1, 'multiselectSubmit', {
-      u: `${window.location.origin}/${journey.id}/multiselectBlockId`,
-      props: expect.objectContaining({
-        id: 'uuid',
-        blockId: 'multiselectBlockId',
-        stepId: 'step1.id',
-        label: 'Step {{number}}',
-        values: ['Option 1', 'Option 2'],
-        key: expect.stringContaining('"target":"Option 1"'),
-        simpleKey: expect.stringContaining('multiselectSubmit'),
-        templateKey: expect.stringContaining('multiselectSubmit')
-      })
-    })
+    expect(multiselectSubmitCalls[0]).toEqual([
+      'multiselectSubmit',
+      {
+        u: `${window.location.origin}/${journey.id}/multiselectBlockId`,
+        props: expect.objectContaining({
+          id: 'uuid',
+          blockId: 'multiselectBlockId',
+          stepId: 'step1.id',
+          label: 'Step {{number}}',
+          values: ['Option 1', 'Option 2'],
+          key: expect.stringContaining('"target":"Option 1"'),
+          simpleKey: expect.stringContaining('multiselectSubmit'),
+          templateKey: expect.stringContaining('multiselectSubmit')
+        })
+      }
+    ])
 
     // Verify second plausible event for Option 2
-    expect(mockPlausible).toHaveBeenNthCalledWith(2, 'multiselectSubmit', {
-      u: `${window.location.origin}/${journey.id}/multiselectBlockId`,
-      props: expect.objectContaining({
-        id: 'uuid',
-        blockId: 'multiselectBlockId',
-        stepId: 'step1.id',
-        label: 'Step {{number}}',
-        values: ['Option 1', 'Option 2'],
-        key: expect.stringContaining('"target":"Option 2"'),
-        simpleKey: expect.stringContaining('multiselectSubmit'),
-        templateKey: expect.stringContaining('multiselectSubmit')
-      })
-    })
+    expect(multiselectSubmitCalls[1]).toEqual([
+      'multiselectSubmit',
+      {
+        u: `${window.location.origin}/${journey.id}/multiselectBlockId`,
+        props: expect.objectContaining({
+          id: 'uuid',
+          blockId: 'multiselectBlockId',
+          stepId: 'step1.id',
+          label: 'Step {{number}}',
+          values: ['Option 1', 'Option 2'],
+          key: expect.stringContaining('"target":"Option 2"'),
+          simpleKey: expect.stringContaining('multiselectSubmit'),
+          templateKey: expect.stringContaining('multiselectSubmit')
+        })
+      }
+    ])
   })
 })
