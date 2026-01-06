@@ -84,6 +84,7 @@ export const card1: TreeBlock<CardBlock> = {
   themeMode: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [step1]
 }
 
@@ -98,6 +99,7 @@ export const card2: TreeBlock<CardBlock> = {
   themeMode: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [step2]
 }
 
@@ -112,6 +114,7 @@ export const card3: TreeBlock<CardBlock> = {
   themeMode: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [step3]
 }
 
@@ -126,6 +129,7 @@ export const block: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [
     {
       id: 'typographyBlockId',
@@ -201,7 +205,8 @@ export const buttonBlock: TreeBlock<ButtonFields> = {
   action: action,
   submitEnabled: null,
   children: [],
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 export const videoBlock: TreeBlock<VideoFields> = {
@@ -249,6 +254,7 @@ export const videoBlock: TreeBlock<VideoFields> = {
     },
     variantLanguages: []
   },
+  eventLabel: null,
   children: [
     {
       ...imageBlock,

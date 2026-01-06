@@ -68,7 +68,8 @@ describe('BlockRenderer', () => {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
     const { getByText } = render(
       <MockedProvider>
@@ -95,7 +96,8 @@ describe('BlockRenderer', () => {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider>
@@ -132,6 +134,7 @@ describe('BlockRenderer', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -172,6 +175,7 @@ describe('BlockRenderer', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -288,7 +292,8 @@ describe('BlockRenderer', () => {
       label: 'radio option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -307,7 +312,8 @@ describe('BlockRenderer', () => {
       label: 'radio option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -342,7 +348,8 @@ describe('BlockRenderer', () => {
       label: 'radio option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -377,7 +384,8 @@ describe('BlockRenderer', () => {
       label: 'radio option 1',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
 
     const block: TreeBlock<RadioQuestionFields> = {
@@ -635,7 +643,8 @@ describe('BlockRenderer', () => {
           submitEnabled: null,
           action: null,
           children: [],
-          settings: null
+          settings: null,
+          eventLabel: null
         }
       ]
     }
@@ -675,7 +684,8 @@ describe('BlockRenderer', () => {
           submitEnabled: null,
           action: null,
           children: [],
-          settings: null
+          settings: null,
+          eventLabel: null
         }
       ]
     }
@@ -812,6 +822,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       fullsize: null,
       action: null,
+      eventLabel: null,
       children: []
     }
     const { getByTestId } = render(
@@ -870,6 +881,7 @@ describe('BlockRenderer', () => {
       fullsize: null,
       action: null,
       parentOrder: 0,
+      eventLabel: null,
       children: []
     }
     const { getByTestId } = render(

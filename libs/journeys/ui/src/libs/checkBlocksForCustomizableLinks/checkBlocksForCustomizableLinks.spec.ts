@@ -29,7 +29,8 @@ describe('checkBlocksForCustomizableLinks', () => {
       customizable: false,
       parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('should return false for empty blocks array', () => {
@@ -70,7 +71,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: true,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([
@@ -101,7 +103,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: true,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([
@@ -134,7 +137,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: true,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([
@@ -166,7 +170,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: true,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([
@@ -197,7 +202,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: false,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([buttonBlock])
@@ -218,7 +224,8 @@ describe('checkBlocksForCustomizableLinks', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([buttonBlock])
@@ -331,7 +338,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         gtmEventName: null,
         blockId: 'block-1'
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([buttonBlock])

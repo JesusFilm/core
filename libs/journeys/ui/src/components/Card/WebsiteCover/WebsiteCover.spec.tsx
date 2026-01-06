@@ -51,9 +51,10 @@ describe('WebsiteCover', () => {
     image: null,
     objectFit: null,
     showGeneratedSubtitles: null,
-    subtitleLanguage: null,
-    mediaVideo: {
-      __typename: 'Video',
+      subtitleLanguage: null,
+      eventLabel: null,
+      mediaVideo: {
+        __typename: 'Video',
       id: '2_0-FallingPlates',
       title: [
         {

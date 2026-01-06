@@ -149,7 +149,8 @@ export const publishedJourney: Journey = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     },
     {
       id: 'image0.id',
@@ -207,7 +208,8 @@ export const publishedJourney: Journey = {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       id: 'icon',
@@ -265,7 +267,8 @@ export const blocks: Block[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   },
   {
     id: 'typographyBlockId1',
@@ -314,7 +317,8 @@ export const blocks: Block[] = [
       gtmEventName: 'gtmEventName',
       blockId: 'step1.id'
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     id: 'icon0-1.id',
@@ -369,7 +373,8 @@ export const blocks: Block[] = [
     endAt: null,
     fullsize: null,
     action: null,
-    posterBlockId: 'image0.id'
+    posterBlockId: 'image0.id',
+    eventLabel: null
   },
   {
     id: 'image0.id',
@@ -404,7 +409,8 @@ export const blocks: Block[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   },
   {
     id: 'typographyBlockId3',
@@ -452,7 +458,8 @@ export const blocks: Block[] = [
       gtmEventName: 'gtmEventName',
       blockId: 'step2.id'
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     id: 'icon1-1.id',
@@ -497,7 +504,8 @@ export const blocks: Block[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   },
   {
     id: 'typographyBlockId5',
@@ -546,7 +554,8 @@ export const blocks: Block[] = [
       parentBlockId: 'radioOption1.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step3.id'
-    }
+    },
+    eventLabel: null
   },
   {
     id: 'radioOption2.id',
@@ -560,7 +569,8 @@ export const blocks: Block[] = [
       parentBlockId: 'radioOption2.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step3.id'
-    }
+    },
+    eventLabel: null
   },
   {
     id: 'radioOption3.id',
@@ -574,7 +584,8 @@ export const blocks: Block[] = [
       parentBlockId: 'radioOption3.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step3.id'
-    }
+    },
+    eventLabel: null
   },
   {
     id: 'image2.id',
@@ -609,7 +620,8 @@ export const blocks: Block[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   },
   {
     id: 'typographyBlockId7',
@@ -658,7 +670,8 @@ export const blocks: Block[] = [
       parentBlockId: 'radioOption4.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step4.id'
-    }
+    },
+    eventLabel: null
   },
   {
     id: 'radioOption5.id',
@@ -672,7 +685,8 @@ export const blocks: Block[] = [
       parentBlockId: 'radioOption5.id',
       gtmEventName: 'gtmEventName',
       blockId: 'step4.id'
-    }
+    },
+    eventLabel: null
   },
   {
     id: 'image3.id',
@@ -741,7 +755,8 @@ export const blocks: Block[] = [
     endAt: null,
     fullsize: null,
     action: null,
-    posterBlockId: 'posterBlockId'
+    posterBlockId: 'posterBlockId',
+    eventLabel: null
   },
   {
     id: 'posterBlockId',
@@ -776,7 +791,8 @@ export const blocks: Block[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   },
   {
     __typename: 'ImageBlock',
@@ -829,7 +845,8 @@ export const blocks: Block[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   },
   {
     id: 'image6.id',
@@ -906,7 +923,8 @@ export const blocks: Block[] = [
       gtmEventName: 'gtmEventName',
       blockId: 'step6.id'
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     id: 'icon6-1.id',

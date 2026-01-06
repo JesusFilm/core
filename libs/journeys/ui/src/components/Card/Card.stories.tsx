@@ -91,7 +91,8 @@ const content: TreeBlock[] = [
         children: []
       }
     ],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 ]
 
@@ -156,6 +157,7 @@ const video: TreeBlock<VideoFields> = {
   },
   action: null,
   fullsize: null,
+  eventLabel: null,
   children: []
 }
 

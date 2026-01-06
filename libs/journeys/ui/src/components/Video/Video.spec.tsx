@@ -60,6 +60,7 @@ const block: TreeBlock<VideoFields> = {
     },
     variantLanguages: []
   },
+  eventLabel: null,
   children: [
     {
       id: 'posterBlockId',
@@ -269,6 +270,7 @@ describe.skip('Admin Video', () => {
               themeName: null,
               fullscreen: false,
               backdropBlur: null,
+              eventLabel: null,
               children: [block]
             }
           }}

@@ -109,6 +109,7 @@ const block: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlockSettings',
     alignment: ButtonAlignment.justify
   },
+  eventLabel: null,
   children: []
 }
 
@@ -132,6 +133,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -477,6 +479,7 @@ describe('Button', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           children: []
         }
       ]

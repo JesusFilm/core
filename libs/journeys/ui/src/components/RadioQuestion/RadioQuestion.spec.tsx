@@ -59,7 +59,8 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 0,
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     },
     {
       __typename: 'RadioOptionBlock',
@@ -69,6 +70,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 1,
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       children: []
     }
   ]
