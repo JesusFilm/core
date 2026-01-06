@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { VideoBlockSource } from '../../enums'
+import { BlockEventLabel, VideoBlockSource } from '../../enums'
 import { Language } from '../../language/language'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
@@ -20,6 +20,14 @@ export const VideoBlock = builder.prismaObject('Block', {
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
   fields: (t) => ({
+    eventLabel: t.expose('eventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
+    endEventLabel: t.expose('endEventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
     autoplay: t.boolean({
       nullable: true,
       resolve: (block) => block.autoplay ?? false

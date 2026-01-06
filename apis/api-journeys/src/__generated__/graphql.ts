@@ -105,6 +105,21 @@ export type BlockDuplicateIdMap = {
   oldId: Scalars['ID']['input'];
 };
 
+export enum BlockEventLabel {
+  Custom1 = 'custom1',
+  Custom2 = 'custom2',
+  Custom3 = 'custom3',
+  DecisionForChrist = 'decisionForChrist',
+  GospelPresentationComplete = 'gospelPresentationComplete',
+  GospelPresentationStart = 'gospelPresentationStart',
+  InviteFriend = 'inviteFriend',
+  PrayerRequest = 'prayerRequest',
+  Rsvp = 'rsvp',
+  Share = 'share',
+  SpecialVideoComplete = 'specialVideoComplete',
+  SpecialVideoStart = 'specialVideoStart'
+}
+
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
   chatUrl?: InputMaybe<Scalars['String']['input']>;
@@ -147,6 +162,7 @@ export type ButtonBlock = Block & {
   action?: Maybe<Action>;
   color?: Maybe<ButtonColor>;
   endIconId?: Maybe<Scalars['ID']['output']>;
+  eventLabel?: Maybe<BlockEventLabel>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -161,6 +177,7 @@ export type ButtonBlock = Block & {
 
 export type ButtonBlockCreateInput = {
   color?: InputMaybe<ButtonColor>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -187,6 +204,7 @@ export type ButtonBlockSettingsInput = {
 export type ButtonBlockUpdateInput = {
   color?: InputMaybe<ButtonColor>;
   endIconId?: InputMaybe<Scalars['ID']['input']>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   settings?: InputMaybe<ButtonBlockSettingsInput>;
@@ -268,6 +286,7 @@ export type CardBlock = Block & {
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
    */
   coverBlockId?: Maybe<Scalars['ID']['output']>;
+  eventLabel?: Maybe<BlockEventLabel>;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
    * is set to true the coverBlock Image should be displayed as a blur in the
@@ -293,6 +312,7 @@ export type CardBlock = Block & {
 export type CardBlockCreateInput = {
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -305,6 +325,7 @@ export type CardBlockUpdateInput = {
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
@@ -4242,6 +4263,7 @@ export type QueryYoutubeClosedCaptionLanguagesSuccess = {
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
+  eventLabel?: Maybe<BlockEventLabel>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -4256,6 +4278,7 @@ export type RadioOptionBlock = Block & {
 };
 
 export type RadioOptionBlockCreateInput = {
+  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -4263,6 +4286,7 @@ export type RadioOptionBlockCreateInput = {
 };
 
 export type RadioOptionBlockUpdateInput = {
+  eventLabel?: InputMaybe<BlockEventLabel>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   pollOptionImageBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -5251,6 +5275,8 @@ export type VideoBlock = Block & {
   duration?: Maybe<Scalars['Int']['output']>;
   /** endAt dictates at which point of time the video should end */
   endAt?: Maybe<Scalars['Int']['output']>;
+  endEventLabel?: Maybe<BlockEventLabel>;
+  eventLabel?: Maybe<BlockEventLabel>;
   fullsize?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   /**
@@ -5312,6 +5338,8 @@ export type VideoBlockCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   endAt?: InputMaybe<Scalars['Int']['input']>;
+  endEventLabel?: InputMaybe<BlockEventLabel>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
@@ -5368,6 +5396,8 @@ export type VideoBlockUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   endAt?: InputMaybe<Scalars['Int']['input']>;
+  endEventLabel?: InputMaybe<BlockEventLabel>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;

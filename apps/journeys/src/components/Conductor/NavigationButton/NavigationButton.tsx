@@ -20,7 +20,8 @@ import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyPlausibleEvents,
-  keyify
+  keyify,
+  templateKeyify
 } from '@core/journeys/ui/plausibleHelpers'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -144,12 +145,18 @@ export function NavigationButton({
             stepId: input.blockId,
             event: 'navigateNextStep',
             blockId: input.blockId,
-            target: input.nextStepId
+            target: input.nextStepId,
+            journeyId: journey?.id
           }),
           simpleKey: keyify({
             stepId: input.blockId,
             event: 'navigateNextStep',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
+          }),
+          templateKey: templateKeyify({
+            event: 'navigateNextStep',
+            journeyId: journey?.id
           })
         }
       })
@@ -208,12 +215,18 @@ export function NavigationButton({
             stepId: input.blockId,
             event: 'navigatePreviousStep',
             blockId: input.blockId,
-            target: input.previousStepId
+            target: input.previousStepId,
+            journeyId: journey?.id
           }),
           simpleKey: keyify({
             stepId: input.blockId,
             event: 'navigatePreviousStep',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
+          }),
+          templateKey: templateKeyify({
+            event: 'navigatePreviousStep',
+            journeyId: journey?.id
           })
         }
       })

@@ -16,7 +16,8 @@ import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyPlausibleEvents,
-  keyify
+  keyify,
+  templateKeyify
 } from '@core/journeys/ui/plausibleHelpers'
 
 import {
@@ -104,18 +105,25 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
 
         if (journey != null)
           plausible('navigateNextStep', {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.blockId,
                 event: 'navigateNextStep',
                 blockId: input.blockId,
-                target: input.nextStepId
+                target: input.nextStepId,
+                journeyId: journey?.id
               }),
               simpleKey: keyify({
                 stepId: input.blockId,
                 event: 'navigateNextStep',
-                blockId: input.blockId
+                blockId: input.blockId,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: 'navigateNextStep',
+                journeyId: journey?.id
               })
             }
           })
@@ -166,18 +174,25 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
         })
         if (journey != null)
           plausible('navigatePreviousStep', {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.blockId,
                 event: 'navigatePreviousStep',
                 blockId: input.blockId,
-                target: input.previousStepId
+                target: input.previousStepId,
+                journeyId: journey?.id
               }),
               simpleKey: keyify({
                 stepId: input.blockId,
                 event: 'navigatePreviousStep',
-                blockId: input.blockId
+                blockId: input.blockId,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: 'navigatePreviousStep',
+                journeyId: journey?.id
               })
             }
           })

@@ -124,6 +124,21 @@ interface Block {
   parentOrder: Int
 }
 
+enum BlockEventLabel {
+  custom1
+  custom2
+  custom3
+  decisionForChrist
+  gospelPresentationStart
+  gospelPresentationComplete
+  inviteFriend
+  prayerRequest
+  rsvp
+  share
+  specialVideoStart
+  specialVideoComplete
+}
+
 type Journey
   @key(fields: "id")
   @shareable
@@ -163,9 +178,8 @@ type Journey
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
-  """
-  used to see if a template has a site created for it
-  """
+
+  """used to see if a template has a site created for it"""
   templateSite: Boolean
 
   """used in a plausible share link to embed report"""
@@ -565,6 +579,7 @@ type ButtonBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
   label: String! @shareable
   variant: ButtonVariant @shareable
   color: ButtonColor @shareable
@@ -580,6 +595,7 @@ input ButtonBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -590,6 +606,7 @@ input ButtonBlockCreateInput {
 
 input ButtonBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   variant: ButtonVariant
   color: ButtonColor
@@ -607,6 +624,7 @@ type CardBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String @shareable
@@ -647,6 +665,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   backgroundColor: String
   backdropBlur: Int
   fullscreen: Boolean
@@ -656,6 +675,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   coverBlockId: ID
   backgroundColor: String
   backdropBlur: Int
@@ -871,6 +891,7 @@ type RadioOptionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
   label: String! @shareable
   action: Action
   pollOptionImageBlockId: ID @shareable
@@ -880,11 +901,13 @@ input RadioOptionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   pollOptionImageBlockId: ID
 }
@@ -1211,6 +1234,8 @@ type VideoBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
+  endEventLabel: BlockEventLabel @shareable
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int @shareable

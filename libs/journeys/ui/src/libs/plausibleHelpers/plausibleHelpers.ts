@@ -16,6 +16,7 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
+import { messagePlatforms } from '../../components/Button/utils/findMessagePlatform'
 import {
   BlockFields_ButtonBlock_action,
   BlockFields_RadioOptionBlock_action,
@@ -30,13 +31,21 @@ interface Props {
   /**
    * compound of stepId, event name, blockId, targetBlockId.
    * Needed to run plausible /api/v1/stats/breakdown api call with
-   * property=event:props:key param */
+   * property=event:props:key param
+   * used for breakdown of journey map*/
   key: string
   /**
    * compound of stepId, event name, blockId.
    * Needed to run plausible /api/v1/stats/breakdown api call with
-   * property=event:props:simpleKey param */
+   * property=event:props:simpleKey param
+   * used for aggregate stats for journey*/
   simpleKey: string
+  /**
+   * compound of event name, journeyId, target.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
+   * property=event:templateKey param
+   * used for journey breakdown stats by template*/
+  templateKey?: string
 }
 
 interface Events {
@@ -85,6 +94,7 @@ interface KeyifyProps {
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string | Action | null
+  journeyId?: string
 }
 
 export function generateActionTargetKey(action: Action): string {
@@ -108,7 +118,8 @@ export function keyify({
   stepId,
   event,
   blockId,
-  target
+  target,
+  journeyId
 }: KeyifyProps): string {
   let targetId = ''
 
@@ -122,7 +133,8 @@ export function keyify({
     stepId,
     event,
     blockId,
-    target: targetId
+    target: targetId,
+    journeyId
   })
 }
 
@@ -131,6 +143,7 @@ export function reverseKeyify(key: string): {
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string
+  journeyId?: string
 } {
   return JSON.parse(key)
 }
@@ -146,4 +159,51 @@ export function getTargetEventKey(action?: Action | null): string {
 
   const target = generateActionTargetKey(action)
   return `${action.parentBlockId}->${target}`
+}
+
+interface TemplateKeyifyProps {
+  event: keyof JourneyPlausibleEvents
+  target?: string | Action | null
+  journeyId?: string
+}
+
+export function templateKeyify({
+  event,
+  target,
+  journeyId
+}: TemplateKeyifyProps): string {
+  let targetId = ''
+
+  if (typeof target === 'string' || target == null) {
+    targetId = target ?? ''
+  } else {
+    targetId = generateActionTargetKey(target)
+  }
+
+  return JSON.stringify({
+    event,
+    target: targetId,
+    journeyId
+  })
+}
+
+export function actionToTarget(action: Action | null): 'link' | 'chat' | null {
+  if (action == null) return null
+
+  switch (action.__typename) {
+    case 'NavigateToBlockAction':
+      return null
+    case 'LinkAction': {
+      const isChatLink = messagePlatforms.find(({ url }: { url: string }) =>
+        action.url.includes(url)
+      )
+      return isChatLink != null ? 'chat' : 'link'
+    }
+    case 'EmailAction':
+      return null
+    case 'ChatAction':
+      return 'chat'
+    case 'PhoneAction':
+      return 'chat'
+  }
 }

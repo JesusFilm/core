@@ -5,6 +5,21 @@ interface Block {
   parentOrder: Int
 }
 
+enum BlockEventLabel {
+  custom1
+  custom2
+  custom3
+  decisionForChrist
+  gospelPresentationStart
+  gospelPresentationComplete
+  inviteFriend
+  prayerRequest
+  rsvp
+  share
+  specialVideoStart
+  specialVideoComplete
+}
+
 extend type Journey {
   blocks: [Block!] @shareable
 }

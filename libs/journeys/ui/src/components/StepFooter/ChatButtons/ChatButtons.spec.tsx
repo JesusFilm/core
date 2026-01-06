@@ -15,7 +15,7 @@ import {
   JourneyFields_chatButtons as ChatButton,
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../../libs/plausibleHelpers'
+import { keyify, templateKeyify } from '../../../libs/plausibleHelpers'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
@@ -183,12 +183,19 @@ describe('ChatButtons', () => {
           stepId: 'step',
           event: 'footerChatButtonClick',
           blockId: 'step',
-          target: 'link:https://m.me/:facebook'
+          target: 'link:https://m.me/:facebook',
+          journeyId: 'journeyId'
         }),
         simpleKey: keyify({
           stepId: 'step',
           event: 'footerChatButtonClick',
-          blockId: 'step'
+          blockId: 'step',
+          journeyId: 'journeyId'
+        }),
+        templateKey: templateKeyify({
+          event: 'footerChatButtonClick',
+          target: 'chat',
+          journeyId: 'journeyId'
         })
       }
     })

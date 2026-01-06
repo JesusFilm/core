@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { BlockEventLabel } from '../../../enums'
 import { ButtonColor, ButtonSize, ButtonVariant } from '../enums'
 import { ButtonBlockSettingsInput } from '../inputs/buttonBlockSettingsInput'
 
@@ -7,6 +8,7 @@ export const ButtonBlockUpdateInput = builder.inputType(
   {
     fields: (t) => ({
       parentBlockId: t.id({ required: false }),
+      eventLabel: t.field({ type: BlockEventLabel, required: false }),
       label: t.string({ required: false }),
       variant: t.field({ type: ButtonVariant, required: false }),
       color: t.field({ type: ButtonColor, required: false }),

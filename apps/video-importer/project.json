@@ -14,25 +14,25 @@
     "run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
-      }
-    },
-    "bundle": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "esbuild apps/video-importer/src/video-importer.ts --bundle --outfile=dist/apps/video-importer/video-importer-bundled.js --platform=node --target=node22 --format=cjs"
+        "command": "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" bun apps/video-importer/src/video-importer.ts --folder apps/video-importer/test-videos"
       }
     },
     "package": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "nx run video-importer:bundle",
-          {
-            "command": "./build-scripts/build-cross-platform.sh",
-            "cwd": "apps/video-importer"
-          },
-          "pnpm exec shx cp apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
+          "cd apps/video-importer && ./build-scripts/build-cross-platform.sh",
+          "mkdir -p dist/apps/video-importer-executable && cp -f apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
+        ],
+        "parallel": false
+      }
+    },
+    "compile": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" bun build --compile apps/video-importer/src/video-importer.ts --outfile dist/apps/video-importer-executable/video-importer",
+          "mkdir -p dist/apps/video-importer-executable && cp -f apps/video-importer/README.md dist/apps/video-importer-executable/README.md"
         ],
         "parallel": false
       }
