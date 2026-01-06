@@ -22,9 +22,6 @@ import {
 } from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
-import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
-
 import {
   action,
   block,
@@ -35,6 +32,7 @@ import {
   getStepViewEventMock,
   imageBlock,
   journey,
+  mockMultiselectSubmissionEventCreate,
   mockStepNextEventCreate,
   mockTextResponse1SubmissionEventCreate,
   mockTextResponse2SubmissionEventCreate,
@@ -609,30 +607,6 @@ describe('CardBlock', () => {
       ...card1,
       children: [step1, { ...multiselectBlock, parentBlockId: card1.id }]
     }
-
-    const mockMultiselectSubmissionEventCreate: MockedResponse<MultiselectSubmissionEventCreate> =
-      {
-        request: {
-          query: MULTISELECT_SUBMISSION_EVENT_CREATE,
-          variables: {
-            input: {
-              id: 'uuid',
-              blockId: 'multiselectBlockId',
-              stepId: 'step1.id',
-              label: 'Step {{number}}',
-              values: ['Option 1', 'Option 2']
-            }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            multiselectSubmissionEventCreate: {
-              id: 'uuid',
-              __typename: 'MultiselectSubmissionEvent'
-            }
-          }
-        }))
-      }
 
     treeBlocksVar([step1, step2, step3])
     blockHistoryVar([step1])
