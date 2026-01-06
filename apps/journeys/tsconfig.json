@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "tsBuildInfoFile": "../../.cache/journeys/tsc/.tsbuildinfo"
   },
   "include": [
