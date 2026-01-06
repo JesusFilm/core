@@ -23,6 +23,7 @@ async function processSiteBatch(
   let failed = 0
 
   for (const site of sites) {
+    console.log(`Processing site ${site.id}`)
     try {
       const existingGoals = await prisma.goals.findMany({
         where: {
@@ -105,6 +106,8 @@ export async function addGoalsToAllSites(
       LIMIT ${batchSize}
       OFFSET ${offset}
     `
+
+    console.log(`Sites needing goals: ${sitesNeedingGoals.length}`)
 
     if (sitesNeedingGoals.length === 0) {
       hasMore = false

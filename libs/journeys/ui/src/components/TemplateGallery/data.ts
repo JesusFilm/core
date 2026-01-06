@@ -58,6 +58,9 @@ const defaultTemplate: Journey = {
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
+  website: false,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
   userJourneys: []
 }
 

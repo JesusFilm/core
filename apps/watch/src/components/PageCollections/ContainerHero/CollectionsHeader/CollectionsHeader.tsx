@@ -1,0 +1,58 @@
+import LanguageIcon from '@mui/icons-material/Language'
+import IconButton from '@mui/material/IconButton'
+import Image from 'next/image'
+import NextLink from 'next/link'
+import { ReactElement, useState } from 'react'
+
+import { LanguageModal } from './LanguageModal'
+
+export function CollectionsHeader({
+  feedbackButtonLabel
+}: {
+  feedbackButtonLabel: string
+}): ReactElement {
+  const [isLanguageModalOpen, setIsLanguageModalOpen] = useState(false)
+
+  const handleOpenLanguageModal = (): void => {
+    setIsLanguageModalOpen(true)
+  }
+
+  const handleCloseLanguageModal = (): void => {
+    setIsLanguageModalOpen(false)
+  }
+
+  return (
+    <>
+      <div
+        data-testid="CollectionsHeader"
+        className="padded absolute top-0 right-0 left-0 z-[99] mx-auto flex h-[100px] w-full max-w-[1920px] items-center justify-between lg:h-[200px]"
+      >
+        <NextLink href="https://www.jesusfilm.org/watch" locale={false}>
+          <Image
+            src="/watch/images/jesusfilm-sign.svg"
+            alt="Jesus Film Project"
+            width={70}
+            height={70}
+            className="max-w-[50px] lg:max-w-[70px]"
+          />
+        </NextLink>
+        <IconButton
+          data-testid="LanguageButton"
+          onClick={handleOpenLanguageModal}
+          aria-label="select language"
+          tabIndex={0}
+          sx={{
+            color: 'white'
+          }}
+        >
+          <LanguageIcon />
+        </IconButton>
+      </div>
+      <LanguageModal
+        open={isLanguageModalOpen}
+        onClose={handleCloseLanguageModal}
+        feedbackButtonLabel={feedbackButtonLabel}
+      />
+    </>
+  )
+}
