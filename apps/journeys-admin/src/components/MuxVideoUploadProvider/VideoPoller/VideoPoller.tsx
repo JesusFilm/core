@@ -86,6 +86,7 @@ export function VideoPoller({
 
     // Cleanup on unmount
     return () => {
+      hasCompletedRef.current = true
       stopPolling()
       unregisterStopPolling(videoId)
     }
