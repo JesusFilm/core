@@ -2091,7 +2091,6 @@ type TextResponseBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   label: String!
   placeholder: String
   required: Boolean
@@ -2107,13 +2106,11 @@ input TextResponseBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   label: String!
 }
 
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   label: String
   placeholder: String
   required: Boolean

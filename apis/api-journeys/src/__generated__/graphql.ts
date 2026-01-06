@@ -4782,7 +4782,6 @@ export type TemplateFamilyStatsEventResponse = {
 
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
-  eventLabel?: Maybe<BlockEventLabel>;
   hideLabel?: Maybe<Scalars['Boolean']['output']>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -4799,7 +4798,6 @@ export type TextResponseBlock = Block & {
 };
 
 export type TextResponseBlockCreateInput = {
-  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -4807,7 +4805,6 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
-  eventLabel?: InputMaybe<BlockEventLabel>;
   hideLabel?: InputMaybe<Scalars['Boolean']['input']>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;

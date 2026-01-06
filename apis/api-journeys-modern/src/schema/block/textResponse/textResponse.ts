@@ -1,5 +1,4 @@
 import { builder } from '../../builder'
-import { BlockEventLabel } from '../../enums'
 import { Block } from '../block'
 
 import { TextResponseType } from './enums/textResponseType'
@@ -10,10 +9,6 @@ export const TextResponseBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'TextResponseBlock',
   shareable: true,
   fields: (t) => ({
-    eventLabel: t.expose('eventLabel', {
-      type: BlockEventLabel,
-      nullable: true
-    }),
     label: t.string({
       nullable: false,
       resolve: (block) => block.label ?? ''

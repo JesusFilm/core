@@ -1159,7 +1159,6 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   label: String!
   placeholder: String
   required: Boolean
@@ -4036,13 +4035,11 @@ input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   label: String!
 }
 
 input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   label: String
   placeholder: String
   required: Boolean

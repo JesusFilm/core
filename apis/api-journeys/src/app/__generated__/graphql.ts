@@ -472,13 +472,11 @@ export class TextResponseBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
 }
 
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
-    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
@@ -1432,7 +1430,6 @@ export class TextResponseBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;

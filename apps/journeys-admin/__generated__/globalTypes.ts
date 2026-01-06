@@ -848,13 +848,11 @@ export interface TextResponseBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  eventLabel?: BlockEventLabel | null;
   label: string;
 }
 
 export interface TextResponseBlockUpdateInput {
   parentBlockId?: string | null;
-  eventLabel?: BlockEventLabel | null;
   label?: string | null;
   placeholder?: string | null;
   required?: boolean | null;

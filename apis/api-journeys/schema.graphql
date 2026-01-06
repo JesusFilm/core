@@ -1075,7 +1075,6 @@ type TextResponseBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  eventLabel: BlockEventLabel @shareable
   label: String! @shareable
   placeholder: String @shareable
   required: Boolean @shareable
@@ -1098,13 +1097,11 @@ input TextResponseBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   label: String!
 }
 
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   label: String
   placeholder: String
   required: Boolean
