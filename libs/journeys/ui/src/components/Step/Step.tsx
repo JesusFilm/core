@@ -93,23 +93,25 @@ export function Step({
             })
           }
         })
-        // TODO: update once types are set
-        const metaAction = activeJourneyStep?.metaAction
-        if (metaAction != null) {
-          const metaActionKey = keyify({
+        const eventLabel =
+          children[0]?.__typename === 'CardBlock'
+            ? children[0].eventLabel
+            : null
+        if (eventLabel != null) {
+          const eventLabelKey = keyify({
             stepId: input.blockId,
-            event: metaAction,
+            event: eventLabel,
             blockId: input.blockId,
             journeyId: journey?.id
           })
-          plausible(metaAction, {
+          plausible(eventLabel, {
             u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
-              key: metaActionKey,
-              simpleKey: metaActionKey,
+              key: eventLabelKey,
+              simpleKey: eventLabelKey,
               templateKey: templateKeyify({
-                event: metaAction,
+                event: eventLabel,
                 journeyId: journey?.id
               })
             }

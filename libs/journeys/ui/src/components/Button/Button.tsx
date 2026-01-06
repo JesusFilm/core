@@ -105,7 +105,8 @@ export function Button({
   children,
   editableLabel,
   submitEnabled,
-  settings
+  settings,
+  eventLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -208,28 +209,26 @@ export function Button({
             })
           }
         })
-        // TODO: update once types are set
-        const metaAction = activeBlock.action?.metAction
-        if (metaAction != null) {
-          plausible(metaAction, {
+        if (eventLabel != null) {
+          plausible(eventLabel, {
             u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.stepId ?? '',
-                event: metaAction,
+                event: eventLabel,
                 blockId: input.blockId,
                 target: action,
                 journeyId: journey.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
-                event: metaAction,
+                event: eventLabel,
                 blockId: input.blockId,
                 journeyId: journey.id
               }),
               templateKey: templateKeyify({
-                event: metaAction,
+                event: eventLabel,
                 journeyId: journey?.id
               })
             }
@@ -279,28 +278,26 @@ export function Button({
             })
           }
         })
-        // TODO: update once types are set
-        const metaAction = activeBlock.action?.metAction
-        if (metaAction != null) {
-          plausible(metaAction, {
+        if (eventLabel != null) {
+          plausible(eventLabel, {
             u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.stepId ?? '',
-                event: metaAction,
+                event: eventLabel,
                 blockId: input.blockId,
                 target: action,
                 journeyId: journey.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
-                event: metaAction,
+                event: eventLabel,
                 blockId: input.blockId,
                 journeyId: journey.id
               }),
               templateKey: templateKeyify({
-                event: metaAction,
+                event: eventLabel,
                 journeyId: journey?.id
               })
             }

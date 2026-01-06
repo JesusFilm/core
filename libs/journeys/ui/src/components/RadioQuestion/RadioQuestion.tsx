@@ -123,28 +123,26 @@ export function RadioQuestion({
             })
           }
         })
-        // TODO: update once types are set
-        const metaAction = radioOptionBlock.action?.metAction
-        if (metaAction != null) {
-          plausible(metaAction, {
+        if (radioOptionBlock.eventLabel != null) {
+          plausible(radioOptionBlock.eventLabel, {
             u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
               ...input,
               key: keyify({
                 stepId: input.stepId ?? '',
-                event: metaAction,
+                event: radioOptionBlock.eventLabel,
                 blockId: radioOptionBlock.id,
                 target: radioOptionBlock.action,
                 journeyId: journey?.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
-                event: metaAction,
+                event: radioOptionBlock.eventLabel,
                 blockId: radioOptionBlock.id,
                 journeyId: journey?.id
               }),
               templateKey: templateKeyify({
-                event: metaAction,
+                event: radioOptionBlock.eventLabel,
                 journeyId: journey?.id
               })
             }

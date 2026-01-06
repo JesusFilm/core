@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Player from 'video.js/dist/types/player'
 
 import {
+  BlockEventLabel,
   VideoBlockSource,
   VideoCollapseEventCreateInput,
   VideoCompleteEventCreateInput,
@@ -111,6 +112,8 @@ export interface VideoEventsProps {
   startAt: number | null
   endAt: number | null
   action: VideoTriggerFields_triggerAction | null
+  eventLabel?: BlockEventLabel | null
+  endEventLabel?: BlockEventLabel | null
 }
 
 export function VideoEvents({
@@ -121,7 +124,9 @@ export function VideoEvents({
   videoId,
   startAt,
   endAt,
-  action
+  action,
+  eventLabel,
+  endEventLabel
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate, { called: calledStart }] =
     useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
@@ -461,23 +466,21 @@ export function VideoEvents({
               })
             }
           })
-          // TODO: update once types are set
-          const metaAction = action?.start.metaAction
-          if (metaAction != null) {
-            const metaActionKey = keyify({
+          if (eventLabel != null) {
+            const eventLabelKey = keyify({
               stepId: input.stepId ?? '',
-              event: metaAction,
+              event: eventLabel,
               blockId: input.blockId,
               journeyId: journey?.id
             })
-            plausible(metaAction, {
+            plausible(eventLabel, {
               u: `${window.location.origin}/${journey.id}/${input.blockId}`,
               props: {
                 ...input,
-                key: metaActionKey,
-                simpleKey: metaActionKey,
+                key: eventLabelKey,
+                simpleKey: eventLabelKey,
                 templateKey: templateKeyify({
-                  event: metaAction,
+                  event: eventLabel,
                   journeyId: journey?.id
                 })
               }
@@ -755,23 +758,21 @@ export function VideoEvents({
               })
             }
           })
-          // TODO: update once types are set
-          const metaAction = action?.end.metaAction
-          if (metaAction != null) {
-            const metaActionKey = keyify({
+          if (endEventLabel != null) {
+            const endEventLabelKey = keyify({
               stepId: input.stepId ?? '',
-              event: metaAction,
+              event: endEventLabel,
               blockId: input.blockId,
               journeyId: journey?.id
             })
-            plausible(metaAction, {
+            plausible(endEventLabel, {
               u: `${window.location.origin}/${journey.id}/${input.blockId}`,
               props: {
                 ...input,
-                key: metaActionKey,
-                simpleKey: metaActionKey,
+                key: endEventLabelKey,
+                simpleKey: endEventLabelKey,
                 templateKey: templateKeyify({
-                  event: metaAction,
+                  event: endEventLabel,
                   journeyId: journey?.id
                 })
               }

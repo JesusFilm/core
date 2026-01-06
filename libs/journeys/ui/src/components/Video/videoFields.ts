@@ -61,5 +61,6 @@ export const VIDEO_FIELDS = gql`
       ...ActionFields
     }
     eventLabel
+    endEventLabel
   }
 `
