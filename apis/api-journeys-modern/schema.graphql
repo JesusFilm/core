@@ -1276,7 +1276,6 @@ type MultiselectOptionBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   label: String!
 }
 
@@ -1284,13 +1283,11 @@ input MultiselectOptionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   label: String!
 }
 
 input MultiselectOptionBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   label: String
 }
 
@@ -1831,7 +1828,6 @@ type SignUpBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   submitIconId: ID
   submitLabel: String
   action: Action
@@ -1841,13 +1837,11 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   submitIconId: ID
   submitLabel: String
 }

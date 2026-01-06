@@ -1074,7 +1074,6 @@ type MultiselectOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   label: String!
 }
 
@@ -1107,7 +1106,6 @@ type SignUpBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   action: Action
   submitIconId: ID
   submitLabel: String
@@ -3967,13 +3965,11 @@ input SignUpBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   submitIconId: ID
   submitLabel: String
 }
@@ -4852,13 +4848,11 @@ input MultiselectOptionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN) 
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   label: String!
 }
 
 input MultiselectOptionBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   label: String
 }
 

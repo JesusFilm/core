@@ -696,13 +696,11 @@ export interface MultiselectOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  eventLabel?: BlockEventLabel | null;
   label: string;
 }
 
 export interface MultiselectOptionBlockUpdateInput {
   parentBlockId?: string | null;
-  eventLabel?: BlockEventLabel | null;
   label?: string | null;
 }
 
@@ -767,13 +765,11 @@ export interface SignUpBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  eventLabel?: BlockEventLabel | null;
   submitLabel: string;
 }
 
 export interface SignUpBlockUpdateInput {
   parentBlockId?: string | null;
-  eventLabel?: BlockEventLabel | null;
   submitIconId?: string | null;
   submitLabel?: string | null;
 }

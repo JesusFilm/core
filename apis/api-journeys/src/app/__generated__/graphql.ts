@@ -424,13 +424,11 @@ export class SignUpBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
-    eventLabel?: Nullable<BlockEventLabel>;
     submitLabel: string;
 }
 
 export class SignUpBlockUpdateInput {
     parentBlockId?: Nullable<string>;
-    eventLabel?: Nullable<BlockEventLabel>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
 }
@@ -1371,7 +1369,6 @@ export class MultiselectOptionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
 }
 
@@ -1402,7 +1399,6 @@ export class SignUpBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    eventLabel?: Nullable<BlockEventLabel>;
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;

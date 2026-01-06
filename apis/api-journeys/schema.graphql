@@ -881,7 +881,6 @@ type MultiselectOptionBlock implements Block
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  eventLabel: BlockEventLabel
   label: String!
 }
 
@@ -936,7 +935,6 @@ type SignUpBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
-  eventLabel: BlockEventLabel @shareable
   action: Action
   submitIconId: ID @shareable
   submitLabel: String @shareable
@@ -946,13 +944,11 @@ input SignUpBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
-  eventLabel: BlockEventLabel
   submitLabel: String!
 }
 
 input SignUpBlockUpdateInput {
   parentBlockId: ID
-  eventLabel: BlockEventLabel
   submitIconId: ID
   submitLabel: String
 }

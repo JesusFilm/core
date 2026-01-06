@@ -1685,7 +1685,6 @@ export type MultiselectBlockUpdateInput = {
 
 export type MultiselectOptionBlock = Block & {
   __typename?: 'MultiselectOptionBlock';
-  eventLabel?: Maybe<BlockEventLabel>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -1694,7 +1693,6 @@ export type MultiselectOptionBlock = Block & {
 };
 
 export type MultiselectOptionBlockCreateInput = {
-  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -1702,7 +1700,6 @@ export type MultiselectOptionBlockCreateInput = {
 };
 
 export type MultiselectOptionBlockUpdateInput = {
-  eventLabel?: InputMaybe<BlockEventLabel>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -4425,7 +4422,6 @@ export type ShortLinkDomainVerfication = {
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
   action?: Maybe<Action>;
-  eventLabel?: Maybe<BlockEventLabel>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -4435,7 +4431,6 @@ export type SignUpBlock = Block & {
 };
 
 export type SignUpBlockCreateInput = {
-  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   parentBlockId: Scalars['ID']['input'];
@@ -4443,7 +4438,6 @@ export type SignUpBlockCreateInput = {
 };
 
 export type SignUpBlockUpdateInput = {
-  eventLabel?: InputMaybe<BlockEventLabel>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   submitIconId?: InputMaybe<Scalars['ID']['input']>;
   submitLabel?: InputMaybe<Scalars['String']['input']>;
