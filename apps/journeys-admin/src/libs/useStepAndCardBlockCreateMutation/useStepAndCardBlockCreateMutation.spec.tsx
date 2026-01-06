@@ -104,7 +104,8 @@ describe('useStepAndCardBlockCreateMutation', () => {
         parentBlockId: 'newStep.id',
         parentOrder: 0,
         themeMode: ThemeMode.dark,
-        themeName: ThemeName.base
+        themeName: ThemeName.base,
+        eventLabel: null
       })
     })
   })
