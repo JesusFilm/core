@@ -124,6 +124,7 @@ export function CardVideo(): ReactElement {
         __typename: 'Video'
       },
       action: null,
+      eventLabel: null,
       __typename: 'VideoBlock'
     } satisfies VideoBlock
 

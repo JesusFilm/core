@@ -59,10 +59,11 @@ describe('CardIntro', () => {
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false,
-    backdropBlur: null,
-    children: []
-  }
+      fullscreen: false,
+      backdropBlur: null,
+      eventLabel: null,
+      children: []
+    }
   const step: TreeBlock = {
     id: 'stepId',
     __typename: 'StepBlock',
@@ -213,6 +214,7 @@ describe('CardIntro', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon: {
@@ -246,6 +248,7 @@ describe('CardIntro', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         video: {
@@ -268,6 +271,7 @@ describe('CardIntro', () => {
           objectFit: null,
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
+          eventLabel: null,
           mediaVideo: {
             id: '1_jf-0-0',
             title: [

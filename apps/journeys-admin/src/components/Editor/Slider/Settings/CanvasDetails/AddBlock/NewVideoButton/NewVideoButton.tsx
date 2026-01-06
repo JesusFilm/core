@@ -73,6 +73,7 @@ export function NewVideoButton({
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       __typename: 'VideoBlock',
       children: []
     }

@@ -55,6 +55,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  eventLabel: null,
   children: []
 }
 
@@ -88,7 +89,8 @@ const buttonBlock: TreeBlock<ButtonBlock> = {
   submitEnabled: null,
   action: null,
   children: [],
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 const cardBlock: TreeBlock<CardBlock> = {
@@ -102,6 +104,7 @@ const cardBlock: TreeBlock<CardBlock> = {
   themeName: ThemeName.base,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [videoBlock, imageBlock, buttonBlock]
 }
 

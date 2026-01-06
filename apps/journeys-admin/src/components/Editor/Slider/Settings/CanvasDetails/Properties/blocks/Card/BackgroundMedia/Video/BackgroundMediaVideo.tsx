@@ -140,7 +140,8 @@ export function BackgroundMediaVideo({
               bcp47: ''
             }
           : null,
-      showGeneratedSubtitles: null
+      showGeneratedSubtitles: null,
+      eventLabel: null
     }
 
     add({

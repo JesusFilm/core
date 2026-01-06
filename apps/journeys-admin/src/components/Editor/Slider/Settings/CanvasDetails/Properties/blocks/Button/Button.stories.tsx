@@ -40,9 +40,10 @@ const block: TreeBlock<ButtonBlock> = {
   startIconId: null,
   endIconId: null,
   submitEnabled: null,
-  action: null,
-  children: [],
-  settings: null
+    action: null,
+    children: [],
+    settings: null,
+    eventLabel: null
 }
 
 const Template: StoryObj<ComponentProps<typeof Button>> = {
@@ -84,6 +85,7 @@ export const Filled: StoryObj<typeof Button> = {
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       },
+      eventLabel: null,
       children: [
         {
           id: 'icon1',

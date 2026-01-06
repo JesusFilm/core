@@ -161,6 +161,7 @@ const video: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  eventLabel: null,
   children: []
 }
 

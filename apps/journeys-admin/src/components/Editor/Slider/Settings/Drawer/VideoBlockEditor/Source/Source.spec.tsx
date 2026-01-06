@@ -227,6 +227,7 @@ describe('Source', () => {
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: null,
+              eventLabel: null,
               posterBlockId: 'poster1.id',
               children: []
             }}
@@ -289,6 +290,7 @@ describe('Source', () => {
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: null,
+              eventLabel: null,
               posterBlockId: 'poster1.id',
               children: []
             }}
@@ -366,6 +368,7 @@ describe('Source', () => {
                 objectFit: null,
                 subtitleLanguage: null,
                 showGeneratedSubtitles: false,
+                eventLabel: null,
                 posterBlockId: null,
                 children: []
               }}
@@ -417,6 +420,7 @@ describe('Source', () => {
                 objectFit: null,
                 subtitleLanguage: null,
                 showGeneratedSubtitles: false,
+                eventLabel: null,
                 posterBlockId: null,
                 children: []
               }}
@@ -490,6 +494,7 @@ describe('Source', () => {
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: false,
+              eventLabel: null,
               posterBlockId: null,
               children: []
             }}

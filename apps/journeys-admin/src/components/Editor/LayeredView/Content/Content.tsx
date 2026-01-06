@@ -4,9 +4,9 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Canvas } from './Canvas'
-import { Goals } from './Goals'
-import { SocialPreview } from './Social'
+import { Canvas } from '../../Slider/Content/Canvas/Canvas'
+import { Goals } from '../../Slider/Content/Goals/Goals'
+import { SocialPreview } from '../../Slider/Content/Social/SocialPreview'
 
 export function Content(): ReactElement {
   const {

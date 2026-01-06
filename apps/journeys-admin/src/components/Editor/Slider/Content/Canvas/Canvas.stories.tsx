@@ -59,6 +59,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',
@@ -124,6 +125,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step1.id'
             },
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -162,6 +164,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image1.id',
@@ -226,6 +229,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step2.id'
             },
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -264,6 +268,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image2.id',
@@ -315,7 +320,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption2.id',
@@ -330,7 +336,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption3.id',
@@ -345,7 +352,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -373,6 +381,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'multiselectQuestion1.id',
@@ -424,6 +433,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image3.id',
@@ -475,7 +485,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption2.id',
@@ -490,7 +501,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -518,6 +530,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'VideoBlock',
@@ -536,6 +549,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             objectFit: null,
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
+            eventLabel: null,
             mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -590,6 +604,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'ImageBlock',
@@ -640,6 +655,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image6.id',
@@ -720,6 +736,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step6.id'
             },
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -817,6 +834,7 @@ export const EmptyCard = {
             themeName: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: []
           }
         ]

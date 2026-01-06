@@ -46,6 +46,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: true,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -94,6 +95,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: 'poster1.id',
+  eventLabel: null,
   children: []
 }
 
@@ -139,6 +141,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
   posterBlockId: 'poster1.id',
   children: []
 }

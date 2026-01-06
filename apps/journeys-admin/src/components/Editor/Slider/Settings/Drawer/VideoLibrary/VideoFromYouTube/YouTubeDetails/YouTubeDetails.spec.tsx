@@ -232,6 +232,7 @@ describe('YouTubeDetails', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       children: []
     }
 
@@ -381,6 +382,7 @@ describe('YouTubeDetails', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       children: []
     }
 
@@ -589,6 +591,7 @@ describe('YouTubeDetails', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       children: []
     }
 
@@ -693,6 +696,7 @@ describe('YouTubeDetails', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       children: []
     }
 
@@ -750,6 +754,7 @@ describe('YouTubeDetails', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       children: []
     }
 
@@ -823,6 +828,7 @@ describe('YouTubeDetails', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
+      eventLabel: null,
       children: []
     }
 
