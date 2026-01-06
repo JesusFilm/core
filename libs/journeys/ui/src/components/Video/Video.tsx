@@ -63,7 +63,8 @@ export function Video({
   videoVariantLanguageId,
   subtitleLanguage,
   showGeneratedSubtitles,
-  eventLabel
+  eventLabel,
+  endEventLabel
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()

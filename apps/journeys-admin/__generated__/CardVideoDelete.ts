@@ -193,6 +193,7 @@ export interface CardVideoDelete_video_VideoBlock {
    */
   action: CardVideoDelete_video_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export type CardVideoDelete_video = CardVideoDelete_video_ImageBlock | CardVideoDelete_video_VideoBlock;

@@ -563,6 +563,7 @@ export interface JourneyFields_blocks_VideoBlock {
    */
   action: JourneyFields_blocks_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

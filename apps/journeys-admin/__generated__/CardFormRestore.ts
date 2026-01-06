@@ -549,6 +549,7 @@ export interface CardFormRestore_image_VideoBlock {
    */
   action: CardFormRestore_image_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1153,6 +1154,7 @@ export interface CardFormRestore_subtitle_VideoBlock {
    */
   action: CardFormRestore_subtitle_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1757,6 +1759,7 @@ export interface CardFormRestore_title_VideoBlock {
    */
   action: CardFormRestore_title_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2361,6 +2364,7 @@ export interface CardFormRestore_textResponse_VideoBlock {
    */
   action: CardFormRestore_textResponse_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2965,6 +2969,7 @@ export interface CardFormRestore_button_VideoBlock {
    */
   action: CardFormRestore_button_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3569,6 +3574,7 @@ export interface CardFormRestore_startIcon_VideoBlock {
    */
   action: CardFormRestore_startIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4173,6 +4179,7 @@ export interface CardFormRestore_endIcon_VideoBlock {
    */
   action: CardFormRestore_endIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4777,6 +4784,7 @@ export interface CardFormRestore_body_VideoBlock {
    */
   action: CardFormRestore_body_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

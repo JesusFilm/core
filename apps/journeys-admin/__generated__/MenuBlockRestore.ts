@@ -559,6 +559,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    */
   action: MenuBlockRestore_stepRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

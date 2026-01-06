@@ -559,6 +559,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock {
    */
   action: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

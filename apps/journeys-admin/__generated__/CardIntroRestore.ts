@@ -549,6 +549,7 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    */
   action: CardIntroRestore_subtitle_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1153,6 +1154,7 @@ export interface CardIntroRestore_title_VideoBlock {
    */
   action: CardIntroRestore_title_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1757,6 +1759,7 @@ export interface CardIntroRestore_body_VideoBlock {
    */
   action: CardIntroRestore_body_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2361,6 +2364,7 @@ export interface CardIntroRestore_button_VideoBlock {
    */
   action: CardIntroRestore_button_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2965,6 +2969,7 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    */
   action: CardIntroRestore_startIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3569,6 +3574,7 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    */
   action: CardIntroRestore_endIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4173,6 +4179,7 @@ export interface CardIntroRestore_video_VideoBlock {
    */
   action: CardIntroRestore_video_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_video_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

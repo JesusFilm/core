@@ -189,6 +189,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate {
    */
   action: CoverVideoBlockCreate_videoBlockCreate_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CoverVideoBlockCreate_cardBlockUpdate {

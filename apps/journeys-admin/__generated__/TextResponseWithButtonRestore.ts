@@ -549,6 +549,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
    */
   action: TextResponseWithButtonRestore_textResponse_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1153,6 +1154,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
    */
   action: TextResponseWithButtonRestore_button_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1757,6 +1759,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
    */
   action: TextResponseWithButtonRestore_startIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2361,6 +2364,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
    */
   action: TextResponseWithButtonRestore_endIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

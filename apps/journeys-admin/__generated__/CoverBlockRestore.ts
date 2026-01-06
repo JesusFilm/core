@@ -194,6 +194,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
    */
   action: CoverBlockRestore_blockRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CoverBlockRestore_blockRestore_ImageBlock {

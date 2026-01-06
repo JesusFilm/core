@@ -563,6 +563,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
    */
   action: GetAdminJourney_journey_blocks_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

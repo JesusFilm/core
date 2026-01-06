@@ -189,4 +189,5 @@ export interface VideoFields {
    */
   action: VideoFields_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }

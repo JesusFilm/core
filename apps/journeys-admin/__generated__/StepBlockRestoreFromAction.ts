@@ -559,6 +559,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
    */
   action: StepBlockRestoreFromAction_blockRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

@@ -559,6 +559,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
    */
   action: StepDuplicate_blockDuplicate_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

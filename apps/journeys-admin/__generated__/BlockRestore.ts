@@ -559,6 +559,7 @@ export interface BlockRestore_blockRestore_VideoBlock {
    */
   action: BlockRestore_blockRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
