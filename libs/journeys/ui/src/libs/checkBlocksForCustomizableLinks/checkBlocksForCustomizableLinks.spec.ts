@@ -278,6 +278,8 @@ describe('checkBlocksForCustomizableLinks', () => {
       image: null,
       objectFit: null,
       mediaVideo: null,
+      eventLabel: null,
+      endEventLabel: null,
       action: {
         __typename: 'LinkAction',
         parentBlockId: '2',

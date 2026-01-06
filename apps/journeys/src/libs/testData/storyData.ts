@@ -1042,6 +1042,7 @@ export const videoBlocks: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1224,6 +1225,7 @@ export const videoBlocks: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1295,6 +1297,7 @@ export const videoBlocks: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]
@@ -1353,6 +1356,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1520,6 +1524,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1591,6 +1596,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]
@@ -1658,6 +1664,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1825,6 +1832,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1896,6 +1904,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]
@@ -2013,6 +2022,7 @@ export const videoLoop: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'image1.id',
@@ -2089,6 +2099,7 @@ export const videoLoop: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'image1.id',
@@ -2160,6 +2171,7 @@ export const videoLoop: TreeBlock[] = [
             subtitleLanguage: null,
             showGeneratedSubtitles: false,
             eventLabel: null,
+            endEventLabel: null,
             children: [
               {
                 id: 'image1.id',

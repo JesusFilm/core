@@ -31,6 +31,7 @@ const video: TreeBlock<VideoFields> = {
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
   eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '5_0-NUA0201-0-0',

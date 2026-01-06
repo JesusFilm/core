@@ -60,7 +60,8 @@ export const journeyVideoBlocks: Blocks[] = [
       variantLanguages: []
     },
     action: null,
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -107,7 +108,8 @@ export const journeyVideoBlocks: Blocks[] = [
       variantLanguages: []
     },
     action: null,
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -154,7 +156,8 @@ export const journeyVideoBlocks: Blocks[] = [
       variantLanguages: []
     },
     action: null,
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -180,7 +183,8 @@ export const journeyVideoBlocks: Blocks[] = [
     showGeneratedSubtitles: null,
     mediaVideo: null,
     action: null,
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'CardBlock',
@@ -249,7 +253,8 @@ export const journeyVideoBlocks: Blocks[] = [
       },
       variantLanguages: []
     },
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'CardBlock',
@@ -360,7 +365,8 @@ export const videoBlocksFiltered = [
       parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
       gtmEventName: 'NavigateToBlockAction'
     },
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -408,7 +414,8 @@ export const videoBlocksFiltered = [
       parentBlockId: '46dafb32-2585-4e14-b97b-eb7a9ae71536',
       gtmEventName: 'NavigateToBlockAction'
     },
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -441,7 +448,8 @@ export const videoBlocksFiltered = [
       parentBlockId: '5b095694-6048-412e-96d4-729678fb7857',
       gtmEventName: 'NavigateToBlockAction'
     },
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -491,7 +499,8 @@ export const videoBlocksFiltered = [
       parentBlockId: '70fb44fe-6bf0-4e7c-89f9-29801c903f8c',
       gtmEventName: 'NavigateToBlockAction'
     },
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',
@@ -541,7 +550,8 @@ export const videoBlocksFiltered = [
       parentBlockId: 'af552762-8e5e-4fe8-82e1-a133e83343b3',
       gtmEventName: 'NavigateToBlockAction'
     },
-    eventLabel: null
+    eventLabel: null,
+    endEventLabel: null
   },
   {
     __typename: 'VideoBlock',

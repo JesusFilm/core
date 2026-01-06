@@ -37,6 +37,7 @@ describe('VideoWrapper', () => {
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
       eventLabel: null,
+      endEventLabel: null,
       children: [
         {
           id: 'image5.id',
@@ -101,7 +102,8 @@ describe('VideoWrapper', () => {
         videoVariantLanguageId: '529',
         subtitleLanguage: null,
         showGeneratedSubtitles: null,
-        eventLabel: null
+        eventLabel: null,
+        endEventLabel: null
       },
       undefined
     )
@@ -132,6 +134,7 @@ describe('VideoWrapper', () => {
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
       eventLabel: null,
+      endEventLabel: null,
       children: [
         {
           id: 'image5.id',
@@ -196,7 +199,8 @@ describe('VideoWrapper', () => {
         videoVariantLanguageId: '529',
         subtitleLanguage: null,
         showGeneratedSubtitles: null,
-        eventLabel: null
+        eventLabel: null,
+        endEventLabel: null
       },
       undefined
     )

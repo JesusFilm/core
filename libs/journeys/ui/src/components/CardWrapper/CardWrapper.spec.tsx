@@ -54,6 +54,7 @@ describe('CardWrapper', () => {
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
           eventLabel: null,
+          endEventLabel: null,
           children: [
             {
               id: 'image5.id',
@@ -124,7 +125,8 @@ describe('CardWrapper', () => {
             videoVariantLanguageId: '529',
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
-            eventLabel: null
+            eventLabel: null,
+            endEventLabel: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -183,6 +185,7 @@ describe('CardWrapper', () => {
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
           eventLabel: null,
+          endEventLabel: null,
           children: [
             {
               id: 'image5.id',
@@ -253,7 +256,8 @@ describe('CardWrapper', () => {
             videoVariantLanguageId: '529',
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
-            eventLabel: null
+            eventLabel: null,
+            endEventLabel: null
           }
         ],
         coverBlockId: 'video5.id',

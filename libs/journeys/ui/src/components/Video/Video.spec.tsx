@@ -37,6 +37,8 @@ const block: TreeBlock<VideoFields> = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -60,7 +62,6 @@ const block: TreeBlock<VideoFields> = {
     },
     variantLanguages: []
   },
-  eventLabel: null,
   children: [
     {
       id: 'posterBlockId',

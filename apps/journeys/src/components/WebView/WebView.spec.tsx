@@ -279,6 +279,7 @@ describe('WebView', () => {
                 showGeneratedSubtitles: null,
                 subtitleLanguage: null,
                 eventLabel: null,
+                endEventLabel: null,
                 children: []
               }
             ]

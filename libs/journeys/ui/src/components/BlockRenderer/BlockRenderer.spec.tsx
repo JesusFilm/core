@@ -790,6 +790,8 @@ describe('BlockRenderer', () => {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
       mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
@@ -822,7 +824,6 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       fullsize: null,
       action: null,
-      eventLabel: null,
       children: []
     }
     const { getByTestId } = render(
@@ -849,6 +850,8 @@ describe('BlockRenderer', () => {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
       mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
@@ -881,7 +884,6 @@ describe('BlockRenderer', () => {
       fullsize: null,
       action: null,
       parentOrder: 0,
-      eventLabel: null,
       children: []
     }
     const { getByTestId } = render(
