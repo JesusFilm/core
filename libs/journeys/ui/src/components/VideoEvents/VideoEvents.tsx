@@ -17,7 +17,11 @@ import {
 } from '../../../__generated__/globalTypes'
 import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -190,14 +194,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoPlay',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoPlay', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoPlay',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -248,14 +257,19 @@ export function VideoEvents({
         const key = keyify({
           stepId: input.stepId ?? '',
           event: 'videoPause',
-          blockId: input.blockId
+          blockId: input.blockId,
+          journeyId: journey?.id
         })
         plausible('videoPause', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
             ...input,
             key,
-            simpleKey: key
+            simpleKey: key,
+            templateKey: templateKeyify({
+              event: 'videoPause',
+              journeyId: journey?.id
+            })
           }
         })
       }
@@ -306,14 +320,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoExpand',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoExpand', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoExpand',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -364,14 +383,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoCollapse',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoCollapse', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoCollapse',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -422,14 +446,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoStart',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoStart', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoStart',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -483,14 +512,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoProgress25',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoProgress25', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoProgress25',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -545,14 +579,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoProgress50',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoProgress50', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoProgress50',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -607,14 +646,19 @@ export function VideoEvents({
           const key = keyify({
             stepId: input.stepId ?? '',
             event: 'videoProgress75',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
           })
           plausible('videoProgress75', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
               ...input,
               key,
-              simpleKey: key
+              simpleKey: key,
+              templateKey: templateKeyify({
+                event: 'videoProgress75',
+                journeyId: journey?.id
+              })
             }
           })
         }
@@ -680,7 +724,12 @@ export function VideoEvents({
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
                 event: 'videoComplete',
-                blockId: input.blockId
+                blockId: input.blockId,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: 'videoComplete',
+                journeyId: journey?.id
               })
             }
           })
