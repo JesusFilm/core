@@ -1,1 +1,0 @@
-export { HeaderLinkAccordion } from './HeaderLinkAccordion'

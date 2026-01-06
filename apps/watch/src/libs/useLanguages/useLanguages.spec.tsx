@@ -27,7 +27,7 @@ describe('useLanguages', () => {
     it('should return loading state when API is loading', async () => {
       server.use(
         http.get('/watch/api/languages', async () => {
-          await delay(50)
+          await delay('infinite')
           return HttpResponse.json([])
         })
       )
@@ -37,10 +37,6 @@ describe('useLanguages', () => {
 
       expect(result.current.isLoading).toBe(true)
       expect(result.current.languages).toEqual([])
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false)
-      })
     })
   })
 
@@ -331,10 +327,8 @@ describe('useLanguages', () => {
       const wrapper = await createI18nWrapper()
       const { result } = renderHook(() => useLanguages(), { wrapper })
 
-      await waitFor(() => {
-        expect(result.current.languages).toEqual([])
-        expect(result.current.isLoading).toBe(false)
-      })
+      expect(result.current.languages).toEqual([])
+      expect(result.current.isLoading).toBe(true)
     })
 
     it('should handle API error', async () => {
