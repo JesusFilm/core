@@ -19,6 +19,15 @@ export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSu
   name: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_language_name[];
 }
 
+export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
@@ -63,6 +72,8 @@ export interface JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSu
   language: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_language;
   createdAt: any;
   updatedAt: any;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_journeyCustomizationFields[];
   blocks: JourneyAiTranslateCreateSubscription_journeyAiTranslateCreateSubscription_journey_blocks[] | null;
 }
 
