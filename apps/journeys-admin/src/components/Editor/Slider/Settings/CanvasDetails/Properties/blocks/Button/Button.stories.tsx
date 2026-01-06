@@ -40,10 +40,10 @@ const block: TreeBlock<ButtonBlock> = {
   startIconId: null,
   endIconId: null,
   submitEnabled: null,
-    action: null,
-    children: [],
-    settings: null,
-    eventLabel: null
+  action: null,
+  children: [],
+  settings: null,
+  eventLabel: null
 }
 
 const Template: StoryObj<ComponentProps<typeof Button>> = {

@@ -59,11 +59,11 @@ describe('CardIntro', () => {
     backgroundColor: null,
     themeMode: null,
     themeName: null,
-      fullscreen: false,
-      backdropBlur: null,
-      eventLabel: null,
-      children: []
-    }
+    fullscreen: false,
+    backdropBlur: null,
+    eventLabel: null,
+    children: []
+  }
   const step: TreeBlock = {
     id: 'stepId',
     __typename: 'StepBlock',
