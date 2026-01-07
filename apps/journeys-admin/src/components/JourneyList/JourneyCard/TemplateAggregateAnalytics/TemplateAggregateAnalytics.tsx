@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -40,7 +41,7 @@ export function TemplateAggregateAnalytics({
 }: TemplateAggregateAnalyticsProps): ReactElement {
   const { t, i18n } = useTranslation('apps-journeys-admin')
   const locale = i18n?.language ?? 'en'
-
+  const loading = true
   const { data } = useQuery<
     GetTemplateFamilyStatsAggregate,
     GetTemplateFamilyStatsAggregateVariables
@@ -87,9 +88,13 @@ export function TemplateAggregateAnalytics({
         icon={<Data1Icon />}
         label={t('Journeys Created')}
         count={
-          <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
-            {localizeAndRound(childJourneys, locale)}
-          </Typography>
+          loading ? (
+            <Skeleton variant="text" width={18} height={21} />
+          ) : (
+            <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
+              {localizeAndRound(childJourneys, locale)}
+            </Typography>
+          )
         }
         ButtonProps={buttonProps}
       />
@@ -98,9 +103,13 @@ export function TemplateAggregateAnalytics({
         icon={<EyeOpenIcon />}
         label={t('Views')}
         count={
-          <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
-            {localizeAndRound(journeyViewCount, locale)}
-          </Typography>
+          loading ? (
+            <Skeleton variant="text" width={18} height={21} />
+          ) : (
+            <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
+              {localizeAndRound(journeyViewCount, locale)}
+            </Typography>
+          )
         }
         ButtonProps={buttonProps}
       />
@@ -109,9 +118,13 @@ export function TemplateAggregateAnalytics({
         icon={<Inbox2Icon />}
         label={t('Responses')}
         count={
-          <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
-            {localizeAndRound(journeyResponseCount, locale)}
-          </Typography>
+          loading ? (
+            <Skeleton variant="text" width={18} height={21} />
+          ) : (
+            <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
+              {localizeAndRound(journeyResponseCount, locale)}
+            </Typography>
+          )
         }
         ButtonProps={buttonProps}
       />
