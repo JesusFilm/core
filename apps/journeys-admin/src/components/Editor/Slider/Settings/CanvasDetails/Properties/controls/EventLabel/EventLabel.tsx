@@ -145,11 +145,15 @@ export function EventLabel({
   >(EVENT_LABEL_VIDEO_END_EVENT_LABEL_UPDATE)
 
   function handleChange(event: SelectChangeEvent): void {
-    if (selectedBlock == null) return
+    const currentBlock =
+      selectedBlock?.__typename === 'StepBlock'
+        ? selectedBlock?.children[0]
+        : selectedBlock
+    if (currentBlock == null) return
 
     const previousEventLabel = getCurrentEventLabel(
       t,
-      selectedBlock,
+      currentBlock,
       videoActionType
     )
     const nextEventLabel = getEventLabelOption(
@@ -158,8 +162,8 @@ export function EventLabel({
     )
     if (previousEventLabel.type === nextEventLabel.type) return
 
-    const blockId = selectedBlock.id
-    const blockTypename = selectedBlock.__typename
+    const blockId = currentBlock.id
+    const blockTypename = currentBlock.__typename
 
     add({
       parameters: {
@@ -172,18 +176,18 @@ export function EventLabel({
 
         dispatch({
           type: 'SetEditorFocusAction',
-          selectedBlock,
+          selectedBlock: currentBlock,
           selectedStep
         })
 
         switch (blockTypename) {
           case 'CardBlock':
             void cardEventLabelUpdate({
-              variables: { id: blockId, eventLabel },
+              variables: { id: currentBlock.id, eventLabel },
               optimisticResponse: {
                 cardBlockUpdate: {
                   __typename: 'CardBlock',
-                  id: blockId,
+                  id: currentBlock.id,
                   eventLabel
                 }
               }
@@ -221,7 +225,7 @@ export function EventLabel({
                   videoBlockUpdate: {
                     __typename: 'VideoBlock',
                     id: blockId,
-                    eventLabel: selectedBlock.eventLabel ?? null,
+                    eventLabel: currentBlock.eventLabel ?? null,
                     endEventLabel: eventLabel
                   }
                 }
@@ -235,7 +239,7 @@ export function EventLabel({
                   __typename: 'VideoBlock',
                   id: blockId,
                   eventLabel,
-                  endEventLabel: selectedBlock.endEventLabel ?? null
+                  endEventLabel: currentBlock.endEventLabel ?? null
                 }
               }
             })
@@ -248,15 +252,20 @@ export function EventLabel({
     })
   }
 
+  const currentBlock =
+    selectedBlock?.__typename === 'StepBlock'
+      ? selectedBlock?.children[0]
+      : selectedBlock
+
   const currentEventLabel = getCurrentEventLabel(
     t,
-    selectedBlock,
+    currentBlock,
     videoActionType
   )
 
   const filteredEventLabels: EventLabelOption[] = getFilteredEventLabels(
     t,
-    selectedBlock,
+    currentBlock,
     videoActionType
   )
 
