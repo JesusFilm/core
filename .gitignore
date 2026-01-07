@@ -68,6 +68,7 @@ terraform.tfstate.backup
 
 # next.js
 .next
+**/next-env.d.ts
 
 # playwright
 **/test-results/

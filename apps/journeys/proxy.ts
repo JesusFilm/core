@@ -14,7 +14,7 @@ export const config = {
   ]
 }
 
-export default async function middleware(
+export default async function proxy(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
   const url = req.nextUrl
