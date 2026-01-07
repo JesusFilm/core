@@ -9,14 +9,19 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["nx build video-importer", "playwright test"],
+        "commands": [
+          "nx build video-importer",
+          "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" playwright test"
+        ],
         "cwd": "apps/video-importer-e2e"
       }
     },
     "update-snapshots": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["playwright test --update-snapshots"],
+        "commands": [
+          "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" playwright test --update-snapshots"
+        ],
         "cwd": "apps/video-importer-e2e"
       }
     },
@@ -24,7 +29,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+          "BUN_INSTALL=${BUN_INSTALL:-$HOME/.bun} PATH=\"$BUN_INSTALL/bin:$PATH\" PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
         ],
         "cwd": "apps/video-importer-e2e"
       }

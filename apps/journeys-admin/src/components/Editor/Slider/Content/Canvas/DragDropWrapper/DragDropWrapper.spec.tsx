@@ -21,7 +21,8 @@ describe('DragDropWrapper', () => {
     submitEnabled: null,
     action: null,
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('should render children', async () => {
