@@ -1,6 +1,5 @@
 import { ApolloQueryResult } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
@@ -17,7 +16,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
-import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
@@ -374,13 +372,6 @@ export function JourneyCard({
               alignItems="center"
             >
               <TemplateAggregateAnalytics journeyId={journey.id} />
-              <Button
-                startIcon={<BarGroup3Icon />}
-                color="primary"
-                sx={{ alignSelf: 'flex-end' }}
-              >
-                {`${t('Metrics')}`}
-              </Button>
             </Stack>
           ) : (
             <JourneyCardInfo journey={journey} variant={variant} />

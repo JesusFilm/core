@@ -1,8 +1,14 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import {
+  GetTemplateFamilyStatsAggregate,
+  GetTemplateFamilyStatsAggregateVariables
+} from '../../../../__generated__/GetTemplateFamilyStatsAggregate'
+import { IdType } from '../../../../__generated__/globalTypes'
+import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from './TemplateAggregateAnalytics/TemplateAggregateAnalytics'
 
 import { ThemeProvider } from '../../ThemeProvider'
 import {
@@ -225,5 +231,45 @@ describe('JourneyCard', () => {
     )
 
     expect(screen.queryByTestId('JourneyCardInfo')).not.toBeInTheDocument()
+  })
+
+  it('should show template only section', async () => {
+    const templateFamilyStatsAggregateMock: MockedResponse<
+      GetTemplateFamilyStatsAggregate,
+      GetTemplateFamilyStatsAggregateVariables
+    > = {
+      request: {
+        query: GET_TEMPLATE_FAMILY_STATS_AGGREGATE,
+        variables: {
+          id: publishedLocalTemplate.id,
+          idType: IdType.databaseId,
+          where: {}
+        }
+      },
+      result: {
+        data: {
+          templateFamilyStatsAggregate: {
+            __typename: 'TemplateFamilyStatsAggregateResponse',
+            childJourneysCount: 10,
+            totalJourneysViews: 100,
+            totalJourneysResponses: 50
+          }
+        }
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[templateFamilyStatsAggregateMock]}>
+          <ThemeProvider>
+            <JourneyCard journey={publishedLocalTemplate} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('Data1Icon')).toBeInTheDocument()
+    })
   })
 })
