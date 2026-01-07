@@ -705,6 +705,8 @@
   "{{count}} years ago_one": "{{count}} years ago",
   "{{count}} years ago_other": "{{count}} years ago",
   "<0>{duration}</0>": "<0>{duration}</0>",
+  "Journeys Created": "Journeys Created",
+  "Views": "Views",
   "Unarchive Templates": "Unarchive Templates",
   "This will unarchive all archived templates you own.": "This will unarchive all archived templates you own.",
   "Trash Templates": "Trash Templates",
