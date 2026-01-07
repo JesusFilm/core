@@ -4,16 +4,23 @@ import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
+import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { MultiselectSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
@@ -86,6 +93,7 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
+  const plausible = usePlausible<JourneyPlausibleEvents>()
   const { enqueueSnackbar } = useSnackbar()
 
   const [textResponseSubmissionEventCreate] =
@@ -181,6 +189,7 @@ export function Card({
     formikHelpers: FormikHelpers<FormikValues>
   ): Promise<void> => {
     const { resetForm } = formikHelpers
+    if (journey == null) return
     if (variant !== 'default' && variant !== 'embed') return
 
     const submissionPromises: Array<Promise<string | null>> = [
@@ -239,15 +248,41 @@ export function Card({
               )
             : t('None')
         const id = uuidv4()
+        const input: MultiselectSubmissionEventCreateInput = {
+          id,
+          blockId,
+          stepId: activeBlock?.id,
+          label: heading,
+          values: valuesArray
+        }
+        input.values.forEach((option) => {
+          plausible('multiselectSubmit', {
+            u: `${window.location.origin}/${journey.id}/${blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: activeBlock?.id,
+                event: 'multiselectSubmit',
+                blockId: input.blockId,
+                target: option,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: activeBlock?.id,
+                event: 'multiselectSubmit',
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: 'multiselectSubmit',
+                journeyId: journey.id
+              })
+            }
+          })
+        })
         return multiselectSubmissionEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              stepId: activeBlock?.id,
-              label: heading,
-              values: valuesArray
-            }
+            input
           }
         }).then(() => {
           sendGTMEvent({

@@ -23,7 +23,8 @@ describe('RadioOption Attribute', () => {
     label: 'Radio Option',
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   }
 
   it('shows default attributes', async () => {
