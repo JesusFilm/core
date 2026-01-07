@@ -36,7 +36,8 @@ describe('ButtonEdit', () => {
     submitEnabled: null,
     action: null,
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   const mockLabelUpdate1 = {

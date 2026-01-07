@@ -34,6 +34,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: true,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 

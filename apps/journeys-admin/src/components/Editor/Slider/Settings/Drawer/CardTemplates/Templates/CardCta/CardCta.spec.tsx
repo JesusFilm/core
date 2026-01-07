@@ -58,6 +58,7 @@ describe('CardCta', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
   const step: TreeBlock = {
@@ -261,6 +262,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon1: {
@@ -294,6 +296,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         button2: {
@@ -309,6 +312,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon2: {
@@ -342,6 +346,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         button3: {
@@ -357,6 +362,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon3: {
@@ -390,6 +396,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         cardBlockUpdate: {
@@ -402,6 +409,7 @@ describe('CardCta', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           __typename: 'CardBlock'
         }
       }
