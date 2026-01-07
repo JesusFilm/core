@@ -4,6 +4,7 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
@@ -16,6 +17,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
@@ -369,6 +371,27 @@ export function JourneyCard({
             <JourneyCardInfo journey={journey} variant={variant} />
           </Box>
         )}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: { xs: 8, sm: 3 },
+            right: { xs: 8, sm: 6 },
+            zIndex: 3
+          }}
+        >
+          <IconButton
+            size="small"
+            aria-label="Download"
+            sx={{
+              outline: '2.5px solid',
+              outlineColor: 'text.secondary',
+              borderRadius: '6px',
+              padding: 1
+            }}
+          >
+            <BarGroup3Icon />
+          </IconButton>
+        </Box>
       </>
     </Card>
   )
