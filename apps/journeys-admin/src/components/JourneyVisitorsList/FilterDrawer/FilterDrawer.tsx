@@ -69,11 +69,6 @@ export function FilterDrawer({
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [showSyncsDialog, setShowSyncsDialog] = useState(false)
 
-  const flagQueryParam = router.query.flag
-  const isSheetsSyncEnabled =
-    flagQueryParam === 'sheets' ||
-    (Array.isArray(flagQueryParam) && flagQueryParam.includes('sheets'))
-
   // Check for query parameter to open sync dialog after integration creation
   useEffect(() => {
     if (journeyId == null) return
@@ -194,17 +189,15 @@ export function FilterDrawer({
       {journeyId != null && (
         <>
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-            {isSheetsSyncEnabled && (
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{ width: '100%', mb: 2 }}
-                onClick={() => setShowSyncsDialog(true)}
-                disabled={disableExportButton}
-              >
-                {t('Sync to Google Sheets')}
-              </Button>
-            )}
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ width: '100%', mb: 2 }}
+              onClick={() => setShowSyncsDialog(true)}
+              disabled={disableExportButton}
+            >
+              {t('Sync to Google Sheets')}
+            </Button>
             {disableExportButton ? (
               <Tooltip
                 title={t(
@@ -266,13 +259,11 @@ export function FilterDrawer({
                   : null
             }
           />
-          {isSheetsSyncEnabled && (
-            <GoogleSheetsSyncDialog
-              open={showSyncsDialog}
-              onClose={() => setShowSyncsDialog(false)}
-              journeyId={journeyId}
-            />
-          )}
+          <GoogleSheetsSyncDialog
+            open={showSyncsDialog}
+            onClose={() => setShowSyncsDialog(false)}
+            journeyId={journeyId}
+          />
         </>
       )}
     </Stack>

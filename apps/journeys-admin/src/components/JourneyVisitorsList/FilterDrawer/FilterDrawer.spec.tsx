@@ -182,7 +182,7 @@ describe('FilterDrawer', () => {
 
   describe('google sheets sync dialog interactions', () => {
     it('opens the sync dialog when the button is clicked', async () => {
-      mockRouter.setCurrentUrl('/journeys?flag=sheets')
+      mockRouter.setCurrentUrl('/journeys')
       const user = userEvent.setup()
       render(
         <MockedProvider mocks={[mockJourneyCreatedAt]}>
@@ -207,7 +207,7 @@ describe('FilterDrawer', () => {
     })
 
     it('automatically opens the sync dialog when the URL has openSyncDialog', async () => {
-      mockRouter.setCurrentUrl('/journeys?flag=sheets&openSyncDialog=true')
+      mockRouter.setCurrentUrl('/journeys?openSyncDialog=true')
 
       render(
         <MockedProvider mocks={[mockJourneyCreatedAt]}>
