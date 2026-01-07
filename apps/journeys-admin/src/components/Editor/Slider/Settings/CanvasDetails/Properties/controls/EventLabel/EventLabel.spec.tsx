@@ -14,8 +14,6 @@ import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import {
   EventLabelButtonEventLabelUpdate,
   EventLabelButtonEventLabelUpdateVariables
@@ -36,6 +34,8 @@ import {
   EventLabelVideoStartEventLabelUpdate,
   EventLabelVideoStartEventLabelUpdateVariables
 } from '../../../../../../../../../__generated__/EventLabelVideoStartEventLabelUpdate'
+import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 

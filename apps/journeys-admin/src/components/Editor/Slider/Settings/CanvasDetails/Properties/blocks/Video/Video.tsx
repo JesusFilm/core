@@ -14,9 +14,9 @@ import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { EventLabel } from '../../controls/EventLabel'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 import { VideoOptions } from './Options/VideoOptions'
-import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const { id, videoId } = block

@@ -8,16 +8,10 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 
-import type { EventLabelOption, EventLabelType } from './utils/eventLabels'
-import { getCurrentEventLabel } from './utils/getCurrentEventLabel'
-import { getFilteredEventLabels } from './utils/getFilteredEventLabels'
-import { getEventLabelOption } from './utils/getEventLabelOption'
-
-import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
 import {
   EventLabelButtonEventLabelUpdate,
   EventLabelButtonEventLabelUpdateVariables
@@ -38,6 +32,12 @@ import {
   EventLabelVideoStartEventLabelUpdate,
   EventLabelVideoStartEventLabelUpdateVariables
 } from '../../../../../../../../../__generated__/EventLabelVideoStartEventLabelUpdate'
+import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
+
+import type { EventLabelOption, EventLabelType } from './utils/eventLabels'
+import { getCurrentEventLabel } from './utils/getCurrentEventLabel'
+import { getEventLabelOption } from './utils/getEventLabelOption'
+import { getFilteredEventLabels } from './utils/getFilteredEventLabels'
 
 interface EventLabelProps {
   videoActionType?: 'start' | 'complete'
@@ -158,7 +158,7 @@ export function EventLabel({
     )
     const nextEventLabel = getEventLabelOption(
       t,
-      event.target.value as EventLabelType | null
+      event.target.value
     )
     if (previousEventLabel.type === nextEventLabel.type) return
 
@@ -281,7 +281,7 @@ export function EventLabel({
 
           <Select
             onChange={handleChange}
-            value={currentEventLabel.type as EventLabelType}
+            value={currentEventLabel.type}
             IconComponent={ChevronDownIcon}
           >
             {filteredEventLabels.map(({ type, label }) => {

@@ -18,9 +18,9 @@ import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { EventLabel } from '../../controls/EventLabel'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 import { RadioOptionImage } from './RadioOptionImage/RadioOptionImage'
-import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

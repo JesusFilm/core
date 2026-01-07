@@ -25,14 +25,14 @@ import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
-import { Icon, icons } from '../../controls/Icon'
 import { EventLabel } from '../../controls/EventLabel'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
+import { Icon, icons } from '../../controls/Icon'
 
 import { Alignment } from './Alignment'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
-import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 export function Button({
   id,
