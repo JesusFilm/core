@@ -41,8 +41,8 @@ export function TemplateAggregateAnalytics({
 }: TemplateAggregateAnalyticsProps): ReactElement {
   const { t, i18n } = useTranslation('apps-journeys-admin')
   const locale = i18n?.language ?? 'en'
-  const loading = true
-  const { data } = useQuery<
+
+  const { data, loading } = useQuery<
     GetTemplateFamilyStatsAggregate,
     GetTemplateFamilyStatsAggregateVariables
   >(GET_TEMPLATE_FAMILY_STATS_AGGREGATE, {
