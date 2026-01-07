@@ -251,6 +251,7 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         sheetName: '2024-01-01 test-journey',
         folderId: 'folder-id',
         email: 'test@example.com',
+        timezone: 'UTC',
         deletedAt: null
       }
     })
