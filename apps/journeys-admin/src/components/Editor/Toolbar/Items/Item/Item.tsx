@@ -69,7 +69,11 @@ export function Item({
                 }}
                 {...restButtonProps}
               >
-                {typeof count === 'number' ? count.toLocaleString() : count}
+                {typeof count === 'number'
+                  ? count.toLocaleString()
+                  : typeof count === 'string'
+                    ? count
+                    : count}
               </Button>
             ) : (
               <IconButton
@@ -120,7 +124,16 @@ export function Item({
           >
             {icon}
           </ListItemIcon>
-          <ListItemText secondary={countLabel ?? count?.toLocaleString()}>
+          <ListItemText
+            secondary={
+              countLabel ??
+              (typeof count === 'number'
+                ? count.toLocaleString()
+                : typeof count === 'string'
+                  ? count
+                  : undefined)
+            }
+          >
             {label}
           </ListItemText>
         </MenuItem>
