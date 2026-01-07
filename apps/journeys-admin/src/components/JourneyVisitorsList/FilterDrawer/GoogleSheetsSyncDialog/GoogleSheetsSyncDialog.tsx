@@ -87,6 +87,7 @@ const EXPORT_TO_SHEETS = gql`
     $select: JourneyVisitorExportSelect
     $destination: JourneyVisitorGoogleSheetDestinationInput!
     $integrationId: ID!
+    $timezone: String
   ) {
     journeyVisitorExportToGoogleSheet(
       journeyId: $journeyId
@@ -94,6 +95,7 @@ const EXPORT_TO_SHEETS = gql`
       select: $select
       destination: $destination
       integrationId: $integrationId
+      timezone: $timezone
     ) {
       spreadsheetId
       spreadsheetUrl
@@ -432,11 +434,15 @@ export function GoogleSheetsSyncDialog({
           }
 
     try {
+      // Get user's timezone to store with sync for consistent date formatting
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
       const { data } = await exportToSheets({
         variables: {
           journeyId,
           destination,
-          integrationId: values.integrationId
+          integrationId: values.integrationId,
+          timezone: userTimezone
         }
       })
 
