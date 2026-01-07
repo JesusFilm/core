@@ -368,8 +368,8 @@ export async function appendEventToGoogleSheets({
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
-  // Update all synced sheets
-  await Promise.all(
+  // Update all synced sheets - use allSettled so one failure doesn't abort others
+  const results = await Promise.allSettled(
     syncs.map(async (sync) => {
       // Use sync-specific timezone for header and data formatting
       const syncTimezone = sync.timezone ?? 'UTC'
@@ -476,4 +476,15 @@ export async function appendEventToGoogleSheets({
       })
     })
   )
+
+  // Log errors for any failed syncs
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      const sync = syncs[index]
+      console.error(
+        `Failed to sync event to Google Sheet (spreadsheetId: ${sync.spreadsheetId}, sheetName: ${sync.sheetName}):`,
+        result.reason
+      )
+    }
+  })
 }
