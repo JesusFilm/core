@@ -17,7 +17,6 @@ import {
   writeValues
 } from '../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../journeyVisitor/export/connectivity'
-import { formatDateYmdInTimeZone } from '../journeyVisitor/export/date'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
@@ -345,9 +344,6 @@ export async function appendEventToGoogleSheets({
     orderIndex
   })
 
-  // Use the stored timezone from when the sync was created, or default to UTC
-  const syncTimezone = sync.timezone ?? 'UTC'
-
   const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
     column,
     userTimezone
@@ -361,15 +357,6 @@ export async function appendEventToGoogleSheets({
     return column.label
   }
 
-  const { headerRow } = buildHeaderRows({
-    columns,
-    userTimezone: syncTimezone,
-    getCardHeading: (blockId) =>
-      getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
-    baseColumnLabelResolver: resolveBaseColumnLabel
-  })
-
-  const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
   const finalHeader = columns.map((column) => column.key)
 
   const { accessToken } = await getTeamGoogleAccessToken(teamId)
@@ -377,36 +364,36 @@ export async function appendEventToGoogleSheets({
   const safe = (value: string | number | null | undefined): string =>
     value == null ? '' : String(value)
   const visitorId = safe(row[0])
-  const createdAtRaw = safe(row[1])
+  const createdAt = safe(row[1])
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
-
-  // Format the date using the stored timezone for consistency with CSV export
-  let formattedDate = createdAtRaw
-  if (createdAtRaw !== '') {
-    try {
-      const dateObj = new Date(createdAtRaw)
-      if (!isNaN(dateObj.getTime())) {
-        formattedDate = formatDateYmdInTimeZone(dateObj, syncTimezone)
-      }
-    } catch {
-      // Keep original value if formatting fails
-    }
-  }
-
-  const rowMap: Record<string, string> = {}
-  if (visitorId !== '') rowMap.visitorId = visitorId
-  if (formattedDate !== '') rowMap.date = formattedDate
-  if (dynamicKey !== '' && dynamicValue !== '') {
-    rowMap[dynamicKey] = dynamicValue
-  }
-
-  const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
-  const lastColA1 = columnIndexToA1(finalHeader.length - 1)
 
   // Update all synced sheets
   await Promise.all(
     syncs.map(async (sync) => {
+      // Use sync-specific timezone for header and data formatting
+      const syncTimezone = sync.timezone ?? 'UTC'
+
+      const { headerRow } = buildHeaderRows({
+        columns,
+        userTimezone: syncTimezone,
+        getCardHeading: (blockId) =>
+          getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
+        baseColumnLabelResolver: resolveBaseColumnLabel
+      })
+
+      const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
+
+      const rowMap: Record<string, string> = {}
+      if (visitorId !== '') rowMap.visitorId = visitorId
+      if (createdAt !== '') rowMap.date = createdAt
+      if (dynamicKey !== '' && dynamicValue !== '') {
+        rowMap[dynamicKey] = dynamicValue
+      }
+
+      const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
+      const lastColA1 = columnIndexToA1(finalHeader.length - 1)
+
       const tabName =
         sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
       await ensureSheet({
