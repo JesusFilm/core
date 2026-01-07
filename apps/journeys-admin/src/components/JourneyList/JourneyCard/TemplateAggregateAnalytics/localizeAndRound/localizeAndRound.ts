@@ -27,11 +27,25 @@ function formatWithDecimals(
   value: number,
   divisor: number,
   decimalPlaces: number,
-  roundingPrecision: number = 100
+  roundingPrecision: number = 100,
+  maxThreshold?: number
 ): string {
   const rounded = Math.round(value / roundingPrecision) * roundingPrecision
   const formatted = (rounded / divisor).toFixed(decimalPlaces)
-  return parseFloat(formatted).toString()
+  const numValue = parseFloat(formatted)
+
+  // If the result rounds up to or above the max threshold, use one more decimal place
+  if (maxThreshold != null && numValue >= maxThreshold) {
+    const formattedWithMoreDecimals = (value / divisor).toFixed(
+      decimalPlaces + 1
+    )
+    const numValueWithMoreDecimals = parseFloat(formattedWithMoreDecimals)
+    if (numValueWithMoreDecimals < maxThreshold) {
+      return numValueWithMoreDecimals.toString()
+    }
+  }
+
+  return numValue.toString()
 }
 
 function formatWan(value: number, suffix: '万' | '만'): string {
@@ -43,7 +57,7 @@ function formatWan(value: number, suffix: '万' | '만'): string {
   }
 
   if (divided < 100) {
-    const formatted = formatWithDecimals(value, TEN_THOUSAND, 1)
+    const formatted = formatWithDecimals(value, TEN_THOUSAND, 1, 1000, 100)
     return `${formatted}${suffix}`
   }
 
