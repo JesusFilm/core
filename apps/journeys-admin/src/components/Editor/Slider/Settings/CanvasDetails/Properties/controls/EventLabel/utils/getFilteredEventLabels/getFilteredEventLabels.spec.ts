@@ -21,7 +21,7 @@ describe('getFilteredEventLabels', () => {
 
   it('should return all event label options when selectedBlock is null', () => {
     const result = getFilteredEventLabels(t, undefined)
-    expect(result).toEqual(eventLabelOptions)
+    expect(result).toEqual(eventLabelOptions(t))
   })
 
   it('should return filtered event labels for CardBlock', () => {
@@ -123,7 +123,7 @@ describe('getFilteredEventLabels', () => {
     } as unknown as TreeBlock<VideoBlock>
 
     const result = getFilteredEventLabels(t, videoBlock)
-    expect(result).toEqual(eventLabelOptions)
+    expect(result).toEqual(eventLabelOptions(t))
   })
 
   it('should return filtered event labels for VideoBlock with start action type', () => {
@@ -179,6 +179,6 @@ describe('getFilteredEventLabels', () => {
     } as unknown as TreeBlock
 
     const result = getFilteredEventLabels(t, unknownBlock)
-    expect(result).toEqual(eventLabelOptions)
+    expect(result).toEqual(eventLabelOptions(t))
   })
 })

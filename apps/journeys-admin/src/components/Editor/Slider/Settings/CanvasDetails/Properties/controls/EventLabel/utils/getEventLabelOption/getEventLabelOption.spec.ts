@@ -28,7 +28,7 @@ describe('getEventLabelOption', () => {
       t,
       'unknownEventLabelType' as unknown as BlockEventLabel
     )
-    expect(result).toEqual(eventLabelOptions[0])
+    expect(result).toEqual(eventLabelOptions(t)[0])
     expect(result.type).toBe('none')
   })
 
@@ -139,7 +139,7 @@ describe('getEventLabelOption', () => {
 
   it('should return the first event label option (None) for empty string', () => {
     const result = getEventLabelOption(t, '' as unknown as BlockEventLabel)
-    expect(result).toEqual(eventLabelOptions[0])
+    expect(result).toEqual(eventLabelOptions(t)[0])
     expect(result.type).toBe('none')
   })
 })

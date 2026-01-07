@@ -21,7 +21,7 @@ describe('getCurrentEventLabel', () => {
 
   it('should return the first event label option (None) by default', () => {
     const result = getCurrentEventLabel(t)
-    expect(result).toEqual(eventLabelOptions[0])
+    expect(result).toEqual(eventLabelOptions(t)[0])
     expect(result.type).toBe('none')
   })
 
