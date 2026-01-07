@@ -59,7 +59,7 @@ describe('getFilteredEventLabels', () => {
     ]
 
     expect(result.map((option) => option.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(7)
+    expect(result.length).toBe(8)
   })
 
   it('should return filtered event labels for submit ButtonBlock', () => {
@@ -105,7 +105,7 @@ describe('getFilteredEventLabels', () => {
     ]
 
     expect(result.map((option) => option.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(7)
+    expect(result.length).toBe(8)
   })
 
   it('should return all event label options when videoActionType is null', () => {
@@ -138,7 +138,7 @@ describe('getFilteredEventLabels', () => {
     ]
 
     expect(result.map((option) => option.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(7)
+    expect(result.length).toBe(8)
   })
 
   it('should return filtered event labels for VideoBlock with complete action type', () => {
@@ -161,7 +161,7 @@ describe('getFilteredEventLabels', () => {
     ]
 
     expect(result.map((option) => option.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(7)
+    expect(result.length).toBe(8)
   })
 
   it('should return all event label options for unknown block types', () => {

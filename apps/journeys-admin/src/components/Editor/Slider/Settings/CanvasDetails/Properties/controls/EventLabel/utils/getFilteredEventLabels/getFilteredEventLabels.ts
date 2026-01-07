@@ -59,8 +59,8 @@ export function getFilteredEventLabels(
     case 'RadioOptionBlock':
       allowedEventLabelTypes.push(
         'none',
-        BlockEventLabel.decisionForChrist,
         BlockEventLabel.prayerRequest,
+        BlockEventLabel.decisionForChrist,
         BlockEventLabel.gospelPresentationStart,
         BlockEventLabel.gospelPresentationComplete,
         BlockEventLabel.custom1,

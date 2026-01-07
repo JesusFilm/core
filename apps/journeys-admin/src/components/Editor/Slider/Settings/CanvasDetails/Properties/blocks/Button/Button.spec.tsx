@@ -26,7 +26,6 @@ describe('Button attributes', () => {
     __typename: 'ButtonBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
-    eventLabel: null,
     label: 'Button',
     buttonVariant: null,
     buttonColor: null,

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockEventLabel, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./../../../../__generated__/globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: VideoFields
@@ -118,8 +118,6 @@ export interface VideoFields {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
-  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -190,4 +188,6 @@ export interface VideoFields {
    * action that should be performed when the video ends
    */
   action: VideoFields_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }

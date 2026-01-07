@@ -8,7 +8,6 @@ export const BUTTON_FIELDS = gql`
     id
     parentBlockId
     parentOrder
-    eventLabel
     label
     buttonVariant: variant
     buttonColor: color
