@@ -59,7 +59,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
       }
     }
   },
-  result: jest.fn(() => ({
+  result: (jest.fn(() => ({
     data: {
       textResponse: {
         id: 'textResponse.id',
@@ -80,6 +80,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         id: 'button.id',
         parentBlockId: 'card.id',
         parentOrder: 1,
+        eventLabel: null,
         label: '',
         buttonVariant: ButtonVariant.contained,
         buttonColor: ButtonColor.primary,
@@ -116,6 +117,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         id: 'button.id',
         parentBlockId: 'card.id',
         parentOrder: 1,
+        eventLabel: null,
         label: '',
         buttonVariant: ButtonVariant.contained,
         buttonColor: ButtonColor.primary,
@@ -131,5 +133,8 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         __typename: 'ButtonBlock'
       }
     }
-  }))
+  })) as unknown as MockedResponse<
+    TextResponseWithButtonCreate,
+    TextResponseWithButtonCreateVariables
+  >['result'])
 }

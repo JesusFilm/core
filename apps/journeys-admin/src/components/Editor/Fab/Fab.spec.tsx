@@ -47,6 +47,7 @@ describe('Fab', () => {
           {
             id: 'card1.id',
             __typename: 'CardBlock',
+      eventLabel: null,
             coverBlockId: 'anotherVideo.id',
             children: [
               {

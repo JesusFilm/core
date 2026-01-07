@@ -72,6 +72,7 @@ export function MenuActionButton(): ReactElement {
 
     const card = {
       __typename: 'CardBlock',
+      eventLabel: null,
       id: cardId,
       parentBlockId: step.id,
       themeMode: ThemeMode.dark,
@@ -126,6 +127,7 @@ export function MenuActionButton(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       settings: null
     } satisfies ButtonBlock
 
@@ -142,6 +144,7 @@ export function MenuActionButton(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       settings: null
     } satisfies ButtonBlock
 
@@ -158,6 +161,7 @@ export function MenuActionButton(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       settings: null
     } satisfies ButtonBlock
 

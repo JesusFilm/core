@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
+import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, BlockEventLabel, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -90,6 +90,7 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -106,6 +107,7 @@ export interface GetJourney_journey_blocks_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -236,6 +238,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
   /**
@@ -489,6 +492,8 @@ export interface GetJourney_journey_blocks_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**

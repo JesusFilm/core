@@ -1,1 +1,1 @@
-export { getCurrentAction } from './getCurrentAction'
+export { getCurrentEventLabel } from './getCurrentAction'

@@ -42,6 +42,7 @@ describe('NewSignUpButton', () => {
       {
         id: 'cardId',
         __typename: 'CardBlock',
+      eventLabel: null,
         parentBlockId: 'stepId',
         coverBlockId: null,
         parentOrder: 0,

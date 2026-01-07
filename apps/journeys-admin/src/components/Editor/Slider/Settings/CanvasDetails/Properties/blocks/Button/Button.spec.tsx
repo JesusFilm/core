@@ -26,6 +26,7 @@ describe('Button attributes', () => {
     __typename: 'ButtonBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
+    eventLabel: null,
     label: 'Button',
     buttonVariant: null,
     buttonColor: null,
@@ -63,7 +64,7 @@ describe('Button attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows meta action when template', () => {
+  it('shows event label when template', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
@@ -78,7 +79,7 @@ describe('Button attributes', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByTestId('MetaActionSelect')).toBeInTheDocument()
+    expect(getByTestId('EventLabelSelect')).toBeInTheDocument()
   })
 
   it('shows filled button', () => {

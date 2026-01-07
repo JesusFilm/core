@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockEventLabel, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardPollRestore
@@ -76,6 +76,7 @@ export interface CardPollRestore_imageRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -92,6 +93,7 @@ export interface CardPollRestore_imageRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -222,6 +224,7 @@ export interface CardPollRestore_imageRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_imageRestore_RadioOptionBlock_action | null;
   /**
@@ -475,6 +478,8 @@ export interface CardPollRestore_imageRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -676,6 +681,7 @@ export interface CardPollRestore_subtitleRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -692,6 +698,7 @@ export interface CardPollRestore_subtitleRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -822,6 +829,7 @@ export interface CardPollRestore_subtitleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_subtitleRestore_RadioOptionBlock_action | null;
   /**
@@ -1075,6 +1083,8 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -1276,6 +1286,7 @@ export interface CardPollRestore_titleRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -1292,6 +1303,7 @@ export interface CardPollRestore_titleRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -1422,6 +1434,7 @@ export interface CardPollRestore_titleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_titleRestore_RadioOptionBlock_action | null;
   /**
@@ -1675,6 +1688,8 @@ export interface CardPollRestore_titleRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -1876,6 +1891,7 @@ export interface CardPollRestore_radioQuestionRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -1892,6 +1908,7 @@ export interface CardPollRestore_radioQuestionRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -2022,6 +2039,7 @@ export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_radioQuestionRestore_RadioOptionBlock_action | null;
   /**
@@ -2275,6 +2293,8 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -2476,6 +2496,7 @@ export interface CardPollRestore_radioOption1Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -2492,6 +2513,7 @@ export interface CardPollRestore_radioOption1Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -2622,6 +2644,7 @@ export interface CardPollRestore_radioOption1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_radioOption1Restore_RadioOptionBlock_action | null;
   /**
@@ -2875,6 +2898,8 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -3076,6 +3101,7 @@ export interface CardPollRestore_radioOption2Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -3092,6 +3118,7 @@ export interface CardPollRestore_radioOption2Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -3222,6 +3249,7 @@ export interface CardPollRestore_radioOption2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_radioOption2Restore_RadioOptionBlock_action | null;
   /**
@@ -3475,6 +3503,8 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -3676,6 +3706,7 @@ export interface CardPollRestore_radioOption3Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -3692,6 +3723,7 @@ export interface CardPollRestore_radioOption3Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -3822,6 +3854,7 @@ export interface CardPollRestore_radioOption3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_radioOption3Restore_RadioOptionBlock_action | null;
   /**
@@ -4075,6 +4108,8 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -4276,6 +4311,7 @@ export interface CardPollRestore_radioOption4Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -4292,6 +4328,7 @@ export interface CardPollRestore_radioOption4Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -4422,6 +4459,7 @@ export interface CardPollRestore_radioOption4Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_radioOption4Restore_RadioOptionBlock_action | null;
   /**
@@ -4675,6 +4713,8 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -4876,6 +4916,7 @@ export interface CardPollRestore_bodyRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -4892,6 +4933,7 @@ export interface CardPollRestore_bodyRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -5022,6 +5064,7 @@ export interface CardPollRestore_bodyRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollRestore_bodyRestore_RadioOptionBlock_action | null;
   /**
@@ -5275,6 +5318,8 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**

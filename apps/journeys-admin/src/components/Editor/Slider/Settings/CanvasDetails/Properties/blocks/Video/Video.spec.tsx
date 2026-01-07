@@ -20,6 +20,8 @@ describe('Video', () => {
     __typename: 'VideoBlock',
     parentBlockId: 'card1.id',
     parentOrder: 0,
+    eventLabel: null,
+    endEventLabel: null,
     startAt: 0,
     endAt: null,
     muted: true,
@@ -78,7 +80,7 @@ describe('Video', () => {
     expect(getByText('FallingPlates')).toBeInTheDocument()
   })
 
-  it('shows meta action when template', () => {
+  it('shows event label when template', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -96,7 +98,7 @@ describe('Video', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('MetaActionSelect')).toHaveLength(2)
+    expect(getAllByTestId('EventLabelSelect')).toHaveLength(2)
   })
 
   it('should open property drawer for video options', () => {

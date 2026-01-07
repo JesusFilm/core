@@ -39,6 +39,7 @@ describe('ActionCards', () => {
                     id: 'card2.id',
                     parentBlockId: 'step2.id',
                     parentOrder: 0,
+                    eventLabel: null,
                     backgroundColor: null,
                     coverBlockId: 'image2.id',
                     themeMode: null,
@@ -59,6 +60,7 @@ describe('ActionCards', () => {
                     label: 'Option 1',
                     parentBlockId: 'RadioQuestion1',
                     parentOrder: 0,
+                    eventLabel: null,
                     action: {
                       __typename: 'LinkAction',
                       parentBlockId: 'RadioOption1',

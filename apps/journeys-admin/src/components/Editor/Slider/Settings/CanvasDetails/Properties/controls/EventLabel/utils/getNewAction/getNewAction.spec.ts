@@ -1,109 +1,109 @@
-import { metaActions } from '../metaActions'
+import { eventLabelOptions } from '../eventLabels'
 
-import { getNewAction } from './getNewAction'
+import { getEventLabelOption } from './getNewAction'
 
-describe('getNewAction', () => {
-  it('should return the action when value matches an action type', () => {
-    const result = getNewAction('christDecisionCapture')
+describe('getEventLabelOption', () => {
+  it('should return the option when value matches an event label type', () => {
+    const result = getEventLabelOption('decisionForChrist')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'christDecisionCapture')
+      eventLabelOptions.find((option) => option.type === 'decisionForChrist')
     )
-    expect(result.type).toBe('christDecisionCapture')
+    expect(result.type).toBe('decisionForChrist')
     expect(result.label).toBe('Decision for Christ')
   })
 
-  it('should return the first metaAction (None) when value does not match any action type', () => {
-    const result = getNewAction('unknownActionType')
-    expect(result).toEqual(metaActions[0])
+  it('should return the first event label option (None) when value does not match any type', () => {
+    const result = getEventLabelOption('unknownEventLabelType')
+    expect(result).toEqual(eventLabelOptions[0])
     expect(result.type).toBe('none')
   })
 
-  it('should return the action for prayerRequestCapture', () => {
-    const result = getNewAction('prayerRequestCapture')
+  it('should return the option for prayerRequest', () => {
+    const result = getEventLabelOption('prayerRequest')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'prayerRequestCapture')
+      eventLabelOptions.find((option) => option.type === 'prayerRequest')
     )
-    expect(result.type).toBe('prayerRequestCapture')
+    expect(result.type).toBe('prayerRequest')
     expect(result.label).toBe('Prayer Request')
   })
 
-  it('should return the action for gospelStartCapture', () => {
-    const result = getNewAction('gospelStartCapture')
+  it('should return the option for gospelPresentationStart', () => {
+    const result = getEventLabelOption('gospelPresentationStart')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'gospelStartCapture')
+      eventLabelOptions.find((option) => option.type === 'gospelPresentationStart')
     )
-    expect(result.type).toBe('gospelStartCapture')
+    expect(result.type).toBe('gospelPresentationStart')
     expect(result.label).toBe('Gospel Presentation Started')
   })
 
-  it('should return the action for gospelCompleteCapture', () => {
-    const result = getNewAction('gospelCompleteCapture')
+  it('should return the option for gospelPresentationComplete', () => {
+    const result = getEventLabelOption('gospelPresentationComplete')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'gospelCompleteCapture')
+      eventLabelOptions.find((option) => option.type === 'gospelPresentationComplete')
     )
-    expect(result.type).toBe('gospelCompleteCapture')
+    expect(result.type).toBe('gospelPresentationComplete')
     expect(result.label).toBe('Gospel Presentation Completed')
   })
 
-  it('should return the action for rsvpCapture', () => {
-    const result = getNewAction('rsvpCapture')
+  it('should return the option for rsvp', () => {
+    const result = getEventLabelOption('rsvp')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'rsvpCapture')
+      eventLabelOptions.find((option) => option.type === 'rsvp')
     )
-    expect(result.type).toBe('rsvpCapture')
+    expect(result.type).toBe('rsvp')
     expect(result.label).toBe('RSVP')
   })
 
-  it('should return the action for specialVideoStartCapture', () => {
-    const result = getNewAction('specialVideoStartCapture')
+  it('should return the option for specialVideoStart', () => {
+    const result = getEventLabelOption('specialVideoStart')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'specialVideoStartCapture')
+      eventLabelOptions.find((option) => option.type === 'specialVideoStart')
     )
-    expect(result.type).toBe('specialVideoStartCapture')
+    expect(result.type).toBe('specialVideoStart')
     expect(result.label).toBe('Video Started')
   })
 
-  it('should return the action for specialVideoCompleteCapture', () => {
-    const result = getNewAction('specialVideoCompleteCapture')
+  it('should return the option for specialVideoComplete', () => {
+    const result = getEventLabelOption('specialVideoComplete')
     expect(result).toEqual(
-      metaActions.find(
-        (action) => action.type === 'specialVideoCompleteCapture'
+      eventLabelOptions.find(
+        (option) => option.type === 'specialVideoComplete'
       )
     )
-    expect(result.type).toBe('specialVideoCompleteCapture')
+    expect(result.type).toBe('specialVideoComplete')
     expect(result.label).toBe('Video Completed')
   })
 
-  it('should return the action for custom1Capture', () => {
-    const result = getNewAction('custom1Capture')
+  it('should return the option for custom1', () => {
+    const result = getEventLabelOption('custom1')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'custom1Capture')
+      eventLabelOptions.find((option) => option.type === 'custom1')
     )
-    expect(result.type).toBe('custom1Capture')
+    expect(result.type).toBe('custom1')
     expect(result.label).toBe('Custom Event 1')
   })
 
-  it('should return the action for custom2Capture', () => {
-    const result = getNewAction('custom2Capture')
+  it('should return the option for custom2', () => {
+    const result = getEventLabelOption('custom2')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'custom2Capture')
+      eventLabelOptions.find((option) => option.type === 'custom2')
     )
-    expect(result.type).toBe('custom2Capture')
+    expect(result.type).toBe('custom2')
     expect(result.label).toBe('Custom Event 2')
   })
 
-  it('should return the action for custom3Capture', () => {
-    const result = getNewAction('custom3Capture')
+  it('should return the option for custom3', () => {
+    const result = getEventLabelOption('custom3')
     expect(result).toEqual(
-      metaActions.find((action) => action.type === 'custom3Capture')
+      eventLabelOptions.find((option) => option.type === 'custom3')
     )
-    expect(result.type).toBe('custom3Capture')
+    expect(result.type).toBe('custom3')
     expect(result.label).toBe('Custom Event 3')
   })
 
-  it('should return the first metaAction (None) for empty string', () => {
-    const result = getNewAction('')
-    expect(result).toEqual(metaActions[0])
+  it('should return the first event label option (None) for empty string', () => {
+    const result = getEventLabelOption('')
+    expect(result).toEqual(eventLabelOptions[0])
     expect(result.type).toBe('none')
   })
 })

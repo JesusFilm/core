@@ -6,6 +6,7 @@ import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/TemplateView/TemplateFooter/data'
 
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,
@@ -17,11 +18,12 @@ import { steps } from '../data'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 
 describe('NavigateToBlockAction', () => {
-  const selectedBlock: TreeBlock = {
+  const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
     id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 4,
+    eventLabel: null,
     label: 'Contact Us',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,

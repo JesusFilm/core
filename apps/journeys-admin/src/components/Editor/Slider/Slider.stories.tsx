@@ -37,9 +37,11 @@ const step1: TreeBlock<StepBlock> = {
   children: [
     {
       __typename: 'CardBlock',
+      eventLabel: null,
       id: 'card1.id',
       parentBlockId: 'step1.id',
       parentOrder: 0,
+      eventLabel: null,
       backgroundColor: null,
       coverBlockId: null,
       themeName: null,
@@ -67,6 +69,7 @@ const step1: TreeBlock<StepBlock> = {
           id: 'button1.id',
           parentBlockId: 'card1.id',
           parentOrder: 1,
+          eventLabel: null,
           label: 'Next',
           buttonVariant: null,
           buttonColor: null,
@@ -99,9 +102,11 @@ const step2: TreeBlock<StepBlock> = {
   children: [
     {
       __typename: 'CardBlock',
+      eventLabel: null,
       id: 'card2.id',
       parentBlockId: 'step1.id',
       parentOrder: 0,
+      eventLabel: null,
       backgroundColor: null,
       coverBlockId: null,
       themeName: null,

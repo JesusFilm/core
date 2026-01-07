@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { CardBlockUpdateInput, BlockEventLabel, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaRestore
@@ -76,6 +76,7 @@ export interface CardCtaRestore_imageRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -92,6 +93,7 @@ export interface CardCtaRestore_imageRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -222,6 +224,7 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_imageRestore_RadioOptionBlock_action | null;
   /**
@@ -475,6 +478,8 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -676,6 +681,7 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -692,6 +698,7 @@ export interface CardCtaRestore_subtitleRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -822,6 +829,7 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_subtitleRestore_RadioOptionBlock_action | null;
   /**
@@ -1075,6 +1083,8 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -1276,6 +1286,7 @@ export interface CardCtaRestore_titleRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -1292,6 +1303,7 @@ export interface CardCtaRestore_titleRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -1422,6 +1434,7 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_titleRestore_RadioOptionBlock_action | null;
   /**
@@ -1675,6 +1688,8 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -1876,6 +1891,7 @@ export interface CardCtaRestore_button1Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -1892,6 +1908,7 @@ export interface CardCtaRestore_button1Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -2022,6 +2039,7 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_button1Restore_RadioOptionBlock_action | null;
   /**
@@ -2275,6 +2293,8 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -2476,6 +2496,7 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -2492,6 +2513,7 @@ export interface CardCtaRestore_startIcon1Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -2622,6 +2644,7 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_startIcon1Restore_RadioOptionBlock_action | null;
   /**
@@ -2875,6 +2898,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -3076,6 +3101,7 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -3092,6 +3118,7 @@ export interface CardCtaRestore_endIcon1Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -3222,6 +3249,7 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_endIcon1Restore_RadioOptionBlock_action | null;
   /**
@@ -3475,6 +3503,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -3676,6 +3706,7 @@ export interface CardCtaRestore_button2Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -3692,6 +3723,7 @@ export interface CardCtaRestore_button2Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -3822,6 +3854,7 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_button2Restore_RadioOptionBlock_action | null;
   /**
@@ -4075,6 +4108,8 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -4276,6 +4311,7 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -4292,6 +4328,7 @@ export interface CardCtaRestore_startIcon2Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -4422,6 +4459,7 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_startIcon2Restore_RadioOptionBlock_action | null;
   /**
@@ -4675,6 +4713,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -4876,6 +4916,7 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -4892,6 +4933,7 @@ export interface CardCtaRestore_endIcon2Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -5022,6 +5064,7 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_endIcon2Restore_RadioOptionBlock_action | null;
   /**
@@ -5275,6 +5318,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -5476,6 +5521,7 @@ export interface CardCtaRestore_button3Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -5492,6 +5538,7 @@ export interface CardCtaRestore_button3Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -5622,6 +5669,7 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_button3Restore_RadioOptionBlock_action | null;
   /**
@@ -5875,6 +5923,8 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -6076,6 +6126,7 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -6092,6 +6143,7 @@ export interface CardCtaRestore_startIcon3Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -6222,6 +6274,7 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_startIcon3Restore_RadioOptionBlock_action | null;
   /**
@@ -6475,6 +6528,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -6676,6 +6731,7 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -6692,6 +6748,7 @@ export interface CardCtaRestore_endIcon3Restore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -6822,6 +6879,7 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardCtaRestore_endIcon3Restore_RadioOptionBlock_action | null;
   /**
@@ -7075,6 +7133,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -7214,6 +7274,7 @@ export interface CardCtaRestore_cardBlockUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */

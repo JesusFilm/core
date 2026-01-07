@@ -8,6 +8,8 @@ export const VIDEO_FIELDS = gql`
     id
     parentBlockId
     parentOrder
+    eventLabel
+    endEventLabel
     muted
     autoplay
     startAt

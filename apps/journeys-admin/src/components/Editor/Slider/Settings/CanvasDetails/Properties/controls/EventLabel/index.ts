@@ -1,1 +1,1 @@
-export { MetaAction } from './MetaAction'
+export { EventLabel } from './EventLabel'

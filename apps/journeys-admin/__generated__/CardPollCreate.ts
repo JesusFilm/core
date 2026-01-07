@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ContactActionType, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, BlockEventLabel, ContactActionType, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardPollCreate
@@ -128,6 +128,7 @@ export interface CardPollCreate_radioOption1 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollCreate_radioOption1_action | null;
   /**
@@ -190,6 +191,7 @@ export interface CardPollCreate_radioOption2 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollCreate_radioOption2_action | null;
   /**
@@ -252,6 +254,7 @@ export interface CardPollCreate_radioOption3 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollCreate_radioOption3_action | null;
   /**
@@ -314,6 +317,7 @@ export interface CardPollCreate_radioOption4 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: CardPollCreate_radioOption4_action | null;
   /**
@@ -349,6 +353,7 @@ export interface CardPollCreate_cardBlockUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */

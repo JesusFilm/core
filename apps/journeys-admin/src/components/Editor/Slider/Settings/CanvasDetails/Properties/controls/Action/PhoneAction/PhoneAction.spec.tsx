@@ -5,6 +5,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
+import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,
@@ -26,11 +27,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('PhoneAction', () => {
-  const selectedBlock: TreeBlock = {
+  const selectedBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlock',
     id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 4,
+    eventLabel: null,
     label: 'Contact Us',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,
@@ -265,7 +267,7 @@ describe('PhoneAction', () => {
   })
 
   it('should disable radio buttons when no phone number is set', async () => {
-    const selectedBlockWithoutPhone: TreeBlock = {
+    const selectedBlockWithoutPhone: TreeBlock<ButtonBlock> = {
       ...selectedBlock,
       action: {
         parentBlockId: 'button2.id',
@@ -316,7 +318,7 @@ describe('PhoneAction', () => {
   })
 
   it('should show tooltip when radio buttons are disabled', async () => {
-    const selectedBlockWithoutPhone: TreeBlock = {
+    const selectedBlockWithoutPhone: TreeBlock<ButtonBlock> = {
       ...selectedBlock,
       action: {
         parentBlockId: 'button2.id',
@@ -354,7 +356,7 @@ describe('PhoneAction', () => {
   })
 
   it('should not call handleContactActionChange when radio is disabled', async () => {
-    const selectedBlockWithoutPhone: TreeBlock = {
+    const selectedBlockWithoutPhone: TreeBlock<ButtonBlock> = {
       ...selectedBlock,
       action: {
         parentBlockId: 'button2.id',

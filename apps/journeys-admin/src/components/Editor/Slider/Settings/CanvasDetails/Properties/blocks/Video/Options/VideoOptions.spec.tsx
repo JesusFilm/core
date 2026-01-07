@@ -44,6 +44,8 @@ const video: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   parentBlockId: 'card1.id',
   parentOrder: 0,
+  eventLabel: null,
+  endEventLabel: null,
   startAt: 0,
   endAt: null,
   muted: true,

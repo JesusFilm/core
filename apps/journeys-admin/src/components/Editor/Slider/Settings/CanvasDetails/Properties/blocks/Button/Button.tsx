@@ -26,7 +26,7 @@ import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 import { Icon, icons } from '../../controls/Icon'
-import { MetaAction } from '../../controls/MetaAction'
+import { EventLabel } from '../../controls/EventLabel'
 
 import { Alignment } from './Alignment'
 import { Color } from './Color'
@@ -70,11 +70,11 @@ export function Button({
       {journey?.template && (
         <Accordion
           icon={<ActivityIcon />}
-          id={`${id}-meta-action`}
+          id={`${id}-event-label`}
           name={t('Tracking')}
           value={t('None')}
         >
-          <MetaAction />
+          <EventLabel />
         </Accordion>
       )}
       <Accordion

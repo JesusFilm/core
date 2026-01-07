@@ -6,171 +6,171 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../../__generated__/BlockFields'
-import { metaActions } from '../metaActions'
+import { eventLabelOptions } from '../eventLabels'
 
-import { getFilteredActions } from './getFilteredActions'
+import { getFilteredEventLabels } from './getFilteredActions'
 
-describe('getFilteredActions', () => {
-  it('should return all metaActions when selectedBlock is null', () => {
-    const result = getFilteredActions(undefined)
-    expect(result).toEqual(metaActions)
+describe('getFilteredEventLabels', () => {
+  it('should return all event label options when selectedBlock is null', () => {
+    const result = getFilteredEventLabels(undefined)
+    expect(result).toEqual(eventLabelOptions)
   })
 
-  it('should return filtered actions for CardBlock', () => {
+  it('should return filtered event labels for CardBlock', () => {
     const cardBlock = {
       __typename: 'CardBlock',
       children: []
     } as unknown as TreeBlock<CardBlock>
 
-    const result = getFilteredActions(cardBlock)
+    const result = getFilteredEventLabels(cardBlock)
 
     const expectedTypes = [
       'none',
-      'christDecisionCapture',
-      'gospelStartCapture',
-      'gospelCompleteCapture',
-      'custom1Capture',
-      'custom2Capture',
-      'custom3Capture'
+      'decisionForChrist',
+      'gospelPresentationStart',
+      'gospelPresentationComplete',
+      'custom1',
+      'custom2',
+      'custom3'
     ]
 
-    expect(result.map((action) => action.type)).toEqual(expectedTypes)
+    expect(result.map((option) => option.type)).toEqual(expectedTypes)
     expect(result.length).toBe(7)
   })
 
-  it('should return filtered actions for regular ButtonBlock', () => {
+  it('should return filtered event labels for regular ButtonBlock', () => {
     const buttonBlock = {
       __typename: 'ButtonBlock',
       submitEnabled: false,
       children: []
     } as unknown as TreeBlock<ButtonBlock>
 
-    const result = getFilteredActions(buttonBlock)
+    const result = getFilteredEventLabels(buttonBlock)
 
     const expectedTypes = [
       'none',
-      'prayerRequestCapture',
-      'christDecisionCapture',
-      'gospelStartCapture',
-      'gospelCompleteCapture',
-      'custom1Capture',
-      'custom2Capture',
-      'custom3Capture'
+      'prayerRequest',
+      'decisionForChrist',
+      'gospelPresentationStart',
+      'gospelPresentationComplete',
+      'custom1',
+      'custom2',
+      'custom3'
     ]
 
-    expect(result.map((action) => action.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(8)
+    expect(result.map((option) => option.type)).toEqual(expectedTypes)
+    expect(result.length).toBe(7)
   })
 
-  it('should return filtered actions for submit ButtonBlock', () => {
+  it('should return filtered event labels for submit ButtonBlock', () => {
     const submitButtonBlock = {
       __typename: 'ButtonBlock',
       submitEnabled: true,
       children: []
     } as unknown as TreeBlock<ButtonBlock>
 
-    const result = getFilteredActions(submitButtonBlock)
+    const result = getFilteredEventLabels(submitButtonBlock)
 
     const expectedTypes = [
       'none',
-      'prayerRequestCapture',
-      'christDecisionCapture',
-      'rsvpCapture',
-      'custom1Capture',
-      'custom2Capture',
-      'custom3Capture'
+      'prayerRequest',
+      'decisionForChrist',
+      'rsvp',
+      'custom1',
+      'custom2',
+      'custom3'
     ]
 
-    expect(result.map((action) => action.type)).toEqual(expectedTypes)
+    expect(result.map((option) => option.type)).toEqual(expectedTypes)
     expect(result.length).toBe(7)
   })
 
-  it('should return filtered actions for RadioOptionBlock', () => {
+  it('should return filtered event labels for RadioOptionBlock', () => {
     const radioOptionBlock = {
       __typename: 'RadioOptionBlock',
       children: []
     } as unknown as TreeBlock<RadioOptionBlock>
 
-    const result = getFilteredActions(radioOptionBlock)
+    const result = getFilteredEventLabels(radioOptionBlock)
 
     const expectedTypes = [
       'none',
-      'prayerRequestCapture',
-      'christDecisionCapture',
-      'gospelStartCapture',
-      'gospelCompleteCapture',
-      'custom1Capture',
-      'custom2Capture',
-      'custom3Capture'
+      'prayerRequest',
+      'decisionForChrist',
+      'gospelPresentationStart',
+      'gospelPresentationComplete',
+      'custom1',
+      'custom2',
+      'custom3'
     ]
 
-    expect(result.map((action) => action.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(8)
+    expect(result.map((option) => option.type)).toEqual(expectedTypes)
+    expect(result.length).toBe(7)
   })
 
-  it('should return all metaActions when videoActionType is null', () => {
+  it('should return all event label options when videoActionType is null', () => {
     const videoBlock = {
       __typename: 'VideoBlock',
       children: []
     } as unknown as TreeBlock<VideoBlock>
 
-    const result = getFilteredActions(videoBlock)
-    expect(result).toEqual(metaActions)
+    const result = getFilteredEventLabels(videoBlock)
+    expect(result).toEqual(eventLabelOptions)
   })
 
-  it('should return filtered actions for VideoBlock with start action type', () => {
+  it('should return filtered event labels for VideoBlock with start action type', () => {
     const videoBlock = {
       __typename: 'VideoBlock',
       children: []
     } as unknown as TreeBlock<VideoBlock>
 
-    const result = getFilteredActions(videoBlock, 'start')
+    const result = getFilteredEventLabels(videoBlock, 'start')
 
     const expectedTypes = [
       'none',
-      'prayerRequestCapture',
-      'christDecisionCapture',
-      'gospelStartCapture',
-      'specialVideoStartCapture',
-      'custom1Capture',
-      'custom2Capture',
-      'custom3Capture'
+      'prayerRequest',
+      'decisionForChrist',
+      'gospelPresentationStart',
+      'specialVideoStart',
+      'custom1',
+      'custom2',
+      'custom3'
     ]
 
-    expect(result.map((action) => action.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(8)
+    expect(result.map((option) => option.type)).toEqual(expectedTypes)
+    expect(result.length).toBe(7)
   })
 
-  it('should return filtered actions for VideoBlock with complete action type', () => {
+  it('should return filtered event labels for VideoBlock with complete action type', () => {
     const videoBlock = {
       __typename: 'VideoBlock',
       children: []
     } as unknown as TreeBlock<VideoBlock>
 
-    const result = getFilteredActions(videoBlock, 'complete')
+    const result = getFilteredEventLabels(videoBlock, 'complete')
 
     const expectedTypes = [
       'none',
-      'prayerRequestCapture',
-      'christDecisionCapture',
-      'gospelCompleteCapture',
-      'specialVideoCompleteCapture',
-      'custom1Capture',
-      'custom2Capture',
-      'custom3Capture'
+      'prayerRequest',
+      'decisionForChrist',
+      'gospelPresentationComplete',
+      'specialVideoComplete',
+      'custom1',
+      'custom2',
+      'custom3'
     ]
 
-    expect(result.map((action) => action.type)).toEqual(expectedTypes)
-    expect(result.length).toBe(8)
+    expect(result.map((option) => option.type)).toEqual(expectedTypes)
+    expect(result.length).toBe(7)
   })
 
-  it('should return all metaActions for unknown block types', () => {
+  it('should return all event label options for unknown block types', () => {
     const unknownBlock = {
       __typename: 'UnknownBlock',
       children: []
     } as unknown as TreeBlock
 
-    const result = getFilteredActions(unknownBlock)
-    expect(result).toEqual(metaActions)
+    const result = getFilteredEventLabels(unknownBlock)
+    expect(result).toEqual(eventLabelOptions)
   })
 })

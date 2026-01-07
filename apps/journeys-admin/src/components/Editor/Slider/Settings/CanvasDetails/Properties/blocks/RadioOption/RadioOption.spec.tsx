@@ -22,6 +22,7 @@ describe('RadioOption Attribute', () => {
     __typename: 'RadioOptionBlock',
     parentBlockId: 'step1.id',
     parentOrder: 0,
+    eventLabel: null,
     label: 'Radio Option',
     action: null,
     pollOptionImageBlockId: null,
@@ -41,7 +42,7 @@ describe('RadioOption Attribute', () => {
     )
   })
 
-  it('shows meta action when template', async () => {
+  it('shows event label when template', async () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -59,7 +60,7 @@ describe('RadioOption Attribute', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByTestId('MetaActionSelect')).toBeInTheDocument()
+      expect(getByTestId('EventLabelSelect')).toBeInTheDocument()
     )
   })
 

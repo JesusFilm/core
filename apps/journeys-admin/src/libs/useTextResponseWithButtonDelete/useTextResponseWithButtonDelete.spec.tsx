@@ -35,6 +35,7 @@ describe('useTextResponseWithButtonDelete', () => {
       id: 'button.id',
       parentBlockId: 'card.id',
       parentOrder: 1,
+      eventLabel: null,
       label: '',
       buttonVariant: ButtonVariant.contained,
       buttonColor: ButtonColor.primary,

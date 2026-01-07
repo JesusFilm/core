@@ -44,6 +44,7 @@ describe('NewTypographyButton', () => {
       {
         id: 'cardId',
         __typename: 'CardBlock',
+      eventLabel: null,
         parentBlockId: 'stepId',
         coverBlockId: null,
         parentOrder: 0,
@@ -60,6 +61,7 @@ describe('NewTypographyButton', () => {
   const cardBlock: TreeBlock<CardBlock> = {
     id: 'cardId',
     __typename: 'CardBlock',
+      eventLabel: null,
     parentBlockId: 'stepId',
     coverBlockId: null,
     parentOrder: 0,

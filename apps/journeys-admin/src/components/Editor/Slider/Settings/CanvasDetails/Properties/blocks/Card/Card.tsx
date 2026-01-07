@@ -54,11 +54,11 @@ const CardStyling = dynamic(
   { ssr: false }
 )
 
-const MetaAction = dynamic(
+const EventLabel = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/MetaAction/MetaAction" */ '../../controls/MetaAction'
-    ).then((mod) => mod.MetaAction),
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/EventLabel/EventLabel" */ '../../controls/EventLabel'
+    ).then((mod) => mod.EventLabel),
   { ssr: false }
 )
 
@@ -133,11 +133,11 @@ export function Card({
       {journey?.template && (
         <Accordion
           icon={<ActivityIcon />}
-          id={`${id}-meta-action`}
+          id={`${id}-event-label`}
           name={t('Tracking')}
           value={t('None')}
         >
-          <MetaAction />
+          <EventLabel />
         </Accordion>
       )}
       <Accordion

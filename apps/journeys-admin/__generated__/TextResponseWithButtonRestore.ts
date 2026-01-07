@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockEventLabel, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonRestore
@@ -76,6 +76,7 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -92,6 +93,7 @@ export interface TextResponseWithButtonRestore_textResponse_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -222,6 +224,7 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action | null;
   /**
@@ -475,6 +478,8 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -676,6 +681,7 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -692,6 +698,7 @@ export interface TextResponseWithButtonRestore_button_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -822,6 +829,7 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: TextResponseWithButtonRestore_button_RadioOptionBlock_action | null;
   /**
@@ -1075,6 +1083,8 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -1276,6 +1286,7 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -1292,6 +1303,7 @@ export interface TextResponseWithButtonRestore_startIcon_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -1422,6 +1434,7 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action | null;
   /**
@@ -1675,6 +1688,8 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -1876,6 +1891,7 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -1892,6 +1908,7 @@ export interface TextResponseWithButtonRestore_endIcon_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -2022,6 +2039,7 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
   label: string;
   action: TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action | null;
   /**
@@ -2275,6 +2293,8 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**

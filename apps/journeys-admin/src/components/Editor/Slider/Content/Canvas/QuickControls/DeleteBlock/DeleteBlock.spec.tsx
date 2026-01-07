@@ -285,6 +285,7 @@ describe('DeleteBlock', () => {
         {
           id: 'blockId',
           __typename: 'CardBlock',
+      eventLabel: null,
           parentBlockId: 'passedInStepId',
           parentOrder: 0,
           coverBlockId: null,

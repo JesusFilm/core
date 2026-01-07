@@ -174,6 +174,7 @@ export function ThemePreview({
                     id: 'button',
                     parentBlockId: 'question',
                     parentOrder: 0,
+                    eventLabel: null,
                     label: 'Button',
                     buttonVariant: ButtonVariant.contained,
                     buttonColor: ButtonColor.error,
@@ -200,6 +201,7 @@ export function ThemePreview({
                         label: 'Poll Block Option',
                         parentBlockId: 'RadioQuestion1',
                         parentOrder: 0,
+                        eventLabel: null,
                         action: null,
                         pollOptionImageBlockId: null,
                         children: []
@@ -210,6 +212,7 @@ export function ThemePreview({
                         label: 'Poll Block Option',
                         parentBlockId: 'RadioQuestion1',
                         parentOrder: 1,
+                        eventLabel: null,
                         action: null,
                         pollOptionImageBlockId: null,
                         children: []

@@ -88,6 +88,7 @@ const block: TreeBlock<CardBlock> = {
   __typename: 'CardBlock',
   parentBlockId: 'step1.id',
   parentOrder: 0,
+  eventLabel: null,
   coverBlockId: null,
   backgroundColor: null,
   themeMode: null,

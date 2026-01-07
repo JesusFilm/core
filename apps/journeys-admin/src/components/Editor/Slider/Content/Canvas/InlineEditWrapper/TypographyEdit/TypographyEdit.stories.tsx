@@ -86,6 +86,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card0.id',
         __typename: 'CardBlock',
+      eventLabel: null,
         parentBlockId: 'step0.id',
         coverBlockId: 'image0.id',
         parentOrder: 0,

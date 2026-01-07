@@ -1,1 +1,1 @@
-export { getNewAction } from './getNewAction'
+export { getEventLabelOption } from './getNewAction'

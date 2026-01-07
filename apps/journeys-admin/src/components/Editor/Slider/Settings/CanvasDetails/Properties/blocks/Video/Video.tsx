@@ -13,7 +13,7 @@ import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../..
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
-import { MetaAction } from '../../controls/MetaAction'
+import { EventLabel } from '../../controls/EventLabel'
 
 import { VideoOptions } from './Options/VideoOptions'
 
@@ -38,16 +38,16 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
       {journey?.template && (
         <Accordion
           icon={<ActivityIcon />}
-          id={`${id}-meta-action`}
+          id={`${id}-event-label`}
           name={t('Tracking')}
           value={t('None')}
         >
-          <MetaAction
+          <EventLabel
             videoActionType="start"
             label={t('On Video Start')}
             showHelperText={false}
           />
-          <MetaAction
+          <EventLabel
             videoActionType="complete"
             label={t('On Video End')}
             showHelperText={true}

@@ -25,7 +25,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
       endIconId: 'endIcon.id'
     }
   },
-  result: jest.fn(() => ({
+  result: (jest.fn(() => ({
     data: {
       textResponse: [
         {
@@ -49,6 +49,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           id: 'button.id',
           parentBlockId: 'card.id',
           parentOrder: 1,
+          eventLabel: null,
           label: '',
           buttonVariant: ButtonVariant.contained,
           buttonColor: ButtonColor.primary,
@@ -84,5 +85,8 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
         }
       ]
     }
-  }))
+  })) as unknown as MockedResponse<
+    TextResponseWithButtonRestore,
+    TextResponseWithButtonRestoreVariables
+  >['result'])
 }

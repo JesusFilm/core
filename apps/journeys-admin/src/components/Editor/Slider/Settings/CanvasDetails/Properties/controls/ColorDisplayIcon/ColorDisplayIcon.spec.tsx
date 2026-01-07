@@ -33,6 +33,7 @@ describe('ColorDisplayIcon', () => {
         parentBlockId: 'step1.id',
         coverBlockId: null,
         parentOrder: 0,
+        eventLabel: null,
         backgroundColor: null,
         themeMode,
         themeName: ThemeName.base,

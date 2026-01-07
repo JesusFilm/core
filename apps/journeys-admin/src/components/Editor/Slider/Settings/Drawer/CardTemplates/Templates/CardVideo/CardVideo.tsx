@@ -84,6 +84,8 @@ export function CardVideo(): ReactElement {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 0,
+      eventLabel: null,
+      endEventLabel: null,
       muted: false,
       autoplay: true,
       startAt: 2048,

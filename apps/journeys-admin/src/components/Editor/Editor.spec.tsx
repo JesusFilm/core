@@ -171,6 +171,7 @@ describe('Editor', () => {
         },
         {
           __typename: 'CardBlock',
+      eventLabel: null,
           id: 'card0.id',
           parentBlockId: 'step0.id',
           parentOrder: 0,

@@ -1,28 +1,29 @@
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import type { MetaAction, MetaActionType } from '../metaActions'
-import { metaActions } from '../metaActions'
+import { BlockEventLabel } from 'apps/journeys-admin/__generated__/globalTypes'
+import type { EventLabelOption, EventLabelType } from '../eventLabels'
+import { eventLabelOptions } from '../eventLabels'
 
-export function getFilteredActions(
+export function getFilteredEventLabels(
   selectedBlock?: TreeBlock,
   videoActionType?: 'start' | 'complete'
-): MetaAction[] {
+): EventLabelOption[] {
   if (selectedBlock == null) {
-    return metaActions
+    return eventLabelOptions
   }
 
-  const allowedActionTypes: MetaActionType[] = []
+  const allowedEventLabelTypes: EventLabelType[] = []
 
   switch (selectedBlock.__typename) {
     case 'CardBlock':
-      allowedActionTypes.push(
+      allowedEventLabelTypes.push(
         'none',
-        'christDecisionCapture',
-        'gospelStartCapture',
-        'gospelCompleteCapture',
-        'custom1Capture',
-        'custom2Capture',
-        'custom3Capture'
+        BlockEventLabel.decisionForChrist,
+        BlockEventLabel.gospelPresentationStart,
+        BlockEventLabel.gospelPresentationComplete,
+        BlockEventLabel.custom1,
+        BlockEventLabel.custom2,
+        BlockEventLabel.custom3
       )
       break
 
@@ -31,78 +32,78 @@ export function getFilteredActions(
         'submitEnabled' in selectedBlock && selectedBlock.submitEnabled === true
 
       if (isSubmitButton) {
-        allowedActionTypes.push(
+        allowedEventLabelTypes.push(
           'none',
-          'rsvpCapture',
-          'prayerRequestCapture',
-          'christDecisionCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
+          BlockEventLabel.rsvp,
+          BlockEventLabel.prayerRequest,
+          BlockEventLabel.decisionForChrist,
+          BlockEventLabel.custom1,
+          BlockEventLabel.custom2,
+          BlockEventLabel.custom3
         )
       } else {
-        allowedActionTypes.push(
+        allowedEventLabelTypes.push(
           'none',
-          'christDecisionCapture',
-          'prayerRequestCapture',
-          'gospelStartCapture',
-          'gospelCompleteCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
+          BlockEventLabel.decisionForChrist,
+          BlockEventLabel.prayerRequest,
+          BlockEventLabel.gospelPresentationStart,
+          BlockEventLabel.gospelPresentationComplete,
+          BlockEventLabel.custom1,
+          BlockEventLabel.custom2,
+          BlockEventLabel.custom3
         )
       }
       break
     }
 
     case 'RadioOptionBlock':
-      allowedActionTypes.push(
+      allowedEventLabelTypes.push(
         'none',
-        'christDecisionCapture',
-        'prayerRequestCapture',
-        'gospelStartCapture',
-        'gospelCompleteCapture',
-        'custom1Capture',
-        'custom2Capture',
-        'custom3Capture'
+        BlockEventLabel.decisionForChrist,
+        BlockEventLabel.prayerRequest,
+        BlockEventLabel.gospelPresentationStart,
+        BlockEventLabel.gospelPresentationComplete,
+        BlockEventLabel.custom1,
+        BlockEventLabel.custom2,
+        BlockEventLabel.custom3
       )
       break
 
     case 'VideoBlock': {
       if (videoActionType == null) {
-        return metaActions
+        return eventLabelOptions
       }
       if (videoActionType === 'start') {
-        allowedActionTypes.push(
+        allowedEventLabelTypes.push(
           'none',
-          'specialVideoStartCapture',
-          'gospelStartCapture',
-          'christDecisionCapture',
-          'prayerRequestCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
+          BlockEventLabel.specialVideoStart,
+          BlockEventLabel.gospelPresentationStart,
+          BlockEventLabel.decisionForChrist,
+          BlockEventLabel.prayerRequest,
+          BlockEventLabel.custom1,
+          BlockEventLabel.custom2,
+          BlockEventLabel.custom3
         )
       } else if (videoActionType === 'complete') {
-        allowedActionTypes.push(
+        allowedEventLabelTypes.push(
           'none',
-          'specialVideoCompleteCapture',
-          'gospelCompleteCapture',
-          'christDecisionCapture',
-          'prayerRequestCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
+          BlockEventLabel.specialVideoComplete,
+          BlockEventLabel.gospelPresentationComplete,
+          BlockEventLabel.decisionForChrist,
+          BlockEventLabel.prayerRequest,
+          BlockEventLabel.custom1,
+          BlockEventLabel.custom2,
+          BlockEventLabel.custom3
         )
       }
       break
     }
 
     default:
-      return metaActions
+      return eventLabelOptions
   }
 
-  return metaActions.filter((action) =>
-    allowedActionTypes.includes(action.type)
+  return eventLabelOptions.filter((option) =>
+    allowedEventLabelTypes.includes(option.type)
   )
 }

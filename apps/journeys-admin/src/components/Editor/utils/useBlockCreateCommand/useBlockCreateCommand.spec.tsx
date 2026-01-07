@@ -12,6 +12,7 @@ const block: CardBlock = {
   __typename: 'CardBlock',
   parentBlockId: 'stepId',
   parentOrder: 0,
+  eventLabel: null,
   coverBlockId: null,
   backgroundColor: null,
   themeMode: null,

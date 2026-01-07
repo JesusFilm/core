@@ -5,23 +5,25 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../../__generated__/BlockFields'
-import { metaActions } from '../metaActions'
+import { BlockEventLabel } from '../../../../../../../../../../../__generated__/globalTypes'
+import { eventLabelOptions } from '../eventLabels'
 
-import { getCurrentAction } from './getCurrentAction'
+import { getCurrentEventLabel } from './getCurrentAction'
 
-describe('getCurrentAction', () => {
-  it('should return the first metaAction (None) by default', () => {
-    const result = getCurrentAction()
-    expect(result).toEqual(metaActions[0])
+describe('getCurrentEventLabel', () => {
+  it('should return the first event label option (None) by default', () => {
+    const result = getCurrentEventLabel()
+    expect(result).toEqual(eventLabelOptions[0])
     expect(result.type).toBe('none')
   })
 
-  it('should return the first metaAction when selectedBlock is provided', () => {
+  it('should return the matching event label option when selectedBlock has eventLabel', () => {
     const cardBlock: TreeBlock<CardBlock> = {
       id: 'card1.id',
       __typename: 'CardBlock',
       parentBlockId: 'step1.id',
       parentOrder: 0,
+      eventLabel: BlockEventLabel.decisionForChrist,
       coverBlockId: null,
       backgroundColor: null,
       themeMode: null,
@@ -31,27 +33,52 @@ describe('getCurrentAction', () => {
       children: []
     }
 
-    const result = getCurrentAction(cardBlock)
-    expect(result).toEqual(metaActions[0])
+    const result = getCurrentEventLabel(cardBlock)
+    expect(result.type).toBe(BlockEventLabel.decisionForChrist)
+    expect(result.label).toBe('Decision for Christ')
   })
 
-  it('should return the first metaAction when videoActionType is start', () => {
-    const videoBlock = {
+  it('should use eventLabel when videoActionType is start', () => {
+    const videoBlock: TreeBlock<VideoBlock> = {
       id: 'video1.id',
       __typename: 'VideoBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      eventLabel: BlockEventLabel.specialVideoStart,
+      endEventLabel: null,
+      muted: true,
+      autoplay: true,
+      startAt: 0,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: true,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: null as unknown as any,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      showGeneratedSubtitles: null,
+      subtitleLanguage: null,
+      mediaVideo: null,
+      action: null,
       children: []
-    } as unknown as TreeBlock<VideoBlock>
+    }
 
-    const result = getCurrentAction(videoBlock, 'start')
-    expect(result).toEqual(metaActions[0])
+    const result = getCurrentEventLabel(videoBlock, 'start')
+    expect(result.type).toBe(BlockEventLabel.specialVideoStart)
+    expect(result.label).toBe('Video Started')
   })
 
-  it('should return the first metaAction when videoActionType is complete', () => {
+  it('should use endEventLabel when videoActionType is complete', () => {
     const buttonBlock: TreeBlock<ButtonBlock> = {
       id: 'button1.id',
       __typename: 'ButtonBlock',
       parentBlockId: 'step1.id',
       parentOrder: 0,
+      eventLabel: BlockEventLabel.custom1,
       label: 'Button',
       buttonVariant: null,
       buttonColor: null,
@@ -64,7 +91,8 @@ describe('getCurrentAction', () => {
       children: []
     }
 
-    const result = getCurrentAction(buttonBlock, 'complete')
-    expect(result).toEqual(metaActions[0])
+    const result = getCurrentEventLabel(buttonBlock)
+    expect(result.type).toBe(BlockEventLabel.custom1)
+    expect(result.label).toBe('Custom Event 1')
   })
 })

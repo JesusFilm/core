@@ -1,1 +1,1 @@
-export { getFilteredActions } from './getFilteredActions'
+export { getFilteredEventLabels } from './getFilteredActions'

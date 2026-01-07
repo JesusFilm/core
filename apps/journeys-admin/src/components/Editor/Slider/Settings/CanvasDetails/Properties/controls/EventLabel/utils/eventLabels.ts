@@ -1,41 +1,31 @@
-// TODO: get real types for backend
-export type MetaActionType =
-  | 'none'
-  | 'prayerRequestCapture'
-  | 'christDecisionCapture'
-  | 'gospelStartCapture'
-  | 'gospelCompleteCapture'
-  | 'rsvpCapture'
-  | 'specialVideoStartCapture'
-  | 'specialVideoCompleteCapture'
-  | 'custom1Capture'
-  | 'custom2Capture'
-  | 'custom3Capture'
+import { BlockEventLabel } from 'apps/journeys-admin/__generated__/globalTypes'
 
-export interface MetaAction {
-  type: MetaActionType
+export type EventLabelType = BlockEventLabel | 'none'
+
+export interface EventLabelOption {
+  type: EventLabelType
   label: string
 }
 
-export const metaActions: MetaAction[] = [
+export const eventLabelOptions: EventLabelOption[] = [
   { type: 'none', label: 'None' },
-  { type: 'prayerRequestCapture', label: 'Prayer Request' },
-  { type: 'christDecisionCapture', label: 'Decision for Christ' },
+  { type: BlockEventLabel.prayerRequest, label: 'Prayer Request' },
+  { type: BlockEventLabel.decisionForChrist, label: 'Decision for Christ' },
   {
-    type: 'gospelStartCapture',
+    type: BlockEventLabel.gospelPresentationStart,
     label: 'Gospel Presentation Started'
   },
   {
-    type: 'gospelCompleteCapture',
+    type: BlockEventLabel.gospelPresentationComplete,
     label: 'Gospel Presentation Completed'
   },
-  { type: 'rsvpCapture', label: 'RSVP' },
-  { type: 'specialVideoStartCapture', label: 'Video Started' },
+  { type: BlockEventLabel.rsvp, label: 'RSVP' },
+  { type: BlockEventLabel.specialVideoStart, label: 'Video Started' },
   {
-    type: 'specialVideoCompleteCapture',
+    type: BlockEventLabel.specialVideoComplete,
     label: 'Video Completed'
   },
-  { type: 'custom1Capture', label: 'Custom Event 1' },
-  { type: 'custom2Capture', label: 'Custom Event 2' },
-  { type: 'custom3Capture', label: 'Custom Event 3' }
+  { type: BlockEventLabel.custom1, label: 'Custom Event 1' },
+  { type: BlockEventLabel.custom2, label: 'Custom Event 2' },
+  { type: BlockEventLabel.custom3, label: 'Custom Event 3' }
 ]

@@ -1,6 +1,6 @@
-import type { MetaAction } from '../metaActions'
-import { metaActions } from '../metaActions'
+import type { EventLabelOption } from '../eventLabels'
+import { eventLabelOptions } from '../eventLabels'
 
-export function getNewAction(value: string): MetaAction {
-  return metaActions.find((action) => action.type === value) ?? metaActions[0]
+export function getEventLabelOption(value: string): EventLabelOption {
+  return eventLabelOptions.find((option) => option.type === value) ?? eventLabelOptions[0]
 }
