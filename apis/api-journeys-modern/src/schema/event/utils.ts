@@ -17,6 +17,7 @@ import {
   writeValues
 } from '../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../journeyVisitor/export/connectivity'
+import { formatDateYmdInTimeZone } from '../journeyVisitor/export/date'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
@@ -344,6 +345,9 @@ export async function appendEventToGoogleSheets({
     orderIndex
   })
 
+  // Use the stored timezone from when the sync was created, or default to UTC
+  const syncTimezone = sync.timezone ?? 'UTC'
+
   const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
     column,
     userTimezone
@@ -359,7 +363,7 @@ export async function appendEventToGoogleSheets({
 
   const { headerRow } = buildHeaderRows({
     columns,
-    userTimezone: 'UTC',
+    userTimezone: syncTimezone,
     getCardHeading: (blockId) =>
       getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
     baseColumnLabelResolver: resolveBaseColumnLabel
@@ -407,13 +411,26 @@ export async function appendEventToGoogleSheets({
   const safe = (value: string | number | null | undefined): string =>
     value == null ? '' : String(value)
   const visitorId = safe(row[0])
-  const createdAt = safe(row[1])
+  const createdAtRaw = safe(row[1])
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
+  // Format the date using the stored timezone for consistency with CSV export
+  let formattedDate = createdAtRaw
+  if (createdAtRaw !== '') {
+    try {
+      const dateObj = new Date(createdAtRaw)
+      if (!isNaN(dateObj.getTime())) {
+        formattedDate = formatDateYmdInTimeZone(dateObj, syncTimezone)
+      }
+    } catch {
+      // Keep original value if formatting fails
+    }
+  }
+
   const rowMap: Record<string, string> = {}
   if (visitorId !== '') rowMap.visitorId = visitorId
-  if (createdAt !== '') rowMap.date = createdAt
+  if (formattedDate !== '') rowMap.date = formattedDate
   if (dynamicKey !== '' && dynamicValue !== '') {
     rowMap[dynamicKey] = dynamicValue
   }
