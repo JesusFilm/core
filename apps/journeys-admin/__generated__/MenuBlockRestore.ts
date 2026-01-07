@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyUpdateInput, BlockEventLabel, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockRestore
@@ -76,7 +76,6 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -86,6 +85,7 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   submitEnabled: boolean | null;
   action: MenuBlockRestore_stepRestore_ButtonBlock_action | null;
   settings: MenuBlockRestore_stepRestore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockRestore_stepRestore_CardBlock {
@@ -93,7 +93,6 @@ export interface MenuBlockRestore_stepRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -124,6 +123,7 @@ export interface MenuBlockRestore_stepRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockRestore_stepRestore_IconBlock {
@@ -224,7 +224,6 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   action: MenuBlockRestore_stepRestore_RadioOptionBlock_action | null;
   /**
@@ -233,6 +232,7 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockRestore_stepRestore_RadioQuestionBlock {
@@ -488,8 +488,6 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
-  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -560,6 +558,8 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: MenuBlockRestore_stepRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

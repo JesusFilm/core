@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockEventLabel, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardVideoDelete
@@ -122,8 +122,6 @@ export interface CardVideoDelete_video_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
-  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -194,6 +192,8 @@ export interface CardVideoDelete_video_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardVideoDelete_video_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export type CardVideoDelete_video = CardVideoDelete_video_ImageBlock | CardVideoDelete_video_VideoBlock;

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockUpdateActionInput, BlockEventLabel, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockUpdateActionInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockRestoreFromAction
@@ -76,7 +76,6 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -86,6 +85,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   submitEnabled: boolean | null;
   action: StepBlockRestoreFromAction_blockRestore_ButtonBlock_action | null;
   settings: StepBlockRestoreFromAction_blockRestore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_CardBlock {
@@ -93,7 +93,6 @@ export interface StepBlockRestoreFromAction_blockRestore_CardBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -124,6 +123,7 @@ export interface StepBlockRestoreFromAction_blockRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_IconBlock {
@@ -224,7 +224,6 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   action: StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action | null;
   /**
@@ -233,6 +232,7 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock {
@@ -488,8 +488,6 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
-  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -560,6 +558,8 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: StepBlockRestoreFromAction_blockRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput, BlockEventLabel, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: VideoBlockUpdate
@@ -118,8 +118,6 @@ export interface VideoBlockUpdate_videoBlockUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
-  endEventLabel: BlockEventLabel | null;
   muted: boolean | null;
   autoplay: boolean | null;
   /**
@@ -190,6 +188,8 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * action that should be performed when the video ends
    */
   action: VideoBlockUpdate_videoBlockUpdate_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface VideoBlockUpdate {

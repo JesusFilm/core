@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, BlockEventLabel, ThemeMode, ThemeName } from "./globalTypes";
+import { CardBlockUpdateInput, ThemeMode, ThemeName, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormDelete
@@ -62,7 +62,6 @@ export interface CardFormDelete_cardBlockUpdate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -93,6 +92,7 @@ export interface CardFormDelete_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormDelete {

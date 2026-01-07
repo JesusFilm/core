@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, BlockUpdateActionInput, BlockEventLabel, ThemeMode, ThemeName } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, BlockUpdateActionInput, ThemeMode, ThemeName, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockCreateFromAction
@@ -49,7 +49,6 @@ export interface StepBlockCreateFromAction_cardBlockCreate {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -80,6 +79,7 @@ export interface StepBlockCreateFromAction_cardBlockCreate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockCreateFromAction_blockUpdateAction_parentBlock {

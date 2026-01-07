@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, BlockEventLabel, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, BlockEventLabel, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockCreate
@@ -49,7 +49,6 @@ export interface MenuBlockCreate_card {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   /**
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
@@ -80,6 +79,7 @@ export interface MenuBlockCreate_card {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockCreate_heading_settings {
@@ -182,7 +182,6 @@ export interface MenuBlockCreate_button1 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -192,6 +191,7 @@ export interface MenuBlockCreate_button1 {
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button1_action | null;
   settings: MenuBlockCreate_button1_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
@@ -254,7 +254,6 @@ export interface MenuBlockCreate_button2 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -264,6 +263,7 @@ export interface MenuBlockCreate_button2 {
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button2_action | null;
   settings: MenuBlockCreate_button2_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
@@ -326,7 +326,6 @@ export interface MenuBlockCreate_button3 {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  eventLabel: BlockEventLabel | null;
   label: string;
   buttonVariant: ButtonVariant | null;
   buttonColor: ButtonColor | null;
@@ -336,6 +335,7 @@ export interface MenuBlockCreate_button3 {
   submitEnabled: boolean | null;
   action: MenuBlockCreate_button3_action | null;
   settings: MenuBlockCreate_button3_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MenuBlockCreate_journeyUpdate_menuStepBlock {
