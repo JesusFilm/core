@@ -72,7 +72,7 @@ describe('getCurrentEventLabel', () => {
     expect(result.label).toBe('Video Started')
   })
 
-  it('should use endEventLabel when videoActionType is complete', () => {
+  it('should return eventLabel for ButtonBlock when set', () => {
     const buttonBlock: TreeBlock<ButtonBlock> = {
       id: 'button1.id',
       __typename: 'ButtonBlock',
