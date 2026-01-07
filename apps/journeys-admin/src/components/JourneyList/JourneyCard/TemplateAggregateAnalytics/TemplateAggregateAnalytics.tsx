@@ -42,7 +42,7 @@ export function TemplateAggregateAnalytics({
   const { t, i18n } = useTranslation('apps-journeys-admin')
   const locale = i18n?.language ?? 'en'
 
-  const { data, loading } = useQuery<
+  const { data } = useQuery<
     GetTemplateFamilyStatsAggregate,
     GetTemplateFamilyStatsAggregateVariables
   >(GET_TEMPLATE_FAMILY_STATS_AGGREGATE, {
@@ -88,7 +88,7 @@ export function TemplateAggregateAnalytics({
         icon={<Data1Icon />}
         label={t('Journeys Created')}
         count={
-          loading ? (
+          childJourneys == null ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
@@ -103,7 +103,7 @@ export function TemplateAggregateAnalytics({
         icon={<EyeOpenIcon />}
         label={t('Views')}
         count={
-          loading ? (
+          journeyViewCount == null ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
@@ -118,7 +118,7 @@ export function TemplateAggregateAnalytics({
         icon={<Inbox2Icon />}
         label={t('Responses')}
         count={
-          loading ? (
+          journeyResponseCount == null ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
