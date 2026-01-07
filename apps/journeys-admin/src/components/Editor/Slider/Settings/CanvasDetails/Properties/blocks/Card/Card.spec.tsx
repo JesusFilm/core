@@ -105,7 +105,7 @@ describe('Card', () => {
       ).toBeInTheDocument()
     })
 
-    it('shows meta action when template', async () => {
+    it('shows event label when template', async () => {
       const card = createCard()
       renderWithProviders(<Card {...card} />, {
         selectedBlock: card,
@@ -114,7 +114,7 @@ describe('Card', () => {
       const trackingButton = screen.getByText('Tracking')
       fireEvent.click(trackingButton)
       await waitFor(() => {
-        expect(screen.getByTestId('MetaActionSelect')).toBeInTheDocument()
+        expect(screen.getByTestId('EventLabelSelect')).toBeInTheDocument()
       })
     })
 

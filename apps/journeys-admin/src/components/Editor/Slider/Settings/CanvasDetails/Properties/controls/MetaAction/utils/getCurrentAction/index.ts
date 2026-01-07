@@ -1,1 +1,0 @@
-export { getCurrentAction } from './getCurrentAction'

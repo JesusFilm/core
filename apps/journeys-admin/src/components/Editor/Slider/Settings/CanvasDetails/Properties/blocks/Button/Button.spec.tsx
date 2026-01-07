@@ -64,7 +64,7 @@ describe('Button attributes', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows meta action when template', () => {
+  it('shows event label when template', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider
@@ -79,7 +79,7 @@ describe('Button attributes', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByTestId('MetaActionSelect')).toBeInTheDocument()
+    expect(getByTestId('EventLabelSelect')).toBeInTheDocument()
   })
 
   it('shows filled button', () => {

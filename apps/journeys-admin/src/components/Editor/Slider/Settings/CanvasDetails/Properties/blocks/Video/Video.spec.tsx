@@ -80,7 +80,7 @@ describe('Video', () => {
     expect(getByText('FallingPlates')).toBeInTheDocument()
   })
 
-  it('shows meta action when template', () => {
+  it('shows event label when template', () => {
     const { getAllByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -98,7 +98,7 @@ describe('Video', () => {
       </MockedProvider>
     )
 
-    expect(getAllByTestId('MetaActionSelect')).toHaveLength(2)
+    expect(getAllByTestId('EventLabelSelect')).toHaveLength(2)
   })
 
   it('should open property drawer for video options', () => {
