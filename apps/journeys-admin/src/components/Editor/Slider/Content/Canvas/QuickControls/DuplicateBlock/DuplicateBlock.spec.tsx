@@ -346,7 +346,8 @@ describe('DuplicateBlock', () => {
       startIconId: null,
       endIconId: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
 
     // capture the optimistic response from the mutation

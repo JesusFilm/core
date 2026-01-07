@@ -45,7 +45,8 @@ describe('Icon', () => {
     submitEnabled: null,
     action: null,
     children: [icon],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('shows toggle options if there is a icon', () => {

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioOptionBlockCreate
@@ -69,6 +69,7 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface RadioOptionBlockCreate {

@@ -62,6 +62,8 @@ describe('VideoDetails', () => {
     mediaVideo: null,
     posterBlockId: 'imageBlockId',
     objectFit: null,
+    eventLabel: null,
+    endEventLabel: null,
     children: [imageBlock]
   }
 
@@ -285,6 +287,7 @@ describe('VideoDetails', () => {
                     themeName: null,
                     fullscreen: false,
                     backdropBlur: null,
+                    eventLabel: null,
                     children: [videoBlock]
                   }
                 ]

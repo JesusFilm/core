@@ -58,6 +58,7 @@ export function RadioQuestionEdit({
       parentOrder: selectedBlock?.children?.length ?? 0,
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     }
 

@@ -151,6 +151,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -171,7 +172,8 @@ describe('transformSteps', () => {
                   blockId: 'step2.id'
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -252,6 +254,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -272,7 +275,8 @@ describe('transformSteps', () => {
                   blockId: 'step1.id'
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -329,6 +333,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -351,7 +356,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -374,7 +380,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -463,6 +470,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -487,7 +495,8 @@ describe('transformSteps', () => {
                   parentStepId: 'step1.id'
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -560,6 +569,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -582,7 +592,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -605,7 +616,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -630,7 +642,8 @@ describe('transformSteps', () => {
                   parentStepId: 'step1.id'
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -756,6 +769,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -779,7 +793,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 } as any,
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -852,6 +867,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -874,7 +890,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -898,7 +915,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 } as any,
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -921,7 +939,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 },
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }
@@ -1024,6 +1043,7 @@ describe('transformSteps', () => {
             themeMode: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -1047,7 +1067,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 } as any,
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               },
               {
                 __typename: 'ButtonBlock',
@@ -1071,7 +1092,8 @@ describe('transformSteps', () => {
                   parentStepId: null
                 } as any,
                 children: [],
-                settings: null
+                settings: null,
+                eventLabel: null
               }
             ]
           }

@@ -94,6 +94,7 @@ describe('CardLayout', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     render(
@@ -123,6 +124,7 @@ describe('CardLayout', () => {
       themeName: null,
       fullscreen: true,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     render(
@@ -152,6 +154,7 @@ describe('CardLayout', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     const step: TreeBlock<StepBlock> = {
@@ -204,6 +207,7 @@ describe('CardLayout', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     render(
@@ -263,6 +267,7 @@ describe('CardLayout', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     render(

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ContactActionType } from "./globalTypes";
+import { ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: RadioOptionFields
@@ -69,4 +69,5 @@ export interface RadioOptionFields {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }

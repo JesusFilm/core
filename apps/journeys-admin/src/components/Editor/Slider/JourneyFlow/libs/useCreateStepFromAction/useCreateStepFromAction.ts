@@ -225,7 +225,8 @@ export function useCreateStepFromAction(): (
       backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
-      parentOrder: 0
+      parentOrder: 0,
+      eventLabel: null
     }
     add({
       parameters: { execute: {}, undo: { stepBeforeDelete: selectedStep } },

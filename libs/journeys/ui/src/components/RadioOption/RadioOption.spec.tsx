@@ -39,7 +39,8 @@ const block: TreeBlock<RadioOptionFields> = {
     blockId: 'def'
   },
   pollOptionImageBlockId: null,
-  children: []
+  children: [],
+  eventLabel: null
 }
 
 describe('RadioOption', () => {

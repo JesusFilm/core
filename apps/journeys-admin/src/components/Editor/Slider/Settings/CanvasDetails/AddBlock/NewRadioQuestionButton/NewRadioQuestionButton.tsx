@@ -80,6 +80,7 @@ export function NewRadioQuestionButton(): ReactElement {
       label: t('Option 1'),
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     }
     const radioOptionBlock2: RadioOptionBlock = {
@@ -89,6 +90,7 @@ export function NewRadioQuestionButton(): ReactElement {
       label: t('Option 2'),
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     }
 

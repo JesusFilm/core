@@ -28,6 +28,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'video5.id',
@@ -52,6 +53,8 @@ describe('CardWrapper', () => {
           objectFit: null,
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
+          eventLabel: null,
+          endEventLabel: null,
           children: [
             {
               id: 'image5.id',
@@ -121,7 +124,9 @@ describe('CardWrapper', () => {
             videoId: null,
             videoVariantLanguageId: '529',
             subtitleLanguage: null,
-            showGeneratedSubtitles: null
+            showGeneratedSubtitles: null,
+            eventLabel: null,
+            endEventLabel: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -132,6 +137,7 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
+        eventLabel: null,
         wrappers: {}
       },
       undefined
@@ -153,6 +159,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'video5.id',
@@ -177,6 +184,8 @@ describe('CardWrapper', () => {
           objectFit: null,
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
+          eventLabel: null,
+          endEventLabel: null,
           children: [
             {
               id: 'image5.id',
@@ -246,7 +255,9 @@ describe('CardWrapper', () => {
             videoId: null,
             videoVariantLanguageId: '529',
             subtitleLanguage: null,
-            showGeneratedSubtitles: null
+            showGeneratedSubtitles: null,
+            eventLabel: null,
+            endEventLabel: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -257,6 +268,7 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
+        eventLabel: null,
         wrappers: {}
       },
       undefined

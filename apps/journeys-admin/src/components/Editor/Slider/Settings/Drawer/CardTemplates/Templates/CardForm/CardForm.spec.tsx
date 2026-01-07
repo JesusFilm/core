@@ -64,6 +64,7 @@ describe('CardForm', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
   const step: TreeBlock = {
@@ -246,6 +247,7 @@ describe('CardForm', () => {
           action: null,
           submitEnabled: true,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon: {
@@ -279,6 +281,7 @@ describe('CardForm', () => {
           action: null,
           submitEnabled: true,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         body: {
@@ -306,6 +309,7 @@ describe('CardForm', () => {
           themeName: null,
           fullscreen: true,
           backdropBlur: null,
+          eventLabel: null,
           __typename: 'CardBlock'
         }
       }

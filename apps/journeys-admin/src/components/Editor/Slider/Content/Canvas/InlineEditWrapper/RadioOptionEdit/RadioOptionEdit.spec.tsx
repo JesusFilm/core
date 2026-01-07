@@ -29,7 +29,8 @@ describe('RadioOptionEdit', () => {
     parentOrder: 0,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   }
 
   const mockRadioOptionUpdate1 = {

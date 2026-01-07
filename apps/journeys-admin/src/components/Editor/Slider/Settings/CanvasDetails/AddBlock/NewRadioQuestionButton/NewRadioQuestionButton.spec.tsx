@@ -47,6 +47,7 @@ describe('NewRadioQuestionButton', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: []
       }
     ]

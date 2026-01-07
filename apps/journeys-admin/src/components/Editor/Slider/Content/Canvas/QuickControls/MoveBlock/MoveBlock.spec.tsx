@@ -81,6 +81,7 @@ describe('MoveBlockButton', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: [block1, block2]
   }
 
@@ -293,6 +294,7 @@ describe('MoveBlockButton', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [block1]
     }
 

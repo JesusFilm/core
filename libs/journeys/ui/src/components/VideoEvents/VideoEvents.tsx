@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Player from 'video.js/dist/types/player'
 
 import {
+  BlockEventLabel,
   VideoBlockSource,
   VideoCollapseEventCreateInput,
   VideoCompleteEventCreateInput,
@@ -111,6 +112,8 @@ export interface VideoEventsProps {
   startAt: number | null
   endAt: number | null
   action: VideoTriggerFields_triggerAction | null
+  eventLabel?: BlockEventLabel | null
+  endEventLabel?: BlockEventLabel | null
 }
 
 export function VideoEvents({
@@ -121,7 +124,9 @@ export function VideoEvents({
   videoId,
   startAt,
   endAt,
-  action
+  action,
+  eventLabel,
+  endEventLabel
 }: VideoEventsProps): ReactElement {
   const [videoStartEventCreate, { called: calledStart }] =
     useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
@@ -461,6 +466,26 @@ export function VideoEvents({
               })
             }
           })
+          if (eventLabel != null) {
+            const eventLabelKey = keyify({
+              stepId: input.stepId ?? '',
+              event: eventLabel,
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+            plausible(eventLabel, {
+              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+              props: {
+                ...input,
+                key: eventLabelKey,
+                simpleKey: eventLabelKey,
+                templateKey: templateKeyify({
+                  event: eventLabel,
+                  journeyId: journey?.id
+                })
+              }
+            })
+          }
         }
         sendGTMEvent({
           event: 'video_start',
@@ -710,7 +735,7 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
           plausible('videoComplete', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
@@ -733,6 +758,27 @@ export function VideoEvents({
               })
             }
           })
+          if (endEventLabel != null) {
+            const endEventLabelKey = keyify({
+              stepId: input.stepId ?? '',
+              event: endEventLabel,
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+            plausible(endEventLabel, {
+              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+              props: {
+                ...input,
+                key: endEventLabelKey,
+                simpleKey: endEventLabelKey,
+                templateKey: templateKeyify({
+                  event: endEventLabel,
+                  journeyId: journey?.id
+                })
+              }
+            })
+          }
+        }
         sendGTMEvent({
           event: 'video_complete',
           eventId: id,

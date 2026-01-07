@@ -7,6 +7,21 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum BlockEventLabel {
+  custom1 = "custom1",
+  custom2 = "custom2",
+  custom3 = "custom3",
+  decisionForChrist = "decisionForChrist",
+  gospelPresentationComplete = "gospelPresentationComplete",
+  gospelPresentationStart = "gospelPresentationStart",
+  inviteFriend = "inviteFriend",
+  prayerRequest = "prayerRequest",
+  rsvp = "rsvp",
+  share = "share",
+  specialVideoComplete = "specialVideoComplete",
+  specialVideoStart = "specialVideoStart",
+}
+
 export enum ButtonAction {
   ChatAction = "ChatAction",
   EmailAction = "EmailAction",

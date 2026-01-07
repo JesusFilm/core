@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
@@ -78,4 +78,5 @@ export interface ButtonFields {
   submitEnabled: boolean | null;
   action: ButtonFields_action | null;
   settings: ButtonFields_settings | null;
+  eventLabel: BlockEventLabel | null;
 }

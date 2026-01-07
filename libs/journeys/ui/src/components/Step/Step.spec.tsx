@@ -5,6 +5,7 @@ import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  BlockEventLabel,
   JourneyStatus,
   ThemeMode,
   ThemeName
@@ -138,7 +139,8 @@ const block: TreeBlock<StepFields> = {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       __typename: 'ButtonBlock',
@@ -154,7 +156,8 @@ const block: TreeBlock<StepFields> = {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
   ]
 }
@@ -218,6 +221,71 @@ describe('Step', () => {
         }),
         templateKey: templateKeyify({
           event: 'pageview',
+          journeyId: 'journeyId'
+        })
+      }
+    })
+  })
+
+  it('should call plausible with eventLabel for pageview events', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const blockWithCardBlock: TreeBlock<StepFields> = {
+      ...block,
+      children: [
+        {
+          __typename: 'CardBlock',
+          id: 'Card1',
+          parentBlockId: 'Step1',
+          parentOrder: 0,
+          backgroundColor: null,
+          coverBlockId: null,
+          themeMode: null,
+          themeName: null,
+          fullscreen: false,
+          backdropBlur: null,
+          eventLabel: BlockEventLabel.custom1,
+          children: []
+        }
+      ]
+    }
+
+    treeBlocksVar([blockWithCardBlock])
+    blockHistoryVar([blockWithCardBlock])
+
+    render(
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...blockWithCardBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
+    expect(mockPlausible).toHaveBeenCalledWith('pageview', expect.any(Object))
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+      u: expect.stringContaining(`/journeyId/Step1`),
+      props: {
+        id: 'uuid',
+        blockId: 'Step1',
+        value: 'Step {{number}}',
+        key: keyify({
+          stepId: 'Step1',
+          event: BlockEventLabel.custom1,
+          blockId: 'Step1',
+          journeyId: 'journeyId'
+        }),
+        simpleKey: keyify({
+          stepId: 'Step1',
+          event: BlockEventLabel.custom1,
+          blockId: 'Step1',
+          journeyId: 'journeyId'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom1,
           journeyId: 'journeyId'
         })
       }

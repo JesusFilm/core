@@ -43,7 +43,8 @@ describe('EmailAction', () => {
       parentStepId: null
     },
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
   const selectedStep = {
     __typename: 'StepBlock',

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardIntroRestore
@@ -85,6 +85,7 @@ export interface CardIntroRestore_subtitle_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_subtitle_ButtonBlock_action | null;
   settings: CardIntroRestore_subtitle_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_subtitle_CardBlock {
@@ -122,6 +123,7 @@ export interface CardIntroRestore_subtitle_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_subtitle_IconBlock {
@@ -230,6 +232,7 @@ export interface CardIntroRestore_subtitle_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioQuestionBlock {
@@ -545,6 +548,8 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_subtitle_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -685,6 +690,7 @@ export interface CardIntroRestore_title_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_title_ButtonBlock_action | null;
   settings: CardIntroRestore_title_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_title_CardBlock {
@@ -722,6 +728,7 @@ export interface CardIntroRestore_title_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_title_IconBlock {
@@ -830,6 +837,7 @@ export interface CardIntroRestore_title_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_title_RadioQuestionBlock {
@@ -1145,6 +1153,8 @@ export interface CardIntroRestore_title_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_title_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1285,6 +1295,7 @@ export interface CardIntroRestore_body_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_body_ButtonBlock_action | null;
   settings: CardIntroRestore_body_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_body_CardBlock {
@@ -1322,6 +1333,7 @@ export interface CardIntroRestore_body_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_body_IconBlock {
@@ -1430,6 +1442,7 @@ export interface CardIntroRestore_body_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_body_RadioQuestionBlock {
@@ -1745,6 +1758,8 @@ export interface CardIntroRestore_body_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_body_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1885,6 +1900,7 @@ export interface CardIntroRestore_button_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_button_ButtonBlock_action | null;
   settings: CardIntroRestore_button_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_button_CardBlock {
@@ -1922,6 +1938,7 @@ export interface CardIntroRestore_button_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_button_IconBlock {
@@ -2030,6 +2047,7 @@ export interface CardIntroRestore_button_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_button_RadioQuestionBlock {
@@ -2345,6 +2363,8 @@ export interface CardIntroRestore_button_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_button_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2485,6 +2505,7 @@ export interface CardIntroRestore_startIcon_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_startIcon_ButtonBlock_action | null;
   settings: CardIntroRestore_startIcon_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_startIcon_CardBlock {
@@ -2522,6 +2543,7 @@ export interface CardIntroRestore_startIcon_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_startIcon_IconBlock {
@@ -2630,6 +2652,7 @@ export interface CardIntroRestore_startIcon_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioQuestionBlock {
@@ -2945,6 +2968,8 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_startIcon_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3085,6 +3110,7 @@ export interface CardIntroRestore_endIcon_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_endIcon_ButtonBlock_action | null;
   settings: CardIntroRestore_endIcon_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_endIcon_CardBlock {
@@ -3122,6 +3148,7 @@ export interface CardIntroRestore_endIcon_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_endIcon_IconBlock {
@@ -3230,6 +3257,7 @@ export interface CardIntroRestore_endIcon_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioQuestionBlock {
@@ -3545,6 +3573,8 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_endIcon_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3685,6 +3715,7 @@ export interface CardIntroRestore_video_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardIntroRestore_video_ButtonBlock_action | null;
   settings: CardIntroRestore_video_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_video_CardBlock {
@@ -3722,6 +3753,7 @@ export interface CardIntroRestore_video_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_video_IconBlock {
@@ -3830,6 +3862,7 @@ export interface CardIntroRestore_video_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_video_RadioQuestionBlock {
@@ -4145,6 +4178,8 @@ export interface CardIntroRestore_video_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardIntroRestore_video_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroRestore_video_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

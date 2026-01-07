@@ -96,7 +96,8 @@ export const mockStepBlockCreateFromStep: MockedResponse<
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         fullscreen: false,
-        backdropBlur: null
+        backdropBlur: null,
+        eventLabel: null
       },
       stepBlockUpdate: {
         id: 'originStepBlock.id',

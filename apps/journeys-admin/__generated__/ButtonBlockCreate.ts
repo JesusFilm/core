@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
+import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: ButtonBlockCreate
@@ -78,6 +78,7 @@ export interface ButtonBlockCreate_buttonBlockCreate {
   submitEnabled: boolean | null;
   action: ButtonBlockCreate_buttonBlockCreate_action | null;
   settings: ButtonBlockCreate_buttonBlockCreate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface ButtonBlockCreate_startIcon {
@@ -169,6 +170,7 @@ export interface ButtonBlockCreate_buttonBlockUpdate {
   submitEnabled: boolean | null;
   action: ButtonBlockCreate_buttonBlockUpdate_action | null;
   settings: ButtonBlockCreate_buttonBlockUpdate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface ButtonBlockCreate {

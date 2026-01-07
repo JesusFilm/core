@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ThemeMode, ThemeName, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardQuoteCreate
@@ -123,6 +123,7 @@ export interface CardQuoteCreate_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardQuoteCreate {

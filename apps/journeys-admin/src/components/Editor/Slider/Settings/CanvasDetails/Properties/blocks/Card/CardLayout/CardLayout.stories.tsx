@@ -94,6 +94,7 @@ const block: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 

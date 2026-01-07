@@ -278,6 +278,7 @@ export function NewMultiselectButton(): ReactElement {
         endIconId: uuidv4(),
         action: null,
         submitEnabled: true,
+        eventLabel: null,
         settings: {
           __typename: 'ButtonBlockSettings',
           alignment: ButtonAlignment.justify

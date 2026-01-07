@@ -11,7 +11,8 @@ describe('transformer', () => {
           parentOrder: 1,
           label: 'Option 4',
           action: null,
-          pollOptionImageBlockId: null
+          pollOptionImageBlockId: null,
+          eventLabel: null
         },
         {
           __typename: 'StepBlock',
@@ -32,7 +33,8 @@ describe('transformer', () => {
           parentBlockId: null,
           parentOrder: 0,
           themeMode: null,
-          themeName: null
+          themeName: null,
+          eventLabel: null
         },
         {
           __typename: 'RadioQuestionBlock',
@@ -48,7 +50,8 @@ describe('transformer', () => {
           parentOrder: 0,
           label: 'Option 1',
           action: null,
-          pollOptionImageBlockId: null
+          pollOptionImageBlockId: null,
+          eventLabel: null
         },
         {
           __typename: 'RadioOptionBlock',
@@ -57,7 +60,8 @@ describe('transformer', () => {
           parentOrder: 0,
           label: 'Option 3',
           action: null,
-          pollOptionImageBlockId: null
+          pollOptionImageBlockId: null,
+          eventLabel: null
         },
         {
           __typename: 'StepBlock',
@@ -75,7 +79,8 @@ describe('transformer', () => {
           parentOrder: 1,
           label: 'Option 2',
           action: null,
-          pollOptionImageBlockId: null
+          pollOptionImageBlockId: null,
+          eventLabel: null
         },
         {
           __typename: 'RadioQuestionBlock',
@@ -98,7 +103,8 @@ describe('transformer', () => {
                 parentOrder: 0,
                 label: 'Option 1',
                 action: null,
-                pollOptionImageBlockId: null
+                pollOptionImageBlockId: null,
+                eventLabel: null
               },
               {
                 children: [],
@@ -108,7 +114,8 @@ describe('transformer', () => {
                 parentOrder: 1,
                 label: 'Option 2',
                 action: null,
-                pollOptionImageBlockId: null
+                pollOptionImageBlockId: null,
+                eventLabel: null
               }
             ],
             __typename: 'RadioQuestionBlock',
@@ -138,7 +145,8 @@ describe('transformer', () => {
                 parentOrder: 0,
                 label: 'Option 3',
                 action: null,
-                pollOptionImageBlockId: null
+                pollOptionImageBlockId: null,
+                eventLabel: null
               },
               {
                 children: [],
@@ -148,7 +156,8 @@ describe('transformer', () => {
                 parentOrder: 1,
                 label: 'Option 4',
                 action: null,
-                pollOptionImageBlockId: null
+                pollOptionImageBlockId: null,
+                eventLabel: null
               }
             ],
             __typename: 'RadioQuestionBlock',

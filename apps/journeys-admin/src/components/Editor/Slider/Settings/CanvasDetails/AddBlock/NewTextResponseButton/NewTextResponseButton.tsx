@@ -109,7 +109,8 @@ export function NewTextResponseButton(): ReactElement {
         settings: {
           __typename: 'ButtonBlockSettings',
           alignment: ButtonAlignment.justify
-        }
+        },
+        eventLabel: null
       }
 
       const blocks = { textResponseBlock, buttonBlock }

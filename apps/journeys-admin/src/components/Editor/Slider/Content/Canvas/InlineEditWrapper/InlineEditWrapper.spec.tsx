@@ -126,7 +126,8 @@ describe('InlineEditWrapper', () => {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
 
     const { getByDisplayValue, getByText } = render(
@@ -208,7 +209,8 @@ describe('InlineEditWrapper', () => {
       label: 'option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
 
     const block: TreeBlock<RadioQuestionFields> = {

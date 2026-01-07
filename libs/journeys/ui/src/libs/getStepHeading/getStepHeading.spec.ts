@@ -30,6 +30,7 @@ describe('getStepHeading', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'ButtonBlock',
@@ -45,7 +46,8 @@ describe('getStepHeading', () => {
             submitEnabled: null,
             action: null,
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             __typename: 'TypographyBlock',
@@ -76,7 +78,8 @@ describe('getStepHeading', () => {
             submitEnabled: null,
             action: null,
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             __typename: 'TypographyBlock',

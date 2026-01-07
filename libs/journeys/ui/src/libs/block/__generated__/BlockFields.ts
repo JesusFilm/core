@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated__/globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: BlockFields
@@ -85,6 +85,7 @@ export interface BlockFields_ButtonBlock {
   submitEnabled: boolean | null;
   action: BlockFields_ButtonBlock_action | null;
   settings: BlockFields_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface BlockFields_CardBlock {
@@ -122,6 +123,7 @@ export interface BlockFields_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface BlockFields_IconBlock {
@@ -230,6 +232,7 @@ export interface BlockFields_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface BlockFields_RadioQuestionBlock {
@@ -545,6 +548,8 @@ export interface BlockFields_VideoBlock {
    * action that should be performed when the video ends
    */
   action: BlockFields_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

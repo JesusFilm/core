@@ -353,6 +353,7 @@ export function CardCta(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -389,6 +390,7 @@ export function CardCta(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -425,6 +427,7 @@ export function CardCta(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -458,6 +461,7 @@ export function CardCta(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 

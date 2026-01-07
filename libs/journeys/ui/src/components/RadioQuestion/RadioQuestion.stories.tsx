@@ -47,7 +47,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 0,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   },
   {
     __typename: 'RadioOptionBlock',
@@ -57,7 +58,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 1,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   },
   {
     __typename: 'RadioOptionBlock',
@@ -67,7 +69,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 2,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   },
   {
     __typename: 'RadioOptionBlock',
@@ -77,7 +80,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 3,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   }
 ]
 

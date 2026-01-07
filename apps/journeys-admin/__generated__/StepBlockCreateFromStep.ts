@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, StepBlockUpdateInput, ThemeMode, ThemeName } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, StepBlockUpdateInput, ThemeMode, ThemeName, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockCreateFromStep
@@ -79,6 +79,7 @@ export interface StepBlockCreateFromStep_cardBlockCreate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockCreateFromStep_stepBlockUpdate {

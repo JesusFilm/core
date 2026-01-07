@@ -36,6 +36,7 @@ describe('PhoneNode', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           children: [
             {
               __typename: 'ButtonBlock',
@@ -60,7 +61,8 @@ describe('PhoneNode', () => {
                 customizable: false,
                 parentStepId: 'step1.id'
               },
-              settings: null
+              settings: null,
+              eventLabel: null
             }
           ]
         }
