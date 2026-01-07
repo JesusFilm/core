@@ -20,6 +20,10 @@ jest.mock('next-i18next', () => ({
 }))
 
 describe('TemplateAggregateAnalytics', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should render icons for each metric button', async () => {
     render(
       <MockedProvider>
