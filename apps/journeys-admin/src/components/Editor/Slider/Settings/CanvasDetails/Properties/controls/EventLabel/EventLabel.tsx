@@ -156,10 +156,18 @@ export function EventLabel({
       currentBlock,
       videoActionType
     )
-    const nextEventLabel = getEventLabelOption(
-      t,
-      event.target.value
-    )
+
+    // Convert string to EventLabelType
+    const eventLabelType: EventLabelType | null =
+      event.target.value === 'none'
+        ? 'none'
+        : Object.values(BlockEventLabel).includes(
+              event.target.value as BlockEventLabel
+            )
+          ? (event.target.value as BlockEventLabel)
+          : null
+
+    const nextEventLabel = getEventLabelOption(t, eventLabelType)
     if (previousEventLabel.type === nextEventLabel.type) return
 
     const blockId = currentBlock.id
