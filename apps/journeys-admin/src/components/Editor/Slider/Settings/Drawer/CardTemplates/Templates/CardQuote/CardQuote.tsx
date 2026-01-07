@@ -224,7 +224,6 @@ export function CardQuote(): ReactElement {
       id: cardId,
       parentBlockId: selectedStep.id,
       parentOrder: 0,
-      eventLabel: null,
       backgroundColor: '#0E1412',
       coverBlockId: imageBlock.id,
       themeMode: ThemeMode.dark,

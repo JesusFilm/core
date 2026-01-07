@@ -32,7 +32,6 @@ describe('PhoneAction', () => {
     id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 4,
-    eventLabel: null,
     label: 'Contact Us',
     buttonVariant: ButtonVariant.contained,
     buttonColor: ButtonColor.primary,

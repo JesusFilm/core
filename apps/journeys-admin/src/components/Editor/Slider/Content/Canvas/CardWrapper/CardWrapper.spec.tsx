@@ -31,7 +31,6 @@ describe('CardWrapper', () => {
     const block: TreeBlock = {
       id: 'card5.id',
       __typename: 'CardBlock',
-      eventLabel: null,
       parentBlockId: 'step5.id',
       coverBlockId: 'video5.id',
       parentOrder: 0,
@@ -95,7 +94,6 @@ describe('CardWrapper', () => {
     expect(Card).toHaveBeenCalledWith(
       {
         __typename: 'CardBlock',
-      eventLabel: null,
         backgroundColor: null,
         eventLabel: null,
         children: [
@@ -161,7 +159,6 @@ describe('CardWrapper', () => {
     const block: TreeBlock = {
       id: 'card5.id',
       __typename: 'CardBlock',
-      eventLabel: null,
       parentBlockId: 'step5.id',
       coverBlockId: 'video5.id',
       parentOrder: 0,
@@ -225,7 +222,6 @@ describe('CardWrapper', () => {
     expect(Card).toHaveBeenCalledWith(
       {
         __typename: 'CardBlock',
-      eventLabel: null,
         backgroundColor: null,
         eventLabel: null,
         children: [
@@ -291,7 +287,6 @@ describe('CardWrapper', () => {
     const card: TreeBlock = {
       id: 'cardId',
       __typename: 'CardBlock',
-      eventLabel: null,
       parentBlockId: 'stepId',
       coverBlockId: null,
       parentOrder: 0,
@@ -335,7 +330,6 @@ describe('CardWrapper', () => {
       const card: TreeBlock = {
         id: 'cardId',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'stepId',
         coverBlockId: null,
         parentOrder: 0,
@@ -374,7 +368,6 @@ describe('CardWrapper', () => {
       const card: TreeBlock = {
         id: 'cardId',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'stepId',
         coverBlockId: null,
         parentOrder: 0,

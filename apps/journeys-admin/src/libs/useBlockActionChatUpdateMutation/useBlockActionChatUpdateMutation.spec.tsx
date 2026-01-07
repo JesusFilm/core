@@ -14,7 +14,6 @@ describe('useBlockActionChatUpdateMutation', () => {
     id: 'button2.id',
     parentBlockId: 'card1.id',
     parentOrder: 0,
-    eventLabel: null,
     label: 'button',
     buttonVariant: null,
     buttonColor: null,

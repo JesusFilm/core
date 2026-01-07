@@ -93,7 +93,6 @@ export function NewButtonButton(): ReactElement {
       endIconId: uuidv4(),
       action: null,
       submitEnabled: shouldBeSubmitButton,
-      eventLabel: null,
       settings: {
         __typename: 'ButtonBlockSettings',
         alignment: ButtonAlignment.justify

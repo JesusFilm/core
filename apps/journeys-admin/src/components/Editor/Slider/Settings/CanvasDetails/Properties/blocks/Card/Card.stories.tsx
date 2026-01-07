@@ -90,7 +90,6 @@ export const Filled: StoryObj<typeof Card> = {
       parentBlockId: 'step1.id',
       coverBlockId: 'image1.id',
       parentOrder: 0,
-      eventLabel: null,
       backgroundColor: '#00ccff',
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,

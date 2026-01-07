@@ -13,9 +13,9 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import type { EventLabelOption, EventLabelType } from './utils/eventLabels'
-import { getCurrentEventLabel } from './utils/getCurrentAction'
-import { getFilteredEventLabels } from './utils/getFilteredActions'
-import { getEventLabelOption } from './utils/getNewAction'
+import { getCurrentEventLabel } from './utils/getCurrentEventLabel'
+import { getFilteredEventLabels } from './utils/getFilteredEventLabels'
+import { getEventLabelOption } from './utils/getEventLabelOption'
 
 import { BlockEventLabel } from '../../../../../../../../../__generated__/globalTypes'
 import {
@@ -147,7 +147,10 @@ export function EventLabel({
   function handleChange(event: SelectChangeEvent): void {
     if (selectedBlock == null) return
 
-    const previousEventLabel = getCurrentEventLabel(selectedBlock, videoActionType)
+    const previousEventLabel = getCurrentEventLabel(
+      selectedBlock,
+      videoActionType
+    )
     const nextEventLabel = getEventLabelOption(event.target.value)
     if (previousEventLabel.type === nextEventLabel.type) return
 

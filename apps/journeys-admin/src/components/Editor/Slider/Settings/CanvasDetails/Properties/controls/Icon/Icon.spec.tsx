@@ -36,7 +36,6 @@ describe('Icon', () => {
     id: 'id',
     parentBlockId: 'parentBlockId',
     parentOrder: 0,
-    eventLabel: null,
     label: 'test button',
     buttonVariant: null,
     buttonColor: null,

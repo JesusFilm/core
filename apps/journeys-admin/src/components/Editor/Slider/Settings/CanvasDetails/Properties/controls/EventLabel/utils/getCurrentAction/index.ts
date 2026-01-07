@@ -1,1 +1,0 @@
-export { getCurrentEventLabel } from './getCurrentAction'

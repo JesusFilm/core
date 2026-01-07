@@ -51,7 +51,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card0.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step0.id',
         coverBlockId: 'image0.id',
         parentOrder: 0,
@@ -157,7 +156,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card1.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step1.id',
         coverBlockId: 'image1.id',
         parentOrder: 0,
@@ -262,7 +260,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card2.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step2.id',
         coverBlockId: 'image2.id',
         parentOrder: 0,
@@ -376,7 +373,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'multiselectCard.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step2.id',
         coverBlockId: null,
         parentOrder: 1,
@@ -429,7 +425,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card3.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step3.id',
         coverBlockId: 'image3.id',
         parentOrder: 0,
@@ -527,7 +522,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card4.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step4.id',
         coverBlockId: null,
         parentOrder: 0,
@@ -603,7 +597,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card5.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step5.id',
         coverBlockId: null,
         parentOrder: 0,
@@ -655,7 +648,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
       {
         id: 'card6.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step6.id',
         coverBlockId: 'image6.id',
         parentOrder: 0,
@@ -835,7 +827,6 @@ export const EmptyCard = {
           {
             id: 'card1.id',
             __typename: 'CardBlock',
-      eventLabel: null,
             parentBlockId: 'step1.id',
             coverBlockId: 'image1.id',
             parentOrder: 0,

@@ -8,7 +8,7 @@ import {
 import { BlockEventLabel } from '../../../../../../../../../../../__generated__/globalTypes'
 import { eventLabelOptions } from '../eventLabels'
 
-import { getCurrentEventLabel } from './getCurrentAction'
+import { getCurrentEventLabel } from './getCurrentEventLabel'
 
 describe('getCurrentEventLabel', () => {
   it('should return the first event label option (None) by default', () => {

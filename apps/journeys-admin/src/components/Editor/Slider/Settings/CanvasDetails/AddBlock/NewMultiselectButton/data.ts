@@ -23,7 +23,6 @@ export const submitButton: TreeBlock<ButtonBlock> = {
   endIconId: null,
   action: null,
   submitEnabled: true,
-  eventLabel: null,
   children: [],
   settings: null,
   eventLabel: null

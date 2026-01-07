@@ -68,7 +68,6 @@ describe('NewSpacerButton', () => {
       {
         id: 'card.id',
         __typename: 'CardBlock',
-      eventLabel: null,
         parentBlockId: 'step.id',
         coverBlockId: null,
         parentOrder: 0,

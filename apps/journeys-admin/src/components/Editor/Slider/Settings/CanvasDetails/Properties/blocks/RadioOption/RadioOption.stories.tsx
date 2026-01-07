@@ -25,7 +25,6 @@ const block: TreeBlock<RadioOptionBlock> = {
   __typename: 'RadioOptionBlock',
   parentBlockId: 'step1.id',
   parentOrder: 0,
-  eventLabel: null,
   label: 'Radio Option',
   action: null,
   pollOptionImageBlockId: null,

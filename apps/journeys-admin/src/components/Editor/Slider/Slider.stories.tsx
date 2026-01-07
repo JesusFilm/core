@@ -37,7 +37,6 @@ const step1: TreeBlock<StepBlock> = {
   children: [
     {
       __typename: 'CardBlock',
-      eventLabel: null,
       id: 'card1.id',
       parentBlockId: 'step1.id',
       parentOrder: 0,

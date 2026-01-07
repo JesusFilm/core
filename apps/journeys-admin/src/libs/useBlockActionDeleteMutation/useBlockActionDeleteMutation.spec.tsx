@@ -21,7 +21,6 @@ describe('useBlockActionDeleteMutation', () => {
     id: 'block1.id',
     parentBlockId: 'card1.id',
     parentOrder: 0,
-    eventLabel: null,
     label: 'button',
     buttonVariant: null,
     buttonColor: null,

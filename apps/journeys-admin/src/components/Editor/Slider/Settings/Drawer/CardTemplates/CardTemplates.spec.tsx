@@ -35,7 +35,6 @@ describe('CardTemplates', () => {
       parentBlockId: 'stepId',
       coverBlockId: null,
       parentOrder: 0,
-      eventLabel: null,
       backgroundColor: null,
       themeMode: null,
       themeName: null,

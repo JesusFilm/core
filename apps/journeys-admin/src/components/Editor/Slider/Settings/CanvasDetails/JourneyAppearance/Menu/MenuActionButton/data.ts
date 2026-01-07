@@ -18,7 +18,6 @@ import {
 const buttonBase = {
   __typename: 'ButtonBlock' as const,
   parentBlockId: 'card.id',
-  eventLabel: null,
   buttonVariant: ButtonVariant.contained,
   buttonColor: null,
   size: ButtonSize.large,
@@ -45,10 +44,8 @@ export const mockMenuStep: TreeBlock<Step & { x: number; y: number }> = {
 
 export const mockMenuCard = {
   __typename: 'CardBlock',
-      eventLabel: null,
   id: 'card.id',
   parentBlockId: 'step.id',
-  eventLabel: null,
   themeMode: ThemeMode.dark,
   themeName: ThemeName.base,
   fullscreen: false,

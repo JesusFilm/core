@@ -30,7 +30,6 @@ const createCard = (
   parentBlockId: 'step1.id',
   coverBlockId: null,
   parentOrder: 0,
-  eventLabel: null,
   backgroundColor: null,
   themeMode: null,
   themeName: null,

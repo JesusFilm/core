@@ -65,7 +65,6 @@ export const createCardBlock = (
 ): TreeBlock<CardBlock> => ({
   id: 'cardId',
   __typename: 'CardBlock',
-      eventLabel: null,
   parentBlockId: 'stepId',
   parentOrder: 0,
   coverBlockId: null,

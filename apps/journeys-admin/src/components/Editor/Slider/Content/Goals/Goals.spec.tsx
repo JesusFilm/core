@@ -110,7 +110,6 @@ const blocks: Blocks[] = [
   },
   {
     __typename: 'CardBlock',
-      eventLabel: null,
     id: '777f29f2-274f-4f14-ba21-2208ea06e7f5',
     parentBlockId: '5b97eebc-0fcd-46ea-8d42-370538bd9f82',
     parentOrder: 0,

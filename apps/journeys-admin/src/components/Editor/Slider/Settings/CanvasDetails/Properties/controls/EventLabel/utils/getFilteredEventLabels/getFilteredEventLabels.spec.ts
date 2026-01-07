@@ -8,7 +8,7 @@ import {
 } from '../../../../../../../../../../../__generated__/BlockFields'
 import { eventLabelOptions } from '../eventLabels'
 
-import { getFilteredEventLabels } from './getFilteredActions'
+import { getFilteredEventLabels } from './getFilteredEventLabels'
 
 describe('getFilteredEventLabels', () => {
   it('should return all event label options when selectedBlock is null', () => {

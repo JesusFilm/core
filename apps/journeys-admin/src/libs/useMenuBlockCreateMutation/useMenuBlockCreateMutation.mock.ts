@@ -89,7 +89,7 @@ export const mockUseMenuBlockCreateMutation: MockedResponse<
       }
     }
   },
-  result: (jest.fn(() => ({
+  result: jest.fn(() => ({
     data: {
       step: mockMenuStep,
       card: mockMenuCard,
@@ -103,8 +103,5 @@ export const mockUseMenuBlockCreateMutation: MockedResponse<
         menuStepBlock: mockMenuStep
       }
     }
-  })) as unknown as MockedResponse<
-    MenuBlockCreate,
-    MenuBlockCreateVariables
-  >['result'])
+  }))
 }

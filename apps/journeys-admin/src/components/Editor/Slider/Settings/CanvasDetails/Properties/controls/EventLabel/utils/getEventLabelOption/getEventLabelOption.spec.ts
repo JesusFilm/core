@@ -1,6 +1,6 @@
 import { eventLabelOptions } from '../eventLabels'
 
-import { getEventLabelOption } from './getNewAction'
+import { getEventLabelOption } from './getEventLabelOption'
 
 describe('getEventLabelOption', () => {
   it('should return the option when value matches an event label type', () => {
@@ -30,7 +30,9 @@ describe('getEventLabelOption', () => {
   it('should return the option for gospelPresentationStart', () => {
     const result = getEventLabelOption('gospelPresentationStart')
     expect(result).toEqual(
-      eventLabelOptions.find((option) => option.type === 'gospelPresentationStart')
+      eventLabelOptions.find(
+        (option) => option.type === 'gospelPresentationStart'
+      )
     )
     expect(result.type).toBe('gospelPresentationStart')
     expect(result.label).toBe('Gospel Presentation Started')
@@ -39,7 +41,9 @@ describe('getEventLabelOption', () => {
   it('should return the option for gospelPresentationComplete', () => {
     const result = getEventLabelOption('gospelPresentationComplete')
     expect(result).toEqual(
-      eventLabelOptions.find((option) => option.type === 'gospelPresentationComplete')
+      eventLabelOptions.find(
+        (option) => option.type === 'gospelPresentationComplete'
+      )
     )
     expect(result.type).toBe('gospelPresentationComplete')
     expect(result.label).toBe('Gospel Presentation Completed')
@@ -66,9 +70,7 @@ describe('getEventLabelOption', () => {
   it('should return the option for specialVideoComplete', () => {
     const result = getEventLabelOption('specialVideoComplete')
     expect(result).toEqual(
-      eventLabelOptions.find(
-        (option) => option.type === 'specialVideoComplete'
-      )
+      eventLabelOptions.find((option) => option.type === 'specialVideoComplete')
     )
     expect(result.type).toBe('specialVideoComplete')
     expect(result.label).toBe('Video Completed')

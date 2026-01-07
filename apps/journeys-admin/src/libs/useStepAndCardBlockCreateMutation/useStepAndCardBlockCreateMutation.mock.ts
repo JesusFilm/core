@@ -48,7 +48,6 @@ export const stepAndCardBlockCreateMock: MockedResponse<
         id: 'newCard.id',
         parentBlockId: 'newStep.id',
         parentOrder: 0,
-        eventLabel: null,
         backgroundColor: null,
         coverBlockId: null,
         themeMode: ThemeMode.dark,

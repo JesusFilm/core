@@ -72,7 +72,6 @@ export function MenuActionButton(): ReactElement {
 
     const card = {
       __typename: 'CardBlock',
-      eventLabel: null,
       id: cardId,
       parentBlockId: step.id,
       themeMode: ThemeMode.dark,

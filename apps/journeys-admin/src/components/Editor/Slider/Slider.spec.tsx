@@ -47,7 +47,6 @@ describe('Slider', () => {
     children: [
       {
         __typename: 'CardBlock',
-      eventLabel: null,
         id: 'card1.id',
         themeName: ThemeName.base,
         themeMode: ThemeMode.light,

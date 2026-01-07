@@ -23,7 +23,6 @@ export const submitButton: TreeBlock<ButtonBlock> = {
   endIconId: null,
   action: null,
   submitEnabled: true,
-  eventLabel: null,
   children: [],
   settings: null,
   eventLabel: null
@@ -41,7 +40,6 @@ export const stepWithSubmitButton: TreeBlock<StepBlock> = {
     {
       id: 'card.id',
       __typename: 'CardBlock',
-      eventLabel: null,
       parentBlockId: 'step.id',
       coverBlockId: null,
       parentOrder: 0,
@@ -68,7 +66,6 @@ export const stepWithoutSubmitButton: TreeBlock<StepBlock> = {
     {
       id: 'card.id',
       __typename: 'CardBlock',
-      eventLabel: null,
       parentBlockId: 'step.id',
       coverBlockId: null,
       parentOrder: 0,

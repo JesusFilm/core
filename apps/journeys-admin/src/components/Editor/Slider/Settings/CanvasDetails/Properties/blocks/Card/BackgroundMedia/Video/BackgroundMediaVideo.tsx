@@ -110,8 +110,6 @@ export function BackgroundMediaVideo({
       __typename: 'VideoBlock',
       parentBlockId: cardBlock.id,
       parentOrder: null,
-      eventLabel: null,
-      endEventLabel: null,
       title: null,
       description: null,
       image: null,

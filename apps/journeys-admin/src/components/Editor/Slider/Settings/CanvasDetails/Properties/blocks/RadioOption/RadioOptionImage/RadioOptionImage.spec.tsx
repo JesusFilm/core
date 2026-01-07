@@ -121,7 +121,6 @@ const radioOption: TreeBlock<RadioOptionBlock> = {
   __typename: 'RadioOptionBlock',
   parentBlockId: 'radioQuestion1.id',
   parentOrder: 0,
-  eventLabel: null,
   pollOptionImageBlockId: null,
   children: [],
   label: 'radio option 1',

@@ -42,7 +42,6 @@ const step: TreeBlock = {
     {
       id: 'card0.id',
       __typename: 'CardBlock',
-      eventLabel: null,
       parentBlockId: 'step0.id',
       parentOrder: 0,
       coverBlockId: null,
