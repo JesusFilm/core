@@ -11,5 +11,6 @@ export const CARD_FIELDS = gql`
     themeMode
     themeName
     fullscreen
+    eventLabel
   }
 `

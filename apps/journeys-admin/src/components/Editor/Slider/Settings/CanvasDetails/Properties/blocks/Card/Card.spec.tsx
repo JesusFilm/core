@@ -35,6 +35,7 @@ const createCard = (
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [],
   ...overrides
 })
@@ -395,6 +396,8 @@ describe('Card', () => {
             fullsize: null,
             action: null,
             objectFit: null,
+            eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]
