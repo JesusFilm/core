@@ -34,6 +34,7 @@ describe('Color', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
+    eventLabel: null,
     children: [
       {
         __typename: 'IconBlock',

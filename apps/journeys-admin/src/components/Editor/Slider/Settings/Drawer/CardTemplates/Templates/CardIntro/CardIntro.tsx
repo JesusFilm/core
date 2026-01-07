@@ -255,6 +255,7 @@ export function CardIntro(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -307,6 +308,8 @@ export function CardIntro(): ReactElement {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
       mediaVideo: {
         id: '1_jf-0-0',
         __typename: 'Video',

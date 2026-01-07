@@ -61,6 +61,7 @@ describe('NewButtonButton', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: []
       } as TreeBlock<CardBlock>
     ]

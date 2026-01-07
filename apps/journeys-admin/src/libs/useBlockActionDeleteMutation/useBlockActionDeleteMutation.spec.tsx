@@ -35,7 +35,8 @@ describe('useBlockActionDeleteMutation', () => {
       parentBlockId: 'step1.id',
       blockId: 'step2.id'
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('should delete block action', async () => {

@@ -40,6 +40,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'video5.id',
@@ -64,6 +65,8 @@ describe('CardWrapper', () => {
           objectFit: null,
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
+          eventLabel: null,
+          endEventLabel: null,
           children: [
             {
               id: 'image5.id',
@@ -94,6 +97,7 @@ describe('CardWrapper', () => {
         __typename: 'CardBlock',
       eventLabel: null,
         backgroundColor: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'VideoBlock',
@@ -118,6 +122,8 @@ describe('CardWrapper', () => {
             endAt: null,
             fullsize: null,
             action: null,
+            eventLabel: null,
+            endEventLabel: null,
             id: 'video5.id',
             muted: true,
             parentBlockId: 'card5.id',
@@ -164,6 +170,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'video5.id',
@@ -188,6 +195,8 @@ describe('CardWrapper', () => {
           objectFit: null,
           subtitleLanguage: null,
           showGeneratedSubtitles: null,
+          eventLabel: null,
+          endEventLabel: null,
           children: [
             {
               id: 'image5.id',
@@ -218,6 +227,7 @@ describe('CardWrapper', () => {
         __typename: 'CardBlock',
       eventLabel: null,
         backgroundColor: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'VideoBlock',
@@ -242,6 +252,8 @@ describe('CardWrapper', () => {
             endAt: null,
             fullsize: null,
             action: null,
+            eventLabel: null,
+            endEventLabel: null,
             id: 'video5.id',
             muted: true,
             parentBlockId: 'card5.id',
@@ -288,6 +300,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     const step: TreeBlock = {
@@ -331,6 +344,7 @@ describe('CardWrapper', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: []
       }
       const step: TreeBlock = {
@@ -369,6 +383,7 @@ describe('CardWrapper', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'imageId',

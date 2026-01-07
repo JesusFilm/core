@@ -23,5 +23,6 @@ export const BUTTON_FIELDS = gql`
     settings {
       alignment
     }
+    eventLabel
   }
 `

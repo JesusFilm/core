@@ -322,7 +322,8 @@ export function CardForm(): ReactElement {
       endIconId: uuidv4(),
       action: null,
       submitEnabled: true,
-      settings: null
+      settings: null,
+      eventLabel: null
     } satisfies ButtonBlock
 
     const body = {
@@ -353,6 +354,7 @@ export function CardForm(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: true,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 

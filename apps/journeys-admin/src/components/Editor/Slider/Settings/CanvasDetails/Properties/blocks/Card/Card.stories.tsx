@@ -37,6 +37,7 @@ const block: TreeBlock<CardBlock> = {
   themeName: ThemeName.base,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -95,6 +96,7 @@ export const Filled: StoryObj<typeof Card> = {
       themeName: ThemeName.base,
       fullscreen: true,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           __typename: 'ImageBlock',

@@ -125,6 +125,7 @@ const radioOption: TreeBlock<RadioOptionBlock> = {
   pollOptionImageBlockId: null,
   children: [],
   label: 'radio option 1',
+  eventLabel: null,
   action: {
     __typename: 'LinkAction',
     url: 'https://example.com',

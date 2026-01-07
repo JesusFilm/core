@@ -38,7 +38,8 @@ describe('NavigateToBlockAction', () => {
       blockId: 'block0.id'
     },
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it("should show 'back to map' button", () => {

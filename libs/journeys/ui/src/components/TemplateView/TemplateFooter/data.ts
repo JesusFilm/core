@@ -62,7 +62,8 @@ export const journey: Journey = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     },
     {
       __typename: 'ButtonBlock',
@@ -85,7 +86,8 @@ export const journey: Journey = {
         customizable: false,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       __typename: 'StepBlock',
@@ -122,7 +124,8 @@ export const journey: Journey = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     },
     {
       id: 'signup.id',

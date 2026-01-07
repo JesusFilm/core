@@ -35,6 +35,7 @@ describe('ChatNode', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           children: [
             {
               __typename: 'ButtonBlock',
@@ -58,7 +59,8 @@ describe('ChatNode', () => {
                 parentStepId: null
               } as any,
               children: [],
-              settings: null
+              settings: null,
+              eventLabel: null
             },
             {
               __typename: 'ButtonBlock',
@@ -82,7 +84,8 @@ describe('ChatNode', () => {
                 parentStepId: null
               } as any,
               children: [],
-              settings: null
+              settings: null,
+              eventLabel: null
             }
           ]
         }

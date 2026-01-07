@@ -184,7 +184,8 @@ export function ThemePreview({
                     action: null,
                     submitEnabled: false,
                     children: [],
-                    settings: null
+                    settings: null,
+                    eventLabel: null
                   }}
                 />
                 <RadioQuestion
@@ -204,6 +205,7 @@ export function ThemePreview({
                         eventLabel: null,
                         action: null,
                         pollOptionImageBlockId: null,
+                        eventLabel: null,
                         children: []
                       },
                       {
@@ -215,6 +217,7 @@ export function ThemePreview({
                         eventLabel: null,
                         action: null,
                         pollOptionImageBlockId: null,
+                        eventLabel: null,
                         children: []
                       }
                     ]

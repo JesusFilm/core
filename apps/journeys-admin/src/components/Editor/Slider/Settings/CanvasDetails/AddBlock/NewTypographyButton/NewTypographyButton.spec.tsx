@@ -53,6 +53,7 @@ describe('NewTypographyButton', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: []
       }
     ]
@@ -70,6 +71,7 @@ describe('NewTypographyButton', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
 

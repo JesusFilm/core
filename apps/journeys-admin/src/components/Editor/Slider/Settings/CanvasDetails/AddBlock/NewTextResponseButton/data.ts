@@ -25,7 +25,8 @@ export const submitButton: TreeBlock<ButtonBlock> = {
   submitEnabled: true,
   eventLabel: null,
   children: [],
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 export const stepWithSubmitButton: TreeBlock<StepBlock> = {
@@ -49,6 +50,7 @@ export const stepWithSubmitButton: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [submitButton]
     }
   ]
@@ -75,6 +77,7 @@ export const stepWithoutSubmitButton: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
   ]

@@ -45,7 +45,8 @@ describe('ActionCards', () => {
                     themeMode: null,
                     themeName: null,
                     fullscreen: false,
-                    backdropBlur: null
+                    backdropBlur: null,
+                    eventLabel: null
                   },
                   {
                     __typename: 'RadioQuestionBlock',
@@ -69,7 +70,8 @@ describe('ActionCards', () => {
                       customizable: false,
                       parentStepId: null
                     },
-                    pollOptionImageBlockId: null
+                    pollOptionImageBlockId: null,
+                    eventLabel: null
                   },
                   {
                     __typename: 'StepBlock',

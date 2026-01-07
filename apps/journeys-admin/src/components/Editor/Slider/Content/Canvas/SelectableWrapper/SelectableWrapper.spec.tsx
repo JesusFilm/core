@@ -79,7 +79,8 @@ describe('SelectableWrapper', () => {
       parentStepId: null
     },
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   const imageBlock: TreeBlock<ImageFields> = {
@@ -106,6 +107,7 @@ describe('SelectableWrapper', () => {
     parentOrder: 0,
     action: null,
     pollOptionImageBlockId: null,
+    eventLabel: null,
     children: []
   }
 
@@ -125,6 +127,7 @@ describe('SelectableWrapper', () => {
         parentOrder: 1,
         action: null,
         pollOptionImageBlockId: null,
+        eventLabel: null,
         children: []
       }
     ]

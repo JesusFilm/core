@@ -136,7 +136,8 @@ export const mockStepBlockCreateFromAction: MockedResponse<
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         fullscreen: false,
-        backdropBlur: null
+        backdropBlur: null,
+        eventLabel: null
       },
       blockUpdateAction: {
         parentBlockId: mockOriginButtonBlock.id,

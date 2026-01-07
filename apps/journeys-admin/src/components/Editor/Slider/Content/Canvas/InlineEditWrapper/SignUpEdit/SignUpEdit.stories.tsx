@@ -54,6 +54,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',

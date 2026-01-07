@@ -50,7 +50,8 @@ const blocks: Blocks[] = [
       customizable: false,
       parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     __typename: 'ButtonBlock',
@@ -72,7 +73,8 @@ const blocks: Blocks[] = [
       customizable: false,
       parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     __typename: 'ButtonBlock',
@@ -94,7 +96,8 @@ const blocks: Blocks[] = [
       customizable: false,
       parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     __typename: 'StepBlock',
@@ -116,7 +119,8 @@ const blocks: Blocks[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   }
 ]
 

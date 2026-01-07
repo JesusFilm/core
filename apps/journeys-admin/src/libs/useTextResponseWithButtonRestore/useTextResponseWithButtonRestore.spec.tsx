@@ -45,6 +45,7 @@ describe('useTextResponseWithButtonRestore', () => {
       action: null,
       submitEnabled: true,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock' as const
     } satisfies ButtonBlock
   }

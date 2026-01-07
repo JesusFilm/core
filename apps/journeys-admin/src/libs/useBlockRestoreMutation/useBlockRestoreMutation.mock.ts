@@ -117,6 +117,7 @@ const selectedStep: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [selectedBlock, block1, block2]
     }
   ]
@@ -151,7 +152,8 @@ export const restoreStepMock: MockedResponse<
           themeMode: null,
           themeName: null,
           fullscreen: false,
-          backdropBlur: null
+          backdropBlur: null,
+          eventLabel: null
         },
         selectedBlock,
         block1,

@@ -31,6 +31,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',
@@ -98,7 +99,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               blockId: 'step1.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           }
         ]
       }
@@ -125,6 +127,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image1.id',
@@ -193,7 +196,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentStepId: null
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             __typename: 'ButtonBlock',
@@ -217,7 +221,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentStepId: null
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             __typename: 'ButtonBlock',
@@ -243,7 +248,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentStepId: 'step1.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           }
         ]
       }
@@ -270,6 +276,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image2.id',
@@ -337,7 +344,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption3.id',
@@ -353,7 +361,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption4.id',
@@ -369,7 +378,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -398,6 +408,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image3.id',
@@ -449,7 +460,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               blockId: 'step4.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             id: 'typographyBlockId2',
@@ -487,7 +499,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption3.id',
@@ -503,7 +516,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -532,6 +546,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image4.id',
@@ -614,7 +629,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               blockId: 'step0.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           }
         ]
       }

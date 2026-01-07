@@ -26,7 +26,8 @@ const buttonBase = {
   endIconId: null,
   submitEnabled: null,
   action: null,
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 export const mockMenuStep: TreeBlock<Step & { x: number; y: number }> = {
@@ -54,7 +55,8 @@ export const mockMenuCard = {
   backdropBlur: null,
   coverBlockId: null,
   backgroundColor: null,
-  parentOrder: 0
+  parentOrder: 0,
+  eventLabel: null
 } satisfies Card
 
 export const mockMenuHeading = {

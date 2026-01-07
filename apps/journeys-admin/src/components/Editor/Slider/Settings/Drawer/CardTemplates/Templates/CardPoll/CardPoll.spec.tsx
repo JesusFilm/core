@@ -60,6 +60,7 @@ describe('CardPoll', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
   const step: TreeBlock = {
@@ -126,25 +127,29 @@ describe('CardPoll', () => {
           id: 'radioOption1Id',
           journeyId: 'journeyId',
           parentBlockId: 'radioQuestionId',
-          label: 'Turning the other cheek'
+          label: 'Turning the other cheek',
+          eventLabel: null
         },
         radioOptionInput2: {
           id: 'radioOption2Id',
           journeyId: 'journeyId',
           parentBlockId: 'radioQuestionId',
-          label: 'Loving your enemies'
+          label: 'Loving your enemies',
+          eventLabel: null
         },
         radioOptionInput3: {
           id: 'radioOption3Id',
           journeyId: 'journeyId',
           parentBlockId: 'radioQuestionId',
-          label: 'Not worrying about tomorrow'
+          label: 'Not worrying about tomorrow',
+          eventLabel: null
         },
         radioOptionInput4: {
           id: 'radioOption4Id',
           journeyId: 'journeyId',
           parentBlockId: 'radioQuestionId',
-          label: 'Seeking first the kingdom of God'
+          label: 'Seeking first the kingdom of God',
+          eventLabel: null
         },
         bodyInput: {
           id: 'bodyId',
@@ -223,6 +228,7 @@ describe('CardPoll', () => {
           eventLabel: null,
           label: 'Turning the other cheek',
           action: null,
+          eventLabel: null,
           __typename: 'RadioOptionBlock',
           pollOptionImageBlockId: null
         },
@@ -233,6 +239,7 @@ describe('CardPoll', () => {
           eventLabel: null,
           label: 'Loving your enemies',
           action: null,
+          eventLabel: null,
           __typename: 'RadioOptionBlock',
           pollOptionImageBlockId: null
         },
@@ -243,6 +250,7 @@ describe('CardPoll', () => {
           eventLabel: null,
           label: 'Not worrying about tomorrow',
           action: null,
+          eventLabel: null,
           __typename: 'RadioOptionBlock',
           pollOptionImageBlockId: null
         },
@@ -253,6 +261,7 @@ describe('CardPoll', () => {
           eventLabel: null,
           label: 'Seeking first the kingdom of God',
           action: null,
+          eventLabel: null,
           __typename: 'RadioOptionBlock',
           pollOptionImageBlockId: null
         },
@@ -281,6 +290,7 @@ describe('CardPoll', () => {
           themeName: null,
           fullscreen: true,
           backdropBlur: null,
+          eventLabel: null,
           __typename: 'CardBlock'
         }
       }

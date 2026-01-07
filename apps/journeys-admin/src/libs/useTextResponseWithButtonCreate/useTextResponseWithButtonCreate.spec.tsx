@@ -50,6 +50,7 @@ describe('useTextResponseWithButtonCreate', () => {
         __typename: 'ButtonBlockSettings',
         alignment: ButtonAlignment.justify
       },
+      eventLabel: null,
       __typename: 'ButtonBlock' as const
     } satisfies ButtonBlock
   }

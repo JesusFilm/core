@@ -20,7 +20,8 @@ const block: CardBlock = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
-  backdropBlur: null
+  backdropBlur: null,
+  eventLabel: null
 }
 const execute = jest.fn().mockResolvedValue(block)
 

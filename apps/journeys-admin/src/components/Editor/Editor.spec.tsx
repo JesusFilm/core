@@ -180,7 +180,8 @@ describe('Editor', () => {
           themeMode: ThemeMode.light,
           themeName: ThemeName.base,
           fullscreen: false,
-          backdropBlur: null
+          backdropBlur: null,
+          eventLabel: null
         },
         {
           __typename: 'TypographyBlock',

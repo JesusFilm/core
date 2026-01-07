@@ -274,6 +274,7 @@ export function CardPoll(): ReactElement {
       label: t('Turning the other cheek'),
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -285,6 +286,7 @@ export function CardPoll(): ReactElement {
       label: t('Loving your enemies'),
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -296,6 +298,7 @@ export function CardPoll(): ReactElement {
       label: t('Not worrying about tomorrow'),
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -307,6 +310,7 @@ export function CardPoll(): ReactElement {
       label: t('Seeking first the kingdom of God'),
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -336,6 +340,7 @@ export function CardPoll(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: true,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
