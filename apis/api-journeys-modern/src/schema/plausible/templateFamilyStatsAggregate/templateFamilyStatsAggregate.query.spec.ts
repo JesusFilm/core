@@ -203,7 +203,12 @@ describe('templateFamilyStatsAggregate', () => {
     }
 
     prismaMock.journey.findUnique.mockResolvedValue(templateJourney as any)
-    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([
+      {
+        id: 'journey-1',
+        slug: 'journey-1-slug'
+      }
+    ] as any)
     prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
 
     mockAxios.get.mockResolvedValue({
@@ -387,7 +392,12 @@ describe('templateFamilyStatsAggregate', () => {
     }
 
     prismaMock.journey.findUnique.mockResolvedValue(templateJourney as any)
-    prismaMock.journey.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([
+      {
+        id: 'journey-1',
+        slug: 'journey-1-slug'
+      }
+    ] as any)
     prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
 
     mockAxios.get.mockResolvedValue({
