@@ -597,6 +597,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         folderId:
           destination.mode === 'create' ? (destination.folderId ?? null) : null,
         email: integrationEmail,
+        timezone: userTimezone, // Store user's timezone for consistent date formatting in live sync
         deletedAt: null
       }
 

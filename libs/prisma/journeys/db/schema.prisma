@@ -288,6 +288,7 @@ model GoogleSheetsSync {
   sheetName     String
   folderId      String?
   email         String?
+  timezone      String? // IANA timezone identifier captured when sync was created (e.g., "Pacific/Auckland")
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
