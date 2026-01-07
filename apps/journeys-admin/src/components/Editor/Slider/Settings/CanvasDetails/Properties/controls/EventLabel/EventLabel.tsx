@@ -148,10 +148,14 @@ export function EventLabel({
     if (selectedBlock == null) return
 
     const previousEventLabel = getCurrentEventLabel(
+      t,
       selectedBlock,
       videoActionType
     )
-    const nextEventLabel = getEventLabelOption(event.target.value)
+    const nextEventLabel = getEventLabelOption(
+      t,
+      event.target.value as EventLabelType | null
+    )
     if (previousEventLabel.type === nextEventLabel.type) return
 
     const blockId = selectedBlock.id
@@ -244,9 +248,14 @@ export function EventLabel({
     })
   }
 
-  const currentEventLabel = getCurrentEventLabel(selectedBlock, videoActionType)
+  const currentEventLabel = getCurrentEventLabel(
+    t,
+    selectedBlock,
+    videoActionType
+  )
 
   const filteredEventLabels: EventLabelOption[] = getFilteredEventLabels(
+    t,
     selectedBlock,
     videoActionType
   )

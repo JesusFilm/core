@@ -1,15 +1,20 @@
+import { TFunction } from 'next-i18next'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockEventLabel } from 'apps/journeys-admin/__generated__/globalTypes'
+import { BlockEventLabel } from '../../../../../../../../../../../__generated__/globalTypes'
 import type { EventLabelOption, EventLabelType } from '../eventLabels'
 import { eventLabelOptions } from '../eventLabels'
 
 export function getFilteredEventLabels(
+  t: TFunction,
   selectedBlock?: TreeBlock,
   videoActionType?: 'start' | 'complete'
 ): EventLabelOption[] {
+  const options = eventLabelOptions(t)
+
   if (selectedBlock == null) {
-    return eventLabelOptions
+    return options
   }
 
   const allowedEventLabelTypes: EventLabelType[] = []
@@ -71,7 +76,7 @@ export function getFilteredEventLabels(
 
     case 'VideoBlock': {
       if (videoActionType == null) {
-        return eventLabelOptions
+        return options
       }
       if (videoActionType === 'start') {
         allowedEventLabelTypes.push(
@@ -100,10 +105,10 @@ export function getFilteredEventLabels(
     }
 
     default:
-      return eventLabelOptions
+      return options
   }
 
-  return eventLabelOptions.filter((option) =>
+  return options.filter((option) =>
     allowedEventLabelTypes.includes(option.type)
   )
 }

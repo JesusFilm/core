@@ -1,13 +1,17 @@
+import { TFunction } from 'next-i18next'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type { EventLabelOption } from '../eventLabels'
 import { eventLabelOptions } from '../eventLabels'
 
 export function getCurrentEventLabel(
+  t: TFunction,
   selectedBlock?: TreeBlock,
   videoActionType?: 'start' | 'complete'
 ): EventLabelOption {
-  if (selectedBlock == null) return eventLabelOptions[0]
+  const options = eventLabelOptions(t)
+  if (selectedBlock == null) return options[0]
 
   const selectedEventLabelType =
     selectedBlock.__typename === 'VideoBlock' && videoActionType === 'complete'
@@ -19,7 +23,7 @@ export function getCurrentEventLabel(
           : 'none'
 
   return (
-    eventLabelOptions.find((option) => option.type === selectedEventLabelType) ??
-    eventLabelOptions[0]
+    options.find((option) => option.type === selectedEventLabelType) ??
+    options[0]
   )
 }

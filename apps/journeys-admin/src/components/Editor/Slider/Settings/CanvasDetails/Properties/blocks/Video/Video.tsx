@@ -16,6 +16,7 @@ import { getAction } from '../../controls/Action/utils/actions'
 import { EventLabel } from '../../controls/EventLabel'
 
 import { VideoOptions } from './Options/VideoOptions'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const { id, videoId } = block
@@ -25,6 +26,8 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
   const { journey } = useJourney()
 
   const selectedAction = getAction(t, block.action?.__typename)
+  const startEventLabel = getEventLabelOption(t, block.eventLabel).label
+  const endEventLabel = getEventLabelOption(t, block.endEventLabel).label
 
   useEffect(() => {
     dispatch({
@@ -40,7 +43,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
           icon={<ActivityIcon />}
           id={`${id}-event-label`}
           name={t('Tracking')}
-          value={t('None')}
+          value={`${startEventLabel} / ${endEventLabel}`}
         >
           <EventLabel
             videoActionType="start"

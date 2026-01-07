@@ -21,6 +21,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -69,7 +70,8 @@ export function Card({
   themeName,
   themeMode,
   coverBlockId,
-  children
+  children,
+  eventLabel
 }: TreeBlock<CardBlock>): ReactElement {
   const { journey } = useJourney()
   const {
@@ -128,6 +130,8 @@ export function Card({
       ? t('Expanded')
       : t('Contained')
 
+  const selectedEventLabel = getEventLabelOption(t, eventLabel).label
+
   return (
     <Box data-testid="CardProperties">
       {journey?.template && (
@@ -135,7 +139,7 @@ export function Card({
           icon={<ActivityIcon />}
           id={`${id}-event-label`}
           name={t('Tracking')}
-          value={t('None')}
+          value={selectedEventLabel}
         >
           <EventLabel />
         </Accordion>

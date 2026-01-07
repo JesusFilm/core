@@ -1,3 +1,5 @@
+import { TFunction } from 'next-i18next'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -11,8 +13,14 @@ import { eventLabelOptions } from '../eventLabels'
 import { getCurrentEventLabel } from './getCurrentEventLabel'
 
 describe('getCurrentEventLabel', () => {
+  const t = jest.fn((key) => key) as unknown as TFunction
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should return the first event label option (None) by default', () => {
-    const result = getCurrentEventLabel()
+    const result = getCurrentEventLabel(t)
     expect(result).toEqual(eventLabelOptions[0])
     expect(result.type).toBe('none')
   })
@@ -33,7 +41,7 @@ describe('getCurrentEventLabel', () => {
       children: []
     }
 
-    const result = getCurrentEventLabel(cardBlock)
+    const result = getCurrentEventLabel(t, cardBlock)
     expect(result.type).toBe(BlockEventLabel.decisionForChrist)
     expect(result.label).toBe('Decision for Christ')
   })
@@ -67,7 +75,7 @@ describe('getCurrentEventLabel', () => {
       children: []
     }
 
-    const result = getCurrentEventLabel(videoBlock, 'start')
+    const result = getCurrentEventLabel(t, videoBlock, 'start')
     expect(result.type).toBe(BlockEventLabel.specialVideoStart)
     expect(result.label).toBe('Video Started')
   })
@@ -91,7 +99,7 @@ describe('getCurrentEventLabel', () => {
       children: []
     }
 
-    const result = getCurrentEventLabel(buttonBlock)
+    const result = getCurrentEventLabel(t, buttonBlock)
     expect(result.type).toBe(BlockEventLabel.custom1)
     expect(result.label).toBe('Custom Event 1')
   })

@@ -20,6 +20,7 @@ import { getAction } from '../../controls/Action/utils/actions'
 import { EventLabel } from '../../controls/EventLabel'
 
 import { RadioOptionImage } from './RadioOptionImage/RadioOptionImage'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -29,6 +30,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
   } = useEditor()
   const { journey } = useJourney()
   const selectedAction = getAction(t, props.action?.__typename)
+  const selectedEventLabel = getEventLabelOption(t, props.eventLabel).label
 
   const flatten = useCallback((children: TreeBlock[]): TreeBlock[] => {
     return flatmap(children, (item) => [item, ...flatten(item.children)])
@@ -62,7 +64,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
           icon={<ActivityIcon />}
           id={`${props.id}-event-label`}
           name={t('Tracking')}
-          value={t('None')}
+          value={selectedEventLabel}
         >
           <EventLabel />
         </Accordion>

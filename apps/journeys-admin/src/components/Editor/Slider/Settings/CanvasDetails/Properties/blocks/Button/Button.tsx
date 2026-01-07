@@ -32,6 +32,7 @@ import { Alignment } from './Alignment'
 import { Color } from './Color'
 import { Size } from './Size'
 import { Variant } from './Variant'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 export function Button({
   id,
@@ -42,7 +43,8 @@ export function Button({
   endIconId,
   action,
   children,
-  settings
+  settings,
+  eventLabel
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
   const { journey } = useJourney()
@@ -57,6 +59,7 @@ export function Button({
   ) as TreeBlock<IconFields>
 
   const selectedAction = getAction(t, action?.__typename)
+  const selectedEventLabel = getEventLabelOption(t, eventLabel).label
 
   useEffect(() => {
     dispatch({
@@ -72,7 +75,7 @@ export function Button({
           icon={<ActivityIcon />}
           id={`${id}-event-label`}
           name={t('Tracking')}
-          value={t('None')}
+          value={selectedEventLabel}
         >
           <EventLabel />
         </Accordion>

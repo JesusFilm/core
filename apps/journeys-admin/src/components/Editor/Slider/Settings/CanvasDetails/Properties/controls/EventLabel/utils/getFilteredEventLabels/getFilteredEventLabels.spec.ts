@@ -1,3 +1,5 @@
+import { TFunction } from 'next-i18next'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
@@ -11,8 +13,14 @@ import { eventLabelOptions } from '../eventLabels'
 import { getFilteredEventLabels } from './getFilteredEventLabels'
 
 describe('getFilteredEventLabels', () => {
+  const t = jest.fn((key) => key) as unknown as TFunction
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should return all event label options when selectedBlock is null', () => {
-    const result = getFilteredEventLabels(undefined)
+    const result = getFilteredEventLabels(t, undefined)
     expect(result).toEqual(eventLabelOptions)
   })
 
@@ -22,7 +30,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<CardBlock>
 
-    const result = getFilteredEventLabels(cardBlock)
+    const result = getFilteredEventLabels(t, cardBlock)
 
     const expectedTypes = [
       'none',
@@ -45,7 +53,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<ButtonBlock>
 
-    const result = getFilteredEventLabels(buttonBlock)
+    const result = getFilteredEventLabels(t, buttonBlock)
 
     const expectedTypes = [
       'none',
@@ -69,7 +77,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<ButtonBlock>
 
-    const result = getFilteredEventLabels(submitButtonBlock)
+    const result = getFilteredEventLabels(t, submitButtonBlock)
 
     const expectedTypes = [
       'none',
@@ -91,7 +99,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<RadioOptionBlock>
 
-    const result = getFilteredEventLabels(radioOptionBlock)
+    const result = getFilteredEventLabels(t, radioOptionBlock)
 
     const expectedTypes = [
       'none',
@@ -114,7 +122,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<VideoBlock>
 
-    const result = getFilteredEventLabels(videoBlock)
+    const result = getFilteredEventLabels(t, videoBlock)
     expect(result).toEqual(eventLabelOptions)
   })
 
@@ -124,7 +132,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<VideoBlock>
 
-    const result = getFilteredEventLabels(videoBlock, 'start')
+    const result = getFilteredEventLabels(t, videoBlock, 'start')
 
     const expectedTypes = [
       'none',
@@ -147,7 +155,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock<VideoBlock>
 
-    const result = getFilteredEventLabels(videoBlock, 'complete')
+    const result = getFilteredEventLabels(t, videoBlock, 'complete')
 
     const expectedTypes = [
       'none',
@@ -170,7 +178,7 @@ describe('getFilteredEventLabels', () => {
       children: []
     } as unknown as TreeBlock
 
-    const result = getFilteredEventLabels(unknownBlock)
+    const result = getFilteredEventLabels(t, unknownBlock)
     expect(result).toEqual(eventLabelOptions)
   })
 })
