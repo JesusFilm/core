@@ -14,7 +14,7 @@ interface ItemProps {
   href?: string
   ButtonProps?: ComponentProps<typeof Button>
   onClick?: (event: MouseEvent<HTMLElement>) => void
-  count?: number | string
+  count?: number | string | ReactNode
   countLabel?: string
   MenuItemProps?: ComponentProps<typeof MenuItem>
 }
@@ -69,7 +69,7 @@ export function Item({
                 }}
                 {...restButtonProps}
               >
-                {count.toLocaleString()}
+                {typeof count === 'number' ? count.toLocaleString() : count}
               </Button>
             ) : (
               <IconButton

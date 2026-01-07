@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -60,9 +61,9 @@ export function TemplateAggregateAnalytics({
 
   const buttonProps = {
     sx: {
-      px: 1.5,
+      px: '7px',
       py: 0,
-      fontSize: '14px',
+      minWidth: '44px',
       '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
         fontSize: '16px'
       },
@@ -85,21 +86,33 @@ export function TemplateAggregateAnalytics({
         variant="icon-button"
         icon={<Data1Icon />}
         label={t('Journeys Created')}
-        count={localizeAndRound(childJourneys, locale)}
+        count={
+          <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
+            {localizeAndRound(childJourneys, locale)}
+          </Typography>
+        }
         ButtonProps={buttonProps}
       />
       <Item
         variant="icon-button"
         icon={<EyeOpenIcon />}
         label={t('Views')}
-        count={localizeAndRound(journeyViewCount, locale)}
+        count={
+          <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
+            {localizeAndRound(journeyViewCount, locale)}
+          </Typography>
+        }
         ButtonProps={buttonProps}
       />
       <Item
         variant="icon-button"
         icon={<Inbox2Icon />}
         label={t('Responses')}
-        count={localizeAndRound(journeyResponseCount, locale)}
+        count={
+          <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
+            {localizeAndRound(journeyResponseCount, locale)}
+          </Typography>
+        }
         ButtonProps={buttonProps}
       />
     </Box>
