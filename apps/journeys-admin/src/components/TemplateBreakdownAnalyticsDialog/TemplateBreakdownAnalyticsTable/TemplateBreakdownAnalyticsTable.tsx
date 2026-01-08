@@ -16,7 +16,6 @@ import { ReactElement, useMemo, useState } from 'react'
 import { GetTemplateFamilyStatsBreakdown } from '../../../../__generated__/GetTemplateFamilyStatsBreakdown'
 
 import {
-  getColumnHeaders,
   NUMERIC_COLUMNS,
   Order,
   ProcessedRow,
@@ -25,6 +24,7 @@ import {
   addRestrictedRowToTotal,
   addRowToTotal,
   createInitialTotalRow,
+  getColumnHeaders,
   processRow,
   sortRows,
   trackNonZeroColumns
