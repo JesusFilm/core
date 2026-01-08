@@ -2344,8 +2344,8 @@ type VideoBlock implements Block
   eventLabel: BlockEventLabel
   endEventLabel: BlockEventLabel
   autoplay: Boolean
-  startAt: Int
-  endAt: Int
+  startAt: Float
+  endAt: Float
   muted: Boolean
   videoId: ID
   videoVariantLanguageId: ID
