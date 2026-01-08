@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { GetTemplateFamilyStatsBreakdown } from '../../../../__generated__/GetTemplateFamilyStatsBreakdown'
+import { PlausibleEvent } from '../../../../__generated__/globalTypes'
 import {
   mockDataForSorting,
   mockDataWithManyRows,
@@ -16,7 +17,6 @@ import {
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 
-// Mock Next.js Link component
 jest.mock('next/link', () => {
   return ({ children, href }: { children: React.ReactNode; href: string }) => {
     return <a href={href}>{children}</a>
@@ -191,5 +191,38 @@ describe('TemplateBreakdownAnalyticsTable', () => {
     render(<TemplateBreakdownAnalyticsTable data={mockDataWithTeamAlpha} />)
 
     expect(screen.getByText('Team Alpha')).toBeInTheDocument()
+  })
+
+  it('should always show views column even when all values are zero', () => {
+    const dataWithZeroViews: GetTemplateFamilyStatsBreakdown = {
+      templateFamilyStatsBreakdown: [
+        {
+          __typename: 'TemplateFamilyStatsBreakdownResponse',
+          journeyId: 'journey-1',
+          journeyName: 'Journey 1',
+          teamName: 'Team A',
+          status: null,
+          stats: [
+            {
+              __typename: 'TemplateFamilyStatsEventResponse',
+              event: PlausibleEvent.journeyResponses,
+              visitors: 50
+            }
+            // No journeyVisitors event, so views will be 0
+          ]
+        }
+      ]
+    }
+
+    render(<TemplateBreakdownAnalyticsTable data={dataWithZeroViews} />)
+
+    // Views column header should be visible
+    const viewsElements = screen.getAllByText(/Views/)
+    expect(viewsElements.length).toBeGreaterThan(0)
+
+    // Views column should show 0 in the total row
+    const totalRow = screen.getByText('TOTAL').closest('tr')
+    const cells = within(totalRow!).getAllByRole('cell')
+    expect(cells.some((cell) => cell.textContent === '0')).toBe(true)
   })
 })

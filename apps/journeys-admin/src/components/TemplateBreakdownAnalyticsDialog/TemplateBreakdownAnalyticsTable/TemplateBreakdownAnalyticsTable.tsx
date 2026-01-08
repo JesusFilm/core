@@ -102,14 +102,17 @@ export function TemplateBreakdownAnalyticsTable({
   const displayRows = regularRows.slice(0, 10)
 
   const visibleColumnHeaders = COLUMN_HEADERS.filter(
-    (header) => header.id === 'journeyName' || !columnsWithZeros.has(header.id)
+    (header) =>
+      header.id === 'journeyName' ||
+      header.id === 'views' ||
+      !columnsWithZeros.has(header.id)
   )
 
   const renderNumericCell = (
     column: SortableColumn,
     value: number
   ): ReactElement | null => {
-    if (columnsWithZeros.has(column)) {
+    if (columnsWithZeros.has(column) && column !== 'views') {
       return null
     }
     return <TableCell>{value}</TableCell>
