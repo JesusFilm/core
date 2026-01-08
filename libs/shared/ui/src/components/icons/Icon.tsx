@@ -62,6 +62,7 @@ import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
+import Data1 from './Data1'
 import Diamond from './Diamond'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
@@ -289,6 +290,7 @@ export type IconName =
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
+  | 'Data1'
   | 'Diamond'
   | 'DotVertical'
   | 'DownArrowSm'
@@ -520,6 +522,7 @@ const iconComponents: IconComponents = {
   Cursor6,
   CursorPointer,
   Dash,
+  Data1,
   Diamond,
   DotVertical,
   DownArrowSm,

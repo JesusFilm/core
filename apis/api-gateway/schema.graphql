@@ -956,6 +956,7 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -972,6 +973,7 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(gr
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
   """
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
@@ -1076,6 +1078,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
   label: String!
   action: Action
   """
@@ -1228,6 +1231,8 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
   """
   startAt dictates at which point of time the video should start playing
   """
@@ -3289,6 +3294,21 @@ enum ContactActionType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_
   text @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum BlockEventLabel @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  custom1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom3 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  decisionForChrist @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  gospelPresentationStart @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  gospelPresentationComplete @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  inviteFriend @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  prayerRequest @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  rsvp @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  share @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  specialVideoStart @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  specialVideoComplete @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum JourneyStatus @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   archived @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   deleted @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3787,6 +3807,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -3797,6 +3818,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
 
 input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   variant: ButtonVariant
   color: ButtonColor
@@ -3811,6 +3833,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   backgroundColor: String
   backdropBlur: Int
   fullscreen: Boolean
@@ -3820,6 +3843,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
 
 input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   coverBlockId: ID
   backgroundColor: String
   backdropBlur: Int
@@ -3889,11 +3913,13 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
 }
 
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   pollOptionImageBlockId: ID
 }
@@ -4903,6 +4929,8 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
   videoId: ID
   videoVariantLanguageId: ID
   source: VideoBlockSource
@@ -4927,6 +4955,8 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
   videoId: ID
   videoVariantLanguageId: ID
   posterBlockId: ID

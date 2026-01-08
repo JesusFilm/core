@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
+import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonCreate
@@ -94,6 +94,7 @@ export interface TextResponseWithButtonCreate_button {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_button_action | null;
   settings: TextResponseWithButtonCreate_button_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonCreate_startIcon {
@@ -185,6 +186,7 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_buttonUpdate_action | null;
   settings: TextResponseWithButtonCreate_buttonUpdate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonCreate {

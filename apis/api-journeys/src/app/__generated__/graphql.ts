@@ -22,6 +22,21 @@ export enum ContactActionType {
     text = "text"
 }
 
+export enum BlockEventLabel {
+    custom1 = "custom1",
+    custom2 = "custom2",
+    custom3 = "custom3",
+    decisionForChrist = "decisionForChrist",
+    gospelPresentationStart = "gospelPresentationStart",
+    gospelPresentationComplete = "gospelPresentationComplete",
+    inviteFriend = "inviteFriend",
+    prayerRequest = "prayerRequest",
+    rsvp = "rsvp",
+    share = "share",
+    specialVideoStart = "specialVideoStart",
+    specialVideoComplete = "specialVideoComplete"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -297,6 +312,7 @@ export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -307,6 +323,7 @@ export class ButtonBlockCreateInput {
 
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -321,6 +338,7 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
@@ -330,6 +348,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
@@ -384,11 +403,13 @@ export class RadioOptionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
 }
 
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     pollOptionImageBlockId?: Nullable<string>;
 }
@@ -1253,6 +1274,7 @@ export class ButtonBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -1270,6 +1292,7 @@ export class CardBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
@@ -1353,6 +1376,7 @@ export class RadioOptionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     action?: Nullable<Action>;
     pollOptionImageBlockId?: Nullable<string>;
@@ -1441,6 +1465,8 @@ export class VideoBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
+    endEventLabel?: Nullable<BlockEventLabel>;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
     muted?: Nullable<boolean>;
