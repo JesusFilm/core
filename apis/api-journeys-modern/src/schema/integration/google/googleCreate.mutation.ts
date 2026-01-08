@@ -126,12 +126,15 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         }
         const accountEmail = userInfo.data.email
 
-        // Check if user already has a Google integration with this account email
-        const existingIntegration = await prisma.integration.findFirst({
+        // Check if user in team  already has a Google integration with this account email
+        const existingIntegration = await prisma.integration.findUnique({
           where: {
-            userId,
-            type: 'google',
-            accountEmail
+            userId_teamId_type_accountEmail: {
+              userId,
+              teamId,
+              type: 'google',
+              accountEmail
+            }
           }
         })
 

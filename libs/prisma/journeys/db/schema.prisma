@@ -275,6 +275,7 @@ model Integration {
   googleSheetsSyncs      GoogleSheetsSync[]
   team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, teamId, type, accountEmail])
   @@index([teamId])
   @@index(userId)
 }
