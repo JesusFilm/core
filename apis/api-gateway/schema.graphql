@@ -2652,6 +2652,7 @@ type CheckVideoInAlgoliaResult @join__type(graph: API_MEDIA)  {
   ok: Boolean
   mismatches: [CheckVideoInAlgoliaMismatch!]
   recordUrl: String
+  error: String
 }
 
 type CheckVideoVariantsInAlgoliaResult @join__type(graph: API_MEDIA)  {
