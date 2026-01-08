@@ -48,6 +48,7 @@ const block: TreeBlock<Block> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'image0.id',
@@ -120,7 +121,8 @@ const block: TreeBlock<Block> = {
               children: []
             }
           ],
-          settings: null
+          settings: null,
+          eventLabel: null
         }
       ]
     }

@@ -10,8 +10,13 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
@@ -102,15 +107,47 @@ export function RadioQuestion({
               stepId: input.stepId ?? '',
               event: 'radioQuestionSubmit',
               blockId: radioOptionBlock.id,
-              target: radioOptionBlock.action
+              target: radioOptionBlock.action,
+              journeyId: journey?.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'radioQuestionSubmit',
-              blockId: radioOptionBlock.id
+              blockId: radioOptionBlock.id,
+              journeyId: journey?.id
+            }),
+            templateKey: templateKeyify({
+              event: 'radioQuestionSubmit',
+              target: actionToTarget(radioOptionBlock.action),
+              journeyId: journey?.id
             })
           }
         })
+        if (radioOptionBlock.eventLabel != null) {
+          plausible(radioOptionBlock.eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: radioOptionBlock.eventLabel,
+                blockId: radioOptionBlock.id,
+                target: radioOptionBlock.action,
+                journeyId: journey?.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: radioOptionBlock.eventLabel,
+                blockId: radioOptionBlock.id,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: radioOptionBlock.eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'radio_question_submission',
