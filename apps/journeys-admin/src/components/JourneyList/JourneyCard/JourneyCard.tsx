@@ -11,6 +11,7 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -31,6 +32,15 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+
+const TemplateBreakdownAnalyticsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TemplateBreakdownAnalyticsDialog" */
+      '../../TemplateBreakdownAnalyticsDialog/TemplateBreakdownAnalyticsDialog'
+    ).then((mod) => mod.TemplateBreakdownAnalyticsDialog),
+  { ssr: false }
+)
 
 interface JourneyCardProps {
   journey: Journey
@@ -63,6 +73,7 @@ export function JourneyCard({
   const { t } = useTranslation('apps-journeys-admin')
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
+  const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
 
   // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
   const TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES =
@@ -358,6 +369,11 @@ export function JourneyCard({
             <JourneyCardText journey={journey} />
           </CardContent>
         </CardActionArea>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journey.id}
+          open={breakdownDialogOpen}
+          handleClose={() => setBreakdownDialogOpen(false)}
+        />
         {!TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES && (
           <Box
             sx={{
@@ -383,11 +399,12 @@ export function JourneyCard({
             size="small"
             aria-label="Download"
             sx={{
-              outline: '2.5px solid',
-              outlineColor: 'text.secondary',
+              outline: '2px solid',
+              outlineColor: 'secondary.light',
               borderRadius: '6px',
               padding: 1
             }}
+            onClick={() => setBreakdownDialogOpen(true)}
           >
             <BarGroup3Icon />
           </IconButton>

@@ -139,4 +139,60 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       expect(switchElement).not.toBeChecked()
     })
   })
+
+  it('should show table component during loading state', () => {
+    const loadingMock: MockedResponse<
+      GetTemplateFamilyStatsBreakdown,
+      GetTemplateFamilyStatsBreakdownVariables
+    > = {
+      request: {
+        query: GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
+        variables: {
+          id: journeyId,
+          idType: IdType.databaseId,
+          where: {
+            property: 'event:props:templateKey',
+            period: 'custom',
+            date: expectedDate
+          },
+          events: [
+            PlausibleEvent.journeyVisitors,
+            PlausibleEvent.journeyResponses,
+            PlausibleEvent.prayerRequestCapture,
+            PlausibleEvent.christDecisionCapture,
+            PlausibleEvent.gospelStartCapture,
+            PlausibleEvent.gospelCompleteCapture,
+            PlausibleEvent.rsvpCapture,
+            PlausibleEvent.specialVideoStartCapture,
+            PlausibleEvent.specialVideoCompleteCapture,
+            PlausibleEvent.custom1Capture,
+            PlausibleEvent.custom2Capture,
+            PlausibleEvent.custom3Capture
+          ],
+          status: [
+            JourneyStatus.published,
+            JourneyStatus.draft,
+            JourneyStatus.archived
+          ]
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[loadingMock]}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open={true}
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByTestId('template-breakdown-analytics-table-empty')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('No template breakdown analytics data available')
+    ).not.toBeInTheDocument()
+  })
 })

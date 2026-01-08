@@ -14,11 +14,14 @@ import {
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
+import Box from '@mui/material/Box'
 import FormGroup from '@mui/material/FormGroup'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Typography from '@mui/material/Typography'
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
+import { useTranslation } from 'next-i18next'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
@@ -58,6 +61,7 @@ export function TemplateBreakdownAnalyticsDialog({
   open,
   handleClose
 }: TemplateBreakdownAnalyticsDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
 
   const defaultVariables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
@@ -147,11 +151,30 @@ export function TemplateBreakdownAnalyticsDialog({
         }
       }}
     >
-      <TemplateBreakdownAnalyticsTable
-        data={data}
-        loading={loading}
-        error={error}
-      />
+      {!loading &&
+      !error &&
+      (data?.templateFamilyStatsBreakdown == null ||
+        data.templateFamilyStatsBreakdown.length === 0) ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 200,
+            px: 4
+          }}
+        >
+          <Typography variant="body1" align="center">
+            {`${t('No template breakdown analytics data available')}`}
+          </Typography>
+        </Box>
+      ) : (
+        <TemplateBreakdownAnalyticsTable
+          data={data}
+          loading={loading}
+          error={error}
+        />
+      )}
     </Dialog>
   )
 }
