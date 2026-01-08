@@ -126,6 +126,27 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         }
         const accountEmail = userInfo.data.email
 
+        // Check if user in team  already has a Google integration with this account email
+        const existingIntegration = await prisma.integration.findUnique({
+          where: {
+            userId_teamId_type_accountEmail: {
+              userId,
+              teamId,
+              type: 'google',
+              accountEmail
+            }
+          }
+        })
+
+        if (existingIntegration != null) {
+          throw new GraphQLError(
+            `You have already linked this Google account (${accountEmail}). Please use the existing integration or remove it first.`,
+            {
+              extensions: { code: 'BAD_USER_INPUT' }
+            }
+          )
+        }
+
         // Require refresh token; do not fall back to short-lived access token
         if (refreshToken == null || refreshToken === '') {
           logger.error(
