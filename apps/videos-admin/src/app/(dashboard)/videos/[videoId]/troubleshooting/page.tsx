@@ -7,7 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
@@ -33,6 +33,7 @@ const CHECK_VIDEO_IN_ALGOLIA = graphql(`
   query CheckVideoInAlgolia($videoId: ID!) {
     checkVideoInAlgolia(videoId: $videoId) {
       ok
+      error
       mismatches {
         field
         expected
@@ -65,8 +66,34 @@ const UPDATE_VIDEO_VARIANT_ALGOLIA_INDEX = graphql(`
   }
 `)
 
+type CheckVideoInAlgoliaMismatch = {
+  field: string
+  expected: string | null
+  actual: string | null
+}
+
+type CheckVideoInAlgoliaResult = {
+  ok: boolean
+  error: string | null
+  mismatches: CheckVideoInAlgoliaMismatch[]
+  recordUrl: string | null
+}
+
+type CheckVideoVariantsInAlgoliaResult = {
+  ok: boolean
+  missingVariants: string[]
+  browseUrl: string | null
+}
+
 export default function TroubleshootingPage(): ReactElement {
   const { videoId } = useParams<{ videoId: string }>()
+  const [lastUpdateVideoAlgoliaSucceeded, setLastUpdateVideoAlgoliaSucceeded] =
+    useState<boolean | null>(null)
+  const [
+    lastUpdateVariantsAlgoliaSucceeded,
+    setLastUpdateVariantsAlgoliaSucceeded
+  ] = useState<boolean | null>(null)
+
   const [getLanguages, { data, loading, error }] = useLazyQuery(
     GET_VIDEO_LANGUAGES,
     {
@@ -113,11 +140,16 @@ export default function TroubleshootingPage(): ReactElement {
     updateVideoAlgolia,
     {
       loading: updateVideoAlgoliaLoading,
-      error: updateVideoAlgoliaError,
-      data: updateVideoAlgoliaData
+      error: updateVideoAlgoliaError
     }
   ] = useMutation(UPDATE_VIDEO_ALGOLIA_INDEX, {
     variables: { videoId },
+    onCompleted: () => {
+      setLastUpdateVideoAlgoliaSucceeded(true)
+    },
+    onError: () => {
+      setLastUpdateVideoAlgoliaSucceeded(false)
+    },
     refetchQueries: [
       {
         query: CHECK_VIDEO_IN_ALGOLIA,
@@ -130,11 +162,16 @@ export default function TroubleshootingPage(): ReactElement {
     updateVideoVariantsAlgolia,
     {
       loading: updateVariantsAlgoliaLoading,
-      error: updateVariantsAlgoliaError,
-      data: updateVariantsAlgoliaData
+      error: updateVariantsAlgoliaError
     }
   ] = useMutation(UPDATE_VIDEO_VARIANT_ALGOLIA_INDEX, {
     variables: { videoId },
+    onCompleted: () => {
+      setLastUpdateVariantsAlgoliaSucceeded(true)
+    },
+    onError: () => {
+      setLastUpdateVariantsAlgoliaSucceeded(false)
+    },
     refetchQueries: [
       {
         query: CHECK_VIDEO_VARIANTS_IN_ALGOLIA,
@@ -160,12 +197,37 @@ export default function TroubleshootingPage(): ReactElement {
   }
 
   const handleUpdateVideoAlgolia = (): void => {
+    setLastUpdateVideoAlgoliaSucceeded(null)
     void updateVideoAlgolia()
   }
 
   const handleUpdateVariantsAlgolia = (): void => {
+    setLastUpdateVariantsAlgoliaSucceeded(null)
     void updateVideoVariantsAlgolia()
   }
+
+  const algoliaVideoResult = (algoliaVideoData?.checkVideoInAlgolia ??
+    null) as unknown as CheckVideoInAlgoliaResult | null
+  const algoliaVideoMismatches = algoliaVideoResult?.mismatches ?? []
+  const algoliaVideoLookupError = algoliaVideoResult?.error ?? null
+  const hasAlgoliaVideoLookupError =
+    algoliaVideoLookupError != null && algoliaVideoLookupError !== ''
+  const hasAlgoliaVideoMismatches = algoliaVideoMismatches.length > 0
+  const isAlgoliaVideoOk = algoliaVideoResult?.ok === true
+
+  const algoliaVideoStatusText = hasAlgoliaVideoLookupError
+    ? 'Lookup Failed ✗'
+    : isAlgoliaVideoOk
+      ? 'OK ✓'
+      : hasAlgoliaVideoMismatches
+        ? 'Mismatch ✗'
+        : 'Not Found ✗'
+
+  const algoliaVideoStatusColor = hasAlgoliaVideoLookupError
+    ? 'error.main'
+    : isAlgoliaVideoOk
+      ? 'success.main'
+      : 'error.main'
 
   return (
     <Stack spacing={4}>
@@ -372,33 +434,35 @@ export default function TroubleshootingPage(): ReactElement {
         </Box>
       )}
 
-      {updateVideoAlgoliaData != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'success.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="success.main">
-            Video index updated successfully!
-          </Typography>
-        </Box>
-      )}
+      {lastUpdateVideoAlgoliaSucceeded === true &&
+        updateVideoAlgoliaError == null && (
+          <Box
+            sx={{
+              p: 2,
+              bgcolor: 'success.light',
+              borderRadius: 1
+            }}
+          >
+            <Typography color="success.main">
+              Video index updated successfully!
+            </Typography>
+          </Box>
+        )}
 
-      {updateVariantsAlgoliaData != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'success.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="success.main">
-            Video variants index updated successfully!
-          </Typography>
-        </Box>
-      )}
+      {lastUpdateVariantsAlgoliaSucceeded === true &&
+        updateVariantsAlgoliaError == null && (
+          <Box
+            sx={{
+              p: 2,
+              bgcolor: 'success.light',
+              borderRadius: 1
+            }}
+          >
+            <Typography color="success.main">
+              Video variants index updated successfully!
+            </Typography>
+          </Box>
+        )}
 
       {algoliaVideoData != null && (
         <Box
@@ -414,26 +478,28 @@ export default function TroubleshootingPage(): ReactElement {
             <Typography variant="h6">Algolia Video Status</Typography>
             <Box>
               <Typography variant="body2" color="text.secondary">
-                Video in Index:
+                Video record:
               </Typography>
               <Typography
                 variant="body1"
                 sx={{
-                  color: algoliaVideoData.checkVideoInAlgolia.ok
-                    ? 'success.main'
-                    : 'error.main',
+                  color: algoliaVideoStatusColor,
                   fontWeight: 'bold'
                 }}
               >
-                {algoliaVideoData.checkVideoInAlgolia.ok
-                  ? 'Found ✓'
-                  : 'Not Found ✗'}
+                {algoliaVideoStatusText}
               </Typography>
-              {(algoliaVideoData.checkVideoInAlgolia.mismatches ?? []).length >
-                0 && (
+              {hasAlgoliaVideoLookupError && (
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="body2" color="text.primary">
+                    Algolia error: {algoliaVideoLookupError}
+                  </Typography>
+                </Box>
+              )}
+
+              {hasAlgoliaVideoMismatches && (
                 <Stack spacing={1} sx={{ mt: 1 }}>
-                  {(algoliaVideoData.checkVideoInAlgolia.mismatches ?? []).map(
-                    ({ field, expected, actual }) => (
+                  {algoliaVideoMismatches.map(({ field, expected, actual }) => (
                       <Typography
                         key={field}
                         variant="body2"
@@ -450,19 +516,20 @@ export default function TroubleshootingPage(): ReactElement {
                       </Typography>
                     )
                   )}
-                  {algoliaVideoData.checkVideoInAlgolia.recordUrl != null && (
-                    <Button
-                      variant="text"
-                      size="small"
-                      href={algoliaVideoData.checkVideoInAlgolia.recordUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      sx={{ alignSelf: 'flex-start' }}
-                    >
-                      Open in Algolia
-                    </Button>
-                  )}
                 </Stack>
+              )}
+
+              {algoliaVideoResult?.recordUrl != null && (
+                <Button
+                  variant="text"
+                  size="small"
+                  href={algoliaVideoResult.recordUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  sx={{ mt: 1, alignSelf: 'flex-start' }}
+                >
+                  Open in Algolia
+                </Button>
               )}
             </Box>
           </Stack>
@@ -470,6 +537,16 @@ export default function TroubleshootingPage(): ReactElement {
       )}
 
       {algoliaVariantsData != null && (
+        (() => {
+          const algoliaVariantsResult =
+            (algoliaVariantsData.checkVideoVariantsInAlgolia ??
+              null) as unknown as CheckVideoVariantsInAlgoliaResult | null
+
+          if (algoliaVariantsResult == null) {
+            return null
+          }
+
+          return (
         <Box
           sx={{
             p: 2,
@@ -486,8 +563,7 @@ export default function TroubleshootingPage(): ReactElement {
                 Variants in Index:
               </Typography>
               {(
-                algoliaVariantsData.checkVideoVariantsInAlgolia
-                  .missingVariants ?? []
+                algoliaVariantsResult.missingVariants ?? []
               ).length === 0 ? (
                 <Typography
                   variant="body1"
@@ -506,19 +582,15 @@ export default function TroubleshootingPage(): ReactElement {
               ) : (
                 <Typography variant="body1" color="error.main">
                   Missing variants:{' '}
-                  {(
-                    algoliaVariantsData.checkVideoVariantsInAlgolia
-                      .missingVariants ?? []
-                  ).join(', ')}
+                  {(algoliaVariantsResult.missingVariants ?? []).join(', ')}
                 </Typography>
               )}
-              {algoliaVariantsData.checkVideoVariantsInAlgolia.browseUrl !=
-                null && (
+              {algoliaVariantsResult.browseUrl != null && (
                 <Button
                   variant="text"
                   size="small"
                   href={
-                    algoliaVariantsData.checkVideoVariantsInAlgolia.browseUrl
+                    algoliaVariantsResult.browseUrl
                   }
                   target="_blank"
                   rel="noreferrer"
@@ -530,6 +602,8 @@ export default function TroubleshootingPage(): ReactElement {
             </Box>
           </Stack>
         </Box>
+          )
+        })()
       )}
 
       {data != null && (
