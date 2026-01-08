@@ -93,7 +93,7 @@ describe('integrationGoogleCreate', () => {
       tag: 'tag'
     })
     // No existing integration for this user with the same Google account
-    prismaMock.integration.findFirst.mockResolvedValue(null)
+    prismaMock.integration.findUnique.mockResolvedValue(null)
     prismaMock.integration.create.mockResolvedValue(mockIntegration as any)
 
     const result = await authClient({
@@ -314,7 +314,7 @@ describe('integrationGoogleCreate', () => {
     mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
 
     // Simulate existing integration with the same Google account for this user
-    prismaMock.integration.findFirst.mockResolvedValue({
+    prismaMock.integration.findUnique.mockResolvedValue({
       id: 'existing-integration-id',
       type: 'google',
       teamId: 'other-team-id',
@@ -346,11 +346,14 @@ describe('integrationGoogleCreate', () => {
       ]
     })
 
-    expect(prismaMock.integration.findFirst).toHaveBeenCalledWith({
+    expect(prismaMock.integration.findUnique).toHaveBeenCalledWith({
       where: {
-        userId: 'userId',
-        type: 'google',
-        accountEmail: 'existing@example.com'
+        userId_teamId_type_accountEmail: {
+          userId: 'userId',
+          teamId: 'team-id',
+          type: 'google',
+          accountEmail: 'existing@example.com'
+        }
       }
     })
 
@@ -392,7 +395,7 @@ describe('integrationGoogleCreate', () => {
     })
 
     // No existing integration for this user (another user may have same email)
-    prismaMock.integration.findFirst.mockResolvedValue(null)
+    prismaMock.integration.findUnique.mockResolvedValue(null)
     prismaMock.integration.create.mockResolvedValue(mockIntegration as any)
 
     const result = await authClient({
