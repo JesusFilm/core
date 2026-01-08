@@ -34,6 +34,11 @@ function IndexPage(): ReactElement {
     }
   }, [user.id, query, activeTeam, refetch])
 
+  // Only show side panel (OnboardingPanel) when on journeys tab, not templates tab
+  const currentContentType =
+    (router?.query?.type as 'journeys' | 'templates') ?? 'journeys'
+  const showSidePanel = currentContentType === 'journeys'
+
   return (
     <>
       <NextSeo title={t('Journeys')} />
@@ -52,19 +57,21 @@ function IndexPage(): ReactElement {
             </Stack>
           </Stack>
         }
-        sidePanelChildren={<OnboardingPanel />}
+        sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
         sidePanelTitle={
-          <>
-            <Typography variant="subtitle1">
-              {t('Create a New Journey')}
-            </Typography>
-            <HelpScoutBeacon
-              userInfo={{
-                name: user?.displayName ?? '',
-                email: user?.email ?? ''
-              }}
-            />
-          </>
+          showSidePanel ? (
+            <>
+              <Typography variant="subtitle1">
+                {t('Create a New Journey')}
+              </Typography>
+              <HelpScoutBeacon
+                userInfo={{
+                  name: user?.displayName ?? '',
+                  email: user?.email ?? ''
+                }}
+              />
+            </>
+          ) : undefined
         }
       >
         <JourneyList user={user} />

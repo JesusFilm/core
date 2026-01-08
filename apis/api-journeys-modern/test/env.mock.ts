@@ -31,9 +31,9 @@ export const env = {
     return 'https://example.com'
   },
   get PLAUSIBLE_API_KEY(): string {
-    return 'test-api-key'
+    return process.env.PLAUSIBLE_API_KEY ?? 'test-api-key'
   },
   get PLAUSIBLE_URL(): string {
-    return 'https://example.com'
+    return process.env.PLAUSIBLE_URL ?? 'https://example.com'
   }
 }

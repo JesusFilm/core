@@ -17,6 +17,7 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Card } from '.'
 
@@ -34,6 +35,7 @@ const createCard = (
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [],
   ...overrides
 })
@@ -68,7 +70,7 @@ const renderWithProviders = (
           <EditorProvider
             initialState={{ selectedBlock: selectedBlock ?? undefined }}
           >
-            {component}
+            <MuxVideoUploadProvider>{component}</MuxVideoUploadProvider>
           </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>
@@ -381,6 +383,8 @@ describe('Card', () => {
             fullsize: null,
             action: null,
             objectFit: null,
+            eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]

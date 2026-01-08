@@ -32,6 +32,7 @@ describe('Button attributes', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
+    eventLabel: null,
     settings: {
       __typename: 'ButtonBlockSettings',
       alignment: ButtonAlignment.justify

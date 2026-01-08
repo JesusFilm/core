@@ -1,0 +1,11 @@
+apiVersion: v2
+name: aws-load-balancer-controller-app
+description: Wrapper chart for AWS Load Balancer Controller managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v2.8.1'
+
+dependencies:
+  - name: aws-load-balancer-controller
+    version: '1.8.1'
+    repository: https://aws.github.io/eks-charts

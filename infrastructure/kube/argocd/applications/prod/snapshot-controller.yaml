@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapshot-controller
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JesusFilm/core
+    path: infrastructure/kube/snapshot-controller
+    targetRevision: main
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+
