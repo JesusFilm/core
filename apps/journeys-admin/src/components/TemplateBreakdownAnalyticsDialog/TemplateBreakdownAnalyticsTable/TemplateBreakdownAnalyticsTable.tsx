@@ -1,3 +1,4 @@
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Table from '@mui/material/Table'
@@ -26,6 +27,9 @@ import {
   ProcessedRow,
   SortableColumn
 } from './utils'
+
+const COLUMN_MAX_WIDTH = 120
+const FIRST_COLUMN_MAX_WIDTH = 200
 
 interface TemplateBreakdownAnalyticsTableProps {
   data: GetTemplateFamilyStatsBreakdown | null | undefined
@@ -115,7 +119,7 @@ export function TemplateBreakdownAnalyticsTable({
     if (columnsWithZeros.has(column) && column !== 'views') {
       return null
     }
-    return <TableCell>{value}</TableCell>
+    return <TableCell width={COLUMN_MAX_WIDTH}>{value}</TableCell>
   }
 
   return (
@@ -126,12 +130,17 @@ export function TemplateBreakdownAnalyticsTable({
           overflow: 'auto'
         }}
       >
-        <Table stickyHeader size="small">
+        <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
               {visibleColumnHeaders.map((header) => (
                 <TableCell
                   key={header.id}
+                  width={
+                    header.id === 'journeyName'
+                      ? FIRST_COLUMN_MAX_WIDTH
+                      : COLUMN_MAX_WIDTH
+                  }
                   sx={{
                     backgroundColor: 'background.paper',
                     fontWeight: 'bold'
@@ -141,16 +150,40 @@ export function TemplateBreakdownAnalyticsTable({
                     active={orderBy === header.id}
                     direction={orderBy === header.id ? order : 'asc'}
                     onClick={() => handleRequestSort(header.id)}
+                    hideSortIcon
+                    sx={{
+                      '& .MuiTableSortLabel-icon': {
+                        display: 'none'
+                      }
+                    }}
                   >
                     <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                        {header.id === 'views' && orderBy === 'views'
-                          ? order === 'desc'
-                            ? '↑ '
-                            : '↓ '
-                          : ''}
-                        {header.label}
-                      </Typography>
+                      <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      >
+                        {header.id === 'views' && orderBy === 'views' && (
+                          <ArrowUpwardIcon
+                            sx={{
+                              fontSize: '0.875rem',
+                              color: 'text.secondary',
+                              transform:
+                                order === 'desc'
+                                  ? 'rotate(180deg)'
+                                  : 'rotate(0deg)'
+                            }}
+                          />
+                        )}
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontWeight: 'bold',
+                            color:
+                              header.id === 'views' ? 'text.primary' : 'inherit'
+                          }}
+                        >
+                          {header.label}
+                        </Typography>
+                      </Box>
                       {header.subtitle != null && (
                         <Typography
                           variant="caption"
@@ -164,23 +197,29 @@ export function TemplateBreakdownAnalyticsTable({
                 </TableCell>
               ))}
             </TableRow>
-          </TableHead>
-          <TableBody>
             {/* Total Row */}
             <TableRow
               sx={{
                 backgroundColor: 'action.hover',
                 '& .MuiTableCell-root': {
                   fontWeight: 'bold',
-                  backgroundColor: 'action.hover',
+                  backgroundColor: 'divider',
                   position: 'sticky',
-                  top: 53,
+                  top: 78,
                   zIndex: 1
                 }
               }}
             >
-              <TableCell>
-                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              <TableCell width={FIRST_COLUMN_MAX_WIDTH}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontWeight: 'bold',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
                   {totalRow.journeyName}
                 </Typography>
               </TableCell>
@@ -215,22 +254,53 @@ export function TemplateBreakdownAnalyticsTable({
               {renderNumericCell('custom2Capture', totalRow.custom2Capture)}
               {renderNumericCell('custom3Capture', totalRow.custom3Capture)}
             </TableRow>
-
+          </TableHead>
+          <TableBody
+            sx={{
+              '& .MuiTableCell-root': {
+                borderBottom: (theme) => `1px solid ${theme.palette.divider}`
+              },
+              '& .MuiTableRow-root:last-child .MuiTableCell-root': {
+                borderBottom: 'none'
+              }
+            }}
+          >
             {/* Regular Rows */}
             {displayRows.map((row) => (
-              <TableRow key={row.journeyId} hover>
-                <TableCell>
+              <TableRow key={row.journeyId}>
+                <TableCell
+                  width={FIRST_COLUMN_MAX_WIDTH}
+                  sx={{ overflow: 'hidden' }}
+                >
+                  <Typography variant="body2">{row.teamName}</Typography>
                   <Link
                     component={NextLink}
                     href={`/journeys/${row.journeyId}`}
-                    sx={{ textDecoration: 'none', color: 'inherit' }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                    sx={{
+                      textDecoration: 'underline',
+                      textDecorationColor: (theme) => theme.palette.divider,
+                      color: 'inherit',
+                      display: 'block',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      maxWidth: '100%'
+                    }}
                   >
-                    <Typography variant="body2">{row.journeyName}</Typography>
                     <Typography
                       variant="caption"
-                      sx={{ color: 'text.secondary', display: 'block' }}
+                      sx={{
+                        color: 'text.secondary',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        display: 'block'
+                      }}
                     >
-                      {row.teamName}
+                      {row.journeyName}
                     </Typography>
                   </Link>
                 </TableCell>
@@ -270,7 +340,7 @@ export function TemplateBreakdownAnalyticsTable({
             {/* Restricted Row */}
             {restrictedRow != null && (
               <TableRow>
-                <TableCell>
+                <TableCell width={FIRST_COLUMN_MAX_WIDTH}>
                   <Box>
                     <Typography
                       variant="body2"

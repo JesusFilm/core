@@ -1,6 +1,7 @@
 import { gql, useQuery } from '@apollo/client'
 import { formatISO } from 'date-fns'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -21,7 +22,6 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Typography from '@mui/material/Typography'
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
-import { useTranslation } from 'next-i18next'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
@@ -148,6 +148,9 @@ export function TemplateBreakdownAnalyticsDialog({
       sx={{
         '& .MuiDialogContent-dividers': {
           px: 0
+        },
+        '& .MuiDialog-paper': {
+          width: 'fit-content'
         }
       }}
     >

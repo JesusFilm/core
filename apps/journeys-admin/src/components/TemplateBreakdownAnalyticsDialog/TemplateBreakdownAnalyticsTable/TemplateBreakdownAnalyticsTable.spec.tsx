@@ -84,7 +84,8 @@ describe('TemplateBreakdownAnalyticsTable', () => {
     expect(totalRow).toBeInTheDocument()
 
     // Check that totals are calculated correctly (100+200=300, 50+75=125, 25+30=55)
-    const cells = within(totalRow!).getAllByRole('cell')
+    // Total row is in TableHead, so cells have role "columnheader"
+    const cells = within(totalRow!).getAllByRole('columnheader')
     expect(cells.some((cell) => cell.textContent === '300')).toBe(true)
     expect(cells.some((cell) => cell.textContent === '125')).toBe(true)
     expect(cells.some((cell) => cell.textContent === '55')).toBe(true)
@@ -94,7 +95,8 @@ describe('TemplateBreakdownAnalyticsTable', () => {
     render(<TemplateBreakdownAnalyticsTable data={mockDataWithRestrictedRow} />)
 
     const totalRow = screen.getByText('TOTAL').closest('tr')
-    const cells = within(totalRow!).getAllByRole('cell')
+    // Total row is in TableHead, so cells have role "columnheader"
+    const cells = within(totalRow!).getAllByRole('columnheader')
     // Total should be 100 + 50 = 150
     expect(cells.some((cell) => cell.textContent === '150')).toBe(true)
   })
@@ -222,7 +224,8 @@ describe('TemplateBreakdownAnalyticsTable', () => {
 
     // Views column should show 0 in the total row
     const totalRow = screen.getByText('TOTAL').closest('tr')
-    const cells = within(totalRow!).getAllByRole('cell')
+    // Total row is in TableHead, so cells have role "columnheader"
+    const cells = within(totalRow!).getAllByRole('columnheader')
     expect(cells.some((cell) => cell.textContent === '0')).toBe(true)
   })
 })
