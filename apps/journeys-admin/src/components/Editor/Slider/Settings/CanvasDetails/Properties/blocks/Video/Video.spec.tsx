@@ -4,9 +4,11 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
@@ -76,6 +78,27 @@ describe('Video', () => {
 
     expect(getByText('Video Source')).toBeInTheDocument()
     expect(getByText('FallingPlates')).toBeInTheDocument()
+  })
+
+  it('shows event label when template', () => {
+    const { getAllByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: video }}>
+              <Video {...video} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(getAllByTestId('EventLabelSelect')).toHaveLength(2)
   })
 
   it('should open property drawer for video options', () => {

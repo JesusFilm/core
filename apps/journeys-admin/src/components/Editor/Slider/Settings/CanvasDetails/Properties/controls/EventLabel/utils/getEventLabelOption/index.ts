@@ -1,0 +1,1 @@
+export { getEventLabelOption } from './getEventLabelOption'

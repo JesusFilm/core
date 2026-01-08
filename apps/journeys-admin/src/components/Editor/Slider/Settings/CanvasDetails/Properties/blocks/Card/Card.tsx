@@ -11,6 +11,7 @@ import {
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
@@ -20,6 +21,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -53,6 +55,14 @@ const CardStyling = dynamic(
   { ssr: false }
 )
 
+const EventLabel = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/EventLabel/EventLabel" */ '../../controls/EventLabel'
+    ).then((mod) => mod.EventLabel),
+  { ssr: false }
+)
+
 export function Card({
   id,
   backgroundColor,
@@ -60,7 +70,8 @@ export function Card({
   themeName,
   themeMode,
   coverBlockId,
-  children
+  children,
+  eventLabel
 }: TreeBlock<CardBlock>): ReactElement {
   const { journey } = useJourney()
   const {
@@ -119,8 +130,20 @@ export function Card({
       ? t('Expanded')
       : t('Contained')
 
+  const selectedEventLabel = getEventLabelOption(t, eventLabel).label
+
   return (
     <Box data-testid="CardProperties">
+      {journey?.template && (
+        <Accordion
+          icon={<ActivityIcon />}
+          id={`${id}-event-label`}
+          name={t('Tracking')}
+          value={selectedEventLabel}
+        >
+          <EventLabel />
+        </Accordion>
+      )}
       <Accordion
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-layout`}
