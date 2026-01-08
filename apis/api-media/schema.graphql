@@ -56,6 +56,7 @@ type CheckVideoInAlgoliaResult {
   ok: Boolean
   mismatches: [CheckVideoInAlgoliaMismatch!]
   recordUrl: String
+  error: String
 }
 
 type CheckVideoVariantsInAlgoliaResult {
@@ -92,6 +93,20 @@ type CloudflareR2 {
   updatedAt: Date!
 }
 
+input CloudflareR2CompleteMultipartInput {
+  """CloudflareR2 id for the asset being uploaded"""
+  id: String
+
+  """Key of the multipart upload being completed"""
+  fileName: String!
+
+  """Upload ID returned from create multipart upload"""
+  uploadId: String!
+
+  """List of uploaded parts with their ETags"""
+  parts: [CloudflareR2MultipartUploadedPartInput!]!
+}
+
 input CloudflareR2CreateInput {
   id: String
 
@@ -109,6 +124,68 @@ input CloudflareR2CreateInput {
 
   """the id of the Video object this file relates to in the database"""
   videoId: String!
+}
+
+input CloudflareR2MultipartPrepareInput {
+  id: String
+
+  """the size of the file that is being uploaded"""
+  contentLength: BigInt!
+
+  """the type of file that is being uploaded. e.g. image or video/mp4"""
+  contentType: String!
+
+  """the name of the file that is being uploaded"""
+  fileName: String!
+
+  """the original name of the file before any renaming"""
+  originalFilename: String
+
+  """the id of the Video object this file relates to in the database"""
+  videoId: String!
+
+  """
+  Optional preferred part size in bytes (minimum 5 MiB, capped to 10k parts)
+  """
+  preferredPartSize: Int
+}
+
+"""Metadata returned when preparing a multipart upload for Cloudflare R2"""
+type CloudflareR2MultipartPrepared {
+  """CloudflareR2 record id"""
+  id: String
+
+  """Upload ID for the multipart upload"""
+  uploadId: String
+
+  """Object key for the multipart upload"""
+  fileName: String
+
+  """Public URL for the completed asset"""
+  publicUrl: String
+
+  """Part size in bytes"""
+  partSize: Int
+
+  """Presigned URLs for each multipart part"""
+  parts: [CloudflareR2MultipartPreparedPart!]
+}
+
+"""Presigned upload URL for a multipart part"""
+type CloudflareR2MultipartPreparedPart {
+  """Presigned URL for the part"""
+  uploadUrl: String
+
+  """1-indexed part number"""
+  partNumber: Int
+}
+
+input CloudflareR2MultipartUploadedPartInput {
+  """1-indexed part number for the multipart upload"""
+  partNumber: Int!
+
+  """ETag returned after uploading the part"""
+  eTag: String!
 }
 
 """
@@ -214,6 +291,14 @@ type Mutation {
 
   """The endpoint to upload a file to Cloudflare R2"""
   cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
+
+  """
+  Prepare a multipart upload for Cloudflare R2 and return presigned part URLs
+  """
+  cloudflareR2MultipartPrepare(input: CloudflareR2MultipartPrepareInput!): CloudflareR2MultipartPrepared!
+
+  """Complete a multipart upload and persist the asset record"""
+  cloudflareR2CompleteMultipart(input: CloudflareR2CompleteMultipartInput!): CloudflareR2!
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!

@@ -2,10 +2,30 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../../../lib/algolia/algoliaClient'
+import {
+  algoliaConfig,
+  getAlgoliaClient
+} from '../../../lib/algolia/algoliaClient'
 import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
+import { logger } from '../../../logger'
 import { builder } from '../../builder'
+
+const getErrorString = (err: unknown): string => {
+  if (err instanceof Error) {
+    return err.message
+  }
+
+  if (typeof err === 'string') {
+    return err
+  }
+
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}
 
 const CheckVideoInAlgoliaMismatchRef = builder
   .objectRef<{
@@ -30,6 +50,7 @@ const CheckVideoInAlgoliaResultRef = builder
       actual: string | null
     }>
     recordUrl: string | null
+    error: string | null
   }>('CheckVideoInAlgoliaResult')
   .implement({
     fields: (t) => ({
@@ -38,7 +59,8 @@ const CheckVideoInAlgoliaResultRef = builder
         type: [CheckVideoInAlgoliaMismatchRef],
         resolve: (parent) => parent.mismatches
       }),
-      recordUrl: t.exposeString('recordUrl', { nullable: true })
+      recordUrl: t.exposeString('recordUrl', { nullable: true }),
+      error: t.exposeString('error', { nullable: true })
     })
   })
 
@@ -64,13 +86,7 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_parent, { videoId }) => {
-      const client = await getAlgoliaClient()
-      const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
-      const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-
-      if (client == null) {
-        throw new GraphQLError('Algolia client not configured')
-      }
+      const client = getAlgoliaClient()
 
       // Fetch minimal video data to validate against Algolia record
       const video = await prisma.video.findUnique({
@@ -118,7 +134,7 @@ builder.queryFields((t) => ({
 
       try {
         const record = await client.getObject({
-          indexName: videosIndex,
+          indexName: algoliaConfig.videosIndex,
           objectID: videoId
         })
 
@@ -158,23 +174,31 @@ builder.queryFields((t) => ({
         return {
           ok: mismatches.length === 0,
           mismatches,
-          recordUrl:
-            appId !== '' && videosIndex !== ''
-              ? `https://www.algolia.com/apps/${appId}/explorer/browse/${videosIndex}?query=${encodeURIComponent(
-                  videoId
-                )}`
-              : null
+          recordUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videosIndex}?query=${encodeURIComponent(videoId)}`,
+          error: null
         }
-      } catch {
+      } catch (err) {
+        const errorString = getErrorString(err)
+        const appId = algoliaConfig.appId
+        const videosIndex = algoliaConfig.videosIndex
+        const context = { videoId, appId, videosIndex }
+
+        logger?.error(
+          { err, ...context },
+          'Algolia getObject failed while checking video in Algolia'
+        )
+
+        if (logger == null) {
+          console.error(
+            `Algolia getObject failed while checking video in Algolia (videoId=${videoId}, appId=${appId}, videosIndex=${videosIndex}): ${errorString}`
+          )
+        }
+
         return {
           ok: false,
           mismatches: [],
-          recordUrl:
-            appId !== '' && videosIndex !== ''
-              ? `https://www.algolia.com/apps/${appId}/explorer/browse/${videosIndex}?query=${encodeURIComponent(
-                  videoId
-                )}`
-              : null
+          recordUrl: `https://www.algolia.com/apps/${appId}/explorer/browse/${videosIndex}?query=${encodeURIComponent(videoId)}`,
+          error: errorString
         }
       }
     }
@@ -186,13 +210,7 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_parent, { videoId }) => {
-      const client = await getAlgoliaClient()
-      const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
-      const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-
-      if (client == null) {
-        throw new GraphQLError('Algolia client not configured')
-      }
+      const client = getAlgoliaClient()
 
       // Get all variants for this video
       const variants = await prisma.videoVariant.findMany({
@@ -205,7 +223,7 @@ builder.queryFields((t) => ({
       for (const variant of variants) {
         try {
           const record = await client.getObject({
-            indexName: videoVariantsIndex,
+            indexName: algoliaConfig.videoVariantsIndex,
             objectID: variant.id
           })
           const objectIdMatches = record.objectID === variant.id
@@ -223,12 +241,7 @@ builder.queryFields((t) => ({
       return {
         ok: missingVariants.length === 0,
         missingVariants,
-        browseUrl:
-          appId !== '' && videoVariantsIndex !== ''
-            ? `https://www.algolia.com/apps/${appId}/explorer/browse/${videoVariantsIndex}?query=${encodeURIComponent(
-                videoId
-              )}`
-            : null
+        browseUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videoVariantsIndex}?query=${encodeURIComponent(videoId)}`
       }
     }
   })
@@ -273,14 +286,45 @@ builder.mutationFields((t) => ({
       }
 
       // Update all variants in Algolia
-      await Promise.all(
+      const results = await Promise.allSettled(
         variants.map(async (variant) => {
           await updateVideoVariantInAlgolia(variant.id)
         })
       )
 
+      const failures = results.flatMap((result, index) => {
+        if (result.status === 'fulfilled') {
+          return []
+        }
+
+        return [
+          {
+            variantId: variants[index]?.id,
+            error: getErrorString(result.reason)
+          }
+        ]
+      })
+
+      if (failures.length > 0) {
+        logger?.error(
+          { videoId, failures },
+          'Algolia update failed for one or more video variants'
+        )
+
+        const failedVariantIds = failures
+          .map((f) => f.variantId)
+          .filter((id): id is string => id != null)
+
+        const failedVariantIdsPreview = failedVariantIds.slice(0, 10).join(', ')
+        const moreCount =
+          failedVariantIds.length > 10 ? ` (+${failedVariantIds.length - 10} more)` : ''
+
+        throw new GraphQLError(
+          `Failed to update ${failures.length}/${variants.length} variants in Algolia for video ${videoId}. Failed variantIds: ${failedVariantIdsPreview}${moreCount}`
+        )
+      }
+
       return true
     }
   })
 }))
-

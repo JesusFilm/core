@@ -180,6 +180,7 @@ describe('useBlockDeleteCommand', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [multiselect]
     }
     const step: TreeBlock<StepBlock> = {
@@ -313,6 +314,7 @@ describe('useBlockDeleteCommand', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [multiselect]
     }
     const step: TreeBlock<StepBlock> = {
