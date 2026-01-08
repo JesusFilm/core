@@ -1,0 +1,78 @@
+/**
+ * Script to add hasAvailableLanguages field to all videos in Algolia
+ *
+ * Usage: npx tsx src/scripts/add-algolia-field.ts
+ */
+
+import { prisma } from '@core/prisma/media/client'
+
+import { getAlgoliaClient } from '../../lib/algolia/algoliaClient'
+
+// Helper script to used to add hasAvailableLanguages field to all videos in Algolia
+// Could be used to add any field to the index
+async function main(): Promise<void> {
+  console.log('🚀 Adding hasAvailableLanguages to videos index...')
+  const client = await getAlgoliaClient()
+
+  const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
+  console.log(`📋 Using Algolia index: ${videosIndex}`)
+
+  if (client == null) {
+    console.error('❌ Algolia client not found')
+    process.exit(1)
+  }
+
+  // Get all videos with their hasAvailableLanguages
+  const videos = await prisma.video.findMany({
+    select: {
+      id: true,
+      availableLanguages: true
+    },
+    orderBy: { id: 'asc' }
+  })
+
+  console.log(`📊 Found ${videos.length} videos to update`)
+
+  if (videos.length === 0) {
+    console.log('ℹ️ No videos found')
+    return
+  }
+
+  // Process in batches
+  const batchSize = 100
+  for (let i = 0; i < videos.length; i += batchSize) {
+    const batch = videos.slice(i, i + batchSize)
+
+    const updates = batch.map((video) => {
+      if (video.availableLanguages.length === 0) {
+        console.log(`❌ Video ${video.id} has no available languages`)
+      }
+      return {
+        objectID: video.id,
+        hasAvailableLanguages: video.availableLanguages.length > 0
+      }
+    })
+
+    await client.partialUpdateObjects({
+      indexName: videosIndex,
+      objects: updates,
+      waitForTasks: true
+    })
+
+    console.log(
+      `✅ Updated batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(videos.length / batchSize)} (${batch.length} records)`
+    )
+  }
+
+  console.log(
+    `🎉 Successfully updated ${videos.length} videos with hasAvailableLanguages`
+  )
+}
+
+// Run the script if this file is executed directly
+if (require.main === module) {
+  main().catch((error) => {
+    console.error('Unhandled error:', error)
+    process.exit(1)
+  })
+}

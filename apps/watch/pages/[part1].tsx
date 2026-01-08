@@ -70,7 +70,10 @@ function HomeLanguagePage({
               }
             })}
           >
-            <Configure ruleContexts={['home_page']} />
+            <Configure
+              ruleContexts={['home_page']}
+              filters="NOT restrictViewPlatforms:watch AND published:true AND videoPublished:true"
+            />
             <VideoHomePage languageId={languageId} />
           </InstantSearch>
         </WatchProvider>
