@@ -38,7 +38,9 @@ const nextConfig = {
     minimumCacheTTL: 31536000
   },
   i18n,
-  reactCompiler: true,
+  experimental: {
+    reactCompiler: true
+  },
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
@@ -47,11 +49,14 @@ const nextConfig = {
   nx: {
     svgr: false
   },
-  typedRoutes: true,
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: ['shared-ui', 'ui-modern'],
   outputFileTracingExcludes: {

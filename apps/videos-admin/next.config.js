@@ -30,7 +30,9 @@ const nextConfig = {
     ],
     minimumCacheTTL: 31536000
   },
-  reactCompiler: true,
+  experimental: {
+    reactCompiler: true
+  },
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
@@ -41,6 +43,10 @@ const nextConfig = {
   typescript: {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
+  },
+  eslint: {
+    // handled by github actions
+    ignoreDuringBuilds: true
   },
   transpilePackages: ['locales'],
   outputFileTracingExcludes: {

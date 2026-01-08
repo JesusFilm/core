@@ -9,8 +9,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "incremental": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "tsBuildInfoFile": "../../../.cache/shared-ui/tsc/.tsbuildinfo"
   },
   "files": [],

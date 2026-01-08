@@ -30,9 +30,9 @@ const Logo = () => {
 export default async function Image({
   params
 }: {
-  params: Promise<{ playlistId: string }>
+  params: { playlistId: string }
 }) {
-  const { playlistId } = await params
+  const { playlistId } = params
   const data = await getPlaylist(playlistId)
 
   if (
