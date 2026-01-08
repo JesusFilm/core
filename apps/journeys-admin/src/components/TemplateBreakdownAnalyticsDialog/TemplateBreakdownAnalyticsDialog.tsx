@@ -2,6 +2,8 @@ import { gql, useQuery } from '@apollo/client'
 import { formatISO } from 'date-fns'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'next-i18next'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { Theme } from '@mui/material/styles'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -64,6 +66,7 @@ export function TemplateBreakdownAnalyticsDialog({
 }: TemplateBreakdownAnalyticsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   const defaultVariables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
     () => ({
@@ -134,6 +137,7 @@ export function TemplateBreakdownAnalyticsDialog({
       onClose={handleClose}
       dialogTitle={{ title: 'Template Breakdown Analytics', closeButton: true }}
       divider
+      fullscreen={!mdUp}
       maxWidth="xl"
       dialogActionChildren={
         noData ? null : (
@@ -163,7 +167,7 @@ export function TemplateBreakdownAnalyticsDialog({
           px: 0
         },
         '& .MuiDialog-paper': {
-          width: 'fit-content'
+          width: mdUp ? 'fit-content' : '100%'
         }
       }}
     >
