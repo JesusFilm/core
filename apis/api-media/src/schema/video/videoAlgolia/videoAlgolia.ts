@@ -317,7 +317,9 @@ builder.mutationFields((t) => ({
 
         const failedVariantIdsPreview = failedVariantIds.slice(0, 10).join(', ')
         const moreCount =
-          failedVariantIds.length > 10 ? ` (+${failedVariantIds.length - 10} more)` : ''
+          failedVariantIds.length > 10
+            ? ` (+${failedVariantIds.length - 10} more)`
+            : ''
 
         throw new GraphQLError(
           `Failed to update ${failures.length}/${variants.length} variants in Algolia for video ${videoId}. Failed variantIds: ${failedVariantIdsPreview}${moreCount}`
