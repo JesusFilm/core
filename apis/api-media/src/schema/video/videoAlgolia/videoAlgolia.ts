@@ -8,7 +8,24 @@ import {
 } from '../../../lib/algolia/algoliaClient'
 import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
+import { logger } from '../../../logger'
 import { builder } from '../../builder'
+
+const getErrorString = (err: unknown): string => {
+  if (err instanceof Error) {
+    return err.message
+  }
+
+  if (typeof err === 'string') {
+    return err
+  }
+
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}
 
 const CheckVideoInAlgoliaMismatchRef = builder
   .objectRef<{
@@ -33,6 +50,7 @@ const CheckVideoInAlgoliaResultRef = builder
       actual: string | null
     }>
     recordUrl: string | null
+    error: string | null
   }>('CheckVideoInAlgoliaResult')
   .implement({
     fields: (t) => ({
@@ -41,7 +59,8 @@ const CheckVideoInAlgoliaResultRef = builder
         type: [CheckVideoInAlgoliaMismatchRef],
         resolve: (parent) => parent.mismatches
       }),
-      recordUrl: t.exposeString('recordUrl', { nullable: true })
+      recordUrl: t.exposeString('recordUrl', { nullable: true }),
+      error: t.exposeString('error', { nullable: true })
     })
   })
 
@@ -155,13 +174,31 @@ builder.queryFields((t) => ({
         return {
           ok: mismatches.length === 0,
           mismatches,
-          recordUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videosIndex}?query=${encodeURIComponent(videoId)}`
+          recordUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videosIndex}?query=${encodeURIComponent(videoId)}`,
+          error: null
         }
-      } catch {
+      } catch (err) {
+        const errorString = getErrorString(err)
+        const appId = algoliaConfig.appId
+        const videosIndex = algoliaConfig.videosIndex
+        const context = { videoId, appId, videosIndex }
+
+        logger?.error(
+          { err, ...context },
+          'Algolia getObject failed while checking video in Algolia'
+        )
+
+        if (logger == null) {
+          console.error(
+            `Algolia getObject failed while checking video in Algolia (videoId=${videoId}, appId=${appId}, videosIndex=${videosIndex}): ${errorString}`
+          )
+        }
+
         return {
           ok: false,
           mismatches: [],
-          recordUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videosIndex}?query=${encodeURIComponent(videoId)}`
+          recordUrl: `https://www.algolia.com/apps/${appId}/explorer/browse/${videosIndex}?query=${encodeURIComponent(videoId)}`,
+          error: errorString
         }
       }
     }
@@ -249,11 +286,43 @@ builder.mutationFields((t) => ({
       }
 
       // Update all variants in Algolia
-      await Promise.all(
+      const results = await Promise.allSettled(
         variants.map(async (variant) => {
           await updateVideoVariantInAlgolia(variant.id)
         })
       )
+
+      const failures = results.flatMap((result, index) => {
+        if (result.status === 'fulfilled') {
+          return []
+        }
+
+        return [
+          {
+            variantId: variants[index]?.id,
+            error: getErrorString(result.reason)
+          }
+        ]
+      })
+
+      if (failures.length > 0) {
+        logger?.error(
+          { videoId, failures },
+          'Algolia update failed for one or more video variants'
+        )
+
+        const failedVariantIds = failures
+          .map((f) => f.variantId)
+          .filter((id): id is string => id != null)
+
+        const failedVariantIdsPreview = failedVariantIds.slice(0, 10).join(', ')
+        const moreCount =
+          failedVariantIds.length > 10 ? ` (+${failedVariantIds.length - 10} more)` : ''
+
+        throw new GraphQLError(
+          `Failed to update ${failures.length}/${variants.length} variants in Algolia for video ${videoId}. Failed variantIds: ${failedVariantIdsPreview}${moreCount}`
+        )
+      }
 
       return true
     }
