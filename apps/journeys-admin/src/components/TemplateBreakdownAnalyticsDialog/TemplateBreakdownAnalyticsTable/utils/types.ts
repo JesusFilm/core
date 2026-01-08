@@ -35,4 +35,3 @@ export interface ProcessedRow extends BreakdownRow {
   custom2Capture: number
   custom3Capture: number
 }
-

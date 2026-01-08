@@ -51,4 +51,3 @@ export const COLUMN_HEADERS = [
   { id: 'custom2Capture' as SortableColumn, label: 'Custom Event 2' },
   { id: 'custom3Capture' as SortableColumn, label: 'Custom Event 3' }
 ]
-

@@ -10,12 +10,16 @@ export type AddRowToTotalReturn = ProcessedRow
 /**
  * Adds values from a row to the accumulator (for calculating totals)
  */
-export function addRowToTotal(acc: ProcessedRow, row: ProcessedRow): ProcessedRow {
+export function addRowToTotal(
+  acc: ProcessedRow,
+  row: ProcessedRow
+): ProcessedRow {
   return {
     ...acc,
     views: acc.views + row.views,
     responses: acc.responses + row.responses,
-    christDecisionCapture: acc.christDecisionCapture + row.christDecisionCapture,
+    christDecisionCapture:
+      acc.christDecisionCapture + row.christDecisionCapture,
     prayerRequestCapture: acc.prayerRequestCapture + row.prayerRequestCapture,
     specialVideoStartCapture:
       acc.specialVideoStartCapture + row.specialVideoStartCapture,
