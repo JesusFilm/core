@@ -728,6 +728,13 @@ export interface PhoneActionInput {
   parentStepId?: string | null;
 }
 
+export interface PlausibleStatsAggregateFilter {
+  period?: string | null;
+  date?: string | null;
+  filters?: string | null;
+  interval?: string | null;
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;

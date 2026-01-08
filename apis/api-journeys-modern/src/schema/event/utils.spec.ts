@@ -463,7 +463,7 @@ describe('event utils', () => {
     })
 
     it('should return early when no sync config exists', async () => {
-      prismaMock.googleSheetsSync.findFirst.mockResolvedValue(null)
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([])
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
@@ -484,7 +484,7 @@ describe('event utils', () => {
         deletedAt: null
       }
 
-      prismaMock.googleSheetsSync.findFirst.mockResolvedValue(mockSync as any)
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
       prismaMock.journey.findUnique.mockResolvedValue({
         blocks: []
       } as any)
@@ -534,7 +534,7 @@ describe('event utils', () => {
         deletedAt: null
       }
 
-      prismaMock.googleSheetsSync.findFirst.mockResolvedValue(mockSync as any)
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
       prismaMock.journey.findUnique.mockResolvedValue({
         blocks: []
       } as any)
@@ -581,7 +581,7 @@ describe('event utils', () => {
 
       const today = format(new Date(), 'yyyy-MM-dd')
 
-      prismaMock.googleSheetsSync.findFirst.mockResolvedValue(mockSync as any)
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
       prismaMock.journey.findUnique.mockResolvedValue({
         blocks: []
       } as any)
@@ -617,7 +617,7 @@ describe('event utils', () => {
         deletedAt: null
       }
 
-      prismaMock.googleSheetsSync.findFirst.mockResolvedValue(mockSync as any)
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
       prismaMock.journey.findUnique.mockResolvedValue({
         blocks: []
       } as any)
@@ -653,6 +653,90 @@ describe('event utils', () => {
       expect(mockWriteValues).toHaveBeenCalledWith(
         expect.objectContaining({
           values: expect.arrayContaining([expect.any(Array)]),
+          append: true
+        })
+      )
+    })
+
+    it('should update all synced sheets when multiple syncs exist', async () => {
+      const mockSync1 = {
+        id: 'sync-id-1',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id-1',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+      const mockSync2 = {
+        id: 'sync-id-2',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id-2',
+        sheetName: 'Sheet2',
+        deletedAt: null
+      }
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([
+        mockSync1,
+        mockSync2
+      ] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: []
+      } as any)
+      prismaMock.event.findMany.mockResolvedValue([])
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      // Mock header reads for both sheets
+      mockReadValues
+        .mockResolvedValueOnce([['']]) // sheet 1: existing header
+        .mockResolvedValueOnce([]) // sheet 1: no existing visitor rows
+        .mockResolvedValueOnce([['']]) // sheet 2: existing header
+        .mockResolvedValueOnce([]) // sheet 2: no existing visitor rows
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          'John Doe',
+          'john@example.com',
+          '+1234567890',
+          'block-id-label',
+          'dynamic-value'
+        ]
+      })
+
+      // Ensure both sheets were accessed
+      expect(mockEnsureSheet).toHaveBeenCalledTimes(2)
+      expect(mockEnsureSheet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spreadsheetId: 'spreadsheet-id-1',
+          sheetTitle: 'Sheet1'
+        })
+      )
+      expect(mockEnsureSheet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spreadsheetId: 'spreadsheet-id-2',
+          sheetTitle: 'Sheet2'
+        })
+      )
+
+      // Both sheets should have rows written
+      expect(mockWriteValues).toHaveBeenCalledTimes(2)
+      expect(mockWriteValues).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spreadsheetId: 'spreadsheet-id-1',
+          sheetTitle: 'Sheet1',
+          append: true
+        })
+      )
+      expect(mockWriteValues).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spreadsheetId: 'spreadsheet-id-2',
+          sheetTitle: 'Sheet2',
           append: true
         })
       )
