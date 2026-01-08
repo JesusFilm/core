@@ -167,7 +167,9 @@ export function TemplateBreakdownAnalyticsDialog({
           px: 0
         },
         '& .MuiDialog-paper': {
-          width: mdUp ? 'fit-content' : '100%'
+          width: mdUp ? 'fit-content' : '100%',
+          minWidth: mdUp ? '700px' : null,
+          minHeight: mdUp ? '600px' : null
         }
       }}
     >
