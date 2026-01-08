@@ -6,7 +6,7 @@ export { processRow } from './processRow'
 export { sortRows } from './sortRows'
 export { trackNonZeroColumns } from './trackNonZeroColumns'
 export {
-  COLUMN_HEADERS,
+  getColumnHeaders,
   NUMERIC_COLUMNS,
   UNKNOWN_JOURNEYS_AGGREGATE_ID
 } from './constants'

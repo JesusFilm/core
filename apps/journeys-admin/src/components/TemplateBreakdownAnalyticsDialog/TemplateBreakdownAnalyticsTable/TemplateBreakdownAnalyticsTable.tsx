@@ -16,7 +16,7 @@ import { ReactElement, useMemo, useState } from 'react'
 import { GetTemplateFamilyStatsBreakdown } from '../../../../__generated__/GetTemplateFamilyStatsBreakdown'
 
 import {
-  COLUMN_HEADERS,
+  getColumnHeaders,
   NUMERIC_COLUMNS,
   Order,
   ProcessedRow,
@@ -112,7 +112,8 @@ export function TemplateBreakdownAnalyticsTable({
     processedData
   const displayRows = regularRows.slice(0, 10)
 
-  const visibleColumnHeaders = COLUMN_HEADERS.filter(
+  const columnHeaders = getColumnHeaders(t)
+  const visibleColumnHeaders = columnHeaders.filter(
     (header) =>
       header.id === 'journeyName' ||
       header.id === 'views' ||

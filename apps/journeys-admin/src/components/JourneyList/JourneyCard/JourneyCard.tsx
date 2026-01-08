@@ -390,6 +390,7 @@ export function JourneyCard({
               <TemplateAggregateAnalytics journeyId={journey.id} />
               <IconButton
                 size="small"
+                aria-label="journey breakdown analytics"
                 sx={{
                   outline: '2px solid',
                   outlineColor: 'secondary.light',
