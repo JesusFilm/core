@@ -2,11 +2,23 @@
   "name": "@core/api-journeys",
   "version": "0.0.0",
   "private": true,
-  "description": "Journeys API service",
+  "description": "Journeys API service (NestJS)",
   "dependencies": {
-    "@core/apis": "workspace:*"
+    "@core/apis": "workspace:*",
+    "@nestjs/apollo": "^13.0.0",
+    "@nestjs/bullmq": "^11.0.0",
+    "@nestjs/cache-manager": "^3.0.0",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.0.0",
+    "@nestjs/platform-express": "^11.0.1",
+    "nestjs-ddtrace": "6.0.0",
+    "nestjs-pino": "^4.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.1.0"
+  },
+  "devDependencies": {
+    "@nestjs/schematics": "11.0.5",
+    "@nestjs/testing": "11.0.12"
   }
 }
-
-
-

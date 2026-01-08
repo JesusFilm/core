@@ -29,13 +29,6 @@ catalogs:
     '@apollo/client': ^3.8.3
     '@apollo/server': ^4.10.4
 
-    # NestJS ecosystem
-    '@nestjs/common': ^11.0.1
-    '@nestjs/core': ^11.0.1
-    '@nestjs/graphql': ^13.0.0
-    '@nestjs/apollo': ^13.0.0
-    '@nestjs/platform-express': ^11.0.1
-
     # Prisma
     '@prisma/client': ^6.18.0
     prisma: ^6.18.0

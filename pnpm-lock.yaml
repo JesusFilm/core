@@ -24,21 +24,6 @@ catalogs:
     '@mui/material':
       specifier: ^7.1.1
       version: 7.1.1
-    '@nestjs/apollo':
-      specifier: ^13.0.0
-      version: 13.0.4
-    '@nestjs/common':
-      specifier: ^11.0.1
-      version: 11.0.16
-    '@nestjs/core':
-      specifier: ^11.0.1
-      version: 11.0.12
-    '@nestjs/graphql':
-      specifier: ^13.0.0
-      version: 13.0.4
-    '@nestjs/platform-express':
-      specifier: ^11.0.1
-      version: 11.0.12
     '@prisma/client':
       specifier: ^6.18.0
       version: 6.18.0
@@ -462,6 +447,9 @@ importers:
       prettier:
         specifier: 3.6.2
         version: 3.6.2
+      prettier-plugin-tailwindcss:
+        specifier: ^0.6.0
+        version: 0.6.14(prettier@3.6.2)
       prisma-erd-generator:
         specifier: ^2.0.0
         version: 2.0.4(@prisma/client@6.18.0(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(puppeteer@23.7.0(typescript@5.9.3))(ts-node@10.9.2(@swc/core@1.5.29(@swc/helpers@0.5.17))(@types/node@22.18.8)(typescript@5.9.3))(typescript@5.9.3)(vue-class-component@7.2.6(vue@3.5.13(typescript@5.9.3)))
@@ -555,27 +543,6 @@ importers:
       '@launchdarkly/node-server-sdk':
         specifier: ^9.10.2
         version: 9.10.2
-      '@nestjs/apollo':
-        specifier: 'catalog:'
-        version: 13.0.4(@apollo/server@4.11.3(encoding@0.1.13)(graphql@16.10.0))(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(@nestjs/graphql@13.0.4(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(graphql@16.10.0)(reflect-metadata@0.1.13)(ts-morph@24.0.0))(graphql@16.10.0)
-      '@nestjs/bullmq':
-        specifier: ^11.0.0
-        version: 11.0.3(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(bullmq@5.45.2)
-      '@nestjs/cache-manager':
-        specifier: ^3.0.0
-        version: 3.0.1(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(cache-manager@6.4.3)(keyv@5.5.0)(rxjs@7.8.2)
-      '@nestjs/common':
-        specifier: 'catalog:'
-        version: 11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2)
-      '@nestjs/core':
-        specifier: 'catalog:'
-        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/platform-express@11.0.12)(reflect-metadata@0.1.13)(rxjs@7.8.2)
-      '@nestjs/graphql':
-        specifier: 'catalog:'
-        version: 13.0.4(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(graphql@16.10.0)(reflect-metadata@0.1.13)(ts-morph@24.0.0)
-      '@nestjs/platform-express':
-        specifier: 'catalog:'
-        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -693,24 +660,12 @@ importers:
       nanoid:
         specifier: ^3.3.7
         version: 3.3.11
-      nestjs-ddtrace:
-        specifier: 6.0.0
-        version: 6.0.0(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(dd-trace@5.36.0)
-      nestjs-pino:
-        specifier: ^4.0.0
-        version: 4.4.0(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(pino-http@10.4.0)(pino@9.6.0)(rxjs@7.8.2)
       pino:
         specifier: ^9.3.2
         version: 9.6.0
       pino-http:
         specifier: ^10.0.0
         version: 10.4.0
-      reflect-metadata:
-        specifier: ^0.1.13
-        version: 0.1.13
-      rxjs:
-        specifier: ^7.1.0
-        version: 7.8.2
       short-unique-id:
         specifier: ^5.2.0
         version: 5.2.2
@@ -727,12 +682,6 @@ importers:
         specifier: ^4.1.12
         version: 4.1.12
     devDependencies:
-      '@nestjs/schematics':
-        specifier: 11.0.5
-        version: 11.0.5(chokidar@4.0.3)(typescript@5.9.3)
-      '@nestjs/testing':
-        specifier: 11.0.12
-        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(@nestjs/platform-express@11.0.12)
       '@types/cors':
         specifier: ^2.8.17
         version: 2.8.17
@@ -766,6 +715,46 @@ importers:
       '@core/apis':
         specifier: workspace:*
         version: link:..
+      '@nestjs/apollo':
+        specifier: ^13.0.0
+        version: 13.0.4(@apollo/server@4.11.3(encoding@0.1.13)(graphql@16.10.0))(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(@nestjs/graphql@13.0.4(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(graphql@16.10.0)(reflect-metadata@0.1.13)(ts-morph@24.0.0))(graphql@16.10.0)
+      '@nestjs/bullmq':
+        specifier: ^11.0.0
+        version: 11.0.3(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(bullmq@5.45.2)
+      '@nestjs/cache-manager':
+        specifier: ^3.0.0
+        version: 3.0.1(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(cache-manager@6.4.3)(keyv@5.5.0)(rxjs@7.8.2)
+      '@nestjs/common':
+        specifier: ^11.0.1
+        version: 11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: ^11.0.1
+        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/platform-express@11.0.12)(reflect-metadata@0.1.13)(rxjs@7.8.2)
+      '@nestjs/graphql':
+        specifier: ^13.0.0
+        version: 13.0.4(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(graphql@16.10.0)(reflect-metadata@0.1.13)(ts-morph@24.0.0)
+      '@nestjs/platform-express':
+        specifier: ^11.0.1
+        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)
+      nestjs-ddtrace:
+        specifier: 6.0.0
+        version: 6.0.0(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(dd-trace@5.36.0)
+      nestjs-pino:
+        specifier: ^4.0.0
+        version: 4.4.0(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(pino-http@10.4.0)(pino@9.6.0)(rxjs@7.8.2)
+      reflect-metadata:
+        specifier: ^0.1.13
+        version: 0.1.13
+      rxjs:
+        specifier: ^7.1.0
+        version: 7.8.2
+    devDependencies:
+      '@nestjs/schematics':
+        specifier: 11.0.5
+        version: 11.0.5(chokidar@4.0.3)(typescript@5.9.3)
+      '@nestjs/testing':
+        specifier: 11.0.12
+        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(@nestjs/platform-express@11.0.12)
 
   apis/api-journeys-modern:
     dependencies:
@@ -1268,12 +1257,6 @@ importers:
       '@mui/utils':
         specifier: ^7.1.1
         version: 7.1.1(@types/react@19.2.2)(react@19.2.0)
-      '@nestjs/common':
-        specifier: 'catalog:'
-        version: 11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2)
-      '@nestjs/core':
-        specifier: 'catalog:'
-        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/platform-express@11.0.12)(reflect-metadata@0.1.13)(rxjs@7.8.2)
       '@prisma/client':
         specifier: 'catalog:'
         version: 6.18.0(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
@@ -1467,6 +1450,27 @@ importers:
       prisma:
         specifier: 'catalog:'
         version: 6.18.0(magicast@0.3.5)(typescript@5.9.3)
+
+  libs/nest:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:..
+      '@nestjs/common':
+        specifier: ^11.0.1
+        version: 11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2)
+      '@nestjs/core':
+        specifier: ^11.0.1
+        version: 11.0.12(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/platform-express@11.0.12)(reflect-metadata@0.1.13)(rxjs@7.8.2)
+      '@nestjs/graphql':
+        specifier: ^13.0.0
+        version: 13.0.4(@apollo/subgraph@2.10.0(graphql@16.10.0))(@nestjs/common@11.0.16(file-type@20.4.1)(reflect-metadata@0.1.13)(rxjs@7.8.2))(@nestjs/core@11.0.12)(graphql@16.10.0)(reflect-metadata@0.1.13)(ts-morph@24.0.0)
+      reflect-metadata:
+        specifier: ^0.1.13
+        version: 0.1.13
+      rxjs:
+        specifier: ^7.1.0
+        version: 7.8.2
 
   workers:
     dependencies:
@@ -19532,6 +19536,67 @@ packages:
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  prettier-plugin-tailwindcss@0.6.14:
+    resolution: {integrity: sha512-pi2e/+ZygeIqntN+vC573BcW5Cve8zUB0SSAGxqpB4f96boZF4M3phPVoOFCeypwkpRYdi7+jQ5YJJUwrkGUAg==}
+    engines: {node: '>=14.21.3'}
+    peerDependencies:
+      '@ianvs/prettier-plugin-sort-imports': '*'
+      '@prettier/plugin-hermes': '*'
+      '@prettier/plugin-oxc': '*'
+      '@prettier/plugin-pug': '*'
+      '@shopify/prettier-plugin-liquid': '*'
+      '@trivago/prettier-plugin-sort-imports': '*'
+      '@zackad/prettier-plugin-twig': '*'
+      prettier: ^3.0
+      prettier-plugin-astro: '*'
+      prettier-plugin-css-order: '*'
+      prettier-plugin-import-sort: '*'
+      prettier-plugin-jsdoc: '*'
+      prettier-plugin-marko: '*'
+      prettier-plugin-multiline-arrays: '*'
+      prettier-plugin-organize-attributes: '*'
+      prettier-plugin-organize-imports: '*'
+      prettier-plugin-sort-imports: '*'
+      prettier-plugin-style-order: '*'
+      prettier-plugin-svelte: '*'
+    peerDependenciesMeta:
+      '@ianvs/prettier-plugin-sort-imports':
+        optional: true
+      '@prettier/plugin-hermes':
+        optional: true
+      '@prettier/plugin-oxc':
+        optional: true
+      '@prettier/plugin-pug':
+        optional: true
+      '@shopify/prettier-plugin-liquid':
+        optional: true
+      '@trivago/prettier-plugin-sort-imports':
+        optional: true
+      '@zackad/prettier-plugin-twig':
+        optional: true
+      prettier-plugin-astro:
+        optional: true
+      prettier-plugin-css-order:
+        optional: true
+      prettier-plugin-import-sort:
+        optional: true
+      prettier-plugin-jsdoc:
+        optional: true
+      prettier-plugin-marko:
+        optional: true
+      prettier-plugin-multiline-arrays:
+        optional: true
+      prettier-plugin-organize-attributes:
+        optional: true
+      prettier-plugin-organize-imports:
+        optional: true
+      prettier-plugin-sort-imports:
+        optional: true
+      prettier-plugin-style-order:
+        optional: true
+      prettier-plugin-svelte:
+        optional: true
 
   prettier@3.5.3:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
@@ -47154,6 +47219,10 @@ snapshots:
     optional: true
 
   prelude-ls@1.2.1: {}
+
+  prettier-plugin-tailwindcss@0.6.14(prettier@3.6.2):
+    dependencies:
+      prettier: 3.6.2
 
   prettier@3.5.3: {}
 

@@ -2,7 +2,7 @@
   "name": "@core/apis",
   "version": "0.0.0",
   "private": true,
-  "description": "API services workspace - GraphQL, NestJS, Prisma backends",
+  "description": "API services workspace - GraphQL, Pothos, Prisma backends",
   "dependencies": {
     "@apollo/server": "catalog:",
     "@apollo/subgraph": "^2.8.0",
@@ -12,13 +12,6 @@
     "@graphql-yoga/plugin-graphql-sse": "^3.13.6",
     "@graphql-yoga/plugin-response-cache": "^3.8.0",
     "@launchdarkly/node-server-sdk": "^9.10.2",
-    "@nestjs/apollo": "catalog:",
-    "@nestjs/bullmq": "^11.0.0",
-    "@nestjs/cache-manager": "^3.0.0",
-    "@nestjs/common": "catalog:",
-    "@nestjs/core": "catalog:",
-    "@nestjs/graphql": "catalog:",
-    "@nestjs/platform-express": "catalog:",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.200.0",
     "@opentelemetry/instrumentation": "^0.200.0",
@@ -58,12 +51,8 @@
     "keyv": "^5.3.2",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.7",
-    "nestjs-ddtrace": "6.0.0",
-    "nestjs-pino": "^4.0.0",
     "pino": "^9.3.2",
     "pino-http": "^10.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.1.0",
     "short-unique-id": "^5.2.0",
     "slugify": "^1.6.6",
     "tslib": "^2.6.2",
@@ -71,8 +60,6 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@nestjs/schematics": "11.0.5",
-    "@nestjs/testing": "11.0.12",
     "@types/cors": "^2.8.17",
     "@types/express": "5.0.1",
     "@types/lodash": "^4.14.198",
@@ -80,6 +67,3 @@
     "prisma": "catalog:"
   }
 }
-
-
-

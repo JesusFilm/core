@@ -167,6 +167,7 @@
     "playwright-lighthouse": "^2.2.2",
     "postject": "^1.0.0-alpha.6",
     "prettier": "3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.0",
     "prisma-erd-generator": "^2.0.0",
     "react-refresh": "^0.18.0",
     "source-map-loader": "^5.0.0",
