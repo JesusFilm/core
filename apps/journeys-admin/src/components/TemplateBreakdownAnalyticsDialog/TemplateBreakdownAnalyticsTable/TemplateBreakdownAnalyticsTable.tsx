@@ -10,23 +10,24 @@ import TableRow from '@mui/material/TableRow'
 import TableSortLabel from '@mui/material/TableSortLabel'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { GetTemplateFamilyStatsBreakdown } from '../../../../__generated__/GetTemplateFamilyStatsBreakdown'
+
 import {
+  COLUMN_HEADERS,
+  NUMERIC_COLUMNS,
+  Order,
+  ProcessedRow,
+  SortableColumn,
+  UNKNOWN_JOURNEYS_AGGREGATE_ID,
   addRestrictedRowToTotal,
   addRowToTotal,
   createInitialTotalRow,
   processRow,
   sortRows,
-  trackNonZeroColumns,
-  COLUMN_HEADERS,
-  NUMERIC_COLUMNS,
-  UNKNOWN_JOURNEYS_AGGREGATE_ID,
-  Order,
-  ProcessedRow,
-  SortableColumn
+  trackNonZeroColumns
 } from './utils'
 
 const isNumericColumn = (columnId: SortableColumn): boolean => {

@@ -3,6 +3,8 @@ import { userEvent } from '@testing-library/user-event'
 
 import { GetTemplateFamilyStatsBreakdown } from '../../../../__generated__/GetTemplateFamilyStatsBreakdown'
 import { PlausibleEvent } from '../../../../__generated__/globalTypes'
+
+import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 import {
   mockDataForSorting,
   mockDataWithManyRows,
@@ -14,8 +16,6 @@ import {
   mockMultipleRowsData,
   mockSingleRowData
 } from './TemplateBreakdownAnalyticsTable.mockData'
-
-import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 
 jest.mock('next/link', () => {
   return ({ children, href }: { children: React.ReactNode; href: string }) => {

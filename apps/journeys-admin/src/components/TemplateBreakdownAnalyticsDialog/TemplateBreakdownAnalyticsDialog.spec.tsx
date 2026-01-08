@@ -13,11 +13,12 @@ import {
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
-import { mockSingleRowData } from './TemplateBreakdownAnalyticsTable/TemplateBreakdownAnalyticsTable.mockData'
+
 import {
   GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
   TemplateBreakdownAnalyticsDialog
 } from './TemplateBreakdownAnalyticsDialog'
+import { mockSingleRowData } from './TemplateBreakdownAnalyticsTable/TemplateBreakdownAnalyticsTable.mockData'
 
 jest.mock('@mui/material/useMediaQuery', () => {
   return jest.fn(() => false)

@@ -1,4 +1,5 @@
-import { Order, ProcessedRow, SortableColumn } from '../types'
+import { ProcessedRow, SortableColumn } from '../types'
+
 import { sortRows } from './sortRows'
 
 describe('sortRows', () => {

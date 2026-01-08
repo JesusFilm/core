@@ -1,9 +1,15 @@
 import { gql, useQuery } from '@apollo/client'
-import { formatISO } from 'date-fns'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'next-i18next'
-import useMediaQuery from '@mui/material/useMediaQuery'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
 import { Theme } from '@mui/material/styles'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { formatISO } from 'date-fns'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -11,18 +17,12 @@ import {
   GetTemplateFamilyStatsBreakdown,
   GetTemplateFamilyStatsBreakdownVariables
 } from '../../../__generated__/GetTemplateFamilyStatsBreakdown'
-import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
 import {
   IdType,
   JourneyStatus,
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import FormGroup from '@mui/material/FormGroup'
-import Switch from '@mui/material/Switch'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Typography from '@mui/material/Typography'
+import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 

@@ -1,9 +1,12 @@
 import { PlausibleEvent } from '../../../../../../__generated__/globalTypes'
 import { BreakdownRow } from '../types'
+
 import { processRow } from './processRow'
 
 describe('processRow', () => {
-  const createMockRow = (stats: Array<{ event: string; visitors: number }>): BreakdownRow => ({
+  const createMockRow = (
+    stats: Array<{ event: string; visitors: number }>
+  ): BreakdownRow => ({
     __typename: 'TemplateFamilyStatsBreakdownResponse',
     journeyId: 'journey-1',
     journeyName: 'Test Journey',
@@ -95,4 +98,3 @@ describe('processRow', () => {
     expect(processed.prayerRequestCapture).toBe(0)
   })
 })
-
