@@ -302,9 +302,7 @@ describe('videoAlgolia', () => {
           ]
         } as any)
 
-        getObjectSpy.mockRejectedValue(
-          new Error('Object not found')
-        )
+        getObjectSpy.mockRejectedValue(new Error('Object not found'))
 
         const result = await authClient({
           document: CHECK_VIDEO_IN_ALGOLIA_QUERY,
