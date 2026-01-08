@@ -1,6 +1,7 @@
 import { SvgIconProps } from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
+import Activity from './Activity'
 import AddSquare2 from './AddSquare2'
 import AddSquare4 from './AddSquare4'
 import AlertCircle from './AlertCircle'
@@ -62,6 +63,7 @@ import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
+import Data1 from './Data1'
 import Diamond from './Diamond'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
@@ -228,6 +230,7 @@ import XSquareContained from './XSquareContained'
 import Youtube from './Youtube'
 
 export type IconName =
+  | 'Activity'
   | 'AddSquare2'
   | 'AddSquare4'
   | 'AlertCircle'
@@ -289,6 +292,7 @@ export type IconName =
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
+  | 'Data1'
   | 'Diamond'
   | 'DotVertical'
   | 'DownArrowSm'
@@ -459,6 +463,7 @@ type IconComponents = {
 }
 
 const iconComponents: IconComponents = {
+  Activity,
   AddSquare2,
   AddSquare4,
   AlertCircle,
@@ -520,6 +525,7 @@ const iconComponents: IconComponents = {
   Cursor6,
   CursorPointer,
   Dash,
+  Data1,
   Diamond,
   DotVertical,
   DownArrowSm,

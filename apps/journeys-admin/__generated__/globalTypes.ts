@@ -761,13 +761,11 @@ export interface PhoneActionInput {
   parentStepId?: string | null;
 }
 
-export interface PlausibleStatsBreakdownFilter {
-  property: string;
+export interface PlausibleStatsAggregateFilter {
   period?: string | null;
   date?: string | null;
-  limit?: number | null;
-  page?: number | null;
   filters?: string | null;
+  interval?: string | null;
 }
 
 export interface QrCodeCreateInput {

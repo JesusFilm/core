@@ -32,6 +32,7 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
 
 const TemplateBreakdownAnalyticsDialog = dynamic(
   async () =>
@@ -75,8 +76,7 @@ export function JourneyCard({
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
 
-  // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
-  const TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES =
+  const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'
 
   useEffect(() => {
@@ -109,7 +109,6 @@ export function JourneyCard({
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
-        height: TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES ? '90%' : '100%',
         boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
@@ -369,46 +368,46 @@ export function JourneyCard({
             <JourneyCardText journey={journey} />
           </CardContent>
         </CardActionArea>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: { xs: 8, sm: 3 },
+            left: { xs: 7, sm: 6 },
+            right: { xs: 10, sm: 7 },
+            zIndex: 3
+          }}
+        >
+          {isTemplateCard ? (
+            <Stack
+              direction="row"
+              gap={1}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <TemplateAggregateAnalytics journeyId={journey.id} />
+              <IconButton
+                size="small"
+                aria-label="Download"
+                sx={{
+                  outline: '2px solid',
+                  outlineColor: 'secondary.light',
+                  borderRadius: '6px',
+                  padding: 1
+                }}
+                onClick={() => setBreakdownDialogOpen(true)}
+              >
+                <BarGroup3Icon />
+              </IconButton>
+            </Stack>
+          ) : (
+            <JourneyCardInfo journey={journey} variant={variant} />
+          )}
+        </Box>
         <TemplateBreakdownAnalyticsDialog
           journeyId={journey.id}
           open={breakdownDialogOpen}
           handleClose={() => setBreakdownDialogOpen(false)}
         />
-        {!TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES && (
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: { xs: 8, sm: 3 },
-              left: { xs: 7, sm: 6 },
-              right: { xs: 10, sm: 7 },
-              zIndex: 3
-            }}
-          >
-            <JourneyCardInfo journey={journey} variant={variant} />
-          </Box>
-        )}
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: { xs: 8, sm: 3 },
-            right: { xs: 8, sm: 6 },
-            zIndex: 3
-          }}
-        >
-          <IconButton
-            size="small"
-            aria-label="Download"
-            sx={{
-              outline: '2px solid',
-              outlineColor: 'secondary.light',
-              borderRadius: '6px',
-              padding: 1
-            }}
-            onClick={() => setBreakdownDialogOpen(true)}
-          >
-            <BarGroup3Icon />
-          </IconButton>
-        </Box>
       </>
     </Card>
   )

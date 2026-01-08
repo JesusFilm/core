@@ -69,12 +69,10 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
         templateSiteId
       )
 
-      const { childJourneysCount, totalJourneysViews } =
-        transformBreakdownResults(breakdownResults)
+      const { totalJourneysViews } = transformBreakdownResults(breakdownResults)
 
-      const totalJourneysResponses = await getTotalJourneysResponses(
-        templateJourney.id
-      )
+      const { totalJourneysResponses, childJourneysCount } =
+        await getTotalJourneysResponses(templateJourney.id)
 
       return {
         childJourneysCount,
@@ -87,31 +85,41 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
 
 function transformBreakdownResults(
   breakdownResults: PlausibleStatsResponse[]
-): { childJourneysCount: number; totalJourneysViews: number } {
-  const uniqueSlugs = new Set<string>()
-  let totalJourneysViews = 0
+): { totalJourneysViews: number } {
+  const slugMaxVisitors = new Map<string, number>()
 
   for (const result of breakdownResults) {
     const property = result.property ?? ''
-    const slashCount = (property.match(/\//g) ?? []).length
 
-    if (slashCount === 1 && property.startsWith('/')) {
-      const slug = property.slice(1)
+    if (property.startsWith('/')) {
+      const afterFirstSlash = property.slice(1)
+      const nextSlashIndex = afterFirstSlash.indexOf('/')
+      const slug =
+        nextSlashIndex === -1
+          ? afterFirstSlash
+          : afterFirstSlash.slice(0, nextSlashIndex)
       if (!slug) continue
-      uniqueSlugs.add(slug)
 
       const visitors = result.visitors ?? 0
-      totalJourneysViews += visitors
+      const currentMax = slugMaxVisitors.get(slug) ?? 0
+      slugMaxVisitors.set(slug, Math.max(currentMax, visitors))
     }
   }
 
+  const totalJourneysViews = Array.from(slugMaxVisitors.values()).reduce(
+    (sum, maxVisitors) => sum + maxVisitors,
+    0
+  )
+
   return {
-    childJourneysCount: uniqueSlugs.size,
     totalJourneysViews
   }
 }
 
-async function getTotalJourneysResponses(templateId: string): Promise<number> {
+async function getTotalJourneysResponses(templateId: string): Promise<{
+  totalJourneysResponses: number
+  childJourneysCount: number
+}> {
   const childJourneys = await prisma.journey.findMany({
     where: {
       fromTemplateId: templateId
@@ -122,10 +130,14 @@ async function getTotalJourneysResponses(templateId: string): Promise<number> {
   })
 
   if (childJourneys.length === 0) {
-    return 0
+    return {
+      totalJourneysResponses: 0,
+      childJourneysCount: 0
+    }
   }
 
   const journeyIds = childJourneys.map((journey) => journey.id)
+  const childJourneysCount = journeyIds.length
 
   const results = await prisma.journeyVisitor.groupBy({
     by: ['journeyId'],
@@ -137,10 +149,13 @@ async function getTotalJourneysResponses(templateId: string): Promise<number> {
       journeyId: true
     }
   })
-  const childJourneysCount = results.reduce(
+  const totalJourneysResponses = results.reduce(
     (total, result) => total + (result._count.journeyId ?? 0),
     0
   )
 
-  return childJourneysCount
+  return {
+    totalJourneysResponses,
+    childJourneysCount
+  }
 }
