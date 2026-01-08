@@ -28,6 +28,10 @@ import {
   SortableColumn
 } from './utils'
 
+const isNumericColumn = (columnId: SortableColumn): boolean => {
+  return NUMERIC_COLUMNS.includes(columnId)
+}
+
 const COLUMN_MAX_WIDTH = 120
 const FIRST_COLUMN_MAX_WIDTH = 200
 
@@ -120,7 +124,9 @@ export function TemplateBreakdownAnalyticsTable({
       return null
     }
     return (
-      <TableCell sx={{ maxWidth: COLUMN_MAX_WIDTH, width: 'auto' }}>
+      <TableCell
+        sx={{ maxWidth: COLUMN_MAX_WIDTH, width: 'auto', textAlign: 'right' }}
+      >
         {value}
       </TableCell>
     )
@@ -158,7 +164,8 @@ export function TemplateBreakdownAnalyticsTable({
                     width:
                       header.id === 'journeyName'
                         ? FIRST_COLUMN_MAX_WIDTH
-                        : 'auto'
+                        : 'auto',
+                    textAlign: isNumericColumn(header.id) ? 'right' : 'left'
                   }}
                 >
                   <TableSortLabel
@@ -174,7 +181,14 @@ export function TemplateBreakdownAnalyticsTable({
                   >
                     <Box>
                       <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.5,
+                          justifyContent: isNumericColumn(header.id)
+                            ? 'flex-end'
+                            : 'flex-start'
+                        }}
                       >
                         {header.id === 'views' && orderBy === 'views' && (
                           <ArrowUpwardIcon

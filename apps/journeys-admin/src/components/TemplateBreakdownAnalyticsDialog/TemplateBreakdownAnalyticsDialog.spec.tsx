@@ -140,7 +140,7 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
     })
   })
 
-  it('should show table component during loading state', () => {
+  it('should show loading spinner during loading state', () => {
     const loadingMock: MockedResponse<
       GetTemplateFamilyStatsBreakdown,
       GetTemplateFamilyStatsBreakdownVariables
@@ -188,11 +188,67 @@ describe('TemplateBreakdownAnalyticsDialog', () => {
       </MockedProvider>
     )
 
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('should show error message when there is an error', async () => {
+    const errorMock: MockedResponse<
+      GetTemplateFamilyStatsBreakdown,
+      GetTemplateFamilyStatsBreakdownVariables
+    > = {
+      request: {
+        query: GET_TEMPLATE_FAMILY_STATS_BREAKDOWN,
+        variables: {
+          id: journeyId,
+          idType: IdType.databaseId,
+          where: {
+            property: 'event:props:templateKey',
+            period: 'custom',
+            date: expectedDate
+          },
+          events: [
+            PlausibleEvent.journeyVisitors,
+            PlausibleEvent.journeyResponses,
+            PlausibleEvent.prayerRequestCapture,
+            PlausibleEvent.christDecisionCapture,
+            PlausibleEvent.gospelStartCapture,
+            PlausibleEvent.gospelCompleteCapture,
+            PlausibleEvent.rsvpCapture,
+            PlausibleEvent.specialVideoStartCapture,
+            PlausibleEvent.specialVideoCompleteCapture,
+            PlausibleEvent.custom1Capture,
+            PlausibleEvent.custom2Capture,
+            PlausibleEvent.custom3Capture
+          ],
+          status: [
+            JourneyStatus.published,
+            JourneyStatus.draft,
+            JourneyStatus.archived
+          ]
+        }
+      },
+      error: new Error('Failed to load stats')
+    }
+
+    render(
+      <MockedProvider mocks={[errorMock]}>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journeyId}
+          open={true}
+          handleClose={mockHandleClose}
+        />
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('There was an error loading the stats')
+      ).toBeInTheDocument()
+    })
+
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument()
     expect(
-      screen.getByTestId('template-breakdown-analytics-table-empty')
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByText('No template breakdown analytics data available')
+      screen.queryByTestId('template-breakdown-analytics-table')
     ).not.toBeInTheDocument()
   })
 })

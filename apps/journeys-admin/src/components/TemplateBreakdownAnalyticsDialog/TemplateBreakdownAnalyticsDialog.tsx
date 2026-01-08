@@ -16,6 +16,7 @@ import {
   PlausibleEvent
 } from '../../../__generated__/globalTypes'
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormGroup from '@mui/material/FormGroup'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -121,6 +122,12 @@ export function TemplateBreakdownAnalyticsDialog({
     }
   }, [includeArchivedJourneys, refetch, open, journeyId])
 
+  const noData =
+    !loading &&
+    !error &&
+    (data?.templateFamilyStatsBreakdown == null ||
+      data.templateFamilyStatsBreakdown.length === 0)
+
   return (
     <Dialog
       open={open}
@@ -129,21 +136,27 @@ export function TemplateBreakdownAnalyticsDialog({
       divider
       maxWidth="xl"
       dialogActionChildren={
-        <FormGroup
-          sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start' }}
-        >
-          <FormControlLabel
-            control={
-              <Switch
-                checked={includeArchivedJourneys}
-                onChange={() =>
-                  setIncludeArchivedJourneys(!includeArchivedJourneys)
-                }
-              />
-            }
-            label="Include archived journeys"
-          />
-        </FormGroup>
+        noData ? null : (
+          <FormGroup
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'flex-start'
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={includeArchivedJourneys}
+                  onChange={() =>
+                    setIncludeArchivedJourneys(!includeArchivedJourneys)
+                  }
+                />
+              }
+              label="Include archived journeys"
+            />
+          </FormGroup>
+        )
       }
       sx={{
         '& .MuiDialogContent-dividers': {
@@ -154,10 +167,19 @@ export function TemplateBreakdownAnalyticsDialog({
         }
       }}
     >
-      {!loading &&
-      !error &&
-      (data?.templateFamilyStatsBreakdown == null ||
-        data.templateFamilyStatsBreakdown.length === 0) ? (
+      {loading ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 200,
+            px: 4
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : error != null ? (
         <Box
           sx={{
             display: 'flex',
@@ -168,7 +190,21 @@ export function TemplateBreakdownAnalyticsDialog({
           }}
         >
           <Typography variant="body1" align="center">
-            {`${t('No template breakdown analytics data available')}`}
+            {t('There was an error loading the stats')}
+          </Typography>
+        </Box>
+      ) : noData ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: 200,
+            px: 4
+          }}
+        >
+          <Typography variant="body1" align="center">
+            {t('No template breakdown analytics data available')}
           </Typography>
         </Box>
       ) : (
