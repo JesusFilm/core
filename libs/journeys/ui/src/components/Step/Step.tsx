@@ -93,6 +93,30 @@ export function Step({
             })
           }
         })
+        const eventLabel =
+          children[0]?.__typename === 'CardBlock'
+            ? children[0].eventLabel
+            : null
+        if (eventLabel != null) {
+          const eventLabelKey = keyify({
+            stepId: input.blockId,
+            event: eventLabel,
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
+          plausible(eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: eventLabelKey,
+              simpleKey: eventLabelKey,
+              templateKey: templateKeyify({
+                event: eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'step_view',

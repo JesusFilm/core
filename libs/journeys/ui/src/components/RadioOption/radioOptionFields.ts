@@ -13,5 +13,6 @@ export const RADIO_OPTION_FIELDS = gql`
       ...ActionFields
     }
     pollOptionImageBlockId
+    eventLabel
   }
 `

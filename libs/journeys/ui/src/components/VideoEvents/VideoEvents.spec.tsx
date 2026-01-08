@@ -7,7 +7,10 @@ import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
-import { VideoBlockSource } from '../../../__generated__/globalTypes'
+import {
+  BlockEventLabel,
+  VideoBlockSource
+} from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
@@ -175,6 +178,78 @@ describe('VideoEvents', () => {
         }),
         templateKey: templateKeyify({
           event: 'videoStart',
+          journeyId: 'journey.id'
+        })
+      }
+    })
+  })
+
+  it('should call plausible with eventLabel for videoStart events', async () => {
+    blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const result = jest.fn(() => ({
+      data: {
+        videoStartEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoStartEvent'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_START_EVENT_CREATE,
+              variables: {
+                input: {
+                  ...input,
+                  position: 0
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents {...props} eventLabel={BlockEventLabel.custom1} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    act(() => {
+      props.player.currentTime(0)
+      props.player.trigger('timeupdate')
+    })
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('videoStart', expect.any(Object))
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+      u: expect.stringContaining(`/journey.id/video0.id`),
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: props.player.currentTime(),
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: BlockEventLabel.custom1,
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: BlockEventLabel.custom1,
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom1,
           journeyId: 'journey.id'
         })
       }
@@ -1180,5 +1255,178 @@ describe('VideoEvents', () => {
         videoId: 'video.id'
       })
     )
+  })
+
+  it('should call plausible with endEventLabel for videoComplete events', async () => {
+    blockHistoryVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const resultStart = jest.fn(() => ({
+      data: {
+        videoStartEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoStartEvent'
+        }
+      }
+    }))
+
+    const resultComplete = jest.fn(() => ({
+      data: {
+        videoCompleteEventCreate: {
+          id: 'uuid',
+          __typename: 'VideoCompleteEvent'
+        }
+      }
+    }))
+
+    const action = {
+      __typename: 'NavigateToBlockAction',
+      parentBlockId: 'step.id',
+      gtmEventName: 'gtm.event',
+      blockId: 'block2.id'
+    } as unknown as VideoTriggerFields_triggerAction
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_START_EVENT_CREATE,
+              variables: {
+                input: {
+                  ...input,
+                  position: 0
+                }
+              }
+            },
+            result: resultStart
+          },
+          {
+            request: {
+              query: VIDEO_PROGRESS_EVENT_CREATE,
+              variables: {
+                input: {
+                  ...input,
+                  position: 25,
+                  progress: 25
+                }
+              }
+            },
+            result: jest.fn(() => ({
+              data: {
+                videoProgressEventCreate: {
+                  id: 'uuid',
+                  __typename: 'VideoProgressEvent'
+                }
+              }
+            }))
+          },
+          {
+            request: {
+              query: VIDEO_PROGRESS_EVENT_CREATE,
+              variables: {
+                input: {
+                  ...input,
+                  position: 50,
+                  progress: 50
+                }
+              }
+            },
+            result: jest.fn(() => ({
+              data: {
+                videoProgressEventCreate: {
+                  id: 'uuid',
+                  __typename: 'VideoProgressEvent'
+                }
+              }
+            }))
+          },
+          {
+            request: {
+              query: VIDEO_PROGRESS_EVENT_CREATE,
+              variables: {
+                input: {
+                  ...input,
+                  position: 75,
+                  progress: 75
+                }
+              }
+            },
+            result: jest.fn(() => ({
+              data: {
+                videoProgressEventCreate: {
+                  id: 'uuid',
+                  __typename: 'VideoProgressEvent'
+                }
+              }
+            }))
+          },
+          {
+            request: {
+              query: VIDEO_COMPLETE_EVENT_CREATE,
+              variables: {
+                input: {
+                  ...input,
+                  position: 100
+                }
+              }
+            },
+            result: resultComplete
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <VideoEvents
+            {...props}
+            action={action}
+            endEventLabel={BlockEventLabel.custom2}
+          />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    act(() => {
+      props.player.currentTime(0)
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() => expect(resultStart).toHaveBeenCalled())
+
+    act(() => {
+      props.player.currentTime(98)
+      props.player.trigger('timeupdate')
+    })
+    await waitFor(() => expect(resultComplete).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith(
+      'videoComplete',
+      expect.any(Object)
+    )
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom2, {
+      u: expect.stringContaining(`/journey.id/video0.id`),
+      props: {
+        id: 'uuid',
+        blockId: props.blockId,
+        position: 100.0,
+        stepId: activeBlock.id,
+        label: props.videoTitle,
+        value: props.source,
+        key: keyify({
+          stepId: activeBlock.id,
+          event: BlockEventLabel.custom2,
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: activeBlock.id,
+          event: BlockEventLabel.custom2,
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom2,
+          journeyId: 'journey.id'
+        })
+      }
+    })
   })
 })

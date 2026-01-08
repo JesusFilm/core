@@ -230,6 +230,7 @@ export function CardQuote(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
