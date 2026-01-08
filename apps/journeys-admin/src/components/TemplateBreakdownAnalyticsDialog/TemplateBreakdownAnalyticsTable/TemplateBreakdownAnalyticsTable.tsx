@@ -34,8 +34,8 @@ const isNumericColumn = (columnId: SortableColumn): boolean => {
   return NUMERIC_COLUMNS.includes(columnId)
 }
 
-const COLUMN_MAX_WIDTH = 120
-const FIRST_COLUMN_MAX_WIDTH = 200
+const COLUMN_MAX_WIDTH = 100
+const FIRST_COLUMN_MAX_WIDTH = 180
 
 interface TemplateBreakdownAnalyticsTableProps {
   data: GetTemplateFamilyStatsBreakdown | null | undefined
@@ -116,6 +116,7 @@ export function TemplateBreakdownAnalyticsTable({
     (header) =>
       header.id === 'journeyName' ||
       header.id === 'views' ||
+      header.id === 'responses' ||
       !columnsWithZeros.has(header.id)
   )
 
@@ -123,13 +124,15 @@ export function TemplateBreakdownAnalyticsTable({
     column: SortableColumn,
     value: number
   ): ReactElement | null => {
-    if (columnsWithZeros.has(column) && column !== 'views') {
+    if (
+      columnsWithZeros.has(column) &&
+      column !== 'views' &&
+      column !== 'responses'
+    ) {
       return null
     }
     return (
-      <TableCell
-        sx={{ maxWidth: COLUMN_MAX_WIDTH, width: 'auto', textAlign: 'right' }}
-      >
+      <TableCell sx={{ width: `${COLUMN_MAX_WIDTH}px`, textAlign: 'right' }}>
         {value}
       </TableCell>
     )
@@ -143,7 +146,7 @@ export function TemplateBreakdownAnalyticsTable({
           overflow: 'auto'
         }}
       >
-        <Table size="small" sx={{ tableLayout: 'auto' }}>
+        <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
           <TableHead
             sx={{
               position: 'sticky',
@@ -160,14 +163,10 @@ export function TemplateBreakdownAnalyticsTable({
                     backgroundColor: 'background.paper',
                     fontWeight: 'bold',
                     borderBottom: 'none',
-                    maxWidth:
-                      header.id === 'journeyName'
-                        ? FIRST_COLUMN_MAX_WIDTH
-                        : COLUMN_MAX_WIDTH,
                     width:
                       header.id === 'journeyName'
-                        ? FIRST_COLUMN_MAX_WIDTH
-                        : 'auto',
+                        ? `${FIRST_COLUMN_MAX_WIDTH}px`
+                        : `${COLUMN_MAX_WIDTH}px`,
                     textAlign: isNumericColumn(header.id) ? 'right' : 'left'
                   }}
                 >
@@ -193,7 +192,7 @@ export function TemplateBreakdownAnalyticsTable({
                             : 'flex-start'
                         }}
                       >
-                        {header.id === 'views' && orderBy === 'views' && (
+                        {orderBy === header.id && (
                           <ArrowUpwardIcon
                             sx={{
                               fontSize: '0.875rem',
@@ -210,7 +209,7 @@ export function TemplateBreakdownAnalyticsTable({
                           sx={{
                             fontWeight: 'bold',
                             color:
-                              header.id === 'views' ? 'text.primary' : 'inherit'
+                              orderBy === header.id ? 'text.primary' : 'inherit'
                           }}
                         >
                           {header.label}
@@ -242,8 +241,7 @@ export function TemplateBreakdownAnalyticsTable({
             >
               <TableCell
                 sx={{
-                  maxWidth: FIRST_COLUMN_MAX_WIDTH,
-                  width: 'auto'
+                  width: `${FIRST_COLUMN_MAX_WIDTH}px`
                 }}
               >
                 <Typography
@@ -305,12 +303,21 @@ export function TemplateBreakdownAnalyticsTable({
               <TableRow key={row.journeyId}>
                 <TableCell
                   sx={{
-                    maxWidth: FIRST_COLUMN_MAX_WIDTH,
-                    width: 'auto',
+                    width: `${FIRST_COLUMN_MAX_WIDTH}px`,
                     overflow: 'hidden'
                   }}
                 >
-                  <Typography variant="body2">{row.teamName}</Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'block'
+                    }}
+                  >
+                    {row.teamName}
+                  </Typography>
                   <Link
                     component={NextLink}
                     href={`/journeys/${row.journeyId}`}
@@ -380,8 +387,7 @@ export function TemplateBreakdownAnalyticsTable({
               <TableRow>
                 <TableCell
                   sx={{
-                    maxWidth: FIRST_COLUMN_MAX_WIDTH,
-                    width: 'auto'
+                    width: `${FIRST_COLUMN_MAX_WIDTH}px`
                   }}
                 >
                   <Box>
