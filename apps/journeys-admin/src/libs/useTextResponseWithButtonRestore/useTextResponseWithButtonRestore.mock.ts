@@ -58,6 +58,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           action: null,
           submitEnabled: true,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         }
       ],
