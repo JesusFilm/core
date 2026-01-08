@@ -603,9 +603,6 @@ importers:
       '@pothos/tracing-opentelemetry':
         specifier: ^1.1.0
         version: 1.1.0(@opentelemetry/api@1.9.0)(@opentelemetry/semantic-conventions@1.38.0)(@pothos/core@4.6.1(graphql@16.10.0))(@pothos/plugin-tracing@1.1.0(@pothos/core@4.6.1(graphql@16.10.0))(graphql@16.10.0))(graphql@16.10.0)
-      '@prisma/client':
-        specifier: 'catalog:'
-        version: 6.18.0(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
       '@prisma/instrumentation':
         specifier: ^6.18.0
         version: 6.18.0(@opentelemetry/api@1.9.0)
@@ -694,9 +691,6 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
-      prisma:
-        specifier: 'catalog:'
-        version: 6.18.0(magicast@0.3.5)(typescript@5.9.3)
 
   apis/api-analytics:
     dependencies:
@@ -1210,6 +1204,138 @@ importers:
         specifier: ^4.0.15
         version: 4.1.12
 
+  apps/arclight:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/arclight-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/docs:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/docs-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/journeys:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/journeys-admin:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/journeys-admin-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/journeys-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/player:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/player-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/resources:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/resources-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/short-links:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/short-links-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/video-importer:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/video-importer-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/videos-admin:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/videos-admin-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/watch:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/watch-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/watch-modern:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
+  apps/watch-modern-e2e:
+    dependencies:
+      '@core/apps':
+        specifier: workspace:*
+        version: link:..
+
   libs:
     dependencies:
       '@ai-sdk/google':
@@ -1257,9 +1383,6 @@ importers:
       '@mui/utils':
         specifier: ^7.1.1
         version: 7.1.1(@types/react@19.2.2)(react@19.2.0)
-      '@prisma/client':
-        specifier: 'catalog:'
-        version: 6.18.0(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
       '@radix-ui/react-accordion':
         specifier: ^1.2.11
         version: 1.2.12(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1447,9 +1570,12 @@ importers:
       '@types/uuid':
         specifier: ^10.0.0
         version: 10.0.0
-      prisma:
-        specifier: 'catalog:'
-        version: 6.18.0(magicast@0.3.5)(typescript@5.9.3)
+
+  libs/journeys/ui:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
 
   libs/nest:
     dependencies:
@@ -1471,6 +1597,84 @@ importers:
       rxjs:
         specifier: ^7.1.0
         version: 7.8.2
+
+  libs/prisma:
+    dependencies:
+      '@prisma/client':
+        specifier: 'catalog:'
+        version: 6.18.0(prisma@6.18.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3)
+    devDependencies:
+      prisma:
+        specifier: 'catalog:'
+        version: 6.18.0(magicast@0.3.5)(typescript@5.9.3)
+
+  libs/prisma/analytics:
+    dependencies:
+      '@core/libs-prisma':
+        specifier: workspace:*
+        version: link:..
+
+  libs/prisma/journeys:
+    dependencies:
+      '@core/libs-prisma':
+        specifier: workspace:*
+        version: link:..
+
+  libs/prisma/languages:
+    dependencies:
+      '@core/libs-prisma':
+        specifier: workspace:*
+        version: link:..
+
+  libs/prisma/media:
+    dependencies:
+      '@core/libs-prisma':
+        specifier: workspace:*
+        version: link:..
+
+  libs/prisma/users:
+    dependencies:
+      '@core/libs-prisma':
+        specifier: workspace:*
+        version: link:..
+
+  libs/shared/ai:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
+
+  libs/shared/eslint: {}
+
+  libs/shared/gql:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
+
+  libs/shared/storybook:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
+
+  libs/shared/ui:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
+
+  libs/shared/ui-dynamic:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
+
+  libs/shared/ui-modern:
+    dependencies:
+      '@core/libs':
+        specifier: workspace:*
+        version: link:../..
 
   workers:
     dependencies:

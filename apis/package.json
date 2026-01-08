@@ -32,7 +32,6 @@
     "@pothos/plugin-with-input": "^4.1.0",
     "@pothos/plugin-zod": "^4.1.0",
     "@pothos/tracing-opentelemetry": "^1.1.0",
-    "@prisma/client": "catalog:",
     "@prisma/instrumentation": "^6.18.0",
     "@t3-oss/env-core": "^0.13.8",
     "@upstash/redis": "^1.35.3",
@@ -63,7 +62,6 @@
     "@types/cors": "^2.8.17",
     "@types/express": "5.0.1",
     "@types/lodash": "^4.14.198",
-    "@types/uuid": "^10.0.0",
-    "prisma": "catalog:"
+    "@types/uuid": "^10.0.0"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "name": "@core/resources",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Resources application",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

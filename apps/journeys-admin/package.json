@@ -1,0 +1,9 @@
+{
+  "name": "@core/journeys-admin",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Journeys Admin application",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@core/video-importer-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Video Importer E2E tests",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}
