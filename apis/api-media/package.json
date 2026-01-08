@@ -1,0 +1,12 @@
+{
+  "name": "@core/api-media",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Media API service",
+  "dependencies": {
+    "@core/apis": "workspace:*"
+  }
+}
+
+
+

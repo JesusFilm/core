@@ -1,3 +1,58 @@
+# PNPM Workspace Configuration
+# Separates dependencies into logical categories while maintaining NX functionality
+
+packages:
+  # Category-level workspaces (shared dependencies for each category)
+  - 'apis'
+  - 'apps'
+  - 'libs'
+  - 'workers'
+  # Individual project workspaces (for projects with their own package.json)
+  - 'apis/*'
+  - 'apps/*'
+  - 'libs/*'
+  - 'libs/**/*'
+  - 'workers/*'
+
+# Catalog for shared dependency versions across workspaces
+# This ensures version consistency while allowing per-workspace dependencies
+catalogs:
+  default:
+    # React ecosystem
+    react: ^19.0.0
+    react-dom: ^19.0.0
+    next: ^15.5.7
+
+    # GraphQL ecosystem
+    graphql: 16.10.0
+    graphql-yoga: ^5.3.1
+    '@apollo/client': ^3.8.3
+    '@apollo/server': ^4.10.4
+
+    # NestJS ecosystem
+    '@nestjs/common': ^11.0.1
+    '@nestjs/core': ^11.0.1
+    '@nestjs/graphql': ^13.0.0
+    '@nestjs/apollo': ^13.0.0
+    '@nestjs/platform-express': ^11.0.1
+
+    # Prisma
+    '@prisma/client': ^6.18.0
+    prisma: ^6.18.0
+
+    # UI frameworks
+    '@mui/material': ^7.1.1
+    '@mui/icons-material': ^7.1.1
+    '@emotion/react': ^11.13.3
+    '@emotion/styled': ^11.13.0
+
+    # Cloudflare/Hono
+    hono: ^4.7.1
+    wrangler: ^3.62.0
+
+    # TypeScript
+    typescript: ^5.5.4
+
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@datadog/native-appsec'

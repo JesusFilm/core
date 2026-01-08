@@ -1,0 +1,12 @@
+{
+  "name": "@core/api-users",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Users API service",
+  "dependencies": {
+    "@core/apis": "workspace:*"
+  }
+}
+
+
+

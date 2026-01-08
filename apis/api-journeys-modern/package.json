@@ -1,0 +1,12 @@
+{
+  "name": "@core/api-journeys-modern",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Journeys Modern API service",
+  "dependencies": {
+    "@core/apis": "workspace:*"
+  }
+}
+
+
+

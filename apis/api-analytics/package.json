@@ -1,0 +1,12 @@
+{
+  "name": "@core/api-analytics",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Analytics API service",
+  "dependencies": {
+    "@core/apis": "workspace:*"
+  }
+}
+
+
+
