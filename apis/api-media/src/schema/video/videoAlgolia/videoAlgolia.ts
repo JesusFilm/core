@@ -2,7 +2,10 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../../../lib/algolia/algoliaClient'
+import {
+  algoliaConfig,
+  getAlgoliaClient
+} from '../../../lib/algolia/algoliaClient'
 import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
 import { builder } from '../../builder'
@@ -64,13 +67,7 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_parent, { videoId }) => {
-      const client = await getAlgoliaClient()
-      const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
-      const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-
-      if (client == null) {
-        throw new GraphQLError('Algolia client not configured')
-      }
+      const client = getAlgoliaClient()
 
       // Fetch minimal video data to validate against Algolia record
       const video = await prisma.video.findUnique({
@@ -118,7 +115,7 @@ builder.queryFields((t) => ({
 
       try {
         const record = await client.getObject({
-          indexName: videosIndex,
+          indexName: algoliaConfig.videosIndex,
           objectID: videoId
         })
 
@@ -158,23 +155,13 @@ builder.queryFields((t) => ({
         return {
           ok: mismatches.length === 0,
           mismatches,
-          recordUrl:
-            appId !== '' && videosIndex !== ''
-              ? `https://www.algolia.com/apps/${appId}/explorer/browse/${videosIndex}?query=${encodeURIComponent(
-                  videoId
-                )}`
-              : null
+          recordUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videosIndex}?query=${encodeURIComponent(videoId)}`
         }
       } catch {
         return {
           ok: false,
           mismatches: [],
-          recordUrl:
-            appId !== '' && videosIndex !== ''
-              ? `https://www.algolia.com/apps/${appId}/explorer/browse/${videosIndex}?query=${encodeURIComponent(
-                  videoId
-                )}`
-              : null
+          recordUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videosIndex}?query=${encodeURIComponent(videoId)}`
         }
       }
     }
@@ -186,13 +173,7 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_parent, { videoId }) => {
-      const client = await getAlgoliaClient()
-      const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
-      const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-
-      if (client == null) {
-        throw new GraphQLError('Algolia client not configured')
-      }
+      const client = getAlgoliaClient()
 
       // Get all variants for this video
       const variants = await prisma.videoVariant.findMany({
@@ -205,7 +186,7 @@ builder.queryFields((t) => ({
       for (const variant of variants) {
         try {
           const record = await client.getObject({
-            indexName: videoVariantsIndex,
+            indexName: algoliaConfig.videoVariantsIndex,
             objectID: variant.id
           })
           const objectIdMatches = record.objectID === variant.id
@@ -223,12 +204,7 @@ builder.queryFields((t) => ({
       return {
         ok: missingVariants.length === 0,
         missingVariants,
-        browseUrl:
-          appId !== '' && videoVariantsIndex !== ''
-            ? `https://www.algolia.com/apps/${appId}/explorer/browse/${videoVariantsIndex}?query=${encodeURIComponent(
-                videoId
-              )}`
-            : null
+        browseUrl: `https://www.algolia.com/apps/${algoliaConfig.appId}/explorer/browse/${algoliaConfig.videoVariantsIndex}?query=${encodeURIComponent(videoId)}`
       }
     }
   })

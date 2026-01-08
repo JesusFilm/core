@@ -2,21 +2,15 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../algoliaClient'
+import { algoliaConfig, getAlgoliaClient } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
 export async function updateVideoInAlgolia(
   videoId: string,
   logger?: Logger
 ): Promise<void> {
-  const client = await getAlgoliaClient(logger)
+  const client = getAlgoliaClient()
   const languages = await getLanguages(logger)
-  const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
-
-  if (client == null) {
-    logger?.warn('algolia client not found, skipping update')
-    return
-  }
 
   try {
     const video = await prisma.video.findUnique({
@@ -216,7 +210,7 @@ export async function updateVideoInAlgolia(
     }
 
     const result = await client.saveObjects({
-      indexName: videosIndex,
+      indexName: algoliaConfig.videosIndex,
       objects: [transformedVideo],
       waitForTasks: true
     })
@@ -224,7 +218,9 @@ export async function updateVideoInAlgolia(
     logger?.info(
       `Successfully saved to Algolia. Tasks: ${result.map((r) => r.taskID).join(', ')}`
     )
-    logger?.info(`Record ${video.id} is now available in index ${videosIndex}`)
+    logger?.info(
+      `Record ${video.id} is now available in index ${algoliaConfig.videosIndex}`
+    )
   } catch (error) {
     logger?.error(error, `failed to update video ${videoId} in algolia`)
   }

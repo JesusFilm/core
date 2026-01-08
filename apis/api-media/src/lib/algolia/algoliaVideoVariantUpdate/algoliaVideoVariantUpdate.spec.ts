@@ -4,9 +4,21 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateVideoVariantInAlgolia } from './algoliaVideoVariantUpdate'
 
+const deleteObjectSpy = jest.fn()
+const saveObjectsSpy = jest.fn()
+
 // Mock the algolia client helper
 jest.mock('../algoliaClient', () => ({
-  getAlgoliaClient: jest.fn()
+  getAlgoliaClient: () => ({
+    deleteObject: deleteObjectSpy,
+    saveObjects: saveObjectsSpy
+  }),
+  algoliaConfig: {
+    appId: 'test-app-id',
+    apiKey: 'test-api-key',
+    videosIndex: 'test-videos',
+    videoVariantsIndex: 'test-video-variants'
+  }
 }))
 
 // Mock the languages helper
@@ -15,16 +27,6 @@ jest.mock('../languages', () => ({
 }))
 
 describe('algoliaVideoVariantUpdate', () => {
-  const deleteObjectSpy = jest.fn().mockResolvedValue({})
-  const saveObjectsSpy = jest
-    .fn()
-    .mockResolvedValue([{ taskID: 'test-task-123' }])
-
-  const mockAlgoliaClient = {
-    deleteObject: deleteObjectSpy,
-    saveObjects: saveObjectsSpy
-  }
-
   const mockLanguages = {
     '529': {
       english: 'English',
@@ -45,35 +47,21 @@ describe('algoliaVideoVariantUpdate', () => {
   } as any
 
   // Get the mocked functions
-  const { getAlgoliaClient } = require('../algoliaClient')
   const { getLanguages } = require('../languages')
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'test-video-variants'
     process.env.CLOUDFLARE_IMAGE_ACCOUNT = 'test-account'
 
     // Reset the spy mock return values
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
     deleteObjectSpy.mockResolvedValue({})
 
-    getAlgoliaClient.mockResolvedValue(mockAlgoliaClient)
     getLanguages.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {
     jest.resetAllMocks()
-  })
-
-  it('should skip update when algolia client is null', async () => {
-    getAlgoliaClient.mockResolvedValueOnce(null)
-
-    await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
-
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      'algolia client not found, skipping update'
-    )
-    expect(saveObjectsSpy).not.toHaveBeenCalled()
   })
 
   it('should warn when video variant is not found and delete from algolia', async () => {
