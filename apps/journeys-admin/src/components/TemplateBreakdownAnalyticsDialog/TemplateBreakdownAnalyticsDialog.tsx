@@ -66,7 +66,7 @@ export function TemplateBreakdownAnalyticsDialog({
 }: TemplateBreakdownAnalyticsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [includeArchivedJourneys, setIncludeArchivedJourneys] = useState(true)
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const smDown = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'))
 
   const defaultVariables: GetTemplateFamilyStatsBreakdownVariables = useMemo(
     () => ({
@@ -137,7 +137,7 @@ export function TemplateBreakdownAnalyticsDialog({
       onClose={handleClose}
       dialogTitle={{ title: 'Template Breakdown Analytics', closeButton: true }}
       divider
-      fullscreen={!mdUp}
+      fullscreen={smDown}
       maxWidth="xl"
       dialogActionChildren={
         noData ? null : (
@@ -167,9 +167,9 @@ export function TemplateBreakdownAnalyticsDialog({
           px: 0
         },
         '& .MuiDialog-paper': {
-          width: mdUp ? 'fit-content' : '100%',
-          minWidth: mdUp ? '700px' : null,
-          minHeight: mdUp ? '600px' : null
+          width: smDown ? '100%' : 'fit-content',
+          minWidth: smDown ? null : '700px',
+          minHeight: smDown ? null : '600px'
         }
       }}
     >

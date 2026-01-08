@@ -11,6 +11,7 @@ import TableSortLabel from '@mui/material/TableSortLabel'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { ReactElement, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { GetTemplateFamilyStatsBreakdown } from '../../../../__generated__/GetTemplateFamilyStatsBreakdown'
 import {
@@ -48,6 +49,7 @@ export function TemplateBreakdownAnalyticsTable({
 }: TemplateBreakdownAnalyticsTableProps): ReactElement | null {
   const [orderBy, setOrderBy] = useState<SortableColumn>('views')
   const [order, setOrder] = useState<Order>('desc')
+  const { t } = useTranslation('apps-journeys-admin')
 
   const processedData = useMemo(() => {
     if (data?.templateFamilyStatsBreakdown == null) {
@@ -73,10 +75,10 @@ export function TemplateBreakdownAnalyticsTable({
       (row) => row.journeyId !== UNKNOWN_JOURNEYS_AGGREGATE_ID
     )
 
-    const totalRow = regularRows.reduce(addRowToTotal, createInitialTotalRow())
+    let totalRow = regularRows.reduce(addRowToTotal, createInitialTotalRow())
 
     if (restrictedRow != null) {
-      addRestrictedRowToTotal(totalRow, restrictedRow)
+      totalRow = addRestrictedRowToTotal(totalRow, restrictedRow)
       trackNonZeroColumns(restrictedRow, columnsWithNonZero)
     }
 
@@ -386,13 +388,13 @@ export function TemplateBreakdownAnalyticsTable({
                       variant="body2"
                       sx={{ color: 'text.secondary', fontWeight: 'bold' }}
                     >
-                      Restricted teams
+                      {t('Restricted teams')}
                     </Typography>
                     <Typography
                       variant="caption"
                       sx={{ color: 'text.secondary', display: 'block' }}
                     >
-                      This data is from teams you don't have access to.
+                      {t("This data is from teams you don't have access to.")}
                     </Typography>
                   </Box>
                 </TableCell>

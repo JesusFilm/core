@@ -5,7 +5,7 @@ export interface AddRestrictedRowToTotalParams {
   restrictedRow: ProcessedRow
 }
 
-export type AddRestrictedRowToTotalReturn = void
+export type AddRestrictedRowToTotalReturn = ProcessedRow
 
 /**
  * Adds values from restricted row to total row
@@ -13,18 +13,28 @@ export type AddRestrictedRowToTotalReturn = void
 export function addRestrictedRowToTotal(
   totalRow: ProcessedRow,
   restrictedRow: ProcessedRow
-): void {
-  totalRow.views += restrictedRow.views
-  totalRow.responses += restrictedRow.responses
-  totalRow.christDecisionCapture += restrictedRow.christDecisionCapture
-  totalRow.prayerRequestCapture += restrictedRow.prayerRequestCapture
-  totalRow.specialVideoStartCapture += restrictedRow.specialVideoStartCapture
-  totalRow.specialVideoCompleteCapture +=
-    restrictedRow.specialVideoCompleteCapture
-  totalRow.gospelStartCapture += restrictedRow.gospelStartCapture
-  totalRow.gospelCompleteCapture += restrictedRow.gospelCompleteCapture
-  totalRow.rsvpCapture += restrictedRow.rsvpCapture
-  totalRow.custom1Capture += restrictedRow.custom1Capture
-  totalRow.custom2Capture += restrictedRow.custom2Capture
-  totalRow.custom3Capture += restrictedRow.custom3Capture
+): ProcessedRow {
+  return {
+    ...totalRow,
+    views: totalRow.views + restrictedRow.views,
+    responses: totalRow.responses + restrictedRow.responses,
+    christDecisionCapture:
+      totalRow.christDecisionCapture + restrictedRow.christDecisionCapture,
+    prayerRequestCapture:
+      totalRow.prayerRequestCapture + restrictedRow.prayerRequestCapture,
+    specialVideoStartCapture:
+      totalRow.specialVideoStartCapture +
+      restrictedRow.specialVideoStartCapture,
+    specialVideoCompleteCapture:
+      totalRow.specialVideoCompleteCapture +
+      restrictedRow.specialVideoCompleteCapture,
+    gospelStartCapture:
+      totalRow.gospelStartCapture + restrictedRow.gospelStartCapture,
+    gospelCompleteCapture:
+      totalRow.gospelCompleteCapture + restrictedRow.gospelCompleteCapture,
+    rsvpCapture: totalRow.rsvpCapture + restrictedRow.rsvpCapture,
+    custom1Capture: totalRow.custom1Capture + restrictedRow.custom1Capture,
+    custom2Capture: totalRow.custom2Capture + restrictedRow.custom2Capture,
+    custom3Capture: totalRow.custom3Capture + restrictedRow.custom3Capture
+  }
 }

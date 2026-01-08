@@ -39,11 +39,12 @@ describe('addRestrictedRowToTotal', () => {
       christDecisionCapture: 2
     })
 
-    addRestrictedRowToTotal(totalRow, restrictedRow)
+    const result = addRestrictedRowToTotal(totalRow, restrictedRow)
 
-    expect(totalRow.views).toBe(110)
-    expect(totalRow.responses).toBe(55)
-    expect(totalRow.christDecisionCapture).toBe(27)
+    expect(result.views).toBe(110)
+    expect(result.responses).toBe(55)
+    expect(result.christDecisionCapture).toBe(27)
+    expect(result).not.toBe(totalRow)
   })
 
   it('should handle all numeric columns', () => {
@@ -63,29 +64,32 @@ describe('addRestrictedRowToTotal', () => {
       custom3Capture: 12
     })
 
-    addRestrictedRowToTotal(totalRow, restrictedRow)
+    const result = addRestrictedRowToTotal(totalRow, restrictedRow)
 
-    expect(totalRow.views).toBe(1)
-    expect(totalRow.responses).toBe(2)
-    expect(totalRow.christDecisionCapture).toBe(3)
-    expect(totalRow.prayerRequestCapture).toBe(4)
-    expect(totalRow.specialVideoStartCapture).toBe(5)
-    expect(totalRow.specialVideoCompleteCapture).toBe(6)
-    expect(totalRow.gospelStartCapture).toBe(7)
-    expect(totalRow.gospelCompleteCapture).toBe(8)
-    expect(totalRow.rsvpCapture).toBe(9)
-    expect(totalRow.custom1Capture).toBe(10)
-    expect(totalRow.custom2Capture).toBe(11)
-    expect(totalRow.custom3Capture).toBe(12)
+    expect(result.views).toBe(1)
+    expect(result.responses).toBe(2)
+    expect(result.christDecisionCapture).toBe(3)
+    expect(result.prayerRequestCapture).toBe(4)
+    expect(result.specialVideoStartCapture).toBe(5)
+    expect(result.specialVideoCompleteCapture).toBe(6)
+    expect(result.gospelStartCapture).toBe(7)
+    expect(result.gospelCompleteCapture).toBe(8)
+    expect(result.rsvpCapture).toBe(9)
+    expect(result.custom1Capture).toBe(10)
+    expect(result.custom2Capture).toBe(11)
+    expect(result.custom3Capture).toBe(12)
+    expect(result).not.toBe(totalRow)
   })
 
-  it('should mutate the total row in place', () => {
+  it('should return a new object without mutating the original', () => {
     const totalRow = createMockProcessedRow({ views: 100 })
     const restrictedRow = createMockProcessedRow({ views: 10 })
 
-    addRestrictedRowToTotal(totalRow, restrictedRow)
+    const result = addRestrictedRowToTotal(totalRow, restrictedRow)
 
-    expect(totalRow.views).toBe(110)
+    expect(result.views).toBe(110)
+    expect(result).not.toBe(totalRow)
+    expect(totalRow.views).toBe(100)
   })
 
   it('should handle zero values correctly', () => {
@@ -98,10 +102,11 @@ describe('addRestrictedRowToTotal', () => {
       responses: 0
     })
 
-    addRestrictedRowToTotal(totalRow, restrictedRow)
+    const result = addRestrictedRowToTotal(totalRow, restrictedRow)
 
-    expect(totalRow.views).toBe(100)
-    expect(totalRow.responses).toBe(50)
+    expect(result.views).toBe(100)
+    expect(result.responses).toBe(50)
+    expect(result).not.toBe(totalRow)
   })
 
   it('should handle negative values correctly', () => {
@@ -112,8 +117,9 @@ describe('addRestrictedRowToTotal', () => {
       views: -10
     })
 
-    addRestrictedRowToTotal(totalRow, restrictedRow)
+    const result = addRestrictedRowToTotal(totalRow, restrictedRow)
 
-    expect(totalRow.views).toBe(90)
+    expect(result.views).toBe(90)
+    expect(result).not.toBe(totalRow)
   })
 })

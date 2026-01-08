@@ -19,6 +19,10 @@ import {
   TemplateBreakdownAnalyticsDialog
 } from './TemplateBreakdownAnalyticsDialog'
 
+jest.mock('@mui/material/useMediaQuery', () => {
+  return jest.fn(() => false)
+})
+
 jest.mock('date-fns', () => {
   return {
     ...jest.requireActual('date-fns'),
