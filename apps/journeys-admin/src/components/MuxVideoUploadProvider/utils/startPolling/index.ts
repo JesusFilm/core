@@ -1,1 +1,0 @@
-export { startPolling } from './startPolling'
