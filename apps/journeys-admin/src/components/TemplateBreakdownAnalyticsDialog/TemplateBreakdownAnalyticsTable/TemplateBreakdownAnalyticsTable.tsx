@@ -119,7 +119,11 @@ export function TemplateBreakdownAnalyticsTable({
     if (columnsWithZeros.has(column) && column !== 'views') {
       return null
     }
-    return <TableCell width={COLUMN_MAX_WIDTH}>{value}</TableCell>
+    return (
+      <TableCell sx={{ maxWidth: COLUMN_MAX_WIDTH, width: 'auto' }}>
+        {value}
+      </TableCell>
+    )
   }
 
   return (
@@ -130,7 +134,7 @@ export function TemplateBreakdownAnalyticsTable({
           overflow: 'auto'
         }}
       >
-        <Table size="small" sx={{ tableLayout: 'fixed' }}>
+        <Table size="small" sx={{ tableLayout: 'auto' }}>
           <TableHead
             sx={{
               position: 'sticky',
@@ -143,15 +147,18 @@ export function TemplateBreakdownAnalyticsTable({
               {visibleColumnHeaders.map((header) => (
                 <TableCell
                   key={header.id}
-                  width={
-                    header.id === 'journeyName'
-                      ? FIRST_COLUMN_MAX_WIDTH
-                      : COLUMN_MAX_WIDTH
-                  }
                   sx={{
                     backgroundColor: 'background.paper',
                     fontWeight: 'bold',
-                    borderBottom: 'none'
+                    borderBottom: 'none',
+                    maxWidth:
+                      header.id === 'journeyName'
+                        ? FIRST_COLUMN_MAX_WIDTH
+                        : COLUMN_MAX_WIDTH,
+                    width:
+                      header.id === 'journeyName'
+                        ? FIRST_COLUMN_MAX_WIDTH
+                        : 'auto'
                   }}
                 >
                   <TableSortLabel
@@ -216,7 +223,12 @@ export function TemplateBreakdownAnalyticsTable({
                 }
               }}
             >
-              <TableCell width={FIRST_COLUMN_MAX_WIDTH}>
+              <TableCell
+                sx={{
+                  maxWidth: FIRST_COLUMN_MAX_WIDTH,
+                  width: 'auto'
+                }}
+              >
                 <Typography
                   variant="body2"
                   sx={{
@@ -275,8 +287,11 @@ export function TemplateBreakdownAnalyticsTable({
             {displayRows.map((row) => (
               <TableRow key={row.journeyId}>
                 <TableCell
-                  width={FIRST_COLUMN_MAX_WIDTH}
-                  sx={{ overflow: 'hidden' }}
+                  sx={{
+                    maxWidth: FIRST_COLUMN_MAX_WIDTH,
+                    width: 'auto',
+                    overflow: 'hidden'
+                  }}
                 >
                   <Typography variant="body2">{row.teamName}</Typography>
                   <Link
@@ -346,7 +361,12 @@ export function TemplateBreakdownAnalyticsTable({
             {/* Restricted Row */}
             {restrictedRow != null && (
               <TableRow>
-                <TableCell width={FIRST_COLUMN_MAX_WIDTH}>
+                <TableCell
+                  sx={{
+                    maxWidth: FIRST_COLUMN_MAX_WIDTH,
+                    width: 'auto'
+                  }}
+                >
                   <Box>
                     <Typography
                       variant="body2"

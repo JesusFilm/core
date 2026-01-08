@@ -383,6 +383,9 @@ export function JourneyCard({
               gap={1}
               justifyContent="space-between"
               alignItems="center"
+              sx={{
+                p: 2
+              }}
             >
               <TemplateAggregateAnalytics journeyId={journey.id} />
               <IconButton
@@ -396,7 +399,7 @@ export function JourneyCard({
                 }}
                 onClick={() => setBreakdownDialogOpen(true)}
               >
-                <BarGroup3Icon />
+                <BarGroup3Icon fontSize="small" />
               </IconButton>
             </Stack>
           ) : (
