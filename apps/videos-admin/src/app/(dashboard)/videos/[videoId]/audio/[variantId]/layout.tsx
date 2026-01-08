@@ -92,11 +92,7 @@ function VariantDialogContent({
   variantId: string
   videoId: string
   children: ReactNode
-}): ReactElement | null {
-  // Filter out source map requests and other invalid variant IDs
-  if (variantId.endsWith('.map') || variantId.includes('.js')) {
-    return null
-  }
+}): ReactElement {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
