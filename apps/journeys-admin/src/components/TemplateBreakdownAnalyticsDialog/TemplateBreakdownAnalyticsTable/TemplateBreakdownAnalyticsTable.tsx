@@ -130,8 +130,15 @@ export function TemplateBreakdownAnalyticsTable({
           overflow: 'auto'
         }}
       >
-        <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
-          <TableHead>
+        <Table size="small" sx={{ tableLayout: 'fixed' }}>
+          <TableHead
+            sx={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 2,
+              backgroundColor: 'background.paper'
+            }}
+          >
             <TableRow>
               {visibleColumnHeaders.map((header) => (
                 <TableCell
@@ -143,7 +150,8 @@ export function TemplateBreakdownAnalyticsTable({
                   }
                   sx={{
                     backgroundColor: 'background.paper',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    borderBottom: 'none'
                   }}
                 >
                   <TableSortLabel
@@ -204,8 +212,6 @@ export function TemplateBreakdownAnalyticsTable({
                 '& .MuiTableCell-root': {
                   fontWeight: 'bold',
                   backgroundColor: 'divider',
-                  position: 'sticky',
-                  top: 78,
                   zIndex: 1
                 }
               }}
