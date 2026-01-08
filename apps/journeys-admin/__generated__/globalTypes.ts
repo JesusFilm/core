@@ -768,6 +768,15 @@ export interface PlausibleStatsAggregateFilter {
   interval?: string | null;
 }
 
+export interface PlausibleStatsBreakdownFilter {
+  property: string;
+  period?: string | null;
+  date?: string | null;
+  limit?: number | null;
+  page?: number | null;
+  filters?: string | null;
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;

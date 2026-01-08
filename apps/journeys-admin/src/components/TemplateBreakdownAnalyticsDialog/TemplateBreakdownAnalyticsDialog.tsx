@@ -135,7 +135,10 @@ export function TemplateBreakdownAnalyticsDialog({
     <Dialog
       open={open}
       onClose={handleClose}
-      dialogTitle={{ title: 'Template Breakdown Analytics', closeButton: true }}
+      dialogTitle={{
+        title: t('Template Breakdown Analytics'),
+        closeButton: true
+      }}
       divider
       fullscreen={smDown}
       maxWidth="xl"
@@ -157,7 +160,7 @@ export function TemplateBreakdownAnalyticsDialog({
                   }
                 />
               }
-              label="Include archived journeys"
+              label={t('Include archived journeys')}
             />
           </FormGroup>
         )
