@@ -1,0 +1,9 @@
+{
+  "name": "@core/arclight",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Arclight application",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

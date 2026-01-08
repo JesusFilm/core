@@ -1,0 +1,9 @@
+{
+  "name": "@core/watch-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Watch E2E tests",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

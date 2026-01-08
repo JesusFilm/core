@@ -1,0 +1,14 @@
+{
+  "name": "@core/libs-nest",
+  "version": "0.0.0",
+  "private": true,
+  "description": "NestJS shared libraries",
+  "dependencies": {
+    "@core/libs": "workspace:*",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.0.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.1.0"
+  }
+}

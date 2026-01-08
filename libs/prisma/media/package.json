@@ -1,0 +1,9 @@
+{
+  "name": "@core/prisma-media",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Media Prisma client",
+  "dependencies": {
+    "@core/libs-prisma": "workspace:*"
+  }
+}

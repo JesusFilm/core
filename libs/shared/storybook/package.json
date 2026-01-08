@@ -1,0 +1,9 @@
+{
+  "name": "@core/shared-storybook",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared Storybook configuration",
+  "dependencies": {
+    "@core/libs": "workspace:*"
+  }
+}
