@@ -34,7 +34,7 @@ const isNumericColumn = (columnId: SortableColumn): boolean => {
   return NUMERIC_COLUMNS.includes(columnId)
 }
 
-const COLUMN_MAX_WIDTH = 100
+const COLUMN_MAX_WIDTH = 120
 const FIRST_COLUMN_MAX_WIDTH = 180
 
 interface TemplateBreakdownAnalyticsTableProps {
@@ -133,7 +133,13 @@ export function TemplateBreakdownAnalyticsTable({
       return null
     }
     return (
-      <TableCell sx={{ width: `${COLUMN_MAX_WIDTH}px`, textAlign: 'right' }}>
+      <TableCell
+        sx={{
+          maxWidth: `${COLUMN_MAX_WIDTH}px`,
+          width: `${COLUMN_MAX_WIDTH}px`,
+          textAlign: 'right'
+        }}
+      >
         {value}
       </TableCell>
     )
@@ -147,7 +153,7 @@ export function TemplateBreakdownAnalyticsTable({
           overflow: 'auto'
         }}
       >
-        <Table size="small" sx={{ tableLayout: 'fixed', width: '100%' }}>
+        <Table size="small" sx={{ tableLayout: 'auto' }}>
           <TableHead
             sx={{
               position: 'sticky',
@@ -164,6 +170,10 @@ export function TemplateBreakdownAnalyticsTable({
                     backgroundColor: 'background.paper',
                     fontWeight: 'bold',
                     borderBottom: 'none',
+                    maxWidth:
+                      header.id === 'journeyName'
+                        ? `${FIRST_COLUMN_MAX_WIDTH}px`
+                        : `${COLUMN_MAX_WIDTH}px`,
                     width:
                       header.id === 'journeyName'
                         ? `${FIRST_COLUMN_MAX_WIDTH}px`
@@ -242,6 +252,7 @@ export function TemplateBreakdownAnalyticsTable({
             >
               <TableCell
                 sx={{
+                  maxWidth: `${FIRST_COLUMN_MAX_WIDTH}px`,
                   width: `${FIRST_COLUMN_MAX_WIDTH}px`
                 }}
               >
@@ -304,6 +315,7 @@ export function TemplateBreakdownAnalyticsTable({
               <TableRow key={row.journeyId}>
                 <TableCell
                   sx={{
+                    maxWidth: `${FIRST_COLUMN_MAX_WIDTH}px`,
                     width: `${FIRST_COLUMN_MAX_WIDTH}px`,
                     overflow: 'hidden'
                   }}
@@ -388,6 +400,7 @@ export function TemplateBreakdownAnalyticsTable({
               <TableRow>
                 <TableCell
                   sx={{
+                    maxWidth: `${FIRST_COLUMN_MAX_WIDTH}px`,
                     width: `${FIRST_COLUMN_MAX_WIDTH}px`
                   }}
                 >

@@ -123,7 +123,7 @@ export function TemplateBreakdownAnalyticsDialog({
           : [JourneyStatus.published, JourneyStatus.draft]
       })
     }
-  }, [includeArchivedJourneys, refetch, open, journeyId])
+  }, [includeArchivedJourneys, refetch, open, journeyId, defaultVariables])
 
   const noData =
     !loading &&
