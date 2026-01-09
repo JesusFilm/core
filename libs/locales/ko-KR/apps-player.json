@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "플레이어",
+    "description": "재생 목록을 보려면 /pl/[playlistId]로 이동합니다."
+  },
+  "Metadata": {
+    "pageTitle": "{title} | 예수 영화 프로젝트"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "재생 목록",
+    "pageTitle": "{title} by {name}",
+    "thisPlaylistIsEmpty": "이 재생 목록이 비어 있습니다.",
+    "defaultDescription": "친구가 여러분을 격려하기 위해 이 동영상을 공유했습니다. 재생을 눌러 예수님 안에서 평화를 찾은 감동적인 이야기를 들어보세요.",
+    "description": "친구 {name} 가 격려의 의미로 이 동영상을 공유했습니다. 재생을 눌러 예수님 안에서 평화를 찾은 감동적인 이야기를 들어보세요."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "사용 가능한 동영상 없음"
+  },
+  "PlaylistList": {
+    "noThumbnail": "썸네일 없음"
+  },
+  "StudyQuestions": {
+    "title": "학습 질문"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "이 동영상을 보려면 JavaScript를 활성화하고 <link>HTML5 동영상을 지원하는</link> 웹 브라우저로 업그레이드하시기 바랍니다."
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "친구 <strong>{name}</strong> 가 여러분을 격려하기 위해 이 동영상을 공유했습니다. 이러한 동영상을 시청하는 가장 좋은 방법은 앱을 다운로드하는 것입니다.",
+    "downloadOnAppStore": "App Store에서 다운로드",
+    "getItOnGooglePlay": "구글 플레이에서 다운로드"
+  }
+}

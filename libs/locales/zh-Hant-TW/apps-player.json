@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "播放器",
+    "description": "導覽到 /pl/[播放清單 ID] 檢視播放清單"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | 耶穌電影計畫"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "播放列表",
+    "pageTitle": "{title} 作者： {name}",
+    "thisPlaylistIsEmpty": "此播放清單為空",
+    "defaultDescription": "您的朋友分享這些影片來鼓勵您。按下播放，欣賞關於在耶穌裡尋找平安的令人振奮的故事。",
+    "description": "您的朋友 {name} 分享這些影片來鼓勵您。按下播放，欣賞在耶穌裡尋找平安的振奮故事。"
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "無可用視訊"
+  },
+  "PlaylistList": {
+    "noThumbnail": "沒有縮圖"
+  },
+  "StudyQuestions": {
+    "title": "學習問題"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "若要觀賞此影片，請啟用 JavaScript，並考慮升級至<link>支援 HTML5</link>影片的網頁瀏覽器<link>。</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "您的朋友 <strong>{name}</strong>與您分享這些影片，作為對您的鼓勵。觀看這些影片的最佳方式是下載我們的應用程式。",
+    "downloadOnAppStore": "在 App Store 下載",
+    "getItOnGooglePlay": "在 Google Play 上取得"
+  }
+}

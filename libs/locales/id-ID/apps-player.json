@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Pemutar",
+    "description": "Navigasikan ke /pl/[playlistId] untuk melihat daftar putar"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Proyek Film Yesus"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Daftar Putar",
+    "pageTitle": "{title} oleh {name}",
+    "thisPlaylistIsEmpty": "Daftar putar ini kosong",
+    "defaultDescription": "Teman Anda membagikan video-video ini sebagai dorongan bagi Anda. Tekan putar untuk mendengar kisah-kisah yang menggembirakan tentang menemukan kedamaian di dalam Yesus.",
+    "description": "Teman Anda {name} membagikan video-video ini sebagai dorongan bagi Anda. Tekan tombol putar untuk mendengar kisah-kisah yang menggembirakan tentang menemukan kedamaian di dalam Yesus."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Tidak ada video yang tersedia"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Tidak ada thumbnail"
+  },
+  "StudyQuestions": {
+    "title": "Pertanyaan Studi"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Untuk melihat video ini, harap aktifkan JavaScript, dan pertimbangkan untuk meningkatkan ke browser web yang <link>mendukung video HTML5</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Temanmu <strong>{name}</strong> membagikan video-video ini kepada Anda sebagai penyemangat bagi Anda. Cara terbaik untuk melihat video-video ini adalah dengan mengunduh aplikasi kami.",
+    "downloadOnAppStore": "Unduh di App Store",
+    "getItOnGooglePlay": "Dapatkan di Google Play"
+  }
+}

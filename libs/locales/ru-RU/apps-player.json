@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Плеер",
+    "description": "Перейдите по адресу /pl/[playlistId], чтобы просмотреть плейлист"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Кинопроект \"Иисус"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Плейлист",
+    "pageTitle": "{title} на {name}",
+    "thisPlaylistIsEmpty": "Этот плейлист пуст",
+    "defaultDescription": "Твой друг поделился этими видео в качестве ободрения для тебя. Нажми на кнопку \"Play\", чтобы услышать бодрящие истории о том, как обрести мир в Иисусе.",
+    "description": "Твой друг {name} поделился этими видео в качестве ободрения для тебя. Нажми на кнопку \"Play\", чтобы услышать бодрящие истории о том, как обрести мир в Иисусе."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Видео не доступно"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Нет миниатюры"
+  },
+  "StudyQuestions": {
+    "title": "Учебные вопросы"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Для просмотра этого видео включи JavaScript и перейди на браузер с <link>поддержкой HTML5.</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Твой друг <strong>{name}</strong> поделился с тобой этими видео в качестве ободрения. Лучший способ посмотреть эти видео - скачать наше приложение.",
+    "downloadOnAppStore": "Загружай в App Store",
+    "getItOnGooglePlay": "Получи его в Google Play"
+  }
+}
