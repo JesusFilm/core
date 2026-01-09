@@ -66,7 +66,9 @@ builder.mutationField('signUpSubmissionEventCreate', (t) =>
             data: visitorUpdates
           }),
           prisma.journeyVisitor.update({
-            where: { journeyId_visitorId: { journeyId, visitorId: visitor.id } },
+            where: {
+              journeyId_visitorId: { journeyId, visitorId: visitor.id }
+            },
             data: { activityCount: journeyVisitor.activityCount + 1 }
           })
         ])
