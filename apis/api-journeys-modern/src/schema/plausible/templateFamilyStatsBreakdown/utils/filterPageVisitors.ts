@@ -3,20 +3,22 @@ import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
 /**
  * Filters page visitors from Plausible stats and aggregates them by journey ID.
- * Only processes properties with exactly one slash (first-level pages like "/journey-slug")
- * and matches them to journey slugs. Aggregates visitor counts for each matching journey.
+ * Properties are in the format "/journeyId/stepId" - extracts journeyId and matches to journey IDs.
+ * Uses Math.max to get the maximum visitors per journey (not sum) to avoid double-counting
+ * when the same visitor appears in multiple step pages. This matches the logic used in
+ * templateFamilyStatsAggregate.
  *
  * @param pageVisitors - Array of Plausible stats responses with page properties
  * @param journeys - Array of journeys to match against page properties
- * @returns Array of journey IDs with aggregated visitor counts. Returns an empty array if no matches are found.
+ * @returns Array of journey IDs with maximum visitor counts per journey. Returns an empty array if no matches are found.
  */
 export function filterPageVisitors(
   pageVisitors: PlausibleStatsResponse[],
   journeys: JourneyWithAcl[]
 ): { journeyId: string; visitors: number }[] {
-  const journeySlugMap = new Map<string, string>()
+  const journeyIdSet = new Set<string>()
   for (const journey of journeys) {
-    journeySlugMap.set(journey.slug, journey.id)
+    journeyIdSet.add(journey.id)
   }
 
   const journeyVisitorsMap = new Map<string, number>()
@@ -24,22 +26,24 @@ export function filterPageVisitors(
   for (const pageVisitor of pageVisitors) {
     const property = pageVisitor.property ?? ''
 
-    const slashCount = (property.match(/\//g) ?? []).length
+    // Extract journeyId using the same logic as templateFamilyStatsAggregate
+    // Properties are in format "/journeyId/stepId" - extract journeyId (between first and second slash)
+    if (property.startsWith('/')) {
+      const afterFirstSlash = property.slice(1)
+      const nextSlashIndex = afterFirstSlash.indexOf('/')
+      const journeyId =
+        nextSlashIndex === -1
+          ? afterFirstSlash
+          : afterFirstSlash.slice(0, nextSlashIndex)
+      if (!journeyId) {
+        continue
+      }
 
-    if (slashCount > 1) {
-      continue
-    }
-
-    if (slashCount === 1 && property.startsWith('/')) {
-      const slug = property.slice(1)
-      const journeyId = journeySlugMap.get(slug)
-
-      if (journeyId != null) {
+      if (journeyIdSet.has(journeyId)) {
         const visitors = pageVisitor.visitors ?? 0
-        journeyVisitorsMap.set(
-          journeyId,
-          (journeyVisitorsMap.get(journeyId) ?? 0) + visitors
-        )
+        const currentMax = journeyVisitorsMap.get(journeyId) ?? 0
+        const newMax = Math.max(currentMax, visitors)
+        journeyVisitorsMap.set(journeyId, newMax)
       }
     }
   }
