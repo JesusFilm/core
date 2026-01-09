@@ -29,10 +29,6 @@ builder.mutationField('textResponseSubmissionEventCreate', (t) =>
       const { input } = args
       const userId = context.user?.id
 
-      if (!userId) {
-        throw new Error('User not authenticated')
-      }
-
       const { visitor, journeyVisitor, journeyId, teamId, block } =
         await validateBlockEvent(userId, input.blockId, input.stepId ?? null)
 

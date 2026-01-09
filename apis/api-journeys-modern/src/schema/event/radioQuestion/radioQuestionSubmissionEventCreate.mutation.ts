@@ -25,10 +25,6 @@ builder.mutationField('radioQuestionSubmissionEventCreate', (t) =>
       const { input } = args
       const userId = context.user?.id
 
-      if (!userId) {
-        throw new Error('User not authenticated')
-      }
-
       const { visitor, journeyVisitor, journeyId, teamId } =
         await validateBlockEvent(userId, input.blockId, input.stepId ?? null)
 
