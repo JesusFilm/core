@@ -359,28 +359,36 @@ export async function appendEventToGoogleSheets({
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
+  let keyForRow = dynamicKey
+
   // Ensure the current event's block is included in the header calculation.
   // This handles the case where a new block is added to the journey and this
   // is the first event for that block - without this, the header wouldn't
   // include the new block's column and the data would be lost.
-  if (dynamicKey !== '' && !headerMap.has(dynamicKey)) {
-    // Parse blockId and label from the dynamicKey format: "${blockId}-${label}"
-    // Block IDs can contain dashes, so we need to check against actual block IDs
-    // to find the correct split point
-    for (const block of journeyBlocks) {
-      const prefix = `${block.id}-`
-      if (dynamicKey.startsWith(prefix)) {
-        const eventBlockId = block.id
-        const eventLabel = dynamicKey.substring(prefix.length)
+  if (dynamicKey !== '') {
+    // Longest-prefix match to avoid prefix collisions (order-independent)
+    // e.g., if we have block IDs "block-1" and "block-1-extended", we need
+    // to match the longest one that fits
+    const matchedBlock = journeyBlocks
+      .filter((b) => dynamicKey.startsWith(`${b.id}-`))
+      .sort((a, b) => b.id.length - a.id.length)[0]
 
-        // Only add if this block is connected
-        if (connectedBlockIds.has(eventBlockId)) {
-          headerMap.set(dynamicKey, {
-            blockId: eventBlockId,
-            label: eventLabel
-          })
-        }
-        break
+    if (matchedBlock != null) {
+      const prefix = `${matchedBlock.id}-`
+      const rawLabel = dynamicKey.substring(prefix.length)
+      // Normalize label to match how historical headers are normalized
+      const normalizedLabel = rawLabel.replace(/\s+/g, ' ').trim()
+      const normalizedKey = `${matchedBlock.id}-${normalizedLabel}`
+      keyForRow = normalizedKey
+
+      if (
+        !headerMap.has(normalizedKey) &&
+        connectedBlockIds.has(matchedBlock.id)
+      ) {
+        headerMap.set(normalizedKey, {
+          blockId: matchedBlock.id,
+          label: normalizedLabel
+        })
       }
     }
   }
@@ -414,8 +422,8 @@ export async function appendEventToGoogleSheets({
       const rowMap: Record<string, string> = {}
       if (visitorId !== '') rowMap.visitorId = visitorId
       if (createdAt !== '') rowMap.date = createdAt
-      if (dynamicKey !== '' && dynamicValue !== '') {
-        rowMap[dynamicKey] = dynamicValue
+      if (keyForRow !== '' && dynamicValue !== '') {
+        rowMap[keyForRow] = dynamicValue
       }
 
       const alignedRow = updatedFinalHeader.map((key) => rowMap[key] ?? '')
