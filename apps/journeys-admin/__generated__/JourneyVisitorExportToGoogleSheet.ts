@@ -26,4 +26,5 @@ export interface JourneyVisitorExportToGoogleSheetVariables {
   select?: JourneyVisitorExportSelect | null;
   destination: JourneyVisitorGoogleSheetDestinationInput;
   integrationId: string;
+  timezone?: string | null;
 }
