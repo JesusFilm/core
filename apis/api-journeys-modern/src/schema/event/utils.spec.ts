@@ -735,8 +735,8 @@ describe('event utils', () => {
 
       // Header should be updated to include the new poll column
       expect(mockUpdateRangeValues).toHaveBeenCalled()
-      const updateCall = mockUpdateRangeValues.mock.calls.find(
-        (call) => call[0].range?.includes('A1')
+      const updateCall = mockUpdateRangeValues.mock.calls.find((call) =>
+        call[0].range?.includes('A1')
       )
       expect(updateCall).toBeDefined()
       // The header row should now include 3 columns: Visitor ID, Date, and Poll
