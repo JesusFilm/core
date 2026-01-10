@@ -658,6 +658,278 @@ describe('event utils', () => {
       )
     })
 
+    it('should use longest prefix match to avoid block ID collisions', async () => {
+      // Test that when block IDs have prefix overlap (e.g., "block-1" and "block-1-extended"),
+      // the longest matching block ID is used
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      // Block IDs with prefix overlap
+      const mockBlocks = [
+        {
+          id: 'step-block-id',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'card-block-id',
+          typename: 'CardBlock',
+          parentBlockId: 'step-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'poll',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'poll-extended',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card-block-id',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        }
+      ]
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: mockBlocks
+      } as any)
+      prismaMock.event.findMany.mockResolvedValue([])
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date']])
+        .mockResolvedValueOnce([])
+
+      // dynamicKey for the "poll-extended" block - should NOT match "poll"
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          'poll-extended-My Label', // This should match "poll-extended", not "poll"
+          'Option 1'
+        ]
+      })
+
+      // The header should include a column for poll-extended, not poll
+      expect(mockUpdateRangeValues).toHaveBeenCalled()
+      const updateCall = mockUpdateRangeValues.mock.calls.find((call) =>
+        call[0].range?.includes('A1')
+      )
+      expect(updateCall).toBeDefined()
+      // The value should be correctly placed (not misaligned)
+      expect(mockWriteValues).toHaveBeenCalled()
+      const writeCall = mockWriteValues.mock.calls[0][0]
+      expect(writeCall.values[0][2]).toBe('Option 1')
+    })
+
+    it('should normalize whitespace in dynamic labels to match existing headers', async () => {
+      // Test that labels with different whitespace are normalized to match
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      const mockBlocks = [
+        {
+          id: 'step-block-id',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'card-block-id',
+          typename: 'CardBlock',
+          parentBlockId: 'step-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'poll-block',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        }
+      ]
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: mockBlocks
+      } as any)
+      // Existing event with normalized label (only blockId and label are used)
+      prismaMock.event.findMany.mockResolvedValue([
+        { blockId: 'poll-block', label: 'My Label' }
+      ] as any)
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date', 'Poll']])
+        .mockResolvedValueOnce([])
+
+      // dynamicKey with extra whitespace that should normalize to "My Label"
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          'poll-block-My  Label', // Extra space should be normalized
+          'Option 1'
+        ]
+      })
+
+      // Should not create a duplicate column - the normalized key should match existing
+      expect(mockWriteValues).toHaveBeenCalled()
+      const writeCall = mockWriteValues.mock.calls[0][0]
+      // Value should be in the correct column (3rd column = index 2)
+      expect(writeCall.values[0][2]).toBe('Option 1')
+    })
+
+    it('should include new block column in header when first event is for a new block', async () => {
+      // This test verifies the fix for the bug where new blocks added to a journey
+      // would not have their data synced correctly on the first event submission
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      // Set up blocks - the new-poll-block-id is a connected RadioQuestionBlock
+      const mockBlocks = [
+        {
+          id: 'step-block-id',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'card-block-id',
+          typename: 'CardBlock',
+          parentBlockId: 'step-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'new-poll-block-id',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        }
+      ]
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: mockBlocks
+      } as any)
+      // No existing events for the new block - this is the first event!
+      prismaMock.event.findMany.mockResolvedValue([])
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      // Existing header only has base columns
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
+        .mockResolvedValueOnce([]) // no existing visitor rows
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          'new-poll-block-id-Poll Label', // dynamicKey: blockId-label for new poll
+          'poll 2 Option 1' // dynamicValue: the selected option
+        ]
+      })
+
+      // Header should be updated to include the new poll column
+      expect(mockUpdateRangeValues).toHaveBeenCalled()
+      const updateCall = mockUpdateRangeValues.mock.calls.find((call) =>
+        call[0].range?.includes('A1')
+      )
+      expect(updateCall).toBeDefined()
+      // The header row should now include 3 columns: Visitor ID, Date, and Poll
+      expect(updateCall![0].values[0]).toHaveLength(3)
+      expect(updateCall![0].values[0]).toContain('Poll')
+
+      // Row should be appended with the poll value in the correct column
+      expect(mockWriteValues).toHaveBeenCalled()
+      const writeCall = mockWriteValues.mock.calls[0][0]
+      expect(writeCall.values[0]).toHaveLength(3)
+      expect(writeCall.values[0][0]).toBe('visitor-id')
+      expect(writeCall.values[0][1]).toBe('2024-01-01T00:00:00.000Z')
+      expect(writeCall.values[0][2]).toBe('poll 2 Option 1')
+    })
+
     it('should update all synced sheets when multiple syncs exist', async () => {
       const mockSync1 = {
         id: 'sync-id-1',

@@ -331,18 +331,11 @@ export async function appendEventToGoogleSheets({
         })
       }
     })
-  const normalizedBlockHeaders = Array.from(headerMap.values())
 
   const baseColumns: JourneyExportColumn[] = [
     { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
     { key: 'date', label: 'Date', blockId: null, typename: '' }
   ]
-  const columns = buildJourneyExportColumns({
-    baseColumns,
-    blockHeaders: normalizedBlockHeaders,
-    journeyBlocks,
-    orderIndex
-  })
 
   const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
     column,
@@ -357,8 +350,6 @@ export async function appendEventToGoogleSheets({
     return column.label
   }
 
-  const finalHeader = columns.map((column) => column.key)
-
   const { accessToken } = await getTeamGoogleAccessToken(teamId)
 
   const safe = (value: string | number | null | undefined): string =>
@@ -368,6 +359,50 @@ export async function appendEventToGoogleSheets({
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
+  let keyForRow = dynamicKey
+
+  // Ensure the current event's block is included in the header calculation.
+  // This handles the case where a new block is added to the journey and this
+  // is the first event for that block - without this, the header wouldn't
+  // include the new block's column and the data would be lost.
+  if (dynamicKey !== '') {
+    // Longest-prefix match to avoid prefix collisions (order-independent)
+    // e.g., if we have block IDs "block-1" and "block-1-extended", we need
+    // to match the longest one that fits
+    const matchedBlock = journeyBlocks
+      .filter((b) => dynamicKey.startsWith(`${b.id}-`))
+      .sort((a, b) => b.id.length - a.id.length)[0]
+
+    if (matchedBlock != null) {
+      const prefix = `${matchedBlock.id}-`
+      const rawLabel = dynamicKey.substring(prefix.length)
+      // Normalize label to match how historical headers are normalized
+      const normalizedLabel = rawLabel.replace(/\s+/g, ' ').trim()
+      const normalizedKey = `${matchedBlock.id}-${normalizedLabel}`
+      keyForRow = normalizedKey
+
+      if (
+        !headerMap.has(normalizedKey) &&
+        connectedBlockIds.has(matchedBlock.id)
+      ) {
+        headerMap.set(normalizedKey, {
+          blockId: matchedBlock.id,
+          label: normalizedLabel
+        })
+      }
+    }
+  }
+
+  // Rebuild normalizedBlockHeaders with the potentially updated headerMap
+  const updatedBlockHeaders = Array.from(headerMap.values())
+  const updatedColumns = buildJourneyExportColumns({
+    baseColumns,
+    blockHeaders: updatedBlockHeaders,
+    journeyBlocks,
+    orderIndex
+  })
+  const updatedFinalHeader = updatedColumns.map((column) => column.key)
+
   // Update all synced sheets - use allSettled so one failure doesn't abort others
   const results = await Promise.allSettled(
     syncs.map(async (sync) => {
@@ -375,7 +410,7 @@ export async function appendEventToGoogleSheets({
       const syncTimezone = sync.timezone ?? 'UTC'
 
       const { headerRow } = buildHeaderRows({
-        columns,
+        columns: updatedColumns,
         userTimezone: syncTimezone,
         getCardHeading: (blockId) =>
           getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
@@ -387,12 +422,12 @@ export async function appendEventToGoogleSheets({
       const rowMap: Record<string, string> = {}
       if (visitorId !== '') rowMap.visitorId = visitorId
       if (createdAt !== '') rowMap.date = createdAt
-      if (dynamicKey !== '' && dynamicValue !== '') {
-        rowMap[dynamicKey] = dynamicValue
+      if (keyForRow !== '' && dynamicValue !== '') {
+        rowMap[keyForRow] = dynamicValue
       }
 
-      const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
-      const lastColA1 = columnIndexToA1(finalHeader.length - 1)
+      const alignedRow = updatedFinalHeader.map((key) => rowMap[key] ?? '')
+      const lastColA1 = columnIndexToA1(updatedFinalHeader.length - 1)
 
       const tabName =
         sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
@@ -403,7 +438,7 @@ export async function appendEventToGoogleSheets({
       })
 
       const headerRange = `${tabName}!A1:${columnIndexToA1(
-        finalHeader.length - 1
+        updatedFinalHeader.length - 1
       )}1`
       const existingHeaderRows = await readValues({
         accessToken,
