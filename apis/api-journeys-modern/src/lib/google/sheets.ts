@@ -41,11 +41,13 @@ export async function createSpreadsheet({
     const spreadsheetId: string = driveJson.id
     const spreadsheetUrl: string = driveJson.webViewLink
 
+    // When Drive API creates a spreadsheet, it includes a default "Sheet1".
+    // Rename it to the custom title instead of adding a new sheet.
     if (initialSheetTitle != null) {
-      await ensureSheet({
+      await renameDefaultSheet({
         accessToken,
         spreadsheetId,
-        sheetTitle: initialSheetTitle
+        newTitle: initialSheetTitle
       })
     }
 
@@ -131,6 +133,73 @@ export async function ensureSheet({
   if (!batchRes.ok) {
     throw new Error(
       `Sheets batchUpdate failed: ${batchRes.status} ${await batchRes.text()}`
+    )
+  }
+}
+
+/**
+ * Renames the first (default) sheet in a spreadsheet.
+ * Used when creating spreadsheets via Drive API, which creates a default "Sheet1".
+ */
+export async function renameDefaultSheet({
+  accessToken,
+  spreadsheetId,
+  newTitle
+}: {
+  accessToken: string
+  spreadsheetId: string
+  newTitle: string
+}): Promise<void> {
+  // Get spreadsheet metadata to find the first sheet's ID
+  const metaRes = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } }
+  )
+  if (!metaRes.ok) {
+    throw new Error(
+      `Sheets metadata fetch failed: ${metaRes.status} ${await metaRes.text()}`
+    )
+  }
+  const meta = await metaRes.json()
+
+  const sheets = meta.sheets ?? []
+  if (sheets.length === 0) {
+    throw new Error('Spreadsheet has no sheets to rename')
+  }
+
+  // Get the first sheet's ID (the default sheet created by Drive API)
+  const firstSheetId = sheets[0].properties?.sheetId
+  if (firstSheetId == null) {
+    throw new Error('Could not get first sheet ID')
+  }
+
+  // Rename the sheet using batchUpdate
+  const batchRes = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        requests: [
+          {
+            updateSheetProperties: {
+              properties: {
+                sheetId: firstSheetId,
+                title: newTitle
+              },
+              fields: 'title'
+            }
+          }
+        ]
+      })
+    }
+  )
+  if (!batchRes.ok) {
+    throw new Error(
+      `Sheets rename failed: ${batchRes.status} ${await batchRes.text()}`
     )
   }
 }
