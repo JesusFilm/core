@@ -658,6 +658,100 @@ describe('event utils', () => {
       )
     })
 
+    it('should include new block column in header when first event is for a new block', async () => {
+      // This test verifies the fix for the bug where new blocks added to a journey
+      // would not have their data synced correctly on the first event submission
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      // Set up blocks - the new-poll-block-id is a connected RadioQuestionBlock
+      const mockBlocks = [
+        {
+          id: 'step-block-id',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'card-block-id',
+          typename: 'CardBlock',
+          parentBlockId: 'step-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        },
+        {
+          id: 'new-poll-block-id',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card-block-id',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: null
+        }
+      ]
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: mockBlocks
+      } as any)
+      // No existing events for the new block - this is the first event!
+      prismaMock.event.findMany.mockResolvedValue([])
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      // Existing header only has base columns
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
+        .mockResolvedValueOnce([]) // no existing visitor rows
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          'new-poll-block-id-Poll Label', // dynamicKey: blockId-label for new poll
+          'poll 2 Option 1' // dynamicValue: the selected option
+        ]
+      })
+
+      // Header should be updated to include the new poll column
+      expect(mockUpdateRangeValues).toHaveBeenCalled()
+      const updateCall = mockUpdateRangeValues.mock.calls.find(
+        (call) => call[0].range?.includes('A1')
+      )
+      expect(updateCall).toBeDefined()
+      // The header row should now include 3 columns: Visitor ID, Date, and Poll
+      expect(updateCall![0].values[0]).toHaveLength(3)
+      expect(updateCall![0].values[0]).toContain('Poll')
+
+      // Row should be appended with the poll value in the correct column
+      expect(mockWriteValues).toHaveBeenCalled()
+      const writeCall = mockWriteValues.mock.calls[0][0]
+      expect(writeCall.values[0]).toHaveLength(3)
+      expect(writeCall.values[0][0]).toBe('visitor-id')
+      expect(writeCall.values[0][1]).toBe('2024-01-01T00:00:00.000Z')
+      expect(writeCall.values[0][2]).toBe('poll 2 Option 1')
+    })
+
     it('should update all synced sheets when multiple syncs exist', async () => {
       const mockSync1 = {
         id: 'sync-id-1',
