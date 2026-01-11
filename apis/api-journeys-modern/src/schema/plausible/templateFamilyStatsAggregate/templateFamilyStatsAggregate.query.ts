@@ -1,6 +1,10 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import {
+  Prisma,
+  JourneyStatus as PrismaJourneyStatus,
+  prisma
+} from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
@@ -122,7 +126,10 @@ async function getTotalJourneysResponses(templateId: string): Promise<{
 }> {
   const childJourneys = await prisma.journey.findMany({
     where: {
-      fromTemplateId: templateId
+      fromTemplateId: templateId,
+      status: {
+        not: PrismaJourneyStatus.trashed
+      }
     },
     select: {
       id: true
@@ -143,7 +150,12 @@ async function getTotalJourneysResponses(templateId: string): Promise<{
     by: ['journeyId'],
     where: {
       journeyId: { in: journeyIds },
-      lastTextResponse: { not: null }
+      lastTextResponse: { not: null },
+      journey: {
+        status: {
+          not: PrismaJourneyStatus.trashed
+        }
+      }
     },
     _count: {
       journeyId: true

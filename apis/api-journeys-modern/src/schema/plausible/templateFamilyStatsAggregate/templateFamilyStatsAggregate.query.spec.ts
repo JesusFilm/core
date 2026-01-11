@@ -1,5 +1,6 @@
 import axios, { isAxiosError } from 'axios'
 
+import { JourneyStatus } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../../test/client'
@@ -158,7 +159,10 @@ describe('templateFamilyStatsAggregate', () => {
 
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
       where: {
-        fromTemplateId: 'template-journey-id'
+        fromTemplateId: 'template-journey-id',
+        status: {
+          not: JourneyStatus.trashed
+        }
       },
       select: {
         id: true
@@ -169,7 +173,12 @@ describe('templateFamilyStatsAggregate', () => {
       by: ['journeyId'],
       where: {
         journeyId: { in: ['journey-1', 'journey-2'] },
-        lastTextResponse: { not: null }
+        lastTextResponse: { not: null },
+        journey: {
+          status: {
+            not: JourneyStatus.trashed
+          }
+        }
       },
       _count: {
         journeyId: true
