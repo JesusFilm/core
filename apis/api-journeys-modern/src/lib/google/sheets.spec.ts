@@ -3,6 +3,7 @@ import {
   createSpreadsheet,
   ensureSheet,
   readValues,
+  renameDefaultSheet,
   updateRangeValues,
   writeValues
 } from './sheets'
@@ -25,6 +26,7 @@ describe('sheets', () => {
   describe('createSpreadsheet', () => {
     it('should create spreadsheet using Drive API when folderId is provided', async () => {
       mockFetch
+        // Drive API call to create file
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
@@ -32,12 +34,14 @@ describe('sheets', () => {
             webViewLink: mockSpreadsheetUrl
           })
         } as Response)
+        // Get metadata (returns default sheet created by Drive API)
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            sheets: []
+            sheets: [{ properties: { sheetId: 0, title: 'Sheet1' } }]
           })
         } as Response)
+        // Rename the default sheet
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({}),
@@ -48,7 +52,7 @@ describe('sheets', () => {
         accessToken: mockAccessToken,
         title: 'Test Spreadsheet',
         folderId: 'folder-123',
-        initialSheetTitle: 'Sheet1'
+        initialSheetTitle: 'Custom Sheet Name'
       })
 
       expect(mockFetch).toHaveBeenCalledWith(
@@ -63,6 +67,28 @@ describe('sheets', () => {
             name: 'Test Spreadsheet',
             mimeType: 'application/vnd.google-apps.spreadsheet',
             parents: ['folder-123']
+          })
+        })
+      )
+
+      // Verify rename was called with updateSheetProperties
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        3,
+        `https://sheets.googleapis.com/v4/spreadsheets/${mockSpreadsheetId}:batchUpdate`,
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({
+            requests: [
+              {
+                updateSheetProperties: {
+                  properties: {
+                    sheetId: 0,
+                    title: 'Custom Sheet Name'
+                  },
+                  fields: 'title'
+                }
+              }
+            ]
           })
         })
       )
@@ -225,6 +251,110 @@ describe('sheets', () => {
           sheetTitle: 'NewSheet'
         })
       ).rejects.toThrow('Sheets metadata fetch failed: 404 Not Found')
+    })
+  })
+
+  describe('renameDefaultSheet', () => {
+    it('should rename the first sheet to the new title', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            sheets: [{ properties: { sheetId: 0, title: 'Sheet1' } }]
+          })
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({})
+        } as Response)
+
+      await renameDefaultSheet({
+        accessToken: mockAccessToken,
+        spreadsheetId: mockSpreadsheetId,
+        newTitle: 'Custom Sheet Name'
+      })
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        `https://sheets.googleapis.com/v4/spreadsheets/${mockSpreadsheetId}:batchUpdate`,
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${mockAccessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            requests: [
+              {
+                updateSheetProperties: {
+                  properties: {
+                    sheetId: 0,
+                    title: 'Custom Sheet Name'
+                  },
+                  fields: 'title'
+                }
+              }
+            ]
+          })
+        })
+      )
+    })
+
+    it('should throw error when spreadsheet has no sheets', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          sheets: []
+        })
+      } as Response)
+
+      await expect(
+        renameDefaultSheet({
+          accessToken: mockAccessToken,
+          spreadsheetId: mockSpreadsheetId,
+          newTitle: 'Custom Sheet Name'
+        })
+      ).rejects.toThrow('Spreadsheet has no sheets to rename')
+    })
+
+    it('should throw error when metadata fetch fails', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+        text: async () => 'Not Found'
+      } as Response)
+
+      await expect(
+        renameDefaultSheet({
+          accessToken: mockAccessToken,
+          spreadsheetId: mockSpreadsheetId,
+          newTitle: 'Custom Sheet Name'
+        })
+      ).rejects.toThrow('Sheets metadata fetch failed: 404 Not Found')
+    })
+
+    it('should throw error when rename fails', async () => {
+      mockFetch
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({
+            sheets: [{ properties: { sheetId: 0, title: 'Sheet1' } }]
+          })
+        } as Response)
+        .mockResolvedValueOnce({
+          ok: false,
+          status: 400,
+          text: async () => 'Bad Request'
+        } as Response)
+
+      await expect(
+        renameDefaultSheet({
+          accessToken: mockAccessToken,
+          spreadsheetId: mockSpreadsheetId,
+          newTitle: 'Custom Sheet Name'
+        })
+      ).rejects.toThrow('Sheets rename failed: 400 Bad Request')
     })
   })
 
