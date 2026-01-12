@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { formatISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -25,7 +25,6 @@ import {
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
-import { mockDataWithAllColumns20Rows } from './TemplateBreakdownAnalyticsTable/TemplateBreakdownAnalyticsTable.mockData'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
@@ -111,11 +110,13 @@ export function TemplateBreakdownAnalyticsDialog({
     skip: !open
   })
 
-  useEffect(() => {
+  const handleToggleArchivedJourneys = (): void => {
+    const newIncludeArchived = !includeArchivedJourneys
+    setIncludeArchivedJourneys(newIncludeArchived)
     if (open) {
       void refetch({
         ...defaultVariables,
-        status: includeArchivedJourneys
+        status: newIncludeArchived
           ? [
               JourneyStatus.published,
               JourneyStatus.draft,
@@ -124,7 +125,7 @@ export function TemplateBreakdownAnalyticsDialog({
           : [JourneyStatus.published, JourneyStatus.draft]
       })
     }
-  }, [includeArchivedJourneys, refetch, open, journeyId, defaultVariables])
+  }
 
   const noData =
     !loading &&
@@ -135,7 +136,10 @@ export function TemplateBreakdownAnalyticsDialog({
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={() => {
+        setIncludeArchivedJourneys(true)
+        handleClose()
+      }}
       dialogTitle={{
         title: t('Template Breakdown Analytics'),
         closeButton: true
@@ -144,28 +148,24 @@ export function TemplateBreakdownAnalyticsDialog({
       fullscreen={mdDown}
       maxWidth="xl"
       dialogActionChildren={
-        noData ? null : (
-          <FormGroup
-            sx={{
-              width: '100%',
-              display: 'flex',
-              justifyContent: 'flex-start',
-              px: 4
-            }}
-          >
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={includeArchivedJourneys}
-                  onChange={() =>
-                    setIncludeArchivedJourneys(!includeArchivedJourneys)
-                  }
-                />
-              }
-              label={t('Include archived journeys')}
-            />
-          </FormGroup>
-        )
+        <FormGroup
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-start',
+            px: 4
+          }}
+        >
+          <FormControlLabel
+            control={
+              <Switch
+                checked={includeArchivedJourneys}
+                onChange={handleToggleArchivedJourneys}
+              />
+            }
+            label={t('Include archived journeys')}
+          />
+        </FormGroup>
       }
       sx={{
         '& .MuiDialogContent-dividers': {
@@ -224,7 +224,6 @@ export function TemplateBreakdownAnalyticsDialog({
       ) : (
         <Box sx={{ px: 6 }}>
           <TemplateBreakdownAnalyticsTable
-            // data={mockDataWithAllColumns20Rows}
             data={data}
             loading={loading}
             error={error}
