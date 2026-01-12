@@ -34,7 +34,8 @@ const isNumericColumn = (columnId: SortableColumn): boolean => {
   return NUMERIC_COLUMNS.includes(columnId)
 }
 
-const COLUMN_MAX_WIDTH = 120
+const COLUMN_MAX_WIDTH = 160
+const COLUMN_MIN_WIDTH = 125
 const FIRST_COLUMN_MAX_WIDTH = 180
 
 interface TemplateBreakdownAnalyticsTableProps {
@@ -136,11 +137,11 @@ export function TemplateBreakdownAnalyticsTable({
       <TableCell
         sx={{
           maxWidth: `${COLUMN_MAX_WIDTH}px`,
-          width: `${COLUMN_MAX_WIDTH}px`,
+          minWidth: `${COLUMN_MIN_WIDTH}px`,
           textAlign: 'right'
         }}
       >
-        {value}
+        <Typography variant="body2">{value}</Typography>
       </TableCell>
     )
   }
@@ -170,15 +171,17 @@ export function TemplateBreakdownAnalyticsTable({
                     backgroundColor: 'background.paper',
                     fontWeight: 'bold',
                     borderBottom: 'none',
+                    verticalAlign: 'bottom',
                     maxWidth:
                       header.id === 'journeyName'
                         ? `${FIRST_COLUMN_MAX_WIDTH}px`
-                        : `${COLUMN_MAX_WIDTH}px`,
-                    width:
+                        : `${COLUMN_MIN_WIDTH}px`,
+                    minWidth:
                       header.id === 'journeyName'
                         ? `${FIRST_COLUMN_MAX_WIDTH}px`
-                        : `${COLUMN_MAX_WIDTH}px`,
-                    textAlign: isNumericColumn(header.id) ? 'right' : 'left'
+                        : `${COLUMN_MIN_WIDTH}px`,
+                    textAlign: isNumericColumn(header.id) ? 'right' : 'left',
+                    pl: 2
                   }}
                 >
                   <TableSortLabel
@@ -203,7 +206,20 @@ export function TemplateBreakdownAnalyticsTable({
                             : 'flex-start'
                         }}
                       >
-                        {orderBy === header.id && (
+                        {header.id === 'journeyName' ? (
+                          orderBy === header.id && (
+                            <ArrowUpwardIcon
+                              sx={{
+                                fontSize: '0.875rem',
+                                color: 'text.secondary',
+                                transform:
+                                  order === 'desc'
+                                    ? 'rotate(180deg)'
+                                    : 'rotate(0deg)'
+                              }}
+                            />
+                          )
+                        ) : (
                           <ArrowUpwardIcon
                             sx={{
                               fontSize: '0.875rem',
@@ -211,26 +227,18 @@ export function TemplateBreakdownAnalyticsTable({
                               transform:
                                 order === 'desc'
                                   ? 'rotate(180deg)'
-                                  : 'rotate(0deg)'
+                                  : 'rotate(0deg)',
+                              visibility:
+                                orderBy === header.id ? 'visible' : 'hidden'
                             }}
                           />
                         )}
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            fontWeight: 'bold',
-                            color:
-                              orderBy === header.id ? 'text.primary' : 'inherit'
-                          }}
-                        >
+                        <Typography variant="subtitle2">
                           {header.label}
                         </Typography>
                       </Box>
                       {header.subtitle != null && (
-                        <Typography
-                          variant="caption"
-                          sx={{ color: 'text.secondary', display: 'block' }}
-                        >
+                        <Typography variant="caption" sx={{ display: 'block' }}>
                           {header.subtitle}
                         </Typography>
                       )}
@@ -244,22 +252,23 @@ export function TemplateBreakdownAnalyticsTable({
               sx={{
                 backgroundColor: 'action.hover',
                 '& .MuiTableCell-root': {
-                  fontWeight: 'bold',
-                  backgroundColor: 'divider',
-                  zIndex: 1
+                  backgroundColor: '#FBFBFB',
+                  zIndex: 1,
+                  boxShadow: (theme) =>
+                    `inset 0 1px 0 0 ${theme.palette.divider}, inset 0 -1px 0 0 ${theme.palette.divider}`
                 }
               }}
             >
               <TableCell
                 sx={{
                   maxWidth: `${FIRST_COLUMN_MAX_WIDTH}px`,
-                  width: `${FIRST_COLUMN_MAX_WIDTH}px`
+                  width: `${FIRST_COLUMN_MAX_WIDTH}px`,
+                  pl: 2
                 }}
               >
                 <Typography
-                  variant="body2"
+                  variant="subtitle2"
                   sx={{
-                    fontWeight: 'bold',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap'
@@ -317,11 +326,12 @@ export function TemplateBreakdownAnalyticsTable({
                   sx={{
                     maxWidth: `${FIRST_COLUMN_MAX_WIDTH}px`,
                     width: `${FIRST_COLUMN_MAX_WIDTH}px`,
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    pl: 2
                   }}
                 >
                   <Typography
-                    variant="body2"
+                    variant="body1"
                     sx={{
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -339,7 +349,6 @@ export function TemplateBreakdownAnalyticsTable({
                     }}
                     sx={{
                       textDecoration: 'underline',
-                      textDecorationColor: (theme) => theme.palette.divider,
                       color: 'inherit',
                       display: 'block',
                       overflow: 'hidden',
@@ -351,7 +360,6 @@ export function TemplateBreakdownAnalyticsTable({
                     <Typography
                       variant="caption"
                       sx={{
-                        color: 'text.secondary',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
@@ -401,19 +409,20 @@ export function TemplateBreakdownAnalyticsTable({
                 <TableCell
                   sx={{
                     maxWidth: `${FIRST_COLUMN_MAX_WIDTH}px`,
-                    width: `${FIRST_COLUMN_MAX_WIDTH}px`
+                    width: `${FIRST_COLUMN_MAX_WIDTH}px`,
+                    pl: 2
                   }}
                 >
                   <Box>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary', fontWeight: 'bold' }}
-                    >
+                    <Typography variant="body1">
                       {t('Restricted teams')}
                     </Typography>
                     <Typography
                       variant="caption"
-                      sx={{ color: 'text.secondary', display: 'block' }}
+                      sx={{
+                        display: 'block',
+                        fontStyle: 'italic'
+                      }}
                     >
                       {t("This data is from teams you don't have access to.")}
                     </Typography>

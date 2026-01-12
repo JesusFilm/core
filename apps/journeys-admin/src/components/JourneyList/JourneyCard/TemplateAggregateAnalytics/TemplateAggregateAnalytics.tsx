@@ -65,6 +65,7 @@ export function TemplateAggregateAnalytics({
       px: '7px',
       py: 0,
       minWidth: '44px',
+      cursor: 'default',
       '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
         fontSize: '16px'
       },

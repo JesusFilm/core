@@ -17,8 +17,9 @@ export function sortRows(
   order: Order
 ): ProcessedRow[] {
   return [...rows].sort((a, b) => {
-    const aValue = a[orderBy]
-    const bValue = b[orderBy]
+    const sortKey = orderBy === 'journeyName' ? 'teamName' : orderBy
+    const aValue = a[sortKey]
+    const bValue = b[sortKey]
     const comparison =
       typeof aValue === 'number' && typeof bValue === 'number'
         ? aValue - bValue

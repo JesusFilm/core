@@ -384,7 +384,7 @@ export function JourneyCard({
               justifyContent="space-between"
               alignItems="center"
               sx={{
-                p: 2
+                pb: 1
               }}
             >
               <TemplateAggregateAnalytics journeyId={journey.id} />

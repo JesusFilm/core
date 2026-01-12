@@ -25,6 +25,7 @@ import {
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
+import { mockDataWithAllColumns20Rows } from './TemplateBreakdownAnalyticsTable/TemplateBreakdownAnalyticsTable.mockData'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
@@ -148,7 +149,8 @@ export function TemplateBreakdownAnalyticsDialog({
             sx={{
               width: '100%',
               display: 'flex',
-              justifyContent: 'flex-start'
+              justifyContent: 'flex-start',
+              px: 4
             }}
           >
             <FormControlLabel
@@ -168,6 +170,9 @@ export function TemplateBreakdownAnalyticsDialog({
       sx={{
         '& .MuiDialogContent-dividers': {
           px: 0
+        },
+        '& .MuiDialogContent-root': {
+          pt: 4
         },
         '& .MuiDialog-paper': {
           width: mdDown ? '100%' : 'fit-content',
@@ -217,11 +222,14 @@ export function TemplateBreakdownAnalyticsDialog({
           </Typography>
         </Box>
       ) : (
-        <TemplateBreakdownAnalyticsTable
-          data={data}
-          loading={loading}
-          error={error}
-        />
+        <Box sx={{ px: 6 }}>
+          <TemplateBreakdownAnalyticsTable
+            // data={mockDataWithAllColumns20Rows}
+            data={data}
+            loading={loading}
+            error={error}
+          />
+        </Box>
       )}
     </Dialog>
   )

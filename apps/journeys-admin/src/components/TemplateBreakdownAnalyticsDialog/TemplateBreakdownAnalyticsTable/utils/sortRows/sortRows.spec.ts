@@ -89,30 +89,30 @@ describe('sortRows', () => {
   describe('string sorting', () => {
     it('should sort rows by string column in ascending order', () => {
       const rows: ProcessedRow[] = [
-        createMockProcessedRow('Charlie'),
-        createMockProcessedRow('Alpha'),
-        createMockProcessedRow('Bravo')
+        createMockProcessedRow('Charlie', { teamName: 'Charlie Team' }),
+        createMockProcessedRow('Alpha', { teamName: 'Alpha Team' }),
+        createMockProcessedRow('Bravo', { teamName: 'Bravo Team' })
       ]
 
       const sorted = sortRows(rows, 'journeyName', 'asc')
 
-      expect(sorted[0].journeyName).toBe('Alpha')
-      expect(sorted[1].journeyName).toBe('Bravo')
-      expect(sorted[2].journeyName).toBe('Charlie')
+      expect(sorted[0].teamName).toBe('Alpha Team')
+      expect(sorted[1].teamName).toBe('Bravo Team')
+      expect(sorted[2].teamName).toBe('Charlie Team')
     })
 
     it('should sort rows by string column in descending order', () => {
       const rows: ProcessedRow[] = [
-        createMockProcessedRow('Charlie'),
-        createMockProcessedRow('Alpha'),
-        createMockProcessedRow('Bravo')
+        createMockProcessedRow('Charlie', { teamName: 'Charlie Team' }),
+        createMockProcessedRow('Alpha', { teamName: 'Alpha Team' }),
+        createMockProcessedRow('Bravo', { teamName: 'Bravo Team' })
       ]
 
       const sorted = sortRows(rows, 'journeyName', 'desc')
 
-      expect(sorted[0].journeyName).toBe('Charlie')
-      expect(sorted[1].journeyName).toBe('Bravo')
-      expect(sorted[2].journeyName).toBe('Alpha')
+      expect(sorted[0].teamName).toBe('Charlie Team')
+      expect(sorted[1].teamName).toBe('Bravo Team')
+      expect(sorted[2].teamName).toBe('Alpha Team')
     })
   })
 
