@@ -146,9 +146,20 @@ export function WebsiteCover({
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        overflowY: 'auto',
+        overflowY: 'scroll',
         overflowX: 'hidden',
-        backgroundColor: baseBackgroundColor
+        backgroundColor: baseBackgroundColor,
+        WebkitOverflowScrolling: 'touch',
+        // Hide scrollbar for webkit browsers (Chrome, Safari, Edge)
+        '&::-webkit-scrollbar': {
+          display: 'none',
+          width: 0,
+          height: 0
+        },
+        // Hide scrollbar for Firefox
+        scrollbarWidth: 'none',
+        // Hide scrollbar for IE and Edge
+        '-ms-overflow-style': 'none'
       }}
     >
       {VideoSection}
