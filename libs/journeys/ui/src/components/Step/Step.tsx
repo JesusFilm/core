@@ -24,6 +24,7 @@ import {
   StepViewEventCreate,
   StepViewEventCreateVariables
 } from './__generated__/StepViewEventCreate'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const STEP_VIEW_EVENT_CREATE = gql`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
@@ -55,8 +56,9 @@ export function Step({
     (variant === 'default' || variant === 'embed') &&
     isActiveBlockOrDescendant(blockId)
 
-  const heading = getStepHeading(blockId, children, treeBlocks, t)
-
+  const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
+  const heading = useGetValueFromJourneyCustomizationString(stepHeading)
+  
   useEffect(() => {
     if (activeJourneyStep && wrappers === undefined) {
       const id = uuidv4()
