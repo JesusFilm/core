@@ -152,8 +152,6 @@ export function WebsiteCover({
         WebkitOverflowScrolling: 'touch',
         '&::-webkit-scrollbar': {
           display: 'none',
-          width: 0,
-          height: 0
         },
         // Hide scrollbar for Firefox
         scrollbarWidth: 'none',
