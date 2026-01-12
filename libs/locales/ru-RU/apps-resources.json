@@ -97,5 +97,9 @@
   "Available in {{count}} languages._one": "Доступно на языке {{count}} .",
   "Available in {{count}} languages._few": "Доступно на {{count}} языках.",
   "Available in {{count}} languages._many": "Доступно на {{count}} языках.",
-  "Available in {{count}} languages._other": "Доступно на {{count}} языках."
+  "Available in {{count}} languages._other": "Доступно на {{count}} языках.",
+  "Better search. Better language support. Better collections.": "Лучший поиск. Лучшая поддержка языков. Лучшие коллекции.",
+  "Better search, languages, and collections.": "Лучший поиск, языки и коллекции.",
+  "Try the new design.": "Попробуйте новый дизайн.",
+  "New Design": "Новый дизайн"
 }

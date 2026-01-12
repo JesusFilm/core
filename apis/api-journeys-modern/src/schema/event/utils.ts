@@ -264,10 +264,10 @@ export async function appendEventToGoogleSheets({
   row: (string | number | null)[]
   sheetName?: string
 }): Promise<void> {
-  const sync = await prisma.googleSheetsSync.findFirst({
+  const syncs = await prisma.googleSheetsSync.findMany({
     where: { journeyId, teamId, deletedAt: null }
   })
-  if (sync == null) return
+  if (syncs.length === 0) return
 
   const journey = await prisma.journey.findUnique({
     where: { id: journeyId },
@@ -357,52 +357,9 @@ export async function appendEventToGoogleSheets({
     return column.label
   }
 
-  const { headerRow } = buildHeaderRows({
-    columns,
-    userTimezone: 'UTC',
-    getCardHeading: (blockId) =>
-      getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
-    baseColumnLabelResolver: resolveBaseColumnLabel
-  })
-
-  const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
   const finalHeader = columns.map((column) => column.key)
 
   const { accessToken } = await getTeamGoogleAccessToken(teamId)
-  const tabName =
-    sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
-  await ensureSheet({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    sheetTitle: tabName
-  })
-
-  const headerRange = `${tabName}!A1:${columnIndexToA1(
-    finalHeader.length - 1
-  )}1`
-  const existingHeaderRows = await readValues({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    range: headerRange
-  })
-  const existingHeaderRow: string[] = (existingHeaderRows[0] ?? []).map(
-    (value) => value ?? ''
-  )
-
-  const headerChanged =
-    existingHeaderRow.length !== sanitizedHeaderRow.length ||
-    sanitizedHeaderRow.some(
-      (cell, index) => cell !== (existingHeaderRow[index] ?? '')
-    )
-
-  if (headerChanged) {
-    await updateRangeValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      range: headerRange,
-      values: [sanitizedHeaderRow]
-    })
-  }
 
   const safe = (value: string | number | null | undefined): string =>
     value == null ? '' : String(value)
@@ -411,59 +368,123 @@ export async function appendEventToGoogleSheets({
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
-  const rowMap: Record<string, string> = {}
-  if (visitorId !== '') rowMap.visitorId = visitorId
-  if (createdAt !== '') rowMap.date = createdAt
-  if (dynamicKey !== '' && dynamicValue !== '') {
-    rowMap[dynamicKey] = dynamicValue
-  }
+  // Update all synced sheets - use allSettled so one failure doesn't abort others
+  const results = await Promise.allSettled(
+    syncs.map(async (sync) => {
+      // Use sync-specific timezone for header and data formatting
+      const syncTimezone = sync.timezone ?? 'UTC'
 
-  const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
+      const { headerRow } = buildHeaderRows({
+        columns,
+        userTimezone: syncTimezone,
+        getCardHeading: (blockId) =>
+          getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
+        baseColumnLabelResolver: resolveBaseColumnLabel
+      })
 
-  const firstDataRow = 2
-  const idColumnRange = `${tabName}!A${firstDataRow}:A1000000`
-  const idColumnValues = await readValues({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    range: idColumnRange
-  })
-  let foundRowNumber: number | null = null
-  for (let i = 0; i < idColumnValues.length; i++) {
-    const cellVal = idColumnValues[i]?.[0] ?? ''
-    if (cellVal === visitorId && visitorId !== '') {
-      foundRowNumber = firstDataRow + i
-      break
+      const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
+
+      const rowMap: Record<string, string> = {}
+      if (visitorId !== '') rowMap.visitorId = visitorId
+      if (createdAt !== '') rowMap.date = createdAt
+      if (dynamicKey !== '' && dynamicValue !== '') {
+        rowMap[dynamicKey] = dynamicValue
+      }
+
+      const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
+      const lastColA1 = columnIndexToA1(finalHeader.length - 1)
+
+      const tabName =
+        sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
+      await ensureSheet({
+        accessToken,
+        spreadsheetId: sync.spreadsheetId,
+        sheetTitle: tabName
+      })
+
+      const headerRange = `${tabName}!A1:${columnIndexToA1(
+        finalHeader.length - 1
+      )}1`
+      const existingHeaderRows = await readValues({
+        accessToken,
+        spreadsheetId: sync.spreadsheetId,
+        range: headerRange
+      })
+      const existingHeaderRow: string[] = (existingHeaderRows[0] ?? []).map(
+        (value) => value ?? ''
+      )
+
+      const headerChanged =
+        existingHeaderRow.length !== sanitizedHeaderRow.length ||
+        sanitizedHeaderRow.some(
+          (cell, index) => cell !== (existingHeaderRow[index] ?? '')
+        )
+
+      if (headerChanged) {
+        await updateRangeValues({
+          accessToken,
+          spreadsheetId: sync.spreadsheetId,
+          range: headerRange,
+          values: [sanitizedHeaderRow]
+        })
+      }
+
+      const firstDataRow = 2
+      const idColumnRange = `${tabName}!A${firstDataRow}:A1000000`
+      const idColumnValues = await readValues({
+        accessToken,
+        spreadsheetId: sync.spreadsheetId,
+        range: idColumnRange
+      })
+      let foundRowNumber: number | null = null
+      for (let i = 0; i < idColumnValues.length; i++) {
+        const cellVal = idColumnValues[i]?.[0] ?? ''
+        if (cellVal === visitorId && visitorId !== '') {
+          foundRowNumber = firstDataRow + i
+          break
+        }
+      }
+
+      if (foundRowNumber != null) {
+        const existingRowRes = await readValues({
+          accessToken,
+          spreadsheetId: sync.spreadsheetId,
+          range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`
+        })
+        const existingRow: string[] = (existingRowRes[0] ?? []).map(
+          (value) => value ?? ''
+        )
+        const mergedRow = alignedRow.map((value, index) =>
+          value !== '' ? value : (existingRow[index] ?? '')
+        )
+
+        await updateRangeValues({
+          accessToken,
+          spreadsheetId: sync.spreadsheetId,
+          range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`,
+          values: [mergedRow]
+        })
+        return
+      }
+
+      await writeValues({
+        accessToken,
+        spreadsheetId: sync.spreadsheetId,
+        sheetTitle: tabName,
+        values: [alignedRow],
+        append: true
+      })
+    })
+  )
+
+  // Log errors for any failed syncs
+  results.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      const sync = syncs[index]
+      console.error(
+        `Failed to sync event to Google Sheet (spreadsheetId: ${sync.spreadsheetId}, sheetName: ${sync.sheetName}):`,
+        result.reason
+      )
     }
-  }
-
-  const lastColA1 = columnIndexToA1(finalHeader.length - 1)
-  if (foundRowNumber != null) {
-    const existingRowRes = await readValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`
-    })
-    const existingRow: string[] = (existingRowRes[0] ?? []).map(
-      (value) => value ?? ''
-    )
-    const mergedRow = alignedRow.map((value, index) =>
-      value !== '' ? value : (existingRow[index] ?? '')
-    )
-
-    await updateRangeValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`,
-      values: [mergedRow]
-    })
-    return
-  }
-
-  await writeValues({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    sheetTitle: tabName,
-    values: [alignedRow],
-    append: true
   })
 }

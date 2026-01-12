@@ -95,5 +95,9 @@
   "Behind The Scenes": "Behind The Scenes",
   "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Available in {{count}} language.",
-  "Available in {{count}} languages._other": "Available in {{count}} languages."
+  "Available in {{count}} languages._other": "Available in {{count}} languages.",
+  "Better search. Better language support. Better collections.": "बेहतर खोज। बेहतर भाषा समर्थन। बेहतर संग्रह।",
+  "Better search, languages, and collections.": "बेहतर खोज, भाषाएँ, और संग्रह।",
+  "Try the new design.": "नया डिज़ाइन आज़माएँ।",
+  "New Design": "नया डिज़ाइन"
 }

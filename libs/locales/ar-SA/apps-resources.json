@@ -99,5 +99,9 @@
   "Available in {{count}} languages._two": "متوفر في {{count}} لغات",
   "Available in {{count}} languages._few": "متوفر في {{count}} لغات",
   "Available in {{count}} languages._many": "متوفر في {{count}} لغات",
-  "Available in {{count}} languages._other": "متوفر في {{count}} لغات"
+  "Available in {{count}} languages._other": "متوفر في {{count}} لغات",
+  "Better search. Better language support. Better collections.": "بحث أفضل. دعم لغوي أفضل. مجموعات أفضل.",
+  "Better search, languages, and collections.": "بحث أفضل، لغات، ومجموعات.",
+  "Try the new design.": "جرب التصميم الجديد.",
+  "New Design": "تصميم جديد"
 }

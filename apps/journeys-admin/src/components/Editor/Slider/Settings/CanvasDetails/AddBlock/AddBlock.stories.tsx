@@ -54,6 +54,7 @@ const disabledStep: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'typography0.id',
