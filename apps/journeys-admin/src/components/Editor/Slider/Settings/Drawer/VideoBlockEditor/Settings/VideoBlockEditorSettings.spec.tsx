@@ -130,6 +130,17 @@ const video: TreeBlock<VideoBlock> = {
       id: '2_0-FallingPlates-529',
       hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
     },
+    variants: [
+      {
+        __typename: 'VideoVariant',
+        id: '2_0-FallingPlates-529',
+        duration: 120,
+        language: {
+           id: '529',
+           __typename: 'Language'
+        }
+      }
+    ],
     variantLanguages: []
   },
   posterBlockId: null,

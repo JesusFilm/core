@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
-import { FormikValues, useFormik } from 'formik'
+import { Formik, FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -94,31 +94,17 @@ export function VideoBlockEditorSettings({
     subtitleLanguageId: selectedBlock?.subtitleLanguage?.id ?? null
   }
 
-  // Set maxDuration to limit video end time-
   const currentVariantId =
     selectedBlock?.mediaVideo?.__typename === 'Video'
       ? selectedBlock?.mediaVideo.variant?.id
       : null
+  
   const maxDuration =
     selectedBlock?.mediaVideo?.__typename === 'Video'
       ? selectedBlock?.mediaVideo.variants.filter(
           (x) => x.id === currentVariantId
         )[0].duration
-      : 0
-
-  // const [hello, setHello] = useState('hi' setHello)
-  const handleEndAtChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    value: string
-  ): void => {
-    const convertedEndAt = timeFormatToSeconds(value)
-    if (maxDuration > 0 && convertedEndAt > maxDuration) {
-      const correctedValue = secondsToTimeFormat(maxDuration)
-      setFieldValue('endAt', correctedValue, true) // Updates form field immediately
-    } else {
-      handleChange(event) // Let normal Formik handling proceed
-    }
-  }
+      : selectedBlock?.duration ?? 0
 
   const { values, errors, handleChange, setFieldValue, setValues } =
     useFormik<Values>({
@@ -150,8 +136,6 @@ export function VideoBlockEditorSettings({
             preventDuplicate: true
           })
         } else if (
-          // selectedBlock?.duration != null &&
-          // convertedEndAt > selectedBlock?.duration
           convertedEndAt > maxDuration
         ) {
           const message = t(
@@ -164,42 +148,12 @@ export function VideoBlockEditorSettings({
             preventDuplicate: true
           })
         } else {
-          // console.log(convertedEndAt, maxDuration, typeof maxDuration)
-          // if (convertedEndAt > maxDuration) {
-          //   console.log('exceeded')
-          //   console.log('maxDuration: ', maxDuration)
-          //   console.log('convertedEndAt: ', convertedEndAt)
-
-          // const correctedValue = secondsToTimeFormat(maxDuration)
-          // setFieldValue('endAt', correctedValue, false)
-          // await onChange({
-          //   ...values,
-          //   startAt: convertedStartAt,
-          //   endAt: maxDuration
-          // })
-          // setFieldValue(values.endAt, '12')
-          // } else {
           await onChange({
             ...values,
             startAt: convertedStartAt,
             endAt: convertedEndAt
           })
         }
-        // }
-        // if (convertedEndAt >= maxDuration) {
-        //   console.log('exceeded')
-        //   console.log('maxDuration: ', maxDuration)
-        //   console.log('convertedEndAt: ', convertedEndAt)
-
-        //   console.log('values.endAt: ', values.endAt)
-        //   console.log('values before: ', values)
-        //   await onChange({
-        //     ...values,
-        //     startAt: convertedStartAt,
-        //     endAt: maxDuration
-        //   })
-        //   console.log('values after: ', values)
-        // }
         return errors
       },
       onSubmit: noop
@@ -282,7 +236,7 @@ export function VideoBlockEditorSettings({
                 <TextField
                   label={t('Starts At')}
                   name="startAt"
-                  value={values.startAt}
+                  // value={values.startAt}
                   variant="filled"
                   disabled={selectedBlock == null}
                   InputProps={{
@@ -304,7 +258,7 @@ export function VideoBlockEditorSettings({
                 <TextField
                   label={t('Ends At')}
                   name="endAt"
-                  value={values.endAt}
+                  // value={values.endAt}
                   variant="filled"
                   disabled={selectedBlock == null}
                   InputProps={{
