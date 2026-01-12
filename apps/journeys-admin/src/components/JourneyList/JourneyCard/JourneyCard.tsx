@@ -371,9 +371,9 @@ export function JourneyCard({
         <Box
           sx={{
             position: 'absolute',
-            bottom: { xs: 8, sm: 3 },
+            bottom: { xs: 8, sm: 4 },
             left: { xs: 7, sm: 6 },
-            right: { xs: 10, sm: 7 },
+            right: 9,
             zIndex: 3
           }}
         >
