@@ -58,7 +58,7 @@ export function Step({
 
   const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
   const heading = useGetValueFromJourneyCustomizationString(stepHeading)
-  
+
   useEffect(() => {
     if (activeJourneyStep && wrappers === undefined) {
       const id = uuidv4()

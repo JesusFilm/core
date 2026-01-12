@@ -400,7 +400,6 @@ describe('Step', () => {
   })
 
   it('should render blocks', () => {
-
     const { getByText } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
         <Step {...block} />
