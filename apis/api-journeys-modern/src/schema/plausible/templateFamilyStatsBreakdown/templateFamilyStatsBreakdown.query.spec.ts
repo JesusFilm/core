@@ -442,11 +442,11 @@ describe('templateFamilyStatsBreakdown', () => {
         data: {
           results: [
             {
-              page: '/journey-1-slug',
+              page: '/journey-1/step-1',
               visitors: 20
             },
             {
-              page: '/journey-2-slug',
+              page: '/journey-2/step-1',
               visitors: 30
             }
           ]
