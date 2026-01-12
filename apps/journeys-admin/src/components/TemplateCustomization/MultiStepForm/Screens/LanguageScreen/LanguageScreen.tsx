@@ -123,7 +123,7 @@ export function LanguageScreen({
       } = values
       const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
       const { data: duplicateData } = await journeyDuplicate({
-        variables: { id: journeyId, teamId }
+        variables: { id: journeyId, teamId, forceNonTemplate: true }
       })
       if (duplicateData?.journeyDuplicate == null) {
         enqueueSnackbar(

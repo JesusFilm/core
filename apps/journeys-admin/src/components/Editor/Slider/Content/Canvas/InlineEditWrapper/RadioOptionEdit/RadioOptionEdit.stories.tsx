@@ -31,7 +31,8 @@ const option1: TreeBlock<RadioOptionFields> = {
   parentOrder: 0,
   action: null,
   pollOptionImageBlockId: null,
-  children: []
+  children: [],
+  eventLabel: null
 }
 
 const block: TreeBlock<RadioQuestionFields> = {
@@ -50,7 +51,8 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 1,
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
   ]
 }
@@ -76,6 +78,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',

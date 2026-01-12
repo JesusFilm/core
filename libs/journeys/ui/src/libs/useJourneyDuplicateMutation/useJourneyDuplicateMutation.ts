@@ -11,9 +11,18 @@ import {
 } from './__generated__/JourneyDuplicate'
 
 export const JOURNEY_DUPLICATE = gql`
-  mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
-    journeyDuplicate(id: $id, teamId: $teamId) {
+  mutation JourneyDuplicate(
+    $id: ID!
+    $teamId: ID!
+    $forceNonTemplate: Boolean
+  ) {
+    journeyDuplicate(
+      id: $id
+      teamId: $teamId
+      forceNonTemplate: $forceNonTemplate
+    ) {
       id
+      template
     }
   }
 `
@@ -28,12 +37,19 @@ export function useJourneyDuplicateMutation(
         if (data?.journeyDuplicate != null) {
           cache.modify({
             fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
+              adminJourneys(existingAdminJourneyRefs = [], details) {
+                const args = (details as { args?: { template?: boolean } }).args
+                // Only add duplicated journey to journeys cache (template: false)
+                // Skip template queries (template: true)
+                if (args?.template === true) {
+                  return existingAdminJourneyRefs
+                }
                 const duplicatedJourneyRef = cache.writeFragment({
                   data: data.journeyDuplicate,
                   fragment: gql`
                     fragment DuplicatedJourney on Journey {
                       id
+                      template
                     }
                   `
                 })

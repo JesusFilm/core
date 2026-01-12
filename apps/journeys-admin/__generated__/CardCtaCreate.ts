@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaCreate
@@ -137,6 +137,7 @@ export interface CardCtaCreate_button1 {
   submitEnabled: boolean | null;
   action: CardCtaCreate_button1_action | null;
   settings: CardCtaCreate_button1_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate_startIcon1 {
@@ -228,6 +229,7 @@ export interface CardCtaCreate_button1Update {
   submitEnabled: boolean | null;
   action: CardCtaCreate_button1Update_action | null;
   settings: CardCtaCreate_button1Update_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate_button2_action_NavigateToBlockAction {
@@ -299,6 +301,7 @@ export interface CardCtaCreate_button2 {
   submitEnabled: boolean | null;
   action: CardCtaCreate_button2_action | null;
   settings: CardCtaCreate_button2_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate_startIcon2 {
@@ -390,6 +393,7 @@ export interface CardCtaCreate_button2Update {
   submitEnabled: boolean | null;
   action: CardCtaCreate_button2Update_action | null;
   settings: CardCtaCreate_button2Update_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate_button3_action_NavigateToBlockAction {
@@ -461,6 +465,7 @@ export interface CardCtaCreate_button3 {
   submitEnabled: boolean | null;
   action: CardCtaCreate_button3_action | null;
   settings: CardCtaCreate_button3_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate_startIcon3 {
@@ -552,6 +557,7 @@ export interface CardCtaCreate_button3Update {
   submitEnabled: boolean | null;
   action: CardCtaCreate_button3Update_action | null;
   settings: CardCtaCreate_button3Update_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate_cardBlockUpdate {
@@ -589,6 +595,7 @@ export interface CardCtaCreate_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaCreate {

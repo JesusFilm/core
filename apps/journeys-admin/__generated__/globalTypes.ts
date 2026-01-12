@@ -7,6 +7,21 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum BlockEventLabel {
+  custom1 = "custom1",
+  custom2 = "custom2",
+  custom3 = "custom3",
+  decisionForChrist = "decisionForChrist",
+  gospelPresentationComplete = "gospelPresentationComplete",
+  gospelPresentationStart = "gospelPresentationStart",
+  inviteFriend = "inviteFriend",
+  prayerRequest = "prayerRequest",
+  rsvp = "rsvp",
+  share = "share",
+  specialVideoComplete = "specialVideoComplete",
+  specialVideoStart = "specialVideoStart",
+}
+
 export enum ButtonAction {
   ChatAction = "ChatAction",
   EmailAction = "EmailAction",
@@ -317,6 +332,7 @@ export interface ButtonBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  eventLabel?: BlockEventLabel | null;
   label: string;
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
@@ -332,6 +348,7 @@ export interface ButtonBlockSettingsInput {
 
 export interface ButtonBlockUpdateInput {
   parentBlockId?: string | null;
+  eventLabel?: BlockEventLabel | null;
   label?: string | null;
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
@@ -356,6 +373,7 @@ export interface CardBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  eventLabel?: BlockEventLabel | null;
   backgroundColor?: string | null;
   backdropBlur?: number | null;
   fullscreen?: boolean | null;
@@ -365,6 +383,7 @@ export interface CardBlockCreateInput {
 
 export interface CardBlockUpdateInput {
   parentBlockId?: string | null;
+  eventLabel?: BlockEventLabel | null;
   coverBlockId?: string | null;
   backgroundColor?: string | null;
   backdropBlur?: number | null;
@@ -702,6 +721,13 @@ export interface PhoneActionInput {
   parentStepId?: string | null;
 }
 
+export interface PlausibleStatsAggregateFilter {
+  period?: string | null;
+  date?: string | null;
+  filters?: string | null;
+  interval?: string | null;
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;
@@ -716,11 +742,13 @@ export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  eventLabel?: BlockEventLabel | null;
   label: string;
 }
 
 export interface RadioOptionBlockUpdateInput {
   parentBlockId?: string | null;
+  eventLabel?: BlockEventLabel | null;
   label?: string | null;
   pollOptionImageBlockId?: string | null;
 }
@@ -895,6 +923,8 @@ export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
+  eventLabel?: BlockEventLabel | null;
+  endEventLabel?: BlockEventLabel | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;
@@ -916,6 +946,8 @@ export interface VideoBlockCreateInput {
 
 export interface VideoBlockUpdateInput {
   parentBlockId?: string | null;
+  eventLabel?: BlockEventLabel | null;
+  endEventLabel?: BlockEventLabel | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   posterBlockId?: string | null;

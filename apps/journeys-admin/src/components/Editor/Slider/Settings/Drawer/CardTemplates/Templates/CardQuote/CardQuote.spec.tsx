@@ -58,6 +58,7 @@ const card: TreeBlock = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 const step: TreeBlock = {
@@ -203,6 +204,7 @@ const cardQuoteCreateMock: MockedResponse<
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         __typename: 'CardBlock'
       }
     }
