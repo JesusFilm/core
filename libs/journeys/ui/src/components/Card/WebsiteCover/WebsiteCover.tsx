@@ -153,7 +153,6 @@ export function WebsiteCover({
         '&::-webkit-scrollbar': {
           display: 'none',
         },
-        // Hide scrollbar for Firefox
         scrollbarWidth: 'none',
         // Hide scrollbar for IE and Edge
         '-ms-overflow-style': 'none'
