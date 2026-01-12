@@ -154,7 +154,6 @@ export function WebsiteCover({
           display: 'none',
         },
         scrollbarWidth: 'none',
-        // Hide scrollbar for IE and Edge
         '-ms-overflow-style': 'none'
       }}
     >
