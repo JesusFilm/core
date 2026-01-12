@@ -151,7 +151,7 @@ export function WebsiteCover({
         backgroundColor: baseBackgroundColor,
         WebkitOverflowScrolling: 'touch',
         '&::-webkit-scrollbar': {
-          display: 'none',
+          display: 'none'
         },
         scrollbarWidth: 'none',
         '-ms-overflow-style': 'none'
