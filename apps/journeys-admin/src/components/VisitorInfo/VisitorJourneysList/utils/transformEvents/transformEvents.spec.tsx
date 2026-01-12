@@ -1,3 +1,5 @@
+import { duration } from '@mui/material/styles'
+
 import {
   GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
   GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
@@ -74,6 +76,14 @@ const radioQuestionResponseEvent: Event = {
   label: 'Radio question - journey 1',
   value: 'Radio option - journey 1',
   createdAt: '2022-11-02T03:33:26.368Z'
+}
+const multiselectSubmissionEvent: Event = {
+  __typename: 'MultiselectSubmissionEvent',
+  id: 'multiselectSubmissionEvent1.id',
+  journeyId: 'journey1.id',
+  label: 'Multi Select question - journey 1',
+  value: 'Option 1, Option 2',
+  createdAt: '2022-11-02T03:33:28.368Z'
 }
 const signUpSubmissionEvent: SignUpEvent = {
   __typename: 'SignUpSubmissionEvent',
@@ -197,6 +207,7 @@ describe('transformEvents', () => {
         textResponseEvent,
         buttonClickEvent,
         radioQuestionResponseEvent,
+        multiselectSubmissionEvent,
         signUpSubmissionEvent,
         stepNextEvent,
         stepViewEvent,
@@ -220,7 +231,8 @@ describe('transformEvents', () => {
             { event: stepViewEvent, duration: '10:00' },
             { event: stepNextEvent, duration: '0:10' }
           ],
-          { event: signUpSubmissionEvent, duration: '1:00' },
+          { event: multiselectSubmissionEvent, duration: '0:59' },
+          { event: signUpSubmissionEvent, duration: '0:01' },
           { event: radioQuestionResponseEvent, duration: '0:01' },
           { event: buttonClickEvent, duration: '0:10' },
           { event: textResponseEvent, duration: '3:00' },
