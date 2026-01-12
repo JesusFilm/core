@@ -58,6 +58,11 @@ export function useJourneyDuplicateMutation(
             }
           })
         }
+
+        // Call the user's update function if provided
+        if (options?.update != null) {
+          options.update(cache, { data }, options)
+        }
       },
       ...options
     }
