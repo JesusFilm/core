@@ -53,7 +53,8 @@ export const stepAndCardBlockCreateMock: MockedResponse<
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         fullscreen: false,
-        backdropBlur: null
+        backdropBlur: null,
+        eventLabel: null
       }
     }
   }

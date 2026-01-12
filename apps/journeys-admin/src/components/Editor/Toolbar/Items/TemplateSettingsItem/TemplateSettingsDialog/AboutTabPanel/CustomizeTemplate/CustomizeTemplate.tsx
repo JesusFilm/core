@@ -76,7 +76,9 @@ export function CustomizeTemplate(): ReactElement {
         justifyContent="space-between"
         sx={{ mb: 4 }}
       >
-        <Typography variant="h6">{t('Text for Customization')}</Typography>
+        <Typography variant="subtitle1">
+          {t('Text for Customization')}
+        </Typography>
         <IconButton
           onClick={handleRefresh}
           aria-label={t('Refresh template variables')}

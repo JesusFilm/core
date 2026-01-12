@@ -1,0 +1,12 @@
+apiVersion: v2
+name: metrics-server-app
+description: Wrapper chart for Kubernetes Metrics Server managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v3.5.0'
+
+dependencies:
+  - name: metrics-server
+    # Use a broad version constraint; pin to a specific version if desired
+    version: '3.5.0'
+    repository: https://kubernetes-sigs.github.io/metrics-server/

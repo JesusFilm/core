@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ContactActionType, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ContactActionType, BlockEventLabel, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardPollCreate
@@ -136,6 +136,7 @@ export interface CardPollCreate_radioOption1 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_radioOption2_action_NavigateToBlockAction {
@@ -198,6 +199,7 @@ export interface CardPollCreate_radioOption2 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_radioOption3_action_NavigateToBlockAction {
@@ -260,6 +262,7 @@ export interface CardPollCreate_radioOption3 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_radioOption4_action_NavigateToBlockAction {
@@ -322,6 +325,7 @@ export interface CardPollCreate_radioOption4 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_body_settings {
@@ -379,6 +383,7 @@ export interface CardPollCreate_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate {
