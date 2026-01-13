@@ -1,0 +1,9 @@
+{
+  "name": "@core/shared-ui-dynamic",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared dynamic UI components",
+  "dependencies": {
+    "@core/libs": "workspace:*"
+  }
+}

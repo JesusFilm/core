@@ -1,0 +1,9 @@
+{
+  "name": "@core/arclight-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Arclight E2E tests",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

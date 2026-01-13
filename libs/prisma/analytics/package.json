@@ -1,0 +1,9 @@
+{
+  "name": "@core/prisma-analytics",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Analytics Prisma client",
+  "dependencies": {
+    "@core/libs-prisma": "workspace:*"
+  }
+}

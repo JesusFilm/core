@@ -1,0 +1,9 @@
+{
+  "name": "@core/prisma-users",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Users Prisma client",
+  "dependencies": {
+    "@core/libs-prisma": "workspace:*"
+  }
+}

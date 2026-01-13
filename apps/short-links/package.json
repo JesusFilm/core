@@ -1,0 +1,9 @@
+{
+  "name": "@core/short-links",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Short Links application",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

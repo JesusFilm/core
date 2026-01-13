@@ -1,0 +1,9 @@
+{
+  "name": "@core/docs-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentation E2E tests",
+  "dependencies": {
+    "@core/apps": "workspace:*"
+  }
+}

@@ -1,4 +1,15 @@
 {
-  "name": "jf-proxy",
-  "private": true
+  "name": "@core/jf-proxy",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Jesus Film proxy worker for routing requests",
+  "type": "module",
+  "dependencies": {
+    "hono": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.7.1",
+    "@cloudflare/workers-types": "^4.20251014.0",
+    "wrangler": "catalog:"
+  }
 }

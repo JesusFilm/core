@@ -1,0 +1,9 @@
+{
+  "name": "@core/prisma-journeys",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Journeys Prisma client",
+  "dependencies": {
+    "@core/libs-prisma": "workspace:*"
+  }
+}
