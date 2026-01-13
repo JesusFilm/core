@@ -90,6 +90,8 @@ describe('cancelUploadForBlock', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
       children: []
     }
 
@@ -139,6 +141,8 @@ describe('cancelUploadForBlock', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
       children: []
     }
 
@@ -188,6 +192,8 @@ describe('cancelUploadForBlock', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
       children: []
     }
 
@@ -221,6 +227,8 @@ describe('cancelUploadForBlock', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
       children: []
     }
 
@@ -265,6 +273,8 @@ describe('cancelUploadForBlock', () => {
       showGeneratedSubtitles: null,
       mediaVideo: null,
       posterBlockId: null,
+      eventLabel: null,
+      endEventLabel: null,
       children: []
     }
 

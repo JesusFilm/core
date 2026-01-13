@@ -4,6 +4,7 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { BlockEventLabel } from '../../enums'
 import { Block } from '../block'
 
 import { ThemeMode } from './enums/themeMode'
@@ -15,6 +16,10 @@ export const CardBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'CardBlock',
   shareable: true,
   fields: (t) => ({
+    eventLabel: t.expose('eventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
     backgroundColor: t.exposeString('backgroundColor', {
       nullable: true,
       description: `backgroundColor should be a HEX color value e.g #FFFFFF for white.`

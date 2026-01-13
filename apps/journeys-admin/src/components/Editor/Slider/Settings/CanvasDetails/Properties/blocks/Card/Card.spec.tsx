@@ -35,6 +35,7 @@ const createCard = (
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [],
   ...overrides
 })
@@ -102,6 +103,19 @@ describe('Card', () => {
       expect(
         screen.getByTestId('Accordion-card1.id-background-color')
       ).toBeInTheDocument()
+    })
+
+    it('shows event label when template', async () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: true }
+      })
+      const trackingButton = screen.getByText('Tracking')
+      fireEvent.click(trackingButton)
+      await waitFor(() => {
+        expect(screen.getByTestId('EventLabelSelect')).toBeInTheDocument()
+      })
     })
 
     it('shows default attributes when no props provided', () => {
@@ -382,6 +396,8 @@ describe('Card', () => {
             fullsize: null,
             action: null,
             objectFit: null,
+            eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]

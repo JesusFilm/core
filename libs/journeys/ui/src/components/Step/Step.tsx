@@ -11,7 +11,11 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
@@ -20,6 +24,7 @@ import {
   StepViewEventCreate,
   StepViewEventCreateVariables
 } from './__generated__/StepViewEventCreate'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const STEP_VIEW_EVENT_CREATE = gql`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
@@ -51,7 +56,8 @@ export function Step({
     (variant === 'default' || variant === 'embed') &&
     isActiveBlockOrDescendant(blockId)
 
-  const heading = getStepHeading(blockId, children, treeBlocks, t)
+  const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
+  const heading = useGetValueFromJourneyCustomizationString(stepHeading)
 
   useEffect(() => {
     if (activeJourneyStep && wrappers === undefined) {
@@ -74,16 +80,45 @@ export function Step({
         const key = keyify({
           stepId: input.blockId,
           event: 'pageview',
-          blockId: input.blockId
+          blockId: input.blockId,
+          journeyId: journey?.id
         })
         plausible('pageview', {
           u: `${window.location.origin}/${journey.id}/${blockId}${search}`,
           props: {
             ...input,
             key,
-            simpleKey: key
+            simpleKey: key,
+            templateKey: templateKeyify({
+              event: 'pageview',
+              journeyId: journey?.id
+            })
           }
         })
+        const eventLabel =
+          children[0]?.__typename === 'CardBlock'
+            ? children[0].eventLabel
+            : null
+        if (eventLabel != null) {
+          const eventLabelKey = keyify({
+            stepId: input.blockId,
+            event: eventLabel,
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
+          plausible(eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: eventLabelKey,
+              simpleKey: eventLabelKey,
+              templateKey: templateKeyify({
+                event: eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'step_view',

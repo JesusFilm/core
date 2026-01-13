@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ThemeMode, ThemeName } from "./globalTypes";
+import { CardBlockUpdateInput, ThemeMode, ThemeName, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardQuoteDelete
@@ -44,6 +44,7 @@ export interface CardQuoteDelete_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardQuoteDelete_body {

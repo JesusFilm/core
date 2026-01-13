@@ -30,7 +30,7 @@ const authPage = '/users/sign-in'
 const unAuthorizedPage = '/users/unauthorized'
 const publicPaths = [authPage, unAuthorizedPage]
 
-export default async function proxy(
+export default async function middleware(
   req: NextRequest
 ): Promise<NextResponse<unknown>> {
   if (

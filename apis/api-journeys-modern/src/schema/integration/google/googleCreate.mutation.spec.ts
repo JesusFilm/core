@@ -92,6 +92,8 @@ describe('integrationGoogleCreate', () => {
       iv: 'iv',
       tag: 'tag'
     })
+    // No existing integration for this user with the same Google account
+    prismaMock.integration.findUnique.mockResolvedValue(null)
     prismaMock.integration.create.mockResolvedValue(mockIntegration as any)
 
     const result = await authClient({
@@ -288,5 +290,135 @@ describe('integrationGoogleCreate', () => {
         })
       ]
     })
+  })
+
+  it('should throw error when user already has Google integration with same account', async () => {
+    const mockTokenResponse = {
+      data: {
+        access_token: 'access-token',
+        refresh_token: 'refresh-token',
+        expires_in: 3600,
+        scope: 'openid email',
+        token_type: 'Bearer'
+      }
+    }
+
+    const mockUserInfoResponse = {
+      data: {
+        email: 'existing@example.com',
+        email_verified: true
+      }
+    }
+
+    mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
+    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
+
+    // Simulate existing integration with the same Google account for this user
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'existing-integration-id',
+      type: 'google',
+      teamId: 'other-team-id',
+      userId: 'userId',
+      accountEmail: 'existing@example.com'
+    } as any)
+
+    const result = await authClient({
+      document: INTEGRATION_GOOGLE_CREATE_MUTATION,
+      variables: {
+        input: {
+          teamId: 'team-id',
+          code: 'auth-code',
+          redirectUri: 'https://example.com/callback'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message:
+            'You have already linked this Google account (existing@example.com). Please use the existing integration or remove it first.',
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })
+      ]
+    })
+
+    expect(prismaMock.integration.findUnique).toHaveBeenCalledWith({
+      where: {
+        userId_teamId_type_accountEmail: {
+          userId: 'userId',
+          teamId: 'team-id',
+          type: 'google',
+          accountEmail: 'existing@example.com'
+        }
+      }
+    })
+
+    expect(prismaMock.integration.create).not.toHaveBeenCalled()
+  })
+
+  it('should allow different users to link the same Google account', async () => {
+    const mockTokenResponse = {
+      data: {
+        access_token: 'access-token',
+        refresh_token: 'refresh-token',
+        expires_in: 3600,
+        scope: 'openid email',
+        token_type: 'Bearer'
+      }
+    }
+
+    const mockUserInfoResponse = {
+      data: {
+        email: 'shared@example.com',
+        email_verified: true
+      }
+    }
+
+    const mockIntegration = {
+      id: 'new-integration-id',
+      type: 'google',
+      teamId: 'team-id',
+      userId: 'userId',
+      accountEmail: 'shared@example.com'
+    }
+
+    mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
+    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
+    mockEncryptSymmetric.mockResolvedValue({
+      ciphertext: 'encrypted-secret',
+      iv: 'iv',
+      tag: 'tag'
+    })
+
+    // No existing integration for this user (another user may have same email)
+    prismaMock.integration.findUnique.mockResolvedValue(null)
+    prismaMock.integration.create.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: INTEGRATION_GOOGLE_CREATE_MUTATION,
+      variables: {
+        input: {
+          teamId: 'team-id',
+          code: 'auth-code',
+          redirectUri: 'https://example.com/callback'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        integrationGoogleCreate: expect.objectContaining({
+          id: 'new-integration-id',
+          type: 'google',
+          accountEmail: 'shared@example.com'
+        })
+      }
+    })
+
+    expect(prismaMock.integration.create).toHaveBeenCalled()
   })
 })

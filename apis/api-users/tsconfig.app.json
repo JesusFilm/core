@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
