@@ -90,20 +90,23 @@ describe('WebsiteCover', () => {
     expect(getByText('How did we get here?')).toBeInTheDocument()
   })
 
-  it('should render with correct container styles', () => {
+  it('should render with correct container styles', async () => {
     const { getByTestId } = render(
       <WebsiteCover backgroundColor="#DDD">{children}</WebsiteCover>
     )
 
     const cover = getByTestId('website-cover')
 
-    expect(cover).toHaveStyle({
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      overflowY: 'scroll',
-      overflowX: 'hidden',
-      backgroundColor: 'rgb(221, 221, 221)'
+    // Wait for MUI styles to be applied (especially important in CI)
+    await waitFor(() => {
+      expect(cover).toHaveStyle({
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'scroll',
+        overflowX: 'hidden',
+        backgroundColor: 'rgb(221, 221, 221)'
+      })
     })
   })
 
