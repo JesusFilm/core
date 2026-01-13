@@ -21,5 +21,12 @@
     "moduleResolution": "bundler",
     "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc"
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "compilerOptions": {
+      "module": "commonjs",
+      "moduleResolution": "node"
+    }
   }
 }
