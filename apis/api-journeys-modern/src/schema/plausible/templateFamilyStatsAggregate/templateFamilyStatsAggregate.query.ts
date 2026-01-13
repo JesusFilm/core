@@ -62,18 +62,22 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
           extensions: { code: 'FORBIDDEN' }
         })
       }
-      const templateSiteId = `api-journeys-template-${templateJourney.id}`
-      const breakdownResults = await getJourneyStatsBreakdown(
-        templateJourney.id,
-        {
-          ...where,
-          property: 'event:page',
-          metrics: 'visitors'
-        },
-        templateSiteId
-      )
 
-      const { totalJourneysViews } = transformBreakdownResults(breakdownResults)
+      let totalJourneysViews = 0
+      if (templateJourney.templateSite === true) {
+        const templateSiteId = `api-journeys-template-${templateJourney.id}`
+        const breakdownResults = await getJourneyStatsBreakdown(
+          templateJourney.id,
+          {
+            ...where,
+            property: 'event:page',
+            metrics: 'visitors'
+          },
+          templateSiteId
+        )
+
+        totalJourneysViews = transformBreakdownResults(breakdownResults)
+      }
 
       const { totalJourneysResponses, childJourneysCount } =
         await getTotalJourneysResponses(templateJourney.id)
@@ -89,7 +93,7 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
 
 function transformBreakdownResults(
   breakdownResults: PlausibleStatsResponse[]
-): { totalJourneysViews: number } {
+): number {
   const slugMaxVisitors = new Map<string, number>()
 
   for (const result of breakdownResults) {
@@ -115,9 +119,7 @@ function transformBreakdownResults(
     0
   )
 
-  return {
-    totalJourneysViews
-  }
+  return totalJourneysViews
 }
 
 async function getTotalJourneysResponses(templateId: string): Promise<{

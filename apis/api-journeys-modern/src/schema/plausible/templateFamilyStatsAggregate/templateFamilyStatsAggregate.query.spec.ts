@@ -85,6 +85,7 @@ describe('templateFamilyStatsAggregate', () => {
       id: 'template-journey-id',
       slug: 'template-slug',
       title: 'Template Journey',
+      templateSite: true,
       userJourneys: [],
       team: { userTeams: [] }
     }
@@ -207,6 +208,7 @@ describe('templateFamilyStatsAggregate', () => {
       id: 'template-journey-id',
       slug: 'template-slug',
       title: 'Template Journey',
+      templateSite: true,
       userJourneys: [],
       team: { userTeams: [] }
     }
@@ -363,6 +365,7 @@ describe('templateFamilyStatsAggregate', () => {
   it('returns Plausible error message on API failure', async () => {
     prismaMock.journey.findUnique.mockResolvedValue({
       id: 'template-journey-id',
+      templateSite: true,
       userJourneys: [],
       team: { userTeams: [] }
     } as any)
@@ -396,6 +399,7 @@ describe('templateFamilyStatsAggregate', () => {
       id: 'template-journey-id',
       slug: 'template-slug',
       title: 'Template Journey',
+      templateSite: true,
       userJourneys: [],
       team: { userTeams: [] }
     }
@@ -558,5 +562,53 @@ describe('templateFamilyStatsAggregate', () => {
       resultData.data?.templateFamilyStatsAggregate?.totalJourneysResponses
     ).toBe(0)
     expect(prismaMock.journeyVisitor.groupBy).not.toHaveBeenCalled()
+  })
+
+  it('should return 0 total views when plausible site hasnt been created yet', async () => {
+    const templateJourney = {
+      id: 'template-journey-id',
+      slug: 'template-slug',
+      title: 'Template Journey',
+      templateSite: false,
+      userJourneys: [],
+      team: { userTeams: [] }
+    }
+
+    prismaMock.journey.findUnique.mockResolvedValue(templateJourney as any)
+    prismaMock.journey.findMany.mockResolvedValue([
+      {
+        id: 'journey-1',
+        slug: 'journey-1-slug'
+      }
+    ] as any)
+    prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
+
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-journey-id',
+        where: {
+          period: '30d'
+        }
+      }
+    })
+
+    // When templateSite is false, the Plausible API should not be called
+    expect(mockAxios.get).not.toHaveBeenCalled()
+
+    const resultData = result as {
+      data?: {
+        templateFamilyStatsAggregate?: {
+          childJourneysCount: number
+          totalJourneysViews: number
+          totalJourneysResponses: number
+        }
+      }
+    }
+    expect(resultData.data?.templateFamilyStatsAggregate).toEqual({
+      childJourneysCount: 1,
+      totalJourneysViews: 0,
+      totalJourneysResponses: 0
+    })
   })
 })
