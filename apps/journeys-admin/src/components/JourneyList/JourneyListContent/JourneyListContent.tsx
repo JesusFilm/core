@@ -11,17 +11,14 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { ActivePriorityList } from '../ActiveJourneyList/ActivePriorityList'
 import { AddJourneyButton } from '../ActiveJourneyList/AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
-import type { JourneyListEvent, JourneyListProps } from '../JourneyList'
+import type { JourneyListEvent } from '../JourneyList'
 import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
-import { JourneySort, SortOrder } from '../JourneySort'
+import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
@@ -586,18 +583,11 @@ export function JourneyListContent({
                       xl: contentType === 'templates' ? 2.4 : 3
                     }}
                   >
-                    <JourneyProvider
-                      value={{
-                        journey: journey as unknown as JourneyFields,
-                        variant: 'admin'
-                      }}
-                    >
-                      <JourneyCard
-                        key={journey.id}
-                        journey={journey}
-                        refetch={refetch}
-                      />
-                    </JourneyProvider>
+                    <JourneyCard
+                      key={journey.id}
+                      journey={journey}
+                      refetch={refetch}
+                    />
                   </Grid>
                 ))}
               </Grid>
