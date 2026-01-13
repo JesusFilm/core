@@ -25,7 +25,6 @@ The service identifies test data by looking for these actual patterns used in e2
 ### Journey Detection (OR logic):
 
 1. **Title Patterns** (case-insensitive):
-
    - `First journey` (+ random numbers)
    - `Second journey` (+ random numbers)
    - `Renamed journey` (+ random numbers)
