@@ -569,6 +569,98 @@ describe('event utils', () => {
       expect(mockWriteValues).not.toHaveBeenCalled()
     })
 
+    it('should append new values with semicolon when updating existing row', async () => {
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: []
+      } as any)
+      prismaMock.event.findMany.mockResolvedValue([])
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
+        .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
+        .mockResolvedValueOnce([['visitor-id', '2024-01-01', 'Option A']]) // existing row with value
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          'block-id-label',
+          'Option B' // new value to append
+        ]
+      })
+
+      // Should call updateRangeValues with merged values (semicolon separated)
+      expect(mockUpdateRangeValues).toHaveBeenCalledWith(
+        expect.objectContaining({
+          values: expect.arrayContaining([
+            expect.arrayContaining(['visitor-id'])
+          ])
+        })
+      )
+      expect(mockWriteValues).not.toHaveBeenCalled()
+    })
+
+    it('should not duplicate values when appending to existing row', async () => {
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: []
+      } as any)
+      prismaMock.event.findMany.mockResolvedValue([])
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
+        .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
+        .mockResolvedValueOnce([['visitor-id', '2024-01-01', 'Option A; Option B']]) // existing row with already appended values
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          'block-id-label',
+          'Option A' // value that already exists
+        ]
+      })
+
+      // Should call updateRangeValues without duplicating 'Option A'
+      expect(mockUpdateRangeValues).toHaveBeenCalled()
+      expect(mockWriteValues).not.toHaveBeenCalled()
+    })
+
     it('should use date-based sheet name when not provided', async () => {
       const mockSync = {
         id: 'sync-id',

@@ -454,9 +454,18 @@ export async function appendEventToGoogleSheets({
         const existingRow: string[] = (existingRowRes[0] ?? []).map(
           (value) => value ?? ''
         )
-        const mergedRow = alignedRow.map((value, index) =>
-          value !== '' ? value : (existingRow[index] ?? '')
-        )
+        const mergedRow = alignedRow.map((value, index) => {
+          const existingValue = existingRow[index] ?? ''
+          // If new value is empty, keep existing
+          if (value === '') return existingValue
+          // If existing value is empty, use new value
+          if (existingValue === '') return value
+          // Both values exist: check if new value is already in existing (avoid duplicates)
+          const existingParts = existingValue.split('; ').map((s) => s.trim())
+          if (existingParts.includes(value.trim())) return existingValue
+          // Append new value with semicolon separator (matching CSV export behavior)
+          return `${existingValue}; ${value}`
+        })
 
         await updateRangeValues({
           accessToken,
