@@ -7,6 +7,7 @@ import { ReactElement, useEffect, useMemo } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
@@ -113,6 +114,7 @@ export function DefaultMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { data: userRoleData } = useUserRoleQuery()
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
@@ -250,6 +252,7 @@ export function DefaultMenu({
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}
+            refetchTemplateStats={refetchTemplateStats}
           />
           <Divider />
         </>

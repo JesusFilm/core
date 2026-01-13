@@ -24,6 +24,7 @@ interface CreateJourneyButtonProps {
    */
   openTeamDialogOnSignIn?: boolean
   handleCloseMenu?: () => void
+  refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
 
 interface JourneyLanguage {
@@ -44,7 +45,8 @@ export function CreateJourneyButton({
   variant = 'button',
   signedIn = false,
   openTeamDialogOnSignIn = false,
-  handleCloseMenu
+  handleCloseMenu,
+  refetchTemplateStats
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { enqueueSnackbar } = useSnackbar()
@@ -132,6 +134,20 @@ export function CreateJourneyButton({
         }
 
         const newJourneyId = duplicateData.journeyDuplicate.id
+        const fromTemplateId = (
+          duplicateData.journeyDuplicate as { fromTemplateId?: string | null }
+        ).fromTemplateId
+
+        // Determine which template ID to refetch
+        // If duplicating from a template, use the source journey ID
+        // Otherwise, use fromTemplateId from the duplicated journey
+        const templateIdToRefetch =
+          journey.template === true ? journey.id : fromTemplateId
+
+        // Refetch template stats if we have a template ID
+        if (templateIdToRefetch != null && refetchTemplateStats != null) {
+          void refetchTemplateStats([templateIdToRefetch])
+        }
 
         if (selectedLanguage == null || !showTranslation) {
           // No translation needed - navigate immediately
@@ -183,7 +199,15 @@ export function CreateJourneyButton({
         handleCloseMenu?.()
       }
     },
-    [journey, journeyDuplicate, router, t, enqueueSnackbar, handleCloseMenu]
+    [
+      journey,
+      journeyDuplicate,
+      router,
+      t,
+      enqueueSnackbar,
+      handleCloseMenu,
+      refetchTemplateStats
+    ]
   )
 
   const handleCheckSignIn = (): void => {

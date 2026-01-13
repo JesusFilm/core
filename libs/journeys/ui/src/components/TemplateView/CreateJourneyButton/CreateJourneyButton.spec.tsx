@@ -764,4 +764,157 @@ describe('CreateJourneyButton', () => {
       expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
     )
   })
+
+  it('should call refetchTemplateStats with journey id when duplicating from a template', async () => {
+    const refetchTemplateStats = jest.fn()
+    const journeyDuplicateMockWithFromTemplateId = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId',
+          forceNonTemplate: true
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId',
+            __typename: 'Journey',
+            fromTemplateId: 'journeyId'
+          }
+        }
+      }))
+    }
+
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock,
+          journeyDuplicateMockWithFromTemplateId,
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <CreateJourneyButton
+                signedIn
+                refetchTemplateStats={refetchTemplateStats}
+              />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Submit without translation
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(journeyDuplicateMockWithFromTemplateId.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['journeyId'])
+    })
+  })
+
+  it('should call refetchTemplateStats with fromTemplateId when duplicating from a non-template journey', async () => {
+    const refetchTemplateStats = jest.fn()
+    const nonTemplateJourney: Journey = {
+      ...journey,
+      template: false,
+      fromTemplateId: 'parentTemplateId'
+    }
+    const journeyDuplicateMockWithFromTemplateId = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId',
+          forceNonTemplate: true
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId',
+            __typename: 'Journey',
+            fromTemplateId: 'parentTemplateId'
+          }
+        }
+      }))
+    }
+
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock,
+          journeyDuplicateMockWithFromTemplateId,
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey: nonTemplateJourney }}>
+              <CreateJourneyButton
+                signedIn
+                refetchTemplateStats={refetchTemplateStats}
+              />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Submit without translation
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(journeyDuplicateMockWithFromTemplateId.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['parentTemplateId'])
+    })
+  })
 })
