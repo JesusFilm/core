@@ -9,6 +9,31 @@ export interface TransformedResult {
 }
 
 /**
+ * Maps raw Plausible event names to their corresponding "Capture" event names.
+ * This mapping is needed because Plausible stores events with their raw names (e.g., "decisionForChrist"),
+ * but the API expects the "Capture" variant (e.g., "christDecisionCapture").
+ */
+const EVENT_TO_CAPTURE_MAP: Record<string, string> = {
+  decisionForChrist: 'christDecisionCapture',
+  gospelPresentationStart: 'gospelStartCapture',
+  gospelPresentationComplete: 'gospelCompleteCapture',
+  prayerRequest: 'prayerRequestCapture',
+  rsvp: 'rsvpCapture',
+  specialVideoStart: 'specialVideoStartCapture',
+  specialVideoComplete: 'specialVideoCompleteCapture',
+  custom1: 'custom1Capture',
+  custom2: 'custom2Capture',
+  custom3: 'custom3Capture'
+}
+
+/**
+ * Maps a raw event name to its "Capture" equivalent if a mapping exists, otherwise returns the original event name.
+ */
+function mapEventToCapture(event: string): string {
+  return EVENT_TO_CAPTURE_MAP[event] ?? event
+}
+
+/**
  * Transforms Plausible breakdown results by grouping events by journey ID and aggregating statistics.
  * Merges events with the same event type by summing their visitor counts. Calculates aggregated
  * events for chatsClicked and linksClicked based on event targets. If an events filter is provided,
@@ -16,6 +41,7 @@ export interface TransformedResult {
  *
  * Note: All events are processed and aggregated first, then filtered. This ensures derived events
  * (chatsClicked, linksClicked) can be correctly calculated even when only derived events are in the filter.
+ * Raw events are mapped to their "Capture" equivalents before filtering to match the expected event names.
  *
  * @param breakdownResults - Array of Plausible stats responses with JSON property data containing journeyId, event, and target
  * @param eventsFilter - Optional array of event names to filter. If null or empty, all events are included.
@@ -52,34 +78,40 @@ export function transformBreakdownResults(
           }
         }
 
-        acc[journeyId].events[event] =
-          (acc[journeyId].events[event] ?? 0) + visitors
+        // Map raw event to "Capture" equivalent if mapping exists
+        const mappedEvent = mapEventToCapture(event)
+        const previousEventCount = acc[journeyId].events[mappedEvent] ?? 0
+        acc[journeyId].events[mappedEvent] = previousEventCount + visitors
 
         if (
           target === 'chat' ||
           (target != null && target.startsWith('chat:'))
         ) {
-          acc[journeyId].events['chatsClicked'] =
-            (acc[journeyId].events['chatsClicked'] ?? 0) + visitors
+          const previousChatsCount = acc[journeyId].events['chatsClicked'] ?? 0
+          acc[journeyId].events['chatsClicked'] = previousChatsCount + visitors
         }
 
         if (
           target === 'link' ||
           (target != null && target.startsWith('link:'))
         ) {
-          acc[journeyId].events['linksClicked'] =
-            (acc[journeyId].events['linksClicked'] ?? 0) + visitors
+          const previousLinksCount = acc[journeyId].events['linksClicked'] ?? 0
+          acc[journeyId].events['linksClicked'] = previousLinksCount + visitors
         }
 
         return acc
-      } catch {
+      } catch (error) {
+        console.error('[transformBreakdownResults] Error parsing property:', {
+          property: result.property,
+          error
+        })
         return acc
       }
     },
     {} as Record<string, { events: Record<string, number> }>
   )
 
-  return Object.entries(grouped).map(([journeyId, data]) => {
+  const result = Object.entries(grouped).map(([journeyId, data]) => {
     let stats = Object.entries(data.events).map(([eventType, visitors]) => ({
       event: eventType as TemplateFamilyStatsEventResponse['event'],
       visitors
@@ -107,4 +139,6 @@ export function transformBreakdownResults(
       stats
     }
   })
+
+  return result
 }
