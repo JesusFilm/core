@@ -1,7 +1,7 @@
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
-import { UserJourneyRole } from '.prisma/api-journeys-modern-client'
+import { UserJourneyRole } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
@@ -39,7 +39,7 @@ describe('E2E Cleanup Service', () => {
     }
 
     // Mock the transaction to execute the callback with the mock transaction client
-    prismaMock.$transaction.mockImplementation(async (callback, options) => {
+    prismaMock.$transaction.mockImplementation(async (callback: any) => {
       return await callback(mockTx)
     })
   })
