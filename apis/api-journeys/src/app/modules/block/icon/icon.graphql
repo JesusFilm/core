@@ -21,6 +21,7 @@ enum IconName {
   ContactSupportRounded
   Launch
   MailOutline
+  LanguageRounded
 }
 
 enum IconColor {

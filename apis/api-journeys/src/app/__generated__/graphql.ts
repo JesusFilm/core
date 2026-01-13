@@ -102,7 +102,8 @@ export enum IconName {
     SubscriptionsRounded = "SubscriptionsRounded",
     ContactSupportRounded = "ContactSupportRounded",
     Launch = "Launch",
-    MailOutline = "MailOutline"
+    MailOutline = "MailOutline",
+    LanguageRounded = "LanguageRounded"
 }
 
 export enum IconColor {

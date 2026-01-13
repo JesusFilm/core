@@ -3445,6 +3445,7 @@ enum IconName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_
   ContactSupportRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   Launch @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   MailOutline @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  LanguageRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum IconColor @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
