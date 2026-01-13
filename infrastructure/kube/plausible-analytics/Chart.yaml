@@ -1,0 +1,11 @@
+apiVersion: v2
+name: plausible-analytics-app
+description: Wrapper chart for Plausible Analytics managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v2.1.5'
+
+dependencies:
+  - name: plausible-analytics
+    version: '0.11.1'
+    repository: https://zekker6.github.io/helm-charts/

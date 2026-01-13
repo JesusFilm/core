@@ -40,6 +40,7 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
+      "@core/shared/ui-modern/*": ["libs/shared/ui-modern/src/*"],
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },

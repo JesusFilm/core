@@ -50,6 +50,10 @@ type Journey @key(fields: "id") @shareable {
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
   """
+  used to see if a template has a site created for it
+  """
+  templateSite: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -231,7 +235,7 @@ input JourneyTemplateInput {
 
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   """
   Sets journey status to published

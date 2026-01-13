@@ -24,8 +24,12 @@ import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockField
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 
@@ -101,7 +105,8 @@ export function Button({
   children,
   editableLabel,
   submitEnabled,
-  settings
+  settings,
+  eventLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -188,15 +193,47 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
               blockId: input.blockId,
-              target: action
+              target: action,
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey.id
+            }),
+            templateKey: templateKeyify({
+              event: 'buttonClick',
+              target: actionToTarget(action),
+              journeyId: journey.id
             })
           }
         })
+        if (eventLabel != null) {
+          plausible(eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                target: action,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       addEventToDataLayer(id)
     }
@@ -216,7 +253,7 @@ export function Button({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
         plausible('chatButtonClick', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
@@ -225,15 +262,48 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
               blockId: input.blockId,
-              target: action
+              target: action,
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey.id
+            }),
+            templateKey: templateKeyify({
+              event: 'chatButtonClick',
+              target: 'chat',
+              journeyId: journey.id
             })
           }
         })
+        if (eventLabel != null) {
+          plausible(eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                target: action,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
+      }
       addEventToDataLayer(id)
     }
   }
@@ -261,15 +331,6 @@ export function Button({
     }
   }
 
-  function isEmptyForm(): boolean {
-    if (formik == null) return true
-    const values = formik.values
-    if (values == null || typeof values !== 'object') return true
-    return Object.values(values as Record<string, unknown>).every(
-      (value) => value === ''
-    )
-  }
-
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
@@ -278,10 +339,10 @@ export function Button({
       e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (!isEmptyForm()) {
-        if (Object.keys(errors).length > 0) return
-        await formik.submitForm()
-      }
+      // Always call submitForm() to touch all fields, ensuring validation errors are displayed.
+      // Per Formik docs, submitForm() will abort submission if validation errors exist.
+      await formik.submitForm()
+      if (Object.keys(errors).length > 0) return
     }
 
     const hasMessagePlatform = messagePlatform != null

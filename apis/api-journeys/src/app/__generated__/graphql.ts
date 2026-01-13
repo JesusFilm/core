@@ -22,6 +22,21 @@ export enum ContactActionType {
     text = "text"
 }
 
+export enum BlockEventLabel {
+    custom1 = "custom1",
+    custom2 = "custom2",
+    custom3 = "custom3",
+    decisionForChrist = "decisionForChrist",
+    gospelPresentationStart = "gospelPresentationStart",
+    gospelPresentationComplete = "gospelPresentationComplete",
+    inviteFriend = "inviteFriend",
+    prayerRequest = "prayerRequest",
+    rsvp = "rsvp",
+    share = "share",
+    specialVideoStart = "specialVideoStart",
+    specialVideoComplete = "specialVideoComplete"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -297,6 +312,7 @@ export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -307,6 +323,7 @@ export class ButtonBlockCreateInput {
 
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -321,6 +338,7 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
@@ -330,6 +348,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
@@ -384,11 +403,13 @@ export class RadioOptionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
 }
 
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     pollOptionImageBlockId?: Nullable<string>;
 }
@@ -789,29 +810,6 @@ export class JourneysEmailPreferenceUpdateInput {
     value: boolean;
 }
 
-export class PlausibleStatsAggregateFilter {
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    filters?: Nullable<string>;
-    interval?: Nullable<string>;
-}
-
-export class PlausibleStatsBreakdownFilter {
-    property: string;
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    limit?: Nullable<number>;
-    page?: Nullable<number>;
-    filters?: Nullable<string>;
-}
-
-export class PlausibleStatsTimeseriesFilter {
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    filters?: Nullable<string>;
-    interval?: Nullable<string>;
-}
-
 export class QrCodesFilter {
     journeyId?: Nullable<string>;
     teamId?: Nullable<string>;
@@ -978,6 +976,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    templateSite?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;
@@ -1043,14 +1042,6 @@ export abstract class IQuery {
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
     abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
-
-    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
-
-    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
-
-    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
-
-    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract qrCode(id: string): QrCode | Promise<QrCode>;
 
@@ -1186,7 +1177,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1283,6 +1274,7 @@ export class ButtonBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -1300,6 +1292,7 @@ export class CardBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
@@ -1383,6 +1376,7 @@ export class RadioOptionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     action?: Nullable<Action>;
     pollOptionImageBlockId?: Nullable<string>;
@@ -1471,6 +1465,8 @@ export class VideoBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
+    endEventLabel?: Nullable<BlockEventLabel>;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
     muted?: Nullable<boolean>;
@@ -1906,39 +1902,6 @@ export class JourneysEmailPreference {
     email: string;
     unsubscribeAll: boolean;
     accountNotifications: boolean;
-}
-
-export class PlausibleStatsAggregateValue {
-    __typename?: 'PlausibleStatsAggregateValue';
-    value: number;
-    change?: Nullable<number>;
-}
-
-export class PlausibleStatsAggregateResponse {
-    __typename?: 'PlausibleStatsAggregateResponse';
-    visitors?: Nullable<PlausibleStatsAggregateValue>;
-    visits?: Nullable<PlausibleStatsAggregateValue>;
-    pageviews?: Nullable<PlausibleStatsAggregateValue>;
-    viewsPerVisit?: Nullable<PlausibleStatsAggregateValue>;
-    bounceRate?: Nullable<PlausibleStatsAggregateValue>;
-    visitDuration?: Nullable<PlausibleStatsAggregateValue>;
-    events?: Nullable<PlausibleStatsAggregateValue>;
-    conversionRate?: Nullable<PlausibleStatsAggregateValue>;
-    timeOnPage?: Nullable<PlausibleStatsAggregateValue>;
-}
-
-export class PlausibleStatsResponse {
-    __typename?: 'PlausibleStatsResponse';
-    property: string;
-    visitors?: Nullable<number>;
-    visits?: Nullable<number>;
-    pageviews?: Nullable<number>;
-    viewsPerVisit?: Nullable<number>;
-    bounceRate?: Nullable<number>;
-    visitDuration?: Nullable<number>;
-    events?: Nullable<number>;
-    conversionRate?: Nullable<number>;
-    timeOnPage?: Nullable<number>;
 }
 
 export class QrCode {

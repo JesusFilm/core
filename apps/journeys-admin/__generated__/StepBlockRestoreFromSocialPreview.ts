@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepBlockRestoreFromSocialPreview
@@ -85,6 +85,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock {
   submitEnabled: boolean | null;
   action: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action | null;
   settings: StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
@@ -122,6 +123,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_IconBlock {
@@ -230,6 +232,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioQuestionBlock {
@@ -568,6 +571,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

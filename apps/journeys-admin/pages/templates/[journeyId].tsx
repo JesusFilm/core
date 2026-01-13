@@ -156,7 +156,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
         where: {
           template: true,
           orderByRecent: true,
-          tagIds
+          tagIds,
+          teamId: 'jfp-team'
         }
       }
     })

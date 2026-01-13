@@ -1,14 +1,28 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
+import {
+  GetTemplateFamilyStatsAggregate,
+  GetTemplateFamilyStatsAggregateVariables
+} from '../../../../__generated__/GetTemplateFamilyStatsAggregate'
+import { IdType } from '../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, fakeDate, journeyWithImage } from '../journeyListData'
+import {
+  customizableTemplateJourney,
+  customizableWebsiteTemplateJourney,
+  defaultJourney,
+  fakeDate,
+  journeyWithImage,
+  publishedLocalTemplate,
+  websiteJourney
+} from '../journeyListData'
 
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
+import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from './TemplateAggregateAnalytics/TemplateAggregateAnalytics'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
@@ -112,5 +126,150 @@ describe('JourneyCard', () => {
 
     expect(screen.getByTestId('new-journey-badge')).toBeInTheDocument()
     expect(screen.getByText('New')).toBeInTheDocument()
+  })
+
+  it('should show quick start badge when journey is template and customizable', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={customizableTemplateJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardQuickStartBadge')).toBeInTheDocument()
+    expect(screen.getByText('Quick Start')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyCardWebsiteBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Website')).not.toBeInTheDocument()
+  })
+
+  it('should show website badge when journey is website', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={websiteJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardWebsiteBadge')).toBeInTheDocument()
+    expect(screen.getByText('Website')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyCardQuickStartBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Quick Start')).not.toBeInTheDocument()
+  })
+
+  it('should show both badges when journey is template and customizable and website', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={customizableWebsiteTemplateJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardQuickStartBadge')).toBeInTheDocument()
+    expect(screen.getByText('Quick Start')).toBeInTheDocument()
+    expect(screen.getByTestId('JourneyCardWebsiteBadge')).toBeInTheDocument()
+    expect(screen.getByText('Website')).toBeInTheDocument()
+  })
+
+  it('should not show badges when journey is not template and customizable and website', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(
+      screen.queryByTestId('JourneyCardQuickStartBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Quick Start')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyCardWebsiteBadge')
+    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Website')).not.toBeInTheDocument()
+  })
+
+  it('should show journey analytics for default journey card', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardInfo')).toBeInTheDocument()
+  })
+
+  // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
+  it('TEMP - should not show journey analytics for local template card', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={publishedLocalTemplate} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.queryByTestId('JourneyCardInfo')).not.toBeInTheDocument()
+  })
+
+  it('should show template only section', async () => {
+    const templateFamilyStatsAggregateMock: MockedResponse<
+      GetTemplateFamilyStatsAggregate,
+      GetTemplateFamilyStatsAggregateVariables
+    > = {
+      request: {
+        query: GET_TEMPLATE_FAMILY_STATS_AGGREGATE,
+        variables: {
+          id: publishedLocalTemplate.id,
+          idType: IdType.databaseId,
+          where: {}
+        }
+      },
+      result: {
+        data: {
+          templateFamilyStatsAggregate: {
+            __typename: 'TemplateFamilyStatsAggregateResponse',
+            childJourneysCount: 10,
+            totalJourneysViews: 100,
+            totalJourneysResponses: 50
+          }
+        }
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[templateFamilyStatsAggregateMock]}>
+          <ThemeProvider>
+            <JourneyCard journey={publishedLocalTemplate} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('Data1Icon')).toBeInTheDocument()
+    })
   })
 })

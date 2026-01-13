@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardVideoRestore
@@ -205,6 +205,8 @@ export interface CardVideoRestore_video_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardVideoRestore_video_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export type CardVideoRestore_video = CardVideoRestore_video_ImageBlock | CardVideoRestore_video_VideoBlock;

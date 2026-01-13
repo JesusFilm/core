@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CoverBlockRestore
@@ -206,6 +206,8 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CoverBlockRestore_blockRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CoverBlockRestore_blockRestore_ImageBlock {

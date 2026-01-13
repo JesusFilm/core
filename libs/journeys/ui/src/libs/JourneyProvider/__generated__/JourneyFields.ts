@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -99,6 +99,7 @@ export interface JourneyFields_blocks_ButtonBlock {
   submitEnabled: boolean | null;
   action: JourneyFields_blocks_ButtonBlock_action | null;
   settings: JourneyFields_blocks_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_CardBlock {
@@ -136,6 +137,7 @@ export interface JourneyFields_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_IconBlock {
@@ -244,6 +246,7 @@ export interface JourneyFields_blocks_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_RadioQuestionBlock {
@@ -572,6 +575,8 @@ export interface JourneyFields_blocks_VideoBlock {
    * action that should be performed when the video ends
    */
   action: JourneyFields_blocks_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

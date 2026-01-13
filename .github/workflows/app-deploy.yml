@@ -1,7 +1,7 @@
 name: App Deploy
 on:
   push:
-    branches: [main, stage, feature/*]
+    branches: [main, stage]
   pull_request:
     branches: [main, feature/*]
   merge_group:
@@ -107,6 +107,7 @@ jobs:
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          PLAYER_VERCEL_PROJECT_ID: ${{ secrets.PLAYER_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
@@ -353,6 +354,7 @@ jobs:
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID || secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
+          PLAYER_VERCEL_PROJECT_ID: ${{ secrets.PLAYER_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID || secrets.SHORT_LINKS_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
           WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}

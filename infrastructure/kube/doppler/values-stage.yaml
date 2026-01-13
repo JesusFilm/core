@@ -1,0 +1,20 @@
+dopplerSecrets:
+  tokenSecretName: doppler-token-secret
+
+  plausible:
+    name: dopplersecret-plausible
+    project: plausible
+    config: stg
+    managedSecret:
+      name: plausible
+      namespace: default
+
+  externaldns:
+    name: externaldns-aws-credentials
+    project: kubernetes
+    config: stg
+    managedSecret:
+      name: externaldns-aws-credentials
+      namespace: default
+
+

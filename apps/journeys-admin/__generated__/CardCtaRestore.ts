@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaRestore
@@ -85,6 +85,7 @@ export interface CardCtaRestore_imageRestore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_imageRestore_ButtonBlock_action | null;
   settings: CardCtaRestore_imageRestore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_imageRestore_CardBlock {
@@ -122,6 +123,7 @@ export interface CardCtaRestore_imageRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_imageRestore_IconBlock {
@@ -230,6 +232,7 @@ export interface CardCtaRestore_imageRestore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_imageRestore_RadioQuestionBlock {
@@ -558,6 +561,8 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_imageRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -698,6 +703,7 @@ export interface CardCtaRestore_subtitleRestore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_subtitleRestore_ButtonBlock_action | null;
   settings: CardCtaRestore_subtitleRestore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_CardBlock {
@@ -735,6 +741,7 @@ export interface CardCtaRestore_subtitleRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_IconBlock {
@@ -843,6 +850,7 @@ export interface CardCtaRestore_subtitleRestore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_RadioQuestionBlock {
@@ -1171,6 +1179,8 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_subtitleRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1311,6 +1321,7 @@ export interface CardCtaRestore_titleRestore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_titleRestore_ButtonBlock_action | null;
   settings: CardCtaRestore_titleRestore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_titleRestore_CardBlock {
@@ -1348,6 +1359,7 @@ export interface CardCtaRestore_titleRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_titleRestore_IconBlock {
@@ -1456,6 +1468,7 @@ export interface CardCtaRestore_titleRestore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_titleRestore_RadioQuestionBlock {
@@ -1784,6 +1797,8 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_titleRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1924,6 +1939,7 @@ export interface CardCtaRestore_button1Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_button1Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_button1Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button1Restore_CardBlock {
@@ -1961,6 +1977,7 @@ export interface CardCtaRestore_button1Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button1Restore_IconBlock {
@@ -2069,6 +2086,7 @@ export interface CardCtaRestore_button1Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button1Restore_RadioQuestionBlock {
@@ -2397,6 +2415,8 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_button1Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2537,6 +2557,7 @@ export interface CardCtaRestore_startIcon1Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon1Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_startIcon1Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_CardBlock {
@@ -2574,6 +2595,7 @@ export interface CardCtaRestore_startIcon1Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_IconBlock {
@@ -2682,6 +2704,7 @@ export interface CardCtaRestore_startIcon1Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_RadioQuestionBlock {
@@ -3010,6 +3033,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_startIcon1Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3150,6 +3175,7 @@ export interface CardCtaRestore_endIcon1Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon1Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_endIcon1Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_CardBlock {
@@ -3187,6 +3213,7 @@ export interface CardCtaRestore_endIcon1Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_IconBlock {
@@ -3295,6 +3322,7 @@ export interface CardCtaRestore_endIcon1Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_RadioQuestionBlock {
@@ -3623,6 +3651,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_endIcon1Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3763,6 +3793,7 @@ export interface CardCtaRestore_button2Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_button2Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_button2Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button2Restore_CardBlock {
@@ -3800,6 +3831,7 @@ export interface CardCtaRestore_button2Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button2Restore_IconBlock {
@@ -3908,6 +3940,7 @@ export interface CardCtaRestore_button2Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button2Restore_RadioQuestionBlock {
@@ -4236,6 +4269,8 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_button2Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4376,6 +4411,7 @@ export interface CardCtaRestore_startIcon2Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon2Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_startIcon2Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_CardBlock {
@@ -4413,6 +4449,7 @@ export interface CardCtaRestore_startIcon2Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_IconBlock {
@@ -4521,6 +4558,7 @@ export interface CardCtaRestore_startIcon2Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_RadioQuestionBlock {
@@ -4849,6 +4887,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_startIcon2Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4989,6 +5029,7 @@ export interface CardCtaRestore_endIcon2Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon2Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_endIcon2Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_CardBlock {
@@ -5026,6 +5067,7 @@ export interface CardCtaRestore_endIcon2Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_IconBlock {
@@ -5134,6 +5176,7 @@ export interface CardCtaRestore_endIcon2Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_RadioQuestionBlock {
@@ -5462,6 +5505,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_endIcon2Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -5602,6 +5647,7 @@ export interface CardCtaRestore_button3Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_button3Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_button3Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button3Restore_CardBlock {
@@ -5639,6 +5685,7 @@ export interface CardCtaRestore_button3Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button3Restore_IconBlock {
@@ -5747,6 +5794,7 @@ export interface CardCtaRestore_button3Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button3Restore_RadioQuestionBlock {
@@ -6075,6 +6123,8 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_button3Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -6215,6 +6265,7 @@ export interface CardCtaRestore_startIcon3Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_startIcon3Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_startIcon3Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_CardBlock {
@@ -6252,6 +6303,7 @@ export interface CardCtaRestore_startIcon3Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_IconBlock {
@@ -6360,6 +6412,7 @@ export interface CardCtaRestore_startIcon3Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_RadioQuestionBlock {
@@ -6688,6 +6741,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_startIcon3Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -6828,6 +6883,7 @@ export interface CardCtaRestore_endIcon3Restore_ButtonBlock {
   submitEnabled: boolean | null;
   action: CardCtaRestore_endIcon3Restore_ButtonBlock_action | null;
   settings: CardCtaRestore_endIcon3Restore_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_CardBlock {
@@ -6865,6 +6921,7 @@ export interface CardCtaRestore_endIcon3Restore_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_IconBlock {
@@ -6973,6 +7030,7 @@ export interface CardCtaRestore_endIcon3Restore_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_RadioQuestionBlock {
@@ -7301,6 +7359,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CardCtaRestore_endIcon3Restore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -7400,6 +7460,7 @@ export interface CardCtaRestore_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardCtaRestore {

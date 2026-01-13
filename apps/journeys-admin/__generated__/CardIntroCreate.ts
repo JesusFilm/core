@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardIntroCreate
@@ -138,6 +138,7 @@ export interface CardIntroCreate_button {
   submitEnabled: boolean | null;
   action: CardIntroCreate_button_action | null;
   settings: CardIntroCreate_button_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroCreate_startIcon {
@@ -229,6 +230,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
   submitEnabled: boolean | null;
   action: CardIntroCreate_buttonBlockUpdate_action | null;
   settings: CardIntroCreate_buttonBlockUpdate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroCreate_video_subtitleLanguage {
@@ -423,6 +425,8 @@ export interface CardIntroCreate_video {
    * action that should be performed when the video ends
    */
   action: CardIntroCreate_video_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CardIntroCreate {
