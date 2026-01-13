@@ -5,6 +5,8 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import AlignLeft from '@core/shared/ui/icons/AlignLeft'
 import LinkIcon from '@core/shared/ui/icons/Link'
@@ -23,6 +25,8 @@ import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
+import { EventLabel } from '../../controls/EventLabel'
+import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 import { Icon, icons } from '../../controls/Icon'
 
 import { Alignment } from './Alignment'
@@ -39,9 +43,11 @@ export function Button({
   endIconId,
   action,
   children,
-  settings
+  settings,
+  eventLabel
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
+  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
   const startIcon = children.find(
@@ -53,6 +59,7 @@ export function Button({
   ) as TreeBlock<IconFields>
 
   const selectedAction = getAction(t, action?.__typename)
+  const selectedEventLabel = getEventLabelOption(t, eventLabel).label
 
   useEffect(() => {
     dispatch({
@@ -63,6 +70,16 @@ export function Button({
 
   return (
     <Box data-testid="ButtonProperties">
+      {journey?.template && (
+        <Accordion
+          icon={<ActivityIcon />}
+          id={`${id}-event-label`}
+          name={t('Tracking')}
+          value={selectedEventLabel}
+        >
+          <EventLabel />
+        </Accordion>
+      )}
       <Accordion
         id={`${id}-button-action`}
         icon={<LinkIcon />}
