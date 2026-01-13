@@ -110,7 +110,16 @@ const journey: Journey = {
   menuStepBlock: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
-  journeyCustomizationFields: [],
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: 'customization1',
+      journeyId: 'journeyId',
+      key: 'number',
+      value: '1',
+      defaultValue: '0'
+    }
+  ],
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null
@@ -163,6 +172,13 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockUuidv4.mockReturnValueOnce('uuid')
+    blockHistoryVar([])
+    treeBlocksVar([])
+  })
+
   const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
     request: {
       query: STEP_VIEW_EVENT_CREATE,
@@ -170,7 +186,7 @@ describe('Step', () => {
         input: {
           id: 'uuid',
           blockId: 'Step1',
-          value: 'Step {{number}}'
+          value: 'Step 1'
         }
       }
     },
@@ -185,7 +201,6 @@ describe('Step', () => {
   }
 
   it('should create a stepViewEvent', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([block])
     blockHistoryVar([block])
     const mockPlausible = jest.fn()
@@ -206,7 +221,7 @@ describe('Step', () => {
       props: {
         id: 'uuid',
         blockId: 'Step1',
-        value: 'Step {{number}}',
+        value: 'Step 1',
         key: keyify({
           stepId: 'Step1',
           event: 'pageview',
@@ -228,7 +243,6 @@ describe('Step', () => {
   })
 
   it('should call plausible with eventLabel for pageview events', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
@@ -271,7 +285,7 @@ describe('Step', () => {
       props: {
         id: 'uuid',
         blockId: 'Step1',
-        value: 'Step {{number}}',
+        value: 'Step 1',
         key: keyify({
           stepId: 'Step1',
           event: BlockEventLabel.custom1,
@@ -296,7 +310,6 @@ describe('Step', () => {
     // disabled due to Jest v30 compatibility issues
     const mockSearch = '?utm_source=source&utm_campaign=campaign'
 
-    mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([block])
     blockHistoryVar([block])
     const mockPlausible = jest.fn()
@@ -317,7 +330,7 @@ describe('Step', () => {
       props: {
         id: 'uuid',
         blockId: 'Step1',
-        value: 'Step {{number}}',
+        value: 'Step 1',
         key: keyify({
           stepId: 'Step1',
           event: 'pageview',
@@ -340,7 +353,6 @@ describe('Step', () => {
 
   it('should stepViewEvent to dataLayer', async () => {
     mockUsePlausible.mockReturnValue(jest.fn())
-    mockUuidv4.mockReturnValueOnce('uuid')
     blockHistoryVar([block])
     treeBlocksVar([block])
     render(
@@ -355,13 +367,12 @@ describe('Step', () => {
         event: 'step_view',
         eventId: 'uuid',
         blockId: 'Step1',
-        stepName: 'Step {{number}}'
+        stepName: 'Step 1'
       })
     )
   })
 
   it('should not create a stepViewEvent if there are wrappers', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
     blockHistoryVar([block])
 
     const result = jest.fn(() => ({
@@ -389,8 +400,6 @@ describe('Step', () => {
   })
 
   it('should render blocks', () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
-
     const { getByText } = render(
       <MockedProvider mocks={[mockStepViewEventCreate]}>
         <Step {...block} />
@@ -417,7 +426,6 @@ describe('Step', () => {
   })
 
   it('should not send stepViewEvent if not activeStep', async () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([])
     blockHistoryVar([block, { ...block, id: 'Step2' }])
 
@@ -442,7 +450,6 @@ describe('Step', () => {
   })
 
   it('should set seoTitle to [journey name (step name)] if activeStep and on first card', () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
     mockUsePlausible.mockReturnValue(jest.fn())
     treeBlocksVar([block])
     blockHistoryVar([block])
@@ -456,11 +463,10 @@ describe('Step', () => {
       { container: document.head }
     )
 
-    expect(document.title).toBe('my journey (Step {{number}})')
+    expect(document.title).toBe('my journey (Step 1)')
   })
 
   it('should set seoTitle to [step name (journey name)] if activeStep and not on first card', () => {
-    mockUuidv4.mockReturnValueOnce('uuid')
     mockUsePlausible.mockReturnValue(jest.fn())
     treeBlocksVar([{ ...block, id: 'Step0' }, block])
     blockHistoryVar([block])
@@ -474,6 +480,6 @@ describe('Step', () => {
       { container: document.head }
     )
 
-    expect(document.title).toBe('Step {{number}} (my journey)')
+    expect(document.title).toBe('Step 1 (my journey)')
   })
 })
