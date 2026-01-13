@@ -90,30 +90,22 @@ describe('WebsiteCover', () => {
     expect(getByText('How did we get here?')).toBeInTheDocument()
   })
 
-  it('should render with correct container styles', async () => {
+  it('should render with correct container styles', () => {
     const { getByTestId } = render(
       <WebsiteCover backgroundColor="#DDD">{children}</WebsiteCover>
     )
 
     const cover = getByTestId('website-cover')
 
-    // Wait for MUI styles to be applied (especially important in CI)
-    // Check styles individually to handle environment differences
-    await waitFor(
-      () => {
-        const styles = window.getComputedStyle(cover)
-
-        expect(styles.height).toBe('100vh')
-        expect(styles.display).toBe('flex')
-        expect(styles.flexDirection).toBe('column')
-        // overflowY can be 'scroll' or 'auto' depending on jsdom version/environment
-        expect(['scroll', 'auto']).toContain(styles.overflowY)
-        expect(styles.overflowX).toBe('hidden')
-        // backgroundColor can be in different formats, check it contains the RGB values
-        expect(styles.backgroundColor).toMatch(/rgb\(221,\s*221,\s*221\)/)
-      },
-      { timeout: 3000 }
-    )
+    expect(cover).toHaveStyle({
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      overflowY: 'scroll',
+      overflowX: 'hidden',
+      backgroundColor: '#DDD',
+      scrollbarWidth: 'none'
+    })
   })
 
   it('should render image section with image source', () => {

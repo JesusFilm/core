@@ -152,8 +152,7 @@ export function WebsiteCover({
         '&::-webkit-scrollbar': {
           display: 'none'
         },
-        scrollbarWidth: 'none',
-        '-ms-overflow-style': 'none'
+        scrollbarWidth: 'none'
       }}
     >
       {VideoSection}
