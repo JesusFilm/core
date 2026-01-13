@@ -147,7 +147,7 @@ describe('StatusTabPanel', () => {
 
     expect(getByText('Archived List')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Active' }))
-    expect(push).toHaveBeenCalledWith({ query: { tab: 'active' } }, undefined, {
+    expect(push).toHaveBeenCalledWith({ query: { status: 'active' } }, undefined, {
       shallow: true
     })
     expect(setActiveEvent).toHaveBeenCalledWith('refetchActive')
@@ -182,7 +182,7 @@ describe('StatusTabPanel', () => {
     expect(getByText('Active List')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Archived' }))
     expect(push).toHaveBeenCalledWith(
-      { query: { tab: 'archived' } },
+      { query: { status: 'archived' } },
       undefined,
       { shallow: true }
     )
@@ -194,7 +194,7 @@ describe('StatusTabPanel', () => {
     const setActiveEvent = jest.fn()
     mockedUseRouter.mockReturnValue({
       query: {
-        tab: 'active'
+        status: 'active'
       },
       push
     } as unknown as NextRouter)
@@ -218,7 +218,7 @@ describe('StatusTabPanel', () => {
     expect(getByText('Active List')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Trash' }))
     expect(push).toHaveBeenCalledWith(
-      { query: { tab: 'trashed' } },
+      { query: { status: 'trashed' } },
       undefined,
       { shallow: true }
     )
