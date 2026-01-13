@@ -640,7 +640,9 @@ describe('event utils', () => {
       mockReadValues
         .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
         .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([['visitor-id', '2024-01-01', 'Option A; Option B']]) // existing row with already appended values
+        .mockResolvedValueOnce([
+          ['visitor-id', '2024-01-01', 'Option A; Option B']
+        ]) // existing row with already appended values
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
