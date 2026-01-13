@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import Button from '@mui/material/Button'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
@@ -16,21 +15,6 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-
-// Query for refetching template stats - defined inline to avoid cross-project imports
-const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
-  query GetTemplateFamilyStatsAggregate(
-    $id: ID!
-    $idType: IdType
-    $where: PlausibleStatsAggregateFilter!
-  ) {
-    templateFamilyStatsAggregate(id: $id, idType: $idType, where: $where) {
-      childJourneysCount
-      totalJourneysViews
-      totalJourneysResponses
-    }
-  }
-`
 
 interface CreateJourneyButtonProps {
   variant?: 'menu-item' | 'button'
@@ -140,22 +124,7 @@ export function CreateJourneyButton({
 
       try {
         const { data: duplicateData } = await journeyDuplicate({
-          variables: { id: journey.id, teamId, forceNonTemplate: true },
-          // Refetch template stats for this specific template when creating journey from template
-          // Only refetch if we're duplicating from a template
-          refetchQueries:
-            journey.template === true
-              ? [
-                  {
-                    query: GET_TEMPLATE_FAMILY_STATS_AGGREGATE,
-                    variables: {
-                      id: journey.id,
-                      idType: 'databaseId' as const,
-                      where: {}
-                    }
-                  }
-                ]
-              : []
+          variables: { id: journey.id, teamId, forceNonTemplate: true }
         })
 
         if (!duplicateData?.journeyDuplicate?.id) {

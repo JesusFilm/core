@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
@@ -22,21 +21,6 @@ import {
 } from '../../TeamProvider'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
-
-// Query for testing template stats refetch - matches the one in CreateJourneyButton
-const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
-  query GetTemplateFamilyStatsAggregate(
-    $id: ID!
-    $idType: IdType
-    $where: PlausibleStatsAggregateFilter!
-  ) {
-    templateFamilyStatsAggregate(id: $id, idType: $idType, where: $where) {
-      childJourneysCount
-      totalJourneysViews
-      totalJourneysResponses
-    }
-  }
-`
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -109,7 +93,7 @@ const journey: Journey = {
   socialNodeY: null
 }
 
-const teamData = {
+const teamResult = jest.fn(() => ({
   data: {
     teams: [
       {
@@ -141,9 +125,7 @@ const teamData = {
       lastActiveTeamId: 'teamId'
     }
   }
-}
-
-const teamResult = jest.fn(() => teamData)
+}))
 
 const getLanguagesMock = {
   request: {
@@ -214,35 +196,10 @@ const journeyDuplicateMock = {
     data: {
       journeyDuplicate: {
         id: 'duplicatedJourneyId',
-        template: false,
         __typename: 'Journey'
       }
     }
   }))
-}
-
-// Mock for template stats refetch - called once during refetchQueries
-const templateStatsResult = jest.fn(() => ({
-  data: {
-    templateFamilyStatsAggregate: {
-      __typename: 'TemplateFamilyStatsAggregateResponse',
-      childJourneysCount: 6,
-      totalJourneysViews: 100,
-      totalJourneysResponses: 50
-    }
-  }
-}))
-
-const templateStatsMock = {
-  request: {
-    query: GET_TEMPLATE_FAMILY_STATS_AGGREGATE,
-    variables: {
-      id: 'journeyId',
-      idType: 'databaseId',
-      where: {}
-    }
-  },
-  result: templateStatsResult
 }
 
 const createJourneyButton = (
@@ -273,27 +230,6 @@ describe('CreateJourneyButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     teamResult.mockClear()
-    // Reset journeyDuplicateMock to return data
-    journeyDuplicateMock.result.mockReturnValue({
-      data: {
-        journeyDuplicate: {
-          id: 'duplicatedJourneyId',
-          template: false,
-          __typename: 'Journey'
-        }
-      }
-    })
-    // Reset templateStatsResult to return data
-    templateStatsResult.mockReturnValue({
-      data: {
-        templateFamilyStatsAggregate: {
-          __typename: 'TemplateFamilyStatsAggregateResponse',
-          childJourneysCount: 6,
-          totalJourneysViews: 100,
-          totalJourneysResponses: 50
-        }
-      }
-    })
   })
 
   it('should render create journey button when variant is button', () => {
@@ -809,10 +745,7 @@ describe('CreateJourneyButton', () => {
             request: {
               query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
             },
-            result: () => {
-              teamResult()
-              return teamData
-            }
+            result: teamResult
           },
           getLanguagesMock
         ]}
@@ -829,107 +762,6 @@ describe('CreateJourneyButton', () => {
 
     await waitFor(() =>
       expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
-    )
-  })
-
-  it('should refetch template stats when duplicating from a template', async () => {
-    mockUseRouter.mockReturnValue({
-      query: { createNew: false },
-      push,
-      replace: jest.fn(),
-      pathname: '/templates/journeyId'
-    } as unknown as NextRouter)
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-            },
-            result: () => {
-              teamResult()
-              return teamData
-            }
-          },
-          getLanguagesMock,
-          journeyDuplicateMock,
-          updateLastActiveTeamIdMock,
-          templateStatsMock,
-          // Second mock for the refetch call
-          {
-            request: {
-              query: GET_TEMPLATE_FAMILY_STATS_AGGREGATE,
-              variables: {
-                id: 'journeyId',
-                idType: 'databaseId',
-                where: {}
-              }
-            },
-            result: jest.fn(() => ({
-              data: {
-                templateFamilyStatsAggregate: {
-                  __typename: 'TemplateFamilyStatsAggregateResponse',
-                  childJourneysCount: 6,
-                  totalJourneysViews: 100,
-                  totalJourneysResponses: 50
-                }
-              }
-            }))
-          }
-        ]}
-      >
-        <SnackbarProvider>
-          <TeamProvider>
-            <JourneyProvider value={{ journey }}>
-              <CreateJourneyButton signedIn />
-            </JourneyProvider>
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
-
-    await waitFor(() =>
-      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
-    )
-
-    // Open the dropdown
-    const muiSelectDropDownButton = screen.getByRole('combobox', {
-      name: 'Select Team'
-    })
-    fireEvent.mouseDown(muiSelectDropDownButton)
-
-    // Wait for the team option to appear in the menu
-    // This ensures the teams data has been processed and rendered
-    await waitFor(
-      () => {
-        const option = screen.getByRole('option', { name: 'Team Name' })
-        expect(option).toBeInTheDocument()
-        return option
-      },
-      { timeout: 3000 }
-    )
-
-    const muiSelectOptions = screen.getByRole('option', { name: 'Team Name' })
-    fireEvent.click(muiSelectOptions)
-
-    // Submit without translation
-    const addButton = screen.getByRole('button', { name: 'Add' })
-    fireEvent.click(addButton)
-
-    await waitFor(() => {
-      expect(journeyDuplicateMock.result).toHaveBeenCalled()
-    })
-
-    // Verify template stats query is refetched after duplication
-    // The refetch happens asynchronously after the mutation completes
-    await waitFor(
-      () => {
-        expect(templateStatsResult).toHaveBeenCalled()
-      },
-      { timeout: 3000 }
     )
   })
 })
