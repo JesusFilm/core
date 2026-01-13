@@ -222,7 +222,11 @@ export function DefaultMenu({
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
-          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <DuplicateJourneyMenuItem
+            id={id}
+            handleCloseMenu={handleCloseMenu}
+            fromTemplateId={journey?.fromTemplateId}
+          />
           <MenuItem
             label={t('Translate')}
             icon={<TranslateIcon color="secondary" />}
