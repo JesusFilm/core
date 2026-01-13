@@ -149,7 +149,6 @@ export function WebsiteCover({
         overflowY: 'scroll',
         overflowX: 'hidden',
         backgroundColor: baseBackgroundColor,
-        WebkitOverflowScrolling: 'touch',
         '&::-webkit-scrollbar': {
           display: 'none'
         },
