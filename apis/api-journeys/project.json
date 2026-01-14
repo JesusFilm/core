@@ -21,7 +21,7 @@
           },
           {
             "glob": "**/*.graphql",
-            "input": "libs/nest/common/src/lib/TranslationModule/",
+            "input": "apis/api-journeys/libs/nest/common/src/lib/TranslationModule/",
             "output": "./assets"
           }
         ],

@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { GraphQLError } from 'graphql'
 
-import { decryptSymmetric } from '@core/nest/common/crypto'
+import { decryptSymmetric } from '../../../lib/crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { env } from '../../../env'

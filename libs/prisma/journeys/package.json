@@ -1,0 +1,15 @@
+{
+  "name": "@core/prisma-journeys",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./client": "./src/client.ts",
+    "./*": "./src/*.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.18.0"
+  }
+}

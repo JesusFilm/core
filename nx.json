@@ -121,5 +121,6 @@
   ],
   "tui": {
     "enabled": false
-  }
+  },
+  "packageManager": "pnpm"
 }

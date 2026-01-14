@@ -1,0 +1,31 @@
+{
+  "name": "nest-decorators",
+  "$schema": "../../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-journeys/libs/nest/decorators/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/nest-decorators/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apis/api-journeys/libs/nest/decorators"],
+      "options": {
+        "jestConfig": "apis/api-journeys/libs/nest/decorators/jest.config.ts"
+      }
+    },
+    "codecov": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "codecov -f coverage/apis/api-journeys/libs/nest/decorators/cobertura-coverage.xml -F apis.api-journeys.libs.nest.decorators"
+      }
+    }
+  }
+}

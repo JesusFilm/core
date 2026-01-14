@@ -1,3 +1,7 @@
+packages:
+  - 'apis/api-journeys'
+  - 'libs/prisma/journeys'
+
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@datadog/native-appsec'

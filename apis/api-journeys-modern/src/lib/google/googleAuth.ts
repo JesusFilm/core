@@ -1,6 +1,6 @@
 import axios, { isAxiosError } from 'axios'
 
-import { decryptSymmetric } from '@core/nest/common/crypto'
+import { decryptSymmetric } from '../crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { env } from '../../env'

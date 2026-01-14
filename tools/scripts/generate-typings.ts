@@ -8,7 +8,7 @@ definitionsFactory
       join(process.cwd(), `apis/${process.argv[2]}/src/app/**/*.graphql`),
       join(
         process.cwd(),
-        'libs/nest/common/src/lib/TranslationModule/translation.graphql'
+        'apis/api-journeys/libs/nest/common/src/lib/TranslationModule/translation.graphql'
       )
     ],
     path: join(

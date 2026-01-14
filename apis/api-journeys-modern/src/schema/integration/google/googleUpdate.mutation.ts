@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { GraphQLError } from 'graphql'
 
-import { encryptSymmetric } from '@core/nest/common/crypto'
+import { encryptSymmetric } from '../../../lib/crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { env } from '../../../env'
