@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -14,6 +15,7 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Button } from '.'
@@ -60,6 +62,24 @@ describe('Button attributes', () => {
     expect(
       getByRole('button', { name: 'Trailing Icon None' })
     ).toBeInTheDocument()
+  })
+
+  it('shows event label when template', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { template: true } as unknown as JourneyFields,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock: block }}>
+            <Button {...block} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('EventLabelSelect')).toBeInTheDocument()
   })
 
   it('shows filled button', () => {

@@ -1,0 +1,1 @@
+export { getCurrentEventLabel } from './getCurrentEventLabel'
