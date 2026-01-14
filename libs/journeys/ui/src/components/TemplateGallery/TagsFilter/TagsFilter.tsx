@@ -87,6 +87,19 @@ export function TagsFilter({
   )
 
   const hasMultipleColumns = tagNames.length > 1
+
+  const filterOptions = (options: Tag[], state: { inputValue: string }) => {
+    const trimmedInput = state.inputValue.trim().toLowerCase()
+    if (trimmedInput === '') {
+      return options
+    }
+    
+    return options.filter((option) => {
+      const label = option.name.find(({ primary }) => primary)?.value ?? ''
+      return label.toLowerCase().includes(trimmedInput)
+    })
+  }
+
   return (
     <Autocomplete
       PopperComponent={popperElementId != null ? Popper : undefined}
@@ -99,6 +112,7 @@ export function TagsFilter({
       onChange={handleChange}
       popupIcon={<ChevronDownIcon />}
       options={filteredChildTags}
+      filterOptions={(filterOptions)}
       groupBy={(option) => option.parentId ?? ''}
       getOptionLabel={(option) =>
         option.name.find(({ primary }) => primary)?.value ?? ''
