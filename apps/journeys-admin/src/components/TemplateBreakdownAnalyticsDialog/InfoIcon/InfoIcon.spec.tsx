@@ -9,7 +9,7 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-describe('HelpIcon', () => {
+describe('InfoIcon', () => {
   it('should render the information icon', () => {
     render(<InfoIcon />)
 
