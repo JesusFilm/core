@@ -2,8 +2,17 @@ import { GetAdminJourneys_journeys as ActiveJourney } from '../../../../../__gen
 import { SortOrder } from '../JourneySort'
 
 import { sortJourneys } from './sortJourneys'
+import { getRecentlyOpenedJourney } from './trackRecentlyOpenedJourney'
+
+jest.mock('./trackRecentlyOpenedJourney', () => ({
+  getRecentlyOpenedJourney: jest.fn()
+}))
 
 describe('sortJourneys', () => {
+  beforeEach(() => {
+    ;(getRecentlyOpenedJourney as jest.Mock).mockReturnValue(null)
+  })
+
   it('should return journeys sorted by updatedAt date by default', () => {
     const journeys = [
       {
@@ -117,6 +126,51 @@ describe('sortJourneys', () => {
       } as unknown as ActiveJourney,
       {
         title: 'Z'
+      } as unknown as ActiveJourney
+    ])
+  })
+
+  it('should place recently opened journey first', () => {
+    const journeys = [
+      {
+        id: 'journey-1',
+        updatedAt: '2021-11-20T10:15:30.123Z',
+        title: 'B'
+      } as unknown as ActiveJourney,
+      {
+        id: 'journey-2',
+        updatedAt: '2021-11-23T18:05:25.789Z',
+        title: 'A'
+      } as unknown as ActiveJourney,
+      {
+        id: 'journey-3',
+        updatedAt: '2021-11-21T08:45:00.000Z',
+        title: 'C'
+      } as unknown as ActiveJourney
+    ]
+
+    ;(getRecentlyOpenedJourney as jest.Mock).mockReturnValue({
+      journeyId: 'journey-3',
+      openedAt: 1700000000000
+    })
+
+    const sorted = sortJourneys(journeys, SortOrder.TITLE)
+
+    expect(sorted).toEqual([
+      {
+        id: 'journey-3',
+        updatedAt: '2021-11-21T08:45:00.000Z',
+        title: 'C'
+      } as unknown as ActiveJourney,
+      {
+        id: 'journey-2',
+        updatedAt: '2021-11-23T18:05:25.789Z',
+        title: 'A'
+      } as unknown as ActiveJourney,
+      {
+        id: 'journey-1',
+        updatedAt: '2021-11-20T10:15:30.123Z',
+        title: 'B'
       } as unknown as ActiveJourney
     ])
   })
