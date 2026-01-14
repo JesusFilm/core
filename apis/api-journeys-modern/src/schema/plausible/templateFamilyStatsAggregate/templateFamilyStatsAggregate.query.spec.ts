@@ -162,7 +162,7 @@ describe('templateFamilyStatsAggregate', () => {
       where: {
         fromTemplateId: 'template-journey-id',
         status: {
-          not: JourneyStatus.trashed
+          notIn: [JourneyStatus.trashed, JourneyStatus.deleted]
         }
       },
       select: {
@@ -178,7 +178,7 @@ describe('templateFamilyStatsAggregate', () => {
         lastTextResponse: { not: null },
         journey: {
           status: {
-            not: JourneyStatus.trashed
+            notIn: [JourneyStatus.trashed, JourneyStatus.deleted]
           }
         }
       },
@@ -745,7 +745,7 @@ describe('templateFamilyStatsAggregate', () => {
       where: {
         fromTemplateId: 'template-journey-id',
         status: {
-          not: JourneyStatus.trashed
+          notIn: [JourneyStatus.trashed, JourneyStatus.deleted]
         }
       },
       select: {
@@ -761,7 +761,7 @@ describe('templateFamilyStatsAggregate', () => {
         lastTextResponse: { not: null },
         journey: {
           status: {
-            not: JourneyStatus.trashed
+            notIn: [JourneyStatus.trashed, JourneyStatus.deleted]
           }
         }
       },

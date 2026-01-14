@@ -119,7 +119,11 @@ function transformBreakdownResults(
       if (!journeyId) continue
 
       const journey = journeyIdToJourney.get(journeyId)
-      if (journey == null || journey.status === PrismaJourneyStatus.trashed) {
+      if (
+        journey == null ||
+        journey.status === PrismaJourneyStatus.trashed ||
+        journey.status === PrismaJourneyStatus.deleted
+      ) {
         continue
       }
 
@@ -148,7 +152,7 @@ async function getTotalJourneysResponses(templateId: string): Promise<{
     where: {
       fromTemplateId: templateId,
       status: {
-        not: PrismaJourneyStatus.trashed
+        notIn: [PrismaJourneyStatus.trashed, PrismaJourneyStatus.deleted]
       }
     },
     select: {
@@ -175,7 +179,7 @@ async function getTotalJourneysResponses(templateId: string): Promise<{
       lastTextResponse: { not: null },
       journey: {
         status: {
-          not: PrismaJourneyStatus.trashed
+          notIn: [PrismaJourneyStatus.trashed, PrismaJourneyStatus.deleted]
         }
       }
     },
