@@ -68,10 +68,23 @@ function LocalButton({
         {...props}
         variant="outlined"
         size="small"
+        disableRipple
+        disableTouchRipple
         sx={{
           border: 'none',
+          backgroundColor: 'transparent',
           '&:hover': {
-            border: 'none'
+            border: 'none',
+            backgroundColor: 'transparent'
+          },
+          '&:active': {
+            backgroundColor: 'transparent'
+          },
+          '&:focus': {
+            backgroundColor: 'transparent'
+          },
+          '&:focus-visible': {
+            backgroundColor: 'transparent'
           },
           px: 1,
           maxWidth: '100%',
@@ -161,12 +174,15 @@ export function HeaderAndLanguageFilter({
 }: LanguageFilterProps): ReactElement {
   const router = useRouter()
   const [open, setOpen] = useState(false)
+
   const { t } = useTranslation('libs-journeys-ui')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
   useEffect(() => {
     const popperAnchor = document?.getElementById('popperAnchorLayer')
-    if (popperAnchor != null) setAnchorEl(popperAnchor)
+    if (popperAnchor != null && anchorEl !== popperAnchor) {
+      setAnchorEl(popperAnchor)
+    }
   }, [anchorEl])
 
   const { data, loading } = useLanguagesQuery({

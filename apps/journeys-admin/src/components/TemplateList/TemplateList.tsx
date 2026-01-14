@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import dynamic from 'next/dynamic'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import type {
   JourneyListEvent,
@@ -38,9 +38,28 @@ const TrashedTemplateList = dynamic(
   { loading: () => <LoadingJourneyList /> }
 )
 
+const SORT_ORDER_STORAGE_KEY = 'journey-templates-sort-order'
+
 export function TemplateList(): ReactElement {
-  const [sortOrder, setSortOrder] = useState<SortOrder>()
+  const [sortOrder, setSortOrder] = useState<SortOrder | undefined>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(SORT_ORDER_STORAGE_KEY)
+      if (
+        saved != null &&
+        Object.values(SortOrder).includes(saved as SortOrder)
+      ) {
+        return saved as SortOrder
+      }
+    }
+    return SortOrder.UPDATED_AT
+  })
   const [event, setEvent] = useState<JourneyListEvent>()
+
+  useEffect(() => {
+    if (sortOrder != null && typeof window !== 'undefined') {
+      localStorage.setItem(SORT_ORDER_STORAGE_KEY, sortOrder)
+    }
+  }, [sortOrder])
 
   const handleClick = (event: JourneyListEvent): void => {
     setEvent(event)

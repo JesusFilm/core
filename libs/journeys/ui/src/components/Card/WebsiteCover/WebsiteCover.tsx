@@ -152,9 +152,9 @@ export function WebsiteCover({
         WebkitOverflowScrolling: 'touch',
         // Hide scrollbar for webkit browsers (Chrome, Safari, Edge)
         '&::-webkit-scrollbar': {
-          display: 'none',
           width: 0,
-          height: 0
+          height: 0,
+          background: 'transparent'
         },
         // Hide scrollbar for Firefox
         scrollbarWidth: 'none',

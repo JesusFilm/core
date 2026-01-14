@@ -18,6 +18,7 @@ import i18nConfig from '../next-i18next.config'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
+import { useTrackRecentlyOpenedJourney } from '../src/libs/useTrackRecentlyOpenedJourney/useTrackRecentlyOpenedJourney'
 
 import './globals.css'
 
@@ -48,6 +49,8 @@ function JourneysAdminApp({
     initialState: pageProps.initialApolloState,
     token: user?._token
   })
+
+  useTrackRecentlyOpenedJourney()
 
   useEffect(() => {
     // Remove the server-side injected CSS.
