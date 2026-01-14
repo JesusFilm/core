@@ -7,6 +7,7 @@
 
 # dependencies
 /node_modules
+/apis/cms/node_modules
 
 # IDEs and editors
 /.idea
@@ -93,3 +94,7 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+
+# Strapi CMS compiled config files
+apis/cms/config/*.js
+apis/cms/config/*.js.map

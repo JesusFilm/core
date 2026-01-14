@@ -1,0 +1,36 @@
+{
+  "name": "cms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Jesus Film Project CMS",
+  "dependencies": {
+    "@strapi/plugin-cloud": "5.33.2",
+    "@strapi/plugin-users-permissions": "5.33.2",
+    "@strapi/strapi": "5.33.2",
+    "@strapi/types": "^5.33.2",
+    "canvas": "^3.2.1",
+    "fs-extra": "^10.0.0",
+    "mime-types": "^2.1.27",
+    "pg": "8.8.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.0.0",
+    "strapi-blurhash": "^2.0.0",
+    "strapi-plugin-mux-video-uploader": "^3.0.2",
+    "styled-components": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.0.0 <=24.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "535792b1-86d8-444e-b899-11a1a228190d",
+    "installId": "59d3de4b0e752f3d6136d2793c61a5e03ab8cd699aaa07fc9532cdedccadfcd7"
+  }
+}
