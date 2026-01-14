@@ -23,6 +23,14 @@ jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
 
+const refetchTemplateStats = jest.fn()
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
+    query: [jest.fn(), {}],
+    refetchTemplateStats
+  }))
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
@@ -78,6 +86,7 @@ const noJourneysMock: MockedResponse<
 describe('TrashedJourneyList', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
   })
 
   beforeAll(() => {
@@ -198,7 +207,20 @@ describe('TrashedJourneyList', () => {
 
   describe('Restore All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'published' }]
+      data: {
+        journeysRestore: [
+          {
+            id: defaultJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const restoreJourneysMock = {
       request: {
@@ -273,6 +295,34 @@ describe('TrashedJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Restore' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList
+                event="restoreAllTrashed"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 

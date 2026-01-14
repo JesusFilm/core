@@ -14,6 +14,14 @@ import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { ActiveTemplateList } from '.'
 
+const refetchTemplateStats = jest.fn()
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
+    query: [jest.fn(), {}],
+    refetchTemplateStats
+  }))
+}))
+
 const ActiveTemplateListMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
@@ -47,6 +55,11 @@ const noTemplatesMock = {
 }
 
 describe('ActiveTemplateList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
@@ -228,7 +241,10 @@ describe('ActiveTemplateList', () => {
   describe('Trash All', () => {
     const result = jest.fn(() => ({
       data: {
-        journeysTrash: [{ id: defaultTemplate.id, status: 'archived' }]
+        journeysTrash: [
+          { id: defaultTemplate.id, status: 'archived', fromTemplateId: 'template-1' },
+          { id: oldTemplate.id, status: 'archived', fromTemplateId: 'template-2' }
+        ]
       }
     }))
     const trashTemplatesMock = {
@@ -296,6 +312,28 @@ describe('ActiveTemplateList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when trashing templates with fromTemplateId', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[ActiveTemplateListMock, trashTemplatesMock, noTemplatesMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveTemplateList event="trashAllActive" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith(['template-1', 'template-2'])
+      })
     })
   })
 })

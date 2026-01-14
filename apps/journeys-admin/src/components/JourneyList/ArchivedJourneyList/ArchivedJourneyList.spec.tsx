@@ -23,6 +23,14 @@ jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
 
+const refetchTemplateStats = jest.fn()
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
+    query: [jest.fn(), {}],
+    refetchTemplateStats
+  }))
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
@@ -67,6 +75,7 @@ const noJourneysMock: MockedResponse<
 describe('ArchivedJourneyList', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
   })
 
   beforeAll(() => {
@@ -143,7 +152,20 @@ describe('ArchivedJourneyList', () => {
 
   describe('Unarchive All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'published' }]
+      data: {
+        journeysRestore: [
+          {
+            id: defaultJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const archiveJourneysMock = {
       request: {
@@ -219,11 +241,52 @@ describe('ArchivedJourneyList', () => {
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
+
+    it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList
+                event="restoreAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByText('Unarchive'))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
+    })
   })
 
   describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'trashAllArchived' }]
+      data: {
+        journeysTrash: [
+          {
+            id: defaultJourney.id,
+            status: 'trashAllArchived',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldJourney.id,
+            status: 'trashAllArchived',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const trashJourneysMock = {
       request: {
@@ -298,6 +361,34 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when trashing journeys with fromTemplateId', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList
+                event="trashAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 })

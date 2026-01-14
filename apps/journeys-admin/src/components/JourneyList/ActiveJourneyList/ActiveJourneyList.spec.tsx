@@ -22,6 +22,14 @@ jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
 
+const refetchTemplateStats = jest.fn()
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
+    query: [jest.fn(), {}],
+    refetchTemplateStats
+  }))
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
@@ -64,6 +72,11 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ActiveJourneyList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+  })
+
   it('should ask users to add a new journey', async () => {
     const { getByText } = render(
       <MockedProvider mocks={[noJourneysMock]}>
@@ -239,6 +252,60 @@ describe('ActiveJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when trashing journeys with fromTemplateId', async () => {
+      const result = jest.fn(() => ({
+        data: {
+          journeysTrash: [
+            {
+              id: defaultJourney.id,
+              status: 'archived',
+              fromTemplateId: 'template-1'
+            },
+            {
+              id: oldJourney.id,
+              status: 'archived',
+              fromTemplateId: 'template-2'
+            }
+          ]
+        }
+      }))
+      const trashJourneysMock = {
+        request: {
+          query: TRASH_ACTIVE_JOURNEYS,
+          variables: {
+            ids: [defaultJourney.id, oldJourney.id]
+          }
+        },
+        result
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList
+                event="trashAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 })

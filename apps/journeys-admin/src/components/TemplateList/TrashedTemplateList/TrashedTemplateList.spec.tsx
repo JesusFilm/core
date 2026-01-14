@@ -14,6 +14,14 @@ import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { TrashedTemplateList } from '.'
 
+const refetchTemplateStats = jest.fn()
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
+    query: [jest.fn(), {}],
+    refetchTemplateStats
+  }))
+}))
+
 const trashedJourneysMock = {
   request: {
     query: GET_ADMIN_JOURNEYS,
@@ -50,6 +58,11 @@ const noJourneysMock = {
 }
 
 describe('TrashedTemplateList', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date(fakeDate))
@@ -202,7 +215,20 @@ describe('TrashedTemplateList', () => {
 
   describe('Restore All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultTemplate.id, status: 'published' }]
+      data: {
+        journeysRestore: [
+          {
+            id: defaultTemplate.id,
+            status: 'published',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldTemplate.id,
+            status: 'published',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const restoreJourneysMock = {
       request: {
@@ -270,6 +296,31 @@ describe('TrashedTemplateList', () => {
       )
       fireEvent.click(getByText('Restore'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when restoring templates with fromTemplateId', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedTemplateList event="restoreAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Template Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByText('Restore'))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 

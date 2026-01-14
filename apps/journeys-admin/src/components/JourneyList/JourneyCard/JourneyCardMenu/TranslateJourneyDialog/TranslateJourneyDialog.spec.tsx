@@ -16,6 +16,17 @@ import { TranslateJourneyDialog } from './TranslateJourneyDialog'
 
 jest.mock('@mui/material/useMediaQuery')
 
+const refetchTemplateStats = jest.fn()
+jest.mock(
+  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
+  () => ({
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
+      query: [jest.fn(), {}],
+      refetchTemplateStats
+    }))
+  })
+)
+
 describe('TranslateJourneyDialog', () => {
   // Mock console methods to reduce noise during tests
   const originalConsoleError = console.error
@@ -125,6 +136,7 @@ describe('TranslateJourneyDialog', () => {
   beforeEach(() => {
     journeyDuplicateMock.result.mockClear()
     handleClose.mockClear()
+    refetchTemplateStats.mockClear()
   })
 
   it('should render correctly', () => {
@@ -287,5 +299,63 @@ describe('TranslateJourneyDialog', () => {
       },
       { timeout: 3000 }
     )
+  })
+
+  it('should call refetchTemplateStats when translating a journey with fromTemplateId', async () => {
+    const journeyWithTemplateId = {
+      ...defaultJourney,
+      fromTemplateId: 'template-id-123',
+      trashedAt: null
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getLastActiveTeamIdAndTeamsMock,
+          {
+            ...journeyDuplicateMock,
+            result: jest.fn(() => ({
+              data: {
+                journeyDuplicate: {
+                  id: 'duplicatedJourneyId',
+                  fromTemplateId: 'template-id-123'
+                }
+              }
+            }))
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider
+              value={{ journey: journeyWithTemplateId, variant: 'admin' }}
+            >
+              <TranslateJourneyDialog
+                open={true}
+                onClose={handleClose}
+                journey={journeyWithTemplateId}
+              />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox')).not.toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
+
+    fireEvent.focus(screen.getByRole('combobox'))
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['template-id-123'])
+    })
   })
 })

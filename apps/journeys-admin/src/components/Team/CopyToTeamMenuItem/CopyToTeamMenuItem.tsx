@@ -97,6 +97,11 @@ export function CopyToTeamMenuItem({
     variables: translationVariables,
     skip: !translationVariables,
     onComplete: () => {
+      // Refetch template stats if the source journey has a fromTemplateId
+      if (journeyData?.fromTemplateId != null) {
+        void refetchTemplateStats([journeyData.fromTemplateId])
+      }
+
       enqueueSnackbar(t('Journey Translated'), {
         variant: 'success',
         preventDuplicate: true

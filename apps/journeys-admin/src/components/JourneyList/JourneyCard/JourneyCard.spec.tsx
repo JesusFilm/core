@@ -22,7 +22,7 @@ import {
 
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
-import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from './TemplateAggregateAnalytics/TemplateAggregateAnalytics'
+import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
