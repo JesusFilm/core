@@ -138,13 +138,9 @@ export function CreateJourneyButton({
           duplicateData.journeyDuplicate as { fromTemplateId?: string | null }
         ).fromTemplateId
 
-        // Determine which template ID to refetch
-        // If duplicating from a template, use the source journey ID
-        // Otherwise, use fromTemplateId from the duplicated journey
         const templateIdToRefetch =
           journey.template === true ? journey.id : fromTemplateId
 
-        // Refetch template stats if we have a template ID
         if (templateIdToRefetch != null && refetchTemplateStats != null) {
           void refetchTemplateStats([templateIdToRefetch])
         }
