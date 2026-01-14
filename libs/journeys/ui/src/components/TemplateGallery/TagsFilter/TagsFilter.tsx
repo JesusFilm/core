@@ -93,7 +93,7 @@ export function TagsFilter({
     if (trimmedInput === '') {
       return options
     }
-    
+
     return options.filter((option) => {
       const label = option.name.find(({ primary }) => primary)?.value ?? ''
       return label.toLowerCase().includes(trimmedInput)
@@ -112,7 +112,7 @@ export function TagsFilter({
       onChange={handleChange}
       popupIcon={<ChevronDownIcon />}
       options={filteredChildTags}
-      filterOptions={(filterOptions)}
+      filterOptions={filterOptions}
       groupBy={(option) => option.parentId ?? ''}
       getOptionLabel={(option) =>
         option.name.find(({ primary }) => primary)?.value ?? ''
