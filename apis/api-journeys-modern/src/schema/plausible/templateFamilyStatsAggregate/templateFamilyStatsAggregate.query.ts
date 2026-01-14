@@ -64,9 +64,10 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
       }
 
       let totalJourneysViews = 0
+      let breakdownResults: PlausibleStatsResponse[] = []
       if (templateJourney.templateSite === true) {
         const templateSiteId = `api-journeys-template-${templateJourney.id}`
-        const breakdownResults = await getJourneyStatsBreakdown(
+        breakdownResults = await getJourneyStatsBreakdown(
           templateJourney.id,
           {
             ...where,
@@ -75,12 +76,14 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
           },
           templateSiteId
         )
-
-        totalJourneysViews = transformBreakdownResults(breakdownResults)
       }
 
-      const { totalJourneysResponses, childJourneysCount } =
+      const { childJourneys, totalJourneysResponses, childJourneysCount } =
         await getTotalJourneysResponses(templateJourney.id)
+      totalJourneysViews = transformBreakdownResults(
+        breakdownResults,
+        childJourneys
+      )
 
       return {
         childJourneysCount,
@@ -92,9 +95,16 @@ builder.queryField('templateFamilyStatsAggregate', (t) =>
 )
 
 function transformBreakdownResults(
-  breakdownResults: PlausibleStatsResponse[]
+  breakdownResults: PlausibleStatsResponse[],
+  childJourneys: Array<
+    Prisma.JourneyGetPayload<{ select: { id: true; status: true } }>
+  >
 ): number {
-  const slugMaxVisitors = new Map<string, number>()
+  const journeyIdToJourney = new Map(
+    childJourneys.map((journey) => [journey.id, journey])
+  )
+
+  const journeyIdMaxVisitors = new Map<string, number>()
 
   for (const result of breakdownResults) {
     const property = result.property ?? ''
@@ -102,19 +112,24 @@ function transformBreakdownResults(
     if (property.startsWith('/')) {
       const afterFirstSlash = property.slice(1)
       const nextSlashIndex = afterFirstSlash.indexOf('/')
-      const slug =
+      const journeyId =
         nextSlashIndex === -1
           ? afterFirstSlash
           : afterFirstSlash.slice(0, nextSlashIndex)
-      if (!slug) continue
+      if (!journeyId) continue
+
+      const journey = journeyIdToJourney.get(journeyId)
+      if (journey == null || journey.status === PrismaJourneyStatus.trashed) {
+        continue
+      }
 
       const visitors = result.visitors ?? 0
-      const currentMax = slugMaxVisitors.get(slug) ?? 0
-      slugMaxVisitors.set(slug, Math.max(currentMax, visitors))
+      const currentMax = journeyIdMaxVisitors.get(journeyId) ?? 0
+      journeyIdMaxVisitors.set(journeyId, Math.max(currentMax, visitors))
     }
   }
 
-  const totalJourneysViews = Array.from(slugMaxVisitors.values()).reduce(
+  const totalJourneysViews = Array.from(journeyIdMaxVisitors.values()).reduce(
     (sum, maxVisitors) => sum + maxVisitors,
     0
   )
@@ -123,6 +138,9 @@ function transformBreakdownResults(
 }
 
 async function getTotalJourneysResponses(templateId: string): Promise<{
+  childJourneys: Array<
+    Prisma.JourneyGetPayload<{ select: { id: true; status: true } }>
+  >
   totalJourneysResponses: number
   childJourneysCount: number
 }> {
@@ -134,12 +152,14 @@ async function getTotalJourneysResponses(templateId: string): Promise<{
       }
     },
     select: {
-      id: true
+      id: true,
+      status: true
     }
   })
 
   if (childJourneys.length === 0) {
     return {
+      childJourneys,
       totalJourneysResponses: 0,
       childJourneysCount: 0
     }
@@ -169,6 +189,7 @@ async function getTotalJourneysResponses(templateId: string): Promise<{
   )
 
   return {
+    childJourneys,
     totalJourneysResponses,
     childJourneysCount
   }
