@@ -117,6 +117,22 @@ module "api-media" {
   }
 }
 
+module "cms" {
+  source = "../../../apps/cms/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/_health"
+      health_check_port = "1337"
+    })
+  })
+  env           = "prod"
+  doppler_token = data.aws_ssm_parameter.doppler_cms_prod_token.value
+  alb = {
+    arn      = module.prod.public_alb.arn
+    dns_name = module.prod.public_alb.dns_name
+  }
+}
+
 module "arclight" {
   source = "../../../apps/arclight/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
@@ -189,22 +205,6 @@ module "journeys-admin" {
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name
   host_name        = "admin.nextstep.is"
-}
-
-module "cms" {
-  source = "../../../apis/cms/infrastructure"
-  ecs_config = merge(local.public_ecs_config, {
-    alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
-      health_check_port = "1337"
-    })
-  })
-  env              = "prod"
-  doppler_token    = data.aws_ssm_parameter.doppler_cms_prod_token.value
-  alb = {
-    arn      = module.prod.public_alb.arn
-    dns_name = module.prod.public_alb.dns_name
-  }
 }
 
 module "postgresql" {

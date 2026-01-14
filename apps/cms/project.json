@@ -1,7 +1,7 @@
 {
   "name": "cms",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apis/cms",
+  "sourceRoot": "apps/cms",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -27,14 +27,14 @@
     "upgrade": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apis/cms",
+        "cwd": "apps/cms",
         "command": "pnpm dlx @strapi/upgrade latest"
       }
     },
     "upgrade:dry": {
       "executor": "nx:run-commands",
       "options": {
-        "cwd": "apis/cms",
+        "cwd": "apps/cms",
         "command": "pnpm dlx @strapi/upgrade latest --dry"
       }
     },
@@ -52,7 +52,7 @@
       "options": {
         "commands": [
           {
-            "command": "DOPPLER_TOKEN=$DOPPLER_CMS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project cms > apis/cms/.env"
+            "command": "DOPPLER_TOKEN=$DOPPLER_CMS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project cms > apps/cms/.env"
           }
         ]
       }

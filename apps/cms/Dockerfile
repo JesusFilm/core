@@ -24,5 +24,5 @@ COPY . .
 
 RUN pnpm run build
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "run", "start"]
 
