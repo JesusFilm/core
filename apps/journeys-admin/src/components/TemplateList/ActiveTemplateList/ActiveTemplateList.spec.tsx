@@ -242,8 +242,16 @@ describe('ActiveTemplateList', () => {
     const result = jest.fn(() => ({
       data: {
         journeysTrash: [
-          { id: defaultTemplate.id, status: 'archived', fromTemplateId: 'template-1' },
-          { id: oldTemplate.id, status: 'archived', fromTemplateId: 'template-2' }
+          {
+            id: defaultTemplate.id,
+            status: 'archived',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldTemplate.id,
+            status: 'archived',
+            fromTemplateId: 'template-2'
+          }
         ]
       }
     }))
@@ -332,7 +340,10 @@ describe('ActiveTemplateList', () => {
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => {
-        expect(refetchTemplateStats).toHaveBeenCalledWith(['template-1', 'template-2'])
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
       })
     })
   })

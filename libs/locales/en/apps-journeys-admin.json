@@ -705,6 +705,7 @@
   "{{count}} years ago_one": "{{count}} years ago",
   "{{count}} years ago_other": "{{count}} years ago",
   "<0>{duration}</0>": "<0>{duration}</0>",
+  "Failed to load template analytics": "Failed to load template analytics",
   "Journeys Created": "Journeys Created",
   "Views": "Views",
   "Unarchive Templates": "Unarchive Templates",

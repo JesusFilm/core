@@ -168,8 +168,16 @@ describe('ArchivedTemplateList', () => {
     const result = jest.fn(() => ({
       data: {
         journeysRestore: [
-          { id: defaultTemplate.id, status: 'published', fromTemplateId: 'template-1' },
-          { id: oldTemplate.id, status: 'published', fromTemplateId: 'template-2' }
+          {
+            id: defaultTemplate.id,
+            status: 'published',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldTemplate.id,
+            status: 'published',
+            fromTemplateId: 'template-2'
+          }
         ]
       }
     }))
@@ -257,7 +265,10 @@ describe('ArchivedTemplateList', () => {
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => {
-        expect(refetchTemplateStats).toHaveBeenCalledWith(['template-1', 'template-2'])
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
       })
     })
   })
@@ -266,8 +277,16 @@ describe('ArchivedTemplateList', () => {
     const result = jest.fn(() => ({
       data: {
         journeysTrash: [
-          { id: defaultTemplate.id, status: 'trashAllArchived', fromTemplateId: 'template-1' },
-          { id: oldTemplate.id, status: 'trashAllArchived', fromTemplateId: 'template-2' }
+          {
+            id: defaultTemplate.id,
+            status: 'trashAllArchived',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldTemplate.id,
+            status: 'trashAllArchived',
+            fromTemplateId: 'template-2'
+          }
         ]
       }
     }))
@@ -355,7 +374,10 @@ describe('ArchivedTemplateList', () => {
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => {
-        expect(refetchTemplateStats).toHaveBeenCalledWith(['template-1', 'template-2'])
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
       })
     })
   })

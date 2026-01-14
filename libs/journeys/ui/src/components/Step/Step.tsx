@@ -17,6 +17,7 @@ import {
   templateKeyify
 } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
 import { StepFields } from './__generated__/StepFields'

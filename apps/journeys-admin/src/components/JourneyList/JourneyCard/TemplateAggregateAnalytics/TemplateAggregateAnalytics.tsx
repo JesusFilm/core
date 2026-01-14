@@ -10,8 +10,8 @@ import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 
 import { IdType } from '../../../../../__generated__/globalTypes'
-import { Item } from '../../../Editor/Toolbar/Items/Item'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { Item } from '../../../Editor/Toolbar/Items/Item'
 
 import { localizeAndRound } from './localizeAndRound'
 

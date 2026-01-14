@@ -15,7 +15,6 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiv
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { UpdateLastActiveTeamId } from '../../../../../../__generated__/UpdateLastActiveTeamId'
-
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'

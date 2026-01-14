@@ -54,13 +54,13 @@ export function ArchivedJourneyList({
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
-        
+
         // Refetch template stats for affected templates
         const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
         if (templateIds.length > 0) {
           void refetchTemplateStats(templateIds)
         }
-        
+
         void refetch()
       }
     }
@@ -71,13 +71,13 @@ export function ArchivedJourneyList({
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
-        
+
         // Refetch template stats for affected templates
         const templateIds = extractTemplateIdsFromJourneys(data.journeysTrash)
         if (templateIds.length > 0) {
           void refetchTemplateStats(templateIds)
         }
-        
+
         void refetch()
       }
     }
