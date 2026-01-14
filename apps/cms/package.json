@@ -29,10 +29,6 @@
     "@types/react-dom": "^18",
     "typescript": "^5"
   },
-  "engines": {
-    "node": ">=20.0.0 <=24.x.x",
-    "npm": ">=6.0.0"
-  },
   "strapi": {
     "uuid": "535792b1-86d8-444e-b899-11a1a228190d",
     "installId": "59d3de4b0e752f3d6136d2793c61a5e03ab8cd699aaa07fc9532cdedccadfcd7"
