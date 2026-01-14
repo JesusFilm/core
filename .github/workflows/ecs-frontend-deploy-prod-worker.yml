@@ -81,7 +81,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
 
       - name: nx Install
         run: pnpm add -g nx --silent
