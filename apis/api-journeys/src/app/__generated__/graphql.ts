@@ -102,7 +102,17 @@ export enum IconName {
     SubscriptionsRounded = "SubscriptionsRounded",
     ContactSupportRounded = "ContactSupportRounded",
     Launch = "Launch",
-    MailOutline = "MailOutline"
+    MailOutline = "MailOutline",
+    ArrowLeftContained2 = "ArrowLeftContained2",
+    ArrowRightContained2 = "ArrowRightContained2",
+    MessageChat1 = "MessageChat1",
+    Home4 = "Home4",
+    LinkAngled = "LinkAngled",
+    Volume5 = "Volume5",
+    Note2 = "Note2",
+    UserProfile2 = "UserProfile2",
+    UsersProfiles3 = "UsersProfiles3",
+    Phone = "Phone"
 }
 
 export enum IconColor {
