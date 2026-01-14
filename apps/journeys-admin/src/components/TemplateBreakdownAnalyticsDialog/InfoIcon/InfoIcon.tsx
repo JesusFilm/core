@@ -1,8 +1,10 @@
-import { ReactElement } from 'react'
-import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
-import { Item } from '../../Editor/Toolbar/Items/Item'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
+
+import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+
+import { Item } from '../../Editor/Toolbar/Items/Item'
 
 export function InfoIcon(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

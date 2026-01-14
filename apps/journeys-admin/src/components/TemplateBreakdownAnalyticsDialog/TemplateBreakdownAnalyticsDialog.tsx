@@ -24,8 +24,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
 
-import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 import { InfoIcon } from './InfoIcon'
+import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
