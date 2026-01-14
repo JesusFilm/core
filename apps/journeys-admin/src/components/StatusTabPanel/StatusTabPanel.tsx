@@ -148,7 +148,8 @@ export function StatusTabPanel({
         value={activeTab}
         index={journeyStatusTabs[0].tabIndex}
         unmountUntilVisible={
-          router?.query?.status !== undefined && router?.query?.status !== 'active'
+          router?.query?.status !== undefined &&
+          router?.query?.status !== 'active'
         }
       >
         {activeList}

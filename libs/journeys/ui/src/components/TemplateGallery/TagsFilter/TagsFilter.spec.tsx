@@ -426,6 +426,7 @@ describe('TagsFilter', () => {
     )
     expect(getByTestId('ChevronDownIcon')).toBeInTheDocument()
   })
+
   it('should filter options when input has leading/trailing spaces', async () => {
     const handleChange = jest.fn()
     const { getByRole, queryByRole } = render(

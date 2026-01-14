@@ -147,9 +147,13 @@ describe('StatusTabPanel', () => {
 
     expect(getByText('Archived List')).toBeInTheDocument()
     fireEvent.click(getByRole('tab', { name: 'Active' }))
-    expect(push).toHaveBeenCalledWith({ query: { status: 'active' } }, undefined, {
-      shallow: true
-    })
+    expect(push).toHaveBeenCalledWith(
+      { query: { status: 'active' } },
+      undefined,
+      {
+        shallow: true
+      }
+    )
     expect(setActiveEvent).toHaveBeenCalledWith('refetchActive')
   })
 
