@@ -162,12 +162,11 @@ module "cms" {
       health_check_port = "1337"
     })
   })
-  env           = "stage"
-  doppler_token = data.aws_ssm_parameter.doppler_cms_stage_token.value
-  alb = {
-    arn      = module.stage.public_alb.arn
-    dns_name = module.stage.public_alb.dns_name
-  }
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_cms_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_name        = "cms-stage.jesusfilm.org"
 }
 
 module "arclight" {

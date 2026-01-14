@@ -125,12 +125,11 @@ module "cms" {
       health_check_port = "1337"
     })
   })
-  env           = "prod"
-  doppler_token = data.aws_ssm_parameter.doppler_cms_prod_token.value
-  alb = {
-    arn      = module.prod.public_alb.arn
-    dns_name = module.prod.public_alb.dns_name
-  }
+  env              = "prod"
+  doppler_token    = data.aws_ssm_parameter.doppler_cms_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_name        = "cms.jesusfilm.org"
 }
 
 module "arclight" {

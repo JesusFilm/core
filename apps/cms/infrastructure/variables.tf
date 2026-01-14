@@ -26,18 +26,34 @@ variable "ecs_config" {
 }
 
 variable "env" {
-  type    = string
-  default = "prod"
+  type        = string
+  default     = "prod"
+  description = "Environment for CMS"
 }
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for CMS"
 }
 
-variable "alb" {
-  type = object({
-    arn      = string
-    dns_name = string
-  })
+variable "alb_listener_arn" {
+  type        = string
+  description = "ARN for ALB listener rule"
+}
+
+variable "alb_dns_name" {
+  type        = string
+  description = "DNS name for ALB listener rule"
+}
+
+variable "host_name" {
+  type        = string
+  description = "Host name for ALB listener rule"
+}
+
+variable "host_names" {
+  type        = list(string)
+  default     = []
+  description = "List of host names for ALB listener rule. Takes precedence over host_name if provided."
 }
 

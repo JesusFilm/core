@@ -20,18 +20,17 @@ locals {
     host_port      = local.port
     cpu            = 1024
     memory         = 2048
-    desired_count  = 2
+    desired_count  = 1
     zone_id        = var.ecs_config.zone_id
+    alb = {
+      arn      = var.ecs_config.alb.arn
+      dns_name = var.ecs_config.alb.dns_name
+    }
     alb_target_group = merge(var.ecs_config.alb_target_group, {
-      port                             = local.port
-      health_check_path                = "/_health"
-      health_check_interval            = 30
-      health_check_timeout             = 5
-      health_check_healthy_threshold   = 2
-      health_check_unhealthy_threshold = 3
+      port = local.port
     })
     auto_scaling = {
-      max_capacity = 2
+      max_capacity = 4
       min_capacity = 1
       cpu = {
         target_value = 75
