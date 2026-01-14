@@ -25,6 +25,7 @@ import {
 import { earliestStatsCollected } from '../Editor/Slider/JourneyFlow/AnalyticsOverlaySwitch'
 
 import { TemplateBreakdownAnalyticsTable } from './TemplateBreakdownAnalyticsTable'
+import { InfoIcon } from './InfoIcon'
 
 interface TemplateBreakdownAnalyticsDialogProps {
   journeyId: string
@@ -142,7 +143,8 @@ export function TemplateBreakdownAnalyticsDialog({
       }}
       dialogTitle={{
         title: t('Template Breakdown Analytics'),
-        closeButton: true
+        closeButton: true,
+        icon: <InfoIcon />
       }}
       divider
       fullscreen={mdDown}
