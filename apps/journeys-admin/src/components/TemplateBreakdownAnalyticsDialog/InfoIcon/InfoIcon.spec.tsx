@@ -18,7 +18,7 @@ describe('InfoIcon', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByRole('button', {
-        name: 'Only journeys with non-zero activity are shown'
+        name: 'Rows and columns with zero activity are hidden'
       })
     ).toBeInTheDocument()
   })
