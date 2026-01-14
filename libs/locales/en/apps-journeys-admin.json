@@ -975,7 +975,7 @@
   "Only a team manager can rename a team": "Only a team manager can rename a team",
   "Only a manager can invite new members to the team": "Only a manager can invite new members to the team",
   "New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.": "New members get access instantly. Team members can see all analytics, edit any journey, and delete and copy journey.",
-  "Only journeys with non-zero activity are shown": "Only journeys with non-zero activity are shown",
+  "Rows and columns with zero activity are hidden": "Rows and columns with zero activity are hidden",
   "Template Breakdown Analytics": "Template Breakdown Analytics",
   "Include archived journeys": "Include archived journeys",
   "There was an error loading the stats": "There was an error loading the stats",

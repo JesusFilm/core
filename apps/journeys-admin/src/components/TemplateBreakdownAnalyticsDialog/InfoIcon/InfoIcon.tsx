@@ -14,7 +14,7 @@ export function InfoIcon(): ReactElement {
       <Item
         variant="icon-button"
         icon={<InformationCircleContainedIcon />}
-        label={t('Only journeys with non-zero activity are shown')}
+        label={t('Rows and columns with zero activity are hidden')}
         ButtonProps={{
           sx: {
             cursor: 'default'
