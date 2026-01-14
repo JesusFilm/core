@@ -54,7 +54,7 @@ export function TemplateAggregateAnalytics({
     data?.templateFamilyStatsAggregate?.totalJourneysViews
   const journeyResponseCount =
     data?.templateFamilyStatsAggregate?.totalJourneysResponses
-  const isLoading = loading || data == null
+  const showLoadingSkeleton = loading || data == null
 
   const buttonProps = {
     sx: {
@@ -84,7 +84,7 @@ export function TemplateAggregateAnalytics({
         icon={<Data1Icon />}
         label={t('Journeys Created')}
         count={
-          isLoading ? (
+          showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
@@ -99,7 +99,7 @@ export function TemplateAggregateAnalytics({
         icon={<EyeOpenIcon />}
         label={t('Views')}
         count={
-          isLoading ? (
+          showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
@@ -114,7 +114,7 @@ export function TemplateAggregateAnalytics({
         icon={<Inbox2Icon />}
         label={t('Responses')}
         count={
-          isLoading ? (
+          showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>

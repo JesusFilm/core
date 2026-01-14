@@ -9,6 +9,7 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
+import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
@@ -21,7 +22,10 @@ jest.mock('@mui/material/useMediaQuery')
 jest.mock(
   '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
   () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
+    extractTemplateIdsFromJourneys: jest.requireActual(
+      '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+    ).extractTemplateIdsFromJourneys
   })
 )
 
@@ -323,6 +327,49 @@ describe('TranslateJourneyDialog', () => {
       trashedAt: null
     }
 
+    const translateSubscriptionMock = {
+      request: {
+        query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+        variables: {
+          journeyId: 'duplicatedJourneyId',
+          name: 'Journey Heading',
+          journeyLanguageName: '',
+          textLanguageId: '496',
+          textLanguageName: 'Français'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyAiTranslateCreateSubscription: {
+            progress: 100,
+            message: 'Translation completed',
+            journey: {
+              id: 'duplicatedJourneyId',
+              title: 'Viaje Traducido',
+              description: 'Esta es una descripción traducida',
+              languageId: '496',
+              createdAt: '2023-04-25T12:34:56Z',
+              updatedAt: '2023-04-25T12:34:56Z',
+              blocks: [],
+              __typename: 'Journey',
+              language: {
+                __typename: 'Language',
+                id: '496',
+                name: [
+                  {
+                    __typename: 'LanguageName',
+                    value: 'Français',
+                    primary: true
+                  }
+                ]
+              }
+            },
+            __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
+          }
+        }
+      }))
+    }
+
     render(
       <MockedProvider
         mocks={[
@@ -338,7 +385,8 @@ describe('TranslateJourneyDialog', () => {
                 }
               }
             }))
-          }
+          },
+          translateSubscriptionMock
         ]}
       >
         <SnackbarProvider>

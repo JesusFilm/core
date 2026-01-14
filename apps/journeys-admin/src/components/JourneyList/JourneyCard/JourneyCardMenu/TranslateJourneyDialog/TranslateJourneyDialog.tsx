@@ -153,15 +153,6 @@ export function TranslateJourneyDialog({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
-        // Refetch template stats if the source journey has a fromTemplateId
-        // (The duplicate mutation also handles this, but we do it here too for safety)
-        const fromTemplateId =
-          (duplicateData.journeyDuplicate as { fromTemplateId?: string | null })
-            .fromTemplateId ?? journeyData.fromTemplateId
-        if (fromTemplateId != null) {
-          void refetchTemplateStats([fromTemplateId])
-        }
-
         // Start the translation subscription
         setTranslationVariables({
           journeyId: duplicateData.journeyDuplicate.id,

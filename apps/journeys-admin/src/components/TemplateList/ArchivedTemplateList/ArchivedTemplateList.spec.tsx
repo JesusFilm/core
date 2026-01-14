@@ -188,12 +188,14 @@ describe('ArchivedTemplateList', () => {
         journeysRestore: [
           {
             id: defaultTemplate.id,
-            status: 'published',
+            __typename: 'Journey',
+            status: JourneyStatus.published,
             fromTemplateId: 'template-1'
           },
           {
             id: oldTemplate.id,
-            status: 'published',
+            __typename: 'Journey',
+            status: JourneyStatus.published,
             fromTemplateId: 'template-2'
           }
         ]
@@ -297,12 +299,14 @@ describe('ArchivedTemplateList', () => {
         journeysTrash: [
           {
             id: defaultTemplate.id,
-            status: 'trashAllArchived',
+            __typename: 'Journey',
+            status: JourneyStatus.trashed,
             fromTemplateId: 'template-1'
           },
           {
             id: oldTemplate.id,
-            status: 'trashAllArchived',
+            __typename: 'Journey',
+            status: JourneyStatus.trashed,
             fromTemplateId: 'template-2'
           }
         ]
