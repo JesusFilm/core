@@ -27,6 +27,10 @@ import { GetJourney_journey as Journey } from '../../../../../../../../../../__g
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -36,6 +40,15 @@ import { BackgroundMedia } from './BackgroundMedia'
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
+}))
+
+jest.mock('../../../../../../../../MuxVideoUploadProvider', () => ({
+  ...jest.requireActual('../../../../../../../../MuxVideoUploadProvider'),
+  useMuxVideoUpload: jest.fn(() => ({
+    getUploadStatus: jest.fn(),
+    addUploadTask: jest.fn(),
+    cancelUploadForBlock: jest.fn()
+  }))
 }))
 
 jest.mock('next/router', () => ({
@@ -51,6 +64,14 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
+const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
+  typeof useMuxVideoUpload
+>
+
+const mockGetUploadStatus = jest.fn()
+const mockCancelUploadForBlock = jest.fn()
+const mockAddUploadTask = jest.fn()
+
 const journey = { id: 'journeyId' } as unknown as Journey
 
 const card: TreeBlock<CardBlock> = {
@@ -64,6 +85,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 const video: TreeBlock<VideoBlock> = {
@@ -87,6 +109,8 @@ const video: TreeBlock<VideoBlock> = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -235,6 +259,15 @@ const coverImageBlockRestoreMock: MockedResponse<
 }
 
 describe('BackgroundMedia', () => {
+  beforeEach(() => {
+    mockUseMuxVideoUpload.mockReturnValue({
+      getUploadStatus: mockGetUploadStatus,
+      addUploadTask: mockAddUploadTask,
+      cancelUploadForBlock: mockCancelUploadForBlock
+    })
+    jest.clearAllMocks()
+  })
+
   it('shows Video selected on null cover', () => {
     render(
       <MockedProvider>
@@ -448,6 +481,68 @@ describe('BackgroundMedia', () => {
         undefined,
         { shallow: true }
       )
+    })
+  })
+
+  it('should cancel video upload when changing to different video source', async () => {
+    const push = jest.fn()
+    const on = jest.fn()
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [
+          { __ref: `CardBlock:${card.id}` },
+          { __ref: `VideoBlock:${video.id}` }
+        ],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+
+    const selectedCard = {
+      ...card,
+      coverBlockId: video.id,
+      children: [video]
+    }
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[coverVideoBlockDeleteMock, coverVideoBlockRestoreMock]}
+      >
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider initialState={{ selectedBlock: selectedCard }}>
+              <SnackbarProvider>
+                <MuxVideoUploadProvider>
+                  <BackgroundMedia />
+                </MuxVideoUploadProvider>
+              </SnackbarProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen
+        .getByTestId('bgvideo-video-tab')
+        .attributes.getNamedItem('aria-pressed')
+    ).toBeTruthy()
+
+    fireEvent.click(screen.getByTestId('bgvideo-image-tab'))
+
+    await waitFor(() => {
+      expect(mockCancelUploadForBlock).toHaveBeenCalledWith(selectedCard)
     })
   })
 })

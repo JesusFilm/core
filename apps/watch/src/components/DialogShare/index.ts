@@ -1,0 +1,1 @@
+export { DialogShare } from './DialogShare'

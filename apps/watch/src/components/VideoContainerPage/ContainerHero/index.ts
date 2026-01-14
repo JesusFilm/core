@@ -1,1 +1,0 @@
-export { ContainerHero } from './ContainerHero'

@@ -1,0 +1,35 @@
+import { decode } from 'blurhash'
+
+/**
+ * Converts a blurhash string to a base64 data URL for use with Next.js Image component.
+ * Only works on the client side where document is available.
+ *
+ * @param blurhash - The blurhash string to decode
+ * @param hexBackground - The hex background color (e.g., "#RRGGBB") to use as overlay
+ * @returns The data URL string or undefined if blurhash is empty or running on server
+ */
+export const blurImage = (
+  blurhash: string,
+  hexBackground: string
+): string | undefined => {
+  if (blurhash === '' || typeof document === 'undefined') return undefined
+
+  const pixels = decode(blurhash, 32, 32, 1)
+
+  const canvas = document.createElement('canvas')
+  canvas.setAttribute('width', '32px')
+  canvas.setAttribute('height', '32px')
+  const context = canvas.getContext('2d')
+
+  if (context != null) {
+    const imageData = context.createImageData(32, 32)
+    imageData.data.set(pixels)
+    context.putImageData(imageData, 0, 0)
+    context.fillStyle = `${hexBackground}88`
+    context.fillRect(0, 0, 32, 32)
+    const blurUrl = canvas.toDataURL('image/webp')
+
+    return blurUrl
+  }
+  return undefined
+}

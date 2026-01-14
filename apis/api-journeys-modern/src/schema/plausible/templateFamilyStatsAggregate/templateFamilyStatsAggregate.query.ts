@@ -1,0 +1,161 @@
+import { GraphQLError } from 'graphql'
+
+import { Prisma, prisma } from '@core/prisma/journeys/client'
+
+import { Action, ability, subject } from '../../../lib/auth/ability'
+import { builder } from '../../builder'
+import { IdType } from '../../journey/enums'
+import { PlausibleStatsAggregateFilter } from '../inputs'
+import { loadJourneyOrThrow, normalizeIdType } from '../journeyAccess'
+import {
+  PlausibleStatsResponse,
+  TemplateFamilyStatsAggregateResponse,
+  TemplateFamilyStatsAggregateResponseRef
+} from '../plausible'
+import { getJourneyStatsBreakdown } from '../service'
+
+export type JourneyWithAcl = Prisma.JourneyGetPayload<{
+  include: {
+    userJourneys: true
+    team: {
+      include: { userTeams: true }
+    }
+  }
+}>
+
+builder.queryField('templateFamilyStatsAggregate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: TemplateFamilyStatsAggregateResponseRef,
+    args: {
+      id: t.arg.id({ required: true }),
+      idType: t.arg({
+        type: IdType,
+        required: false,
+        defaultValue: 'slug'
+      }),
+      where: t.arg({
+        type: PlausibleStatsAggregateFilter,
+        required: true
+      })
+    },
+    resolve: async (
+      _parent,
+      { id, idType, where },
+      context
+    ): Promise<TemplateFamilyStatsAggregateResponse> => {
+      const templateJourney = await loadJourneyOrThrow(
+        id,
+        normalizeIdType(idType)
+      )
+      if (
+        !ability(
+          Action.Update,
+          subject('Journey', templateJourney),
+          context.user
+        )
+      ) {
+        throw new GraphQLError('User is not allowed to view journey', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+      const templateSiteId = `api-journeys-template-${templateJourney.id}`
+      const breakdownResults = await getJourneyStatsBreakdown(
+        templateJourney.id,
+        {
+          ...where,
+          property: 'event:page',
+          metrics: 'visitors'
+        },
+        templateSiteId
+      )
+
+      const { totalJourneysViews } = transformBreakdownResults(breakdownResults)
+
+      const { totalJourneysResponses, childJourneysCount } =
+        await getTotalJourneysResponses(templateJourney.id)
+
+      return {
+        childJourneysCount,
+        totalJourneysViews,
+        totalJourneysResponses
+      }
+    }
+  })
+)
+
+function transformBreakdownResults(
+  breakdownResults: PlausibleStatsResponse[]
+): { totalJourneysViews: number } {
+  const slugMaxVisitors = new Map<string, number>()
+
+  for (const result of breakdownResults) {
+    const property = result.property ?? ''
+
+    if (property.startsWith('/')) {
+      const afterFirstSlash = property.slice(1)
+      const nextSlashIndex = afterFirstSlash.indexOf('/')
+      const slug =
+        nextSlashIndex === -1
+          ? afterFirstSlash
+          : afterFirstSlash.slice(0, nextSlashIndex)
+      if (!slug) continue
+
+      const visitors = result.visitors ?? 0
+      const currentMax = slugMaxVisitors.get(slug) ?? 0
+      slugMaxVisitors.set(slug, Math.max(currentMax, visitors))
+    }
+  }
+
+  const totalJourneysViews = Array.from(slugMaxVisitors.values()).reduce(
+    (sum, maxVisitors) => sum + maxVisitors,
+    0
+  )
+
+  return {
+    totalJourneysViews
+  }
+}
+
+async function getTotalJourneysResponses(templateId: string): Promise<{
+  totalJourneysResponses: number
+  childJourneysCount: number
+}> {
+  const childJourneys = await prisma.journey.findMany({
+    where: {
+      fromTemplateId: templateId
+    },
+    select: {
+      id: true
+    }
+  })
+
+  if (childJourneys.length === 0) {
+    return {
+      totalJourneysResponses: 0,
+      childJourneysCount: 0
+    }
+  }
+
+  const journeyIds = childJourneys.map((journey) => journey.id)
+  const childJourneysCount = journeyIds.length
+
+  const results = await prisma.journeyVisitor.groupBy({
+    by: ['journeyId'],
+    where: {
+      journeyId: { in: journeyIds },
+      lastTextResponse: { not: null }
+    },
+    _count: {
+      journeyId: true
+    }
+  })
+  const totalJourneysResponses = results.reduce(
+    (total, result) => total + (result._count.journeyId ?? 0),
+    0
+  )
+
+  return {
+    totalJourneysResponses,
+    childJourneysCount
+  }
+}

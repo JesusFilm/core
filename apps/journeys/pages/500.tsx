@@ -40,7 +40,8 @@ export function Custom500(): ReactElement {
       parentBlockId: '500-stepBlock-id',
       parentOrder: 0,
       themeMode: null,
-      themeName: null
+      themeName: null,
+      eventLabel: null
     },
     {
       __typename: 'ImageBlock',
@@ -104,7 +105,8 @@ export function Custom500(): ReactElement {
         customizable: null,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       __typename: 'IconBlock',
