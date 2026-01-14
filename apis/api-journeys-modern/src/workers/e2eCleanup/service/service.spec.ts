@@ -7,17 +7,20 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { service } from './service'
 
-// Mock prismaUsers
-const mockPrismaUsers = {
-  user: {
-    findMany: jest.fn(),
-    delete: jest.fn()
-  }
-}
-
+// Mock prismaUsers - must be defined in the factory to avoid hoisting issues
 jest.mock('@core/prisma/users/client', () => ({
-  prismaUsers: mockPrismaUsers
+  prisma: {
+    user: {
+      findMany: jest.fn(),
+      delete: jest.fn()
+    }
+  }
 }))
+
+// Get reference to the mock for use in tests
+const { prisma: mockPrismaUsers } = jest.requireMock(
+  '@core/prisma/users/client'
+)
 
 describe('E2E Cleanup Service', () => {
   let mockLogger: Logger
@@ -35,6 +38,9 @@ describe('E2E Cleanup Service', () => {
     // Create mock transaction client
     mockTx = {
       event: { deleteMany: jest.fn() },
+      qrCode: { deleteMany: jest.fn() },
+      journeyTag: { deleteMany: jest.fn() },
+      journeyEventsExportLog: { deleteMany: jest.fn() },
       journey: { delete: jest.fn() }
     }
 
@@ -105,6 +111,9 @@ describe('E2E Cleanup Service', () => {
 
       // Mock transaction operations
       mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.qrCode.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.journeyTag.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.journeyEventsExportLog.deleteMany.mockResolvedValue({ count: 0 })
       mockTx.journey.delete.mockResolvedValue({})
 
       // Mock user deletion
@@ -180,6 +189,9 @@ describe('E2E Cleanup Service', () => {
       // Should delete journeys in transactions (3 total journeys)
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(3)
       expect(mockTx.event.deleteMany).toHaveBeenCalledTimes(3)
+      expect(mockTx.qrCode.deleteMany).toHaveBeenCalledTimes(3)
+      expect(mockTx.journeyTag.deleteMany).toHaveBeenCalledTimes(3)
+      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenCalledTimes(3)
       expect(mockTx.journey.delete).toHaveBeenCalledTimes(3)
 
       // Should delete events for each journey
@@ -192,6 +204,46 @@ describe('E2E Cleanup Service', () => {
       expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(3, {
         where: { journeyId: 'journey-3' }
       })
+
+      // Should delete related records (qrCode, journeyTag, journeyEventsExportLog) for each journey
+      expect(mockTx.qrCode.deleteMany).toHaveBeenNthCalledWith(1, {
+        where: { journeyId: 'journey-1' }
+      })
+      expect(mockTx.qrCode.deleteMany).toHaveBeenNthCalledWith(2, {
+        where: { journeyId: 'journey-2' }
+      })
+      expect(mockTx.qrCode.deleteMany).toHaveBeenNthCalledWith(3, {
+        where: { journeyId: 'journey-3' }
+      })
+
+      expect(mockTx.journeyTag.deleteMany).toHaveBeenNthCalledWith(1, {
+        where: { journeyId: 'journey-1' }
+      })
+      expect(mockTx.journeyTag.deleteMany).toHaveBeenNthCalledWith(2, {
+        where: { journeyId: 'journey-2' }
+      })
+      expect(mockTx.journeyTag.deleteMany).toHaveBeenNthCalledWith(3, {
+        where: { journeyId: 'journey-3' }
+      })
+
+      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenNthCalledWith(
+        1,
+        {
+          where: { journeyId: 'journey-1' }
+        }
+      )
+      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenNthCalledWith(
+        2,
+        {
+          where: { journeyId: 'journey-2' }
+        }
+      )
+      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenNthCalledWith(
+        3,
+        {
+          where: { journeyId: 'journey-3' }
+        }
+      )
 
       // Should delete each journey
       expect(mockTx.journey.delete).toHaveBeenNthCalledWith(1, {
@@ -395,6 +447,9 @@ describe('E2E Cleanup Service', () => {
       prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
 
       mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.qrCode.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.journeyTag.deleteMany.mockResolvedValue({ count: 0 })
+      mockTx.journeyEventsExportLog.deleteMany.mockResolvedValue({ count: 0 })
       mockTx.journey.delete.mockResolvedValue({})
       mockPrismaUsers.user.delete.mockResolvedValue({})
 

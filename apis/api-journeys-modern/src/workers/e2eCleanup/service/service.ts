@@ -105,6 +105,17 @@ export async function service(
                 where: { journeyId: journey.id }
               })
 
+              // Delete related records that don't have onDelete: Cascade in schema
+              await tx.qrCode.deleteMany({
+                where: { journeyId: journey.id }
+              })
+              await tx.journeyTag.deleteMany({
+                where: { journeyId: journey.id }
+              })
+              await tx.journeyEventsExportLog.deleteMany({
+                where: { journeyId: journey.id }
+              })
+
               // Delete the journey - this will cascade delete everything else
               await tx.journey.delete({
                 where: { id: journey.id }
