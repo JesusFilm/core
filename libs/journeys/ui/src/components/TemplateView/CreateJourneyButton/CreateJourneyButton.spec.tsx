@@ -230,6 +230,40 @@ describe('CreateJourneyButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     teamResult.mockClear()
+    // Reset teamResult implementation to ensure it returns data
+    teamResult.mockImplementation(() => ({
+      data: {
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Name',
+            __typename: 'Team',
+            publicTitle: 'Team Name',
+            userTeams: [
+              {
+                id: 'userTeamId',
+                __typename: 'UserTeam',
+                role: UserTeamRole.manager,
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Test',
+                  lastName: 'User',
+                  imageUrl: null,
+                  email: 'test@example.com'
+                }
+              }
+            ],
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          id: 'profileId',
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
   })
 
   it('should render create journey button when variant is button', () => {
