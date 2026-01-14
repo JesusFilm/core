@@ -4,26 +4,41 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 import { JOURNEY_TRASH } from './TrashJourneyDialog'
 
 import { TrashJourneyDialog } from '.'
 
-const refetchTemplateStats = jest.fn()
 jest.mock(
   '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
   () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
-      query: [jest.fn(), {}],
-      refetchTemplateStats
-    }))
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
   })
 )
 
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
+
 describe('TrashJourneyDialog', () => {
+  const refetchTemplateStats = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
     refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   it('should change journey status to trashed', async () => {

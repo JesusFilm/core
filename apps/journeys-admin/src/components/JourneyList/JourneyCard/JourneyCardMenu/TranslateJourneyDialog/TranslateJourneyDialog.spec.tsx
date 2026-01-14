@@ -12,20 +12,23 @@ import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateS
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+
 import { TranslateJourneyDialog } from './TranslateJourneyDialog'
 
 jest.mock('@mui/material/useMediaQuery')
 
-const refetchTemplateStats = jest.fn()
 jest.mock(
   '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
   () => ({
-    useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
-      query: [jest.fn(), {}],
-      refetchTemplateStats
-    }))
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
   })
 )
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 describe('TranslateJourneyDialog', () => {
   // Mock console methods to reduce noise during tests
@@ -132,11 +135,23 @@ describe('TranslateJourneyDialog', () => {
   }
 
   const handleClose = jest.fn()
+  const refetchTemplateStats = jest.fn()
 
   beforeEach(() => {
     journeyDuplicateMock.result.mockClear()
     handleClose.mockClear()
     refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   it('should render correctly', () => {

@@ -4,6 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
@@ -14,13 +15,17 @@ import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { ArchivedTemplateList } from '.'
 
-const refetchTemplateStats = jest.fn()
 jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
-  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(() => ({
-    query: [jest.fn(), {}],
-    refetchTemplateStats
-  }))
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
+  extractTemplateIdsFromJourneys: jest.requireActual(
+    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+  ).extractTemplateIdsFromJourneys
 }))
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 const archivedJourneysMock = {
   request: {
@@ -55,9 +60,22 @@ const noJourneysMock = {
 }
 
 describe('ArchivedTemplateList', () => {
+  const refetchTemplateStats = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
     refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   beforeAll(() => {
