@@ -487,7 +487,6 @@ describe('TagsFilter', () => {
       expect(queryByText('Acceptance')).not.toBeInTheDocument()
       expect(queryByText('Addiction')).not.toBeInTheDocument()
     })
-    screen.debug()
   })
 
   it('should filter options case insensitively', async () => {
