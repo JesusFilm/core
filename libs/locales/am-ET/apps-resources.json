@@ -95,9 +95,5 @@
   "Behind The Scenes": "Behind The Scenes",
   "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Available in {{count}} language.",
-  "Available in {{count}} languages._other": "Available in {{count}} languages.",
-  "Better search. Better language support. Better collections.": "የተሻለ ፍለጋ። የተሻለ ቋንቋ ድጋፍ። የተሻለ ስብስቦች።",
-  "Better search, languages, and collections.": "የተሻለ ፍለጋ፣ ቋንቋዎች፣ እና ስብስቦች።",
-  "Try the new design.": "አዲሱን ዲዛይን ይሞክሩ።",
-  "New Design": "አዲስ ዲዛይን"
+  "Available in {{count}} languages._other": "Available in {{count}} languages."
 }
