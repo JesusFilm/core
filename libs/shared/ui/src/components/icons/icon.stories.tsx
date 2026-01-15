@@ -5,7 +5,7 @@ import { Meta, StoryObj } from '@storybook/nextjs'
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
-// import { CenterCheck } from './CenterCheck'
+import { CenterCheck } from './CenterCheck'
 import { Icon, IconName } from './Icon'
 
 const iconNames: IconName[] = [
@@ -22,10 +22,12 @@ const iconNames: IconName[] = [
   'ArrowExpand1',
   'ArrowExpand2',
   'ArrowLeftContained1',
+  'ArrowLeftContained2',
   'ArrowLeftSm',
   'ArrowLeft',
   'ArrowRefresh6',
   'ArrowRightContained1',
+  'ArrowRightContained2',
   'ArrowRightSm',
   'ArrowRight',
   'ArrowRotateLeft1',
@@ -166,6 +168,7 @@ const iconNames: IconName[] = [
   'Minimise2',
   'MinusCircleContained',
   'More',
+  'Note2',
   'VolumeOff',
   'Volume5',
   'PackagePlus',
@@ -320,7 +323,7 @@ const Template: StoryObj<typeof Icon> = {
                 {<Icon name={name} /> != null ? name : null}
               </Typography>
               {/* Use to test icon centering */}
-              {/* <CenterCheck name={name} /> */}
+              <CenterCheck name={name} />
               {/* Use to test loading state locally */}
               {/* <CircularProgress size="16px" /> */}
               <Icon name={name} fontSize="small" />
