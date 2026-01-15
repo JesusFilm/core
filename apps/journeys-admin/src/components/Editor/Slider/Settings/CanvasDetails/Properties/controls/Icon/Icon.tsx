@@ -54,6 +54,7 @@ import { Color } from './Color'
 
 void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
 
+// icons is equivalent to IconName from global types"
 export const icons = [
   {
     value: IconName.ArrowBackRounded,
