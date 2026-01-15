@@ -52,11 +52,9 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     window.open(targetUrl, '_blank', 'noopener,noreferrer')
   }
 
-  function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>) {
+  function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>): void {
     const { name, value } = e.target
-
     if (!value) return
-
     const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
     void setFieldValue(name, url)
   }
