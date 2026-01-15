@@ -46,7 +46,7 @@ resource "aws_security_group" "eks-cluster" {
 resource "aws_eks_cluster" "this" {
   name     = "${var.name}-${var.env}"
   role_arn = aws_iam_role.eks-cluster.arn
-  version  = "1.32"
+  version  = "1.31"
 
   vpc_config {
     security_group_ids = concat([aws_security_group.eks-cluster.id], var.security_group_ids)
@@ -219,9 +219,9 @@ resource "aws_eks_node_group" "az_2a_ondemand" {
   subnet_ids      = var.subnet_ids_2a
 
   scaling_config {
-    desired_size = 2
-    max_size     = 4
-    min_size     = 2
+    desired_size = 3
+    max_size     = 5
+    min_size     = 3
   }
 
   update_config {
