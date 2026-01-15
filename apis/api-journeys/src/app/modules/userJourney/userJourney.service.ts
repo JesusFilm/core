@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { User } from '@core/nest/common/firebaseClient'
+import { User } from 'apis/api-journeys/src/app/lib/firebaseClient'
 
 import {
   JourneyAccessRequest,

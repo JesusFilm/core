@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
-import { contextToUserId } from '@core/nest/common/firebaseClient'
+import { contextToUserId } from '../firebaseClient'
 
 @Injectable()
 export class GqlAuthGuard implements CanActivate {

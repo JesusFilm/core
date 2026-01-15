@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import omit from 'lodash/omit'
 
-import { keyAsId } from '@core/nest/decorators/KeyAsId'
-
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
+import { keyAsId } from '../../../lib/decorators/KeyAsId'
 import { PrismaService } from '../../../lib/prisma.service'
 import { VisitorService } from '../../visitor/visitor.service'
 import { EventService, ONE_DAY } from '../event.service'

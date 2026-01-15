@@ -1,9 +1,9 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
-import { User } from '@core/nest/common/firebaseClient'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { User } from 'apis/api-journeys/src/app/lib/firebaseClient'
+import { CurrentUser } from 'apis/api-journeys/src/app/lib/decorators/CurrentUser'
+import { CurrentUserId } from 'apis/api-journeys/src/app/lib/decorators/CurrentUserId'
 import { JourneyProfile } from '@core/prisma/journeys/client'
 
 import { JourneyProfileUpdateInput } from '../../__generated__/graphql'

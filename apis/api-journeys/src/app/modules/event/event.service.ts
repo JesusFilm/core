@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { FromPostgresql } from 'apis/api-journeys/src/app/lib/decorators/FromPostgresql'
 import {
   Block,
   JourneyVisitor,
