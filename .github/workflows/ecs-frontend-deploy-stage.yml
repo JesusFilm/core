@@ -12,6 +12,7 @@ jobs:
     outputs:
       arclight: ${{ steps.set.outputs.arclight }}
       journeys_admin: ${{ steps.set.outputs.journeys_admin }}
+      cms: ${{ steps.set.outputs.cms }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,7 +43,11 @@ jobs:
           else
             echo "journeys_admin=false" >> "$GITHUB_OUTPUT"
           fi
-
+          if echo "$list" | awk '{print $1}' | grep -xq 'cms'; then
+            echo "cms=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "cms=false" >> "$GITHUB_OUTPUT"
+          fi
   arclight:
     needs: [affected]
     if: ${{ needs.affected.outputs.arclight == 'true' }}
@@ -72,7 +77,6 @@ jobs:
       DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
       DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-
   e2e-arclight:
     name: E2E Arclight (stage)
     needs: [affected, arclight]
@@ -117,6 +121,35 @@ jobs:
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
       name: journeys-admin
+      env: stage
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
+      DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
+      DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
+      DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+      DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+      DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+      DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
+      DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
+      DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
+      DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+      DOPPLER_PLAYER_TOKEN: ${{ secrets.DOPPLER_PLAYER_TOKEN }}
+      DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+      DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
+      DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+      DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+  cms:
+    needs: [affected]
+    if: ${{ needs.affected.outputs.cms == 'true' }}
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
+    with:
+      name: cms
       env: stage
       branch: ${{ github.ref_name }}
     secrets:
