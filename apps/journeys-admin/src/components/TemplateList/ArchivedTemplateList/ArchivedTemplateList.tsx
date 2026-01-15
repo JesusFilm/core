@@ -13,6 +13,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
@@ -42,12 +46,20 @@ export function ArchivedTemplateList({
     template: true,
     teamId: 'jfp-team'
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
+
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -58,6 +70,12 @@ export function ArchivedTemplateList({
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysTrash)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
