@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, Reference, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -389,7 +389,9 @@ export function NewMultiselectButton(): ReactElement {
             selectedBlockId: previousBlockId,
             activeSlide: ActiveSlide.Content
           })
+          const createdBlocks = [multiselectBlock, option1, option2, buttonBlock]
           void multiselectWithButtonDelete({
+            
             variables: {
               multiselectId: blocks.multiselectBlock.id,
               option1Id: blocks.option1.id,
@@ -399,36 +401,35 @@ export function NewMultiselectButton(): ReactElement {
               endIconId: blocks.buttonBlock.endIconId as string
             },
             optimisticResponse: {
-              multiselect: {
-                id: blocks.multiselectBlock.id,
-                parentOrder: blocks.multiselectBlock.parentOrder,
-                __typename: 'MultiselectBlock'
-              },
-              option1: {
-                id: blocks.option1.id,
-                parentOrder: blocks.option1.parentOrder,
-                __typename: 'MultiselectOptionBlock'
-              },
-              option2: {
-                id: blocks.option2.id,
-                parentOrder: blocks.option2.parentOrder,
-                __typename: 'MultiselectOptionBlock'
-              },
-              button: {
-                id: blocks.buttonBlock.id,
-                parentOrder: blocks.buttonBlock.parentOrder,
-                __typename: 'ButtonBlock'
-              },
-              startIcon: {
-                id: blocks.buttonBlock.startIconId as string,
-                parentOrder: 0,
-                __typename: 'IconBlock'
-              },
-              endIcon: {
-                id: blocks.buttonBlock.endIconId as string,
-                parentOrder: 1,
-                __typename: 'IconBlock'
-              }
+              multiselect: null,
+              option1: null,
+              option2: null,
+              button: null,
+              startIcon: null,
+              endIcon: null
+            },
+            update(cache, { data }) {
+              if (data == null) return
+      
+              createdBlocks.forEach((block) => {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs: Reference[], { readField }) {
+                      return existingBlockRefs.filter(
+                        (ref) => readField('id', ref) !== block.id
+                      )
+                    }
+                  }
+                })
+                cache.evict({
+                  id: cache.identify({
+                    __typename: block.__typename,
+                    id: block.id
+                  })
+                })
+                cache.gc()
+              })
             }
           })
         },
@@ -470,6 +471,40 @@ export function NewMultiselectButton(): ReactElement {
                 iconColor: null,
                 __typename: 'IconBlock'
               }
+            },
+            update(cache, { data }) {
+              if (data == null) return
+      
+              const keys = Object.keys(data)
+              keys.forEach((key) => {
+                data[key].forEach((block: any) => {
+                  cache.modify({
+                    id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                    fields: {
+                      blocks(existingBlockRefs: Reference[], { readField }) {
+                        if (
+                          existingBlockRefs.some(
+                            (ref) => readField('id', ref) === block.id
+                          )
+                        ) {
+                          return existingBlockRefs
+                        }
+                        return [
+                          ...existingBlockRefs,
+                          cache.writeFragment({
+                            data: block,
+                            fragment: gql`
+                              fragment NewBlock on Block {
+                                id
+                              }
+                            `
+                          })
+                        ]
+                      }
+                    }
+                  })
+                })
+              })
             }
           })
         }
