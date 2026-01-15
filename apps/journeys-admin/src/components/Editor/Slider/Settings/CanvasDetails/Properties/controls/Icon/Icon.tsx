@@ -1,24 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import ArrowBackRounded from '@mui/icons-material/ArrowBackRounded'
 import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
-import BeenhereRounded from '@mui/icons-material/BeenhereRounded'
-import ChatBubbleOutlineRounded from '@mui/icons-material/ChatBubbleOutlineRounded'
-import CheckCircleRounded from '@mui/icons-material/CheckCircleRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
-import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
-import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
-import Launch from '@mui/icons-material/Launch'
-import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
-import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
-import MailOutline from '@mui/icons-material/MailOutline'
-import MenuBookRounded from '@mui/icons-material/MenuBookRounded'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
-import SendRounded from '@mui/icons-material/SendRounded'
-import SubscriptionsRounded from '@mui/icons-material/SubscriptionsRounded'
-import TranslateRounded from '@mui/icons-material/TranslateRounded'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
@@ -27,6 +12,29 @@ import Typography from '@mui/material/Typography'
 import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import ArrowLeftContained2 from '@core/shared/ui/icons/ArrowLeftContained2'
+import ArrowRightContained2 from '@core/shared/ui/icons/ArrowRightContained2'
+import Bible from '@core/shared/ui/icons/Bible'
+import CheckContained from '@core/shared/ui/icons/CheckContained'
+import Globe1 from '@core/shared/ui/icons/Globe1'
+import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
+import Home4 from '@core/shared/ui/icons/Home4'
+import LinkAngled from '@core/shared/ui/icons/LinkAngled'
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
+import Mail1 from '@core/shared/ui/icons/Mail1'
+import Marker2 from '@core/shared/ui/icons/Marker2'
+import MessageChat1 from '@core/shared/ui/icons/MessageChat1'
+import MessageSquare from '@core/shared/ui/icons/MessageSquare'
+import MessageText2 from '@core/shared/ui/icons/MessageText2'
+import Note2 from '@core/shared/ui/icons/Note2'
+import Phone from '@core/shared/ui/icons/Phone'
+import Play1 from '@core/shared/ui/icons/Play1'
+import Play3 from '@core/shared/ui/icons/Play3'
+import Send2 from '@core/shared/ui/icons/Send2'
+import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
+import UsersProfiles3 from '@core/shared/ui/icons/UsersProfiles3'
+import Volume5 from '@core/shared/ui/icons/Volume5'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -47,37 +55,26 @@ import { Color } from './Color'
 
 void init({ defaultNS: 'apps-journeys-admin', fallbackLng: 'en' })
 
-// icons is equivalent to IconName from global types"
 export const icons = [
-  {
-    value: IconName.ArrowForwardRounded,
-    label: t('Arrow Right'),
-    display: <ArrowForwardRounded />
-  },
   {
     value: IconName.ArrowBackRounded,
     label: t('Arrow Left'),
     display: <ArrowBackRounded />
   },
   {
-    value: IconName.BeenhereRounded,
-    label: t('Been Here'),
-    display: <BeenhereRounded />
+    value: IconName.ArrowForwardRounded,
+    label: t('Arrow Right'),
+    display: <ArrowForwardRounded />
   },
   {
-    value: IconName.ChatBubbleOutlineRounded,
-    label: t('Chat Bubble'),
-    display: <ChatBubbleOutlineRounded />
+    value: IconName.ArrowLeftContained2,
+    label: t('Arrow Circle Left'),
+    display: <ArrowLeftContained2 />
   },
   {
-    value: IconName.CheckCircleRounded,
-    label: t('Check Circle'),
-    display: <CheckCircleRounded />
-  },
-  {
-    value: IconName.ChevronRightRounded,
-    label: t('Chevron Right'),
-    display: <ChevronRightRounded />
+    value: IconName.ArrowRightContained2,
+    label: t('Arrow Circle Right'),
+    display: <ArrowRightContained2 />
   },
   {
     value: IconName.ChevronLeftRounded,
@@ -85,64 +82,109 @@ export const icons = [
     display: <ChevronLeftRounded />
   },
   {
-    value: IconName.ContactSupportRounded,
-    label: t('Contact Support'),
-    display: <ContactSupportRounded />
-  },
-  {
-    value: IconName.FormatQuoteRounded,
-    label: t('Format Quote'),
-    display: <FormatQuoteRounded />
-  },
-  {
-    value: IconName.LiveTvRounded,
-    label: t('Live Tv'),
-    display: <LiveTvRounded />
-  },
-  {
-    value: IconName.LockOpenRounded,
-    label: t('Lock Open'),
-    display: <LockOpenRounded />
+    value: IconName.ChevronRightRounded,
+    label: t('Chevron Right'),
+    display: <ChevronRightRounded />
   },
   {
     value: IconName.MenuBookRounded,
-    label: t('Menu Book'),
-    display: <MenuBookRounded />
+    label: t('Bible'),
+    display: <Bible />
   },
   {
-    value: IconName.PlayArrowRounded,
-    label: t('Play Arrow'),
-    display: <PlayArrowRounded />
+    value: IconName.ChatBubbleOutlineRounded,
+    label: t('Chat'),
+    display: <MessageSquare />
   },
   {
-    value: IconName.RadioButtonUncheckedRounded,
-    label: t('Radio Button Unchecked'),
-    display: <RadioButtonUncheckedRounded />
+    value: IconName.FormatQuoteRounded,
+    label: t('Chat Text'),
+    display: <MessageText2 />
   },
   {
-    value: IconName.SendRounded,
-    label: t('Send'),
-    display: <SendRounded />
+    value: IconName.MessageChat1,
+    label: t('Chats Square'),
+    display: <MessageChat1 />
   },
   {
-    value: IconName.SubscriptionsRounded,
-    label: t('Subscription'),
-    display: <SubscriptionsRounded />
+    value: IconName.CheckCircleRounded,
+    label: t('Check'),
+    display: <CheckContained />
+  },
+  {
+    value: IconName.ContactSupportRounded,
+    label: t('Help Circle'),
+    display: <HelpCircleContained />
+  },
+  {
+    value: IconName.Home4,
+    label: t('Home'),
+    display: <Home4 />
   },
   {
     value: IconName.TranslateRounded,
-    label: t('Translate'),
-    display: <TranslateRounded />
+    label: t('Globe'),
+    display: <Globe1 />
   },
   {
     value: IconName.Launch,
     label: t('Launch'),
-    display: <Launch />
+    display: <LinkExternal />
+  },
+  {
+    value: IconName.LinkAngled,
+    label: t('Link'),
+    display: <LinkAngled />
+  },
+  {
+    value: IconName.SendRounded,
+    label: t('Send'),
+    display: <Send2 />
+  },
+  {
+    value: IconName.BeenhereRounded,
+    label: t('Location'),
+    display: <Marker2 />
   },
   {
     value: IconName.MailOutline,
     label: t('Mail'),
-    display: <MailOutline />
+    display: <Mail1 />
+  },
+  {
+    value: IconName.Phone,
+    label: t('Phone'),
+    display: <Phone />
+  },
+  {
+    value: IconName.UserProfile2,
+    label: t('Person'),
+    display: <UserProfile2 />
+  },
+  {
+    value: IconName.UsersProfiles3,
+    label: t('People'),
+    display: <UsersProfiles3 />
+  },
+  {
+    value: IconName.PlayArrowRounded,
+    label: t('Play'),
+    display: <Play3 />
+  },
+  {
+    value: IconName.SubscriptionsRounded,
+    label: t('Play Square'),
+    display: <Play1 />
+  },
+  {
+    value: IconName.Volume5,
+    label: t('Sound'),
+    display: <Volume5 />
+  },
+  {
+    value: IconName.Note2,
+    label: t('Music'),
+    display: <Note2 />
   }
 ]
 
