@@ -13,6 +13,9 @@ import { init, t } from 'i18next'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ArrowLeftContained2 from '@core/shared/ui/icons/ArrowLeftContained2'
 import ArrowRightContained2 from '@core/shared/ui/icons/ArrowRightContained2'
 import Bible from '@core/shared/ui/icons/Bible'
@@ -35,10 +38,6 @@ import Send2 from '@core/shared/ui/icons/Send2'
 import UserProfile2 from '@core/shared/ui/icons/UserProfile2'
 import UsersProfiles3 from '@core/shared/ui/icons/UsersProfiles3'
 import Volume5 from '@core/shared/ui/icons/Volume5'
-
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
