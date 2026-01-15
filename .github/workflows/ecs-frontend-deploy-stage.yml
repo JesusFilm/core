@@ -25,7 +25,7 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
       - id: set
         name: compute if arclight is affected
@@ -62,6 +62,7 @@ jobs:
       DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
       DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
       DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
       DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
       DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
       DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
@@ -90,7 +91,7 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests (Arclight stage)
@@ -129,6 +130,7 @@ jobs:
       DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
       DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
       DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
       DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
       DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
       DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
