@@ -174,7 +174,7 @@ describe('Icon', () => {
         iconBlockUpdate: {
           id: 'iconBlock.id',
           parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
+          name: IconName.ChevronLeftRounded,
           color: null,
           size: null
         }
@@ -189,7 +189,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                name: IconName.BeenhereRounded
+                name: IconName.ChevronLeftRounded
               }
             },
             result
@@ -202,7 +202,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Been Here' }))
+    fireEvent.click(getByRole('option', { name: 'Chevron Left' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -212,7 +212,7 @@ describe('Icon', () => {
         iconBlockUpdate: {
           id: 'iconBlock.id',
           parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
+          name: IconName.ChevronLeftRounded,
           color: null,
           size: null
         }
@@ -224,7 +224,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          name: IconName.BeenhereRounded
+          name: IconName.ChevronLeftRounded
         }
       },
       result: result1
@@ -263,7 +263,7 @@ describe('Icon', () => {
     )
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Chevron Left' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -276,7 +276,7 @@ describe('Icon', () => {
         iconBlockUpdate: {
           id: 'iconBlock.id',
           parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
+          name: IconName.ChevronLeftRounded,
           color: null,
           size: null
         }
@@ -288,7 +288,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          name: IconName.BeenhereRounded
+          name: IconName.ChevronLeftRounded
         }
       },
       result: result1,
@@ -329,7 +329,7 @@ describe('Icon', () => {
     )
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Chevron Left' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

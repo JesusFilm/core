@@ -16,7 +16,7 @@ const block: TreeBlock<IconFields> = {
   __typename: 'IconBlock',
   parentBlockId: 'parent',
   parentOrder: 0,
-  iconName: IconName.CheckCircleRounded,
+  iconName: IconName.ArrowForwardRounded,
   iconColor: IconColor.error,
   iconSize: IconSize.md,
   children: []
@@ -25,7 +25,9 @@ const block: TreeBlock<IconFields> = {
 describe('Icon', () => {
   it('should render the icon successfully', () => {
     const { getByTestId } = render(<Icon {...block} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(getByTestId('ArrowForwardRoundedIcon')).toHaveClass(
+      'MuiSvgIcon-root'
+    )
   })
 
   it('should render nothing', () => {
@@ -35,21 +37,29 @@ describe('Icon', () => {
 
   it('should render small icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.sm} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 16px')
+    expect(getByTestId('ArrowForwardRoundedIcon')).toHaveStyle(
+      'font-size: 16px'
+    )
   })
 
   it('should render medium icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.md} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 20px')
+    expect(getByTestId('ArrowForwardRoundedIcon')).toHaveStyle(
+      'font-size: 20px'
+    )
   })
 
   it('should render large icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.lg} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 28px')
+    expect(getByTestId('ArrowForwardRoundedIcon')).toHaveStyle(
+      'font-size: 28px'
+    )
   })
 
   it('should render extra large icon', () => {
     const { getByTestId } = render(<Icon {...block} iconSize={IconSize.xl} />)
-    expect(getByTestId('CheckCircleRoundedIcon')).toHaveStyle('font-size: 48px')
+    expect(getByTestId('ArrowForwardRoundedIcon')).toHaveStyle(
+      'font-size: 48px'
+    )
   })
 })
