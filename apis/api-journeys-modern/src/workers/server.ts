@@ -56,36 +56,36 @@ function run({
 
 async function main(): Promise<void> {
   async function importAndRunAllWorkers(): Promise<void> {
-    // run(
-    //   await import(
-    //     /* webpackChunkName: 'email' */
-    //     './email'
-    //   )
-    // )
-    // run(
-    //   await import(
-    //     /* webpackChunkName: 'emailEvents' */
-    //     './emailEvents'
-    //   )
-    // )
-    // run(
-    //   await import(
-    //     /* webpackChunkName: 'revalidate' */
-    //     './revalidate'
-    //   )
-    // )
-    // run(
-    //   await import(
-    //     /* webpackChunkName: 'plausible' */
-    //     './plausible'
-    //   )
-    // )
-    // run(
-    //   await import(
-    //     /* webpackChunkName: 'shortlinkUpdater' */
-    //     './shortlinkUpdater'
-    //   )
-    // )
+    run(
+      await import(
+        /* webpackChunkName: 'email' */
+        './email'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'emailEvents' */
+        './emailEvents'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'revalidate' */
+        './revalidate'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'plausible' */
+        './plausible'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'shortlinkUpdater' */
+        './shortlinkUpdater'
+      )
+    )
     run(
       await import(
         /* webpackChunkName: "e2eCleanup" */
