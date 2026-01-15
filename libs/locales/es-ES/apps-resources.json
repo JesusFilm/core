@@ -95,9 +95,5 @@
   "Behind The Scenes": "Entre bastidores",
   "Trailer": "Tráiler",
   "Available in {{count}} languages._one": "Disponible en el idioma {{count}} .",
-  "Available in {{count}} languages._other": "Disponible en {{count}} idiomas.",
-  "Better search. Better language support. Better collections.": "Mejor búsqueda. Mejor soporte de idiomas. Mejores colecciones.",
-  "Better search, languages, and collections.": "Mejor búsqueda, idiomas y colecciones.",
-  "Try the new design.": "Prueba el nuevo diseño.",
-  "New Design": "Nuevo Diseño"
+  "Available in {{count}} languages._other": "Disponible en {{count}} idiomas."
 }
