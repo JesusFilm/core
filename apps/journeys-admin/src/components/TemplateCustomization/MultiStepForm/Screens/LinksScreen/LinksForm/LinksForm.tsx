@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import React, { ReactElement, useRef } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
@@ -52,10 +52,43 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     window.open(targetUrl, '_blank', 'noopener,noreferrer')
   }
 
-  function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>): void {
+  // const prevValueRef = useRef("");
+
+  // function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>): void {
+  //   const { name, value } = e.target
+  //   const isDeleting = value.length < prevValueRef.current.length;
+  
+  //   // 1. Update our "previous value" tracker for the next keystroke
+  //   prevValueRef.current = value;
+
+  //   // 2. LOGIC: Only auto-prefix if:
+  //   // - They aren't currently deleting/backspacing
+  //   // - It doesn't already have a protocol
+  //   // - They've typed enough to suggest a domain (e.g., more than 3 chars)
+  //   if (!isDeleting && !/^\w+:\/\//.test(value) && value.length > 3) {
+  //     const formattedUrl = `https://${value}`;
+  //     void setFieldValue(name, formattedUrl);
+      
+  //     // Update the ref to the formatted version so the next 'delete' works
+  //     prevValueRef.current = formattedUrl; 
+  //   } else {
+  //     // Just save exactly what they typed (allows deleting https://)
+  //     void setFieldValue(name, value);
+  //   }
+  // }
+
+  function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>) {
     const { name, value } = e.target
+
+    if (!value) return
+
     const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
     void setFieldValue(name, url)
+  }
+
+  function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    void setFieldValue(name, value);
   }
 
   return (
@@ -161,7 +194,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                       ? handleChange
                       : handleLinkChange
                   }
-                  onBlur={handleBlur}
+                  onBlur={handleLinkBLur}
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
                   helperText={hasError ? (errors?.[fieldName] as string) : ' '}
