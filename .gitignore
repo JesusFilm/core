@@ -93,3 +93,7 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+apps/journeys-admin-e2e/src/pages/card-level-actions.ts
+apps/journeys-admin-e2e/src/utils/download/qr-code.png
+lighthouse/lighthouse-report.html
+apps/journeys-admin-e2e/lighthouse/lighthouse-report.html

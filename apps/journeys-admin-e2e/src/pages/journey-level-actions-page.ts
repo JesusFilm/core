@@ -187,16 +187,21 @@ export class JourneyLevelActions {
   }
 
   async verifySnackBarMsg(snackbarMsg: string): Promise<void> {
-    await expect(
-      this.page.locator('div[id="notistack-snackbar"]', {
-        hasText: snackbarMsg
-      })
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    await expect(
-      this.page.locator('div[id="notistack-snackbar"]', {
-        hasText: snackbarMsg
-      })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    // Use case-insensitive matching and wait for snackbar to appear
+    // Try both selector formats for compatibility
+    const snackbarLocator = this.page
+      .locator('#notistack-snackbar, div[id="notistack-snackbar"]')
+      .filter({ hasText: new RegExp(snackbarMsg, 'i') })
+    
+    // First wait for any snackbar to appear (container might be created first)
+    const anySnackbar = this.page.locator('#notistack-snackbar, div[id="notistack-snackbar"]')
+    await expect(anySnackbar.first()).toBeVisible({ timeout: thirtySecondsTimeout })
+    
+    // Then verify it has the correct message
+    await expect(snackbarLocator.first()).toBeVisible({ timeout: 5000 })
+    
+    // Wait for it to disappear
+    await expect(snackbarLocator.first()).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
   async clickSelectTeamDropDownIcon(): Promise<void> {

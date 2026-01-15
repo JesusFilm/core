@@ -82,7 +82,8 @@ test.describe('verify card level actions', () => {
   })
 
   // Video - create, update & delete
-  test.skip('Video - create, update & delete', async ({ page }) => {
+  test('Video - create, update & delete', async ({ page }) => {
+    test.setTimeout(120000)
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card

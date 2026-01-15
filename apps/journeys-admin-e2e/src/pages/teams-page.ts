@@ -7,6 +7,7 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const sixtySecondsTimeout = 60000
 
 export class TeamsPage {
   readonly page: Page
@@ -219,9 +220,18 @@ export class TeamsPage {
 
   async clickAddIntegrationButton() {
     await this.page.getByTestId('Add-IntegrationsButton').click()
+    // Wait for the integration dialog to load
+    await this.page.waitForTimeout(1000)
   }
   async clickGrowthSpaceIntegration() {
-    await this.page.getByTestId('growthSpaces-IntegrationsButton').click()
+    // Wait for integration options to be available
+    await this.page.waitForLoadState('networkidle', { timeout: sixtySecondsTimeout })
+    // The button is a link component, wait for it to be available
+    const growthSpaceButton = this.page.getByTestId('growthSpaces-IntegrationsButton')
+    // Wait for the link to be visible and enabled
+    await expect(growthSpaceButton).toBeVisible({ timeout: sixtySecondsTimeout })
+    await expect(growthSpaceButton).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await growthSpaceButton.click()
   }
   async enterAccessId(accessId: string) {
     await this.page

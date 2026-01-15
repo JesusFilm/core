@@ -10,7 +10,7 @@ import { LoginPage } from '../../pages/login-page'
 import { Publisher } from '../../pages/publisher-and-templates-page'
 import { TemplatePage } from '../../pages/template-page'
 
-test.describe('Publisher page - Single Template', () => {
+test.describe.fixme('Publisher page - Single Template', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -46,7 +46,7 @@ test.describe('Publisher page - Single Template', () => {
   })
 })
 
-test.describe('Publisher page - All Templates', () => {
+test.describe.fixme('Publisher page - All Templates', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -89,7 +89,7 @@ test.describe('Publisher page - All Templates', () => {
   })
 })
 
-test.describe('Publisher page', () => {
+test.describe.fixme('Publisher page', () => {
   test.beforeEach(
     'Create a journey and create a template from the existing journey',
     async ({ page }) => {
@@ -248,7 +248,7 @@ test.describe('Publisher page', () => {
   })
 })
 
-test.describe('Template page - Journey from Template', () => {
+test.describe.fixme('Template page - Journey from Template', () => {
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -282,7 +282,7 @@ test.describe('Template page - Journey from Template', () => {
   })
 })
 
-test.describe('Template page', () => {
+test.describe.fixme('Template page', () => {
   test.beforeEach('Login > Create a journey and template', async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)

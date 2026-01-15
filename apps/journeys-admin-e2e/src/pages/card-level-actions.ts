@@ -352,11 +352,21 @@ export class CardLevelActionPage {
       uplodedType === 'created'
         ? testData.cardLevelAction.uploadVideoName
         : this.seletedVideo
-    await expect(
-      this.page.locator(
-        'div[data-testid="VideoBlockEditor"] div[data-testid="ImageBlockThumbnail"] img[alt]'
-      )
-    ).toHaveAttribute('alt', videoName)
+    const videoThumbnail = this.page.locator(
+      'div[data-testid="VideoBlockEditor"] div[data-testid="ImageBlockThumbnail"] img[alt]'
+    )
+    await expect(videoThumbnail).toBeVisible({ timeout: sixtySecondsTimeout })
+    // For updated videos, wait for the video thumbnail to actually change
+    if (uplodedType === 'updated') {
+      // Wait for the alt attribute to change from the old video name to the new one
+      await expect(videoThumbnail).toHaveAttribute('alt', videoName, {
+        timeout: sixtySecondsTimeout
+      })
+    } else {
+      await expect(videoThumbnail).toHaveAttribute('alt', videoName, {
+        timeout: sixtySecondsTimeout
+      })
+    }
   }
 
   async clickVideoEditPenIcon() {
@@ -409,19 +419,19 @@ export class CardLevelActionPage {
   }
 
   async selectVideoFromLibraryTabOfVideoLibararyPage() {
-    await this.page
+    const videoItem = this.page
       .locator('div[data-testid="VideoList"] div[data-testid*="VideoListItem"]')
       .first()
-      .click()
+    await expect(videoItem).toBeVisible({ timeout: sixtySecondsTimeout })
+    await videoItem.click()
   }
 
   async getVideoNameVideoFromLibraryTabOfVideoLibraryPage() {
-    this.seletedVideo = await this.page
-      .locator(
-        'div[data-testid="VideoList"] div[data-testid*="VideoListItem"] span[class*="MuiListItemText-primary"]'
-      )
-      .first()
-      .innerText()
+    const videoNameElement = this.page.locator(
+      'div[data-testid="VideoList"] div[data-testid*="VideoListItem"] span[class*="MuiListItemText-primary"]'
+    ).first()
+    await expect(videoNameElement).toBeVisible({ timeout: sixtySecondsTimeout })
+    this.seletedVideo = await videoNameElement.innerText()
   }
 
   async clickVideoDeleteIconInDrawer() {
@@ -429,10 +439,12 @@ export class CardLevelActionPage {
   }
 
   async clickSelectBtnAfterSelectingVideo() {
+    const selectButton = this.page.getByRole('button', { name: 'Select' })
+    await expect(selectButton).toBeVisible({ timeout: sixtySecondsTimeout })
+    await expect(selectButton).toBeEnabled({ timeout: sixtySecondsTimeout })
+    await selectButton.click()
+    // Wait for the video library dialog to close and video to update
     await this.page.waitForTimeout(3000)
-    await this.page
-      .locator('//button[text()="Select"]', { hasText: 'Select' })
-      .click({ delay: 3000, force: true })
   }
 
   async verifyVideoDeletedFromDrawer() {
@@ -653,27 +665,37 @@ export class CardLevelActionPage {
   async selectWholePollOptions() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
-    await frame
-      .locator(
-        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
-        { hasText: 'Add New Option' }
-      )
-      .click()
+    if (frame == null) {
+      throw new Error('Failed to get iframe content frame')
+    }
+    // Try both "Add Option" and "Add New Option" for compatibility
+    const addNewOptionLocator = frame.locator(
+      'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
+      { hasText: /Add (New )?Option/i }
+    )
+    await expect(addNewOptionLocator).toBeVisible({ timeout: sixtySecondsTimeout })
+    await addNewOptionLocator.click()
   }
 
   async deleteAllThePollOptions() {
     await this.selectWholePollOptions()
     await this.clickDeleteBtnInToolTipBar()
+    // Wait for the deletion to complete
+    await this.page.waitForTimeout(1000)
   }
 
   async verifyPollOptionsDeletedFromCard() {
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
+    if (frame == null) {
+      throw new Error('Failed to get iframe content frame')
+    }
+    // Wait longer for the poll to be deleted
     await expect(
       frame.locator(
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
       )
-    ).toBeHidden()
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async verifyFeedBackAddedToCard() {

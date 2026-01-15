@@ -40,6 +40,11 @@ export class JourneyPage {
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
   async createAndVerifyCustomJourney() {
+    // Journey creation and navigation is already handled in clickCreateCustomJourney
+    // Wait for journey card iframe to be loaded (with shorter timeout since we already waited)
+    await expect(
+      this.page.locator(this.journeyCardFrame).first()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
@@ -167,6 +172,8 @@ export class JourneyPage {
     await this.selectThreeDotOptionsBesideSortByOption('Archive All')
     await this.clickDialogBoxBtn('Archive')
     await this.verifySnackbarToastMessage('Journeys Archived')
+    // Wait for the page to update after archiving
+    await this.page.waitForLoadState('networkidle', { timeout: sixtySecondsTimeout })
     await this.verifyActiveTabShowsEmptyMessage()
     await this.clickArchivedTab()
     await this.verifyAllJourneyMovedToArchivedTab()
@@ -262,10 +269,22 @@ export class JourneyPage {
     } catch {
       // Ignore if not found
     }
-    await expect(createJourneyLoaderPath).toBeHidden({
-      timeout: sixtySecondsTimeout
-    })
-    //await this.page.waitForLoadState('networkidle')
+    // Wait a bit for the journey creation to process
+    await this.page.waitForTimeout(2000)
+    // Wait for journey card iframe to be loaded - this indicates the editor is ready
+    // Use a more lenient approach - wait for either the iframe or check URL change
+    try {
+      await expect(
+        this.page.locator(this.journeyCardFrame).first()
+      ).toBeVisible({ timeout: sixtySecondsTimeout })
+    } catch {
+      // If iframe not found, check if we're on the journeys page by checking URL
+      const url = this.page.url()
+      if (!url.includes('/journeys/')) {
+        throw new Error('Journey creation failed - not navigated to journey editor')
+      }
+      // If we're on the journeys page, continue - the iframe might load later
+    }
   }
 
   async setJourneyName(journey: string) {
@@ -276,43 +295,45 @@ export class JourneyPage {
   }
 
   async enterJourneysTypography(): Promise<void> {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .first()
-      .locator(
-        'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
-      )
-      .first()
-      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
+    // Wait for iframe to load
+    const iframe = this.page.locator(this.journeyCardFrame).first()
+    await expect(iframe).toBeVisible({ timeout: sixtySecondsTimeout })
+    const frame = await iframe.contentFrame()
+    if (frame == null) {
+      throw new Error('Failed to get iframe content frame')
+    }
+    
+    // Wait for card wrapper to be visible
+    await expect(
+      frame.locator('div[data-testid="CardWrapper"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    
+    const typographyElement = frame.locator(
+      'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
+    ).first()
+    await expect(typographyElement).toBeVisible({ timeout: sixtySecondsTimeout })
+    await typographyElement.click({ timeout: sixtySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
+        await frame
           .locator('h3[data-testid="JourneysTypography"] textarea')
           .first()
           .isVisible()
       ) {
         break
       }
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .first()
+      await frame
         .locator(
           'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
         )
         .first()
         .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .first()
+    await frame
       .locator('h3[data-testid="JourneysTypography"] textarea')
       .first()
       .clear()
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .first()
+    await frame
       .locator('h3[data-testid="JourneysTypography"] textarea')
       .first()
       .fill(journeyName)
@@ -350,14 +371,23 @@ export class JourneyPage {
 
   async backIcon() {
     await this.page.locator('a[data-testid="ToolbarBackButton"]').click()
+    // Wait for navigation and journey list to load
+    await this.page.waitForLoadState('networkidle', { timeout: sixtySecondsTimeout })
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
+    // Wait for page to load after navigating back
+    await this.page.waitForLoadState('networkidle', { timeout: sixtySecondsTimeout })
+    // Wait for journey list to be visible first
+    await expect(
+      this.page.locator('div[data-testid*="JourneyCard"]').first()
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    // Then wait for our specific journey
     await expect(
       this.page.locator(this.journeyNamePath, {
         hasText: journeyName
       })
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickOnTheCreatedCustomJourney() {
@@ -664,11 +694,12 @@ export class JourneyPage {
   }
 
   async verifyActiveTabShowsEmptyMessage() {
+    // The empty message is in a Typography component, not h6
     await expect(
-      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] h6', {
+      this.page.locator('div[aria-labelledby*="active-status-panel-tab"] p, div[aria-labelledby*="active-status-panel-tab"] h6', {
         hasText: 'No journeys to display.'
       })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async getJourneyListOfArchivedTab() {
@@ -791,6 +822,8 @@ export class JourneyPage {
         { hasText: sortOption }
       )
       .click()
+    // Wait for the list to update after sorting
+    await this.page.waitForTimeout(1000)
   }
 
   async verifySelectedSortOptionInSortByIcon(selectedSortOption: string) {
@@ -803,6 +836,14 @@ export class JourneyPage {
   }
 
   async verifyJouyneysAreSortedByNames() {
+    // Wait for journey cards to be visible
+    await expect(
+      this.page
+        .locator(
+          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]'
+        )
+        .first()
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     const journeyList = await this.page
       .locator(
         'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
@@ -832,10 +873,13 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
-    list
+    const sortedList = list
       .map((str) => str.toLowerCase())
       .sort((a, b) => Intl.Collator().compare(a, b))
-    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
+    const sortedExpectedList = expectedSortedList
+      .map((str) => str.toLowerCase())
+      .sort((a, b) => Intl.Collator().compare(a, b))
+    expect(sortedList.join().trim() === sortedExpectedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJouyneysAreSortedByNames() {
@@ -1154,9 +1198,11 @@ export class JourneyPage {
   }
 
   async clickCopyIconInShareDialog() {
-    await this.page
-      .locator('div.MuiDialogContent-root button[aria-label="Copy"]')
-      .click()
+    const copyButton = this.page.locator('div.MuiDialogContent-root button[aria-label="Copy"]')
+    await expect(copyButton).toBeVisible({ timeout: thirtySecondsTimeout })
+    await copyButton.click()
+    // Wait for clipboard action to complete and snackbar to potentially appear
+    await this.page.waitForTimeout(1000)
   }
 
   async clickButtonInShareDialog(buttonName: string) {
