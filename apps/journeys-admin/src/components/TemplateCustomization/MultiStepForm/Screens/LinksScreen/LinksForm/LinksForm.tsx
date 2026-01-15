@@ -57,7 +57,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
   // function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>): void {
   //   const { name, value } = e.target
   //   const isDeleting = value.length < prevValueRef.current.length;
-  
+
   //   // 1. Update our "previous value" tracker for the next keystroke
   //   prevValueRef.current = value;
 
@@ -68,9 +68,9 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
   //   if (!isDeleting && !/^\w+:\/\//.test(value) && value.length > 3) {
   //     const formattedUrl = `https://${value}`;
   //     void setFieldValue(name, formattedUrl);
-      
+
   //     // Update the ref to the formatted version so the next 'delete' works
-  //     prevValueRef.current = formattedUrl; 
+  //     prevValueRef.current = formattedUrl;
   //   } else {
   //     // Just save exactly what they typed (allows deleting https://)
   //     void setFieldValue(name, value);
@@ -87,8 +87,8 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
   }
 
   function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    void setFieldValue(name, value);
+    const { name, value } = e.target
+    void setFieldValue(name, value)
   }
 
   return (
