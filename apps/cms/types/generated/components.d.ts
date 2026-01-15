@@ -63,7 +63,7 @@ export interface SharedSlider extends Struct.ComponentSchema {
 }
 
 declare module '@strapi/strapi' {
-  export namespace Public {
+  export module Public {
     export interface ComponentSchemas {
       'shared.media': SharedMedia
       'shared.quote': SharedQuote

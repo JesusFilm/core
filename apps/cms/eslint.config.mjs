@@ -7,7 +7,7 @@ const tsconfigRootDir = dirname(fileURLToPath(import.meta.url))
 export default [
   ...commonConfig,
   {
-    ignores: ['**/dist/**', '**/.strapi/**']
+    ignores: ['**/dist/**', '**/.strapi/**', '**/types/generated/**']
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
