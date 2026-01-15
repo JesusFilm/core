@@ -52,31 +52,6 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     window.open(targetUrl, '_blank', 'noopener,noreferrer')
   }
 
-  // const prevValueRef = useRef("");
-
-  // function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>): void {
-  //   const { name, value } = e.target
-  //   const isDeleting = value.length < prevValueRef.current.length;
-  
-  //   // 1. Update our "previous value" tracker for the next keystroke
-  //   prevValueRef.current = value;
-
-  //   // 2. LOGIC: Only auto-prefix if:
-  //   // - They aren't currently deleting/backspacing
-  //   // - It doesn't already have a protocol
-  //   // - They've typed enough to suggest a domain (e.g., more than 3 chars)
-  //   if (!isDeleting && !/^\w+:\/\//.test(value) && value.length > 3) {
-  //     const formattedUrl = `https://${value}`;
-  //     void setFieldValue(name, formattedUrl);
-      
-  //     // Update the ref to the formatted version so the next 'delete' works
-  //     prevValueRef.current = formattedUrl; 
-  //   } else {
-  //     // Just save exactly what they typed (allows deleting https://)
-  //     void setFieldValue(name, value);
-  //   }
-  // }
-
   function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>) {
     const { name, value } = e.target
 
