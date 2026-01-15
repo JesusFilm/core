@@ -24,8 +24,8 @@ export function initAuth(): void {
     cookies: {
       name: 'journeys-admin',
       keys: [
-        process.env.COOKIE_SECRET_CURRENT ?? '',
-        process.env.COOKIE_SECRET_PREVIOUS ?? ''
+        process.env.COOKIE_SECRET_CURRENT!,
+        process.env.COOKIE_SECRET_PREVIOUS!
       ],
       httpOnly: true,
       maxAge: 12 * 60 * 60 * 24 * 1000,
