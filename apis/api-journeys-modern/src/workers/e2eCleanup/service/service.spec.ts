@@ -24,7 +24,6 @@ const { prisma: mockPrismaUsers } = jest.requireMock(
 
 describe('E2E Cleanup Service', () => {
   let mockLogger: Logger
-  let mockTx: any
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -34,20 +33,6 @@ describe('E2E Cleanup Service', () => {
       warn: jest.fn(),
       error: jest.fn()
     } as any
-
-    // Create mock transaction client
-    mockTx = {
-      event: { deleteMany: jest.fn() },
-      qrCode: { deleteMany: jest.fn() },
-      journeyTag: { deleteMany: jest.fn() },
-      journeyEventsExportLog: { deleteMany: jest.fn() },
-      journey: { delete: jest.fn() }
-    }
-
-    // Mock the transaction to execute the callback with the mock transaction client
-    prismaMock.$transaction.mockImplementation(async (callback: any) => {
-      return await callback(mockTx)
-    })
   })
 
   describe('service', () => {
@@ -109,12 +94,8 @@ describe('E2E Cleanup Service', () => {
         .mockResolvedValueOnce(user1Journeys as any)
         .mockResolvedValueOnce(user2Journeys as any)
 
-      // Mock transaction operations
-      mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.qrCode.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyTag.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyEventsExportLog.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journey.delete.mockResolvedValue({})
+      // Mock journey deletion (cascade deletes related records)
+      prismaMock.journey.delete.mockResolvedValue({} as any)
 
       // Mock user deletion
       mockPrismaUsers.user.delete.mockResolvedValue({})
@@ -186,73 +167,15 @@ describe('E2E Cleanup Service', () => {
         }
       })
 
-      // Should delete journeys in transactions (3 total journeys)
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(3)
-      expect(mockTx.event.deleteMany).toHaveBeenCalledTimes(3)
-      expect(mockTx.qrCode.deleteMany).toHaveBeenCalledTimes(3)
-      expect(mockTx.journeyTag.deleteMany).toHaveBeenCalledTimes(3)
-      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenCalledTimes(3)
-      expect(mockTx.journey.delete).toHaveBeenCalledTimes(3)
-
-      // Should delete events for each journey
-      expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(1, {
-        where: { journeyId: 'journey-1' }
-      })
-      expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(2, {
-        where: { journeyId: 'journey-2' }
-      })
-      expect(mockTx.event.deleteMany).toHaveBeenNthCalledWith(3, {
-        where: { journeyId: 'journey-3' }
-      })
-
-      // Should delete related records (qrCode, journeyTag, journeyEventsExportLog) for each journey
-      expect(mockTx.qrCode.deleteMany).toHaveBeenNthCalledWith(1, {
-        where: { journeyId: 'journey-1' }
-      })
-      expect(mockTx.qrCode.deleteMany).toHaveBeenNthCalledWith(2, {
-        where: { journeyId: 'journey-2' }
-      })
-      expect(mockTx.qrCode.deleteMany).toHaveBeenNthCalledWith(3, {
-        where: { journeyId: 'journey-3' }
-      })
-
-      expect(mockTx.journeyTag.deleteMany).toHaveBeenNthCalledWith(1, {
-        where: { journeyId: 'journey-1' }
-      })
-      expect(mockTx.journeyTag.deleteMany).toHaveBeenNthCalledWith(2, {
-        where: { journeyId: 'journey-2' }
-      })
-      expect(mockTx.journeyTag.deleteMany).toHaveBeenNthCalledWith(3, {
-        where: { journeyId: 'journey-3' }
-      })
-
-      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenNthCalledWith(
-        1,
-        {
-          where: { journeyId: 'journey-1' }
-        }
-      )
-      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenNthCalledWith(
-        2,
-        {
-          where: { journeyId: 'journey-2' }
-        }
-      )
-      expect(mockTx.journeyEventsExportLog.deleteMany).toHaveBeenNthCalledWith(
-        3,
-        {
-          where: { journeyId: 'journey-3' }
-        }
-      )
-
-      // Should delete each journey
-      expect(mockTx.journey.delete).toHaveBeenNthCalledWith(1, {
+      // Should delete each journey (cascade deletes related records)
+      expect(prismaMock.journey.delete).toHaveBeenCalledTimes(3)
+      expect(prismaMock.journey.delete).toHaveBeenNthCalledWith(1, {
         where: { id: 'journey-1' }
       })
-      expect(mockTx.journey.delete).toHaveBeenNthCalledWith(2, {
+      expect(prismaMock.journey.delete).toHaveBeenNthCalledWith(2, {
         where: { id: 'journey-2' }
       })
-      expect(mockTx.journey.delete).toHaveBeenNthCalledWith(3, {
+      expect(prismaMock.journey.delete).toHaveBeenNthCalledWith(3, {
         where: { id: 'journey-3' }
       })
 
@@ -306,7 +229,7 @@ describe('E2E Cleanup Service', () => {
       expect(prismaMock.journey.findMany).toHaveBeenCalled()
 
       // Should not perform any deletions
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(prismaMock.journey.delete).not.toHaveBeenCalled()
       expect(mockPrismaUsers.user.delete).not.toHaveBeenCalled()
     })
 
@@ -337,8 +260,8 @@ describe('E2E Cleanup Service', () => {
         where: { id: 'user-1' }
       })
 
-      // Should not call transaction since no journeys to delete
-      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      // Should not call journey.delete since no journeys to delete
+      expect(prismaMock.journey.delete).not.toHaveBeenCalled()
     })
 
     it('should handle journey deletion errors gracefully', async () => {
@@ -366,9 +289,9 @@ describe('E2E Cleanup Service', () => {
       mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
       prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
 
-      // Mock transaction to fail
-      const transactionError = new Error('Journey deletion failed')
-      prismaMock.$transaction.mockRejectedValue(transactionError)
+      // Mock journey.delete to fail
+      const deleteError = new Error('Journey deletion failed')
+      prismaMock.journey.delete.mockRejectedValue(deleteError)
 
       const job = {
         data: {
@@ -419,55 +342,6 @@ describe('E2E Cleanup Service', () => {
       } as Job
 
       await expect(service(job, mockLogger)).rejects.toThrow('Database error')
-    })
-
-    it('should use transaction timeout for journey deletion', async () => {
-      const playwrightUsers = [
-        {
-          id: 'user-1',
-          userId: 'playwright-user-1',
-          email: 'playwright123@example.com'
-        }
-      ]
-
-      const userJourneys = [
-        {
-          id: 'journey-1',
-          title: 'Test Journey 1',
-          userJourneys: [
-            {
-              userId: 'playwright-user-1',
-              role: UserJourneyRole.owner
-            }
-          ]
-        }
-      ]
-
-      mockPrismaUsers.user.findMany.mockResolvedValue(playwrightUsers)
-      prismaMock.journey.findMany.mockResolvedValue(userJourneys as any)
-
-      mockTx.event.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.qrCode.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyTag.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journeyEventsExportLog.deleteMany.mockResolvedValue({ count: 0 })
-      mockTx.journey.delete.mockResolvedValue({})
-      mockPrismaUsers.user.delete.mockResolvedValue({})
-
-      const job = {
-        data: {
-          __typename: 'e2eCleanup',
-          olderThanHours: 24,
-          dryRun: false
-        }
-      } as Job
-
-      await service(job, mockLogger)
-
-      // Should call transaction with timeout option
-      expect(prismaMock.$transaction).toHaveBeenCalledWith(
-        expect.any(Function),
-        { timeout: 30000 }
-      )
     })
 
     it('should filter users by correct time cutoff', async () => {

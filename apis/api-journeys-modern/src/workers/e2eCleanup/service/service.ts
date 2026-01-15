@@ -98,33 +98,10 @@ export async function service(
         logger?.info(`🗑️ Deleting journey "${journey.title}" (${journey.id})`)
 
         try {
-          await prisma.$transaction(
-            async (tx) => {
-              // Delete events first (don't cascade from journey deletion)
-              await tx.event.deleteMany({
-                where: { journeyId: journey.id }
-              })
-
-              // Delete related records that don't have onDelete: Cascade in schema
-              await tx.qrCode.deleteMany({
-                where: { journeyId: journey.id }
-              })
-              await tx.journeyTag.deleteMany({
-                where: { journeyId: journey.id }
-              })
-              await tx.journeyEventsExportLog.deleteMany({
-                where: { journeyId: journey.id }
-              })
-
-              // Delete the journey - this will cascade delete everything else
-              await tx.journey.delete({
-                where: { id: journey.id }
-              })
-            },
-            {
-              timeout: 30000 // 30 seconds per journey
-            }
-          )
+          // Delete the journey - this will cascade delete everything else
+          await prisma.journey.delete({
+            where: { id: journey.id }
+          })
 
           deletedCount++
           logger?.info(`✅ Deleted journey "${journey.title}" (${journey.id})`)
