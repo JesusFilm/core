@@ -95,9 +95,5 @@
   "Behind The Scenes": "Behind The Scenes",
   "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Available in {{count}} language.",
-  "Available in {{count}} languages._other": "Available in {{count}} languages.",
-  "Better search. Better language support. Better collections.": "উন্নত অনুসন্ধান। উন্নত ভাষা সহায়তা। উন্নত সংগ্রহ।",
-  "Better search, languages, and collections.": "উন্নত অনুসন্ধান, ভাষা, এবং সংগ্রহ।",
-  "Try the new design.": "নতুন ডিজাইনটি চেষ্টা করুন।",
-  "New Design": "নতুন ডিজাইন"
+  "Available in {{count}} languages._other": "Available in {{count}} languages."
 }
