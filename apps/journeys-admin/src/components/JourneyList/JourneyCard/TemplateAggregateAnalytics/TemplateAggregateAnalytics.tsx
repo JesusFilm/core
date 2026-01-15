@@ -1,36 +1,19 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect } from 'react'
 
 import Data1Icon from '@core/shared/ui/icons/Data1'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 
-import {
-  GetTemplateFamilyStatsAggregate,
-  GetTemplateFamilyStatsAggregateVariables
-} from '../../../../../__generated__/GetTemplateFamilyStatsAggregate'
 import { IdType } from '../../../../../__generated__/globalTypes'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { Item } from '../../../Editor/Toolbar/Items/Item'
 
 import { localizeAndRound } from './localizeAndRound'
-
-export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
-  query GetTemplateFamilyStatsAggregate(
-    $id: ID!
-    $idType: IdType
-    $where: PlausibleStatsAggregateFilter!
-  ) {
-    templateFamilyStatsAggregate(id: $id, idType: $idType, where: $where) {
-      childJourneysCount
-      totalJourneysViews
-      totalJourneysResponses
-    }
-  }
-`
 
 interface TemplateAggregateAnalyticsProps {
   journeyId: string
@@ -41,24 +24,37 @@ export function TemplateAggregateAnalytics({
 }: TemplateAggregateAnalyticsProps): ReactElement {
   const { t, i18n } = useTranslation('apps-journeys-admin')
   const locale = i18n?.language ?? 'en'
+  const { enqueueSnackbar } = useSnackbar()
+  const { query } = useTemplateFamilyStatsAggregateLazyQuery()
+  const [getTemplateStats, { data, loading, error }] = query
 
-  const { data } = useQuery<
-    GetTemplateFamilyStatsAggregate,
-    GetTemplateFamilyStatsAggregateVariables
-  >(GET_TEMPLATE_FAMILY_STATS_AGGREGATE, {
-    variables: {
-      id: journeyId,
-      idType: IdType.databaseId,
-      where: {}
-    },
-    skip: !journeyId
-  })
+  useEffect(() => {
+    if (journeyId) {
+      void getTemplateStats({
+        variables: {
+          id: journeyId,
+          idType: IdType.databaseId,
+          where: {}
+        }
+      })
+    }
+  }, [journeyId, getTemplateStats])
+
+  useEffect(() => {
+    if (error != null) {
+      enqueueSnackbar(t('Failed to load template analytics'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+    }
+  }, [error, enqueueSnackbar, t])
 
   const childJourneys = data?.templateFamilyStatsAggregate?.childJourneysCount
   const journeyViewCount =
     data?.templateFamilyStatsAggregate?.totalJourneysViews
   const journeyResponseCount =
     data?.templateFamilyStatsAggregate?.totalJourneysResponses
+  const showLoadingSkeleton = loading || data == null
 
   const buttonProps = {
     sx: {
@@ -88,7 +84,7 @@ export function TemplateAggregateAnalytics({
         icon={<Data1Icon />}
         label={t('Journeys Created')}
         count={
-          childJourneys == null ? (
+          showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
@@ -103,7 +99,7 @@ export function TemplateAggregateAnalytics({
         icon={<EyeOpenIcon />}
         label={t('Views')}
         count={
-          journeyViewCount == null ? (
+          showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
@@ -118,7 +114,7 @@ export function TemplateAggregateAnalytics({
         icon={<Inbox2Icon />}
         label={t('Responses')}
         count={
-          journeyResponseCount == null ? (
+          showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />
           ) : (
             <Typography variant="subtitle3" sx={{ lineHeight: '21px' }}>
