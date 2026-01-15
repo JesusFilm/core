@@ -62,8 +62,8 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
   }
 
   function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    void setFieldValue(name, value);
+    const { name, value } = e.target
+    void setFieldValue(name, value)
   }
 
   return (
