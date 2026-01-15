@@ -1,4 +1,4 @@
-export default [
+const middlewares = [
   'strapi::logger',
   'strapi::errors',
   'strapi::security',
@@ -8,5 +8,7 @@ export default [
   'strapi::body',
   'strapi::session',
   'strapi::favicon',
-  'strapi::public',
-];
+  'strapi::public'
+]
+
+export default middlewares

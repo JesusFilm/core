@@ -1,4 +1,4 @@
-export default ({ env }) => ({
+const pluginsConfig = ({ env }) => ({
   'mux-video-uploader': {
     enabled: true,
     config: {
@@ -17,3 +17,5 @@ export default ({ env }) => ({
     }
   }
 })
+
+export default pluginsConfig

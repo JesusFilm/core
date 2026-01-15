@@ -1,4 +1,4 @@
-export default ({ env }) => {
+const databaseConfig = ({ env }) => {
   return {
     connection: {
       client: 'postgres',
@@ -13,3 +13,5 @@ export default ({ env }) => {
     }
   }
 }
+
+export default databaseConfig

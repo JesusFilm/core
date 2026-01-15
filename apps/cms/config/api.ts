@@ -1,7 +1,9 @@
-export default {
+const apiConfig = {
   rest: {
     defaultLimit: 25,
     maxLimit: 100,
-    withCount: true,
-  },
-};
+    withCount: true
+  }
+}
+
+export default apiConfig

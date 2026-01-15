@@ -1,6 +1,6 @@
-import type { StrapiApp } from '@strapi/strapi/admin';
+import type { StrapiApp } from '@strapi/strapi/admin'
 
-export default {
+const appConfig = {
   config: {
     locales: [
       // 'ar',
@@ -29,9 +29,11 @@ export default {
       // 'vi',
       // 'zh-Hans',
       // 'zh',
-    ],
+    ]
   },
   bootstrap(app: StrapiApp) {
-    console.log(app);
-  },
-};
+    console.log(app)
+  }
+}
+
+export default appConfig
