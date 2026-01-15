@@ -34,6 +34,7 @@ variable "env" {
 variable "doppler_token" {
   type        = string
   description = "Doppler token for CMS"
+  sensitive   = true
 }
 
 variable "alb_listener_arn" {
