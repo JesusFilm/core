@@ -822,6 +822,7 @@
   "Choose folder": "選擇資料夾",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "選購：在 Google Drive 中選擇資料夾，儲存您的新試算表。",
   "Choose Spreadsheet": "選擇試算表",
+  "Select a spreadsheet from Google Drive to sync your data.": "從 Google Drive 選取試算表同步資料。",
   "Sheet name": "工作表名稱",
   "Sheet title": "單張標題",
   "Sheet tab name": "工作表標籤名稱",
