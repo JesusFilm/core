@@ -374,10 +374,13 @@ export async function appendEventToGoogleSheets({
   // correct column key should be based on the block structure (e.g., "blockId-card 2").
   const extractBlockIdFromKey = (key: string): string | null => {
     if (key === '') return null
-    // Find the first column that matches by checking if the key starts with "blockId-"
-    // The blockId is a UUID format, so we can safely split on the first hyphen after the UUID
+    // Find the first column that matches by checking:
+    // 1. Exact match: key === col.blockId (for keys without a label suffix)
+    // 2. Prefix match: key starts with "blockId-" (for keys with a label suffix)
     const matchingColumn = columns.find(
-      (col) => col.blockId != null && key.startsWith(`${col.blockId}-`)
+      (col) =>
+        col.blockId != null &&
+        (key === col.blockId || key.startsWith(`${col.blockId}-`))
     )
     return matchingColumn?.blockId ?? null
   }
