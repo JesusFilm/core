@@ -1,14 +1,13 @@
 {
   "kind": "collectionType",
-  "collectionName": "authors",
+  "collectionName": "clients",
   "info": {
-    "singularName": "author",
-    "pluralName": "authors",
-    "displayName": "Author",
-    "description": "Create authors for your content"
+    "singularName": "client",
+    "pluralName": "clients",
+    "displayName": "Client"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
@@ -18,25 +17,28 @@
     },
     "slug": {
       "type": "uid",
-      "targetField": "name",
       "required": true
     },
-    "email": {
-      "type": "email"
-    },
-    "avatar": {
+    "favicon": {
       "type": "media",
       "multiple": false,
-      "required": false,
       "allowedTypes": [
         "images"
       ]
     },
+    "description": {
+      "type": "text"
+    },
+    "defaultSeo": {
+      "type": "component",
+      "component": "shared.seo",
+      "repeatable": false
+    },
     "articles": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
       "target": "api::article.article",
-      "mappedBy": "author"
+      "mappedBy": "clients"
     }
   }
 }
