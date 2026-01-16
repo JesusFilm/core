@@ -386,7 +386,8 @@ export async function appendEventToGoogleSheets({
   // Find the correct column key by blockId - use the first column matching this blockId
   const resolvedColumnKey =
     resolvedBlockId != null
-      ? columns.find((col) => col.blockId === resolvedBlockId)?.key ?? dynamicKey
+      ? (columns.find((col) => col.blockId === resolvedBlockId)?.key ??
+        dynamicKey)
       : dynamicKey
 
   // Update all synced sheets - use allSettled so one failure doesn't abort others
