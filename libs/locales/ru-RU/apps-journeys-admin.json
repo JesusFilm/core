@@ -822,6 +822,7 @@
   "Choose folder": "Выберите папку",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "Необязательно: Выбери папку в Google Drive, где будет храниться твоя новая электронная таблица.",
   "Choose Spreadsheet": "Выберите электронную таблицу",
+  "Select a spreadsheet from Google Drive to sync your data.": "Выбери электронную таблицу из Google Drive, чтобы синхронизировать данные.",
   "Sheet name": "Название листа",
   "Sheet title": "Название листа",
   "Sheet tab name": "Название вкладки листа",
