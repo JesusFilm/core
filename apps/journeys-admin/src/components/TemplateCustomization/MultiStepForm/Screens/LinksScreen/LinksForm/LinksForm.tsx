@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
@@ -21,7 +21,7 @@ interface LinksFormProps {
 
 export function LinksForm({ links }: LinksFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { values, errors, touched, handleBlur, setFieldValue, handleChange } =
+  const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<Record<string, string>>()
 
   function handleOpenLink(
