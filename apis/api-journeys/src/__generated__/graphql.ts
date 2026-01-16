@@ -864,6 +864,7 @@ export enum IconName {
   ChevronRightRounded = 'ChevronRightRounded',
   ContactSupportRounded = 'ContactSupportRounded',
   FormatQuoteRounded = 'FormatQuoteRounded',
+  LanguageRounded = 'LanguageRounded',
   Launch = 'Launch',
   LiveTvRounded = 'LiveTvRounded',
   LockOpenRounded = 'LockOpenRounded',

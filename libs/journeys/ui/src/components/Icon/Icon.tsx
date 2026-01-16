@@ -7,6 +7,7 @@ import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
+import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
@@ -63,7 +64,8 @@ export function Icon({
     SubscriptionsRounded,
     ContactSupportRounded,
     Launch,
-    MailOutline
+    MailOutline,
+    LanguageRounded
   }
 
   const iconRTL =

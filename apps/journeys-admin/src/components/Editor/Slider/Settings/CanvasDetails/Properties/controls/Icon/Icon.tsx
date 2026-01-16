@@ -9,6 +9,7 @@ import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import ContactSupportRounded from '@mui/icons-material/ContactSupportRounded'
 import FormatQuoteRounded from '@mui/icons-material/FormatQuoteRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import LanguageRounded from '@mui/icons-material/LanguageRounded'
 import Launch from '@mui/icons-material/Launch'
 import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
 import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
@@ -143,6 +144,11 @@ export const icons = [
     value: IconName.MailOutline,
     label: t('Mail'),
     display: <MailOutline />
+  },
+  {
+    value: IconName.LanguageRounded,
+    label: t('Website'),
+    display: <LanguageRounded />
   }
 ]
 
