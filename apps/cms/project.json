@@ -66,6 +66,16 @@
           }
         ]
       }
+    },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "echo 'upload-sourcemaps not implemented for cms'"
+          }
+        ]
+      }
     }
   }
 }

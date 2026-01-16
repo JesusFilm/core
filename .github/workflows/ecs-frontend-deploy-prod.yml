@@ -7,12 +7,9 @@ on:
       - main
 jobs:
   affected:
-    name: Detect affected projects
     runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
-      arclight: ${{ steps.set.outputs.arclight }}
-      journeys_admin: ${{ steps.set.outputs.journeys_admin }}
-      cms: ${{ steps.set.outputs.cms }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,29 +25,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
-      - id: set
-        name: compute if arclight is affected
+      - id: set-matrix
+        name: set matrix app to affected array
         run: |
-          set -euo pipefail
-          list=$(pnpm -s exec nx show projects --affected)
-          if echo "$list" | awk '{print $1}' | grep -xq 'arclight'; then
-            echo "arclight=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "arclight=false" >> "$GITHUB_OUTPUT"
-          fi
-          if echo "$list" | awk '{print $1}' | grep -xq 'journeys-admin'; then
-            echo "journeys_admin=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "journeys_admin=false" >> "$GITHUB_OUTPUT"
-          fi
-          if echo "$list" | awk '{print $1}' | grep -xq 'cms'; then
-            echo "cms=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "cms=false" >> "$GITHUB_OUTPUT"
-          fi
+          echo "matrix=$(pnpm exec ts-node tools/scripts/affected-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
   arclight:
     needs: [affected]
-    if: ${{ needs.affected.outputs.arclight == 'true' }}
+    if: contains(needs.affected.outputs.matrix, 'arclight')
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-prod-worker.yml@main
     with:
       name: arclight
@@ -79,7 +61,7 @@ jobs:
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
   journeys-admin:
     needs: [affected]
-    if: ${{ needs.affected.outputs.journeys_admin == 'true' }}
+    if: contains(needs.affected.outputs.matrix, 'journeys-admin')
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-prod-worker.yml@main
     with:
       name: journeys-admin
@@ -108,7 +90,7 @@ jobs:
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
   cms:
     needs: [affected]
-    if: ${{ needs.affected.outputs.cms == 'true' }}
+    if: contains(needs.affected.outputs.matrix, 'cms')
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-prod-worker.yml@main
     with:
       name: cms
