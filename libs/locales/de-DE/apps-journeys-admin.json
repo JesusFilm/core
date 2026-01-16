@@ -822,6 +822,7 @@
   "Choose folder": "Ordner wählen",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "Optional: Wähle einen Ordner in Google Drive, um dein neues Arbeitsblatt zu speichern.",
   "Choose Spreadsheet": "Tabellenkalkulation wählen",
+  "Select a spreadsheet from Google Drive to sync your data.": "Wähle eine Tabellenkalkulation aus Google Drive aus, um deine Daten zu synchronisieren.",
   "Sheet name": "Blattname",
   "Sheet title": "Blatttitel",
   "Sheet tab name": "Name der Registerkarte Blatt",
