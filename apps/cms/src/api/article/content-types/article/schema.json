@@ -13,15 +13,23 @@
   "pluginOptions": {},
   "attributes": {
     "title": {
-      "type": "string"
+      "type": "string",
+      "required": true
+    },
+    "clients": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::client.client",
+      "inversedBy": "articles"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
     },
     "description": {
       "type": "text",
       "maxLength": 80
-    },
-    "slug": {
-      "type": "uid",
-      "targetField": "title"
     },
     "cover": {
       "type": "media",
