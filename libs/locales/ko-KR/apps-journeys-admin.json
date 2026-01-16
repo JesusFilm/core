@@ -822,6 +822,7 @@
   "Choose folder": "폴더 선택",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "선택 사항입니다: Google 드라이브에서 새 스프레드시트를 저장할 폴더를 선택합니다.",
   "Choose Spreadsheet": "스프레드시트 선택",
+  "Select a spreadsheet from Google Drive to sync your data.": "Google 드라이브에서 스프레드시트를 선택하여 데이터를 동기화하세요.",
   "Sheet name": "시트 이름",
   "Sheet title": "시트 제목",
   "Sheet tab name": "시트 탭 이름",
