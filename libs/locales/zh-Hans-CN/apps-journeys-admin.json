@@ -822,6 +822,7 @@
   "Choose folder": "选择文件夹",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "可选：在 Google Drive 中选择一个文件夹来存储新的电子表格。",
   "Choose Spreadsheet": "选择电子表格",
+  "Select a spreadsheet from Google Drive to sync your data.": "从 Google Drive 选择电子表格同步数据。",
   "Sheet name": "纸张名称",
   "Sheet title": "纸张标题",
   "Sheet tab name": "工作表选项卡名称",
