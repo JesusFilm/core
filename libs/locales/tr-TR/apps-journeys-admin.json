@@ -822,6 +822,7 @@
   "Choose folder": "Klasör seçin",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "İsteğe bağlı: Yeni elektronik tablonuzu saklamak için Google Drive'da bir klasör seçin.",
   "Choose Spreadsheet": "Elektronik Tablo Seçin",
+  "Select a spreadsheet from Google Drive to sync your data.": "Verilerinizi senkronize etmek için Google Drive'dan bir elektronik tablo seçin.",
   "Sheet name": "Sayfa adı",
   "Sheet title": "Sayfa başlığı",
   "Sheet tab name": "Sayfa sekmesi adı",
