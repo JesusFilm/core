@@ -822,6 +822,7 @@
   "Choose folder": "フォルダを選択",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "オプション：新しいスプレッドシートを保存するGoogleドライブ内のフォルダを選択します。",
   "Choose Spreadsheet": "スプレッドシートの選択",
+  "Select a spreadsheet from Google Drive to sync your data.": "Googleドライブからスプレッドシートを選択し、データを同期します。",
   "Sheet name": "シート名",
   "Sheet title": "シートタイトル",
   "Sheet tab name": "シートタブ名",
