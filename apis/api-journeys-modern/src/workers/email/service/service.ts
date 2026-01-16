@@ -96,9 +96,6 @@ async function getCompleteSenderData(jobSender: any): Promise<any> {
   if (!completeSender.firstName || completeSender.firstName.trim() === '') {
     const emailLocalPart = completeSender.email?.split('@')[0] || 'User'
     completeSender.firstName = emailLocalPart
-    console.info(
-      `Using email-based firstName fallback: ${emailLocalPart} from ${completeSender.email}`
-    )
   }
 
   return completeSender
