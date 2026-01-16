@@ -317,7 +317,7 @@ export class JourneyResolver {
             }
           ]
         }
-      } else {
+      } else if (options.skipRoutingFilter !== true) {
         filter.team = {
           customDomains: { none: { routeAllTeamJourneys: true } }
         }
