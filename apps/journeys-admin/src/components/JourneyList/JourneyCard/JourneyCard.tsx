@@ -4,10 +4,12 @@ import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -16,6 +18,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
@@ -30,6 +33,15 @@ import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
 import { TemplateAggregateAnalytics } from './TemplateAggregateAnalytics'
+
+const TemplateBreakdownAnalyticsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "TemplateBreakdownAnalyticsDialog" */
+      '../../TemplateBreakdownAnalyticsDialog/TemplateBreakdownAnalyticsDialog'
+    ).then((mod) => mod.TemplateBreakdownAnalyticsDialog),
+  { ssr: false }
+)
 
 interface JourneyCardProps {
   journey: Journey
@@ -62,6 +74,7 @@ export function JourneyCard({
   const { t } = useTranslation('apps-journeys-admin')
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
+  const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
 
   const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'
@@ -358,9 +371,9 @@ export function JourneyCard({
         <Box
           sx={{
             position: 'absolute',
-            bottom: { xs: 8, sm: 3 },
+            bottom: { xs: 8, sm: 4 },
             left: { xs: 7, sm: 6 },
-            right: { xs: 10, sm: 7 },
+            right: 9,
             zIndex: 3
           }}
         >
@@ -370,13 +383,34 @@ export function JourneyCard({
               gap={1}
               justifyContent="space-between"
               alignItems="center"
+              sx={{
+                pb: 1
+              }}
             >
               <TemplateAggregateAnalytics journeyId={journey.id} />
+              <IconButton
+                size="small"
+                aria-label="journey breakdown analytics"
+                sx={{
+                  outline: '2px solid',
+                  outlineColor: 'secondary.light',
+                  borderRadius: '6px',
+                  padding: 1
+                }}
+                onClick={() => setBreakdownDialogOpen(true)}
+              >
+                <BarGroup3Icon fontSize="small" />
+              </IconButton>
             </Stack>
           ) : (
             <JourneyCardInfo journey={journey} variant={variant} />
           )}
         </Box>
+        <TemplateBreakdownAnalyticsDialog
+          journeyId={journey.id}
+          open={breakdownDialogOpen}
+          handleClose={() => setBreakdownDialogOpen(false)}
+        />
       </>
     </Card>
   )

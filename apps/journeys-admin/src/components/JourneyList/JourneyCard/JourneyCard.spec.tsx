@@ -9,6 +9,7 @@ import {
   GetTemplateFamilyStatsAggregateVariables
 } from '../../../../__generated__/GetTemplateFamilyStatsAggregate'
 import { IdType } from '../../../../__generated__/globalTypes'
+import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ThemeProvider } from '../../ThemeProvider'
 import {
   customizableTemplateJourney,
@@ -22,7 +23,6 @@ import {
 
 import { JourneyCard } from './JourneyCard'
 import { JourneyCardVariant } from './journeyCardVariant'
-import { GET_TEMPLATE_FAMILY_STATS_AGGREGATE } from './TemplateAggregateAnalytics/TemplateAggregateAnalytics'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
