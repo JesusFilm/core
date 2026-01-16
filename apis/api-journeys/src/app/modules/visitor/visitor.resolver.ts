@@ -8,7 +8,6 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { FromPostgresql } from 'apis/api-journeys/src/app/lib/decorators/FromPostgresql'
 import { GraphQLError } from 'graphql'
 import compact from 'lodash/compact'
 import pick from 'lodash/pick'
@@ -21,6 +20,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
 import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { VisitorService, VisitorsConnection } from './visitor.service'

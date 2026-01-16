@@ -9,11 +9,6 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
-import { FromPostgresql } from 'apis/api-journeys/src/app/lib/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from 'apis/api-journeys/src/app/lib/powerBi/getPowerBiEmbed'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 import filter from 'lodash/filter'
@@ -51,6 +46,11 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
 import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'

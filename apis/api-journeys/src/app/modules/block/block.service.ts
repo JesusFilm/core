@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { FromPostgresql } from 'apis/api-journeys/src/app/lib/decorators/FromPostgresql'
-import { ToPostgresql } from 'apis/api-journeys/src/app/lib/decorators/ToPostgresql'
 import { Action, Block, Prisma } from '@core/prisma/journeys/client'
 
 import { BlockDuplicateIdMap } from '../../__generated__/graphql'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
+import { ToPostgresql } from '../../lib/decorators/ToPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']

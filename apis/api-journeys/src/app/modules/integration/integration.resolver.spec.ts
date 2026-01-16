@@ -5,16 +5,14 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { Integration, Prisma } from '@core/prisma/journeys/client'
 
 import { IntegrationType, UserTeamRole } from '../../__generated__/graphql'
-import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { IntegrationResolver } from './integration.resolver'
 
 describe('IntegrationResolver', () => {
-  let resolver: IntegrationResolver,
-    prismaService: DeepMockProxy<PrismaService>,
-    ability: AppAbility
+  let resolver: IntegrationResolver, prismaService: DeepMockProxy<PrismaService>
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -32,7 +30,6 @@ describe('IntegrationResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
-    ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
   const integration: Integration = {
