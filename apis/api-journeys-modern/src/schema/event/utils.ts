@@ -368,6 +368,27 @@ export async function appendEventToGoogleSheets({
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
+  // Extract blockId from dynamicKey (format: "blockId-label" or just "blockId")
+  // and find the matching column by blockId to use the correct column key.
+  // This fixes the issue where frontend sends a label like "Step 3" but the
+  // correct column key should be based on the block structure (e.g., "blockId-card 2").
+  const extractBlockIdFromKey = (key: string): string | null => {
+    if (key === '') return null
+    // Find the first column that matches by checking if the key starts with "blockId-"
+    // The blockId is a UUID format, so we can safely split on the first hyphen after the UUID
+    const matchingColumn = columns.find(
+      (col) => col.blockId != null && key.startsWith(`${col.blockId}-`)
+    )
+    return matchingColumn?.blockId ?? null
+  }
+
+  const resolvedBlockId = extractBlockIdFromKey(dynamicKey)
+  // Find the correct column key by blockId - use the first column matching this blockId
+  const resolvedColumnKey =
+    resolvedBlockId != null
+      ? columns.find((col) => col.blockId === resolvedBlockId)?.key ?? dynamicKey
+      : dynamicKey
+
   // Update all synced sheets - use allSettled so one failure doesn't abort others
   const results = await Promise.allSettled(
     syncs.map(async (sync) => {
@@ -387,8 +408,8 @@ export async function appendEventToGoogleSheets({
       const rowMap: Record<string, string> = {}
       if (visitorId !== '') rowMap.visitorId = visitorId
       if (createdAt !== '') rowMap.date = createdAt
-      if (dynamicKey !== '' && dynamicValue !== '') {
-        rowMap[dynamicKey] = dynamicValue
+      if (resolvedColumnKey !== '' && dynamicValue !== '') {
+        rowMap[resolvedColumnKey] = dynamicValue
       }
 
       const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')

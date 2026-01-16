@@ -752,6 +752,85 @@ describe('event utils', () => {
       )
     })
 
+    it('should use existing column key when event label differs from existing events for same blockId', async () => {
+      // This test validates the fix for the issue where events with different labels
+      // (e.g., "Step 3" vs "card 2") for the same blockId should go to the same column
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      const radioQuestionBlockId = 'radio-question-block-123'
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: [
+          {
+            id: 'step-block-1',
+            typename: 'StepBlock',
+            parentBlockId: null,
+            parentOrder: 0,
+            nextBlockId: null,
+            deletedAt: null
+          },
+          {
+            id: 'card-block-1',
+            typename: 'CardBlock',
+            parentBlockId: 'step-block-1',
+            parentOrder: 0,
+            deletedAt: null
+          },
+          {
+            id: radioQuestionBlockId,
+            typename: 'RadioQuestionBlock',
+            parentBlockId: 'card-block-1',
+            parentOrder: 0,
+            deletedAt: null
+          }
+        ]
+      } as any)
+      // Simulate existing events with "card 2" label for the same blockId
+      prismaMock.event.findMany.mockResolvedValue([
+        { blockId: radioQuestionBlockId, label: 'card 2' }
+      ] as any)
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date', 'Poll']]) // existing header
+        .mockResolvedValueOnce([]) // no existing visitor rows
+
+      // New event comes in with "Step 3" label (different from existing "card 2")
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          `${radioQuestionBlockId}-Step 3`, // Frontend sent "Step 3" as label
+          'Option A'
+        ]
+      })
+
+      // The value should be written to the existing column (blockId-card 2), not create a new one
+      expect(mockWriteValues).toHaveBeenCalledWith(
+        expect.objectContaining({
+          values: expect.arrayContaining([
+            expect.arrayContaining(['visitor-id'])
+          ]),
+          append: true
+        })
+      )
+    })
+
     it('should update all synced sheets when multiple syncs exist', async () => {
       const mockSync1 = {
         id: 'sync-id-1',
