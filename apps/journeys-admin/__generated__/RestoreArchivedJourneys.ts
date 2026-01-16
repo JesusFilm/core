@@ -13,6 +13,7 @@ export interface RestoreArchivedJourneys_journeysRestore {
   __typename: "Journey";
   id: string;
   status: JourneyStatus;
+  fromTemplateId: string | null;
 }
 
 export interface RestoreArchivedJourneys {

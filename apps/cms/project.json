@@ -1,0 +1,61 @@
+{
+  "name": "cms",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/cms",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/cms"],
+      "options": {
+        "command": "pnpm --filter cms exec strapi build"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm --filter cms exec strapi develop"
+      }
+    },
+    "strapi": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm --filter cms exec strapi"
+      }
+    },
+    "upgrade": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/cms",
+        "command": "pnpm dlx @strapi/upgrade latest"
+      }
+    },
+    "upgrade:dry": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/cms",
+        "command": "pnpm dlx @strapi/upgrade latest --dry"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/cms/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_CMS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project cms > apps/cms/.env"
+          }
+        ]
+      }
+    }
+  }
+}
