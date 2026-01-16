@@ -822,6 +822,7 @@
   "Choose folder": "เลือกโฟลเดอร์",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "ตัวเลือก: เลือกโฟลเดอร์ใน Google Drive เพื่อเก็บสเปรดชีตใหม่ของคุณ",
   "Choose Spreadsheet": "เลือกสเปรดชีต",
+  "Select a spreadsheet from Google Drive to sync your data.": "เลือกสเปรดชีตจาก Google Drive เพื่อซิงค์ข้อมูลของคุณ",
   "Sheet name": "ชื่อแผ่นงาน",
   "Sheet title": "ชื่อแผ่นงาน",
   "Sheet tab name": "ชื่อแท็บแผ่นงาน",
