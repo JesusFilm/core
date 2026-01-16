@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import React, { ReactElement, useRef } from 'react'
+import React, { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
