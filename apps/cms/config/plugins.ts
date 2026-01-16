@@ -1,4 +1,9 @@
 const pluginsConfig = ({ env }) => ({
+  'users-permissions': {
+    config: {
+      jwtSecret: env('JWT_SECRET')
+    }
+  },
   'mux-video-uploader': {
     enabled: true,
     config: {
