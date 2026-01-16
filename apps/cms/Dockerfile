@@ -1,28 +1,53 @@
-FROM node:22-alpine3.20
+FROM node:22-alpine
 
-EXPOSE 1337
+# -------------------------
+# System deps for sharp / vips
+# -------------------------
+RUN apk add --no-cache \
+  build-base \
+  gcc \
+  autoconf \
+  automake \
+  zlib-dev \
+  libpng-dev \
+  nasm \
+  bash \
+  vips-dev \
+  git
 
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
-ENV NODE_ENV=production
-ENV PNPM_HOME="/usr/local/share/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 
-RUN apk upgrade --update-cache --available && \
-    apk add g++ make python3 py3-pip curl-dev && \
-    rm -rf /var/cache/apk/*
+# Enable pnpm
+RUN corepack enable
 
-WORKDIR /app
+# -------------------------
+# Workspace root
+# -------------------------
+WORKDIR /opt
 
-COPY ./package.json ./package.json
-COPY ./pnpm-lock.yaml* ./
+# Copy only what pnpm needs to resolve CMS
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/cms/package.json ./apps/cms/package.json
 
-RUN corepack enable && corepack prepare pnpm --activate
-RUN pnpm install --frozen-lockfile
+# Install ONLY cms deps
+RUN pnpm install \
+  --frozen-lockfile \
+  --filter ./apps/cms...
 
-COPY . .
+# -------------------------
+# Copy CMS source only
+# -------------------------
+COPY apps/cms ./apps/cms
 
-RUN pnpm run build
+WORKDIR /opt/apps/cms
 
+RUN chown -R node:node /opt/apps/cms
+USER node
+
+RUN ["pnpm", "run", "build"]
+
+EXPOSE 1337
 CMD ["pnpm", "run", "start"]
-
