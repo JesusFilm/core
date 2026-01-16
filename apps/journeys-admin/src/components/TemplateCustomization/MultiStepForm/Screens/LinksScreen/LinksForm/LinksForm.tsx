@@ -59,11 +59,6 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     void setFieldValue(name, url)
   }
 
-  function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target
-    void setFieldValue(name, value)
-  }
-
   return (
     <Form id="linksForm" style={{ width: '100%' }}>
       <Stack sx={{ width: '100%' }}>
@@ -162,11 +157,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                   fullWidth
                   type={link.linkType === 'email' ? 'email' : 'text'}
                   value={values?.[fieldName] ?? ''}
-                  onChange={
-                    link.linkType === 'email' || link.linkType === 'chatButtons'
-                      ? handleChange
-                      : handleLinkChange
-                  }
+                  onChange={handleChange}
                   onBlur={handleLinkBLur}
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
