@@ -56,6 +56,16 @@
           }
         ]
       }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "echo 'extract-translations not implemented for cms'"
+          }
+        ]
+      }
     }
   }
 }
