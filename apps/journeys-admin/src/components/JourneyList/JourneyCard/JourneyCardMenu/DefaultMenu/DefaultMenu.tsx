@@ -30,6 +30,7 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
@@ -113,6 +114,7 @@ export function DefaultMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { data: userRoleData } = useUserRoleQuery()
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
@@ -220,7 +222,11 @@ export function DefaultMenu({
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
-          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <DuplicateJourneyMenuItem
+            id={id}
+            handleCloseMenu={handleCloseMenu}
+            fromTemplateId={journey?.fromTemplateId}
+          />
           <MenuItem
             label={t('Translate')}
             icon={<TranslateIcon color="secondary" />}
@@ -250,6 +256,7 @@ export function DefaultMenu({
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}
+            refetchTemplateStats={refetchTemplateStats}
           />
           <Divider />
         </>

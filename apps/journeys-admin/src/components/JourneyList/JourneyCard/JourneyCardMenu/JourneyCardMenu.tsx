@@ -267,6 +267,7 @@ export function JourneyCardMenu({
           open={openTrashDialog}
           handleClose={() => setOpenTrashDialog(false)}
           refetch={refetch}
+          fromTemplateId={journey?.fromTemplateId}
         />
       )}
       {openRestoreDialog != null && (
@@ -276,6 +277,7 @@ export function JourneyCardMenu({
           published={published}
           handleClose={() => setOpenRestoreDialog(false)}
           refetch={refetch}
+          fromTemplateId={journey?.fromTemplateId}
         />
       )}
       {openDeleteDialog != null && (

@@ -9,6 +9,7 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ThemeProvider } from '../../ThemeProvider'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
@@ -21,6 +22,18 @@ import { ActiveJourneyList } from '.'
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
+
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
+  extractTemplateIdsFromJourneys: jest.requireActual(
+    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+  ).extractTemplateIdsFromJourneys
+}))
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -64,6 +77,24 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ActiveJourneyList', () => {
+  const refetchTemplateStats = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
+  })
+
   it('should ask users to add a new journey', async () => {
     const { getByText } = render(
       <MockedProvider mocks={[noJourneysMock]}>
@@ -239,6 +270,60 @@ describe('ActiveJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when trashing journeys with fromTemplateId', async () => {
+      const result = jest.fn(() => ({
+        data: {
+          journeysTrash: [
+            {
+              id: defaultJourney.id,
+              status: 'archived',
+              fromTemplateId: 'template-1'
+            },
+            {
+              id: oldJourney.id,
+              status: 'archived',
+              fromTemplateId: 'template-2'
+            }
+          ]
+        }
+      }))
+      const trashJourneysMock = {
+        request: {
+          query: TRASH_ACTIVE_JOURNEYS,
+          variables: {
+            ids: [defaultJourney.id, oldJourney.id]
+          }
+        },
+        result
+      }
+
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[activeJourneysMock, trashJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveJourneyList
+                event="trashAllActive"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 })
