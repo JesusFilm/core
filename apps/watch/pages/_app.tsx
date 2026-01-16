@@ -161,7 +161,7 @@ function WatchApp({
               themeName={ThemeName.website}
               themeMode={ThemeMode.light}
             >
-              <BetaBanner />
+              {/* <BetaBanner /> */}
               <InstantSearchProvider>
                 <GoogleTagManager
                   gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}

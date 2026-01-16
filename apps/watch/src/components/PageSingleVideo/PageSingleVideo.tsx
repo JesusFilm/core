@@ -3,7 +3,10 @@ import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { InstantSearch } from 'react-instantsearch'
 import { v4 as uuidv4 } from 'uuid'
+
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import Bible from '@core/shared/ui/icons/Bible'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
@@ -13,6 +16,7 @@ import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import type { VideoCarouselSlide } from '../../types/inserts'
+import { ContentHeader } from '../ContentHeader'
 import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { DialogShare } from '../DialogShare'
 import { PageWrapper } from '../PageWrapper'
@@ -26,6 +30,7 @@ import { NewVideoContentHeader } from './NewVideoContentHeader'
 
 export function PageSingleVideo(): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const searchClient = useInstantSearchClient()
   const {
     id,
     container,
@@ -43,6 +48,8 @@ export function PageSingleVideo(): ReactElement {
   } = useVideo()
 
   const [showShare, setShowShare] = useState(false)
+
+  const languageSlug = variant?.slug?.split('/')[1]
 
   // State for managing current playing content (video or Mux insert)
   const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0)
@@ -168,7 +175,13 @@ export function PageSingleVideo(): ReactElement {
   }
 
   return (
-    <>
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}
+      stalledSearchDelay={500}
+      future={{ preserveSharedStateOnUnmount: true }}
+      insights
+    >
       <NextSeo
         title={last(title)?.value}
         description={last(snippet)?.value ?? undefined}
@@ -205,14 +218,21 @@ export function PageSingleVideo(): ReactElement {
       />
       <PageWrapper
         hero={
-          <VideoBlock
-            currentMuxInsert={currentMuxInsert}
-            onMuxInsertComplete={handleMuxInsertComplete}
-          />
+          <>
+            <ContentHeader
+              languageSlug={languageSlug?.replace('.html', '')}
+              isPersistent={false}
+              languageId={languageSlug?.replace('.html', '')}
+            />
+            <VideoBlock
+              currentMuxInsert={currentMuxInsert}
+              onMuxInsertComplete={handleMuxInsertComplete}
+            />
+          </>
         }
         data-testid="PageSingleVideo"
         hideFooter
-        isFullscreen
+        // isFullscreen
       >
         <ContentPageBlurFilter>
           {(children.length > 0 ||
@@ -275,6 +295,6 @@ export function PageSingleVideo(): ReactElement {
           </div>
         </ContentPageBlurFilter>
       </PageWrapper>
-    </>
+    </InstantSearch>
   )
 }

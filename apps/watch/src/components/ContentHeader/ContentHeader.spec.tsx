@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 
 import {
   PlayerProvider,
@@ -9,9 +10,43 @@ import { videos } from '../Videos/__generated__/testData'
 
 import { ContentHeader } from './ContentHeader'
 
+let mockIsSearchActive = false
+const mockHandleCloseSearch = jest.fn()
+
+jest.mock('../SearchComponent/hooks/useFloatingSearchOverlay', () => ({
+  useFloatingSearchOverlay: () => ({
+    searchInputRef: { current: null },
+    overlayRef: { current: null },
+    isSearchActive: mockIsSearchActive,
+    hasQuery: false,
+    searchQuery: '',
+    searchValue: '',
+    loading: false,
+    handleSearch: jest.fn(),
+    handleSearchFocus: jest.fn(),
+    handleSearchBlur: jest.fn(),
+    handleOverlayBlur: jest.fn(),
+    handleQuickSelect: jest.fn(),
+    handleCloseSearch: mockHandleCloseSearch,
+    handleClearSearch: jest.fn(),
+    trendingSearches: [],
+    isTrendingLoading: false,
+    isTrendingFallback: false
+  })
+}))
+
+jest.mock('@core/journeys/ui/algolia/SearchBarProvider', () => ({
+  SearchBarProvider: ({ children }: { children: ReactNode }) => children
+}))
+
+jest.mock('../SearchComponent/SearchOverlay', () => ({
+  SearchOverlay: () => null
+}))
+
 describe('ContentHeader', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    mockIsSearchActive = false
   })
 
   it('renders the header with a logo', () => {
@@ -33,6 +68,24 @@ describe('ContentHeader', () => {
 
     const link = screen.getByRole('link')
     expect(link).toHaveAttribute('href', '/')
+  })
+
+  it('shows close button and hides globe when search overlay is open', () => {
+    mockIsSearchActive = true
+    const initialState: Partial<PlayerState> = {
+      play: false,
+      active: false,
+      loading: false
+    }
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider initialState={initialState}>
+          <ContentHeader />
+        </PlayerProvider>
+      </VideoProvider>
+    )
+
+    expect(screen.queryByTestId('AudioLanguageButton')).not.toBeInTheDocument()
   })
 
   it('should be visible when video is not playing', () => {

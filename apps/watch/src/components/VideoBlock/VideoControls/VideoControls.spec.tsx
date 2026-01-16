@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import Player from 'video.js/dist/types/player'
 
-import { PlayerProvider } from '../../../../libs/playerContext'
-import { VideoProvider } from '../../../../libs/videoContext'
-import { videos } from '../../../Videos/__generated__/testData'
+import { PlayerProvider } from '../../../libs/playerContext'
+import { VideoProvider } from '../../../libs/videoContext'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
 

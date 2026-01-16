@@ -1,4 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react'
+import { Index } from 'react-instantsearch'
 
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import { VideoProvider } from '../../../libs/videoContext'
@@ -6,6 +7,7 @@ import {
   type CarouselMuxSlide,
   type VideoCarouselSlide
 } from '../../../types/inserts'
+import { ContentHeader } from '../../ContentHeader'
 import { ContentPageBlurFilter } from '../../ContentPageBlurFilter'
 import { VideoBlock } from '../../VideoBlock'
 import { VideoCarousel } from '../../VideoCarousel'
@@ -21,6 +23,7 @@ interface ContainerWithMediaProps {
   onSkipActiveVideo?: () => void
   children?: ReactNode
   containerSlug?: string
+  languageId?: string
 }
 
 export function ContainerWithMedia({
@@ -33,10 +36,21 @@ export function ContainerWithMedia({
   onMuxInsertComplete,
   onSkipActiveVideo,
   children,
-  containerSlug = 'watch'
+  containerSlug = 'watch',
+  languageId
 }: ContainerWithMediaProps): ReactElement {
+  const languageSlug = activeVideo?.slug?.split('/')[1]
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
   return (
     <>
+      <Index indexName={indexName}>
+        <ContentHeader
+          languageSlug={languageSlug?.replace('.html', '')}
+          isPersistent={true}
+          languageId={languageId}
+        />
+      </Index>
       {activeVideo != null && (
         <VideoProvider value={{ content: activeVideo }}>
           <VideoBlock

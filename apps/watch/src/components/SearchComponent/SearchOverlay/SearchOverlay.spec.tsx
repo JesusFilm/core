@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { createRef } from 'react'
 
 import { SearchOverlay } from './SearchOverlay'
@@ -55,5 +55,30 @@ describe('SearchOverlay', () => {
     expect(screen.getByText('Popular Searches')).toBeInTheDocument()
     expect(screen.getByText('Hope')).toBeInTheDocument()
     expect(screen.getByText('Faith')).toBeInTheDocument()
+  })
+
+  it('calls onClose when the close button is clicked', () => {
+    const onClose = jest.fn()
+    const containerRef = createRef<HTMLDivElement>()
+
+    render(
+      <SearchOverlay
+        open
+        hasQuery={false}
+        searchQuery=""
+        onBlur={jest.fn()}
+        onSelectQuickValue={jest.fn()}
+        containerRef={containerRef}
+        languageId="en"
+        onClose={onClose}
+        trendingSearches={[]}
+        isTrendingLoading={false}
+        isTrendingFallback={false}
+        onClearSearch={jest.fn()}
+      />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close search' }))
+    expect(onClose).toHaveBeenCalled()
   })
 })

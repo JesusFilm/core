@@ -1,6 +1,8 @@
+import { X } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 
+import { Button } from '@core/shared/ui-modern/components/button'
 import {
   Dialog,
   DialogContent,
@@ -46,17 +48,34 @@ export function SearchOverlay({
   const trendingTitle = isTrendingFallback
     ? t('Popular Searches')
     : t('Trending Searches')
+  const closeButtonClass =
+    'rounded-full text-white hover:bg-white/10 hover:text-white focus-visible:ring-white/50 [&_svg]:size-5'
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogPortal>
         <DialogOverlay className="blured-bg bg-stone-900/5" />
+        <div className="fixed inset-x-0 top-0 z-[60] mr-3 pointer-events-none">
+          <div className="responsive-container flex h-[100px] items-center justify-end lg:h-[200px]">
+            <Button
+              onClick={onClose}
+              variant="ghost"
+              size="icon"
+              aria-label={t('Close search')}
+              tabIndex={0}
+              className={`${closeButtonClass} pointer-events-auto`}
+            >
+              <X className="drop-shadow-xs" />
+            </Button>
+          </div>
+        </div>
         <DialogContent
           ref={containerRef}
           onBlur={onBlur}
           onOpenAutoFocus={(event) => event.preventDefault()}
           onCloseAutoFocus={(event) => event.preventDefault()}
-          className="fixed inset-x-0 top-[100px] bottom-0 left-0 max-w-none translate-x-0 translate-y-0 overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 lg:top-[159px] [&>button]:right-12 [&>button]:scale-175 [&>button]:cursor-pointer"
+          showCloseButton={false}
+          className="search-overlay-scroll fixed inset-x-0 top-[100px] bottom-0 left-0 max-w-none translate-x-0 translate-y-0 overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 lg:top-[159px]"
           data-testid="SearchOverlay"
         >
           <div className="mx-auto w-full max-w-screen-2xl px-4 pt-8 pb-10 md:px-12 md:pt-12 md:pb-16">

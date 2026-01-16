@@ -3,6 +3,8 @@
 import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 
+import { useFullscreen } from '../../libs/hooks'
+
 const EXPERIMENTAL_COOKIE_NAME = 'EXPERIMENTAL'
 
 function deleteExperimentalCookie(): void {
@@ -13,11 +15,16 @@ function deleteExperimentalCookie(): void {
 
 export function BetaBanner(): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const isFullscreen = useFullscreen()
+
+  if (isFullscreen) {
+    return null
+  }
 
   return (
     <section
       role="banner"
-      className="relative z-100 w-full bg-[#000] text-white shadow-sm transition-colors hover:bg-[#ce2e37]"
+      className="fixed z-100 w-full bg-[#000] text-white shadow-sm transition-colors hover:bg-[#ce2e37]"
     >
       <div className="mx-auto flex w-full max-w-6xl items-center justify-center px-4 py-3">
         <div className="inline-flex w-full flex-wrap items-center justify-center gap-2 rounded-md text-center text-sm leading-tight font-semibold tracking-wide text-white">

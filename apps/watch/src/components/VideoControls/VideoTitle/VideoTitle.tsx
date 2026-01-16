@@ -98,7 +98,7 @@ export function VideoTitle({
         <div className="flex flex-1 flex-col">
           {videoLabel && (
             <div
-              className={`animate-fade-in-up animation-delay-100 font-sans font-bold tracking-widest text-[#FF9E00] uppercase ${isMuxInsert ? 'text-lg' : 'text-sm'} `}
+              className={`animate-fade-in-up animation-delay-100 font-sans font-bold tracking-widest text-[#FF9E00] uppercase text-sm ${isMuxInsert ? 'md:text-lg' : 'md:text-sm'} `}
             >
               {videoLabel}
             </div>
@@ -119,12 +119,12 @@ export function VideoTitle({
         <div className="flex flex-col gap-1 pr-30 md:pr-0">
           {videoLabel && (
             <div
-              className={`animate-fade-in-up animation-delay-100 mb-0 font-sans font-bold tracking-widest text-[#FF9E00] uppercase ${isMuxInsert ? 'text-lg' : 'text-md'} `}
+              className={`animate-fade-in-up animation-delay-100 mb-0 font-sans font-bold tracking-widest text-[#FF9E00] uppercase text-sm ${isMuxInsert ? 'md:text-lg' : 'md:text-md'} `}
             >
               {videoLabel}
             </div>
           )}
-          <h2 className="animate-fade-in-up animation-delay-200 mb-0 font-sans text-3xl font-bold text-stone-50 text-shadow-xs md:text-4xl lg:text-5xl xl:text-6xl">
+          <h2 className="animate-fade-in-up animation-delay-200 mb-0 font-sans text-xl font-bold text-stone-50 text-shadow-xs md:text-4xl lg:text-5xl xl:text-6xl">
             {videoTitle.replace(/^\d+\.\s*/, '')}
           </h2>
           {collectionTitle && isPreview && (

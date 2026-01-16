@@ -7,6 +7,7 @@ import Player from 'video.js/dist/types/player'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
+import { useFullscreen } from '../../../libs/hooks/useFullscreen'
 import { usePlayer } from '../../../libs/playerContext'
 import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
@@ -64,6 +65,7 @@ export function VideoBlockPlayer({
   const {
     state: { subtitleLanguageId, subtitleOn }
   } = useWatch()
+  const isFullscreen = useFullscreen()
   const [playerReady, setPlayerReady] = useState(false)
   const [mediaError, setMediaError] = useState<Error | null>(null)
 
@@ -475,11 +477,11 @@ export function VideoBlockPlayer({
     <>
       <div
         className={clsx(
-          "vjs-hide-loading-spinners fixed top-[48px] right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px]",
+          "vjs-hide-loading-spinners fixed top-0 right-0 left-0 z-0 max-w-[100vw] max-h-[100vh] mx-auto [body[style*='padding-right']_&]:right-[15px]",
           {
             'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
               placement == 'carouselItem' && collapsed,
-            'aspect-[var(--ratio-sm-expanded)] max-w-[1920px] md:aspect-[var(--ratio-md-expanded)]':
+            'aspect-[var(--ratio-sm-expanded)] max-w-[100vw] max-h-[100vh] md:aspect-[var(--ratio-md-expanded)]':
               placement == 'singleVideo' || !collapsed
           }
         )}
@@ -492,22 +494,30 @@ export function VideoBlockPlayer({
               data-testid="VideoBlockPlayer"
               ref={videoRef}
               className={clsx(
-                'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
+                'vjs hero-hide-native-subtitles max-h-[100vh] max-w-[100vw]',
                 {
-                  '[&_.vjs-tech]:object-cover':
-                    placement == 'carouselItem' && collapsed,
-                  '[&_.vjs-tech]:object-contain':
-                    placement == 'singleVideo' || !collapsed,
+                  'md:[&_.vjs-tech]:object-cover':
+                    (() => {
+                      const condition = !isFullscreen && collapsed;
+                      console.log('object-cover condition:', condition, { isFullscreen, placement, collapsed });
+                      return condition;
+                    })(),
+                  'md:[&_.vjs-tech]:object-contain':
+                    (() => {
+                      const condition = isFullscreen || !collapsed;
+                      console.log('object-contain condition:', condition, { isFullscreen, placement, collapsed });
+                      return condition;
+                    })(),
                   'cursor-pointer': placement == 'carouselItem'
                 }
               )}
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: collapsed ? '120%' : '100%'
-              }}
+              // style={{
+              //   position: 'absolute',
+              //   top: 0,
+              //   left: 0,
+              //   width: '100%',
+              //   height: wasUnmuted ? '100%' : '120%' 
+              // }}
               playsInline
               onClick={
                 placement == 'carouselItem' ? handlePreviewClick : undefined

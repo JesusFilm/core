@@ -33,14 +33,14 @@ import { Button } from '@core/shared/ui-modern/components/button'
 import { Skeleton } from '@core/shared/ui-modern/components/skeleton'
 import { cn } from '@core/shared/ui-modern/utils'
 
-import { usePlayer } from '../../../../libs/playerContext'
-import { useVideo } from '../../../../libs/videoContext'
-import { useLanguageActions } from '../../../../libs/watchContext'
-import type { InsertAction, InsertOverlay } from '../../../../types/inserts'
-import { HeroOverlay } from '../../../HeroOverlay/HeroOverlay'
-import { handleVideoTitleClick } from '../../../VideoControls/utils/handleVideoTitleClick/handleVideoTitleClick'
-import { VideoSlider } from '../../../VideoControls/VideoSlider'
-import { VideoTitle } from '../../../VideoControls/VideoTitle/VideoTitle'
+import { usePlayer } from '../../../libs/playerContext'
+import { useVideo } from '../../../libs/videoContext'
+import { useLanguageActions } from '../../../libs/watchContext'
+import type { InsertAction, InsertOverlay } from '../../../types/inserts'
+import { HeroOverlay } from '../../HeroOverlay/HeroOverlay'
+import { handleVideoTitleClick } from '../../VideoControls/utils/handleVideoTitleClick/handleVideoTitleClick'
+import { VideoSlider } from '../../VideoControls/VideoSlider'
+import { VideoTitle } from '../../VideoControls/VideoTitle/VideoTitle'
 
 const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
@@ -49,7 +49,7 @@ const DynamicLanguageSwitchDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "DialogLangSwitch" */
-      '../../../DialogLangSwitch'
+      '../../DialogLangSwitch'
     ).then((mod) => mod.DialogLangSwitch),
   {
     ssr: false,
@@ -827,6 +827,7 @@ export function VideoControls({
                 data-testid="vjs-jfp-custom-controls"
                 className={cn(
                   'padded z-[5] mx-auto w-full max-w-7xl pb-4',
+                  fullscreen ? 'pb-2' : 'pb-4',
                   visible ? 'delay-0' : 'delay-[500ms]'
                 )}
                 style={{ transitionDelay: visible ? undefined : '0.5s' }}
@@ -842,20 +843,33 @@ export function VideoControls({
                   className="flex h-[8.4px] md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                 />
                 <div className="flex flex-row items-center justify-between gap-5 md:justify-start">
-                  <Button
-                    id={play ? 'pause-button' : 'play-button'}
-                    onClick={play ? handlePause : handlePlay}
-                    variant="ghost"
-                    aria-label={play ? 'pause' : 'play'}
-                  >
-                    {isSeekLoading ? (
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    ) : !play ? (
-                      <Play className="h-6 w-6" fill="currentColor" />
-                    ) : (
-                      <Pause className="h-6 w-6" fill="currentColor" />
+                  <div className="flex flex-row items-center gap-3 md:gap-5">
+                    <Button
+                      id={play ? 'pause-button' : 'play-button'}
+                      onClick={play ? handlePause : handlePlay}
+                      variant="ghost"
+                      aria-label={play ? 'pause' : 'play'}
+                    >
+                      {isSeekLoading ? (
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                      ) : !play ? (
+                        <Play className="h-6 w-6" fill="currentColor" />
+                      ) : (
+                        <Pause className="h-6 w-6" fill="currentColor" />
+                      )}
+                    </Button>
+                    {player != null && (
+                      <div className="text-secondary-foreground z-[2] flex gap-1 text-sm md:hidden">
+                        <span className="font-sans">{currentTime ?? '0:00'}</span>
+                        <span>/</span>
+                        {duration === '0:00' ? (
+                          <Skeleton className="bg-muted w-[27px]" />
+                        ) : (
+                          <span className="font-sans">{duration}</span>
+                        )}
+                      </div>
                     )}
-                  </Button>
+                  </div>
                   <VideoSlider
                     aria-label="desktop-progress-control"
                     min={0}
@@ -869,7 +883,7 @@ export function VideoControls({
                     className="hidden h-[8.4px] md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                   />
                   {player != null && (
-                    <div className="text-secondary-foreground z-[2] flex gap-1 text-sm">
+                    <div className="text-secondary-foreground z-[2] hidden gap-1 text-sm md:flex">
                       <span className="font-sans">{currentTime ?? '0:00'}</span>
                       <span>/</span>
                       {duration === '0:00' ? (

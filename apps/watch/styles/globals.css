@@ -154,10 +154,12 @@
 
   /* Video carousel dimensions */
   :root {
-    --ratio-sm: 1/1;
-    --ratio-md: 239/100;
-    --ratio-sm-expanded: 1/1;
-    --ratio-md-expanded: 185/100;
+    /* --ratio-sm: 1/1; */
+    /* --ratio-sm: 239/100; */
+    --ratio-sm: 239/100;
+    --ratio-md: 239/100; /* Colapsed short video height in carousel */
+    --ratio-sm-expanded: 185/100;
+    --ratio-md-expanded: 16/9;
   }
 }
 
@@ -174,6 +176,25 @@
   .blured-bg {
     backdrop-filter: blur(10px);
     background: none;
+  }
+
+  .search-overlay-scroll {
+    scrollbar-color: #2b2b2b #0c0c0c;
+    scrollbar-width: thin;
+  }
+
+  .search-overlay-scroll::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .search-overlay-scroll::-webkit-scrollbar-track {
+    background: #0c0c0c;
+  }
+
+  .search-overlay-scroll::-webkit-scrollbar-thumb {
+    background-color: #2b2b2b;
+    border-radius: 999px;
+    border: 2px solid #0c0c0c;
   }
 }
 
@@ -426,5 +447,44 @@
 
   .btn-primary {
     @apply bg-primary hover:bg-primary-light focus:ring-primary rounded-md px-4 py-2 text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none;
+  }
+
+  .video-height-unmuted .vjs {
+    height: 100%!important;
+  }
+  .video-height-muted {
+    aspect-ratio: auto;
+  }
+
+  .video-height-unmuted .vjs .vjs,
+  .video-height-muted .vjs .vjs {
+    height: auto;
+  }
+
+  .video-placement-single .vjs .vjs {
+    height: 100%;
+  }
+
+  .video-height-muted .vjs {
+    height: 120%;
+  }
+
+  @responsive {
+    .md\:video-height-unmuted .vjs {
+      height: 100%;
+    }
+
+    .md\:video-height-unmuted .vjs video,
+    .md\:video-height-muted .vjs video {
+      height: auto;
+    }
+
+    .md\:video-placement-single .vjs video {
+      height: 100%;
+    }
+
+    .md\:video-height-muted .vjs {
+      height: 120%;
+    }
   }
 }

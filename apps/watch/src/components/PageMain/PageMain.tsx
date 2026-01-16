@@ -5,7 +5,6 @@ import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
 import { WatchProvider } from '../../libs/watchContext'
 import { Footer } from '../Footer'
-import { SearchComponent } from '../SearchComponent'
 
 import { CollectionsRail } from './CollectionsRail'
 import { ContainerWithMedia } from './ContainerWithMedia'
@@ -43,9 +42,6 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
 
   return (
     <div>
-      <Index indexName={indexName}>
-        <SearchComponent languageId={languageId} />
-      </Index>
       <ContainerWithMedia
         slides={slides}
         activeVideoId={activeVideoId}
@@ -55,6 +51,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
         onSelectSlide={handleVideoSelect}
         onMuxInsertComplete={handleMuxInsertComplete}
         onSkipActiveVideo={handleSkipActiveVideo}
+        languageId={languageId}
       >
         <CollectionsRail languageId={languageId} />
         <SectionPromo />
