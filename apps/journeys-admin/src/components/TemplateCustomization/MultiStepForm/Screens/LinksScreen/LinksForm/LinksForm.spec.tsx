@@ -1,11 +1,11 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Formik, FormikProvider } from 'formik'
 
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
-import userEvent from '@testing-library/user-event'
 
 describe('LinksForm', () => {
   it('should render links with labels, fields and open buttons', () => {
