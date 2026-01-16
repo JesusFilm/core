@@ -822,6 +822,7 @@
   "Choose folder": "اختر المجلد",
   "Optional: Choose a folder in Google Drive to store your new spreadsheet.": "اختياري: اختر مجلداً في Google Drive لتخزين جدول البيانات الجديد.",
   "Choose Spreadsheet": "اختر جدول البيانات",
+  "Select a spreadsheet from Google Drive to sync your data.": "حدد جدول بيانات من Google Drive لمزامنة بياناتك.",
   "Sheet name": "اسم الورقة",
   "Sheet title": "عنوان الورقة",
   "Sheet tab name": "اسم علامة تبويب الورقة",
