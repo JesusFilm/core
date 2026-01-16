@@ -370,9 +370,7 @@ export async function appendEventToGoogleSheets({
     // e.g., if we have block IDs "block-1" and "block-1-extended", we need
     // to match the longest one that fits
     const matchedBlock = journeyBlocks
-      .filter(
-        (b) => dynamicKey === b.id || dynamicKey.startsWith(`${b.id}-`)
-      )
+      .filter((b) => dynamicKey === b.id || dynamicKey.startsWith(`${b.id}-`))
       .sort((a, b) => b.id.length - a.id.length)[0]
 
     if (matchedBlock != null) {
