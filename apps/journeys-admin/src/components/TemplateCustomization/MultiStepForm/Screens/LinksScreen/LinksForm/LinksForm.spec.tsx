@@ -5,6 +5,7 @@ import { ContactActionType } from '../../../../../../../__generated__/globalType
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
+import userEvent from '@testing-library/user-event'
 
 describe('LinksForm', () => {
   it('should render links with labels, fields and open buttons', () => {
@@ -88,7 +89,39 @@ describe('LinksForm', () => {
     const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
       'textbox'
     )
-    fireEvent.blur(input, { target: { value: 'example.com' } })
+    fireEvent.change(input, { target: { value: 'example.com' } })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
+  })
+
+  it('should update value on change and not add https:// protocol if it exists', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'url-1',
+        linkType: 'url',
+        url: '',
+        label: 'URL Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = jest.fn()
+    render(
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, { target: { value: 'https://example.com' } })
+    fireEvent.blur(input)
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
 
@@ -330,7 +363,8 @@ describe('LinksForm', () => {
     const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
       'textbox'
     )
-    fireEvent.blur(input, { target: { value: 'example.com' } })
+    fireEvent.change(input, { target: { value: 'example.com' } })
+    fireEvent.blur(input)
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
 
