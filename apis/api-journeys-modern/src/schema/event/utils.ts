@@ -510,11 +510,26 @@ export async function appendEventToGoogleSheets({
           if (value === '') return existingValue
           // If existing value is empty, use new value
           if (existingValue === '') return value
-          // Both values exist: check if new value is already in existing (avoid duplicates)
-          const existingParts = existingValue.split('; ').map((s) => s.trim())
-          if (existingParts.includes(value.trim())) return existingValue
-          // Append new value with semicolon separator (matching CSV export behavior)
-          return `${existingValue}; ${value}`
+          // Both values exist: split both by ';', merge unique parts, and rejoin
+          const existingParts = existingValue.split(';').map((s) => s.trim())
+          const newParts = value.split(';').map((s) => s.trim())
+          const seen = new Set<string>()
+          const merged: string[] = []
+          // Add existing parts first (preserving order)
+          for (const part of existingParts) {
+            if (part !== '' && !seen.has(part)) {
+              seen.add(part)
+              merged.push(part)
+            }
+          }
+          // Add new parts that aren't already present
+          for (const part of newParts) {
+            if (part !== '' && !seen.has(part)) {
+              seen.add(part)
+              merged.push(part)
+            }
+          }
+          return merged.join('; ')
         })
 
         await updateRangeValues({
