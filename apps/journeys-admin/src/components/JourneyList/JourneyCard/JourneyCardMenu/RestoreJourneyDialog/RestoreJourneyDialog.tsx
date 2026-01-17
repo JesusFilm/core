@@ -9,12 +9,14 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyRestore } from '../../../../../../__generated__/JourneyRestore'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 export const JOURNEY_RESTORE = gql`
   mutation JourneyRestore($ids: [ID!]!) {
     journeysRestore(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -25,6 +27,7 @@ export interface RestoreJourneyDialogProps {
   open: boolean
   handleClose: () => void
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  fromTemplateId?: string | null
 }
 
 export function RestoreJourneyDialog({
@@ -32,10 +35,12 @@ export function RestoreJourneyDialog({
   published,
   open,
   handleClose,
-  refetch
+  refetch,
+  fromTemplateId
 }: RestoreJourneyDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const previousStatus = published
     ? JourneyStatus.published
@@ -50,6 +55,7 @@ export function RestoreJourneyDialog({
         {
           id,
           status: previousStatus,
+          fromTemplateId: fromTemplateId ?? null,
           __typename: 'Journey'
         }
       ]
@@ -58,7 +64,14 @@ export function RestoreJourneyDialog({
 
   async function handleRestore(): Promise<void> {
     try {
-      await restoreJourney()
+      const { data } = await restoreJourney()
+
+      const templateIdToRefetch =
+        data?.journeysRestore?.[0]?.fromTemplateId ?? fromTemplateId
+      if (templateIdToRefetch != null) {
+        void refetchTemplateStats([templateIdToRefetch])
+      }
+
       handleClose()
       enqueueSnackbar(t('Journey Restored'), {
         variant: 'success',

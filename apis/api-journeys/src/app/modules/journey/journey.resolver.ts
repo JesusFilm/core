@@ -17,13 +17,6 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Block,
   Action as BlockAction,
@@ -51,6 +44,13 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
+import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'

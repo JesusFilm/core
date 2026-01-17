@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
 
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import {
   Block,
   JourneyVisitor,
@@ -12,6 +11,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
