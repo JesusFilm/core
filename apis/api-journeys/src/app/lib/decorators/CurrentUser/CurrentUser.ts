@@ -1,7 +1,7 @@
 import { ExecutionContext, Logger, createParamDecorator } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 
-import { contextToUser } from '@core/nest/common/firebaseClient'
+import { contextToUser } from '../../firebaseClient'
 
 export const CurrentUser = createParamDecorator(
   (_data, context: ExecutionContext) => {
