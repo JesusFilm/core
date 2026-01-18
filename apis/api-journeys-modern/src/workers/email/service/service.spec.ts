@@ -1,5 +1,4 @@
 import { ApolloClient, ApolloQueryResult } from '@apollo/client'
-import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
 import {

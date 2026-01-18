@@ -7,6 +7,7 @@ import {
   UserTeamRole,
   prisma
 } from '@core/prisma/journeys/client'
+import { prisma as usersPrisma } from '@core/prisma/users/client'
 import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 
@@ -73,15 +74,19 @@ async function getCompleteSenderData(jobSender: any): Promise<any> {
   let completeSender = jobSender // fallback to job data
   try {
     if (jobSender.id != null) {
-      const { data: senderData } = await apollo.query({
-        query: GET_USER,
-        variables: { userId: jobSender.id }
+      const user = await usersPrisma.user.findUnique({
+        where: { userId: jobSender.id },
+        select: {
+          firstName: true,
+          email: true,
+          imageUrl: true
+        }
       })
-      if (senderData.user != null) {
+      if (user != null) {
         completeSender = {
-          firstName: senderData.user.firstName,
-          email: senderData.user.email,
-          imageUrl: senderData.user.imageUrl
+          firstName: user.firstName,
+          email: user.email,
+          imageUrl: user.imageUrl
         }
       }
     }
