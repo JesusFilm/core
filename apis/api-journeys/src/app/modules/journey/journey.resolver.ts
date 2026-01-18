@@ -292,7 +292,8 @@ export class JourneyResolver {
     @Args('options')
     options: JourneysQueryOptions = {
       hostname: null,
-      embedded: false
+      embedded: false,
+      skipRoutingFilter: false
     }
   ): Promise<Journey | null> {
     if (options.embedded === true && options.hostname != null) return null
