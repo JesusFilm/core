@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -28,6 +28,7 @@ import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
+import Button from '@mui/material/Button'
 
 const Dialog = dynamic(
   async () =>
@@ -489,7 +490,7 @@ export function JourneyListContent({
     if (contentType === 'templates') {
       switch (status) {
         case 'active':
-          return t('This feature is coming soon')
+          return t('Make your first template.')
         case 'archived':
           return t('No archived templates.')
         case 'trashed':
@@ -512,7 +513,7 @@ export function JourneyListContent({
   }
 
   // Get helper text
-  const getHelperText = (): string => {
+  const getHelperText = (isEmpty?: boolean): ReactNode => {
     if (contentType === 'templates') {
       switch (status) {
         case 'archived':
@@ -521,9 +522,12 @@ export function JourneyListContent({
           return t('Trashed templates are moved here for up to 40 days.')
         case 'active':
         default:
-          return t(
-            'Full template functionality will be available in a future update.'
-          )
+          if (isEmpty === true) {
+            return t(
+              'Templates you make from your projects will appear here. Monitor the performance of all your journeys created from these templates.'
+            )
+          }
+          return t('Templates let your team reuse and share projects.')
       }
     } else {
       switch (status) {
@@ -544,6 +548,10 @@ export function JourneyListContent({
       }
     }
   }
+
+  const isEmpty =
+    sortedJourneys != null && sortedJourneys.length === 0 && !usePriorityList
+  const showLearnMoreButton = contentType === 'templates' && status === 'active'
 
   return (
     <>
@@ -628,31 +636,40 @@ export function JourneyListContent({
           )}
         </Box>
       )}
-      {sortedJourneys != null &&
-        sortedJourneys.length === 0 &&
-        !usePriorityList && (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              pt: 30
-            }}
-          >
-            <Typography variant="subtitle1" align="center" gutterBottom>
-              {getEmptyStateMessage()}
-            </Typography>
-          </Box>
-        )}
-      <Stack alignItems="center">
+      {isEmpty && (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            pt: 30
+          }}
+        >
+          <Typography variant="subtitle1" align="center" gutterBottom>
+            {getEmptyStateMessage()}
+          </Typography>
+        </Box>
+      )}
+      <Stack alignItems="center" sx={{ pb: { xs: 3, sm: 5 } }}>
         <Typography
           variant="caption"
           align="center"
           component="div"
-          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 400, whiteSpace: 'pre-line' }}
+          sx={{ pt: { xs: 3, sm: 5 }, maxWidth: 400, whiteSpace: 'pre-line' }}
         >
-          {getHelperText()}
+          {getHelperText(isEmpty)}
         </Typography>
+        {showLearnMoreButton && (
+          <Button
+            variant="text"
+            component="a"
+            href="https://support.nextstep.is/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('Learn more')}
+          </Button>
+        )}
       </Stack>
       {primaryDialogOpen != null && (
         <Dialog
