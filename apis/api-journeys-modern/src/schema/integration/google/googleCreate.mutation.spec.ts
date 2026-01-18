@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { encryptSymmetric } from '@core/nest/common/crypto'
+import { encryptSymmetric } from '@core/yoga/crypto'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../../test/client'
@@ -8,7 +8,7 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 jest.mock('axios')
-jest.mock('@core/nest/common/crypto', () => ({
+jest.mock('@core/yoga/crypto', () => ({
   encryptSymmetric: jest.fn()
 }))
 jest.mock('@core/yoga/firebaseClient', () => ({
