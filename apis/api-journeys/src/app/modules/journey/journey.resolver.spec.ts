@@ -4,8 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -30,6 +28,8 @@ import {
   JourneysReportType
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { getPowerBiEmbed } from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
@@ -47,7 +47,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('@core/nest/powerBi/getPowerBiEmbed', () => ({
+jest.mock('../../lib/powerBi/getPowerBiEmbed', () => ({
   __esModule: true,
   getPowerBiEmbed: jest.fn()
 }))
@@ -2035,8 +2035,6 @@ describe('JourneyResolver', () => {
       const journeyWithTheme = {
         ...journeyWithUserTeamAndCustomizationFields,
         journeyTheme
-      } as typeof journeyWithUserTeamAndCustomizationFields & {
-        journeyTheme: typeof journeyTheme
       }
 
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
