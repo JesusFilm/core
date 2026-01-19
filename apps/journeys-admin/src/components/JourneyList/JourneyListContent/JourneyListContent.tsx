@@ -662,6 +662,7 @@ export function JourneyListContent({
         {showLearnMoreButton && (
           <Button
             variant="text"
+            size="small"
             component="a"
             href="https://support.nextstep.is/"
             target="_blank"
