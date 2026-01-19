@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
@@ -75,6 +75,31 @@ export function MultiStepForm(): ReactElement {
 
   const [activeScreen, setActiveScreen] =
     useState<CustomizationScreen>('language')
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Reset scroll position when screen changes.
+  // The scroll container (MainPanelBody) persists across screen changes, so we need to manually reset it.
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure this runs after React has finished rendering
+    requestAnimationFrame(() => {
+      // Find the scroll container (MainPanelBody)
+      const scrollContainer = document.querySelector<HTMLElement>(
+        '[data-testid="MainPanelBody"]'
+      )
+      if (scrollContainer != null) {
+        // Reset scroll to top
+        scrollContainer.scrollTop = 0
+      }
+
+      // Also try to scroll the app header into view (if it exists) to ensure it's visible
+      const appHeader = document.querySelector<HTMLElement>('#app-header')
+      if (appHeader != null) {
+        requestAnimationFrame(() => {
+          appHeader.scrollIntoView({ block: 'start', behavior: 'instant' })
+        })
+      }
+    })
+  }, [activeScreen])
 
   async function handleNext(): Promise<void> {
     if (activeScreen !== screens[screens.length - 1]) {
@@ -92,6 +117,7 @@ export function MultiStepForm(): ReactElement {
 
   return (
     <Container
+      ref={containerRef}
       maxWidth="sm"
       sx={{
         width: '100%',
@@ -100,7 +126,8 @@ export function MultiStepForm(): ReactElement {
         borderRadius: { xs: '0px', sm: '16px' },
         mt: { xs: 0, sm: 6 },
         mb: { xs: 0, sm: 6 },
-        py: 10
+        py: 10,
+        border: '2px solid red'
       }}
     >
       <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
@@ -134,6 +161,7 @@ export function MultiStepForm(): ReactElement {
         )}
 
         <Box
+          key={activeScreen}
           sx={{
             alignSelf: 'center',
             width: '100%',
