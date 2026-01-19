@@ -4462,6 +4462,10 @@ input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+  """
+  skip custom domain routing filter (for admin template customization)
+  """
+  skipRoutingFilter: Boolean
 }
 
 input JourneyCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

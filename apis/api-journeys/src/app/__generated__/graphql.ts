@@ -694,6 +694,7 @@ export class JourneysQueryOptions {
     hostname?: Nullable<string>;
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
+    skipRoutingFilter?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {

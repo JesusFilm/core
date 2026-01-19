@@ -308,6 +308,7 @@ export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
+  skipRoutingFilter?: boolean | null;
 }
 
 export interface LanguagesFilter {
