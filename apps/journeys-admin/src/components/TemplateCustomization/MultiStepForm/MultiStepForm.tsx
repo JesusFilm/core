@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -89,6 +89,26 @@ export function MultiStepForm(): ReactElement {
     router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
     screens
   )
+
+  // Because of how react renders the screens, the scroll position is not reset when the screen changes.
+  // This is a workaround to reset the scroll position when the screen changes.
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      const scrollContainer = document.querySelector<HTMLElement>(
+        '[data-testid="MainPanelBody"]'
+      )
+      if (scrollContainer != null) {
+        scrollContainer.scrollTop = 0
+      }
+
+      const appHeader = document.querySelector<HTMLElement>('#app-header')
+      if (appHeader != null) {
+        requestAnimationFrame(() => {
+          appHeader.scrollIntoView({ block: 'start', behavior: 'instant' })
+        })
+      }
+    })
+  }, [activeScreen])
 
   useTemplateCustomizationRedirect({
     journeyId,
