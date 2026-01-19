@@ -90,7 +90,7 @@ export function TagsFilter({
 
   const filterOptions = createFilterOptions<Tag>({
     stringify: (option: Tag) =>
-      option.name.map(tagNames => tagNames.value).join(' '),
+      option.name.map((tagNames) => tagNames.value).join(' '),
     trim: true,
     ignoreCase: true
   })
