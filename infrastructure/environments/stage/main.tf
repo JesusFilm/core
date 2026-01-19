@@ -183,7 +183,6 @@ module "arclight" {
   alb_dns_name     = module.stage.public_alb.dns_name
   host_name        = "core-stage.arclight.org"
   host_names       = ["*.arclight.org", "*.arc.gt"] // handle any arclight or arc.gt subdomain passed to stage alb
-  env              = "stage"
 }
 
 module "bastion" {
