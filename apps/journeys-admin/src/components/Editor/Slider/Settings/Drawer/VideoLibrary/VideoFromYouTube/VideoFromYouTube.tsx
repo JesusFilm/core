@@ -69,7 +69,10 @@ const fetcher = async (query: string): Promise<Data> => {
     id: item.kind === 'youtube#video' ? item.id : item.contentDetails.videoId,
     title: item.snippet.title,
     description: item.snippet.description,
-    image: item.snippet.thumbnails.high.url ?? item.snippet.thumbnails.default?.url ?? '',
+    image:
+      item.snippet.thumbnails.high.url ??
+      item.snippet.thumbnails.default?.url ??
+      '',
     source: VideoBlockSource.youTube,
     duration:
       item.kind === 'youtube#video'
