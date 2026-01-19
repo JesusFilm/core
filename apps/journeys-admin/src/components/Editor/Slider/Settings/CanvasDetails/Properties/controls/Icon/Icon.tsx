@@ -4,6 +4,9 @@ import ArrowForwardRounded from '@mui/icons-material/ArrowForwardRounded'
 import ChevronLeftRounded from '@mui/icons-material/ChevronLeftRounded'
 import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import LiveTvRounded from '@mui/icons-material/LiveTvRounded'
+import LockOpenRounded from '@mui/icons-material/LockOpenRounded'
+import RadioButtonUncheckedRounded from '@mui/icons-material/RadioButtonUncheckedRounded'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
@@ -59,132 +62,180 @@ export const icons = [
   {
     value: IconName.ArrowBackRounded,
     label: t('Arrow Left'),
-    display: <ArrowBackRounded />
+    display: <ArrowBackRounded />,
+    deprecated: false
   },
   {
     value: IconName.ArrowForwardRounded,
     label: t('Arrow Right'),
-    display: <ArrowForwardRounded />
+    display: <ArrowForwardRounded />,
+    deprecated: false
   },
   {
     value: IconName.ArrowLeftContained2,
     label: t('Arrow Circle Left'),
-    display: <ArrowLeftContained2 />
+    display: <ArrowLeftContained2 />,
+    deprecated: false
   },
   {
     value: IconName.ArrowRightContained2,
     label: t('Arrow Circle Right'),
-    display: <ArrowRightContained2 />
+    display: <ArrowRightContained2 />,
+    deprecated: false
   },
   {
     value: IconName.ChevronLeftRounded,
     label: t('Chevron Left'),
-    display: <ChevronLeftRounded />
+    display: <ChevronLeftRounded />,
+    deprecated: false
   },
   {
     value: IconName.ChevronRightRounded,
     label: t('Chevron Right'),
-    display: <ChevronRightRounded />
+    display: <ChevronRightRounded />,
+    deprecated: false
   },
   {
     value: IconName.MenuBookRounded,
     label: t('Bible'),
-    display: <Bible />
+    display: <Bible />,
+    deprecated: false
   },
   {
     value: IconName.ChatBubbleOutlineRounded,
     label: t('Chat'),
-    display: <MessageSquare />
+    display: <MessageSquare />,
+    deprecated: false
   },
   {
     value: IconName.FormatQuoteRounded,
     label: t('Chat Text'),
-    display: <MessageText2 />
+    display: <MessageText2 />,
+    deprecated: false
   },
   {
     value: IconName.MessageChat1,
     label: t('Chats Square'),
-    display: <MessageChat1 />
+    display: <MessageChat1 />,
+    deprecated: false
   },
   {
     value: IconName.CheckCircleRounded,
     label: t('Check'),
-    display: <CheckContained />
+    display: <CheckContained />,
+    deprecated: false
   },
   {
     value: IconName.ContactSupportRounded,
     label: t('Help Circle'),
-    display: <HelpCircleContained />
+    display: <HelpCircleContained />,
+    deprecated: false
   },
   {
     value: IconName.Home4,
     label: t('Home'),
-    display: <Home4 />
+    display: <Home4 />,
+    deprecated: false
   },
   {
     value: IconName.TranslateRounded,
     label: t('Globe'),
-    display: <Globe1 />
+    display: <Globe1 />,
+    deprecated: false
   },
   {
     value: IconName.Launch,
     label: t('Launch'),
-    display: <LinkExternal />
+    display: <LinkExternal />,
+    deprecated: false
   },
   {
     value: IconName.LinkAngled,
     label: t('Link'),
-    display: <LinkAngled />
+    display: <LinkAngled />,
+    deprecated: false
   },
   {
     value: IconName.SendRounded,
     label: t('Send'),
-    display: <Send2 />
+    display: <Send2 />,
+    deprecated: false
   },
   {
     value: IconName.BeenhereRounded,
     label: t('Location'),
-    display: <Marker2 />
+    display: <Marker2 />,
+    deprecated: false
   },
   {
     value: IconName.MailOutline,
     label: t('Mail'),
-    display: <Mail1 />
+    display: <Mail1 />,
+    deprecated: false
   },
   {
     value: IconName.Phone,
     label: t('Phone'),
-    display: <Phone />
+    display: <Phone />,
+    deprecated: false
   },
   {
     value: IconName.UserProfile2,
     label: t('Person'),
-    display: <UserProfile2 />
+    display: <UserProfile2 />,
+    deprecated: false
   },
   {
     value: IconName.UsersProfiles3,
     label: t('People'),
-    display: <UsersProfiles3 />
+    display: <UsersProfiles3 />,
+    deprecated: false
   },
   {
     value: IconName.PlayArrowRounded,
     label: t('Play'),
-    display: <Play3 />
+    display: <Play3 />,
+    deprecated: false
   },
   {
     value: IconName.SubscriptionsRounded,
     label: t('Play Square'),
-    display: <Play1 />
+    display: <Play1 />,
+    deprecated: false
   },
   {
     value: IconName.Volume5,
     label: t('Sound'),
-    display: <Volume5 />
+    display: <Volume5 />,
+    deprecated: false
   },
   {
     value: IconName.Note2,
     label: t('Music'),
-    display: <Note2 />
+    display: <Note2 />,
+    deprecated: false
+  },
+  // ===== DEPRECATED ICONS =====
+  // Kept for backward compatibility - these will display in the select value
+  // when selected (shown in the select input) but are
+  // hidden from the dropdown menu options
+  {
+    value: IconName.LiveTvRounded,
+    label: t('Live Tv'),
+    display: <LiveTvRounded />,
+    deprecated: true
+  },
+  {
+    value: IconName.LockOpenRounded,
+    label: t('Lock Open'),
+    display: <LockOpenRounded />,
+    deprecated: true
+  },
+  {
+    value: IconName.RadioButtonUncheckedRounded,
+    label: t('Radio Button Unchecked'),
+    display: <RadioButtonUncheckedRounded />,
+    deprecated: true
   }
 ]
 
@@ -275,9 +326,13 @@ export function Icon({ id }: IconProps): ReactElement {
           inputProps={{ 'aria-label': 'icon-name' }}
         >
           <MenuItem value="">{t('None')}</MenuItem>
-          {icons.map(({ value, label, display }) => {
+          {icons.map(({ value, label, display, deprecated }) => {
             return (
-              <MenuItem key={`button-icon-name-${value}`} value={value}>
+              <MenuItem
+                key={`button-icon-name-${value}`}
+                value={value}
+                sx={{ display: deprecated === true ? 'none' : 'flex' }}
+              >
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   {display}
                   <Typography sx={{ pl: 3 }}>{t(label)}</Typography>
