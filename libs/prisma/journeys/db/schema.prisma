@@ -148,7 +148,7 @@ model Event {
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
-  journey                 Journey?          @relation(fields: [journeyId], references: [id])
+  journey                 Journey?          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
   @@index(visitorId)
@@ -275,6 +275,7 @@ model Integration {
   googleSheetsSyncs      GoogleSheetsSync[]
   team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, teamId, type, accountEmail])
   @@index([teamId])
   @@index(userId)
 }
@@ -288,6 +289,7 @@ model GoogleSheetsSync {
   sheetName     String
   folderId      String?
   email         String?
+  timezone      String? // IANA timezone identifier captured when sync was created (e.g., "Pacific/Auckland")
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -367,7 +369,7 @@ model JourneyTag {
   id        String  @id @default(uuid())
   tagId     String
   journeyId String
-  journey   Journey @relation(fields: [journeyId], references: [id])
+  journey   Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, tagId])
   @@index([tagId])
@@ -516,6 +518,21 @@ enum VideoBlockObjectFit {
   zoomed
 }
 
+enum EventLabel {
+  custom1
+  custom2
+  custom3
+  decisionForChrist
+  gospelPresentationStart
+  gospelPresentationComplete
+  inviteFriend
+  prayerRequest
+  rsvp
+  share
+  specialVideoStart
+  specialVideoComplete
+}
+
 model Block {
   id                         String               @id @default(uuid())
   typename                   String
@@ -531,6 +548,8 @@ model Block {
   startIconId                String?
   endIconId                  String?
   action                     Action?
+  eventLabel                 EventLabel?
+  endEventLabel              EventLabel? // only used by video block
   backgroundColor            String?
   backdropBlur               Int?
   coverBlockId               String?              @unique
@@ -706,7 +725,7 @@ model QrCode {
   color           String? @default("#000000")
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
-  journey         Journey @relation(fields: [journeyId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 }
 
 model JourneyEventsExportLog {
@@ -717,7 +736,7 @@ model JourneyEventsExportLog {
   eventsFilter   String[]
   dateRangeStart DateTime?
   dateRangeEnd   DateTime?
-  journey        Journey   @relation(fields: [journeyId], references: [id])
+  journey        Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
   @@index(createdAt)

@@ -3,6 +3,7 @@ type CardBlock implements Block @shareable {
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
   """
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
@@ -39,6 +40,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   backgroundColor: String
   backdropBlur: Int
   fullscreen: Boolean
@@ -48,6 +50,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   coverBlockId: ID
   backgroundColor: String
   backdropBlur: Int

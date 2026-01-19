@@ -250,6 +250,7 @@ describe('WebView', () => {
             themeMode: null,
             themeName: null,
             fullscreen: false,
+            eventLabel: null,
             children: [
               {
                 id: 'video1.id',
@@ -277,6 +278,8 @@ describe('WebView', () => {
                 objectFit: null,
                 showGeneratedSubtitles: null,
                 subtitleLanguage: null,
+                eventLabel: null,
+                endEventLabel: null,
                 children: []
               }
             ]
