@@ -9,8 +9,11 @@ const playlistItem1: YoutubePlaylist = {
     description:
       'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
     thumbnails: {
+      default: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
       high: {
-        url: 'https://i.ytimg.com/vi/ak06MSETeo4/high.jpg'
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
     }
   },
@@ -26,6 +29,9 @@ const playlistItem2: YoutubePlaylist = {
     description:
       'Trace the theme of blessing and curse in the Bible to see how Jesus defeats the curse and restores the blessing of life to creation.',
     thumbnails: {
+      default: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
       high: {
         url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
@@ -43,8 +49,11 @@ const playlistItem3: YoutubePlaylist = {
     description:
       'This video summarizes the overall story of the Bible as a series of crossroad decisions.',
     thumbnails: {
+      default: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
       high: {
-        url: 'https://i.ytimg.com/vi/7_CGP-12AE0/high.jpg'
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
     }
   },
