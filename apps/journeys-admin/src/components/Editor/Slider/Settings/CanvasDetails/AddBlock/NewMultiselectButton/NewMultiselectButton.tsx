@@ -389,9 +389,22 @@ export function NewMultiselectButton(): ReactElement {
             selectedBlockId: previousBlockId,
             activeSlide: ActiveSlide.Content
           })
-          const createdBlocks = [multiselectBlock, option1, option2, buttonBlock]
+          const createdBlocks = [
+            multiselectBlock,
+            option1,
+            option2,
+            buttonBlock,
+            {
+              id: buttonBlock.startIconId,
+              __typename: 'IconBlock'
+            },
+            {
+              id: buttonBlock.endIconId,
+              __typename: 'IconBlock'
+            }
+          ]
+
           void multiselectWithButtonDelete({
-            
             variables: {
               multiselectId: blocks.multiselectBlock.id,
               option1Id: blocks.option1.id,
@@ -410,7 +423,7 @@ export function NewMultiselectButton(): ReactElement {
             },
             update(cache, { data }) {
               if (data == null) return
-      
+
               createdBlocks.forEach((block) => {
                 cache.modify({
                   id: cache.identify({ __typename: 'Journey', id: journey.id }),
@@ -428,8 +441,8 @@ export function NewMultiselectButton(): ReactElement {
                     id: block.id
                   })
                 })
-                cache.gc()
               })
+              cache.gc()
             }
           })
         },
@@ -474,37 +487,38 @@ export function NewMultiselectButton(): ReactElement {
             },
             update(cache, { data }) {
               if (data == null) return
-      
               const keys = Object.keys(data)
-              keys.forEach((key) => {
-                data[key].forEach((block: any) => {
-                  cache.modify({
-                    id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                    fields: {
-                      blocks(existingBlockRefs: Reference[], { readField }) {
-                        if (
-                          existingBlockRefs.some(
-                            (ref) => readField('id', ref) === block.id
-                          )
-                        ) {
-                          return existingBlockRefs
-                        }
-                        return [
-                          ...existingBlockRefs,
-                          cache.writeFragment({
-                            data: block,
-                            fragment: gql`
-                              fragment NewBlock on Block {
-                                id
-                              }
-                            `
-                          })
-                        ]
+              // keys.forEach((key) => {
+              const blocks = Object.values(data).flat()
+              blocks.forEach((block: any) => {
+                if (block == null) return
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs: Reference[], { readField }) {
+                      if (
+                        existingBlockRefs.some(
+                          (ref) => readField('id', ref) === block.id
+                        )
+                      ) {
+                        return existingBlockRefs
                       }
+                      return [
+                        ...existingBlockRefs,
+                        cache.writeFragment({
+                          data: block,
+                          fragment: gql`
+                            fragment NewBlock on Block {
+                              id
+                            }
+                          `
+                        })
+                      ]
                     }
-                  })
+                  }
                 })
               })
+              // })
             }
           })
         }
