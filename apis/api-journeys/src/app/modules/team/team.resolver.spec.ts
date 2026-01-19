@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   CustomDomain,
   Prisma,
@@ -11,6 +10,7 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { TeamResolver } from './team.resolver'

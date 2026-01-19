@@ -11,13 +11,15 @@ interface TemplateActionButtonProps {
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
   handleCloseMenu?: () => void
+  refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
 
 export function TemplateActionButton({
   variant = 'button',
   signedIn,
   openTeamDialogOnSignIn = false,
-  handleCloseMenu
+  handleCloseMenu,
+  refetchTemplateStats
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
 
@@ -40,6 +42,7 @@ export function TemplateActionButton({
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
       handleCloseMenu={handleCloseMenu}
+      refetchTemplateStats={refetchTemplateStats}
     />
   )
 }

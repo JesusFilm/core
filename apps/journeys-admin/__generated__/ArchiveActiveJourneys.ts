@@ -13,6 +13,7 @@ export interface ArchiveActiveJourneys_journeysArchive {
   __typename: "Journey";
   id: string;
   status: JourneyStatus;
+  fromTemplateId: string | null;
 }
 
 export interface ArchiveActiveJourneys {
