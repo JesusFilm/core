@@ -56,9 +56,6 @@ export function ImageThumbnail({
           data-testid="imageThumbnailPlaceholder"
           sx={{
             color: 'secondary.light',
-            '& svg': {
-              display: 'flex'
-            }
           }}
         >
           {icon}
