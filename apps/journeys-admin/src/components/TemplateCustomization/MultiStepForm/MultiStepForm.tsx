@@ -77,21 +77,17 @@ export function MultiStepForm(): ReactElement {
     useState<CustomizationScreen>('language')
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Reset scroll position when screen changes.
-  // The scroll container (MainPanelBody) persists across screen changes, so we need to manually reset it.
+  // Because of how react renders the screens, the scroll position is not reset when the screen changes.
+  // This is a workaround to reset the scroll position when the screen changes.
   useEffect(() => {
-    // Use requestAnimationFrame to ensure this runs after React has finished rendering
     requestAnimationFrame(() => {
-      // Find the scroll container (MainPanelBody)
       const scrollContainer = document.querySelector<HTMLElement>(
         '[data-testid="MainPanelBody"]'
       )
       if (scrollContainer != null) {
-        // Reset scroll to top
         scrollContainer.scrollTop = 0
       }
 
-      // Also try to scroll the app header into view (if it exists) to ensure it's visible
       const appHeader = document.querySelector<HTMLElement>('#app-header')
       if (appHeader != null) {
         requestAnimationFrame(() => {
