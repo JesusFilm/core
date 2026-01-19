@@ -359,7 +359,20 @@ export async function appendEventToGoogleSheets({
 
   const finalHeader = columns.map((column) => column.key)
 
-  const { accessToken } = await getTeamGoogleAccessToken(teamId)
+  // Attempt to get OAuth token - if stale, the error is already handled by googleAuth
+  // (marking as stale and queuing email notification)
+  let accessToken: string
+  try {
+    const authResult = await getTeamGoogleAccessToken(teamId)
+    accessToken = authResult.accessToken
+  } catch (error) {
+    // OAuth has failed - the integration has been marked as stale and email has been sent
+    // Log the error and return early without propagating (this is a background sync operation)
+    console.error(
+      `Failed to append event to Google Sheets: ${error instanceof Error ? error.message : String(error)}`
+    )
+    return
+  }
 
   const safe = (value: string | number | null | undefined): string =>
     value == null ? '' : String(value)

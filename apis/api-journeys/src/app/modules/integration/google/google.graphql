@@ -4,4 +4,5 @@ type IntegrationGoogle implements Integration @shareable {
   type: IntegrationType!
   user: User
   accountEmail: String
+  oauthStale: Boolean!
 }
