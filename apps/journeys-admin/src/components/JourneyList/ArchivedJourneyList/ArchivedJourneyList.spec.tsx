@@ -9,20 +9,32 @@ import {
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
-import { SortOrder } from '../JourneySort'
-
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from './ArchivedJourneyList'
+} from '../JourneyListContent/JourneyListContent'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
+import { SortOrder } from '../JourneySort'
 
 import { ArchivedJourneyList } from '.'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
+
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
+  extractTemplateIdsFromJourneys: jest.requireActual(
+    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+  ).extractTemplateIdsFromJourneys
+}))
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -66,8 +78,22 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ArchivedJourneyList', () => {
+  const refetchTemplateStats = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   beforeAll(() => {
@@ -144,7 +170,20 @@ describe('ArchivedJourneyList', () => {
 
   describe('Unarchive All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'published' }]
+      data: {
+        journeysRestore: [
+          {
+            id: defaultJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const archiveJourneysMock = {
       request: {
@@ -220,11 +259,52 @@ describe('ArchivedJourneyList', () => {
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
+
+    it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
+      const { getByText } = render(
+        <MockedProvider
+          mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList
+                event="restoreAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByText('Unarchive'))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
+    })
   })
 
   describe('Trash All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'trashAllArchived' }]
+      data: {
+        journeysTrash: [
+          {
+            id: defaultJourney.id,
+            status: 'trashAllArchived',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldJourney.id,
+            status: 'trashAllArchived',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const trashJourneysMock = {
       request: {
@@ -299,6 +379,34 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when trashing journeys with fromTemplateId', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList
+                event="trashAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 })

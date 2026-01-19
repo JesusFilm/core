@@ -15,7 +15,7 @@ import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { computeConnectedBlockIds } from './export/connectivity'
-import { sanitizeCSVCell } from './export/csv'
+import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
 import {
   formatDateYmdInTimeZone,
   parseDateInTimeZoneToUtc
@@ -126,9 +126,11 @@ async function* getJourneyVisitors(
           eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-      // Join values with a fixed separator and sanitize for CSV
+      // Join values with a fixed separator and sanitize for Google Sheets
       eventValuesByKey.forEach((values, key) => {
-        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
+        const sanitizedValues = values.map((value) =>
+          sanitizeGoogleSheetsCell(value)
+        )
         row[key] = sanitizedValues.join('; ')
       })
       yield row
@@ -458,7 +460,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         if (existingHeaderRow.length > 0) {
           // Extract keys from existing header row
           // The header row contains display labels, we need to map them back to column keys
-          // Note: labels in the sheet were written through sanitizeCSVCell, so we need to
+          // Note: legacy sheets may have labels written through sanitizeCSVCell, so we need to
           // compare against both raw and sanitized labels to match correctly
           const existingHeader: string[] = existingHeaderRow.map((label) => {
             // Skip empty labels (no header columns)
@@ -560,9 +562,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         }
       }
 
-      // Build data rows aligned to finalHeader with sanitization
+      // Build data rows aligned to finalHeader with sanitization for Google Sheets
       const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
-        sanitizeCSVCell(cell)
+        sanitizeGoogleSheetsCell(cell)
       )
       const values: (string | null)[][] = [sanitizedHeaderRow]
       for await (const row of getJourneyVisitors(
@@ -574,7 +576,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           // Handle empty header columns (no header columns)
           if (k === '' || k.trim() === '') return ''
           const value = row[k] ?? ''
-          return sanitizeCSVCell(value)
+          return sanitizeGoogleSheetsCell(value)
         })
         values.push(aligned)
       }
@@ -597,6 +599,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         folderId:
           destination.mode === 'create' ? (destination.folderId ?? null) : null,
         email: integrationEmail,
+        timezone: userTimezone, // Store user's timezone for consistent date formatting in live sync
         deletedAt: null
       }
 

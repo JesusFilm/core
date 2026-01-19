@@ -1,3 +1,4 @@
+import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_AUDIO_PREVIEW, UPDATE_AUDIO_PREVIEW } from '../gql/mutations'
 import { GET_AUDIO_PREVIEW } from '../gql/queries'
@@ -95,7 +96,7 @@ export async function processAudioPreviewFile(
 
   try {
     publicUrl = await uploadFileToR2Direct({
-      bucket: process.env.CLOUDFLARE_R2_BUCKET!,
+      bucket: env.CLOUDFLARE_R2_BUCKET,
       key: `audiopreview/${languageId}.aac`,
       filePath,
       contentType

@@ -17,13 +17,6 @@ import omit from 'lodash/omit'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Block,
   Action as BlockAction,
@@ -51,6 +44,13 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
+import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
@@ -292,7 +292,8 @@ export class JourneyResolver {
     @Args('options')
     options: JourneysQueryOptions = {
       hostname: null,
-      embedded: false
+      embedded: false,
+      skipRoutingFilter: false
     }
   ): Promise<Journey | null> {
     if (options.embedded === true && options.hostname != null) return null
@@ -317,7 +318,7 @@ export class JourneyResolver {
             }
           ]
         }
-      } else {
+      } else if (options.skipRoutingFilter !== true) {
         filter.team = {
           customDomains: { none: { routeAllTeamJourneys: true } }
         }
@@ -609,7 +610,8 @@ export class JourneyResolver {
                   'logoImageBlockId',
                   'menuStepBlockId',
                   'journeyCustomizationFields',
-                  'journeyTheme'
+                  'journeyTheme',
+                  'templateSite'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -1056,6 +1058,21 @@ export class JourneyResolver {
           extensions: { code: 'FORBIDDEN' }
         }
       )
+
+    if (input.template === true) {
+      await this.plausibleQueue.add(
+        'create-template-site',
+        {
+          __typename: 'plausibleCreateTemplateSite',
+          templateId: id
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: { age: FIVE_DAYS, count: 50 }
+        }
+      )
+    }
+
     return await this.prismaService.journey.update({
       where: { id },
       data: input

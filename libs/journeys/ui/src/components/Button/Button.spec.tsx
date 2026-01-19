@@ -6,6 +6,7 @@ import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  BlockEventLabel,
   ButtonAlignment,
   ButtonColor,
   ButtonSize,
@@ -21,7 +22,11 @@ import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import {
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import {
   ButtonFields,
@@ -105,6 +110,7 @@ const block: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlockSettings',
     alignment: ButtonAlignment.justify
   },
+  eventLabel: null,
   children: []
 }
 
@@ -128,6 +134,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -342,12 +349,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'buttonClick',
+          target: actionToTarget(action),
+          journeyId: 'journey.id'
         })
       }
     })
@@ -426,12 +440,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'buttonClick',
+          target: actionToTarget(action),
+          journeyId: 'journey.id'
         })
       }
     })
@@ -459,6 +480,7 @@ describe('Button', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           children: []
         }
       ]
@@ -653,12 +675,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -731,12 +760,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -811,12 +847,201 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
+        })
+      }
+    })
+  })
+
+  it('should call plausible with eventLabel for buttonClick events', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const buttonBlock = {
+      ...block,
+      eventLabel: BlockEventLabel.custom1
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuid',
+          action: undefined,
+          actionValue: undefined
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonBlock.label,
+                  action: undefined,
+                  actionValue: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(mockPlausible).toHaveBeenCalledWith(
+      'buttonClick',
+      expect.any(Object)
+    )
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+      u: expect.stringContaining(`/journey.id/button`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        label: 'stepName',
+        value: 'This is a button',
+        action: undefined,
+        actionValue: undefined,
+        key: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom1,
+          blockId: 'button',
+          target: null,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom1,
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom1,
+          journeyId: 'journey.id'
+        })
+      }
+    })
+  })
+
+  it('should call plausible with eventLabel for chatButtonClick events', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const action: ButtonFields_action = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      url: 'https://m.me/some-user',
+      customizable: null,
+      parentStepId: null
+    }
+
+    const buttonBlock = {
+      ...block,
+      action,
+      eventLabel: BlockEventLabel.custom2
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: MessagePlatform.facebook
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(mockPlausible).toHaveBeenCalledWith(
+      'chatButtonClick',
+      expect.any(Object)
+    )
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom2, {
+      u: expect.stringContaining(`/journey.id/button`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: 'facebook',
+        key: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom2,
+          blockId: 'button',
+          target: action,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom2,
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom2,
+          journeyId: 'journey.id'
         })
       }
     })

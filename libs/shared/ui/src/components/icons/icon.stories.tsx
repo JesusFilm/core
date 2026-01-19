@@ -9,6 +9,7 @@ import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { Icon, IconName } from './Icon'
 
 const iconNames: IconName[] = [
+  'Activity',
   'AddSquare2',
   'AddSquare4',
   'AlertCircle',
@@ -70,6 +71,7 @@ const iconNames: IconName[] = [
   'Cursor6',
   'CursorPointer',
   'Dash',
+  'Data1',
   'Diamond',
   'DotVertical',
   'DownArrowSm',
@@ -127,8 +129,10 @@ const iconNames: IconName[] = [
   'Key2',
   'Laptop1',
   'Layers4',
+  'Layout1',
   'Layout2',
   'LayoutScale',
+  'LayoutTop',
   'Lightning2',
   'LightningCircleContained',
   'Line',
@@ -207,6 +211,7 @@ const iconNames: IconName[] = [
   'ThumbsUp',
   'Tiktok',
   'Transform',
+  'Translate',
   'TrendDown1',
   'TwitterLogo',
   'Type1',
