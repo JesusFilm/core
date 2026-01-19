@@ -25,7 +25,7 @@ export interface YoutubeVideo {
   snippet: {
     title: string
     description: string
-    thumbnails: { default: { url: string }, high: { url: string } }
+    thumbnails: { default: { url: string }; high: { url: string } }
   }
   contentDetails: {
     duration: string
