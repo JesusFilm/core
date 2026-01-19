@@ -86,6 +86,12 @@ async function main(): Promise<void> {
         './shortlinkUpdater'
       )
     )
+    run(
+      await import(
+        /* webpackChunkName: "e2eCleanup" */
+        './e2eCleanup'
+      )
+    )
   }
 
   if (process.env.NODE_ENV !== 'production') {
