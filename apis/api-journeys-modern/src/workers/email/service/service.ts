@@ -107,7 +107,7 @@ async function getCompleteSenderData(jobSender: any): Promise<any> {
 }
 
 export async function service(job: Job<ApiJourneysJob>): Promise<void> {
-  console.log("Process Email Job: ", job.name)
+  console.log('Process Email Job: ', job.name)
   switch (job.name) {
     case 'team-invite':
       await teamInviteEmail(job as Job<TeamInviteJob>)
