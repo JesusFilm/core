@@ -21,7 +21,7 @@ export interface VideoListProps {
   videos?: Array<
     Pick<
       VideoListItemProps,
-      'id' | 'title' | 'description' | 'image' | 'duration' | 'source'
+      'id' | 'title' | 'description' | 'image' | 'duration' | 'source' | 'imageHigh'
     >
   >
   fetchMore: () => Promise<void>
