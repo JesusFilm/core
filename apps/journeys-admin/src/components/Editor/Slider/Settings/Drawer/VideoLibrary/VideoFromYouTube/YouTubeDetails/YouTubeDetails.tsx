@@ -72,8 +72,8 @@ export function YouTubeDetails({
     onSelect({
       videoId: id,
       source: VideoBlockSource.youTube,
-      title: data?.snippet.title ?? null,
-      image: data?.snippet.thumbnails?.default?.url ?? null,
+      title: data?.snippet.title ?? undefined,
+      image: data?.snippet.thumbnails?.high?.url ?? undefined,
       startAt:
         activeVideoBlock?.videoId === id ? (activeVideoBlock?.startAt ?? 0) : 0,
       endAt:
