@@ -90,9 +90,7 @@ export function TagsFilter({
 
   const filterOptions = createFilterOptions<Tag>({
     stringify: (option: Tag) =>
-      option.name.find(
-        (tag: { primary: boolean; value: string }) => tag.primary
-      )?.value ?? '',
+      option.name.map(tagNames => tagNames.value).join(' '),
     trim: true,
     ignoreCase: true
   })
