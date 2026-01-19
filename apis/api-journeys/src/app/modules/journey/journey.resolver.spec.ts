@@ -849,6 +849,20 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('does not apply custom domain routing filter if skipRoutingFilter is true', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journeyId', IdType.databaseId, {
+          skipRoutingFilter: true
+        })
+      ).toEqual(journey)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 'journeyId'
+        }
+      })
+    })
+
     it('throws error if not found', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(null)
       await expect(
