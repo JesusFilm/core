@@ -56,13 +56,19 @@ describe('JourneyListContent', () => {
     renderJourneyListContent({
       mocks: [noTemplatesMock],
       contentType: 'templates',
-      status: 'active',
+      status: 'active'
     })
 
     const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
-    expect(learnMoreLink).toHaveAttribute('href', 'https://support.nextstep.is/')
+    expect(learnMoreLink).toHaveAttribute(
+      'href',
+      'https://support.nextstep.is/'
+    )
     expect(learnMoreLink).toHaveAttribute('target', '_blank')
-    expect(learnMoreLink).toHaveAttribute('rel', expect.stringContaining('noopener'))
+    expect(learnMoreLink).toHaveAttribute(
+      'rel',
+      expect.stringContaining('noopener')
+    )
     expect(learnMoreLink).toHaveAttribute(
       'rel',
       expect.stringContaining('noreferrer')
@@ -479,7 +485,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() => {
         expect(
-          getByText('How to create, use, and share templates.')
+          getByText('Templates let your team reuse and share projects.')
         ).toBeInTheDocument()
       })
     })
