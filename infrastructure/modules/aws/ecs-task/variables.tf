@@ -97,7 +97,9 @@ variable "dd_source" {
 
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for ECS Task"
+  sensitive   = true
 }
 
 # We are unable to for_each sensitive values, so we must provide a list of secret env vars

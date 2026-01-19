@@ -1530,6 +1530,8 @@ export type JourneysQueryOptions = {
   hostname?: InputMaybe<Scalars['String']['input']>;
   /** limit results to journeys in a journey collection (currently only available when using hostname option) */
   journeyCollection?: InputMaybe<Scalars['Boolean']['input']>;
+  /** skip custom domain routing filter (for admin template customization) */
+  skipRoutingFilter?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum JourneysReportType {

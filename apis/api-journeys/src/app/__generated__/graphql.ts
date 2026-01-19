@@ -704,6 +704,7 @@ export class JourneysQueryOptions {
     hostname?: Nullable<string>;
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
+    skipRoutingFilter?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -1938,6 +1939,13 @@ export class Team {
     qrCodes: QrCode[];
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -2030,13 +2038,6 @@ export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
     pageInfo: PageInfo;
-}
-
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
 }
 
 export class Video {
