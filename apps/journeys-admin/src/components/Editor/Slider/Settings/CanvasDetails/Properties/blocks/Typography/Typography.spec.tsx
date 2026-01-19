@@ -130,8 +130,8 @@ describe('Typography properties', () => {
     ).toBeInTheDocument()
   })
 
-  it('variant accordion should be open', () => {
-    const { getByText } = render(
+  it('variant accordion should be closed by default', () => {
+    const { queryByText } = render(
       <MockedProvider>
         <EditorProvider>
           <Typography {...block} />
@@ -140,8 +140,8 @@ describe('Typography properties', () => {
       </MockedProvider>
     )
     expect(
-      getByText('selectedAttributeId: typography1.id-typography-variant')
-    ).toBeInTheDocument()
+      queryByText('selectedAttributeId: typography1.id-typography-variant')
+    ).not.toBeInTheDocument()
   })
 
   it('shows settings color overriding block color', () => {
