@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -28,7 +29,6 @@ import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
-import Button from '@mui/material/Button'
 
 const Dialog = dynamic(
   async () =>

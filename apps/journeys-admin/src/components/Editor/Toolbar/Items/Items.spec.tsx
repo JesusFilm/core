@@ -2,9 +2,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { Items } from './Items'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
+import { Items } from './Items'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
