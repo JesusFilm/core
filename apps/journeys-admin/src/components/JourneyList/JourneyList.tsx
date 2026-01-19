@@ -43,6 +43,32 @@ export function JourneyList({
   const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
+    if (!router.isReady) return
+    const sortByFromQuery = router.query.sortBy as string
+    const sortByFromStorage = typeof window !== 'undefined' ? localStorage.getItem('journeyListSortBy') : null
+    const sortBy = sortByFromQuery || sortByFromStorage
+    if (sortBy && Object.values(SortOrder).includes(sortBy as SortOrder)) {
+      setSortOrder((prev) => prev !== sortBy ? sortBy as SortOrder : prev)
+      if (sortByFromQuery && typeof window !== 'undefined') {
+        localStorage.setItem('journeyListSortBy', sortByFromQuery)
+      } else if (sortByFromStorage && !sortByFromQuery) {
+        void router.replace({ query: { ...router.query, sortBy: sortByFromStorage } }, undefined, { shallow: true })
+      }
+    }
+  }, [router.isReady, router.query.sortBy, router])
+
+  const handleSetSortOrder = (order: SortOrder | ((prev: SortOrder | undefined) => SortOrder | undefined)) => {
+    const newOrder = typeof order === 'function' ? order(sortOrder) : order
+    if (newOrder) {
+      setSortOrder(newOrder)
+      if (router.isReady) {
+        void router.push({ query: { ...router.query, sortBy: newOrder } }, undefined, { shallow: true })
+      }
+      if (typeof window !== 'undefined') localStorage.setItem('journeyListSortBy', newOrder)
+    }
+  }
+
+  useEffect(() => {
     const handleRouteChange = (url: string) => {
       // for updating journey list cache for shallow loading
       if (url === '/' || url === '/publisher') {
@@ -112,7 +138,7 @@ export function JourneyList({
         <JourneyListView
           renderList={renderList}
           setActiveEvent={handleClick}
-          setSortOrder={setSortOrder}
+          setSortOrder={handleSetSortOrder}
           sortOrder={sortOrder}
         />
       </Box>
