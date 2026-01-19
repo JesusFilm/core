@@ -543,24 +543,26 @@ export class JourneyResolver {
         duplicateBlocks.push(duplicateLogoImageBlock)
       }
     }
-    
+
     const baseTitleMatch = journey.title.match(/^(.+?)(?:\s+copy(?:\s+\d+)?)?$/)
     const baseTitle = baseTitleMatch ? baseTitleMatch[1] : journey.title
 
     const archiveFilter: Prisma.DateTimeNullableFilter | null =
       journey.archivedAt == null ? null : { not: null }
-    const existingDuplicateJourneys = await this.prismaService.journey.findMany({
-      where: {
-        title: {
-          contains: baseTitle
-        },
-        archivedAt: archiveFilter,
-        trashedAt: null,
-        deletedAt: null,
-        template: false,
-        team: { id: teamId }
+    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
+      {
+        where: {
+          title: {
+            contains: baseTitle
+          },
+          archivedAt: archiveFilter,
+          trashedAt: null,
+          deletedAt: null,
+          template: false,
+          team: { id: teamId }
+        }
       }
-    })
+    )
     const duplicates = this.getJourneyDuplicateNumbers(
       existingDuplicateJourneys,
       baseTitle
