@@ -1,4 +1,4 @@
-import { gql, InMemoryCache } from '@apollo/client'
+import { InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -474,7 +474,8 @@ describe('NewMultiselectButton', () => {
       await waitFor(() =>
         expect(multiselectWithButtonDeleteMock.result).toHaveBeenCalled()
       )
-      await waitFor(() => {expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
+      await waitFor(() => {
+        expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
       })
     })
 
@@ -486,28 +487,28 @@ describe('NewMultiselectButton', () => {
         .mockReturnValueOnce('button.id')
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
-      
-        const cache = new InMemoryCache()
-        cache.writeQuery({
-          query: gql`
-            query TestJourney {
-              journey {
+
+      const cache = new InMemoryCache()
+      cache.writeQuery({
+        query: gql`
+          query TestJourney {
+            journey {
+              id
+              blocks {
                 id
-                blocks {
-                  id
-                  __typename
-                }
+                __typename
               }
             }
-          `,
-          data: {
-            journey: {
-              __typename: 'Journey',
-              id: 'journey.id',
-              blocks: []
-            }
           }
-        })
+        `,
+        data: {
+          journey: {
+            __typename: 'Journey',
+            id: 'journey.id',
+            blocks: []
+          }
+        }
+      })
 
       const { getByRole } = render(
         <MockedProvider
@@ -543,7 +544,7 @@ describe('NewMultiselectButton', () => {
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() =>
         expect(multiselectWithButtonDeleteMock.result).toHaveBeenCalled()
-    )
+      )
       expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
 
       fireEvent.click(getByRole('button', { name: 'Redo' }))

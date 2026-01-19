@@ -65,7 +65,7 @@ export function useTextResponseWithButtonDelete(): [
         textResponseId: textResponseBlock.id,
         buttonId: buttonBlock.id,
         startIconId: buttonBlock.startIconId as string,
-        endIconId: buttonBlock.endIconId as string,
+        endIconId: buttonBlock.endIconId as string
       },
       optimisticResponse: {
         textResponse: [],
