@@ -59,29 +59,31 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video')
       video.preload = 'metadata'
-
-      // Create a blob URL to load the file in the video element
-      video.src = URL.createObjectURL(file)
+      const blobUrl = URL.createObjectURL(file)
 
       video.onloadedmetadata = () => {
-        URL.revokeObjectURL(video.src) // clean up
-        resolve(video.duration) // duration in seconds
+        URL.revokeObjectURL(blobUrl) 
+        resolve(video.duration) 
       }
 
       video.onerror = () => {
-        URL.revokeObjectURL(video.src)
-        reject(setErrorType('general-upload-error'))
+        URL.revokeObjectURL(blobUrl)
+        reject(new Error('Metadata load failed'))
       }
     })
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
-    const duration = await getVideoDuration(files[0])
-    if (duration < 0.5) {
-      setErrorType('file-duration-too-short')
-      return
+    let duration: number | null = null
+    try { duration = await getVideoDuration(files[0])} catch (error) {
+      return setErrorType('general-upload-error')
     }
-    if (files.length > 0 && videoBlockId != null && duration >= 0.5) {
+
+    if (duration && duration < 0.5) {
+      return setErrorType('file-duration-too-short')
+
+    }
+    if (files.length > 0 && videoBlockId != null) {
       // Check if task already exists
       if (uploadTask != null) {
         // Task already exists, don't add another
