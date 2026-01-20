@@ -157,7 +157,14 @@ const activeBlock: TreeBlock<StepBlock> = {
 }
 
 const journey = {
-  id: 'journey.id'
+  id: 'journey.id',
+  language: {
+    __typename: 'Language',
+    id: '1',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: []
+  }
 } as unknown as Journey
 
 describe('Button', () => {
@@ -1587,6 +1594,13 @@ describe('Button', () => {
   describe('customization string resolution', () => {
     it('resolves label using journey customization fields on default variant', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
@@ -1616,6 +1630,13 @@ describe('Button', () => {
 
     it('does not resolve label on admin variant for template journeys', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         template: true,
         journeyCustomizationFields: [
           {
@@ -1646,6 +1667,13 @@ describe('Button', () => {
 
     it('replaces custom fields within mixed strings and leaves other text intact', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
@@ -1675,6 +1703,13 @@ describe('Button', () => {
 
     it('uses defaultValue when value is null', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
