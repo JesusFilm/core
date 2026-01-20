@@ -15,6 +15,7 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiv
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { UpdateLastActiveTeamId } from '../../../../../../__generated__/UpdateLastActiveTeamId'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
 
@@ -25,12 +26,37 @@ jest.mock('next/router', () => ({
   }))
 }))
 
+jest.mock(
+  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
+  () => ({
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
+  })
+)
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 describe('DuplicateJourneys', () => {
   const handleCloseMenu = jest.fn()
+  const refetchTemplateStats = jest.fn()
 
-  beforeEach(() => jest.clearAllMocks())
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
+  })
 
   it('should duplicate a journey on menu card click', async () => {
     const result = jest.fn(() => {
@@ -420,5 +446,118 @@ describe('DuplicateJourneys', () => {
     await waitFor(() =>
       expect(queryByText('Copy to Another Team')).not.toBeInTheDocument()
     )
+  })
+
+  it('should call refetchTemplateStats when duplicating a journey with fromTemplateId', async () => {
+    const result = jest.fn(() => {
+      return {
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId'
+          }
+        }
+      }
+    })
+
+    const result2 = jest.fn(() => ({
+      data: {
+        teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+
+    const mockLanguage = {
+      request: {
+        query: GET_LANGUAGES,
+        variables: {
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          languages: [
+            {
+              __typename: 'Language',
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true,
+                  __typename: 'LanguageName'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+
+    const { getByRole, getByText, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_DUPLICATE,
+              variables: {
+                id: 'journeyId',
+                teamId: 'teamId'
+              }
+            },
+            result
+          },
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: result2
+          },
+          mockLanguage
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                language: {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      __typename: 'LanguageName',
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                },
+                status: JourneyStatus.draft
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <DuplicateJourneyMenuItem
+                id="journeyId"
+                handleCloseMenu={handleCloseMenu}
+                fromTemplateId="templateId123"
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await fireEvent.click(getByRole('menuitem', { name: 'Duplicate' }))
+    expect(getByTestId('journey-duplicate-loader')).toBeInTheDocument()
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['templateId123'])
+    })
+    expect(handleCloseMenu).toHaveBeenCalled()
+    expect(getByText('Journey Duplicated')).toBeInTheDocument()
   })
 })

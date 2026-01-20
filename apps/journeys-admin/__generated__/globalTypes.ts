@@ -207,6 +207,46 @@ export enum MessagePlatform {
   whatsApp = "whatsApp",
 }
 
+export enum PlausibleEvent {
+  buttonClick = "buttonClick",
+  chatButtonClick = "chatButtonClick",
+  chatsClicked = "chatsClicked",
+  christDecisionCapture = "christDecisionCapture",
+  custom1Capture = "custom1Capture",
+  custom2Capture = "custom2Capture",
+  custom3Capture = "custom3Capture",
+  footerChatButtonClick = "footerChatButtonClick",
+  footerThumbsDownButtonClick = "footerThumbsDownButtonClick",
+  footerThumbsUpButtonClick = "footerThumbsUpButtonClick",
+  gospelCompleteCapture = "gospelCompleteCapture",
+  gospelStartCapture = "gospelStartCapture",
+  journeyResponses = "journeyResponses",
+  journeyVisitors = "journeyVisitors",
+  linksClicked = "linksClicked",
+  multiSelectSubmit = "multiSelectSubmit",
+  navigateNextStep = "navigateNextStep",
+  navigatePreviousStep = "navigatePreviousStep",
+  pageview = "pageview",
+  prayerRequestCapture = "prayerRequestCapture",
+  radioQuestionSubmit = "radioQuestionSubmit",
+  rsvpCapture = "rsvpCapture",
+  shareButtonClick = "shareButtonClick",
+  signUpSubmit = "signUpSubmit",
+  specialVideoCompleteCapture = "specialVideoCompleteCapture",
+  specialVideoStartCapture = "specialVideoStartCapture",
+  textResponseSubmit = "textResponseSubmit",
+  videoCollapse = "videoCollapse",
+  videoComplete = "videoComplete",
+  videoExpand = "videoExpand",
+  videoPause = "videoPause",
+  videoPlay = "videoPlay",
+  videoProgress25 = "videoProgress25",
+  videoProgress50 = "videoProgress50",
+  videoProgress75 = "videoProgress75",
+  videoStart = "videoStart",
+  videoTrigger = "videoTrigger",
+}
+
 export enum Role {
   publisher = "publisher",
 }
@@ -660,6 +700,7 @@ export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
+  skipRoutingFilter?: boolean | null;
 }
 
 export interface LanguagesFilter {
@@ -726,6 +767,15 @@ export interface PlausibleStatsAggregateFilter {
   date?: string | null;
   filters?: string | null;
   interval?: string | null;
+}
+
+export interface PlausibleStatsBreakdownFilter {
+  property: string;
+  period?: string | null;
+  date?: string | null;
+  limit?: number | null;
+  page?: number | null;
+  filters?: string | null;
 }
 
 export interface QrCodeCreateInput {

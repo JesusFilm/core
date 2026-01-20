@@ -3,8 +3,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
 import { Prisma } from '@core/prisma/journeys/client'
 
 import {
@@ -12,6 +10,8 @@ import {
   TextResponseSubmissionEventCreateInput,
   TextResponseType
 } from '../../../__generated__/graphql'
+import { CurrentUserId } from '../../../lib/decorators/CurrentUserId'
+import { GqlAuthGuard } from '../../../lib/GqlAuthGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { IntegrationGrowthSpacesService } from '../../integration/growthSpaces/growthSpaces.service'
 import { EventService } from '../event.service'

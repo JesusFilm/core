@@ -1145,6 +1145,9 @@ input JourneysQueryOptions {
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+
+  """skip custom domain routing filter (for admin template customization)"""
+  skipRoutingFilter: Boolean
 }
 
 enum JourneysReportType {
@@ -1322,7 +1325,10 @@ type Mutation {
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction! @override(from: "api-journeys")
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent! @override(from: "api-journeys")
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!

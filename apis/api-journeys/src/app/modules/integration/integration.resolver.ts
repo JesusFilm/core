@@ -1,11 +1,11 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 
-import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { Integration, Prisma, Team } from '@core/prisma/journeys/client'
 
 import { IntegrationType } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAccessible } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Integration')
