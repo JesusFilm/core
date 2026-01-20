@@ -41,6 +41,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   type customErrorCode =
     | ErrorCode
     | 'file-duration-too-short'
+    | 'general-upload-error'
 
   const [errorType, setErrorType] = useState<customErrorCode | null>(null)
 
@@ -69,7 +70,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
 
       video.onerror = () => {
         URL.revokeObjectURL(video.src)
-        reject()
+        reject(setErrorType('general-upload-error'))
       }
     })
   }
