@@ -1,7 +1,4 @@
-import {
-  BlockHeaderRecord,
-  deduplicateBlockHeadersByBlockId
-} from './headings'
+import { BlockHeaderRecord, deduplicateBlockHeadersByBlockId } from './headings'
 
 describe('headings', () => {
   describe('deduplicateBlockHeadersByBlockId', () => {
