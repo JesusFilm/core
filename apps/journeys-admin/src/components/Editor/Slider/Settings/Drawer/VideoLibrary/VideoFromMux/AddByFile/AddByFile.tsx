@@ -61,9 +61,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       video.preload = 'metadata'
       const blobUrl = URL.createObjectURL(file)
 
+      video.src = blobUrl
+
       video.onloadedmetadata = () => {
-        URL.revokeObjectURL(blobUrl) 
-        resolve(video.duration) 
+        URL.revokeObjectURL(blobUrl)
+        resolve(video.duration)
       }
 
       video.onerror = () => {
@@ -75,7 +77,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
     let duration: number | null = null
-    try { duration = await getVideoDuration(files[0])} catch (error) {
+    try { duration = await getVideoDuration(files[0]) } catch (error) {
       return setErrorType('general-upload-error')
     }
 
