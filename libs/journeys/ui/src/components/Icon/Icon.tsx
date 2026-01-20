@@ -92,7 +92,11 @@ export function Icon({
 
   const iconRTL =
     rtl &&
-    (iconName === IconName.ChatBubbleOutlineRounded ||
+    (iconName === IconName.MenuBookRounded ||
+      iconName === IconName.ChatBubbleOutlineRounded ||
+      iconName === IconName.FormatQuoteRounded ||
+      iconName === IconName.MessageChat1 ||
+      iconName === IconName.Launch ||
       iconName === IconName.SendRounded)
 
   return iconName === null ? (
