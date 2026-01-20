@@ -316,14 +316,16 @@ export async function appendEventToGoogleSheets({
     distinct: ['blockId', 'label']
   })
 
-  // Normalize labels and deduplicate by normalized key
+  // Normalize labels and deduplicate by blockId (keep only first label per blockId)
+  // This prevents creating multiple columns for the same block when events have different labels
   const headerMap = new Map<string, { blockId: string; label: string }>()
   blockHeadersResult
     .filter((header) => header.blockId != null)
     .forEach((header) => {
       const normalizedLabel = (header.label ?? '').replace(/\s+/g, ' ').trim()
-      const key = `${header.blockId}-${normalizedLabel}`
-      // Only add if not already present (handles duplicates with different whitespace)
+      // Key by blockId only to ensure one column per block
+      const key = header.blockId!
+      // Only add if not already present (keeps first label encountered for each blockId)
       if (!headerMap.has(key)) {
         headerMap.set(key, {
           blockId: header.blockId!,
@@ -375,15 +377,11 @@ export async function appendEventToGoogleSheets({
 
     if (matchedBlock != null) {
       // Check if there's already a header entry for this blockId
-      // This fixes the issue where frontend sends a label like "Step 3" but the
-      // correct column key should be based on existing data (e.g., "blockId-card 2")
-      const existingKeyForBlock = Array.from(headerMap.keys()).find((k) =>
-        k.startsWith(`${matchedBlock.id}-`)
-      )
+      const existingHeader = headerMap.get(matchedBlock.id)
 
-      if (existingKeyForBlock != null) {
+      if (existingHeader != null) {
         // Use the existing column key for this blockId to avoid creating duplicate columns
-        keyForRow = existingKeyForBlock
+        keyForRow = `${existingHeader.blockId}-${existingHeader.label}`
       } else {
         // No existing column for this block - normalize and potentially add to headerMap
         const prefix = `${matchedBlock.id}-`
@@ -395,11 +393,8 @@ export async function appendEventToGoogleSheets({
         const normalizedKey = `${matchedBlock.id}-${normalizedLabel}`
         keyForRow = normalizedKey
 
-        if (
-          !headerMap.has(normalizedKey) &&
-          connectedBlockIds.has(matchedBlock.id)
-        ) {
-          headerMap.set(normalizedKey, {
+        if (connectedBlockIds.has(matchedBlock.id)) {
+          headerMap.set(matchedBlock.id, {
             blockId: matchedBlock.id,
             label: normalizedLabel
           })
