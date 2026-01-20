@@ -59,7 +59,9 @@ export const GoogleReconnectEmail = ({
         <BodyWrapper>
           <ActionCard
             headerText="Google Account Reconnection Required"
-            subHeaderText={accountEmail != null ? `Account: ${accountEmail}` : undefined}
+            subHeaderText={
+              accountEmail != null ? `Account: ${accountEmail}` : undefined
+            }
             bodyText={`Your Google Sheets sync for team "${teamName}" has stopped working because your Google account authorization has expired. Please reconnect your Google account to resume syncing.`}
             recipient={recipient}
           >
@@ -119,7 +121,8 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
 GoogleReconnectEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
   accountEmail: 'example@gmail.com',
-  reconnectUrl: 'https://admin.nextsteps.is/teams/team-id/integrations/integration-id',
+  reconnectUrl:
+    'https://admin.nextsteps.is/teams/team-id/integrations/integration-id',
   recipient: {
     firstName: 'Joe',
     lastName: 'Ro-Nimo',

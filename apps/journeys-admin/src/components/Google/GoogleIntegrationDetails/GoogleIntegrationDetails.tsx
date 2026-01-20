@@ -23,10 +23,10 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
-import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
 
 import { GoogleIntegrationDeleteSyncDialog } from './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog'
 import { GoogleIntegrationRemoveDialog } from './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog'
