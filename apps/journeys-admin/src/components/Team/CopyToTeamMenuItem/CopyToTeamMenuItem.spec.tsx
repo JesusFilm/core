@@ -24,16 +24,39 @@ import { GetAdminJourneys_journeys as GetAdminJourney } from '../../../../__gene
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields as JourneyFields } from '../../../../__generated__/JourneyFields'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 import { CopyToTeamMenuItem } from './CopyToTeamMenuItem'
+
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
+}))
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 type Journey = GetAdminJourney & JourneyFields
 
 describe('CopyToTeamMenuItem', () => {
   const handleCloseMenu = jest.fn()
+  const refetchTemplateStats = jest.fn()
 
   beforeEach(() => {
     handleCloseMenu.mockClear()
+    refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
@@ -120,7 +143,8 @@ describe('CopyToTeamMenuItem', () => {
       data: {
         journeyDuplicate: {
           id: 'duplicatedJourneyId',
-          __typename: 'Journey'
+          __typename: 'Journey',
+          template: false
         }
       }
     }))
@@ -626,7 +650,8 @@ describe('CopyToTeamMenuItem', () => {
         data: {
           journeyDuplicate: {
             id: '',
-            __typename: 'Journey'
+            __typename: 'Journey',
+            template: false
           }
         }
       }
@@ -771,5 +796,93 @@ describe('CopyToTeamMenuItem', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
     })
+  })
+
+  it('should call refetchTemplateStats when copying a journey with fromTemplateId', async () => {
+    const { getByRole, getByText, getByTestId } = render(
+      <MockedProvider
+        mocks={[
+          updateLastActiveTeamIdMock,
+          updateLastActiveTeamIdMockForTranslation,
+          mockLanguage,
+          duplicateJourneyMock,
+          getLastActiveTeamIdAndTeamsMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CopyToTeamMenuItem
+              id="journeyId"
+              handleCloseMenu={handleCloseMenu}
+              journey={
+                {
+                  __typename: 'Journey',
+                  id: 'journeyId',
+                  slug: 'journey',
+                  title: 'Journey',
+                  description: null,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    slug: 'english',
+                    name: [
+                      {
+                        value: 'English',
+                        primary: true,
+                        __typename: 'LanguageName'
+                      }
+                    ]
+                  },
+                  status: JourneyStatus.draft,
+                  createdAt: '2021-11-19T12:34:56.647Z',
+                  publishedAt: null,
+                  trashedAt: null,
+                  archivedAt: null,
+                  featuredAt: null,
+                  fromTemplateId: 'templateId123'
+                } as unknown as Journey
+              }
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(getLastActiveTeamIdAndTeamsMock.result).toHaveBeenCalled()
+    )
+    fireEvent.click(getByRole('menuitem', { name: 'Copy to ...' }))
+    const muiSelect = getByTestId('team-duplicate-select')
+    const muiSelectDropDownButton = within(muiSelect).getByRole('combobox')
+    fireEvent.mouseDown(muiSelectDropDownButton)
+    const muiSelectOptions = getByRole('option', {
+      name: 'Team Name'
+    })
+    fireEvent.click(muiSelectOptions)
+
+    const dialogButtons = await within(
+      getByTestId('CopyToTeamDialog')
+    ).findAllByRole('button')
+    const copyButton = dialogButtons.find(
+      (button) => button.textContent === 'Copy'
+    )
+    expect(copyButton).not.toBeUndefined()
+    if (copyButton) {
+      fireEvent.click(copyButton)
+    }
+
+    await waitFor(() => {
+      expect(duplicateJourneyMock.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['templateId123'])
+    })
+
+    await waitFor(() =>
+      expect(updateLastActiveTeamIdMock.result).toHaveBeenCalled()
+    )
+    expect(handleCloseMenu).toHaveBeenCalled()
+    expect(getByText('Journey Copied')).toBeInTheDocument()
   })
 })

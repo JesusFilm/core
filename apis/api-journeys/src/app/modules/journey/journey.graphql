@@ -50,6 +50,10 @@ type Journey @key(fields: "id") @shareable {
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
   """
+  used to see if a template has a site created for it
+  """
+  templateSite: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -113,6 +117,10 @@ input JourneysQueryOptions {
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+  """
+  skip custom domain routing filter (for admin template customization)
+  """
+  skipRoutingFilter: Boolean
 }
 
 enum JourneysReportType {

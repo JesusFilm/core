@@ -1,6 +1,7 @@
 import { SvgIconProps } from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
+import Activity from './Activity'
 import AddSquare2 from './AddSquare2'
 import AddSquare4 from './AddSquare4'
 import AlertCircle from './AlertCircle'
@@ -62,6 +63,7 @@ import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
+import Data1 from './Data1'
 import Diamond from './Diamond'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
@@ -119,8 +121,10 @@ import Key1 from './Key1'
 import Key2 from './Key2'
 import Laptop1 from './Laptop1'
 import Layers4 from './Layers4'
+import Layout1 from './Layout1'
 import Layout2 from './Layout2'
 import LayoutScale from './LayoutScale'
+import LayoutTop from './LayoutTop'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
@@ -196,6 +200,7 @@ import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
+import Translate from './Translate'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
@@ -225,6 +230,7 @@ import XSquareContained from './XSquareContained'
 import Youtube from './Youtube'
 
 export type IconName =
+  | 'Activity'
   | 'AddSquare2'
   | 'AddSquare4'
   | 'AlertCircle'
@@ -286,6 +292,7 @@ export type IconName =
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
+  | 'Data1'
   | 'Diamond'
   | 'DotVertical'
   | 'DownArrowSm'
@@ -343,8 +350,10 @@ export type IconName =
   | 'Key2'
   | 'Laptop1'
   | 'Layers4'
+  | 'Layout1'
   | 'Layout2'
   | 'LayoutScale'
+  | 'LayoutTop'
   | 'Lightning2'
   | 'LightningCircleContained'
   | 'Line'
@@ -421,6 +430,7 @@ export type IconName =
   | 'ThumbsUp'
   | 'Tiktok'
   | 'Transform'
+  | 'Translate'
   | 'TrendDown1'
   | 'TwitterLogo'
   | 'Type1'
@@ -453,6 +463,7 @@ type IconComponents = {
 }
 
 const iconComponents: IconComponents = {
+  Activity,
   AddSquare2,
   AddSquare4,
   AlertCircle,
@@ -514,6 +525,7 @@ const iconComponents: IconComponents = {
   Cursor6,
   CursorPointer,
   Dash,
+  Data1,
   Diamond,
   DotVertical,
   DownArrowSm,
@@ -571,8 +583,10 @@ const iconComponents: IconComponents = {
   Key2,
   Laptop1,
   Layers4,
+  Layout1,
   Layout2,
   LayoutScale,
+  LayoutTop,
   Lightning2,
   LightningCircleContained,
   Line,
@@ -649,6 +663,7 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Tiktok,
   Transform,
+  Translate,
   TrendDown1,
   TwitterLogo,
   Type1,

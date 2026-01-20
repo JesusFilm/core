@@ -1,3 +1,4 @@
+import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_VIDEO_SUBTITLE, UPDATE_VIDEO_SUBTITLE } from '../gql/mutations'
 import { GET_VIDEO_SUBTITLES_BY_EDITION } from '../gql/queries'
@@ -59,15 +60,10 @@ export async function processSubtitleFile(
     return
   }
 
-  if (!process.env.CLOUDFLARE_R2_BUCKET) {
-    console.error('CLOUDFLARE_R2_BUCKET is not set')
-    summary.failed++
-    return
-  }
   try {
     await uploadToR2({
       uploadUrl: r2Asset.uploadUrl,
-      bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      bucket: env.CLOUDFLARE_R2_BUCKET,
       filePath,
       contentType,
       contentLength

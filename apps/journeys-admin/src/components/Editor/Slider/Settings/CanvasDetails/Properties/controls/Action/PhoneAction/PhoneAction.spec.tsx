@@ -49,7 +49,8 @@ describe('PhoneAction', () => {
       parentStepId: 'step1.id'
     },
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   const selectedStep: TreeBlock<BlockFields_StepBlock> = {

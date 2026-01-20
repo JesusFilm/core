@@ -4,8 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -30,6 +28,8 @@ import {
   JourneysReportType
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { getPowerBiEmbed } from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
@@ -47,7 +47,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('@core/nest/powerBi/getPowerBiEmbed', () => ({
+jest.mock('../../lib/powerBi/getPowerBiEmbed', () => ({
   __esModule: true,
   getPowerBiEmbed: jest.fn()
 }))
@@ -109,7 +109,8 @@ describe('JourneyResolver', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    showAssistant: null
+    showAssistant: null,
+    templateSite: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -848,6 +849,20 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('does not apply custom domain routing filter if skipRoutingFilter is true', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journeyId', IdType.databaseId, {
+          skipRoutingFilter: true
+        })
+      ).toEqual(journey)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 'journeyId'
+        }
+      })
+    })
+
     it('throws error if not found', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(null)
       await expect(
@@ -1291,7 +1306,8 @@ describe('JourneyResolver', () => {
             'createdAt',
             'strategySlug',
             'logoImageBlockId',
-            'menuStepBlockId'
+            'menuStepBlockId',
+            'templateSite'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1365,7 +1381,8 @@ describe('JourneyResolver', () => {
           'createdAt',
           'strategySlug',
           'logoImageBlockId',
-          'menuStepBlockId'
+          'menuStepBlockId',
+          'templateSite'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1458,7 +1475,8 @@ describe('JourneyResolver', () => {
           'createdAt',
           'strategySlug',
           'logoImageBlockId',
-          'menuStepBlockId'
+          'menuStepBlockId',
+          'templateSite'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1592,7 +1610,8 @@ describe('JourneyResolver', () => {
             'createdAt',
             'strategySlug',
             'logoImageBlockId',
-            'menuStepBlockId'
+            'menuStepBlockId',
+            'templateSite'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -2030,8 +2049,6 @@ describe('JourneyResolver', () => {
       const journeyWithTheme = {
         ...journeyWithUserTeamAndCustomizationFields,
         journeyTheme
-      } as typeof journeyWithUserTeamAndCustomizationFields & {
-        journeyTheme: typeof journeyTheme
       }
 
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
@@ -2475,6 +2492,24 @@ describe('JourneyResolver', () => {
           where: { id: 'journeyId' },
           data: { template: true }
         })
+      })
+
+      it('creates template site in plausible when setting template to true', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+        expect(plausibleQueue.add).toHaveBeenCalledWith(
+          'create-template-site',
+          {
+            __typename: 'plausibleCreateTemplateSite',
+            templateId: 'journeyId'
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
       })
     })
   })

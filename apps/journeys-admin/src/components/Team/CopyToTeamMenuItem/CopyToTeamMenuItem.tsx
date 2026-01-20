@@ -13,6 +13,7 @@ import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTea
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../MenuItem'
 
 interface CopyToTeamMenuItemProps {
@@ -75,6 +76,7 @@ export function CopyToTeamMenuItem({
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const updateTeamState = (teamId: string): void => {
     setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
@@ -95,6 +97,11 @@ export function CopyToTeamMenuItem({
     variables: translationVariables,
     skip: !translationVariables,
     onComplete: () => {
+      // Refetch template stats if the source journey has a fromTemplateId
+      if (journeyData?.fromTemplateId != null) {
+        void refetchTemplateStats([journeyData.fromTemplateId])
+      }
+
       enqueueSnackbar(t('Journey Translated'), {
         variant: 'success',
         preventDuplicate: true
@@ -141,6 +148,11 @@ export function CopyToTeamMenuItem({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
+        // Refetch template stats if the source journey has a fromTemplateId
+        if (journeyData?.fromTemplateId != null) {
+          void refetchTemplateStats([journeyData.fromTemplateId])
+        }
+
         if (selectedLanguage == null || !showTranslation) {
           setLoading(false)
           enqueueSnackbar(t('Journey Copied'), {

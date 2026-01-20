@@ -14,7 +14,7 @@ import {
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import i18nConfig from '../next-i18next.config'
-import { WatchHomePage as VideoHomePage } from '../src/components/WatchHomePage'
+import { PageMain as VideoHomePage } from '../src/components/PageMain'
 import { createInstantSearchRouter } from '../src/libs/algolia/instantSearchRouter/instantSearchRouter'
 import { createApolloClient, useApolloClient } from '../src/libs/apolloClient'
 import { getCookie } from '../src/libs/cookieHandler'

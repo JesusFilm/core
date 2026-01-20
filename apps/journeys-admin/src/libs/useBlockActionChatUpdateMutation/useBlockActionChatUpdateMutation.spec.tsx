@@ -22,7 +22,8 @@ describe('useBlockActionChatUpdateMutation', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('should update block action', async () => {

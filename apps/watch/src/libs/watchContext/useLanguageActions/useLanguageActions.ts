@@ -31,7 +31,14 @@ interface UseLanguageActionsHook {
  */
 export function useLanguageActions(): UseLanguageActionsHook {
   const { dispatch } = useWatch()
-  const router = useRouter()
+
+  // Safely get router - handle cases where router context is not available
+  let router: any = null
+  try {
+    router = useRouter()
+  } catch {
+    // Router not available (e.g., during SSR or outside Next.js context)
+  }
 
   function updateAudioLanguage(
     language: { id: string; slug: string },
@@ -44,9 +51,20 @@ export function useLanguageActions(): UseLanguageActionsHook {
     setCookie('AUDIO_LANGUAGE', language.id)
     updateSubtitleLanguage(language)
 
-    if (reload) {
+    if (reload && router) {
       const [pathname, query] = router.asPath.split('?')
       const segments = pathname.split('/')
+
+      // Special handling for home page
+      if (pathname === '/watch') {
+        void router.push({
+          pathname: `/watch/${language.slug}`,
+          query
+        })
+        return
+      }
+
+      // For video pages, replace the last segment with the new language
       segments[segments.length - 1] = `${language.slug}.html`
       const newPath = segments.join('/')
       void router.push({

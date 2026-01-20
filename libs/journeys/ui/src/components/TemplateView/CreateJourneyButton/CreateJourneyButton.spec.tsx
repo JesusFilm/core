@@ -188,7 +188,8 @@ const journeyDuplicateMock = {
     query: JOURNEY_DUPLICATE,
     variables: {
       id: 'journeyId',
-      teamId: 'teamId'
+      teamId: 'teamId',
+      forceNonTemplate: true
     }
   },
   result: jest.fn(() => ({
@@ -229,7 +230,96 @@ describe('CreateJourneyButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     teamResult.mockClear()
-    journeyDuplicateMock.result.mockClear()
+    // Reset teamResult implementation to ensure it returns data
+    teamResult.mockImplementation(() => ({
+      data: {
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Name',
+            __typename: 'Team',
+            publicTitle: 'Team Name',
+            userTeams: [
+              {
+                id: 'userTeamId',
+                __typename: 'UserTeam',
+                role: UserTeamRole.manager,
+                user: {
+                  __typename: 'User',
+                  id: 'userId',
+                  firstName: 'Test',
+                  lastName: 'User',
+                  imageUrl: null,
+                  email: 'test@example.com'
+                }
+              }
+            ],
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          id: 'profileId',
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: 'teamId'
+        }
+      }
+    }))
+  })
+
+  it('should render create journey button when variant is button', () => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton variant="button" />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CreateJourneyMenuItem')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render create journey menu item when variant is menu-item', () => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton variant="menu-item" />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CreateJourneyMenuItem')).toBeInTheDocument()
+    expect(screen.queryByTestId('CreateJourneyButton')).not.toBeInTheDocument()
   })
 
   it('should not open team dialog if url query set to createNew and openTeamDialogOnSignIn is not set', async () => {
@@ -320,12 +410,62 @@ describe('CreateJourneyButton', () => {
     )
   })
 
-  it('should duplicate journey without translation and navigate immediately', async () => {
+  it('should duplicate journey without translation and navigate to journeys list when not global publish', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: false },
       push,
       replace: jest.fn(),
       pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock,
+          journeyDuplicateMock,
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <CreateJourneyButton signedIn />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Submit without translation
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(journeyDuplicateMock.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith('/?type=journeys&refresh=true')
+    })
+  })
+
+  it('should duplicate journey without translation and navigate to journey editor when global publish', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/publisher'
     } as unknown as NextRouter)
 
     render(
@@ -657,5 +797,158 @@ describe('CreateJourneyButton', () => {
     await waitFor(() =>
       expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
     )
+  })
+
+  it('should call refetchTemplateStats with journey id when duplicating from a template', async () => {
+    const refetchTemplateStats = jest.fn()
+    const journeyDuplicateMockWithFromTemplateId = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId',
+          forceNonTemplate: true
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId',
+            __typename: 'Journey',
+            fromTemplateId: 'journeyId'
+          }
+        }
+      }))
+    }
+
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock,
+          journeyDuplicateMockWithFromTemplateId,
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey }}>
+              <CreateJourneyButton
+                signedIn
+                refetchTemplateStats={refetchTemplateStats}
+              />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Submit without translation
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(journeyDuplicateMockWithFromTemplateId.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['journeyId'])
+    })
+  })
+
+  it('should call refetchTemplateStats with fromTemplateId when duplicating from a non-template journey', async () => {
+    const refetchTemplateStats = jest.fn()
+    const nonTemplateJourney: Journey = {
+      ...journey,
+      template: false,
+      fromTemplateId: 'parentTemplateId'
+    }
+    const journeyDuplicateMockWithFromTemplateId = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId',
+          forceNonTemplate: true
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyDuplicate: {
+            id: 'duplicatedJourneyId',
+            __typename: 'Journey',
+            fromTemplateId: 'parentTemplateId'
+          }
+        }
+      }))
+    }
+
+    mockUseRouter.mockReturnValue({
+      query: { createNew: false },
+      push,
+      replace: jest.fn(),
+      pathname: '/templates/journeyId'
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock,
+          journeyDuplicateMockWithFromTemplateId,
+          updateLastActiveTeamIdMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider value={{ journey: nonTemplateJourney }}>
+              <CreateJourneyButton
+                signedIn
+                refetchTemplateStats={refetchTemplateStats}
+              />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+
+    // Submit without translation
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() => {
+      expect(journeyDuplicateMockWithFromTemplateId.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['parentTemplateId'])
+    })
   })
 })
