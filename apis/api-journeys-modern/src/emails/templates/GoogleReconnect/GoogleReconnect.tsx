@@ -26,6 +26,7 @@ import { env } from '../../../env'
 interface GoogleReconnectEmailProps {
   teamName?: string
   accountEmail?: string
+  reconnectUrl: string
   recipient: Omit<User, 'id' | 'emailVerified'>
   story?: boolean
 }
@@ -37,6 +38,7 @@ interface WrapperProps {
 export const GoogleReconnectEmail = ({
   teamName,
   accountEmail,
+  reconnectUrl,
   recipient,
   story = false
 }: GoogleReconnectEmailProps): ReactElement => {
@@ -65,7 +67,7 @@ export const GoogleReconnectEmail = ({
               <Row className="px-[28px]">
                 <Column align="center">
                   <ActionButton
-                    url={`${env.JOURNEYS_ADMIN_URL}/teams`}
+                    url={reconnectUrl}
                     buttonText="Reconnect Google Account"
                   />
                 </Column>
@@ -117,6 +119,7 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
 GoogleReconnectEmail.PreviewProps = {
   teamName: 'JFP Sol Team',
   accountEmail: 'example@gmail.com',
+  reconnectUrl: 'https://admin.nextsteps.is/teams/team-id/integrations/integration-id',
   recipient: {
     firstName: 'Joe',
     lastName: 'Ro-Nimo',

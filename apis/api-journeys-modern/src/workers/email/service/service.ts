@@ -494,10 +494,14 @@ export async function googleReconnectEmail(
   )
     return
 
+  // Construct URL to the integration details page where user can reconnect
+  const reconnectUrl = `${env.JOURNEYS_ADMIN_URL}/teams/${job.data.teamId}/integrations/${job.data.integrationId}`
+
   const html = await render(
     GoogleReconnectEmail({
       teamName: job.data.teamName,
       accountEmail: job.data.accountEmail,
+      reconnectUrl,
       recipient: data.user
     })
   )
@@ -506,6 +510,7 @@ export async function googleReconnectEmail(
     GoogleReconnectEmail({
       teamName: job.data.teamName,
       accountEmail: job.data.accountEmail,
+      reconnectUrl,
       recipient: data.user
     }),
     {

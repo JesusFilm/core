@@ -48,3 +48,71 @@ export const getIntegrationMock: MockedResponse<
     }
   }
 }
+
+export const getGoogleIntegrationMock: MockedResponse<
+  GetIntegration,
+  GetIntegrationVariables
+> = {
+  request: {
+    query: GET_INTEGRATION,
+    variables: {
+      teamId: 'team.id'
+    }
+  },
+  result: {
+    data: {
+      integrations: [
+        {
+          __typename: 'IntegrationGoogle',
+          id: 'google-integration.id',
+          team: {
+            __typename: 'Team',
+            id: 'team.id'
+          },
+          type: IntegrationType.google,
+          user: {
+            __typename: 'User',
+            id: 'user.id',
+            email: 'user@example.com'
+          },
+          accountEmail: 'google@example.com',
+          oauthStale: false
+        }
+      ]
+    }
+  }
+}
+
+export const getGoogleIntegrationStaleMock: MockedResponse<
+  GetIntegration,
+  GetIntegrationVariables
+> = {
+  request: {
+    query: GET_INTEGRATION,
+    variables: {
+      teamId: 'team.id'
+    }
+  },
+  result: {
+    data: {
+      integrations: [
+        {
+          __typename: 'IntegrationGoogle',
+          id: 'google-integration.id',
+          team: {
+            __typename: 'Team',
+            id: 'team.id'
+          },
+          type: IntegrationType.google,
+          user: {
+            __typename: 'User',
+            id: 'user.id',
+            email: 'user@example.com'
+          },
+          accountEmail: 'google@example.com',
+          oauthStale: true
+        }
+      ]
+    }
+  }
+}

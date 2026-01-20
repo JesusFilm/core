@@ -69,6 +69,7 @@ async function handleStaleOAuth(
           userId: integration.userId,
           teamId,
           teamName: integration.team.title,
+          integrationId,
           accountEmail: accountEmail ?? undefined
         },
         {

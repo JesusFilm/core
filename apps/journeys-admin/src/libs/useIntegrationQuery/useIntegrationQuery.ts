@@ -31,6 +31,7 @@ export const GET_INTEGRATION = gql`
           email # to force federation for user id
         }
         accountEmail
+        oauthStale
       }
     }
   }

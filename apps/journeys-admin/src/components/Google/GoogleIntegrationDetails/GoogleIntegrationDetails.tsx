@@ -1,4 +1,5 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -161,6 +162,11 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   const canManageSyncs = isIntegrationOwner || isTeamManager
 
+  // Check if the OAuth is stale (token refresh has failed)
+  const isOAuthStale =
+    integrationOwner?.__typename === 'IntegrationGoogle' &&
+    integrationOwner.oauthStale === true
+
   const staticRedirectUri = useMemo(() => {
     if (typeof window === 'undefined') return undefined
     const origin = window.location.origin
@@ -234,6 +240,13 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   return (
     <Stack gap={4}>
+      {isOAuthStale && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {t(
+            'Your Google account authorization has expired. Please reconnect your Google account to resume syncing.'
+          )}
+        </Alert>
+      )}
       <Stack>
         {data?.integrations
           .filter((i) => i.id === integrationId)

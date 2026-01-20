@@ -74,6 +74,7 @@ export interface GoogleReconnectJob {
   userId: string
   teamId: string
   teamName: string
+  integrationId: string
   accountEmail?: string
 }
 
