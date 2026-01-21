@@ -16,6 +16,10 @@ import {
 } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { BlockFields_RadioOptionBlock } from '../../../../../../../../__generated__/BlockFields'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
+import { RadioOptionBlockCreate, RadioOptionBlockCreateVariables } from '../../../../../../../../__generated__/RadioOptionBlockCreate'
+import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -126,6 +130,80 @@ export function RadioOptionEdit({
     })
   }
 
+  
+  const { addBlock } = useBlockCreateCommand()
+  const [radioOptionBlockCreate] = useMutation<
+  RadioOptionBlockCreate,
+  RadioOptionBlockCreateVariables
+>(RADIO_OPTION_BLOCK_CREATE)
+
+
+    function handleCreateOption(): void {
+      console.log('handleCreateOption')
+      const siblings =
+        selectedBlock?.children ?? []
+      const parentOrder = siblings.length
+      console.log('parentOrder', parentOrder)
+      if (journey == null) return
+  
+      const radioOptionBlock: BlockFields_RadioOptionBlock = {
+        id: uuidv4(),
+        label: '',
+        parentBlockId: radioOptionProps.parentBlockId,
+        parentOrder: selectedBlock?.parentBlockId?.length ?? 0,
+        action: null,
+        pollOptionImageBlockId: null,
+        eventLabel: null,
+        __typename: 'RadioOptionBlock'
+      }
+      console.log('adding block')
+      addBlock({
+        block: radioOptionBlock,
+        execute() {
+          console.log('dispatching set editor focus action')
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlockId: radioOptionBlock.id
+          })
+          console.log(selectedBlock)
+          void radioOptionBlockCreate({
+            variables: {
+              input: {
+                id: radioOptionBlock.id,
+                journeyId: journey.id,
+                parentBlockId: radioOptionBlock.parentBlockId ?? id,
+                label: radioOptionBlock.label
+              }
+            },
+            optimisticResponse: {
+              radioOptionBlockCreate: radioOptionBlock
+            },
+            update(cache, { data }) {
+              if (data?.radioOptionBlockCreate != null) {
+                cache.modify({
+                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
+                  fields: {
+                    blocks(existingBlockRefs = []) {
+                      const newBlockRef = cache.writeFragment({
+                        data: data.radioOptionBlockCreate,
+                        fragment: gql`
+                          fragment NewBlock on Block {
+                            id
+                          }
+                        `
+                      })
+                      return [...existingBlockRefs, newBlockRef]
+                    }
+                  }
+                })
+              }
+            }
+          })
+        }
+      })
+    }
+  
+
   return (
     <RadioOption
       {...radioOptionProps}
@@ -157,6 +235,15 @@ export function RadioOptionEdit({
           onChange={(e) => {
             setValue(e.currentTarget.value)
             handleSubmit(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            // Handle Enter without Shift: move to next option or create new one
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              // Save current value first
+              handleSubmit(value)
+              handleCreateOption()
+            }
           }}
           onClick={(e) => e.stopPropagation()}
         />
