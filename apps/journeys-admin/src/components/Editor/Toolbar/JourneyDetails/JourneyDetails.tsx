@@ -87,7 +87,9 @@ export function JourneyDetails(): ReactElement {
               variant="body2"
               sx={{
                 display: { xs: 'inline', md: 'unset' },
-                color: 'secondary.light'
+                color: 'secondary.light',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {journey.description}
