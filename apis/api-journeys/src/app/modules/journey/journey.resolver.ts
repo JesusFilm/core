@@ -545,18 +545,12 @@ export class JourneyResolver {
       }
     }
 
-    const baseTitleMatch = journey.title.match(/^(.+?)(?:\s+copy(?:\s+\d+)?)?$/)
-    const baseTitle = baseTitleMatch ? baseTitleMatch[1] : journey.title
-
-    const archiveFilter: Prisma.DateTimeNullableFilter | null =
-      journey.archivedAt == null ? null : { not: null }
     const existingDuplicateJourneys = await this.prismaService.journey.findMany(
       {
         where: {
           title: {
-            contains: baseTitle
+            contains: journey.title
           },
-          archivedAt: archiveFilter,
           trashedAt: null,
           deletedAt: null,
           template: false,
@@ -566,10 +560,10 @@ export class JourneyResolver {
     )
     const duplicates = this.getJourneyDuplicateNumbers(
       existingDuplicateJourneys,
-      baseTitle
+      journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
-    const duplicateTitle = `${baseTitle}${
+    const duplicateTitle = `${journey.title}${
       duplicateNumber === 0
         ? ''
         : duplicateNumber === 1
@@ -616,11 +610,14 @@ export class JourneyResolver {
                   'templateSite'
                 ]),
                 id: duplicateJourneyId,
-                slug,
+                slug: slug,
                 title: duplicateTitle,
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
+                archivedAt: null,
+                trashedAt: null,
+                deletedAt: null,
                 template: duplicateAsTemplate,
                 fromTemplateId: journey.template
                   ? id
