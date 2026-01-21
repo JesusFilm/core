@@ -50,8 +50,13 @@ export function VideoListItem({
   }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {
-    if (handleSelect != null) handleSelect({ ...block, image: imageHigh })
-    handleClose()
+    if (handleSelect != null)
+        if(imageHigh){ 
+          handleSelect({ ...block, image: imageHigh})
+        } else {
+          handleSelect(block)
+        }
+      handleClose()
   }
 
   const duration =
