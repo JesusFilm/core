@@ -111,16 +111,43 @@ export function buildJourneyExportColumns({
 }: BuildJourneyExportColumnsOptions): JourneyExportColumn[] {
   const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
 
-  const blockColumns = [...blockHeaders]
+  // For TextResponseBlock, deduplicate by blockId to avoid multiple columns
+  // when the label changes (e.g., from typography fallback to actual label)
+  const seenTextResponseBlockIds = new Set<string>()
+  const deduplicatedHeaders = blockHeaders.filter((item) => {
+    const block = idToBlock.get(item.blockId)
+    if (block?.typename === 'TextResponseBlock') {
+      if (seenTextResponseBlockIds.has(item.blockId)) {
+        return false
+      }
+      seenTextResponseBlockIds.add(item.blockId)
+    }
+    return true
+  })
+
+  const blockColumns = [...deduplicatedHeaders]
     .sort((a, b) => compareHeaders(a, b, orderIndex))
     .map<JourneyExportColumn>((item) => {
+      const block = idToBlock.get(item.blockId)
       // Normalize label: replace all newlines/multiple spaces with single space, then trim
       const normalizedLabel = item.label.replace(/\s+/g, ' ').trim()
+
+      // For TextResponseBlock, use just blockId as key to ensure all events
+      // for the same block go into one column regardless of label variations
+      if (block?.typename === 'TextResponseBlock') {
+        return {
+          key: item.blockId,
+          label: normalizedLabel,
+          blockId: item.blockId,
+          typename: block.typename
+        }
+      }
+
       return {
         key: `${item.blockId}-${normalizedLabel}`,
         label: normalizedLabel,
         blockId: item.blockId,
-        typename: idToBlock.get(item.blockId)?.typename ?? ''
+        typename: block?.typename ?? ''
       }
     })
 

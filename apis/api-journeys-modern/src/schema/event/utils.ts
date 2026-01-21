@@ -415,7 +415,16 @@ export async function appendEventToGoogleSheets({
   if (visitorId !== '') rowMap.visitorId = visitorId
   if (createdAt !== '') rowMap.date = createdAt
   if (dynamicKey !== '' && dynamicValue !== '') {
-    rowMap[dynamicKey] = dynamicValue
+    // dynamicKey format is "${blockId}-${label}"
+    // For TextResponseBlock, the column key is just blockId (no label suffix)
+    // to deduplicate columns when labels vary
+    const hyphenIndex = dynamicKey.indexOf('-')
+    const blockIdFromKey =
+      hyphenIndex > 0 ? dynamicKey.substring(0, hyphenIndex) : dynamicKey
+    const block = idToBlock.get(blockIdFromKey)
+    const normalizedKey =
+      block?.typename === 'TextResponseBlock' ? blockIdFromKey : dynamicKey
+    rowMap[normalizedKey] = dynamicValue
   }
 
   const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')

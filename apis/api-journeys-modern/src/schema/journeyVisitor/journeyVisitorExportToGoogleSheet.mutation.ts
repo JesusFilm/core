@@ -490,18 +490,29 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
             }
 
             // Check for Poll or Multiselect patterns (with or without card heading)
+            // Match by computing what the display label would be for each column
             if (label === 'Poll' || label.startsWith('Poll (')) {
-              // Try to find matching Poll column by key
-              const pollCol = columns.find(
-                (c) => c.typename === 'RadioQuestionBlock' && c.key === label
-              )
+              const pollCol = columns.find((c) => {
+                if (c.typename !== 'RadioQuestionBlock' || c.blockId == null)
+                  return false
+                const cardHeadingForCol = getCardHeading(c.blockId)
+                const expectedLabel = cardHeadingForCol
+                  ? `Poll (${cardHeadingForCol})`
+                  : 'Poll'
+                return expectedLabel === normalizedExistingLabel
+              })
               if (pollCol) return pollCol.key
             }
             if (label === 'Multiselect' || label.startsWith('Multiselect (')) {
-              // Try to find matching Multiselect column by key
-              const multiselectCol = columns.find(
-                (c) => c.typename === 'MultiselectBlock' && c.key === label
-              )
+              const multiselectCol = columns.find((c) => {
+                if (c.typename !== 'MultiselectBlock' || c.blockId == null)
+                  return false
+                const cardHeadingForCol = getCardHeading(c.blockId)
+                const expectedLabel = cardHeadingForCol
+                  ? `Multiselect (${cardHeadingForCol})`
+                  : 'Multiselect'
+                return expectedLabel === normalizedExistingLabel
+              })
               if (multiselectCol) return multiselectCol.key
             }
 
