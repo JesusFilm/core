@@ -626,7 +626,13 @@ export interface ApiLanguageLanguage extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::language.language'
     >
-    name: Schema.Attribute.String & Schema.Attribute.Required
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true
+        }
+      }>
     publishedAt: Schema.Attribute.DateTime
     remoteId: Schema.Attribute.String &
       Schema.Attribute.Required &
@@ -701,31 +707,21 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     }
   }
   attributes: {
-    apiMediaId: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
-        }
-      }>
-    availableLanguages: Schema.Attribute.JSON &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
-        }
-      }>
-    childIds: Schema.Attribute.JSON &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
-        }
-      }>
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
-    description: Schema.Attribute.Text
-    imageAlt: Schema.Attribute.String
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true
+        }
+      }>
+    imageAlt: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true
+        }
+      }>
     label: Schema.Attribute.Enumeration<
       [
         'collection',
@@ -738,53 +734,33 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
         'behindTheScenes'
       ]
     > &
-      Schema.Attribute.Required &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
-        }
-      }>
+      Schema.Attribute.Required
     locale: Schema.Attribute.String
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::video.video'>
-    locked: Schema.Attribute.Boolean &
+    publishedAt: Schema.Attribute.DateTime
+    remoteId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required
+    snippet: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
-          localized: false
-        }
-      }> &
-      Schema.Attribute.DefaultTo<false>
-    noIndex: Schema.Attribute.Boolean
-    originId: Schema.Attribute.String &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
+          localized: true
         }
       }>
-    primaryLanguageId: Schema.Attribute.String &
+    studyQuestions: Schema.Attribute.Component<'shared.study-question', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true
+        }
+      }>
+    title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
-          localized: false
+          localized: true
         }
       }>
-    published: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>
-    publishedAt: Schema.Attribute.DateTime
-    restrictDownloadPlatforms: Schema.Attribute.JSON &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
-        }
-      }>
-    restrictViewPlatforms: Schema.Attribute.JSON &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: false
-        }
-      }>
-    slug: Schema.Attribute.String
-    snippet: Schema.Attribute.Text
-    studyQuestions: Schema.Attribute.JSON
-    title: Schema.Attribute.String
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private

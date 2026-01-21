@@ -16,18 +16,14 @@
     }
   },
   "attributes": {
-    "apiMediaId": {
+    "remoteId": {
       "type": "string",
       "required": true,
-      "unique": true,
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
+      "unique": true
     },
     "label": {
       "type": "enumeration",
+      "required": true,
       "enum": [
         "collection",
         "episode",
@@ -37,99 +33,55 @@
         "shortFilm",
         "trailer",
         "behindTheScenes"
-      ],
-      "required": true,
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
+      ]
     },
     "slug": {
-      "type": "string"
-    },
-    "primaryLanguageId": {
-      "type": "string",
-      "required": true,
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
-    "published": {
-      "type": "boolean",
-      "default": true
-    },
-    "noIndex": {
-      "type": "boolean"
-    },
-    "locked": {
-      "type": "boolean",
-      "default": false,
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
-    "availableLanguages": {
-      "type": "json",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
-    "childIds": {
-      "type": "json",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
-    "publishedAt": {
-      "type": "datetime"
-    },
-    "originId": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
-    "restrictDownloadPlatforms": {
-      "type": "json",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
-    },
-    "restrictViewPlatforms": {
-      "type": "json",
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
+      "type": "uid",
+      "targetField": "title",
+      "required": true
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true
     },
     "snippet": {
-      "type": "text"
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "description": {
-      "type": "text"
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "imageAlt": {
-      "type": "string"
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     },
     "studyQuestions": {
-      "type": "json"
+      "type": "component",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "component": "shared.study-question",
+      "repeatable": true
     }
   }
 }

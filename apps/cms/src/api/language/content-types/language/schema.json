@@ -26,8 +26,12 @@
     },
     "name": {
       "type": "string",
-      "required": true,
-      "localized": true
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true
     },
     "iso3": {
       "type": "string"

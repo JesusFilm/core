@@ -19,13 +19,11 @@ export async function importLanguages(
   try {
     const where = lastLanguageImport
       ? { 
-        // updatedAt: { gte: lastLanguageImport }, 
+        updatedAt: { gte: lastLanguageImport }, 
         hasVideos: true,
-        bcp47: 'fr'
        }
       : { 
         hasVideos: true, 
-        bcp47: 'fr'
       }
 
     let skip = 0
@@ -36,14 +34,6 @@ export async function importLanguages(
         where,
         include: {
           name: {
-            orderBy: { primary: 'desc' },
-            where: {
-              language: {
-                bcp47: {
-                  not: null
-                }
-              }
-            },
             include: {
               language: {
                 include: {
@@ -101,6 +91,7 @@ export async function importLanguages(
                   if (!locale) {
                     const localeName = translationLanguage.name.find((n) => n.languageId === '529')?.value ?? translationLanguage.name.find((n) => n.primary)?.value ?? 'Unknown'
                     await localeService.create({
+                      id: translationLanguage.id,
                       code: translationLanguage.bcp47,
                       name: `${localeName} (${translationLanguage.bcp47})`
                     })

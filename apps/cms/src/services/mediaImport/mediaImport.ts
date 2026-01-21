@@ -12,7 +12,7 @@ export async function runMediaImport(
   const startTime = Date.now()
   const errors: string[] = []
   let languagesImported = 0
-  const videosImported = 0
+  let videosImported = 0
   const videoVariantsImported = 0
 
   try {
@@ -55,9 +55,13 @@ export async function runMediaImport(
       )
     }
 
-    // const videoResult = await importVideos(strapi, state.lastMediaImport)
-    // videosImported = videoResult.imported
-    // errors.push(...videoResult.errors)
+    const videoResult = await importVideos(strapi, state.lastMediaImport)
+    videosImported = videoResult.imported
+    errors.push(...videoResult.errors)
+    
+    strapi.log.info(
+      `Video import completed: ${videosImported} imported`
+    )
 
     // const currentLastMediaImport = new Date()
 

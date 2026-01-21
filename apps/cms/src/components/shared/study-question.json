@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_shared_study_questions",
+  "info": {
+    "displayName": "Study Question"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "text",
+      "required": true
+    },
+    "locale": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

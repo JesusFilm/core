@@ -8,30 +8,32 @@ const mediaPrisma = new PrismaClient()
 
 export async function importVideos(
   strapi: Core.Strapi,
-  lastMediaImport: Date | null
+  _lastMediaImport: Date | null
 ): Promise<{ imported: number; errors: string[] }> {
+  const localeService = strapi.plugins['i18n'].services.locales
+  const locales = await localeService.find()
+
   const errors: string[] = []
   let imported = 0
 
   try {
-    // Note: Video model doesn't have updatedAt field, so we import all videos
-    // Incremental sync would require updatedAt field in the Prisma schema
     const videos = await mediaPrisma.video.findMany({
+      where: {
+        published: true
+      },
       include: {
         title: true,
         snippet: true,
         description: true,
         imageAlt: true,
         studyQuestions: {
-          orderBy: { order: 'asc' }
+          orderBy: { order: 'asc' },
         }
       }
     })
 
     for (const video of videos) {
       try {
-        const documentId = `video-${video.id}`
-
         const groupedByLanguage = new Map<
           string,
           {
@@ -39,7 +41,7 @@ export async function importVideos(
             snippet?: string
             description?: string
             imageAlt?: string
-            studyQuestions?: string[]
+            studyQuestions?: { value: string, locale: string }[]
           }
         >()
 
@@ -83,13 +85,45 @@ export async function importVideos(
           if (!langData.studyQuestions) {
             langData.studyQuestions = []
           }
-          langData.studyQuestions.push(question.value)
+          const locale = locales.find(({ id }) => id.toString() === question.languageId)
+          langData.studyQuestions.push({ value: question.value, locale: locale?.code ?? 'en' })
         }
 
-        let firstDocumentId: string | undefined
+        let videoDocument = await strapi.documents('api::video.video').findFirst({
+          filters: {
+            remoteId: { $eq: video.id }
+          }
+        })
+
+        const englishVideoData = groupedByLanguage.get('529')
+        const charMap = {
+          'ä': 'a',
+          'ç': 'c',
+          'ğ': 'g',
+          'é': 'e',
+          'ú': 'u',
+          'ü': 'u',
+        }
+        const slug = video.slug.replace(/[äçğéúü]/g, (match) => charMap[match])
+
+        if (!videoDocument) {
+          videoDocument = await strapi.documents('api::video.video').create({
+            data: {
+              ...englishVideoData,
+              title: englishVideoData?.title ?? 'Unknown',
+              remoteId: video.id,
+              label: video.label,
+              slug
+            }
+          })
+        }
 
         for (const [languageId, langData] of groupedByLanguage.entries()) {
-          const locale = await languageIdToLocale(languageId)
+          if (languageId === '529') {
+            continue
+          }
+
+          const locale = locales.find(({ id }) => id.toString() === languageId)
 
           if (!locale) {
             errors.push(
@@ -99,68 +133,19 @@ export async function importVideos(
           }
 
           const baseData = {
-            apiMediaId: video.id,
-            label: video.label,
-            slug: video.slug ?? undefined,
-            primaryLanguageId: video.primaryLanguageId,
-            published: video.published,
-            noIndex: video.noIndex ?? undefined,
-            locked: video.locked,
-            availableLanguages: video.availableLanguages,
-            childIds: video.childIds,
-            publishedAt: video.publishedAt ?? undefined,
-            originId: video.originId ?? undefined,
-            restrictDownloadPlatforms: video.restrictDownloadPlatforms,
-            restrictViewPlatforms: video.restrictViewPlatforms,
-            title: langData.title ?? undefined,
-            snippet: langData.snippet ?? undefined,
-            description: langData.description ?? undefined,
-            imageAlt: langData.imageAlt ?? undefined,
-            studyQuestions: langData.studyQuestions ?? undefined
+            title: langData.title ?? englishVideoData.title,
+            snippet: langData.snippet ?? englishVideoData.snippet,
+            description: langData.description ?? englishVideoData.description,
+            imageAlt: langData.imageAlt ?? englishVideoData.imageAlt,
+            studyQuestions: langData.studyQuestions ?? englishVideoData?.studyQuestions ?? [],
+            slug
           }
 
-          const existing = await strapi.documents('api::video.video').findMany({
-            filters: {
-              $and: [
-                { apiMediaId: { $eq: video.id } },
-                { locale: { $eq: locale } }
-              ]
-            },
-            limit: 1
+          await strapi.documents('api::video.video').update({
+            documentId: videoDocument.documentId,
+            data: baseData,
+            locale: locale.code
           })
-
-          if (existing && existing.length > 0) {
-            const existingDoc = existing[0]
-            if (!firstDocumentId) {
-              firstDocumentId = existingDoc.documentId
-            }
-            await strapi.documents('api::video.video').update({
-              documentId: existingDoc.documentId,
-              data: baseData,
-              locale
-            })
-          } else {
-            const createOptions: {
-              data: typeof baseData
-              locale: string
-              documentId?: string
-            } = {
-              data: baseData,
-              locale
-            }
-
-            if (firstDocumentId) {
-              createOptions.documentId = firstDocumentId
-            }
-
-            const created = await strapi
-              .documents('api::video.video')
-              .create(createOptions)
-
-            if (!firstDocumentId && created.documentId) {
-              firstDocumentId = created.documentId
-            }
-          }
         }
 
         imported++

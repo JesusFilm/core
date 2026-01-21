@@ -62,6 +62,17 @@ export interface SharedSlider extends Struct.ComponentSchema {
   }
 }
 
+export interface SharedStudyQuestion extends Struct.ComponentSchema {
+  collectionName: 'components_shared_study_questions'
+  info: {
+    displayName: 'Study Question'
+  }
+  attributes: {
+    locale: Schema.Attribute.String & Schema.Attribute.Required
+    value: Schema.Attribute.Text & Schema.Attribute.Required
+  }
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -70,6 +81,7 @@ declare module '@strapi/strapi' {
       'shared.rich-text': SharedRichText
       'shared.seo': SharedSeo
       'shared.slider': SharedSlider
+      'shared.study-question': SharedStudyQuestion
     }
   }
 }

@@ -25,7 +25,7 @@ export async function importVideoVariants(
         const videoDocuments = await strapi.entityService.findMany(
           'api::video.video',
           {
-            filters: { apiMediaId: { $eq: variant.videoId } },
+            filters: { remoteId: { $eq: variant.videoId } },
             limit: 1
           }
         )
