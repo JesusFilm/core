@@ -14,6 +14,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
+import { getVideoDuration } from './utils/getVideoDuration/getVideoDuration'
 
 interface AddByFileProps {
   onChange: (id: string, shouldCloseDrawer?: boolean) => void
@@ -55,25 +56,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     setErrorType(null)
   }
 
-  const getVideoDuration = (file: File): Promise<number> => {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video')
-      video.preload = 'metadata'
-      const blobUrl = URL.createObjectURL(file)
-
-      video.src = blobUrl
-
-      video.onloadedmetadata = () => {
-        URL.revokeObjectURL(blobUrl)
-        resolve(video.duration)
-      }
-
-      video.onerror = () => {
-        URL.revokeObjectURL(blobUrl)
-        reject(new Error('Metadata load failed'))
-      }
-    })
-  }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
     let duration: number | null = null
