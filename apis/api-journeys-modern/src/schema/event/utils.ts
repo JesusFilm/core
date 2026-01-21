@@ -455,9 +455,43 @@ export async function appendEventToGoogleSheets({
     const existingRow: string[] = (existingRowRes[0] ?? []).map(
       (value) => value ?? ''
     )
-    const mergedRow = alignedRow.map((value, index) =>
-      value !== '' ? value : (existingRow[index] ?? '')
-    )
+    const mergedRow = alignedRow.map((value, index) => {
+      const existingValue = existingRow[index] ?? ''
+
+      // Early return if new value is empty - keep existing
+      if (value === '') return existingValue
+
+      // Early return if existing value is empty - use new value
+      if (existingValue === '') return value
+
+      // Split both values by ';', trim parts, and merge unique values
+      const existingParts = existingValue
+        .split(';')
+        .map((p) => p.trim())
+        .filter((p) => p !== '')
+      const newParts = value
+        .split(';')
+        .map((p) => p.trim())
+        .filter((p) => p !== '')
+
+      // Use Set to deduplicate while preserving order (existing first, then new)
+      const seen = new Set<string>()
+      const merged: string[] = []
+      for (const part of existingParts) {
+        if (!seen.has(part)) {
+          seen.add(part)
+          merged.push(part)
+        }
+      }
+      for (const part of newParts) {
+        if (!seen.has(part)) {
+          seen.add(part)
+          merged.push(part)
+        }
+      }
+
+      return merged.join('; ')
+    })
 
     await updateRangeValues({
       accessToken,
