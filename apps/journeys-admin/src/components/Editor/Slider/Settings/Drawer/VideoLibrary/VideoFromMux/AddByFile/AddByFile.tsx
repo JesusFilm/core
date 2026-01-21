@@ -14,6 +14,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
+
 import { getVideoDuration } from './utils/getVideoDuration/getVideoDuration'
 
 interface AddByFileProps {
@@ -56,16 +57,16 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     setErrorType(null)
   }
 
-
   const onDropAccepted = async (files: File[]): Promise<void> => {
     let duration: number | null = null
-    try { duration = await getVideoDuration(files[0]) } catch (error) {
+    try {
+      duration = await getVideoDuration(files[0])
+    } catch (error) {
       return setErrorType('general-upload-error')
     }
 
     if (duration && duration < 0.5) {
       return setErrorType('file-duration-too-short')
-
     }
     if (files.length > 0 && videoBlockId != null) {
       // Check if task already exists
@@ -94,7 +95,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const onDropRejected = async (
     fileRejections: FileRejection[]
   ): Promise<void> => {
-    setErrorType(fileRejections[0].errors[0].code as customErrorCode)
+    setErrorType(fileRejections[0].errors[0].code)
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
@@ -115,24 +116,16 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   function getErrorMessage(errorCode: customErrorCode) {
     switch (errorCode) {
       case ErrorCode.FileTooLarge: {
-        return t(
-          'File is too large. Max size is 1 GB.'
-        )
+        return t('File is too large. Max size is 1 GB.')
       }
       case ErrorCode.FileInvalidType: {
-        return t(
-          'Invalid file type.'
-        )
+        return t('Invalid file type.')
       }
       case ErrorCode.TooManyFiles: {
-        return t(
-          'Only one file upload at once.'
-        )
+        return t('Only one file upload at once.')
       }
       case 'file-duration-too-short': {
-        return t(
-          'Video is too short. Minimum duration is 1 second.'
-        )
+        return t('Video is too short. Minimum duration is 1 second.')
       }
       default: {
         return t('Something went wrong, try again')
@@ -200,7 +193,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       <Stack
         direction="row"
         spacing={1}
-        color={error != null || errorType != null ? 'error.main' : 'secondary.light'}
+        color={
+          error != null || errorType != null ? 'error.main' : 'secondary.light'
+        }
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
         <AlertTriangleIcon
@@ -215,10 +210,14 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           </Typography>
         ) : errorType != null ? (
           <Typography variant="caption">
-            {getErrorMessage(errorType as customErrorCode)}
+            {getErrorMessage(errorType)}
           </Typography>
         ) : (
-          <Typography variant="caption">{t('Upload a video (MP4 or MOV) at least 1 second long. Maximum file size: 1 GB')}</Typography>
+          <Typography variant="caption">
+            {t(
+              'Upload a video (MP4 or MOV) at least 1 second long. Maximum file size: 1 GB'
+            )}
+          </Typography>
         )}
       </Stack>
 
