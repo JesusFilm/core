@@ -25,7 +25,7 @@ export function JourneyDetails(): ReactElement {
             px: { xs: 4, md: 0 },
             py: { xs: 1, md: 0 },
             gap: { xs: 2, md: 0 },
-            maxWidth: { xs: 220, md: '100%' }
+            width: '100%'
           }}
         >
           <Typography
@@ -87,7 +87,9 @@ export function JourneyDetails(): ReactElement {
               variant="body2"
               sx={{
                 display: { xs: 'inline', md: 'unset' },
-                color: 'secondary.light'
+                color: 'secondary.light',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {journey.description}
