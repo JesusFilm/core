@@ -95,7 +95,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const onDropRejected = async (
     fileRejections: FileRejection[]
   ): Promise<void> => {
-    setErrorType(fileRejections[0].errors[0].code)
+    setErrorType(fileRejections[0].errors[0].code as customErrorCode)
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
