@@ -43,7 +43,9 @@ variable "environment_variables" {
 }
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for ECS Scheduled Task"
+  sensitive   = true
 }
 
 variable "cluster_arn" {

@@ -10,6 +10,10 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
@@ -39,12 +43,19 @@ export function TrashedTemplateList({
     template: true,
     teamId: 'jfp-team'
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
+
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }

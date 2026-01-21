@@ -10,6 +10,10 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import {
@@ -39,6 +43,7 @@ export function ArchivedJourneyList({
     status: [JourneyStatus.archived],
     useLastActiveTeamId: true
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
@@ -46,6 +51,13 @@ export function ArchivedJourneyList({
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+
+        // Refetch template stats for affected templates
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -56,6 +68,13 @@ export function ArchivedJourneyList({
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
+
+        // Refetch template stats for affected templates
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysTrash)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }

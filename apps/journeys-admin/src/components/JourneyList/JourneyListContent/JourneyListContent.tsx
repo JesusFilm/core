@@ -13,6 +13,10 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ActivePriorityList } from '../ActiveJourneyList/ActivePriorityList'
 import { AddJourneyButton } from '../ActiveJourneyList/AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
@@ -37,6 +41,7 @@ export const ARCHIVE_ACTIVE_JOURNEYS = gql`
     journeysArchive(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -46,6 +51,7 @@ export const TRASH_ACTIVE_JOURNEYS = gql`
     journeysTrash(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -55,6 +61,7 @@ export const RESTORE_ARCHIVED_JOURNEYS = gql`
     journeysRestore(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -64,6 +71,7 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
     journeysTrash(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -73,6 +81,7 @@ export const RESTORE_TRASHED_JOURNEYS = gql`
     journeysRestore(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -82,6 +91,7 @@ export const DELETE_TRASHED_JOURNEYS = gql`
     journeysDelete(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -142,6 +152,7 @@ export function JourneyListContent({
   }
 
   const { data, refetch } = useAdminJourneysQuery(getQueryParams())
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   // Determine mutations based on status
   const getMutations = (): {
@@ -217,6 +228,12 @@ export function JourneyListContent({
         enqueueSnackbar(t(messageKey), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data[mutationField])
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -237,6 +254,12 @@ export function JourneyListContent({
         enqueueSnackbar(t(messageKey), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data[mutationField])
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }

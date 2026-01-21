@@ -17,6 +17,7 @@ import {
   templateKeyify
 } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
 import { StepFields } from './__generated__/StepFields'
@@ -24,7 +25,6 @@ import {
   StepViewEventCreate,
   StepViewEventCreateVariables
 } from './__generated__/StepViewEventCreate'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const STEP_VIEW_EVENT_CREATE = gql`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
