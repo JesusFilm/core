@@ -76,6 +76,13 @@
           }
         ]
       }
+    },
+    "import-media": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/cms",
+        "command": "pnpm exec ts-node --files -P tsconfig.json -r dotenv/config -r tsconfig-paths/register src/scripts/runMediaImport.ts"
+      }
     }
   }
 }

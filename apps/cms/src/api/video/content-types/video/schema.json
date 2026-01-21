@@ -1,0 +1,135 @@
+{
+  "kind": "collectionType",
+  "collectionName": "videos",
+  "info": {
+    "singularName": "video",
+    "pluralName": "videos",
+    "displayName": "Video",
+    "description": "Videos imported from API Media database"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "apiMediaId": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "label": {
+      "type": "enumeration",
+      "enum": [
+        "collection",
+        "episode",
+        "featureFilm",
+        "segment",
+        "series",
+        "shortFilm",
+        "trailer",
+        "behindTheScenes"
+      ],
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "slug": {
+      "type": "string"
+    },
+    "primaryLanguageId": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "published": {
+      "type": "boolean",
+      "default": true
+    },
+    "noIndex": {
+      "type": "boolean"
+    },
+    "locked": {
+      "type": "boolean",
+      "default": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "availableLanguages": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "childIds": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "publishedAt": {
+      "type": "datetime"
+    },
+    "originId": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "restrictDownloadPlatforms": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "restrictViewPlatforms": {
+      "type": "json",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "title": {
+      "type": "string"
+    },
+    "snippet": {
+      "type": "text"
+    },
+    "description": {
+      "type": "text"
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "studyQuestions": {
+      "type": "json"
+    }
+  }
+}

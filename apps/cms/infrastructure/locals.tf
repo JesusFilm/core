@@ -12,6 +12,8 @@ locals {
     "MUX_SECRET_KEY",
     "MUX_WEBHOOK_SIGNING_SECRET",
     "PG_DATABASE_URL_CMS",
+    "PG_DATABASE_URL_MEDIA",
+    "PG_DATABASE_URL_LANGUAGES",
     "TRANSFER_TOKEN_SALT"
   ]
   service_config = {

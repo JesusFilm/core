@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "languages",
+  "info": {
+    "singularName": "language",
+    "pluralName": "languages",
+    "displayName": "Language",
+    "description": "Languages imported from API Languages database"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "remoteId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "bcp47": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "localized": true
+    },
+    "iso3": {
+      "type": "string"
+    }
+  }
+}

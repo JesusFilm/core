@@ -1,4 +1,6 @@
-// import type { Core } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi'
+
+import { activateLocales } from './bootstrap/activateLocales'
 
 const indexConfig = {
   /**
@@ -18,8 +20,8 @@ const indexConfig = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {
-    // Bootstrap function intentionally left empty
+  async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    // await activateLocales(strapi)
   }
 }
 

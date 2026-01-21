@@ -13,7 +13,13 @@
     "noEmitOnError": true,
     "noImplicitThis": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "baseUrl": ".",
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {
+      "@core/prisma/media/*": ["../../libs/prisma/media/src/*"],
+      "@core/prisma/languages/*": ["../../libs/prisma/languages/src/*"]
+    }
   },
   "include": [
     // Include root files
@@ -23,7 +29,9 @@
     // Include all js files
     "./**/*.js",
     // Force the JSON files in the src folder to be included
-    "src/**/*.json"
+    "src/**/*.json",
+    // Explicitly include generated types to ensure module augmentation is loaded
+    "./types/generated/contentTypes.d.ts"
   ],
 
   "exclude": [

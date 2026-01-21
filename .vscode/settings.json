@@ -79,6 +79,17 @@
       "name": "plausible_db",
       "database": "plausible_db",
       "username": "postgres"
+    },
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "db",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "cms",
+      "database": "cms",
+      "username": "postgres",
+      "password": "postgres"
     }
   ],
   "editor.codeActionsOnSave": {

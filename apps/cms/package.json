@@ -5,7 +5,8 @@
   "description": "Jesus Film Project CMS",
   "scripts": {
     "build": "strapi build",
-    "start": "strapi start"
+    "start": "strapi start",
+    "strapi": "strapi"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.33.3",

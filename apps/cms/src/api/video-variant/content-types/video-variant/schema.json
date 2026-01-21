@@ -1,0 +1,74 @@
+{
+  "kind": "collectionType",
+  "collectionName": "video_variants",
+  "info": {
+    "singularName": "video-variant",
+    "pluralName": "video-variants",
+    "displayName": "Video Variant",
+    "description": "Video variants imported from API Media database"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "apiMediaId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "video": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::video.video"
+    },
+    "languageId": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "string",
+      "required": true
+    },
+    "duration": {
+      "type": "integer"
+    },
+    "lengthInMilliseconds": {
+      "type": "integer"
+    },
+    "hls": {
+      "type": "string"
+    },
+    "dash": {
+      "type": "string"
+    },
+    "share": {
+      "type": "string"
+    },
+    "downloadable": {
+      "type": "boolean",
+      "default": true
+    },
+    "published": {
+      "type": "boolean",
+      "default": true
+    },
+    "version": {
+      "type": "integer",
+      "default": 1
+    },
+    "edition": {
+      "type": "string",
+      "default": "base"
+    },
+    "masterUrl": {
+      "type": "string"
+    },
+    "masterWidth": {
+      "type": "integer"
+    },
+    "masterHeight": {
+      "type": "integer"
+    }
+  }
+}

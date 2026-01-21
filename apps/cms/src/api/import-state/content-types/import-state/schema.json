@@ -1,0 +1,22 @@
+{
+  "kind": "singleType",
+  "collectionName": "import_states",
+  "info": {
+    "singularName": "import-state",
+    "pluralName": "import-states",
+    "displayName": "Import State",
+    "description": "Tracks import state for incremental sync"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "lastLanguageImport": {
+      "type": "datetime"
+    },
+    "lastMediaImport": {
+      "type": "datetime"
+    }
+  }
+}

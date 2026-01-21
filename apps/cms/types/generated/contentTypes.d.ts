@@ -569,6 +569,228 @@ export interface ApiClientClient extends Struct.CollectionTypeSchema {
   }
 }
 
+export interface ApiImportStateImportState extends Struct.SingleTypeSchema {
+  collectionName: 'import_states'
+  info: {
+    description: 'Tracks import state for incremental sync'
+    displayName: 'Import State'
+    pluralName: 'import-states'
+    singularName: 'import-state'
+  }
+  options: {
+    draftAndPublish: false
+  }
+  attributes: {
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    lastLanguageImport: Schema.Attribute.DateTime
+    lastMediaImport: Schema.Attribute.DateTime
+    locale: Schema.Attribute.String & Schema.Attribute.Private
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::import-state.import-state'
+    > &
+      Schema.Attribute.Private
+    publishedAt: Schema.Attribute.DateTime
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+  }
+}
+
+export interface ApiLanguageLanguage extends Struct.CollectionTypeSchema {
+  collectionName: 'languages'
+  info: {
+    description: 'Languages imported from API Languages database'
+    displayName: 'Language'
+    pluralName: 'languages'
+    singularName: 'language'
+  }
+  options: {
+    draftAndPublish: false
+  }
+  pluginOptions: {
+    i18n: {
+      localized: true
+    }
+  }
+  attributes: {
+    bcp47: Schema.Attribute.String
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    iso3: Schema.Attribute.String
+    locale: Schema.Attribute.String
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::language.language'
+    >
+    name: Schema.Attribute.String & Schema.Attribute.Required
+    publishedAt: Schema.Attribute.DateTime
+    remoteId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+  }
+}
+
+export interface ApiVideoVariantVideoVariant
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'video_variants'
+  info: {
+    description: 'Video variants imported from API Media database'
+    displayName: 'Video Variant'
+    pluralName: 'video-variants'
+    singularName: 'video-variant'
+  }
+  options: {
+    draftAndPublish: false
+  }
+  attributes: {
+    apiMediaId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    dash: Schema.Attribute.String
+    downloadable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>
+    duration: Schema.Attribute.Integer
+    edition: Schema.Attribute.String & Schema.Attribute.DefaultTo<'base'>
+    hls: Schema.Attribute.String
+    languageId: Schema.Attribute.String & Schema.Attribute.Required
+    lengthInMilliseconds: Schema.Attribute.Integer
+    locale: Schema.Attribute.String & Schema.Attribute.Private
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::video-variant.video-variant'
+    > &
+      Schema.Attribute.Private
+    masterHeight: Schema.Attribute.Integer
+    masterUrl: Schema.Attribute.String
+    masterWidth: Schema.Attribute.Integer
+    published: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>
+    publishedAt: Schema.Attribute.DateTime
+    share: Schema.Attribute.String
+    slug: Schema.Attribute.String & Schema.Attribute.Required
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    version: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>
+    video: Schema.Attribute.Relation<'manyToOne', 'api::video.video'>
+  }
+}
+
+export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
+  collectionName: 'videos'
+  info: {
+    description: 'Videos imported from API Media database'
+    displayName: 'Video'
+    pluralName: 'videos'
+    singularName: 'video'
+  }
+  options: {
+    draftAndPublish: false
+  }
+  pluginOptions: {
+    i18n: {
+      localized: true
+    }
+  }
+  attributes: {
+    apiMediaId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    availableLanguages: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    childIds: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    description: Schema.Attribute.Text
+    imageAlt: Schema.Attribute.String
+    label: Schema.Attribute.Enumeration<
+      [
+        'collection',
+        'episode',
+        'featureFilm',
+        'segment',
+        'series',
+        'shortFilm',
+        'trailer',
+        'behindTheScenes'
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    locale: Schema.Attribute.String
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::video.video'>
+    locked: Schema.Attribute.Boolean &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }> &
+      Schema.Attribute.DefaultTo<false>
+    noIndex: Schema.Attribute.Boolean
+    originId: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    primaryLanguageId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    published: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>
+    publishedAt: Schema.Attribute.DateTime
+    restrictDownloadPlatforms: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    restrictViewPlatforms: Schema.Attribute.JSON &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false
+        }
+      }>
+    slug: Schema.Attribute.String
+    snippet: Schema.Attribute.Text
+    studyQuestions: Schema.Attribute.JSON
+    title: Schema.Attribute.String
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+  }
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases'
@@ -1192,6 +1414,10 @@ declare module '@strapi/strapi' {
       'api::author.author': ApiAuthorAuthor
       'api::category.category': ApiCategoryCategory
       'api::client.client': ApiClientClient
+      'api::import-state.import-state': ApiImportStateImportState
+      'api::language.language': ApiLanguageLanguage
+      'api::video-variant.video-variant': ApiVideoVariantVideoVariant
+      'api::video.video': ApiVideoVideo
       'plugin::content-releases.release': PluginContentReleasesRelease
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction
       'plugin::i18n.locale': PluginI18NLocale

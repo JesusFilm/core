@@ -1,6 +1,10 @@
 const adminConfig = ({ env }) => ({
   auth: {
-    secret: env('ADMIN_JWT_SECRET')
+    secret: env('ADMIN_JWT_SECRET'),
+    sessions: {
+      maxRefreshTokenLifespan: env.int('ADMIN_MAX_REFRESH_TOKEN_LIFESPAN', 2592000), // 30 days
+      maxSessionLifespan: env.int('ADMIN_MAX_SESSION_LIFESPAN', 2592000), // 30 days
+    }
   },
   apiToken: {
     salt: env('API_TOKEN_SALT')
