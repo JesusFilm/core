@@ -610,7 +610,7 @@ export class JourneyResolver {
                   'templateSite'
                 ]),
                 id: duplicateJourneyId,
-                slug: slug,
+                slug,
                 title: duplicateTitle,
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
