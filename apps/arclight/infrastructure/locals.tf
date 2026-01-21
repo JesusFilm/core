@@ -23,7 +23,7 @@ locals {
     host_port      = local.port
     cpu            = 1024
     memory         = 2048
-    desired_count  = var.env == "stage" ? 1 : 4
+    desired_count  = var.env == "stage" ? 1 : 2
     zone_id        = var.ecs_config.zone_id
     alb = {
       arn      = var.ecs_config.alb.arn
