@@ -181,7 +181,8 @@ describe('journeyVisitorExport', () => {
         blockId: true,
         label: true
       },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
@@ -258,7 +259,8 @@ describe('journeyVisitorExport', () => {
         blockId: true,
         label: true
       },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
@@ -309,7 +311,8 @@ describe('journeyVisitorExport', () => {
         blockId: true,
         label: true
       },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 

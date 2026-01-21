@@ -297,7 +297,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           blockId: true,
           label: true
         },
-        distinct: ['blockId', 'label']
+        distinct: ['blockId', 'label'],
+        // Order by createdAt to ensure consistent "first" label per blockId
+        orderBy: { createdAt: 'asc' }
       })
 
       // Normalize labels and deduplicate by blockId (keep only first label per blockId)
