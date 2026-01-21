@@ -1100,7 +1100,7 @@ describe('Button', () => {
           __typename: 'IconBlock',
           parentBlockId: 'id',
           parentOrder: 0,
-          iconName: IconName.CheckCircleRounded,
+          iconName: IconName.ChevronLeftRounded,
           iconColor: null,
           iconSize: IconSize.md,
           children: []
@@ -1112,11 +1112,11 @@ describe('Button', () => {
         <Button {...iconBlock} />
       </MockedProvider>
     )
-    expect(screen.getByTestId('CheckCircleRoundedIcon')).toHaveClass(
+    expect(screen.getByTestId('ChevronLeftRoundedIcon')).toHaveClass(
       'MuiSvgIcon-root'
     )
     expect(
-      screen.getByTestId('CheckCircleRoundedIcon').parentElement
+      screen.getByTestId('ChevronLeftRoundedIcon').parentElement
     ).toHaveClass('MuiButton-startIcon')
   })
 
@@ -1130,7 +1130,7 @@ describe('Button', () => {
           __typename: 'IconBlock',
           parentBlockId: 'id',
           parentOrder: 0,
-          iconName: IconName.CheckCircleRounded,
+          iconName: IconName.ChevronLeftRounded,
           iconColor: IconColor.primary,
           iconSize: IconSize.md,
           children: []
@@ -1142,11 +1142,11 @@ describe('Button', () => {
         <Button {...iconBlock} />
       </MockedProvider>
     )
-    expect(screen.getByTestId('CheckCircleRoundedIcon')).toHaveClass(
+    expect(screen.getByTestId('ChevronLeftRoundedIcon')).toHaveClass(
       'MuiSvgIcon-root'
     )
     expect(
-      screen.getByTestId('CheckCircleRoundedIcon').parentElement
+      screen.getByTestId('ChevronLeftRoundedIcon').parentElement
     ).toHaveClass('MuiButton-endIcon')
   })
 
