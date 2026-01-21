@@ -1,6 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { Items } from './Items'
 
@@ -11,16 +14,32 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('Items', () => {
   it('should render items', () => {
-    const { getByTestId } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider>
           <Items />
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByTestId('AnalyticsItem')).toBeInTheDocument()
-    expect(getByTestId('ResponsesItem')).toBeInTheDocument()
-    expect(getByTestId('StrategyItem')).toBeInTheDocument()
-    expect(getByTestId('ShareItem')).toBeInTheDocument()
+    expect(screen.getByTestId('AnalyticsItem')).toBeInTheDocument()
+    expect(screen.getByTestId('ResponsesItem')).toBeInTheDocument()
+    expect(screen.getByTestId('StrategyItem')).toBeInTheDocument()
+    expect(screen.getByTestId('ShareItem')).toBeInTheDocument()
+  })
+
+  it('should hide ResponsesItem if template', () => {
+    render(
+      <JourneyProvider
+        value={{ journey: { template: true } as unknown as JourneyFields }}
+      >
+        <SnackbarProvider>
+          <MockedProvider>
+            <Items />
+          </MockedProvider>
+        </SnackbarProvider>
+      </JourneyProvider>
+    )
+    expect(screen.getByTestId('AnalyticsItem')).toBeInTheDocument()
+    expect(screen.queryByTestId('ResponsesItem')).not.toBeInTheDocument()
   })
 })

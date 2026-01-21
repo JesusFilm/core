@@ -31,8 +31,8 @@ export function eventLabelOptions(t: TFunction): EventLabelOption[] {
       type: BlockEventLabel.specialVideoComplete,
       label: t('Video Completed')
     },
-    { type: BlockEventLabel.custom1, label: t('Custom Event 1') },
-    { type: BlockEventLabel.custom2, label: t('Custom Event 2') },
-    { type: BlockEventLabel.custom3, label: t('Custom Event 3') }
+    { type: BlockEventLabel.custom1, label: t('Custom Tracking 1') },
+    { type: BlockEventLabel.custom2, label: t('Custom Tracking 2') },
+    { type: BlockEventLabel.custom3, label: t('Custom Tracking 3') }
   ]
 }
