@@ -1334,14 +1334,26 @@ describe('JourneyResolver', () => {
       // Reset mocks from beforeEach
       prismaService.journey.findUnique.mockReset()
       prismaService.journey.findMany.mockReset()
-      
+
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
-      const archivedJourney = {...journey, title:'test', archivedAt: new Date('2021-11-19T12:34:56.647Z')}
-      const archivedJourneyWithUserTeam = {...journeyWithUserTeam, ...archivedJourney}
-      const archivedJourneyWithUserTeamAndCustomizationFields = {...journeyWithUserTeamAndCustomizationFields, ...archivedJourneyWithUserTeam}
-      
+      const archivedJourney = {
+        ...journey,
+        title: 'test',
+        archivedAt: new Date('2021-11-19T12:34:56.647Z')
+      }
+      const archivedJourneyWithUserTeam = {
+        ...journeyWithUserTeam,
+        ...archivedJourney
+      }
+      const archivedJourneyWithUserTeamAndCustomizationFields = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        ...archivedJourneyWithUserTeam
+      }
+
       prismaService.journey.findUnique
-        .mockResolvedValueOnce(archivedJourneyWithUserTeamAndCustomizationFields)
+        .mockResolvedValueOnce(
+          archivedJourneyWithUserTeamAndCustomizationFields
+        )
         .mockResolvedValueOnce(archivedJourneyWithUserTeam)
       prismaService.journey.findMany.mockResolvedValueOnce([archivedJourney])
       prismaService.block.findMany.mockResolvedValueOnce([block])
