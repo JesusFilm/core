@@ -717,7 +717,8 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         typename: { in: ['ButtonClickEvent', 'TextResponseSubmissionEvent'] }
       }),
       select: { blockId: true, label: true },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
@@ -765,7 +766,8 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         }
       }),
       select: { blockId: true, label: true },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
