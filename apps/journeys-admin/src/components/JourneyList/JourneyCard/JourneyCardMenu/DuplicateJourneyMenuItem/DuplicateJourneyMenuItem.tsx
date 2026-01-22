@@ -10,21 +10,25 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
   handleCloseMenu: () => void
+  fromTemplateId?: string | null
 }
 
 export function DuplicateJourneyMenuItem({
   id,
-  handleCloseMenu
+  handleCloseMenu,
+  fromTemplateId
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { activeTeam } = useTeam()
   const { enqueueSnackbar } = useSnackbar()
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -47,6 +51,11 @@ export function DuplicateJourneyMenuItem({
           variables: { id, teamId: activeTeam.id }
         })
       }
+
+      if (fromTemplateId != null) {
+        void refetchTemplateStats([fromTemplateId])
+      }
+
       enqueueSnackbar(
         activeTeam?.id != null ? t('Journey Duplicated') : t('Journey Copied'),
         {

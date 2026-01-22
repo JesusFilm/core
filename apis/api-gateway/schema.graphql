@@ -267,12 +267,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   period of the previous JourneyViewEvent
   """
   journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS) 
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS) 
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS) 
   stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS) 
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS) 
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent! @join__field(graph: API_JOURNEYS) 
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS) 
   videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS) 
   videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS) 
@@ -433,6 +433,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   The endpoint to upload a file to Cloudflare R2
   """
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  """
+  Prepare a multipart upload for Cloudflare R2 and return presigned part URLs
+  """
+  cloudflareR2MultipartPrepare(input: CloudflareR2MultipartPrepareInput!) : CloudflareR2MultipartPrepared! @join__field(graph: API_MEDIA) 
+  """
+  Complete a multipart upload and persist the asset record
+  """
+  cloudflareR2CompleteMultipart(input: CloudflareR2CompleteMultipartInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
@@ -2689,6 +2697,50 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   updatedAt: Date!
 }
 
+"""
+Metadata returned when preparing a multipart upload for Cloudflare R2
+"""
+type CloudflareR2MultipartPrepared @join__type(graph: API_MEDIA)  {
+  """
+  CloudflareR2 record id
+  """
+  id: String
+  """
+  Upload ID for the multipart upload
+  """
+  uploadId: String
+  """
+  Object key for the multipart upload
+  """
+  fileName: String
+  """
+  Public URL for the completed asset
+  """
+  publicUrl: String
+  """
+  Part size in bytes
+  """
+  partSize: Int
+  """
+  Presigned URLs for each multipart part
+  """
+  parts: [CloudflareR2MultipartPreparedPart!]
+}
+
+"""
+Presigned upload URL for a multipart part
+"""
+type CloudflareR2MultipartPreparedPart @join__type(graph: API_MEDIA)  {
+  """
+  Presigned URL for the part
+  """
+  uploadUrl: String
+  """
+  1-indexed part number
+  """
+  partNumber: Int
+}
+
 type ForeignKeyConstraintError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   """
@@ -3416,6 +3468,16 @@ enum IconName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_
   ContactSupportRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   Launch @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   MailOutline @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ArrowLeftContained2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ArrowRightContained2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  MessageChat1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Home4 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  LinkAngled @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Volume5 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Note2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  UserProfile2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  UsersProfiles3 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Phone @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum IconColor @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4433,6 +4495,10 @@ input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+  """
+  skip custom domain routing filter (for admin template customization)
+  """
+  skipRoutingFilter: Boolean
 }
 
 input JourneyCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5004,6 +5070,25 @@ input MutationAudioPreviewUpdateInput @join__type(graph: API_LANGUAGES)  {
   codec: String
 }
 
+input CloudflareR2CompleteMultipartInput @join__type(graph: API_MEDIA)  {
+  """
+  CloudflareR2 id for the asset being uploaded
+  """
+  id: String
+  """
+  Key of the multipart upload being completed
+  """
+  fileName: String!
+  """
+  Upload ID returned from create multipart upload
+  """
+  uploadId: String!
+  """
+  List of uploaded parts with their ETags
+  """
+  parts: [CloudflareR2MultipartUploadedPartInput!]!
+}
+
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   """
@@ -5026,6 +5111,45 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the id of the Video object this file relates to in the database
   """
   videoId: String!
+}
+
+input CloudflareR2MultipartPrepareInput @join__type(graph: API_MEDIA)  {
+  id: String
+  """
+  the size of the file that is being uploaded
+  """
+  contentLength: BigInt!
+  """
+  the type of file that is being uploaded. e.g. image or video/mp4
+  """
+  contentType: String!
+  """
+  the name of the file that is being uploaded
+  """
+  fileName: String!
+  """
+  the original name of the file before any renaming
+  """
+  originalFilename: String
+  """
+  the id of the Video object this file relates to in the database
+  """
+  videoId: String!
+  """
+  Optional preferred part size in bytes (minimum 5 MiB, capped to 10k parts)
+  """
+  preferredPartSize: Int
+}
+
+input CloudflareR2MultipartUploadedPartInput @join__type(graph: API_MEDIA)  {
+  """
+  1-indexed part number for the multipart upload
+  """
+  partNumber: Int!
+  """
+  ETag returned after uploading the part
+  """
+  eTag: String!
 }
 
 input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {

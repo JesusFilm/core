@@ -3,8 +3,8 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/media/client'
 
 import {
-  algoliaConfig,
-  getAlgoliaClient
+  getAlgoliaClient,
+  getAlgoliaConfig
 } from '../../../lib/algolia/algoliaClient'
 import { updateVideoInAlgolia } from '../../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../../lib/algolia/algoliaVideoVariantUpdate'
@@ -87,6 +87,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (_parent, { videoId }) => {
       const client = getAlgoliaClient()
+      const algoliaConfig = getAlgoliaConfig()
 
       // Fetch minimal video data to validate against Algolia record
       const video = await prisma.video.findUnique({
@@ -211,6 +212,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (_parent, { videoId }) => {
       const client = getAlgoliaClient()
+      const algoliaConfig = getAlgoliaConfig()
 
       // Get all variants for this video
       const variants = await prisma.videoVariant.findMany({
@@ -317,7 +319,9 @@ builder.mutationFields((t) => ({
 
         const failedVariantIdsPreview = failedVariantIds.slice(0, 10).join(', ')
         const moreCount =
-          failedVariantIds.length > 10 ? ` (+${failedVariantIds.length - 10} more)` : ''
+          failedVariantIds.length > 10
+            ? ` (+${failedVariantIds.length - 10} more)`
+            : ''
 
         throw new GraphQLError(
           `Failed to update ${failures.length}/${variants.length} variants in Algolia for video ${videoId}. Failed variantIds: ${failedVariantIdsPreview}${moreCount}`

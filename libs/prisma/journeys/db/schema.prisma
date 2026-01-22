@@ -148,7 +148,7 @@ model Event {
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
-  journey                 Journey?          @relation(fields: [journeyId], references: [id])
+  journey                 Journey?          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
   @@index(visitorId)
@@ -275,6 +275,7 @@ model Integration {
   googleSheetsSyncs      GoogleSheetsSync[]
   team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, teamId, type, accountEmail])
   @@index([teamId])
   @@index(userId)
 }
@@ -368,7 +369,7 @@ model JourneyTag {
   id        String  @id @default(uuid())
   tagId     String
   journeyId String
-  journey   Journey @relation(fields: [journeyId], references: [id])
+  journey   Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, tagId])
   @@index([tagId])
@@ -724,7 +725,7 @@ model QrCode {
   color           String? @default("#000000")
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
-  journey         Journey @relation(fields: [journeyId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 }
 
 model JourneyEventsExportLog {
@@ -735,7 +736,7 @@ model JourneyEventsExportLog {
   eventsFilter   String[]
   dateRangeStart DateTime?
   dateRangeEnd   DateTime?
-  journey        Journey   @relation(fields: [journeyId], references: [id])
+  journey        Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
   @@index(createdAt)
