@@ -53,7 +53,7 @@ export function AppHeader({
               direction="row"
               flexGrow={1}
               justifyContent="center"
-              sx={{ ml: -9 }}
+              sx={{ mx: -9 }}
             >
               <Image
                 src={taskbarIcon}
