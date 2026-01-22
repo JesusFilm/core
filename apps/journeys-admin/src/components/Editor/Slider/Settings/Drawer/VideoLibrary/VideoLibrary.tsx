@@ -77,6 +77,11 @@ export function VideoLibrary({
   const [activeTab, setActiveTab] = useState(
     uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
   )
+
+  useEffect(() => {
+    console.log(activeTab + "effect Used")
+  }, [activeTab])
+
   const router = useRouter()
 
   useEffect(() => {
@@ -90,6 +95,7 @@ export function VideoLibrary({
   }
 
   function setRoute(param: string): void {
+    console.log("Hello: ", param)
     void router.push({ query: { ...router.query, param } }, undefined, {
       shallow: true
     })
@@ -102,10 +108,13 @@ export function VideoLibrary({
     _event: SyntheticEvent<Element, Event>,
     newValue: number
   ): void => {
+    console.log("handle change")
     setActiveTab(newValue)
-    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
+    const route: 'video-library' | 'video-youtube' | 'video-upload' =
       TabParams[newValue]
     if (route != null) setRoute(route)
+    console.log(newValue)
+    console.log(route)
   }
 
   const onSelect = (
@@ -122,6 +131,22 @@ export function VideoLibrary({
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {
+    // if source is local, setActiveTab(local)
+    
+    if (selectedBlock?.source === 'mux') {
+      setActiveTab(UPLOAD_TAB)
+      setRoute(TabParams[UPLOAD_TAB])
+    } else if (selectedBlock?.source === 'internal') {
+      setActiveTab(LIBRARY_TAB)
+      setRoute(TabParams[LIBRARY_TAB])
+    } else if (selectedBlock?.source === 'youTube') {
+      setActiveTab(YOUTUBE_TAB)
+      setRoute(TabParams[YOUTUBE_TAB])
+    }
+
+
+
+    console.log(selectedBlock)
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }
