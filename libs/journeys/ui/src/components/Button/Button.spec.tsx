@@ -157,7 +157,14 @@ const activeBlock: TreeBlock<StepBlock> = {
 }
 
 const journey = {
-  id: 'journey.id'
+  id: 'journey.id',
+  language: {
+    __typename: 'Language',
+    id: '1',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: []
+  }
 } as unknown as Journey
 
 describe('Button', () => {
@@ -1150,6 +1157,137 @@ describe('Button', () => {
     ).toHaveClass('MuiButton-endIcon')
   })
 
+  describe('rtl', () => {
+    it('should swap icon positions for RTL in journey viewer', () => {
+      const rtlJourney: Journey = {
+        id: 'journey.id',
+        language: {
+          __typename: 'Language',
+          id: '529',
+          bcp47: 'ar',
+          iso3: 'arb',
+          name: [
+            {
+              __typename: 'LanguageName',
+              value: 'Arabic',
+              primary: false
+            }
+          ]
+        }
+      } as unknown as Journey
+
+      const iconBlock: TreeBlock<ButtonFields> = {
+        ...block,
+        startIconId: 'start',
+        endIconId: 'end',
+        children: [
+          {
+            id: 'start',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 0,
+            iconName: IconName.ChevronLeftRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          },
+          {
+            id: 'end',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 1,
+            iconName: IconName.ChevronRightRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey: rtlJourney, variant: 'default' }}>
+            <Button {...iconBlock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      // In RTL journey viewer, startIcon should render in endIcon position
+      expect(
+        screen.getByTestId('ChevronLeftRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-endIcon')
+
+      // In RTL journey viewer, endIcon should render in startIcon position
+      expect(
+        screen.getByTestId('ChevronRightRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-startIcon')
+    })
+
+    it('should not swap icon positions for RTL in editor', () => {
+      const rtlJourney: Journey = {
+        id: 'journey.id',
+        language: {
+          __typename: 'Language',
+          id: '529',
+          bcp47: 'ar',
+          iso3: 'arb',
+          name: [
+            {
+              __typename: 'LanguageName',
+              value: 'Arabic',
+              primary: false
+            }
+          ]
+        }
+      } as unknown as Journey
+
+      const iconBlock: TreeBlock<ButtonFields> = {
+        ...block,
+        startIconId: 'start',
+        endIconId: 'end',
+        children: [
+          {
+            id: 'start',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 0,
+            iconName: IconName.ChevronLeftRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          },
+          {
+            id: 'end',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 1,
+            iconName: IconName.ChevronRightRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey: rtlJourney, variant: 'admin' }}>
+            <Button {...iconBlock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      // In editor, icons should remain in their original positions
+      expect(
+        screen.getByTestId('ChevronLeftRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-startIcon')
+
+      expect(
+        screen.getByTestId('ChevronRightRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-endIcon')
+    })
+  })
+
   it('should call actionHandler on click', () => {
     render(
       <MockedProvider>
@@ -1456,6 +1594,13 @@ describe('Button', () => {
   describe('customization string resolution', () => {
     it('resolves label using journey customization fields on default variant', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
@@ -1485,6 +1630,13 @@ describe('Button', () => {
 
     it('does not resolve label on admin variant for template journeys', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         template: true,
         journeyCustomizationFields: [
           {
@@ -1515,6 +1667,13 @@ describe('Button', () => {
 
     it('replaces custom fields within mixed strings and leaves other text intact', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
@@ -1544,6 +1703,13 @@ describe('Button', () => {
 
     it('uses defaultValue when value is null', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
