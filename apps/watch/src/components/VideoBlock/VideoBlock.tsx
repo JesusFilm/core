@@ -455,7 +455,7 @@ export function VideoBlock({
       : variant?.hls
 
     // Clear aspect ratio class when switching videos
-    setAspectRatioClass('')
+    // setAspectRatioClass('')
 
     if (!playerRef.current || !playerReady || !videoSource) {
       return
@@ -552,6 +552,25 @@ export function VideoBlock({
     [mute, dispatchPlayer, handleMuteToggle]
   )
 
+  // Clear subtitle tracks when video source changes
+  useEffect(() => {
+    if (!playerRef.current || !playerReady) return
+
+    const tracks = playerRef.current.textTracks?.() ?? []
+    for (let i = 0; i < tracks.length; i++) {
+      const track = tracks[i]
+      if (track.kind === 'subtitles') {
+        track.mode = 'disabled'
+        // Remove the track to prevent it from interfering with new subtitles
+        try {
+          playerRef.current.removeRemoteTextTrack(track)
+        } catch {
+          // Continue if removal fails
+        }
+      }
+    }
+  }, [currentMuxInsert?.id, variant?.id, playerReady])
+
   useEffect(() => {
     const player = playerRef.current
     if (player == null || !playerReady) return
@@ -566,7 +585,10 @@ export function VideoBlock({
     subtitleOn,
     mute,
     subtitleUpdate,
-    playerReady
+    playerReady,
+    // Include video source dependencies to trigger subtitle update when video changes
+    currentMuxInsert?.id,
+    variant?.id
   ])
 
   const shouldShowOverlay =
@@ -659,16 +681,18 @@ export function VideoBlock({
                 </div>
               </div>
             )}
-            {collapsed && !(placement === 'singleVideo' && wasUnmuted) && (
-              <div
-                className="pointer-events-none absolute inset-0 z-1 opacity-70"
-                style={{
-                  backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
-                  backgroundImage: 'url(/assets/overlay.svg)',
-                  backgroundSize: '1600px auto'
-                }}
-              />
-            )}
+            <div
+              className={`pointer-events-none absolute inset-0 z-1 transition-opacity duration-300 ${
+                collapsed && !(placement === 'singleVideo' && wasUnmuted)
+                  ? 'opacity-70'
+                  : 'opacity-0'
+              }`}
+              style={{
+                backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
+                backgroundImage: 'url(/assets/overlay.svg)',
+                backgroundSize: '1600px auto'
+              }}
+            />
             {/* Subtitles */}
             <HeroSubtitleOverlay
               player={playerRef.current}

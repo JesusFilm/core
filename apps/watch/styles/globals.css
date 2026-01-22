@@ -89,6 +89,16 @@
   --radius-lg: 1rem;
   --radius: var(--radius-md);
 
+   /* Video carousel dimensions */
+
+    /* --ratio-sm: 1/1; */
+    /* --ratio-sm: 239/100; */
+    --ratio-sm: 239/100;
+    --ratio-md: 239/100; /* Colapsed short video height in carousel */
+    --ratio-sm-expanded: 185/100;
+    --ratio-md-expanded: 16/9;
+
+
   @keyframes mesh-gradient {
     0% {
       background-position: 0% 50%;
@@ -152,15 +162,7 @@
     cursor: not-allowed;
   }
 
-  /* Video carousel dimensions */
-  :root {
-    /* --ratio-sm: 1/1; */
-    /* --ratio-sm: 239/100; */
-    --ratio-sm: 239/100;
-    --ratio-md: 239/100; /* Colapsed short video height in carousel */
-    --ratio-sm-expanded: 185/100;
-    --ratio-md-expanded: 16/9;
-  }
+ 
 }
 
 /* 2. Components layer - medium specificity */
@@ -452,8 +454,14 @@
   .video-height-unmuted .vjs {
     height: 100%!important;
   }
+  
   .video-height-muted {
-    aspect-ratio: auto;
+    /* Don't add  aspect-ratio: auto here in carousel */
+  }
+
+  .video-placement-single.video-height-muted {
+    aspect-ratio: auto; 
+    /* Needed to have video cover effect on the single video page */
   }
 
   .video-height-unmuted .vjs .vjs,

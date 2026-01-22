@@ -72,7 +72,7 @@ export function ContentHeader({
     <SearchBarProvider>
       <div
         data-testid="ContentHeader"
-        className={`responsive-container absolute top-0 right-0 left-0 z-[99] flex h-[100px] w-full flex-row items-center justify-between gap-4 transition-opacity duration-[225ms] lg:h-[200px] ${
+        className={`responsive-container absolute top-0 right-0 left-0 z-[99] flex h-[80px] w-full flex-row items-end justify-between gap-4 transition-opacity duration-[225ms] lg:h-[120px] ${
           visible ? 'opacity-100' : 'opacity-0'
         } ${visible ? 'delay-0' : 'delay-[600ms]'}`}
       >
