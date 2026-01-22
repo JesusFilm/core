@@ -23,7 +23,7 @@ export const getColumnHeaders = (t: TranslationFunction) => [
   {
     id: 'journeyName' as SortableColumn,
     label: t('Team'),
-    subtitle: t('Link to journey')
+    subtitle: t('Link to project')
   },
   { id: 'views' as SortableColumn, label: t('Views') },
   { id: 'responses' as SortableColumn, label: t('Responses') },
@@ -49,7 +49,7 @@ export const getColumnHeaders = (t: TranslationFunction) => [
     label: t('Gospel Presentation Completed')
   },
   { id: 'rsvpCapture' as SortableColumn, label: t('RSVP') },
-  { id: 'custom1Capture' as SortableColumn, label: t('Custom Event 1') },
-  { id: 'custom2Capture' as SortableColumn, label: t('Custom Event 2') },
-  { id: 'custom3Capture' as SortableColumn, label: t('Custom Event 3') }
+  { id: 'custom1Capture' as SortableColumn, label: t('Custom Tracking 1') },
+  { id: 'custom2Capture' as SortableColumn, label: t('Custom Tracking 2') },
+  { id: 'custom3Capture' as SortableColumn, label: t('Custom Tracking 3') }
 ]
