@@ -224,6 +224,7 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
+        journey={journeyData as Journey}
       />
     </>
   )

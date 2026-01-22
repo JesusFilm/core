@@ -16,13 +16,13 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { useJourney } from '../../libs/JourneyProvider'
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -40,6 +40,7 @@ interface CopyToTeamDialogProps {
     message: string
   }
   isTranslating?: boolean
+  journey?: Journey
 }
 
 interface JourneyLanguage {
@@ -83,11 +84,11 @@ export function CopyToTeamDialog({
   onClose,
   submitAction,
   translationProgress,
-  isTranslating = false
+  isTranslating = false,
+  journey
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
-  const { journey } = useJourney()
   const teams = query?.data?.teams ?? []
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)

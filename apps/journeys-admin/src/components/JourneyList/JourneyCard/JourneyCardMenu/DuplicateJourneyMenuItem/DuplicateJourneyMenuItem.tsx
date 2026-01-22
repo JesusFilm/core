@@ -12,16 +12,19 @@ import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
   handleCloseMenu: () => void
+  journey?: Journey
   fromTemplateId?: string | null
 }
 
 export function DuplicateJourneyMenuItem({
   id,
   handleCloseMenu,
+  journey,
   fromTemplateId
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -116,6 +119,7 @@ export function DuplicateJourneyMenuItem({
           setOpen(false)
         }}
         submitAction={handleDuplicateJourney}
+        journey={journey}
       />
     </>
   )

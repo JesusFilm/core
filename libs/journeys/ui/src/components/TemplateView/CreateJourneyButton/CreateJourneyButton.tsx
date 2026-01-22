@@ -15,6 +15,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
 
 interface CreateJourneyButtonProps {
   variant?: 'menu-item' | 'button'
@@ -23,6 +24,7 @@ interface CreateJourneyButtonProps {
    * Only one CreateJourneyButton per page should have this set to true to avoid opening multiple instances of the dialog.
    */
   openTeamDialogOnSignIn?: boolean
+  journey?: Journey
   handleCloseMenu?: () => void
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
@@ -45,6 +47,7 @@ export function CreateJourneyButton({
   variant = 'button',
   signedIn = false,
   openTeamDialogOnSignIn = false,
+  journey,
   handleCloseMenu,
   refetchTemplateStats
 }: CreateJourneyButtonProps): ReactElement {
@@ -52,7 +55,8 @@ export function CreateJourneyButton({
   const { enqueueSnackbar } = useSnackbar()
 
   const router = useRouter()
-  const { journey } = useJourney()
+  const { journey: journeyFromContext } = useJourney()
+  const journeyData = journey ?? journeyFromContext
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [openTeamDialog, setOpenTeamDialog] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -88,11 +92,11 @@ export function CreateJourneyButton({
 
       // Navigate to the translated journey
       if (pendingNavigationId) {
-        if (journey) {
+        if (journeyData) {
           sendGTMEvent({
             event: 'template_use',
-            journeyId: journey.id,
-            journeyTitle: journey.title
+            journeyId: journeyData.id,
+            journeyTitle: journeyData.title
           })
         }
         void router.push(`/journeys/${pendingNavigationId}`, undefined, {
@@ -120,13 +124,13 @@ export function CreateJourneyButton({
       selectedLanguage?: JourneyLanguage,
       showTranslation?: boolean
     ): Promise<void> => {
-      if (journey == null) return
+      if (journeyData == null) return
 
       setLoading(true)
 
       try {
         const { data: duplicateData } = await journeyDuplicate({
-          variables: { id: journey.id, teamId, forceNonTemplate: true }
+          variables: { id: journeyData.id, teamId, forceNonTemplate: true }
         })
 
         if (!duplicateData?.journeyDuplicate?.id) {
@@ -139,7 +143,7 @@ export function CreateJourneyButton({
         ).fromTemplateId
 
         const templateIdToRefetch =
-          journey.template === true ? journey.id : fromTemplateId
+          journeyData.template === true ? journeyData.id : fromTemplateId
 
         if (templateIdToRefetch != null && refetchTemplateStats != null) {
           void refetchTemplateStats([templateIdToRefetch])
@@ -157,8 +161,8 @@ export function CreateJourneyButton({
 
           sendGTMEvent({
             event: 'template_use',
-            journeyId: journey.id,
-            journeyTitle: journey.title
+            journeyId: journeyData.id,
+            journeyTitle: journeyData.title
           })
           const globalPublish = router.pathname === '/publisher'
           if (globalPublish) {
@@ -176,9 +180,9 @@ export function CreateJourneyButton({
         setPendingNavigationId(newJourneyId)
         setTranslationVariables({
           journeyId: newJourneyId,
-          name: journey.title,
+          name: journeyData.title,
           journeyLanguageName:
-            journey.language.name.find(({ primary }) => !primary)?.value ?? '',
+            journeyData.language.name.find(({ primary }) => !primary)?.value ?? '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
@@ -187,6 +191,7 @@ export function CreateJourneyButton({
         // Don't close dialog or navigate yet - wait for translation to complete
       } catch (error) {
         setLoading(false)
+        console.log("CreateJourneyButton error", error)
         enqueueSnackbar(t('Journey duplication failed'), {
           variant: 'error',
           preventDuplicate: true
@@ -196,7 +201,7 @@ export function CreateJourneyButton({
       }
     },
     [
-      journey,
+      journeyData,
       journeyDuplicate,
       router,
       t,
@@ -219,7 +224,7 @@ export function CreateJourneyButton({
     // Use env var if outside journeys-admin project
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
-    const url = `${domain}/templates/${journey?.id ?? ''}`
+    const url = `${domain}/templates/${journeyData?.id ?? ''}`
 
     void router.push(
       {
@@ -286,7 +291,7 @@ export function CreateJourneyButton({
         onClick={handleCheckSignIn}
         variant="contained"
         sx={{ flex: 'none' }}
-        disabled={journey == null}
+        disabled={journeyData == null}
         data-testid="CreateJourneyButton"
       >
         {t('Use This Template')}
@@ -325,6 +330,7 @@ export function CreateJourneyButton({
               : undefined
           }
           isTranslating={translationVariables != null}
+          journey={journeyData as Journey}
         />
       )}
     </>

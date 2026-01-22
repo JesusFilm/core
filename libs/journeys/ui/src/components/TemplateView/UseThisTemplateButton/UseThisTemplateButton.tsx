@@ -11,25 +11,29 @@ import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { AccountCheckDialog } from '../AccountCheckDialog'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
 
 interface UseThisTemplateButtonProps {
   variant?: 'menu-item' | 'button'
   signedIn?: boolean
+  journey?: Journey
 }
 
 export function UseThisTemplateButton({
   variant = 'button',
-  signedIn = false
+  signedIn = false,
+  journey
 }: UseThisTemplateButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
   const router = useRouter()
-  const { journey } = useJourney()
+  const { journey: journeyFromContext } = useJourney()
+  const journeyData = journey ?? journeyFromContext
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
-    void router.push(`/templates/${journey?.id ?? ''}/customize`, undefined, {
+    void router.push(`/templates/${journeyData?.id ?? ''}/customize`, undefined, {
       shallow: true
     })
   }
@@ -48,7 +52,7 @@ export function UseThisTemplateButton({
     // Use env var if outside journeys-admin project
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
-    const url = `${domain}/templates/${journey?.id ?? ''}`
+    const url = `${domain}/templates/${journeyData?.id ?? ''}`
 
     void router.push(
       {
@@ -91,13 +95,13 @@ export function UseThisTemplateButton({
       <Button
         onMouseEnter={() => {
           if (signedIn) {
-            void router.prefetch(`/templates/${journey?.id ?? ''}/customize`)
+            void router.prefetch(`/templates/${journeyData?.id ?? ''}/customize`)
           }
         }}
         onClick={handleCheckSignIn}
         variant="contained"
         sx={{ flex: 'none', minWidth: 180 }}
-        disabled={journey == null}
+        disabled={journeyData == null}
         data-testid="UseThisTemplateButton"
       >
         {loading ? (
