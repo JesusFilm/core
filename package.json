@@ -412,5 +412,10 @@
     "html-tokenize": {
       "readable-stream": "^3.6.0"
     }
+  },
+  "pnpm": {
+    "overrides": {
+      "strapi-blurhash>canvas": "^3.2.1"
+    }
   }
 }

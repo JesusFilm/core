@@ -15,10 +15,12 @@ import ArrowExpand1 from './ArrowExpand1'
 import ArrowExpand2 from './ArrowExpand2'
 import ArrowLeft from './ArrowLeft'
 import ArrowLeftContained1 from './ArrowLeftContained1'
+import ArrowLeftContained2 from './ArrowLeftContained2'
 import ArrowLeftSm from './ArrowLeftSm'
 import ArrowRefresh6 from './ArrowRefresh6'
 import ArrowRight from './ArrowRight'
 import ArrowRightContained1 from './ArrowRightContained1'
+import ArrowRightContained2 from './ArrowRightContained2'
 import ArrowRightSm from './ArrowRightSm'
 import ArrowRotateLeft1 from './ArrowRotateLeft1'
 import ArrowRotateRight2 from './ArrowRotateRight2'
@@ -158,6 +160,7 @@ import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
 import More from './More'
+import Note2 from './Note2'
 import PackagePlus from './PackagePlus'
 import Palette from './Palette'
 import Passport from './Passport'
@@ -243,10 +246,12 @@ export type IconName =
   | 'ArrowExpand1'
   | 'ArrowExpand2'
   | 'ArrowLeftContained1'
+  | 'ArrowLeftContained2'
   | 'ArrowLeftSm'
   | 'ArrowLeft'
   | 'ArrowRefresh6'
   | 'ArrowRightContained1'
+  | 'ArrowRightContained2'
   | 'ArrowRightSm'
   | 'ArrowRight'
   | 'ArrowRotateLeft1'
@@ -387,6 +392,7 @@ export type IconName =
   | 'Minimise2'
   | 'MinusCircleContained'
   | 'More'
+  | 'Note2'
   | 'PackagePlus'
   | 'Palette'
   | 'Passport'
@@ -476,10 +482,12 @@ const iconComponents: IconComponents = {
   ArrowExpand1,
   ArrowExpand2,
   ArrowLeftContained1,
+  ArrowLeftContained2,
   ArrowLeftSm,
   ArrowLeft,
   ArrowRefresh6,
   ArrowRightContained1,
+  ArrowRightContained2,
   ArrowRightSm,
   ArrowRight,
   ArrowRotateLeft1,
@@ -620,6 +628,7 @@ const iconComponents: IconComponents = {
   MediaStrip1,
   MinusCircleContained,
   More,
+  Note2,
   PackagePlus,
   Palette,
   Passport,

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import { decryptSymmetric } from '../crypto'
+import { decryptSymmetric } from '@core/yoga/crypto'
 
 import { prismaMock } from '../../../test/prismaMock'
 
@@ -10,7 +10,7 @@ import {
 } from './googleAuth'
 
 jest.mock('axios')
-jest.mock('../crypto', () => ({
+jest.mock('@core/yoga/crypto', () => ({
   decryptSymmetric: jest.fn()
 }))
 

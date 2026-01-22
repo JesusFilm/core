@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 
-import { JourneyVisitor, Prisma, Visitor } from '@core/prisma-journeys/client'
+import { JourneyVisitor, Prisma, Visitor } from '@core/prisma/journeys/client'
 
 import { PageInfo } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'

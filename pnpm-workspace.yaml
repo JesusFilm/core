@@ -1,6 +1,8 @@
 packages:
-  - 'apis/api-journeys'
-  - 'libs/prisma/journeys'
+  - apis/**
+  - apps/**
+  - libs/**
+  - workers/**
 
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
@@ -14,6 +16,7 @@ onlyBuiltDependencies:
   - '@prisma/engines'
   - '@swc/core'
   - '@tailwindcss/oxide'
+  - canvas
   - core-js
   - core-js-pure
   - dd-trace

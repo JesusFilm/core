@@ -102,7 +102,17 @@ export enum IconName {
     SubscriptionsRounded = "SubscriptionsRounded",
     ContactSupportRounded = "ContactSupportRounded",
     Launch = "Launch",
-    MailOutline = "MailOutline"
+    MailOutline = "MailOutline",
+    ArrowLeftContained2 = "ArrowLeftContained2",
+    ArrowRightContained2 = "ArrowRightContained2",
+    MessageChat1 = "MessageChat1",
+    Home4 = "Home4",
+    LinkAngled = "LinkAngled",
+    Volume5 = "Volume5",
+    Note2 = "Note2",
+    UserProfile2 = "UserProfile2",
+    UsersProfiles3 = "UsersProfiles3",
+    Phone = "Phone"
 }
 
 export enum IconColor {
@@ -694,6 +704,7 @@ export class JourneysQueryOptions {
     hostname?: Nullable<string>;
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
+    skipRoutingFilter?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -1928,6 +1939,13 @@ export class Team {
     qrCodes: QrCode[];
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -2020,13 +2038,6 @@ export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
     pageInfo: PageInfo;
-}
-
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
 }
 
 export class Video {

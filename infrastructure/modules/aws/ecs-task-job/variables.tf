@@ -22,7 +22,9 @@ variable "env" {
 }
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for ECS Task Job"
+  sensitive   = true
 }
 
 # We are unable to for_each sensitive values, so we must provide a list of secret env vars
