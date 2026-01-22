@@ -297,10 +297,13 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           blockId: true,
           label: true
         },
-        distinct: ['blockId', 'label']
+        distinct: ['blockId', 'label'],
+        // Order by createdAt to ensure consistent "first" label per blockId
+        orderBy: { createdAt: 'asc' }
       })
 
-      // Normalize labels and deduplicate by normalized key
+      // Normalize labels and deduplicate by blockId (keep only first label per blockId)
+      // This prevents creating multiple columns for the same block when events have different labels
       const headerMap = new Map<string, { blockId: string; label: string }>()
       blockHeadersResult
         .filter((header) => header.blockId != null)
@@ -308,8 +311,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           const normalizedLabel = (header.label ?? '')
             .replace(/\s+/g, ' ')
             .trim()
-          const key = `${header.blockId}-${normalizedLabel}`
-          // Only add if not already present (handles duplicates with different whitespace)
+          // Key by blockId only to ensure one column per block
+          const key = header.blockId!
+          // Only add if not already present (keeps first label encountered for each blockId)
           if (!headerMap.has(key)) {
             headerMap.set(key, {
               blockId: header.blockId!,
