@@ -15,7 +15,7 @@ import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { computeConnectedBlockIds } from './export/connectivity'
-import { sanitizeCSVCell } from './export/csv'
+import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
 import {
   formatDateYmdInTimeZone,
   parseDateInTimeZoneToUtc
@@ -126,9 +126,11 @@ async function* getJourneyVisitors(
           eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-      // Join values with a fixed separator and sanitize for CSV
+      // Join values with a fixed separator and sanitize for Google Sheets
       eventValuesByKey.forEach((values, key) => {
-        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
+        const sanitizedValues = values.map((value) =>
+          sanitizeGoogleSheetsCell(value)
+        )
         row[key] = sanitizedValues.join('; ')
       })
       yield row
@@ -295,10 +297,13 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           blockId: true,
           label: true
         },
-        distinct: ['blockId', 'label']
+        distinct: ['blockId', 'label'],
+        // Order by createdAt to ensure consistent "first" label per blockId
+        orderBy: { createdAt: 'asc' }
       })
 
-      // Normalize labels and deduplicate by normalized key
+      // Normalize labels and deduplicate by blockId (keep only first label per blockId)
+      // This prevents creating multiple columns for the same block when events have different labels
       const headerMap = new Map<string, { blockId: string; label: string }>()
       blockHeadersResult
         .filter((header) => header.blockId != null)
@@ -306,8 +311,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           const normalizedLabel = (header.label ?? '')
             .replace(/\s+/g, ' ')
             .trim()
-          const key = `${header.blockId}-${normalizedLabel}`
-          // Only add if not already present (handles duplicates with different whitespace)
+          // Key by blockId only to ensure one column per block
+          const key = header.blockId!
+          // Only add if not already present (keeps first label encountered for each blockId)
           if (!headerMap.has(key)) {
             headerMap.set(key, {
               blockId: header.blockId!,
@@ -458,7 +464,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         if (existingHeaderRow.length > 0) {
           // Extract keys from existing header row
           // The header row contains display labels, we need to map them back to column keys
-          // Note: labels in the sheet were written through sanitizeCSVCell, so we need to
+          // Note: legacy sheets may have labels written through sanitizeCSVCell, so we need to
           // compare against both raw and sanitized labels to match correctly
           const existingHeader: string[] = existingHeaderRow.map((label) => {
             // Skip empty labels (no header columns)
@@ -560,9 +566,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         }
       }
 
-      // Build data rows aligned to finalHeader with sanitization
+      // Build data rows aligned to finalHeader with sanitization for Google Sheets
       const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
-        sanitizeCSVCell(cell)
+        sanitizeGoogleSheetsCell(cell)
       )
       const values: (string | null)[][] = [sanitizedHeaderRow]
       for await (const row of getJourneyVisitors(
@@ -574,7 +580,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           // Handle empty header columns (no header columns)
           if (k === '' || k.trim() === '') return ''
           const value = row[k] ?? ''
-          return sanitizeCSVCell(value)
+          return sanitizeGoogleSheetsCell(value)
         })
         values.push(aligned)
       }

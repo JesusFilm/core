@@ -4,22 +4,22 @@ import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 import { filterPageVisitors } from './filterPageVisitors'
 
 describe('filterPageVisitors', () => {
-  it('should return pages only on the first level', () => {
+  it('should extract journeyId from properties in format /journeyId/stepId', () => {
     const pageVisitors: PlausibleStatsResponse[] = [
       {
-        property: '/journey-slug',
+        property: '/journey-1/step-1',
         visitors: 10
       },
       {
-        property: '/journey-slug/step-id',
+        property: '/journey-1/step-2',
         visitors: 5
       },
       {
-        property: '/journey-slug/step-id/block-id',
+        property: '/journey-1/step-3/block-id',
         visitors: 3
       },
       {
-        property: 'journey-slug',
+        property: 'journey-1/step-1',
         visitors: 2
       }
     ]
@@ -35,17 +35,18 @@ describe('filterPageVisitors', () => {
 
     const result = filterPageVisitors(pageVisitors, journeys)
 
+    // Should use Math.max, so max of 10, 5, 3 = 10
     expect(result).toEqual([{ journeyId: 'journey-1', visitors: 10 }])
   })
 
-  it('should trim the leading slash from the page', () => {
+  it('should handle multiple journeys', () => {
     const pageVisitors: PlausibleStatsResponse[] = [
       {
-        property: '/journey-slug-1',
+        property: '/journey-1/step-1',
         visitors: 10
       },
       {
-        property: '/journey-slug-2',
+        property: '/journey-2/step-1',
         visitors: 20
       }
     ]
@@ -73,18 +74,18 @@ describe('filterPageVisitors', () => {
     ])
   })
 
-  it('should return only when matched with slug from a journey', () => {
+  it('should return only when matched with journey ID', () => {
     const pageVisitors: PlausibleStatsResponse[] = [
       {
-        property: '/matching-slug',
+        property: '/journey-1/step-1',
         visitors: 10
       },
       {
-        property: '/non-matching-slug',
+        property: '/non-matching-journey/step-1',
         visitors: 20
       },
       {
-        property: '/another-matching-slug',
+        property: '/journey-2/step-1',
         visitors: 30
       }
     ]
@@ -112,26 +113,26 @@ describe('filterPageVisitors', () => {
     ])
   })
 
-  it('should sum up visitors for the same journey', () => {
+  it('should use Math.max for visitors from multiple step pages', () => {
     const pageVisitors: PlausibleStatsResponse[] = [
       {
-        property: '/journey-slug',
+        property: '/journey-1/step-1',
         visitors: 10
       },
       {
-        property: '/journey-slug',
+        property: '/journey-1/step-2',
         visitors: 20
       },
       {
-        property: '/journey-slug',
+        property: '/journey-1/step-3',
         visitors: 5
       },
       {
-        property: '/another-slug',
+        property: '/journey-2/step-1',
         visitors: 15
       },
       {
-        property: '/another-slug',
+        property: '/journey-2/step-2',
         visitors: 25
       }
     ]
@@ -153,9 +154,10 @@ describe('filterPageVisitors', () => {
 
     const result = filterPageVisitors(pageVisitors, journeys)
 
+    // Should use Math.max: journey-1 max(10, 20, 5) = 20, journey-2 max(15, 25) = 25
     expect(result).toEqual([
-      { journeyId: 'journey-1', visitors: 35 },
-      { journeyId: 'journey-2', visitors: 40 }
+      { journeyId: 'journey-1', visitors: 20 },
+      { journeyId: 'journey-2', visitors: 25 }
     ])
   })
 })

@@ -17,6 +17,7 @@ import {
   templateKeyify
 } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
 import { StepFields } from './__generated__/StepFields'
@@ -55,7 +56,8 @@ export function Step({
     (variant === 'default' || variant === 'embed') &&
     isActiveBlockOrDescendant(blockId)
 
-  const heading = getStepHeading(blockId, children, treeBlocks, t)
+  const stepHeading = getStepHeading(blockId, children, treeBlocks, t)
+  const heading = useGetValueFromJourneyCustomizationString(stepHeading)
 
   useEffect(() => {
     if (activeJourneyStep && wrappers === undefined) {
