@@ -10,12 +10,12 @@ jest.mock('../../../lib/algolia/algoliaClient', () => ({
   getAlgoliaClient: () => ({
     getObject: getObjectSpy
   }),
-  algoliaConfig: {
+  getAlgoliaConfig: () => ({
     appId: 'test-app-id',
     apiKey: 'test-api-key',
     videosIndex: 'test-videos-index',
     videoVariantsIndex: 'test-video-variants-index'
-  }
+  })
 }))
 
 // Mock the algolia update functions

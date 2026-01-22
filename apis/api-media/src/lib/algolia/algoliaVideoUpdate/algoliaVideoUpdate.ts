@@ -2,7 +2,7 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { algoliaConfig, getAlgoliaClient } from '../algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
 export async function updateVideoInAlgolia(
@@ -10,6 +10,7 @@ export async function updateVideoInAlgolia(
   logger?: Logger
 ): Promise<void> {
   const client = getAlgoliaClient()
+  const algoliaConfig = getAlgoliaConfig()
   const languages = await getLanguages(logger)
 
   try {

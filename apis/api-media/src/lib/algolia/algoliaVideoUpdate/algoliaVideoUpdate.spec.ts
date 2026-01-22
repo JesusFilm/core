@@ -11,12 +11,12 @@ jest.mock('../algoliaClient', () => ({
   getAlgoliaClient: () => ({
     saveObjects: saveObjectsSpy
   }),
-  algoliaConfig: {
+  getAlgoliaConfig: () => ({
     appId: 'test-app-id',
     apiKey: 'test-api-key',
     videosIndex: 'test-videos',
     videoVariantsIndex: 'test-video-variants'
-  }
+  })
 }))
 
 // Mock the languages helper

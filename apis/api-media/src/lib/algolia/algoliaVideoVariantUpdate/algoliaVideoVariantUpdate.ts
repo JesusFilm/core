@@ -2,7 +2,7 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { algoliaConfig, getAlgoliaClient } from '../algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
 type Translation = {
@@ -21,6 +21,7 @@ export async function updateVideoVariantInAlgolia(
 ): Promise<void> {
   try {
     const client = getAlgoliaClient()
+    const algoliaConfig = getAlgoliaConfig()
     const languages = await getLanguages(logger)
 
     const videoVariant = await prisma.videoVariant.findUnique({
