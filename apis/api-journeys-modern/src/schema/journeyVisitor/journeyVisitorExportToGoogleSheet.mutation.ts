@@ -15,7 +15,7 @@ import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { computeConnectedBlockIds } from './export/connectivity'
-import { sanitizeCSVCell } from './export/csv'
+import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
 import {
   formatDateYmdInTimeZone,
   parseDateInTimeZoneToUtc
@@ -126,9 +126,11 @@ async function* getJourneyVisitors(
           eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-      // Join values with a fixed separator and sanitize for CSV
+      // Join values with a fixed separator and sanitize for Google Sheets
       eventValuesByKey.forEach((values, key) => {
-        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
+        const sanitizedValues = values.map((value) =>
+          sanitizeGoogleSheetsCell(value)
+        )
         row[key] = sanitizedValues.join('; ')
       })
       yield row
@@ -295,10 +297,13 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           blockId: true,
           label: true
         },
-        distinct: ['blockId', 'label']
+        distinct: ['blockId', 'label'],
+        // Order by createdAt to ensure consistent "first" label per blockId
+        orderBy: { createdAt: 'asc' }
       })
 
-      // Normalize labels and deduplicate by normalized key
+      // Normalize labels and deduplicate by blockId (keep only first label per blockId)
+      // This prevents creating multiple columns for the same block when events have different labels
       const headerMap = new Map<string, { blockId: string; label: string }>()
       blockHeadersResult
         .filter((header) => header.blockId != null)
@@ -306,8 +311,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           const normalizedLabel = (header.label ?? '')
             .replace(/\s+/g, ' ')
             .trim()
-          const key = `${header.blockId}-${normalizedLabel}`
-          // Only add if not already present (handles duplicates with different whitespace)
+          // Key by blockId only to ensure one column per block
+          const key = header.blockId!
+          // Only add if not already present (keeps first label encountered for each blockId)
           if (!headerMap.has(key)) {
             headerMap.set(key, {
               blockId: header.blockId!,
@@ -458,7 +464,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         if (existingHeaderRow.length > 0) {
           // Extract keys from existing header row
           // The header row contains display labels, we need to map them back to column keys
-          // Note: labels in the sheet were written through sanitizeCSVCell, so we need to
+          // Note: legacy sheets may have labels written through sanitizeCSVCell, so we need to
           // compare against both raw and sanitized labels to match correctly
           const existingHeader: string[] = existingHeaderRow.map((label) => {
             // Skip empty labels (no header columns)
@@ -490,29 +496,18 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
             }
 
             // Check for Poll or Multiselect patterns (with or without card heading)
-            // Match by computing what the display label would be for each column
             if (label === 'Poll' || label.startsWith('Poll (')) {
-              const pollCol = columns.find((c) => {
-                if (c.typename !== 'RadioQuestionBlock' || c.blockId == null)
-                  return false
-                const cardHeadingForCol = getCardHeading(c.blockId)
-                const expectedLabel = cardHeadingForCol
-                  ? `Poll (${cardHeadingForCol})`
-                  : 'Poll'
-                return expectedLabel === normalizedExistingLabel
-              })
+              // Try to find matching Poll column by key
+              const pollCol = columns.find(
+                (c) => c.typename === 'RadioQuestionBlock' && c.key === label
+              )
               if (pollCol) return pollCol.key
             }
             if (label === 'Multiselect' || label.startsWith('Multiselect (')) {
-              const multiselectCol = columns.find((c) => {
-                if (c.typename !== 'MultiselectBlock' || c.blockId == null)
-                  return false
-                const cardHeadingForCol = getCardHeading(c.blockId)
-                const expectedLabel = cardHeadingForCol
-                  ? `Multiselect (${cardHeadingForCol})`
-                  : 'Multiselect'
-                return expectedLabel === normalizedExistingLabel
-              })
+              // Try to find matching Multiselect column by key
+              const multiselectCol = columns.find(
+                (c) => c.typename === 'MultiselectBlock' && c.key === label
+              )
               if (multiselectCol) return multiselectCol.key
             }
 
@@ -571,9 +566,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         }
       }
 
-      // Build data rows aligned to finalHeader with sanitization
+      // Build data rows aligned to finalHeader with sanitization for Google Sheets
       const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
-        sanitizeCSVCell(cell)
+        sanitizeGoogleSheetsCell(cell)
       )
       const values: (string | null)[][] = [sanitizedHeaderRow]
       for await (const row of getJourneyVisitors(
@@ -585,7 +580,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           // Handle empty header columns (no header columns)
           if (k === '' || k.trim() === '') return ''
           const value = row[k] ?? ''
-          return sanitizeCSVCell(value)
+          return sanitizeGoogleSheetsCell(value)
         })
         values.push(aligned)
       }
@@ -608,6 +603,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         folderId:
           destination.mode === 'create' ? (destination.folderId ?? null) : null,
         email: integrationEmail,
+        timezone: userTimezone, // Store user's timezone for consistent date formatting in live sync
         deletedAt: null
       }
 

@@ -96,6 +96,24 @@ export interface BlockHeaderRecord {
   label: string
 }
 
+/**
+ * Deduplicates block headers by blockId, keeping only the first label encountered for each blockId.
+ * This prevents creating multiple columns for the same block when events have different labels
+ * (e.g., when a block's label changes or when the fallback step heading is used initially).
+ */
+export function deduplicateBlockHeadersByBlockId(
+  headers: BlockHeaderRecord[]
+): BlockHeaderRecord[] {
+  const seenBlockIds = new Set<string>()
+  return headers.filter((header) => {
+    if (seenBlockIds.has(header.blockId)) {
+      return false
+    }
+    seenBlockIds.add(header.blockId)
+    return true
+  })
+}
+
 interface BuildJourneyExportColumnsOptions {
   baseColumns?: JourneyExportColumn[]
   blockHeaders: BlockHeaderRecord[]
@@ -111,45 +129,22 @@ export function buildJourneyExportColumns({
 }: BuildJourneyExportColumnsOptions): JourneyExportColumn[] {
   const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
 
-  // For TextResponseBlock, deduplicate by blockId to avoid multiple columns
-  // when the label changes (e.g., from typography fallback to actual label)
-  const seenTextResponseBlockIds = new Set<string>()
-  const deduplicatedHeaders = blockHeaders.filter((item) => {
-    const block = idToBlock.get(item.blockId)
-    if (block?.typename === 'TextResponseBlock') {
-      if (seenTextResponseBlockIds.has(item.blockId)) {
-        return false
-      }
-      seenTextResponseBlockIds.add(item.blockId)
+  // Sort headers first, then deduplicate by blockId to keep only the first (by order) label per block
+  const sortedHeaders = [...blockHeaders].sort((a, b) =>
+    compareHeaders(a, b, orderIndex)
+  )
+  const deduplicatedHeaders = deduplicateBlockHeadersByBlockId(sortedHeaders)
+
+  const blockColumns = deduplicatedHeaders.map<JourneyExportColumn>((item) => {
+    // Normalize label: replace all newlines/multiple spaces with single space, then trim
+    const normalizedLabel = item.label.replace(/\s+/g, ' ').trim()
+    return {
+      key: `${item.blockId}-${normalizedLabel}`,
+      label: normalizedLabel,
+      blockId: item.blockId,
+      typename: idToBlock.get(item.blockId)?.typename ?? ''
     }
-    return true
   })
-
-  const blockColumns = [...deduplicatedHeaders]
-    .sort((a, b) => compareHeaders(a, b, orderIndex))
-    .map<JourneyExportColumn>((item) => {
-      const block = idToBlock.get(item.blockId)
-      // Normalize label: replace all newlines/multiple spaces with single space, then trim
-      const normalizedLabel = item.label.replace(/\s+/g, ' ').trim()
-
-      // For TextResponseBlock, use just blockId as key to ensure all events
-      // for the same block go into one column regardless of label variations
-      if (block?.typename === 'TextResponseBlock') {
-        return {
-          key: item.blockId,
-          label: normalizedLabel,
-          blockId: item.blockId,
-          typename: block.typename
-        }
-      }
-
-      return {
-        key: `${item.blockId}-${normalizedLabel}`,
-        label: normalizedLabel,
-        blockId: item.blockId,
-        typename: block?.typename ?? ''
-      }
-    })
 
   return [...baseColumns, ...blockColumns]
 }

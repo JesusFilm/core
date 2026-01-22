@@ -9,6 +9,7 @@ import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 import { Icon, IconName } from './Icon'
 
 const iconNames: IconName[] = [
+  'Activity',
   'AddSquare2',
   'AddSquare4',
   'AlertCircle',
@@ -21,10 +22,12 @@ const iconNames: IconName[] = [
   'ArrowExpand1',
   'ArrowExpand2',
   'ArrowLeftContained1',
+  'ArrowLeftContained2',
   'ArrowLeftSm',
   'ArrowLeft',
   'ArrowRefresh6',
   'ArrowRightContained1',
+  'ArrowRightContained2',
   'ArrowRightSm',
   'ArrowRight',
   'ArrowRotateLeft1',
@@ -70,6 +73,7 @@ const iconNames: IconName[] = [
   'Cursor6',
   'CursorPointer',
   'Dash',
+  'Data1',
   'Diamond',
   'DotVertical',
   'DownArrowSm',
@@ -164,6 +168,7 @@ const iconNames: IconName[] = [
   'Minimise2',
   'MinusCircleContained',
   'More',
+  'Note2',
   'VolumeOff',
   'Volume5',
   'PackagePlus',

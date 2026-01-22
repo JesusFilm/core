@@ -442,11 +442,11 @@ describe('templateFamilyStatsBreakdown', () => {
         data: {
           results: [
             {
-              page: '/journey-1-slug',
+              page: '/journey-1/step-1',
               visitors: 20
             },
             {
-              page: '/journey-2-slug',
+              page: '/journey-2/step-1',
               visitors: 30
             }
           ]
@@ -709,6 +709,93 @@ describe('templateFamilyStatsBreakdown', () => {
       expect.objectContaining({
         journeyId: 'journey-2',
         status: 'draft'
+      })
+    ])
+  })
+
+  it('returns journeys with no Plausible stats but with responses', async () => {
+    const templateJourney = {
+      id: 'template-journey-id',
+      slug: 'template-slug',
+      title: 'Template Journey',
+      userJourneys: [],
+      team: { userTeams: [] }
+    }
+
+    prismaMock.journey.findUnique.mockResolvedValue(
+      templateJourney as unknown as JourneyWithAcl
+    )
+
+    // First `findMany`: child journeys from template (id-only)
+    prismaMock.journey.findMany
+      .mockResolvedValueOnce([{ id: 'journey-1' }] as any)
+      // Second `findMany`: fetch journeys with ACL data
+      .mockResolvedValueOnce([
+        {
+          id: 'journey-1',
+          slug: 'journey-1-slug',
+          title: 'Journey One',
+          status: 'published',
+          teamId: 'team-1',
+          team: { title: 'Team One', userTeams: [] },
+          userJourneys: []
+        }
+      ] as unknown as JourneyWithAcl[])
+
+    // Responses exist (journeyVisitor with lastTextResponse not null)
+    prismaMock.journeyVisitor.groupBy
+      .mockResolvedValueOnce([
+        {
+          journeyId: 'journey-1',
+          _count: { journeyId: 7 }
+        }
+      ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
+      .mockResolvedValueOnce([
+        {
+          journeyId: 'journey-1',
+          _count: { journeyId: 7 }
+        }
+      ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
+
+    // Plausible returns no stats for this template family, but we still expect journeyResponses
+    mockAxios.get.mockResolvedValueOnce({
+      data: {
+        results: []
+      }
+    } as unknown as AxiosResponse)
+
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-journey-id',
+        where: { property: 'event:goal' },
+        events: ['journeyResponses']
+      }
+    })
+
+    expect(mockAxios.get).toHaveBeenCalledTimes(1)
+
+    const resultData = result as {
+      data?: {
+        templateFamilyStatsBreakdown?: Array<{
+          journeyId: string
+          journeyName: string
+          teamName: string
+          status: string
+          stats: Array<{ event: string; visitors: number }>
+        }>
+      }
+    }
+
+    expect(resultData.data?.templateFamilyStatsBreakdown).toEqual([
+      expect.objectContaining({
+        journeyId: 'journey-1',
+        journeyName: 'Journey One',
+        teamName: 'Team One',
+        status: 'published',
+        stats: [
+          expect.objectContaining({ event: 'journeyResponses', visitors: 7 })
+        ]
       })
     ])
   })
