@@ -28,12 +28,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
     return '#FEFEFE'
   }
 
-  const getEffectiveIcon = (align) => {
-    return getAlignIcon(align)
-  }
-
   const effectiveColor = getEffectiveColor()
-  const effectiveIcon = getEffectiveIcon(align)
 
   useEffect(() => {
     dispatch({
@@ -76,7 +71,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
           <Accordion
             id={`${id}-typography-alignment`}
-            icon={effectiveIcon}
+            icon={getAlignIcon(align)}
             name={t('Text Alignment')}
             value={capitalize(align?.toString() ?? 'Left')}
           >
