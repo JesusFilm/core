@@ -4,36 +4,7 @@
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-journeys/tsc/.tsbuildinfo",
-    "baseUrl": ".",
-    "paths": {
-      "@core/nest/common/*": ["./libs/nest/common/src/lib/*"],
-      "@core/nest/decorators/*": ["./libs/nest/decorators/src/lib/*"],
-      "@core/nest/gqlAuthGuard/*": ["./libs/nest/gqlAuthGuard/src/lib/*"],
-      "@core/nest/powerBi/*": ["./libs/nest/powerBi/src/lib/*"],
-      "@core/journeys/ui/*": [
-        "../../libs/journeys/ui/src/components/*",
-        "../../libs/journeys/ui/src/libs/*"
-      ],
-      "@core/prisma/analytics/*": ["../../libs/prisma/analytics/src/*"],
-      "@core/prisma/journeys/*": ["../../libs/prisma/journeys/src/*"],
-      "@core/prisma-journeys/*": ["../../libs/prisma/journeys/src/*"],
-      "@core/prisma/languages/*": ["../../libs/prisma/languages/src/*"],
-      "@core/prisma/media/*": ["../../libs/prisma/media/src/*"],
-      "@core/prisma/users/*": ["../../libs/prisma/users/src/*"],
-      "@core/shared/ai/*": ["../../libs/shared/ai/src/*"],
-      "@core/shared/gql": ["../../libs/shared/gql/src"],
-      "@core/shared/ui-dynamic/*": [
-        "../../libs/shared/ui-dynamic/src/components/*",
-        "../../libs/shared/ui-dynamic/src/libs/*"
-      ],
-      "@core/shared/ui/*": [
-        "../../libs/shared/ui/src/components/*",
-        "../../libs/shared/ui/src/libs/*"
-      ],
-      "@core/shared/ui-modern/*": ["../../libs/shared/ui-modern/src/*"],
-      "@core/yoga/*": ["../../libs/yoga/src/*"]
-    }
+    "tsBuildInfoFile": "../../.cache/api-journeys/tsc/.tsbuildinfo"
   },
   "files": [],
   "include": [],
