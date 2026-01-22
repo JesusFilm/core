@@ -1,7 +1,9 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
+import { updateLanguageInAlgolia } from '../../lib/algolia/algoliaLanguageUpdate/algoliaLanguageUpdate'
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { builder } from '../builder'
+import { logger } from '../logger'
 
 enum LanguageIdType {
   databaseId = 'databaseId',
@@ -155,6 +157,50 @@ builder.queryFields((t) => ({
       return await prisma.language.count({
         where: filter
       })
+    }
+  })
+}))
+
+builder.mutationFields((t) => ({
+  languageUpdate: t.withAuth({ isPublisher: true }).prismaFieldWithInput({
+    type: 'Language',
+    nullable: false,
+    input: {
+      id: t.input.id({ required: true }),
+      bcp47: t.input.string({ required: false }),
+      iso3: t.input.string({ required: false }),
+      slug: t.input.string({ required: false }),
+      hasVideos: t.input.boolean({ required: false })
+    },
+    resolve: async (
+      query,
+      _parent,
+      { input: { id, bcp47, iso3, slug, hasVideos } }
+    ) => {
+      const data: Prisma.LanguageUpdateInput = {}
+
+      if (bcp47 !== undefined) data.bcp47 = bcp47
+      if (iso3 !== undefined) data.iso3 = iso3
+      if (slug !== undefined) data.slug = slug
+      if (hasVideos !== undefined) data.hasVideos = hasVideos
+
+      if (Object.keys(data).length === 0) {
+        throw new Error('No fields provided to update')
+      }
+
+      const language = await prisma.language.update({
+        ...query,
+        where: { id },
+        data
+      })
+
+      try {
+        await updateLanguageInAlgolia(language.id, logger)
+      } catch (err) {
+        logger.error({ err, languageId: language.id }, 'Algolia update error')
+      }
+
+      return language
     }
   })
 }))
