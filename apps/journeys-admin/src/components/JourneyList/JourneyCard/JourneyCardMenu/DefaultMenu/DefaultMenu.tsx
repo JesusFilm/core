@@ -39,6 +39,7 @@ import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTe
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
@@ -259,7 +260,7 @@ export function DefaultMenu({
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}
-            journey={journey}
+            journey={journey as unknown as JourneyFields}
             refetchTemplateStats={refetchTemplateStats}
           />
           <Divider />
