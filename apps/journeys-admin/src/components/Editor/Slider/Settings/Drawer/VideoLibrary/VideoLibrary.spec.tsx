@@ -76,7 +76,6 @@ const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
   typeof useMuxVideoUpload
 >
 
-// Mocked functions
 const mockGetUploadStatus = jest.fn()
 const mockCancelUploadForBlock = jest.fn()
 const mockAddUploadTask = jest.fn()
