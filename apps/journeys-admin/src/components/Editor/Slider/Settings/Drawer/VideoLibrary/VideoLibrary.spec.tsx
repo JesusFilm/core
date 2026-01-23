@@ -662,25 +662,6 @@ describe('VideoLibrary', () => {
     })
   })
 
-  it.each([
-    {
-      source: VideoBlockSource.youTube,
-      tabName: 'YouTube',
-      param: 'video-youtube'
-    },
-    {
-      source: VideoBlockSource.internal,
-      tabName: 'Library',
-      param: 'video-library'
-    },
-    { source: VideoBlockSource.mux, tabName: 'Upload', param: 'video-upload' }
-  ])(
-    'should navigate to $tabName tab when clicking Change Video on a $source video',
-    async ({ source, tabName, param }) => {
-      // test implementation
-    }
-  )
-
   it('should navigate to YouTube tab when clicking Change Video on a YouTube video', async () => {
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)
     const onSelect = jest.fn()
