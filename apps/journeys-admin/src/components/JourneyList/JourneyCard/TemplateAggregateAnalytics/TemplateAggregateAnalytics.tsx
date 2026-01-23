@@ -83,7 +83,7 @@ export function TemplateAggregateAnalytics({
       <Item
         variant="icon-button"
         icon={<Data1Icon />}
-        label={t('Journeys Created')}
+        label={t('Template uses')}
         count={
           showLoadingSkeleton ? (
             <Skeleton variant="text" width={18} height={21} />

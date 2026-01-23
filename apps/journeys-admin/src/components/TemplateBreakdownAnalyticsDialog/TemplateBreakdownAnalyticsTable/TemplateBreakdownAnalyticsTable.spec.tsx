@@ -174,7 +174,7 @@ describe('TemplateBreakdownAnalyticsTable', () => {
     )
 
     expect(screen.getByText('Team')).toBeInTheDocument()
-    expect(screen.getByText('Link to journey')).toBeInTheDocument()
+    expect(screen.getByText('Link to project')).toBeInTheDocument()
     const viewsElements = screen.getAllByText(/Views/)
     expect(viewsElements.length).toBeGreaterThan(0)
     expect(screen.getByText('Responses')).toBeInTheDocument()

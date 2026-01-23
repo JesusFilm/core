@@ -88,7 +88,7 @@ export function StatusTabPanel({
           ?.queryParam ?? journeyStatusTabs[0].queryParam
       void router.push(
         {
-          query: { tab: tabParam }
+          query: { status: tabParam }
         },
         undefined,
         { shallow: true }
@@ -148,7 +148,8 @@ export function StatusTabPanel({
         value={activeTab}
         index={journeyStatusTabs[0].tabIndex}
         unmountUntilVisible={
-          router?.query?.tab !== undefined && router?.query?.tab !== 'active'
+          router?.query?.status !== undefined &&
+          router?.query?.status !== 'active'
         }
       >
         {activeList}
@@ -157,7 +158,7 @@ export function StatusTabPanel({
         name="archived-status-panel"
         value={activeTab}
         index={journeyStatusTabs[1].tabIndex}
-        unmountUntilVisible={router?.query?.tab !== 'archived'}
+        unmountUntilVisible={router?.query?.status !== 'archived'}
       >
         {archivedList}
       </TabPanel>
@@ -165,7 +166,7 @@ export function StatusTabPanel({
         name="trashed-status-panel"
         value={activeTab}
         index={journeyStatusTabs[2].tabIndex}
-        unmountUntilVisible={router?.query?.tab !== 'trashed'}
+        unmountUntilVisible={router?.query?.status !== 'trashed'}
       >
         {trashedList}
       </TabPanel>
