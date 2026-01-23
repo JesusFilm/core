@@ -11,12 +11,12 @@ import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import { GetAdminJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface UseThisTemplateButtonProps {
   variant?: 'menu-item' | 'button'
   signedIn?: boolean
-  journey?: Journey
+  journey?: JourneyFields
 }
 
 export function UseThisTemplateButton({

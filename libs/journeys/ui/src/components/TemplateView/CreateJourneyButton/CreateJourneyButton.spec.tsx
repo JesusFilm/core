@@ -21,7 +21,7 @@ import {
 } from '../../TeamProvider'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
-import { nonCustomizableLocalTemplateJourney, nonCustomizableGlobalTemplateJourney } from '../../../../../../../apps/journeys-admin/src/components/JourneyList/journeyListData'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -203,7 +203,7 @@ const journeyDuplicateMock = {
   }
 }
 
-const createJourneyButton = (
+const createJourneyButton = (journeyProps?: JourneyFields | undefined) => (
   <MockedProvider
     mocks={[
       {
@@ -217,7 +217,7 @@ const createJourneyButton = (
   >
     <SnackbarProvider>
       <JourneyProvider value={{ journey }}>
-        <CreateJourneyButton />
+        <CreateJourneyButton journey={journeyProps} />
       </JourneyProvider>
     </SnackbarProvider>
   </MockedProvider>
@@ -269,7 +269,7 @@ describe('CreateJourneyButton', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', nonCustomizableLocalTemplateJourney]
+    ['prop journey', journey as unknown as JourneyFields]
   ])('(%s)', (_, nonCustomizableTemplate) => {
 
     it('should render create journey button when variant is button', () => {
@@ -475,7 +475,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should pre-render sign in page', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         await waitFor(() => {
           expect(prefetch).toHaveBeenCalledWith('/users/sign-in')
@@ -483,7 +483,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
         fireEvent.click(
@@ -508,7 +508,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
         fireEvent.click(
@@ -552,7 +552,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
         fireEvent.click(
@@ -577,7 +577,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
         fireEvent.click(
@@ -620,7 +620,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
         fireEvent.click(
@@ -645,7 +645,7 @@ describe('CreateJourneyButton', () => {
       })
 
       it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-        render(createJourneyButton)
+        render(createJourneyButton(nonCustomizableTemplate))
 
         fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
         fireEvent.click(
@@ -907,7 +907,14 @@ describe('CreateJourneyButton', () => {
 
     describe.each([
       ['context journey', undefined],
-      ['prop journey', nonCustomizableGlobalTemplateJourney]
+      ['prop journey', { 
+        ...journey, 
+        team: { 
+          id: 'jfp-team', 
+          title: 'Team Name', 
+          __typename: 'Team' 
+        } 
+      } as unknown as JourneyFields]
     ])('navigation (%s)', (_, nonCustomizableTemplate) => {
 
       it('should duplicate journey without translation and navigate to journey editor when global publish', async () => {

@@ -15,7 +15,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import { GetAdminJourneys_journeys as Journey } from '../../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface CreateJourneyButtonProps {
   variant?: 'menu-item' | 'button'
@@ -24,7 +24,7 @@ interface CreateJourneyButtonProps {
    * Only one CreateJourneyButton per page should have this set to true to avoid opening multiple instances of the dialog.
    */
   openTeamDialogOnSignIn?: boolean
-  journey?: Journey
+  journey?: JourneyFields
   handleCloseMenu?: () => void
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
@@ -330,7 +330,7 @@ export function CreateJourneyButton({
               : undefined
           }
           isTranslating={translationVariables != null}
-          journey={journeyData as Journey}
+          journey={journeyData as unknown as JourneyFields}
         />
       )}
     </>

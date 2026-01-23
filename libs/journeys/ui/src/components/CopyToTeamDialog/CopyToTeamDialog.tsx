@@ -22,7 +22,7 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamId
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
-import { GetAdminJourneys_journeys as Journey } from '../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -40,7 +40,7 @@ interface CopyToTeamDialogProps {
     message: string
   }
   isTranslating?: boolean
-  journey?: Journey
+  journey?: JourneyFields
 }
 
 interface JourneyLanguage {

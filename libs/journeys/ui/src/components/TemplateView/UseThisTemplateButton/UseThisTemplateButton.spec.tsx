@@ -7,7 +7,7 @@ import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__g
 import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyProvider.mock'
 
 import { UseThisTemplateButton } from './UseThisTemplateButton'
-import { customizableTemplateJourney } from '../../../../../../../apps/journeys-admin/src/components/JourneyList/journeyListData'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -52,7 +52,7 @@ describe('UseThisTemplateButton', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', customizableTemplateJourney]
+    ['prop journey', journey as unknown as JourneyFields]
   ])('navigation (%s)', (_, customizableTemplateJourney) => {
 
     it('should render use this template button when variant is button', () => {

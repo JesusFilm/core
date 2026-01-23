@@ -8,7 +8,7 @@ import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { journey } from '../../TemplateFooter/data'
 
 import { TemplateActionButton } from './TemplateActionButton'
-import { templateJourney, customizableTemplateJourney } from '../../../../../../../../apps/journeys-admin/src/components/JourneyList/journeyListData'
+import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 jest.mock('../../../../libs/isJourneyCustomizable', () => ({
   isJourneyCustomizable: jest.fn()
@@ -41,7 +41,7 @@ describe('TemplateActionButton', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', templateJourney]
+    ['prop journey', journey as unknown as JourneyFields]
   ])('(%s)', (_, templateJourney) => {
 
     it('should render UseThisTemplateButton when journey is customizable and user is signed in', () => {
@@ -256,7 +256,13 @@ describe('TemplateActionButton', () => {
 
     describe.each([
       ['context journey', undefined],
-      ['prop journey', customizableTemplateJourney]
+      ['prop journey', {
+        ...journey,
+        journeyCustomizationDescription: 'Customize this journey',
+        journeyCustomizationFields: [
+          { id: 'field1', __typename: 'JourneyCustomizationField' }
+        ]
+      } as unknown as JourneyFields]
     ])('for customizable template journey (%s)', (_, customizableTemplateJourney) => {
 
       it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {

@@ -13,7 +13,7 @@ import {
 } from '../TeamProvider'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
-import { defaultJourney, templateJourneyFromTemplate } from '../../../../../../apps/journeys-admin/src/components/JourneyList/journeyListData'
+import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 // Mock next/router
 jest.mock('next/router', () => ({
@@ -40,7 +40,7 @@ describe('CopyToTeamDialog', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', defaultJourney]
+    ['prop journey', { id: 'journeyId' } as unknown as JourneyFields]
   ])('(%s)', (_, defaultJourney) => {
 
     it('should set initial team selection if only 1 team', async () => {
@@ -78,7 +78,7 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journey={defaultJourney as unknown as JourneyFields}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -671,7 +671,11 @@ describe('CopyToTeamDialog', () => {
 
     describe.each([
       ['context journey', undefined],
-      ['prop journey', templateJourneyFromTemplate]
+      ['prop journey', {
+        id: 'journeyId',
+        template: true,
+        fromTemplateId: 'originalTemplateId' // Not original template
+      } as unknown as JourneyFields]
     ])('(%s) with template journey from template', (_, templateJourneyFromTemplate) => {
 
       it('should not allow copy or translation of non-original templates in publisher', async () => {

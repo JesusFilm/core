@@ -5,7 +5,7 @@ import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
-import { GetAdminJourneys_journeys as Journey } from '../../../../../../../../apps/journeys-admin/__generated__/GetAdminJourneys'
+
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface TemplateActionButtonProps {
@@ -13,7 +13,7 @@ interface TemplateActionButtonProps {
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
   handleCloseMenu?: () => void
-  journey?: Journey
+  journey?: JourneyFields
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
 
@@ -29,7 +29,7 @@ export function TemplateActionButton({
   const journeyData = journey ?? journeyFromContext
 
   if (journeyData != null && isJourneyCustomizable(journeyData as JourneyFields)) {
-    return <UseThisTemplateButton variant={variant} signedIn={signedIn} journey={journeyData as Journey} />
+    return <UseThisTemplateButton variant={variant} signedIn={signedIn} journey={journeyData as unknown as JourneyFields} />
   }
 
   if (journeyData == null && variant === 'button') {
@@ -46,7 +46,7 @@ export function TemplateActionButton({
       variant={variant}
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
-      journey={journeyData as Journey}
+      journey={journeyData as unknown as JourneyFields}
       handleCloseMenu={handleCloseMenu}
       refetchTemplateStats={refetchTemplateStats}
     />
