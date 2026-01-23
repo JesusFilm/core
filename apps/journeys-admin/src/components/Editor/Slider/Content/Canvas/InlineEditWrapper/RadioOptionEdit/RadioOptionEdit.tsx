@@ -171,12 +171,18 @@ export function RadioOptionEdit({
             handleSubmit(e.target.value)
           }}
           onKeyDown={(e) => {
-            // Handle Enter without Shift: move to next option or create new one
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
-              // Save current value first
               handleSubmit(value)
-              handleCreateRadioOption(dispatch, addBlock, radioOptionBlockCreate, radioOptionProps.parentBlockId, journey, selectedStep)
+
+              handleCreateRadioOption({
+                dispatch,
+                addBlock,
+                radioOptionBlockCreate,
+                parentBlockId: radioOptionProps.parentBlockId,
+                journey,
+                selectedStep,
+              })
             }
           }}
           onClick={(e) => e.stopPropagation()}

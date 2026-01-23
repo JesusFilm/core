@@ -8,18 +8,19 @@ import { BlockFields_RadioOptionBlock, BlockFields_StepBlock } from "../../../..
 import { JourneyFields } from "../../../../../../../../../../__generated__/JourneyFields"
 import { RadioOptionBlockCreate, RadioOptionBlockCreateVariables } from "../../../../../../../../../../__generated__/RadioOptionBlockCreate"
 
-export function handleCreateRadioOption(
+interface HandleCreateRadioOptionProps {
     dispatch: (action: any) => void,
     addBlock: (params: { block: BlockFields_RadioOptionBlock; execute: () => void }) => void,
     radioOptionBlockCreate: MutationFunction<RadioOptionBlockCreate, RadioOptionBlockCreateVariables>,
-    parentBlockId?: string | null,
+    parentBlockId: string | null,
     journey?: JourneyFields,
     selectedStep?: TreeBlock<BlockFields_StepBlock>,
     siblingCount?: number | undefined
-
-): void {
-
+}
+export function handleCreateRadioOption({ dispatch, addBlock, radioOptionBlockCreate, parentBlockId, journey, selectedStep, siblingCount }: HandleCreateRadioOptionProps): void {
     if (journey == null) return
+
+    console.log('siblingCount', siblingCount)
 
     const parentOrder = siblingCount ?? searchBlocks(selectedStep?.children ?? [], parentBlockId ?? '')?.children?.length ?? 0
 

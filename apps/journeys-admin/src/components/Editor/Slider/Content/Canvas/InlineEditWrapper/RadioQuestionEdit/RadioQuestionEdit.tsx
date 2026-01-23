@@ -54,13 +54,15 @@ export function RadioQuestionEdit({
       addOption={
         props.children.length < 12
           ? () => handleCreateRadioOption(
-            dispatch,
+            {
+              dispatch,
             addBlock,
-            radioOptionBlockCreate,
-            id,
-            journey,
-            undefined,
-            selectedBlock?.children?.length
+              radioOptionBlockCreate,
+              parentBlockId: id,
+              journey,
+              selectedStep: undefined,
+              siblingCount: selectedBlock?.children?.length
+            }
           )
           : undefined
       }
