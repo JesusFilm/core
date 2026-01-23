@@ -552,23 +552,6 @@ export class JourneyViewEventCreateInput {
     value?: Nullable<string>;
 }
 
-export class RadioQuestionSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    radioOptionBlockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class SignUpSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    name: string;
-    email: string;
-}
-
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -589,14 +572,6 @@ export class StepPreviousEventCreateInput {
     previousStepId: string;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class TextResponseSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -1150,17 +1125,11 @@ export abstract class IMutation {
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
-    abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
-
-    abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
-
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
-
-    abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 
@@ -1587,25 +1556,6 @@ export class JourneyViewEvent implements Event {
     language?: Nullable<Language>;
 }
 
-export class RadioQuestionSubmissionEvent implements Event {
-    __typename?: 'RadioQuestionSubmissionEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class SignUpSubmissionEvent implements Event {
-    __typename?: 'SignUpSubmissionEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    email?: Nullable<string>;
-}
-
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
@@ -1631,16 +1581,6 @@ export class StepPreviousEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class TextResponseSubmissionEvent implements Event {
-    __typename?: 'TextResponseSubmissionEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    blockId?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {
