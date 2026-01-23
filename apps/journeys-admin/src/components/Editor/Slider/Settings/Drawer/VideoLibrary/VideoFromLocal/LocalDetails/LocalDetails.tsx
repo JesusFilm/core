@@ -107,6 +107,18 @@ export function LocalDetails({
     })
   }
 
+  const handleCancel = (): void => {
+    // Cancel action - placeholder for testing
+    console.log('Cancel clicked')
+  }
+
+  const handlePreview = (): void => {
+    // Preview action - placeholder for testing
+    if (playerRef.current != null) {
+      playerRef.current.play()
+    }
+  }
+
   const time = data?.video?.variant?.duration ?? 0
   const duration =
     time < 3600
@@ -248,16 +260,40 @@ export function LocalDetails({
             textOverflow: 'ellipsis'
           }}
         />
-        <Button
-          variant="contained"
-          startIcon={<CheckIcon />}
-          onClick={handleSelect}
-          size="small"
-          sx={{ backgroundColor: 'secondary.dark' }}
-          disabled={loading && !isPreselected}
-        >
-          {t('Select')}
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Button
+            variant="outlined"
+            onClick={handleCancel}
+            size="small"
+            disabled={loading}
+            aria-label="Cancel video selection"
+            tabIndex={0}
+          >
+            {t('Cancel')}
+          </Button>
+          <Button
+            variant="text"
+            onClick={handlePreview}
+            size="small"
+            disabled={loading || !data}
+            aria-label="Preview video"
+            tabIndex={0}
+          >
+            {t('Preview')}
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<CheckIcon />}
+            onClick={handleSelect}
+            size="small"
+            sx={{ backgroundColor: 'secondary.dark' }}
+            disabled={loading && !isPreselected}
+            aria-label="Select video"
+            tabIndex={0}
+          >
+            {t('Select')}
+          </Button>
+        </Stack>
       </Stack>
       <VideoLanguage
         open={openLanguage}
