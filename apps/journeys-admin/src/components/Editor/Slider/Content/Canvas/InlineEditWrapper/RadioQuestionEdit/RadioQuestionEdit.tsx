@@ -14,6 +14,7 @@ import {
 } from '../../../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
+
 import { handleCreateRadioOption } from './utils/handleCreateRadioOption'
 
 export const RADIO_OPTION_BLOCK_CREATE = gql`
@@ -53,17 +54,16 @@ export function RadioQuestionEdit({
       id={id}
       addOption={
         props.children.length < 12
-          ? () => handleCreateRadioOption(
-            {
-              dispatch,
-            addBlock,
-              radioOptionBlockCreate,
-              parentBlockId: id,
-              journey,
-              selectedStep: undefined,
-              siblingCount: selectedBlock?.children?.length
-            }
-          )
+          ? () =>
+              handleCreateRadioOption({
+                dispatch,
+                addBlock,
+                radioOptionBlockCreate,
+                parentBlockId: id,
+                journey,
+                selectedStep: undefined,
+                siblingCount: selectedBlock?.children?.length
+              })
           : undefined
       }
       wrappers={wrappers}

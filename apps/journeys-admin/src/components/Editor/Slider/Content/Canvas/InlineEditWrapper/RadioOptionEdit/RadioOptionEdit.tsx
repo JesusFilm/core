@@ -11,13 +11,16 @@ import { RadioOption } from '@core/journeys/ui/RadioOption'
 import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 import {
+  RadioOptionBlockCreate,
+  RadioOptionBlockCreateVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockCreate'
+import {
   RadioOptionBlockUpdateContent,
   RadioOptionBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
-import { InlineEditInput } from '../InlineEditInput'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
-import { RadioOptionBlockCreate, RadioOptionBlockCreateVariables } from '../../../../../../../../__generated__/RadioOptionBlockCreate'
+import { InlineEditInput } from '../InlineEditInput'
 import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
 import { handleCreateRadioOption } from '../RadioQuestionEdit/utils/handleCreateRadioOption/handleCreateRadioOption'
 
@@ -32,7 +35,7 @@ export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
     }
   }
 `
-interface RadioOptionEditProps extends TreeBlock<RadioOptionFields> { }
+interface RadioOptionEditProps extends TreeBlock<RadioOptionFields> {}
 
 export function RadioOptionEdit({
   id,
@@ -44,9 +47,9 @@ export function RadioOptionEdit({
 
   const resolvedLabel = !journey?.template
     ? (resolveJourneyCustomizationString(
-      label,
-      journey?.journeyCustomizationFields ?? []
-    ) ?? label)
+        label,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? label)
     : label
 
   const [radioOptionBlockUpdate] = useMutation<
@@ -136,8 +139,6 @@ export function RadioOptionEdit({
     RadioOptionBlockCreateVariables
   >(RADIO_OPTION_BLOCK_CREATE)
 
-
-
   return (
     <RadioOption
       {...radioOptionProps}
@@ -181,7 +182,7 @@ export function RadioOptionEdit({
                 radioOptionBlockCreate,
                 parentBlockId: radioOptionProps.parentBlockId,
                 journey,
-                selectedStep,
+                selectedStep
               })
             }
           }}
