@@ -3,12 +3,6 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { Integrations } from './Integrations'
 
-jest.mock('@core/shared/ui/FlagsProvider', () => ({
-  useFlags: () => ({
-    teamIntegrations: true
-  })
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
