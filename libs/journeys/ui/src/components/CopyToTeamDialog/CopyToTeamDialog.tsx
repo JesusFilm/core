@@ -22,7 +22,7 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamId
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
-import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface CopyToTeamDialogProps {
   title: string

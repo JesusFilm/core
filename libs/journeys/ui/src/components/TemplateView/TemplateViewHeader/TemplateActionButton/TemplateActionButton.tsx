@@ -5,7 +5,6 @@ import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
-
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface TemplateActionButtonProps {
