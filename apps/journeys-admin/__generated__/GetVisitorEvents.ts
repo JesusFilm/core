@@ -10,7 +10,7 @@ import { ButtonAction, VideoBlockSource, MessagePlatform } from "./globalTypes";
 // ====================================================
 
 export interface GetVisitorEvents_visitor_events_JourneyEvent {
-  __typename: "JourneyEvent" | "RadioQuestionSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "TextResponseSubmissionEvent" | "MultiselectSubmissionEvent";
+  __typename: "JourneyEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "TextResponseSubmissionEvent";
   id: string;
   journeyId: string;
   label: string | null;
@@ -88,25 +88,10 @@ export interface GetVisitorEvents_visitor_events_JourneyViewEvent {
 export interface GetVisitorEvents_visitor_events_SignUpSubmissionEvent {
   __typename: "SignUpSubmissionEvent";
   id: string;
-  /**
-   * ID of the journey that the block belongs to
-   */
   journeyId: string;
-  /**
-   * null for signUpSubmissionEvent
-   */
   label: string | null;
-  /**
-   * name from the signUpBlock form
-   */
   value: string | null;
-  /**
-   * time event was created
-   */
   createdAt: any;
-  /**
-   * email from the signUpBlock form
-   */
   email: string | null;
 }
 

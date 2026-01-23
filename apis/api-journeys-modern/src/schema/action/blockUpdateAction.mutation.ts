@@ -66,9 +66,6 @@ async function findParentStepBlock(id?: string): Promise<Block | undefined> {
 
 builder.mutationField('blockUpdateAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: ActionInterface,
     args: {
       id: t.arg.id({ required: true }),
