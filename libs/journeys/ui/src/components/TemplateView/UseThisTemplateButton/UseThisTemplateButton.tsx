@@ -10,8 +10,8 @@ import { type ReactElement, useEffect, useState } from 'react'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-import { AccountCheckDialog } from '../AccountCheckDialog'
 import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface UseThisTemplateButtonProps {
   variant?: 'menu-item' | 'button'
@@ -33,9 +33,13 @@ export function UseThisTemplateButton({
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
-    void router.push(`/templates/${journeyData?.id ?? ''}/customize`, undefined, {
-      shallow: true
-    })
+    void router.push(
+      `/templates/${journeyData?.id ?? ''}/customize`,
+      undefined,
+      {
+        shallow: true
+      }
+    )
   }
 
   const handleCheckSignIn = async (): Promise<void> => {
@@ -95,7 +99,9 @@ export function UseThisTemplateButton({
       <Button
         onMouseEnter={() => {
           if (signedIn) {
-            void router.prefetch(`/templates/${journeyData?.id ?? ''}/customize`)
+            void router.prefetch(
+              `/templates/${journeyData?.id ?? ''}/customize`
+            )
           }
         }}
         onClick={handleCheckSignIn}

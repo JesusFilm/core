@@ -4,6 +4,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
+import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -13,7 +14,6 @@ import {
 } from '../TeamProvider'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
-import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 // Mock next/router
 jest.mock('next/router', () => ({
@@ -42,7 +42,6 @@ describe('CopyToTeamDialog', () => {
     ['context journey', undefined],
     ['prop journey', { id: 'journeyId' } as unknown as JourneyFields]
   ])('(%s)', (_, defaultJourney) => {
-
     it('should set initial team selection if only 1 team', async () => {
       const result = jest.fn(() => ({
         data: {
@@ -93,24 +92,25 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should call submit action and update team state on dialog submit', async () => {
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-        request: {
-          query: UPDATE_LAST_ACTIVE_TEAM_ID,
-          variables: {
-            input: {
-              lastActiveTeamId: 'teamId'
+      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+        {
+          request: {
+            query: UPDATE_LAST_ACTIVE_TEAM_ID,
+            variables: {
+              input: {
+                lastActiveTeamId: 'teamId'
+              }
             }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            journeyProfileUpdate: {
-              __typename: 'JourneyProfile',
-              id: 'teamId'
+          },
+          result: jest.fn(() => ({
+            data: {
+              journeyProfileUpdate: {
+                __typename: 'JourneyProfile',
+                id: 'teamId'
+              }
             }
-          }
-        }))
-      }
+          }))
+        }
       const result = jest.fn(() => ({
         data: {
           teams: [
@@ -180,24 +180,25 @@ describe('CopyToTeamDialog', () => {
     })
 
     it('should not update team state when shouldUpdateTeamState is false', async () => {
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-        request: {
-          query: UPDATE_LAST_ACTIVE_TEAM_ID,
-          variables: {
-            input: {
-              lastActiveTeamId: 'teamId'
+      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+        {
+          request: {
+            query: UPDATE_LAST_ACTIVE_TEAM_ID,
+            variables: {
+              input: {
+                lastActiveTeamId: 'teamId'
+              }
             }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            journeyProfileUpdate: {
-              __typename: 'JourneyProfile',
-              id: 'teamId'
+          },
+          result: jest.fn(() => ({
+            data: {
+              journeyProfileUpdate: {
+                __typename: 'JourneyProfile',
+                id: 'teamId'
+              }
             }
-          }
-        }))
-      }
+          }))
+        }
       const result = jest.fn(() => ({
         data: {
           teams: [
@@ -598,24 +599,25 @@ describe('CopyToTeamDialog', () => {
         }
       }))
 
-      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-        request: {
-          query: UPDATE_LAST_ACTIVE_TEAM_ID,
-          variables: {
-            input: {
-              lastActiveTeamId: 'teamId'
+      const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> =
+        {
+          request: {
+            query: UPDATE_LAST_ACTIVE_TEAM_ID,
+            variables: {
+              input: {
+                lastActiveTeamId: 'teamId'
+              }
             }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            journeyProfileUpdate: {
-              __typename: 'JourneyProfile',
-              id: 'teamId'
+          },
+          result: jest.fn(() => ({
+            data: {
+              journeyProfileUpdate: {
+                __typename: 'JourneyProfile',
+                id: 'teamId'
+              }
             }
-          }
-        }))
-      }
+          }))
+        }
 
       const { getByRole } = render(
         <MockedProvider
@@ -671,51 +673,111 @@ describe('CopyToTeamDialog', () => {
 
     describe.each([
       ['context journey', undefined],
-      ['prop journey', {
-        id: 'journeyId',
-        template: true,
-        fromTemplateId: 'originalTemplateId' // Not original template
-      } as unknown as JourneyFields]
-    ])('(%s) with template journey from template', (_, templateJourneyFromTemplate) => {
+      [
+        'prop journey',
+        {
+          id: 'journeyId',
+          template: true,
+          fromTemplateId: 'originalTemplateId' // Not original template
+        } as unknown as JourneyFields
+      ]
+    ])(
+      '(%s) with template journey from template',
+      (_, templateJourneyFromTemplate) => {
+        it('should not allow copy or translation of non-original templates in publisher', async () => {
+          // Mock router to return templates admin path
+          mockUseRouter.mockReturnValue({
+            pathname: '/publisher'
+          } as any)
 
-      it('should not allow copy or translation of non-original templates in publisher', async () => {
-        // Mock router to return templates admin path
-        mockUseRouter.mockReturnValue({
-          pathname: '/publisher'
-        } as any)
-
-        const result = jest.fn(() => ({
-          data: {
-            teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
-            getJourneyProfile: {
-              __typename: 'JourneyProfile',
-              lastActiveTeamId: 'teamId'
-            }
-          }
-        }))
-
-        const { getByText, getByRole } = render(
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-                },
-                result
+          const result = jest.fn(() => ({
+            data: {
+              teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+              getJourneyProfile: {
+                __typename: 'JourneyProfile',
+                lastActiveTeamId: 'teamId'
               }
-            ]}
-          >
-            <SnackbarProvider>
-              <JourneyProvider
-                value={{
-                  journey: {
-                    id: 'journeyId',
-                    template: true,
-                    fromTemplateId: 'originalTemplateId' // Not original template
-                  } as unknown as Journey,
-                  variant: 'admin'
-                }}
-              >
+            }
+          }))
+
+          const { getByText, getByRole } = render(
+            <MockedProvider
+              mocks={[
+                {
+                  request: {
+                    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                  },
+                  result
+                }
+              ]}
+            >
+              <SnackbarProvider>
+                <JourneyProvider
+                  value={{
+                    journey: {
+                      id: 'journeyId',
+                      template: true,
+                      fromTemplateId: 'originalTemplateId' // Not original template
+                    } as unknown as Journey,
+                    variant: 'admin'
+                  }}
+                >
+                  <TeamProvider>
+                    <CopyToTeamDialog
+                      open
+                      title="Copy To Journey"
+                      onClose={handleCloseMenuMock}
+                      submitAction={handleSubmitActionMock}
+                      submitLabel="Copy"
+                      journey={templateJourneyFromTemplate}
+                    />
+                  </TeamProvider>
+                </JourneyProvider>
+              </SnackbarProvider>
+            </MockedProvider>
+          )
+
+          await waitFor(() => expect(result).toHaveBeenCalled())
+
+          expect(
+            getByText(/This template isn't the original/)
+          ).toBeInTheDocument()
+
+          const translationSwitch = getByRole('checkbox', {
+            name: 'Translation'
+          })
+          expect(translationSwitch).toBeDisabled()
+          expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
+        })
+
+        it('should not allow copy or translation of non-original templates in publisher with journey from props', async () => {
+          // Mock router to return templates admin path
+          mockUseRouter.mockReturnValue({
+            pathname: '/publisher'
+          } as any)
+
+          const result = jest.fn(() => ({
+            data: {
+              teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
+              getJourneyProfile: {
+                __typename: 'JourneyProfile',
+                lastActiveTeamId: 'teamId'
+              }
+            }
+          }))
+
+          const { getByText, getByRole } = render(
+            <MockedProvider
+              mocks={[
+                {
+                  request: {
+                    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+                  },
+                  result
+                }
+              ]}
+            >
+              <SnackbarProvider>
                 <TeamProvider>
                   <CopyToTeamDialog
                     open
@@ -726,70 +788,23 @@ describe('CopyToTeamDialog', () => {
                     journey={templateJourneyFromTemplate}
                   />
                 </TeamProvider>
-              </JourneyProvider>
-            </SnackbarProvider>
-          </MockedProvider>
-        )
+              </SnackbarProvider>
+            </MockedProvider>
+          )
 
-        await waitFor(() => expect(result).toHaveBeenCalled())
+          await waitFor(() => expect(result).toHaveBeenCalled())
 
-        expect(getByText(/This template isn't the original/)).toBeInTheDocument()
+          expect(
+            getByText(/This template isn't the original/)
+          ).toBeInTheDocument()
 
-        const translationSwitch = getByRole('checkbox', { name: 'Translation' })
-        expect(translationSwitch).toBeDisabled()
-        expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
-      })
-
-      it('should not allow copy or translation of non-original templates in publisher with journey from props', async () => {
-        // Mock router to return templates admin path
-        mockUseRouter.mockReturnValue({
-          pathname: '/publisher'
-        } as any)
-
-        const result = jest.fn(() => ({
-          data: {
-            teams: [{ id: 'teamId', title: 'Team Name', __typename: 'Team' }],
-            getJourneyProfile: {
-              __typename: 'JourneyProfile',
-              lastActiveTeamId: 'teamId'
-            }
-          }
-        }))
-
-        const { getByText, getByRole } = render(
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-                },
-                result
-              }
-            ]}
-          >
-            <SnackbarProvider>
-              <TeamProvider>
-                <CopyToTeamDialog
-                  open
-                  title="Copy To Journey"
-                  onClose={handleCloseMenuMock}
-                  submitAction={handleSubmitActionMock}
-                  submitLabel="Copy"
-                  journey={templateJourneyFromTemplate}
-                />
-              </TeamProvider>
-            </SnackbarProvider>
-          </MockedProvider>
-        )
-
-        await waitFor(() => expect(result).toHaveBeenCalled())
-
-        expect(getByText(/This template isn't the original/)).toBeInTheDocument()
-
-        const translationSwitch = getByRole('checkbox', { name: 'Translation' })
-        expect(translationSwitch).toBeDisabled()
-        expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
-      })
-    })
+          const translationSwitch = getByRole('checkbox', {
+            name: 'Translation'
+          })
+          expect(translationSwitch).toBeDisabled()
+          expect(getByRole('button', { name: 'Copy' })).toBeDisabled()
+        })
+      }
+    )
   })
 })

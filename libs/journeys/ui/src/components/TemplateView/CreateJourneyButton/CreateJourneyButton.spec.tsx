@@ -11,6 +11,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { SUPPORTED_LANGUAGE_IDS } from '../../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
@@ -21,7 +22,6 @@ import {
 } from '../../TeamProvider'
 
 import { CreateJourneyButton } from './CreateJourneyButton'
-import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -271,7 +271,6 @@ describe('CreateJourneyButton', () => {
     ['context journey', undefined],
     ['prop journey', journey as unknown as JourneyFields]
   ])('(%s)', (_, nonCustomizableTemplate) => {
-
     it('should render create journey button when variant is button', () => {
       mockUseRouter.mockReturnValue({
         prefetch,
@@ -290,7 +289,10 @@ describe('CreateJourneyButton', () => {
           ]}
         >
           <SnackbarProvider>
-            <CreateJourneyButton variant="button" journey={nonCustomizableTemplate} />
+            <CreateJourneyButton
+              variant="button"
+              journey={nonCustomizableTemplate}
+            />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -319,13 +321,18 @@ describe('CreateJourneyButton', () => {
           ]}
         >
           <SnackbarProvider>
-            <CreateJourneyButton variant="menu-item" journey={nonCustomizableTemplate} />
+            <CreateJourneyButton
+              variant="menu-item"
+              journey={nonCustomizableTemplate}
+            />
           </SnackbarProvider>
         </MockedProvider>
       )
 
       expect(screen.getByTestId('CreateJourneyMenuItem')).toBeInTheDocument()
-      expect(screen.queryByTestId('CreateJourneyButton')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CreateJourneyButton')
+      ).not.toBeInTheDocument()
     })
 
     it('should not open team dialog if url query set to createNew and openTeamDialogOnSignIn is not set', async () => {
@@ -374,7 +381,11 @@ describe('CreateJourneyButton', () => {
           ]}
         >
           <SnackbarProvider>
-            <CreateJourneyButton signedIn openTeamDialogOnSignIn={true} journey={nonCustomizableTemplate} />
+            <CreateJourneyButton
+              signedIn
+              openTeamDialogOnSignIn={true}
+              journey={nonCustomizableTemplate}
+            />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -439,7 +450,10 @@ describe('CreateJourneyButton', () => {
           <SnackbarProvider>
             <TeamProvider>
               <JourneyProvider value={{ journey }}>
-                <CreateJourneyButton signedIn journey={nonCustomizableTemplate} />
+                <CreateJourneyButton
+                  signedIn
+                  journey={nonCustomizableTemplate}
+                />
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
@@ -457,7 +471,9 @@ describe('CreateJourneyButton', () => {
 
       // Language selection should appear
       await waitFor(() => {
-        expect(screen.getByPlaceholderText('Search Language')).toBeInTheDocument()
+        expect(
+          screen.getByPlaceholderText('Search Language')
+        ).toBeInTheDocument()
       })
     })
 
@@ -485,7 +501,9 @@ describe('CreateJourneyButton', () => {
       it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
         render(createJourneyButton(nonCustomizableTemplate))
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Login with my account' })
         )
@@ -510,7 +528,9 @@ describe('CreateJourneyButton', () => {
       it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
         render(createJourneyButton(nonCustomizableTemplate))
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Create a new account' })
         )
@@ -554,7 +574,9 @@ describe('CreateJourneyButton', () => {
       it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
         render(createJourneyButton(nonCustomizableTemplate))
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Login with my account' })
         )
@@ -579,7 +601,9 @@ describe('CreateJourneyButton', () => {
       it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
         render(createJourneyButton(nonCustomizableTemplate))
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Create a new account' })
         )
@@ -622,7 +646,9 @@ describe('CreateJourneyButton', () => {
       it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
         render(createJourneyButton(nonCustomizableTemplate))
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Login with my account' })
         )
@@ -647,7 +673,9 @@ describe('CreateJourneyButton', () => {
       it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
         render(createJourneyButton(nonCustomizableTemplate))
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Create a new account' })
         )
@@ -697,7 +725,9 @@ describe('CreateJourneyButton', () => {
       )
 
       await waitFor(() =>
-        expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
+        expect(
+          getByRole('button', { name: 'Use This Template' })
+        ).toBeDisabled()
       )
     })
 
@@ -880,7 +910,10 @@ describe('CreateJourneyButton', () => {
           <SnackbarProvider>
             <TeamProvider>
               <JourneyProvider value={{ journey }}>
-                <CreateJourneyButton signedIn journey={nonCustomizableTemplate} />
+                <CreateJourneyButton
+                  signedIn
+                  journey={nonCustomizableTemplate}
+                />
               </JourneyProvider>
             </TeamProvider>
           </SnackbarProvider>
@@ -907,16 +940,18 @@ describe('CreateJourneyButton', () => {
 
     describe.each([
       ['context journey', undefined],
-      ['prop journey', { 
-        ...journey, 
-        team: { 
-          id: 'jfp-team', 
-          title: 'Team Name', 
-          __typename: 'Team' 
-        } 
-      } as unknown as JourneyFields]
+      [
+        'prop journey',
+        {
+          ...journey,
+          team: {
+            id: 'jfp-team',
+            title: 'Team Name',
+            __typename: 'Team'
+          }
+        } as unknown as JourneyFields
+      ]
     ])('navigation (%s)', (_, nonCustomizableTemplate) => {
-
       it('should duplicate journey without translation and navigate to journey editor when global publish', async () => {
         mockUseRouter.mockReturnValue({
           query: { createNew: false },
@@ -942,14 +977,19 @@ describe('CreateJourneyButton', () => {
             <SnackbarProvider>
               <TeamProvider>
                 <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton signedIn journey={nonCustomizableTemplate} />
+                  <CreateJourneyButton
+                    signedIn
+                    journey={nonCustomizableTemplate}
+                  />
                 </JourneyProvider>
               </TeamProvider>
             </SnackbarProvider>
           </MockedProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
 
         await waitFor(() =>
           expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()

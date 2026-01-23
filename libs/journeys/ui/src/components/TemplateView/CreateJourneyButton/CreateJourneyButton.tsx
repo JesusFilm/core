@@ -12,10 +12,10 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface CreateJourneyButtonProps {
   variant?: 'menu-item' | 'button'
@@ -182,7 +182,8 @@ export function CreateJourneyButton({
           journeyId: newJourneyId,
           name: journeyData.title,
           journeyLanguageName:
-            journeyData.language.name.find(({ primary }) => !primary)?.value ?? '',
+            journeyData.language.name.find(({ primary }) => !primary)?.value ??
+            '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''
@@ -191,7 +192,7 @@ export function CreateJourneyButton({
         // Don't close dialog or navigate yet - wait for translation to complete
       } catch (error) {
         setLoading(false)
-        console.log("CreateJourneyButton error", error)
+        console.log('CreateJourneyButton error', error)
         enqueueSnackbar(t('Journey duplication failed'), {
           variant: 'error',
           preventDuplicate: true

@@ -222,9 +222,9 @@ export function DefaultMenu({
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
-          <DuplicateJourneyMenuItem 
-            id={id} 
-            handleCloseMenu={handleCloseMenu} 
+          <DuplicateJourneyMenuItem
+            id={id}
+            handleCloseMenu={handleCloseMenu}
             journey={journey}
             fromTemplateId={journey?.fromTemplateId}
           />

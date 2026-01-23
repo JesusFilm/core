@@ -49,7 +49,7 @@ export function CreateTemplateItem({
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
-  
+
   const [removeUserJourney] =
     useMutation<RemoveUserJourney>(REMOVE_USER_JOURNEY)
   const [createTemplate] = useMutation<CreateTemplate>(CREATE_TEMPLATE)

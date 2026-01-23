@@ -29,7 +29,11 @@ describe('ResponsesItem', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <ResponsesItem variant="icon-button" fromJourneyList journeyId={defaultJourney.id} />
+          <ResponsesItem
+            variant="icon-button"
+            fromJourneyList
+            journeyId={defaultJourney.id}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )

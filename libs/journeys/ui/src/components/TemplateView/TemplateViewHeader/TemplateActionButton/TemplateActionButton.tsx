@@ -3,9 +3,9 @@ import { ReactElement } from 'react'
 
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
+import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
-import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 interface TemplateActionButtonProps {
   variant?: 'menu-item' | 'button'
@@ -27,8 +27,17 @@ export function TemplateActionButton({
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
 
-  if (journeyData != null && isJourneyCustomizable(journeyData as JourneyFields)) {
-    return <UseThisTemplateButton variant={variant} signedIn={signedIn} journey={journeyData as unknown as JourneyFields} />
+  if (
+    journeyData != null &&
+    isJourneyCustomizable(journeyData)
+  ) {
+    return (
+      <UseThisTemplateButton
+        variant={variant}
+        signedIn={signedIn}
+        journey={journeyData as unknown as JourneyFields}
+      />
+    )
   }
 
   if (journeyData == null && variant === 'button') {

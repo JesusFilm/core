@@ -4,10 +4,10 @@ import { type NextRouter, useRouter } from 'next/router'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyProvider.mock'
 
 import { UseThisTemplateButton } from './UseThisTemplateButton'
-import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -54,7 +54,6 @@ describe('UseThisTemplateButton', () => {
     ['context journey', undefined],
     ['prop journey', journey as unknown as JourneyFields]
   ])('navigation (%s)', (_, customizableTemplateJourney) => {
-
     it('should render use this template button when variant is button', () => {
       mockUseRouter.mockReturnValue({
         prefetch,
@@ -63,7 +62,10 @@ describe('UseThisTemplateButton', () => {
 
       render(
         <JourneyProvider value={{ journey }}>
-          <UseThisTemplateButton variant="button" journey={customizableTemplateJourney} />
+          <UseThisTemplateButton
+            variant="button"
+            journey={customizableTemplateJourney}
+          />
         </JourneyProvider>
       )
 
@@ -81,7 +83,10 @@ describe('UseThisTemplateButton', () => {
 
       render(
         <JourneyProvider value={{ journey }}>
-          <UseThisTemplateButton variant="menu-item" journey={customizableTemplateJourney} />
+          <UseThisTemplateButton
+            variant="menu-item"
+            journey={customizableTemplateJourney}
+          />
         </JourneyProvider>
       )
 
@@ -104,11 +109,16 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton signedIn journey={customizableTemplateJourney} />
+            <UseThisTemplateButton
+              signedIn
+              journey={customizableTemplateJourney}
+            />
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
 
         await waitFor(() => {
           expect(push).toHaveBeenCalledWith(
@@ -123,7 +133,10 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton signedIn journey={customizableTemplateJourney} />
+            <UseThisTemplateButton
+              signedIn
+              journey={customizableTemplateJourney}
+            />
           </JourneyProvider>
         )
 
@@ -132,7 +145,9 @@ describe('UseThisTemplateButton', () => {
         )
 
         await waitFor(() => {
-          expect(prefetch).toHaveBeenCalledWith(`/templates/${journeyId}/customize`)
+          expect(prefetch).toHaveBeenCalledWith(
+            `/templates/${journeyId}/customize`
+          )
         })
       })
 
@@ -147,11 +162,16 @@ describe('UseThisTemplateButton', () => {
 
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton signedIn journey={customizableTemplateJourney} />
+            <UseThisTemplateButton
+              signedIn
+              journey={customizableTemplateJourney}
+            />
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
 
         await waitFor(() => {
           expect(screen.getByRole('progressbar')).toBeInTheDocument()
@@ -198,7 +218,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
 
         await waitFor(() => {
           expect(screen.getByText('Login with my account')).toBeInTheDocument()
@@ -214,7 +236,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Login with my account' })
         )
@@ -244,7 +268,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Create a new account' })
         )
@@ -293,7 +319,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Login with my account' })
         )
@@ -323,7 +351,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Create a new account' })
         )
@@ -372,7 +402,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Login with my account' })
         )
@@ -402,7 +434,9 @@ describe('UseThisTemplateButton', () => {
           </JourneyProvider>
         )
 
-        fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
         fireEvent.click(
           screen.getByRole('button', { name: 'Create a new account' })
         )

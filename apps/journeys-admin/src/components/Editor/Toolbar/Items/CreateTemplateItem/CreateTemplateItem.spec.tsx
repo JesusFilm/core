@@ -199,7 +199,11 @@ describe('CreateTemplateItem', () => {
       >
         <SnackbarProvider>
           <JourneyProvider>
-            <CreateTemplateItem variant="menu-item" globalPublish={true} journey={defaultJourney} />
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={true}
+              journey={defaultJourney}
+            />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

@@ -95,7 +95,11 @@ describe('AnalyticsItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <AnalyticsItem variant="button" fromJourneyList={true} journeyId={defaultJourney.id} />
+            <AnalyticsItem
+              variant="button"
+              fromJourneyList={true}
+              journeyId={defaultJourney.id}
+            />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -118,7 +122,10 @@ describe('AnalyticsItem', () => {
           mocks={[{ ...getJourneyPlausibleVisitorsMock, result }]}
         >
           <TeamProvider>
-            <AnalyticsItem variant="icon-button" journeyId={defaultJourney.id} />
+            <AnalyticsItem
+              variant="icon-button"
+              journeyId={defaultJourney.id}
+            />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
