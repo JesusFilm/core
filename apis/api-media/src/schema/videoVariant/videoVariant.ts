@@ -3,6 +3,7 @@ import compact from 'lodash/compact'
 import { Platform, prisma } from '@core/prisma/media/client'
 
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
+import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
 import {
   videoCacheReset,
   videoVariantCacheReset
@@ -470,6 +471,12 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      const hadAnyVariantsForLanguage =
+        (await prisma.videoVariant.findFirst({
+          where: { languageId: input.languageId },
+          select: { id: true }
+        })) != null
+
       const newVariant = await prisma.videoVariant.create({
         ...query,
         data: {
@@ -483,6 +490,14 @@ builder.mutationFields((t) => ({
       if (newVariant.published) {
         await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
         await updateParentCollectionLanguages(newVariant.videoId)
+      }
+
+      try {
+        if (!hadAnyVariantsForLanguage) {
+          await ensureLanguageHasVideosTrue(newVariant.languageId)
+        }
+      } catch (error) {
+        console.error('Language hasVideos update error:', error)
       }
 
       // Handle parent variant creation for child videos
@@ -530,6 +545,15 @@ builder.mutationFields((t) => ({
       if (!currentVariant) {
         throw new Error(`VideoVariant with id ${input.id} not found`)
       }
+
+      const nextLanguageId = input.languageId ?? currentVariant.languageId
+      const languageChanged = nextLanguageId !== currentVariant.languageId
+      const hadAnyVariantsForNextLanguage = languageChanged
+        ? (await prisma.videoVariant.findFirst({
+            where: { languageId: nextLanguageId },
+            select: { id: true }
+          })) != null
+        : true
 
       const updated = await prisma.videoVariant.update({
         ...query,
@@ -594,6 +618,14 @@ builder.mutationFields((t) => ({
           await updateParentCollectionLanguages(currentVariant.videoId)
         } catch (error) {
           console.error('Language management update error:', error)
+        }
+      }
+
+      if (languageChanged && !hadAnyVariantsForNextLanguage) {
+        try {
+          await ensureLanguageHasVideosTrue(nextLanguageId)
+        } catch (error) {
+          console.error('Language hasVideos update error:', error)
         }
       }
 
