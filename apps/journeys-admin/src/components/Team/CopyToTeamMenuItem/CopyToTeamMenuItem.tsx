@@ -15,6 +15,7 @@ import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../MenuItem'
+import { JourneyFields } from '../../../../__generated__/JourneyFields'
 
 interface CopyToTeamMenuItemProps {
   id?: string
@@ -224,7 +225,7 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
-        journey={journeyData as Journey}
+        journey={journeyData as unknown as JourneyFields}
       />
     </>
   )

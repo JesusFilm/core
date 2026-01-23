@@ -10,9 +10,9 @@ import Layout1Icon from '@core/shared/ui/icons/Layout1'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
 import { Item } from '../Item/Item'
-import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
