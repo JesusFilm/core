@@ -593,6 +593,16 @@ enum IconName {
   ContactSupportRounded
   Launch
   MailOutline
+  ArrowLeftContained2
+  ArrowRightContained2
+  MessageChat1
+  Home4
+  LinkAngled
+  Volume5
+  Note2
+  UserProfile2
+  UsersProfiles3
+  Phone
 }
 
 enum IconSize {
@@ -1166,6 +1176,9 @@ input JourneysQueryOptions {
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+
+  """skip custom domain routing filter (for admin template customization)"""
+  skipRoutingFilter: Boolean
 }
 
 enum JourneysReportType {

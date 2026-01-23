@@ -11,7 +11,6 @@ import {
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import {
   CustomDomain,
   Journey,
@@ -27,6 +26,7 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { QrCodeService } from '../qrCode/qrCode.service'

@@ -44,7 +44,17 @@ export function ContainedIconButton({
       data-testid="JourneysAdminContainedIconButton"
     >
       <CardActionArea onClick={onClick} disabled={disabled || loading}>
-        <Stack direction="row" alignItems="center" spacing={3} sx={{ p: 2 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          spacing={3}
+          sx={{
+            p: 2,
+            '& svg': {
+              display: 'flex'
+            }
+          }}
+        >
           <Box>
             {slots?.ImageThumbnail != null ? (
               <>{slots.ImageThumbnail}</>

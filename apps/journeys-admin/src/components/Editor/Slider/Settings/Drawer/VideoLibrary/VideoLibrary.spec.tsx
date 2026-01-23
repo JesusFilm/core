@@ -90,6 +90,7 @@ const mockRouter = (query = { param: null }) => {
     events: { on }
   } as unknown as NextRouter)
 }
+
 describe('VideoLibrary', () => {
   beforeEach(() => {
     jest.clearAllMocks()
