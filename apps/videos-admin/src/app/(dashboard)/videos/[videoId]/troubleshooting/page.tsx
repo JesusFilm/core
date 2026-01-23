@@ -138,10 +138,7 @@ export default function TroubleshootingPage(): ReactElement {
 
   const [
     updateVideoAlgolia,
-    {
-      loading: updateVideoAlgoliaLoading,
-      error: updateVideoAlgoliaError
-    }
+    { loading: updateVideoAlgoliaLoading, error: updateVideoAlgoliaError }
   ] = useMutation(UPDATE_VIDEO_ALGOLIA_INDEX, {
     variables: { videoId },
     onCompleted: () => {
@@ -160,10 +157,7 @@ export default function TroubleshootingPage(): ReactElement {
 
   const [
     updateVideoVariantsAlgolia,
-    {
-      loading: updateVariantsAlgoliaLoading,
-      error: updateVariantsAlgoliaError
-    }
+    { loading: updateVariantsAlgoliaLoading, error: updateVariantsAlgoliaError }
   ] = useMutation(UPDATE_VIDEO_VARIANT_ALGOLIA_INDEX, {
     variables: { videoId },
     onCompleted: () => {
@@ -500,22 +494,21 @@ export default function TroubleshootingPage(): ReactElement {
               {hasAlgoliaVideoMismatches && (
                 <Stack spacing={1} sx={{ mt: 1 }}>
                   {algoliaVideoMismatches.map(({ field, expected, actual }) => (
-                      <Typography
-                        key={field}
-                        variant="body2"
-                        sx={{
-                          px: 2,
-                          py: 1,
-                          bgcolor: 'warning.light',
-                          borderRadius: 1,
-                          fontFamily: 'monospace'
-                        }}
-                      >
-                        {field}: expected {expected ?? 'null'}, got{' '}
-                        {actual ?? 'null'}
-                      </Typography>
-                    )
-                  )}
+                    <Typography
+                      key={field}
+                      variant="body2"
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        bgcolor: 'warning.light',
+                        borderRadius: 1,
+                        fontFamily: 'monospace'
+                      }}
+                    >
+                      {field}: expected {expected ?? 'null'}, got{' '}
+                      {actual ?? 'null'}
+                    </Typography>
+                  ))}
                 </Stack>
               )}
 
@@ -536,7 +529,7 @@ export default function TroubleshootingPage(): ReactElement {
         </Box>
       )}
 
-      {algoliaVariantsData != null && (
+      {algoliaVariantsData != null &&
         (() => {
           const algoliaVariantsResult =
             (algoliaVariantsData.checkVideoVariantsInAlgolia ??
@@ -547,64 +540,62 @@ export default function TroubleshootingPage(): ReactElement {
           }
 
           return (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1
-          }}
-        >
-          <Stack spacing={2}>
-            <Typography variant="h6">Algolia Video Variants Status</Typography>
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                Variants in Index:
-              </Typography>
-              {(
-                algoliaVariantsResult.missingVariants ?? []
-              ).length === 0 ? (
-                <Typography
-                  variant="body1"
-                  sx={{
-                    px: 2,
-                    py: 1,
-                    bgcolor: 'success.light',
-                    borderRadius: 1,
-                    fontFamily: 'monospace',
-                    color: 'success.main',
-                    mt: 1
-                  }}
-                >
-                  All variants found ✓
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 1
+              }}
+            >
+              <Stack spacing={2}>
+                <Typography variant="h6">
+                  Algolia Video Variants Status
                 </Typography>
-              ) : (
-                <Typography variant="body1" color="error.main">
-                  Missing variants:{' '}
-                  {(algoliaVariantsResult.missingVariants ?? []).join(', ')}
-                </Typography>
-              )}
-              {algoliaVariantsResult.browseUrl != null && (
-                <Button
-                  variant="text"
-                  size="small"
-                  href={
-                    algoliaVariantsResult.browseUrl
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                  sx={{ mt: 1, alignSelf: 'flex-start' }}
-                >
-                  Open variants in Algolia
-                </Button>
-              )}
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    Variants in Index:
+                  </Typography>
+                  {(algoliaVariantsResult.missingVariants ?? []).length ===
+                  0 ? (
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        px: 2,
+                        py: 1,
+                        bgcolor: 'success.light',
+                        borderRadius: 1,
+                        fontFamily: 'monospace',
+                        color: 'success.main',
+                        mt: 1
+                      }}
+                    >
+                      All variants found ✓
+                    </Typography>
+                  ) : (
+                    <Typography variant="body1" color="error.main">
+                      Missing variants:{' '}
+                      {(algoliaVariantsResult.missingVariants ?? []).join(', ')}
+                    </Typography>
+                  )}
+                  {algoliaVariantsResult.browseUrl != null && (
+                    <Button
+                      variant="text"
+                      size="small"
+                      href={algoliaVariantsResult.browseUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      sx={{ mt: 1, alignSelf: 'flex-start' }}
+                    >
+                      Open variants in Algolia
+                    </Button>
+                  )}
+                </Box>
+              </Stack>
             </Box>
-          </Stack>
-        </Box>
           )
-        })()
-      )}
+        })()}
 
       {data != null && (
         <Box
