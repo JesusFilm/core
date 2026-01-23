@@ -1,0 +1,12 @@
+{
+  "name": "videos-admin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Jesus Film Project Videos Admin",
+  "dependencies": {
+    "@mui/x-charts": "^8.5.2",
+    "@mui/x-tree-view": "^8.5.2",
+    "next-firebase-auth-edge": "^1.7.0-canary.2",
+    "react-loading-hook": "^1.1.2"
+  }
+}
