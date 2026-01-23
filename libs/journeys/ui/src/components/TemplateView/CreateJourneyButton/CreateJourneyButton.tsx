@@ -192,7 +192,7 @@ export function CreateJourneyButton({
         // Don't close dialog or navigate yet - wait for translation to complete
       } catch (error) {
         setLoading(false)
-        console.log('CreateJourneyButton error', error)
+
         enqueueSnackbar(t('Journey duplication failed'), {
           variant: 'error',
           preventDuplicate: true

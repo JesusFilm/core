@@ -408,10 +408,6 @@ describe('DuplicateJourneys', () => {
     const dialogButtons = await within(
       getByTestId('CopyToTeamDialog')
     ).findAllByRole('button')
-    console.log(
-      'Dialog buttons:',
-      dialogButtons.map((btn) => btn.textContent)
-    )
 
     // Find the footer buttons (primary actions are usually in DialogActions at the bottom)
     const dialogFooter = within(getByTestId('CopyToTeamDialog')).queryByTestId(
@@ -419,10 +415,6 @@ describe('DuplicateJourneys', () => {
     )
     if (dialogFooter) {
       const footerButtons = within(dialogFooter).getAllByRole('button')
-      console.log(
-        'Footer buttons:',
-        footerButtons.map((btn) => btn.textContent)
-      )
       // Try to click the last button in the footer, which is typically the primary action
       const primaryButton = footerButtons[footerButtons.length - 1]
       fireEvent.click(primaryButton)
@@ -585,10 +577,6 @@ describe('DuplicateJourneys', () => {
     const dialogButtons = await within(
       getByTestId('CopyToTeamDialog')
     ).findAllByRole('button')
-    console.log(
-      'Dialog buttons:',
-      dialogButtons.map((btn) => btn.textContent)
-    )
 
     // Find the footer buttons (primary actions are usually in DialogActions at the bottom)
     const dialogFooter = within(getByTestId('CopyToTeamDialog')).queryByTestId(
@@ -596,10 +584,7 @@ describe('DuplicateJourneys', () => {
     )
     if (dialogFooter) {
       const footerButtons = within(dialogFooter).getAllByRole('button')
-      console.log(
-        'Footer buttons:',
-        footerButtons.map((btn) => btn.textContent)
-      )
+
       // Try to click the last button in the footer, which is typically the primary action
       const primaryButton = footerButtons[footerButtons.length - 1]
       fireEvent.click(primaryButton)
