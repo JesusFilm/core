@@ -22,6 +22,21 @@ export enum ContactActionType {
     text = "text"
 }
 
+export enum BlockEventLabel {
+    custom1 = "custom1",
+    custom2 = "custom2",
+    custom3 = "custom3",
+    decisionForChrist = "decisionForChrist",
+    gospelPresentationStart = "gospelPresentationStart",
+    gospelPresentationComplete = "gospelPresentationComplete",
+    inviteFriend = "inviteFriend",
+    prayerRequest = "prayerRequest",
+    rsvp = "rsvp",
+    share = "share",
+    specialVideoStart = "specialVideoStart",
+    specialVideoComplete = "specialVideoComplete"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -87,7 +102,17 @@ export enum IconName {
     SubscriptionsRounded = "SubscriptionsRounded",
     ContactSupportRounded = "ContactSupportRounded",
     Launch = "Launch",
-    MailOutline = "MailOutline"
+    MailOutline = "MailOutline",
+    ArrowLeftContained2 = "ArrowLeftContained2",
+    ArrowRightContained2 = "ArrowRightContained2",
+    MessageChat1 = "MessageChat1",
+    Home4 = "Home4",
+    LinkAngled = "LinkAngled",
+    Volume5 = "Volume5",
+    Note2 = "Note2",
+    UserProfile2 = "UserProfile2",
+    UsersProfiles3 = "UsersProfiles3",
+    Phone = "Phone"
 }
 
 export enum IconColor {
@@ -297,6 +322,7 @@ export class ButtonBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -307,6 +333,7 @@ export class ButtonBlockCreateInput {
 
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -321,6 +348,7 @@ export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     fullscreen?: Nullable<boolean>;
@@ -330,6 +358,7 @@ export class CardBlockCreateInput {
 
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     coverBlockId?: Nullable<string>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
@@ -384,11 +413,13 @@ export class RadioOptionBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
     parentBlockId: string;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
 }
 
 export class RadioOptionBlockUpdateInput {
     parentBlockId?: Nullable<string>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label?: Nullable<string>;
     pollOptionImageBlockId?: Nullable<string>;
 }
@@ -521,23 +552,6 @@ export class JourneyViewEventCreateInput {
     value?: Nullable<string>;
 }
 
-export class RadioQuestionSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    radioOptionBlockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class SignUpSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    name: string;
-    email: string;
-}
-
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -558,14 +572,6 @@ export class StepPreviousEventCreateInput {
     previousStepId: string;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class TextResponseSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -673,6 +679,7 @@ export class JourneysQueryOptions {
     hostname?: Nullable<string>;
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
+    skipRoutingFilter?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -1118,17 +1125,11 @@ export abstract class IMutation {
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
-    abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
-
-    abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
-
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
-
-    abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 
@@ -1253,6 +1254,7 @@ export class ButtonBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
@@ -1270,6 +1272,7 @@ export class CardBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     backgroundColor?: Nullable<string>;
     backdropBlur?: Nullable<number>;
     coverBlockId?: Nullable<string>;
@@ -1353,6 +1356,7 @@ export class RadioOptionBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
     label: string;
     action?: Nullable<Action>;
     pollOptionImageBlockId?: Nullable<string>;
@@ -1441,6 +1445,8 @@ export class VideoBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
+    eventLabel?: Nullable<BlockEventLabel>;
+    endEventLabel?: Nullable<BlockEventLabel>;
     startAt?: Nullable<number>;
     endAt?: Nullable<number>;
     muted?: Nullable<boolean>;
@@ -1550,25 +1556,6 @@ export class JourneyViewEvent implements Event {
     language?: Nullable<Language>;
 }
 
-export class RadioQuestionSubmissionEvent implements Event {
-    __typename?: 'RadioQuestionSubmissionEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class SignUpSubmissionEvent implements Event {
-    __typename?: 'SignUpSubmissionEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    email?: Nullable<string>;
-}
-
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
@@ -1594,16 +1581,6 @@ export class StepPreviousEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class TextResponseSubmissionEvent implements Event {
-    __typename?: 'TextResponseSubmissionEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    blockId?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {
@@ -1902,6 +1879,13 @@ export class Team {
     qrCodes: QrCode[];
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -1994,13 +1978,6 @@ export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
     pageInfo: PageInfo;
-}
-
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
 }
 
 export class Video {

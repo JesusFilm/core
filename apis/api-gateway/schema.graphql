@@ -267,12 +267,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   period of the previous JourneyViewEvent
   """
   journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS) 
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS) 
   stepNextEventCreate(input: StepNextEventCreateInput!) : StepNextEvent! @join__field(graph: API_JOURNEYS) 
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!) : StepPreviousEvent! @join__field(graph: API_JOURNEYS) 
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   videoStartEventCreate(input: VideoStartEventCreateInput!) : VideoStartEvent! @join__field(graph: API_JOURNEYS) 
   videoPlayEventCreate(input: VideoPlayEventCreateInput!) : VideoPlayEvent! @join__field(graph: API_JOURNEYS) 
   videoPauseEventCreate(input: VideoPauseEventCreateInput!) : VideoPauseEvent! @join__field(graph: API_JOURNEYS) 
@@ -382,7 +379,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): MultiselectOptionBlock! @join__field(graph: API_JOURNEYS_MODERN) 
-  videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  videoBlockCreate(input: VideoBlockCreateInput!) : VideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   videoBlockUpdate(
     id: ID!
     input: VideoBlockUpdateInput!
@@ -390,17 +387,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): VideoBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  ): VideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockDeleteAction(id: ID!, journeyId: ID) : Block! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!) : Action! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID) : EmailAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID) : LinkAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID) : NavigateToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!) : TextResponseSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -433,6 +433,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   The endpoint to upload a file to Cloudflare R2
   """
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  """
+  Prepare a multipart upload for Cloudflare R2 and return presigned part URLs
+  """
+  cloudflareR2MultipartPrepare(input: CloudflareR2MultipartPrepareInput!) : CloudflareR2MultipartPrepared! @join__field(graph: API_MEDIA) 
+  """
+  Complete a multipart upload and persist the asset record
+  """
+  cloudflareR2CompleteMultipart(input: CloudflareR2CompleteMultipartInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
@@ -513,6 +521,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
   fixVideoLanguages(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  updateVideoAlgoliaIndex(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  updateVideoVariantAlgoliaIndex(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -531,6 +541,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoOriginCreate(input: MutationVideoOriginCreateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoOriginUpdate(input: MutationVideoOriginUpdateInput!) : VideoOrigin! @join__field(graph: API_MEDIA) 
   videoOriginDelete(id: ID!) : VideoOrigin! @join__field(graph: API_MEDIA) 
+  videoPublishChildren(id: ID!) : VideoPublishChildrenResult! @join__field(graph: API_MEDIA) 
+  videoPublishChildrenAndLanguages(id: ID!) : VideoPublishChildrenAndLanguagesResult! @join__field(graph: API_MEDIA) 
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
@@ -921,6 +933,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  checkVideoInAlgolia(videoId: ID!) : CheckVideoInAlgoliaResult! @join__field(graph: API_MEDIA) 
+  checkVideoVariantsInAlgolia(videoId: ID!) : CheckVideoVariantsInAlgoliaResult! @join__field(graph: API_MEDIA) 
   videoOrigins: [VideoOrigin!]! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
@@ -950,6 +964,7 @@ type ButtonBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -966,6 +981,7 @@ type CardBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(gr
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
   """
   backgroundColor should be a HEX color value e.g #FFFFFF for white.
   """
@@ -1070,6 +1086,7 @@ type RadioOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
   label: String!
   action: Action
   """
@@ -1222,6 +1239,8 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
   """
   startAt dictates at which point of time the video should start playing
   """
@@ -1473,50 +1492,6 @@ type JourneyViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__
   language: Language
 }
 
-type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  """
-  ID of the journey that the radioQuestionBlock belongs to
-  """
-  journeyId: ID!
-  """
-  time event was created
-  """
-  createdAt: DateTime!
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  label of the selected radioOptionBlock
-  """
-  value: String
-}
-
-type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  """
-  ID of the journey that the block belongs to
-  """
-  journeyId: ID!
-  """
-  time event was created
-  """
-  createdAt: DateTime!
-  """
-  null for signUpSubmissionEvent
-  """
-  label: String
-  """
-  name from the signUpBlock form
-  """
-  value: String
-  """
-  email from the signUpBlock form
-  """
-  email: String
-}
-
 type StepViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
   id: ID!
   """
@@ -1575,30 +1550,6 @@ type StepPreviousEvent implements Event @join__type(graph: API_JOURNEYS)  @join_
   stepName of the previous stepBlock
   """
   value: String
-}
-
-type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  """
-  ID of the journey that the buttonBlock belongs to
-  """
-  journeyId: ID!
-  """
-  time event was created
-  """
-  createdAt: DateTime!
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  response from the TextResponseBlock form
-  """
-  value: String
-  """
-  the id of the block this event originates from
-  """
-  blockId: String
 }
 
 type VideoStartEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
@@ -2143,6 +2094,12 @@ type Team @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JO
   qrCodes: [QrCode!]!
 }
 
+type Translation @join__type(graph: API_JOURNEYS)  {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
   id: ID!
   journeyId: ID!
@@ -2351,12 +2308,6 @@ type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
   pageInfo: PageInfo!
 }
 
-type Translation @join__type(graph: API_JOURNEYS)  {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   teamId: ID!
@@ -2508,6 +2459,23 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   timeOnPage: Float
 }
 
+type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  email: String
+}
+
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
@@ -2529,6 +2497,15 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
+}
+
+type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  blockId: String
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -2631,6 +2608,25 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   video: Video!
 }
 
+type CheckVideoInAlgoliaMismatch @join__type(graph: API_MEDIA)  {
+  field: String
+  expected: String
+  actual: String
+}
+
+type CheckVideoInAlgoliaResult @join__type(graph: API_MEDIA)  {
+  ok: Boolean
+  mismatches: [CheckVideoInAlgoliaMismatch!]
+  recordUrl: String
+  error: String
+}
+
+type CheckVideoVariantsInAlgoliaResult @join__type(graph: API_MEDIA)  {
+  ok: Boolean
+  missingVariants: [String!]
+  browseUrl: String
+}
+
 type CloudflareImage @join__type(graph: API_MEDIA)  {
   id: ID!
   uploadUrl: String
@@ -2657,6 +2653,50 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   publicUrl: String
   createdAt: Date!
   updatedAt: Date!
+}
+
+"""
+Metadata returned when preparing a multipart upload for Cloudflare R2
+"""
+type CloudflareR2MultipartPrepared @join__type(graph: API_MEDIA)  {
+  """
+  CloudflareR2 record id
+  """
+  id: String
+  """
+  Upload ID for the multipart upload
+  """
+  uploadId: String
+  """
+  Object key for the multipart upload
+  """
+  fileName: String
+  """
+  Public URL for the completed asset
+  """
+  publicUrl: String
+  """
+  Part size in bytes
+  """
+  partSize: Int
+  """
+  Presigned URLs for each multipart part
+  """
+  parts: [CloudflareR2MultipartPreparedPart!]
+}
+
+"""
+Presigned upload URL for a multipart part
+"""
+type CloudflareR2MultipartPreparedPart @join__type(graph: API_MEDIA)  {
+  """
+  Presigned URL for the part
+  """
+  uploadUrl: String
+  """
+  1-indexed part number
+  """
+  partNumber: Int
 }
 
 type ForeignKeyConstraintError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
@@ -3039,6 +3079,20 @@ type VideoOrigin @join__type(graph: API_MEDIA)  {
   description: String
 }
 
+type VideoPublishChildrenAndLanguagesResult @join__type(graph: API_MEDIA)  {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
+  publishedVariantIds: [ID!]
+  publishedVariantsCount: Int
+}
+
+type VideoPublishChildrenResult @join__type(graph: API_MEDIA)  {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
+}
+
 type VideoSnippet @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
@@ -3251,6 +3305,21 @@ enum ContactActionType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_
   text @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum BlockEventLabel @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  custom1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom3 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  decisionForChrist @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  gospelPresentationStart @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  gospelPresentationComplete @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  inviteFriend @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  prayerRequest @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  rsvp @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  share @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  specialVideoStart @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  specialVideoComplete @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum JourneyStatus @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   archived @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   deleted @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3357,6 +3426,16 @@ enum IconName @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_
   ContactSupportRounded @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   Launch @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   MailOutline @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ArrowLeftContained2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ArrowRightContained2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  MessageChat1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Home4 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  LinkAngled @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Volume5 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Note2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  UserProfile2 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  UsersProfiles3 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  Phone @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum IconColor @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3749,6 +3828,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -3759,6 +3839,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph
 
 input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   variant: ButtonVariant
   color: ButtonColor
@@ -3773,6 +3854,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   backgroundColor: String
   backdropBlur: Int
   fullscreen: Boolean
@@ -3782,6 +3864,7 @@ input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: 
 
 input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   coverBlockId: ID
   backgroundColor: String
   backdropBlur: Int
@@ -3851,11 +3934,13 @@ input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
 }
 
 input RadioOptionBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   pollOptionImageBlockId: ID
 }
@@ -4020,47 +4105,6 @@ input JourneyViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(
   value: ID
 }
 
-input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  label of the selected radioOption block
-  """
-  value: String
-}
-
-input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  name from the signUpBlock form
-  """
-  name: String!
-  """
-  email from the signUpBlock form
-  """
-  email: String!
-}
-
 input StepViewEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -4120,26 +4164,6 @@ input StepPreviousEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type
   stepName of the previous stepBlock
   """
   value: String
-}
-
-input TextResponseSubmissionEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  response from the TextResponseBlock form
-  """
-  value: String!
 }
 
 input VideoStartEventCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4368,6 +4392,10 @@ input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+  """
+  skip custom domain routing filter (for admin template customization)
+  """
+  skipRoutingFilter: Boolean
 }
 
 input JourneyCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4861,10 +4889,37 @@ input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
   interval: String
 }
 
+input RadioQuestionSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  radioOptionBlockId: ID!
+  stepId: ID
+  label: String
+  value: String
+}
+
+input SignUpSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  name: String!
+  email: String!
+}
+
+input TextResponseSubmissionEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  value: String!
+}
+
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
   videoId: ID
   videoVariantLanguageId: ID
   source: VideoBlockSource
@@ -4889,6 +4944,8 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
+  endEventLabel: BlockEventLabel
   videoId: ID
   videoVariantLanguageId: ID
   posterBlockId: ID
@@ -4935,6 +4992,25 @@ input MutationAudioPreviewUpdateInput @join__type(graph: API_LANGUAGES)  {
   codec: String
 }
 
+input CloudflareR2CompleteMultipartInput @join__type(graph: API_MEDIA)  {
+  """
+  CloudflareR2 id for the asset being uploaded
+  """
+  id: String
+  """
+  Key of the multipart upload being completed
+  """
+  fileName: String!
+  """
+  Upload ID returned from create multipart upload
+  """
+  uploadId: String!
+  """
+  List of uploaded parts with their ETags
+  """
+  parts: [CloudflareR2MultipartUploadedPartInput!]!
+}
+
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   """
@@ -4957,6 +5033,45 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the id of the Video object this file relates to in the database
   """
   videoId: String!
+}
+
+input CloudflareR2MultipartPrepareInput @join__type(graph: API_MEDIA)  {
+  id: String
+  """
+  the size of the file that is being uploaded
+  """
+  contentLength: BigInt!
+  """
+  the type of file that is being uploaded. e.g. image or video/mp4
+  """
+  contentType: String!
+  """
+  the name of the file that is being uploaded
+  """
+  fileName: String!
+  """
+  the original name of the file before any renaming
+  """
+  originalFilename: String
+  """
+  the id of the Video object this file relates to in the database
+  """
+  videoId: String!
+  """
+  Optional preferred part size in bytes (minimum 5 MiB, capped to 10k parts)
+  """
+  preferredPartSize: Int
+}
+
+input CloudflareR2MultipartUploadedPartInput @join__type(graph: API_MEDIA)  {
+  """
+  1-indexed part number for the multipart upload
+  """
+  partNumber: Int!
+  """
+  ETag returned after uploading the part
+  """
+  eTag: String!
 }
 
 input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {

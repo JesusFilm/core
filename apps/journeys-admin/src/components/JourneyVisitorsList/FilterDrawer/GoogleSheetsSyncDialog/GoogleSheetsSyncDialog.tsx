@@ -87,6 +87,7 @@ const EXPORT_TO_SHEETS = gql`
     $select: JourneyVisitorExportSelect
     $destination: JourneyVisitorGoogleSheetDestinationInput!
     $integrationId: ID!
+    $timezone: String
   ) {
     journeyVisitorExportToGoogleSheet(
       journeyId: $journeyId
@@ -94,6 +95,7 @@ const EXPORT_TO_SHEETS = gql`
       select: $select
       destination: $destination
       integrationId: $integrationId
+      timezone: $timezone
     ) {
       spreadsheetId
       spreadsheetUrl
@@ -432,11 +434,15 @@ export function GoogleSheetsSyncDialog({
           }
 
     try {
+      // Get user's timezone to store with sync for consistent date formatting
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
       const { data } = await exportToSheets({
         variables: {
           journeyId,
           destination,
-          integrationId: values.integrationId
+          integrationId: values.integrationId,
+          timezone: userTimezone
         }
       })
 
@@ -1253,35 +1259,56 @@ export function GoogleSheetsSyncDialog({
                           </Typography>
                         </Box>
                       ) : (
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          onClick={() =>
-                            handleOpenDrivePicker(
-                              'sheet',
-                              values.integrationId || undefined,
-                              setFieldValue
-                            )
-                          }
+                        <Box
                           sx={{
-                            fontSize: '15px',
-                            fontWeight: 600,
-                            lineHeight: '18px',
-                            justifyContent: 'flex-start',
-                            alignSelf: 'flex-start',
-                            px: '9px',
-                            py: '7px',
-                            borderWidth: 2,
-                            '&:hover': {
-                              borderWidth: 2
-                            }
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5
                           }}
                         >
-                          {values.existingSpreadsheetId
-                            ? (values.existingSpreadsheetName ??
-                              values.existingSpreadsheetId)
-                            : t('Choose Spreadsheet')}
-                        </Button>
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() =>
+                              handleOpenDrivePicker(
+                                'sheet',
+                                values.integrationId || undefined,
+                                setFieldValue
+                              )
+                            }
+                            sx={{
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              lineHeight: '18px',
+                              justifyContent: 'flex-start',
+                              alignSelf: 'flex-start',
+                              px: '9px',
+                              py: '7px',
+                              borderWidth: 2,
+                              '&:hover': {
+                                borderWidth: 2
+                              }
+                            }}
+                          >
+                            {values.existingSpreadsheetId
+                              ? (values.existingSpreadsheetName ??
+                                values.existingSpreadsheetId)
+                              : t('Choose Spreadsheet')}
+                          </Button>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontSize: '12px',
+                              lineHeight: '16px',
+                              color: '#444451',
+                              ml: 2
+                            }}
+                          >
+                            {t(
+                              'Select a spreadsheet from Google Drive to sync your data.'
+                            )}
+                          </Typography>
+                        </Box>
                       )}
                       {values.googleMode === 'create' && (
                         <TextField

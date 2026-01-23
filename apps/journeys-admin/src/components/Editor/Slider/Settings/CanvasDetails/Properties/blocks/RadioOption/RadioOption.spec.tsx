@@ -4,11 +4,13 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
@@ -23,7 +25,8 @@ describe('RadioOption Attribute', () => {
     label: 'Radio Option',
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   }
 
   it('shows default attributes', async () => {
@@ -36,6 +39,28 @@ describe('RadioOption Attribute', () => {
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    )
+  })
+
+  it('shows event label when template', async () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: block }}>
+              <RadioOption {...block} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('EventLabelSelect')).toBeInTheDocument()
     )
   })
 
