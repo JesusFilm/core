@@ -10,10 +10,10 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
-import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
-import { MenuItem } from '../../../../MenuItem'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string

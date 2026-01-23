@@ -27,6 +27,7 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
@@ -39,7 +40,6 @@ import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTe
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
-import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
