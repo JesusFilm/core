@@ -13,6 +13,7 @@ import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
@@ -119,7 +120,7 @@ export function DuplicateJourneyMenuItem({
           setOpen(false)
         }}
         submitAction={handleDuplicateJourney}
-        journey={journey}
+        journey={journey as unknown as JourneyFields}
       />
     </>
   )
