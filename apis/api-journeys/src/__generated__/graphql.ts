@@ -970,6 +970,7 @@ export type IntegrationGoogle = Integration & {
   __typename?: 'IntegrationGoogle';
   accountEmail?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  oauthStale: Scalars['Boolean']['output'];
   team: Team;
   type: IntegrationType;
   user?: Maybe<User>;

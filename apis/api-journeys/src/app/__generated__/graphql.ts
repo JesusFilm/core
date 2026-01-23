@@ -1678,6 +1678,7 @@ export class IntegrationGoogle implements Integration {
     type: IntegrationType;
     user?: Nullable<User>;
     accountEmail?: Nullable<string>;
+    oauthStale: boolean;
 }
 
 export class IntegrationGrowthSpaces implements Integration {

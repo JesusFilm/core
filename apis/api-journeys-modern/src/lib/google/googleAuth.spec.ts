@@ -118,6 +118,7 @@ describe('googleAuth', () => {
   describe('getIntegrationGoogleAccessToken', () => {
     it('should return access token from refresh token', async () => {
       const mockIntegration = {
+        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
@@ -140,6 +141,7 @@ describe('googleAuth', () => {
       expect(prismaMock.integration.findUnique).toHaveBeenCalledWith({
         where: { id: 'integration-id' },
         select: {
+          teamId: true,
           accessSecretCipherText: true,
           accessSecretIv: true,
           accessSecretTag: true,
@@ -155,6 +157,7 @@ describe('googleAuth', () => {
 
     it('should throw re-authorization required error when refresh fails', async () => {
       const mockIntegration = {
+        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
@@ -184,6 +187,7 @@ describe('googleAuth', () => {
 
     it('should throw error when integration missing required fields', async () => {
       prismaMock.integration.findUnique.mockResolvedValue({
+        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: null,
         accessSecretTag: 'tag',
@@ -199,6 +203,7 @@ describe('googleAuth', () => {
       delete process.env.GOOGLE_CLIENT_SECRET
 
       const mockIntegration = {
+        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
