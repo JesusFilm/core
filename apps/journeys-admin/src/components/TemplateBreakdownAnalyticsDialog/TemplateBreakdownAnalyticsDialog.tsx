@@ -165,7 +165,7 @@ export function TemplateBreakdownAnalyticsDialog({
                 onChange={handleToggleArchivedJourneys}
               />
             }
-            label={t('Include archived journeys')}
+            label={t('Include archived projects')}
           />
         </FormGroup>
       }

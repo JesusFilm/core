@@ -96,6 +96,24 @@ export interface BlockHeaderRecord {
   label: string
 }
 
+/**
+ * Deduplicates block headers by blockId, keeping only the first label encountered for each blockId.
+ * This prevents creating multiple columns for the same block when events have different labels
+ * (e.g., when a block's label changes or when the fallback step heading is used initially).
+ */
+export function deduplicateBlockHeadersByBlockId(
+  headers: BlockHeaderRecord[]
+): BlockHeaderRecord[] {
+  const seenBlockIds = new Set<string>()
+  return headers.filter((header) => {
+    if (seenBlockIds.has(header.blockId)) {
+      return false
+    }
+    seenBlockIds.add(header.blockId)
+    return true
+  })
+}
+
 interface BuildJourneyExportColumnsOptions {
   baseColumns?: JourneyExportColumn[]
   blockHeaders: BlockHeaderRecord[]
@@ -111,18 +129,22 @@ export function buildJourneyExportColumns({
 }: BuildJourneyExportColumnsOptions): JourneyExportColumn[] {
   const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
 
-  const blockColumns = [...blockHeaders]
-    .sort((a, b) => compareHeaders(a, b, orderIndex))
-    .map<JourneyExportColumn>((item) => {
-      // Normalize label: replace all newlines/multiple spaces with single space, then trim
-      const normalizedLabel = item.label.replace(/\s+/g, ' ').trim()
-      return {
-        key: `${item.blockId}-${normalizedLabel}`,
-        label: normalizedLabel,
-        blockId: item.blockId,
-        typename: idToBlock.get(item.blockId)?.typename ?? ''
-      }
-    })
+  // Sort headers first, then deduplicate by blockId to keep only the first (by order) label per block
+  const sortedHeaders = [...blockHeaders].sort((a, b) =>
+    compareHeaders(a, b, orderIndex)
+  )
+  const deduplicatedHeaders = deduplicateBlockHeadersByBlockId(sortedHeaders)
+
+  const blockColumns = deduplicatedHeaders.map<JourneyExportColumn>((item) => {
+    // Normalize label: replace all newlines/multiple spaces with single space, then trim
+    const normalizedLabel = item.label.replace(/\s+/g, ' ').trim()
+    return {
+      key: `${item.blockId}-${normalizedLabel}`,
+      label: normalizedLabel,
+      blockId: item.blockId,
+      typename: idToBlock.get(item.blockId)?.typename ?? ''
+    }
+  })
 
   return [...baseColumns, ...blockColumns]
 }
