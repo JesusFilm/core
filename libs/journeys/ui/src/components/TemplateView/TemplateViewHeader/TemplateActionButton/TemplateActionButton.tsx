@@ -27,10 +27,7 @@ export function TemplateActionButton({
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
 
-  if (
-    journeyData != null &&
-    isJourneyCustomizable(journeyData)
-  ) {
+  if (journeyData != null && isJourneyCustomizable(journeyData)) {
     return (
       <UseThisTemplateButton
         variant={variant}
