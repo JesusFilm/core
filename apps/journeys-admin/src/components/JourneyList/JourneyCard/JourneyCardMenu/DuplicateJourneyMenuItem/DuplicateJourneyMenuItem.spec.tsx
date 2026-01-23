@@ -16,9 +16,9 @@ import { GetJourney_journey as Journey } from '../../../../../../__generated__/G
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { UpdateLastActiveTeamId } from '../../../../../../__generated__/UpdateLastActiveTeamId'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { defaultJourney } from '../../../journeyListData'
 
 import { DuplicateJourneyMenuItem } from './DuplicateJourneyMenuItem'
-import { defaultJourney } from '../../../journeyListData'
 
 jest.mock('next/router', () => ({
   __esModule: true,

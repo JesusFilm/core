@@ -7,14 +7,13 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 
 import { GetJourney_journey as Journey } from '../../../../../../__generated__/GetJourney'
+import { defaultJourney } from '../../../../JourneyList/journeyListData'
 
 import {
   CREATE_TEMPLATE,
   CreateTemplateItem,
   REMOVE_USER_JOURNEY
 } from './CreateTemplateItem'
-
-import { defaultJourney } from '../../../../JourneyList/journeyListData'
 
 jest.mock('next/router', () => ({
   __esModule: true,
