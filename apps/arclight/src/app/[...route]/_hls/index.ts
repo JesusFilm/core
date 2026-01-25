@@ -5,7 +5,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../../lib/brightcove'
-import { setCorsHeaders } from '../../../lib/redirectUtils'
+import { getClientIp, setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
@@ -85,10 +85,13 @@ hls.openapi(hlsRoute, async (c: Context) => {
 
     // Fallback: use Brightcove HLS when no Mux URL exists
     if (brightcoveId) {
-      const clientIp =
-        c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
       try {
-        const url = await getBrightcoveUrl(brightcoveId, 'hls', null, clientIp)
+        const url = await getBrightcoveUrl(
+          brightcoveId,
+          'hls',
+          null,
+          getClientIp(c)
+        )
         return c.redirect(url, 302)
       } catch (err) {
         console.warn('Brightcove HLS fallback failed:', err)
