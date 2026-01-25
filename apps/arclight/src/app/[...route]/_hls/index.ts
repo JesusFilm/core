@@ -76,11 +76,14 @@ hls.openapi(hlsRoute, async (c: Context) => {
     })
 
     const hlsUrl = data.video?.variant?.hls
-    if (hlsUrl) {
+    const brightcoveId = data.video?.variant?.brightcoveId
+
+    // Primary: use Mux HLS if available
+    if (hlsUrl && !hlsUrl.includes('arc.gt')) {
       return c.redirect(hlsUrl, 302)
     }
 
-    const brightcoveId = data.video?.variant?.brightcoveId
+    // Fallback: use Brightcove HLS when no Mux URL exists
     if (brightcoveId) {
       const clientIp =
         c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
@@ -88,7 +91,7 @@ hls.openapi(hlsRoute, async (c: Context) => {
         const url = await getBrightcoveUrl(brightcoveId, 'hls', null, clientIp)
         return c.redirect(url, 302)
       } catch (err) {
-        console.warn('Mux HLS missing; Brightcove redirect failed:', err)
+        console.warn('Brightcove HLS fallback failed:', err)
       }
     }
 
