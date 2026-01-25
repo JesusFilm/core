@@ -63,6 +63,8 @@ export const hls = new OpenAPIHono()
 hls.openapi(hlsRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
+  const clientIp =
+    c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
 
   try {
     const { data } = await getApolloClient().query<
@@ -74,24 +76,22 @@ hls.openapi(hlsRoute, async (c: Context) => {
         languageId
       }
     })
-
-    const hlsUrl = data.video?.variant?.hls
-    if (hlsUrl) {
-      return c.redirect(hlsUrl, 302)
-    }
-
     const brightcoveId = data.video?.variant?.brightcoveId
     if (brightcoveId) {
-      const clientIp =
-        c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
       try {
         const url = await getBrightcoveUrl(brightcoveId, 'hls', null, clientIp)
         return c.redirect(url, 302)
       } catch (err) {
-        console.warn('Mux HLS missing; Brightcove redirect failed:', err)
+        console.warn(
+          'Brightcove redirect failed, falling back to variant HLS:',
+          err
+        )
       }
     }
-
+    const hlsUrl = data.video?.variant?.hls
+    if (hlsUrl) {
+      return c.redirect(hlsUrl, 302)
+    }
     return c.json({ error: 'Video or HLS URL not found' }, 404)
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)

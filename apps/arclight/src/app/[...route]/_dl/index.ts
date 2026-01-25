@@ -5,12 +5,14 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getBrightcoveUrl } from '../../../lib/brightcove'
 import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
     video(id: $id) {
       variant(languageId: $languageId) {
+        brightcoveId
         downloads {
           quality
           url
@@ -21,6 +23,7 @@ const GET_VIDEO_VARIANT = graphql(`
 `)
 
 type VideoVariant = {
+  brightcoveId?: string | null
   downloads: Array<{
     quality: string
     url: string
@@ -98,9 +101,24 @@ export const dl = new OpenAPIHono()
 dl.openapi(dlRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
+  const clientIp =
+    c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
 
   try {
     const variant = await getVideoVariant(mediaComponentId, languageId)
+    const brightcoveId = variant.brightcoveId
+
+    if (brightcoveId) {
+      try {
+        const url = await getBrightcoveUrl(brightcoveId, 'dl', null, clientIp)
+        return c.redirect(url)
+      } catch (err) {
+        console.warn(
+          'Brightcove redirect failed, falling back to variant downloads:',
+          err
+        )
+      }
+    }
     const download = variant.downloads?.find((d) => d.quality === 'low')
 
     if (!download?.url) {
