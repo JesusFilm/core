@@ -6,7 +6,7 @@ export interface SendEmailParams {
   subject: string
   html: string
   text: string
-  from: string
+  from?: string
 }
 
 export async function sendEmail(
@@ -27,6 +27,9 @@ export async function sendEmail(
     disallowedDomains.includes(domain)
   )
     throw new Error('Example email address')
+
+  if (from == null) 
+    from = '"Next Steps Support" <support@nextstep.is>'
 
   const transporter = nodemailer.createTransport(process.env.SMTP_URL, { from })
 
