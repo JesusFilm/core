@@ -1,1 +1,1 @@
-export { Align } from './Align'
+export { Align, getAlignIcon } from './Align'
