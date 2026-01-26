@@ -46,6 +46,25 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
+type CheckVideoInAlgoliaMismatch {
+  field: String
+  expected: String
+  actual: String
+}
+
+type CheckVideoInAlgoliaResult {
+  ok: Boolean
+  mismatches: [CheckVideoInAlgoliaMismatch!]
+  recordUrl: String
+  error: String
+}
+
+type CheckVideoVariantsInAlgoliaResult {
+  ok: Boolean
+  missingVariants: [String!]
+  browseUrl: String
+}
+
 type CloudflareImage {
   id: ID!
   uploadUrl: String
@@ -334,6 +353,8 @@ type Mutation {
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
   fixVideoLanguages(videoId: ID!): Boolean!
+  updateVideoAlgoliaIndex(videoId: ID!): Boolean!
+  updateVideoVariantAlgoliaIndex(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -725,6 +746,8 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
+  checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
   videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition

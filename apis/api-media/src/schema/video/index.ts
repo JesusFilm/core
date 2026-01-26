@@ -1,6 +1,7 @@
 import './enums'
 import './inputs'
 import './video'
+import './videoAlgolia'
 import './videoDescription'
 import './videoImageAlt'
 import './videoSnippet'
