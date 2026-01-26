@@ -8,7 +8,10 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
-import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
+import {
+  StaleOAuthError,
+  getTeamGoogleAccessToken
+} from '../../lib/google/googleAuth'
 import {
   columnIndexToA1,
   ensureSheet,
@@ -354,7 +357,17 @@ export async function appendEventToGoogleSheets({
     return column.label
   }
 
-  const { accessToken } = await getTeamGoogleAccessToken(teamId)
+  let accessToken: string
+  try {
+    const authResult = await getTeamGoogleAccessToken(teamId)
+    accessToken = authResult.accessToken
+  } catch (error) {
+    // If the integration is stale, skip syncing to Google Sheets silently
+    if (error instanceof StaleOAuthError) {
+      return
+    }
+    throw error
+  }
 
   const safe = (value: string | number | null | undefined): string =>
     value == null ? '' : String(value)

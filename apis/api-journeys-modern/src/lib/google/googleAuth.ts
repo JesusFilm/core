@@ -135,6 +135,16 @@ async function refreshGoogleToken(
   )
 }
 
+/**
+ * Error thrown when the Google integration OAuth credentials are stale and require re-authorization.
+ */
+export class StaleOAuthError extends Error {
+  constructor(message: string = 'Google integration OAuth credentials are stale. Re-authorization is required.') {
+    super(message)
+    this.name = 'StaleOAuthError'
+  }
+}
+
 export async function getTeamGoogleAccessToken(
   teamId: string
 ): Promise<GoogleAuthResult> {
@@ -145,12 +155,18 @@ export async function getTeamGoogleAccessToken(
       accessSecretCipherText: true,
       accessSecretIv: true,
       accessSecretTag: true,
-      accountEmail: true
+      accountEmail: true,
+      oauthStale: true
     }
   })
 
   if (integration == null) {
     throw new Error('Google integration not configured for this team')
+  }
+
+  // If the integration is marked as stale, don't attempt to refresh the token
+  if (integration.oauthStale) {
+    throw new StaleOAuthError()
   }
 
   return refreshGoogleToken(
@@ -170,12 +186,18 @@ export async function getIntegrationGoogleAccessToken(
       accessSecretCipherText: true,
       accessSecretIv: true,
       accessSecretTag: true,
-      accountEmail: true
+      accountEmail: true,
+      oauthStale: true
     }
   })
 
   if (integration == null) {
     throw new Error('Google integration not found')
+  }
+
+  // If the integration is marked as stale, don't attempt to refresh the token
+  if (integration.oauthStale) {
+    throw new StaleOAuthError()
   }
 
   return refreshGoogleToken(integration, 'Google integration not found', {
