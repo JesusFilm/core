@@ -14,8 +14,9 @@ interface ItemProps {
   href?: string
   ButtonProps?: ComponentProps<typeof Button>
   onClick?: (event: MouseEvent<HTMLElement>) => void
-  count?: number
+  count?: number | string | ReactNode
   countLabel?: string
+  MenuItemProps?: ComponentProps<typeof MenuItem>
 }
 
 export function Item({
@@ -26,7 +27,8 @@ export function Item({
   ButtonProps,
   onClick,
   count,
-  countLabel
+  countLabel,
+  MenuItemProps
 }: ItemProps): ReactElement {
   switch (variant) {
     case 'icon-button': {
@@ -67,7 +69,11 @@ export function Item({
                 }}
                 {...restButtonProps}
               >
-                {count.toLocaleString()}
+                {typeof count === 'number'
+                  ? count.toLocaleString()
+                  : typeof count === 'string'
+                    ? count
+                    : count}
               </Button>
             ) : (
               <IconButton
@@ -109,6 +115,7 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
+          {...MenuItemProps}
         >
           <ListItemIcon
             sx={{
@@ -117,7 +124,16 @@ export function Item({
           >
             {icon}
           </ListItemIcon>
-          <ListItemText secondary={countLabel ?? count?.toLocaleString()}>
+          <ListItemText
+            secondary={
+              countLabel ??
+              (typeof count === 'number'
+                ? count.toLocaleString()
+                : typeof count === 'string'
+                  ? count
+                  : undefined)
+            }
+          >
             {label}
           </ListItemText>
         </MenuItem>

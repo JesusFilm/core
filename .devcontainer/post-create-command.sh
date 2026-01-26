@@ -43,3 +43,12 @@ if ! psql -h db -U postgres -d plausible_db < .devcontainer/plausible.sql; then
   exit 1
 fi
 echo "Post-create setup completed!"
+
+echo "Setting up CMS database..."
+psql -U postgres -h db -tc "SELECT 1 FROM pg_database WHERE datname = 'cms'" | grep -q 1 \
+  || psql -U postgres -h db -c "CREATE DATABASE cms;"
+
+echo "Installing Argo CD..."
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64

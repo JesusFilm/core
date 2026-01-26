@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./../../../../__generated__/globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: VideoFields
@@ -107,6 +107,8 @@ export interface VideoFields_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type VideoFields_action = VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction | VideoFields_action_ChatAction | VideoFields_action_PhoneAction;
@@ -186,4 +188,6 @@ export interface VideoFields {
    * action that should be performed when the video ends
    */
   action: VideoFields_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }

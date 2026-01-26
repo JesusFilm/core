@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Player",
+    "description": "Navigate to /pl/[playlistId] to view a playlist"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Jesus Film Project"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "پلے-لسٹ",
+    "pageTitle": "{title} by {name}",
+    "thisPlaylistIsEmpty": "This playlist is empty",
+    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
+    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "No video available"
+  },
+  "PlaylistList": {
+    "noThumbnail": "No thumbnail"
+  },
+  "StudyQuestions": {
+    "title": "Study Questions"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
+    "downloadOnAppStore": "Download on App Store",
+    "getItOnGooglePlay": "Get it on Google Play"
+  }
+}

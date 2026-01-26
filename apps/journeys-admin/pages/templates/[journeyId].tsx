@@ -31,7 +31,10 @@ function TemplateDetailsPage(): ReactElement {
   const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,
-    idType: IdType.databaseId
+    idType: IdType.databaseId,
+    options: {
+      skipRoutingFilter: true
+    }
   })
   const { activeTeam, refetch, query } = useTeam()
 
@@ -156,7 +159,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
         where: {
           template: true,
           orderByRecent: true,
-          tagIds
+          tagIds,
+          teamId: 'jfp-team'
         }
       }
     })

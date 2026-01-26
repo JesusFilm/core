@@ -46,6 +46,9 @@ export function HomePage({
         case 'facebook.com':
           setActivePage?.('facebook.com')
           break
+        case 'oidc.okta':
+          setActivePage?.('oidc.okta')
+          break
         default:
           break
       }
@@ -61,6 +64,7 @@ export function HomePage({
       <Stack spacing={3}>
         <SignInServiceButton service="google.com" />
         <SignInServiceButton service="facebook.com" />
+        <SignInServiceButton service="oidc.okta" />
       </Stack>
       <Divider sx={{ my: 3 }}>{t('OR')}</Divider>
       <Formik

@@ -10,9 +10,13 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+
+import Globe from '@core/shared/ui/icons/Globe'
+import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
+import { isTemplateCustomizable } from '../../libs/isTemplateCustomizable'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { useNavigationState } from '../../libs/useNavigationState'
 
@@ -52,6 +56,7 @@ export function TemplateGalleryCard({
 }: TemplateGalleryCardProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const isNavigating = useNavigationState()
+  const [isCardHovered, setIsCardHovered] = useState(false)
 
   const theme = useTheme()
   const router = useRouter()
@@ -113,6 +118,8 @@ export function TemplateGalleryCard({
           outlineColor: (theme) => theme.palette.primary.main
         }
       }}
+      onMouseEnter={() => setIsCardHovered(true)}
+      onMouseLeave={() => setIsCardHovered(false)}
     >
       <Box
         component={NextLink}
@@ -138,6 +145,116 @@ export function TemplateGalleryCard({
               backgroundColor: 'background.default'
             }}
           >
+            <Stack
+              direction="column"
+              spacing={1}
+              alignItems="flex-start"
+              sx={{
+                position: 'absolute',
+                top: { xs: 4, md: 6 },
+                left: { xs: 4, md: 6 },
+                zIndex: 3
+              }}
+            >
+              {isTemplateCustomizable(journey) && (
+                <Box
+                  data-testid="TemplateGalleryCardQuickStartBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000000cc',
+                    borderRadius: { xs: 8, md: 11 },
+                    padding: { xs: 0.5, md: 1 },
+                    paddingRight: isCardHovered
+                      ? { xs: 2, md: 3 }
+                      : { xs: 0.5, md: 1 },
+                    transition: 'padding 0.3s ease',
+                    boxShadow: '0 3px 4px 0 #0000004D'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: { xs: 16, md: 22 },
+                      height: { xs: 16, md: 22 },
+                      borderRadius: '50%',
+                      background: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Lightning2
+                      sx={{ fontSize: { xs: 14, md: 18 }, color: '#FFD700' }}
+                    />
+                  </Box>
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? { xs: 60, md: 100 } : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#FFD700',
+                      typography: 'overline2',
+                      fontSize: { xs: '0.65rem', md: '0.75rem' }
+                    }}
+                  >
+                    {t('Quick Start')}
+                  </Typography>
+                </Box>
+              )}
+              {journey.website && (
+                <Box
+                  data-testid="TemplateGalleryCardWebsiteBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000000cc',
+                    borderRadius: { xs: 8, md: 11 },
+                    padding: { xs: 0.5, md: 1 },
+                    paddingRight: isCardHovered
+                      ? { xs: 2, md: 3 }
+                      : { xs: 0.5, md: 1 },
+                    transition: 'padding 0.3s ease',
+                    boxShadow: '0 3px 4px 0 #0000004D'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: { xs: 16, md: 22 },
+                      height: { xs: 16, md: 22 },
+                      borderRadius: '50%',
+                      background: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Globe
+                      sx={{ fontSize: { xs: 14, md: 18 }, color: '#4DA3FF' }}
+                    />
+                  </Box>
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? { xs: 60, md: 100 } : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#4DA3FF',
+                      typography: 'overline2',
+                      fontSize: { xs: '0.65rem', md: '0.75rem' }
+                    }}
+                  >
+                    {t('Website')}
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
             {journey?.primaryImageBlock?.src != null ? (
               <>
                 <HoverLayer className="hoverImageEffects" />

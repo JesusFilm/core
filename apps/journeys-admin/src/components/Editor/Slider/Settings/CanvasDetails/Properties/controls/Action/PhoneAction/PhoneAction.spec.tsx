@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
@@ -43,16 +44,30 @@ describe('PhoneAction', () => {
       gtmEventName: 'gtmEventName',
       phone: '+1234567890',
       countryCode: 'US',
-      contactAction: ContactActionType.call
+      contactAction: ContactActionType.call,
+      customizable: false,
+      parentStepId: 'step1.id'
     },
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
+  }
+
+  const selectedStep: TreeBlock<BlockFields_StepBlock> = {
+    __typename: 'StepBlock',
+    id: 'step1.id',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    nextBlockId: null,
+    slug: 'step-1',
+    children: []
   }
 
   it('displays the country code and phone number', async () => {
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -67,7 +82,7 @@ describe('PhoneAction', () => {
     const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -213,7 +228,9 @@ describe('PhoneAction', () => {
           input: {
             phone: '+1234567890',
             countryCode: 'US',
-            contactAction: ContactActionType.text
+            contactAction: ContactActionType.text,
+            customizable: false,
+            parentStepId: 'step1.id'
           }
         }
       },
@@ -225,7 +242,9 @@ describe('PhoneAction', () => {
             gtmEventName: null,
             phone: '+1234567890',
             countryCode: 'US',
-            contactAction: ContactActionType.text
+            contactAction: ContactActionType.text,
+            customizable: false,
+            parentStepId: 'step1.id'
           }
         }
       }
@@ -234,7 +253,7 @@ describe('PhoneAction', () => {
     const result = jest.fn().mockReturnValue(contactActionUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...contactActionUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -255,7 +274,9 @@ describe('PhoneAction', () => {
         gtmEventName: 'gtmEventName',
         phone: '',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
 
@@ -282,7 +303,7 @@ describe('PhoneAction', () => {
   it('should enable radio buttons when phone number is set', async () => {
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -304,7 +325,9 @@ describe('PhoneAction', () => {
         gtmEventName: 'gtmEventName',
         phone: '',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
 
@@ -340,7 +363,9 @@ describe('PhoneAction', () => {
         gtmEventName: 'gtmEventName',
         phone: '',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
 

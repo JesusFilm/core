@@ -13,8 +13,16 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
@@ -27,24 +35,6 @@ const Dialog = dynamic(
   { ssr: false }
 )
 
-export const RESTORE_ARCHIVED_JOURNEYS = gql`
-  mutation RestoreArchivedJourneys($ids: [ID!]!) {
-    journeysRestore(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
-export const TRASH_ARCHIVED_JOURNEYS = gql`
-  mutation TrashArchivedJourneys($ids: [ID!]!) {
-    journeysTrash(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
 export function ArchivedJourneyList({
   user,
   sortOrder,
@@ -56,6 +46,7 @@ export function ArchivedJourneyList({
     status: [JourneyStatus.archived],
     useLastActiveTeamId: true
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
@@ -63,6 +54,13 @@ export function ArchivedJourneyList({
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+
+        // Refetch template stats for affected templates
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -73,6 +71,13 @@ export function ArchivedJourneyList({
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
+
+        // Refetch template stats for affected templates
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysTrash)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }

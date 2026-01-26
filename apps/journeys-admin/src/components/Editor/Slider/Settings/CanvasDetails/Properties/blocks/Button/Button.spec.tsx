@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -14,6 +15,7 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Button } from '.'
@@ -32,6 +34,7 @@ describe('Button attributes', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
+    eventLabel: null,
     settings: {
       __typename: 'ButtonBlockSettings',
       alignment: ButtonAlignment.justify
@@ -61,6 +64,24 @@ describe('Button attributes', () => {
     ).toBeInTheDocument()
   })
 
+  it('shows event label when template', () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { template: true } as unknown as JourneyFields,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider initialState={{ selectedBlock: block }}>
+            <Button {...block} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(getByTestId('EventLabelSelect')).toBeInTheDocument()
+  })
+
   it('shows filled button', () => {
     const filledBlock: TreeBlock<ButtonBlock> = {
       ...block,
@@ -82,7 +103,7 @@ describe('Button attributes', () => {
           __typename: 'IconBlock',
           parentBlockId: 'button',
           parentOrder: 0,
-          iconName: IconName.ChatBubbleOutlineRounded,
+          iconName: IconName.ChevronLeftRounded,
           iconColor: IconColor.secondary,
           iconSize: IconSize.lg,
           children: []
@@ -116,7 +137,7 @@ describe('Button attributes', () => {
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Variant Text' })).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Leading Icon Chat Bubble' })
+      getByRole('button', { name: 'Leading Icon Chevron Left' })
     ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Trailing Icon Chevron Right' })

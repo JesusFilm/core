@@ -91,7 +91,8 @@ const content: TreeBlock[] = [
         children: []
       }
     ],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 ]
 
@@ -131,6 +132,8 @@ const video: TreeBlock<VideoFields> = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

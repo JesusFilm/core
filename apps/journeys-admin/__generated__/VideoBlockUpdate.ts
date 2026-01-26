@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: VideoBlockUpdate
@@ -107,6 +107,8 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction | VideoBlockUpdate_videoBlockUpdate_action_ChatAction | VideoBlockUpdate_videoBlockUpdate_action_PhoneAction;
@@ -186,6 +188,8 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * action that should be performed when the video ends
    */
   action: VideoBlockUpdate_videoBlockUpdate_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface VideoBlockUpdate {

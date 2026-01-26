@@ -84,7 +84,59 @@ export const journeyAcl: AppAclFn = ({
     template: true,
     status: JourneyStatus.published
   })
+  // Team members can manage local templates
+  can(Action.Manage, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: UserTeamRole.member
+          }
+        }
+      }
+    }
+  })
+  // Journey editors can manage local templates
+  can(Action.Manage, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    userJourneys: {
+      some: {
+        userId: user.id,
+        role: UserJourneyRole.editor
+      }
+    }
+  })
   cannot(Action.Manage, 'Journey', 'template')
+  // Team managers/members can manage template field for local templates
+  can(Action.Manage, 'Journey', 'template', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+          }
+        }
+      }
+    }
+  })
+  // Journey owners/editors can manage template field for local templates
+  can(Action.Manage, 'Journey', 'template', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    userJourneys: {
+      some: {
+        userId: user.id,
+        role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
+      }
+    }
+  })
   if (user.roles?.includes('publisher') === true) {
     can(Action.Create, 'Journey', { teamId: 'jfp-team' })
 

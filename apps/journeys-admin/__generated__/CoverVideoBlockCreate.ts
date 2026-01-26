@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CoverVideoBlockCreate
@@ -107,6 +107,8 @@ export interface CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction | CoverVideoBlockCreate_videoBlockCreate_action_ChatAction | CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction;
@@ -186,6 +188,8 @@ export interface CoverVideoBlockCreate_videoBlockCreate {
    * action that should be performed when the video ends
    */
   action: CoverVideoBlockCreate_videoBlockCreate_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface CoverVideoBlockCreate_cardBlockUpdate {

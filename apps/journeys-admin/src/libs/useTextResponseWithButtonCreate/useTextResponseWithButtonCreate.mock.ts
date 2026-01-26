@@ -92,6 +92,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
           __typename: 'ButtonBlockSettings',
           alignment: ButtonAlignment.justify
         },
+        eventLabel: null,
         __typename: 'ButtonBlock'
       },
       startIcon: {
@@ -128,6 +129,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
           __typename: 'ButtonBlockSettings',
           alignment: ButtonAlignment.justify
         },
+        eventLabel: null,
         __typename: 'ButtonBlock'
       }
     }

@@ -29,7 +29,8 @@ describe('checkBlocksForCustomizableLinks', () => {
       customizable: false,
       parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('should return false for empty blocks array', () => {
@@ -70,7 +71,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: true,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([
@@ -101,7 +103,75 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: true,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
+    } as ButtonBlock
+
+    const result = checkBlocksForCustomizableLinks([
+      nonCustomizableButtonBlock,
+      buttonBlock
+    ])
+    expect(result).toBe(true)
+  })
+
+  it('should return true for ButtonBlock with customizable PhoneAction', () => {
+    const buttonBlock = {
+      __typename: 'ButtonBlock',
+      id: '2',
+      parentBlockId: null,
+      parentOrder: 1,
+      label: 'Test Button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIconId: null,
+      endIconId: null,
+      submitEnabled: null,
+      action: {
+        __typename: 'PhoneAction',
+        parentBlockId: '2',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: 'call' as any,
+        customizable: true,
+        parentStepId: null
+      },
+      settings: null,
+      eventLabel: null
+    } as ButtonBlock
+
+    const result = checkBlocksForCustomizableLinks([
+      nonCustomizableButtonBlock,
+      buttonBlock
+    ])
+    expect(result).toBe(true)
+  })
+
+  it('should return true for ButtonBlock with customizable ChatAction', () => {
+    const buttonBlock = {
+      __typename: 'ButtonBlock',
+      id: '2',
+      parentBlockId: null,
+      parentOrder: 1,
+      label: 'Test Button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIconId: null,
+      endIconId: null,
+      submitEnabled: null,
+      action: {
+        __typename: 'ChatAction',
+        parentBlockId: '2',
+        gtmEventName: null,
+        chatUrl: 'https://example.com/chat',
+        target: null,
+        customizable: true,
+        parentStepId: null
+      },
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([
@@ -132,7 +202,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         customizable: false,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([buttonBlock])
@@ -153,7 +224,8 @@ describe('checkBlocksForCustomizableLinks', () => {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([buttonBlock])
@@ -206,6 +278,8 @@ describe('checkBlocksForCustomizableLinks', () => {
       image: null,
       objectFit: null,
       mediaVideo: null,
+      eventLabel: null,
+      endEventLabel: null,
       action: {
         __typename: 'LinkAction',
         parentBlockId: '2',
@@ -266,7 +340,8 @@ describe('checkBlocksForCustomizableLinks', () => {
         gtmEventName: null,
         blockId: 'block-1'
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     } as ButtonBlock
 
     const result = checkBlocksForCustomizableLinks([buttonBlock])

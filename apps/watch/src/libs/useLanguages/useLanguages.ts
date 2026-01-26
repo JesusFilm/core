@@ -26,7 +26,10 @@ export interface Language {
 }
 
 export function useLanguages(): { languages: Language[]; isLoading: boolean } {
-  const { data, isLoading } = useSWR<string[][]>('/api/languages', fetcher)
+  const { data, isLoading: isDataLoading } = useSWR<string[][]>(
+    '/watch/api/languages',
+    fetcher
+  )
   const { i18n } = useTranslation()
   const [languages, setLanguages] = useState<Language[]>([])
 
@@ -39,6 +42,9 @@ export function useLanguages(): { languages: Language[]; isLoading: boolean } {
       )
     )
   }, [data, i18n])
+
+  // Consider loading if data is still loading OR if we have data but languages haven't been processed yet
+  const isLoading = isDataLoading || (data != null && languages.length === 0)
 
   return { languages, isLoading }
 }

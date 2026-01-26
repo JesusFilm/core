@@ -101,6 +101,8 @@ type PhoneAction implements Action
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatAction implements Action
@@ -120,6 +122,21 @@ interface Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
+}
+
+enum BlockEventLabel {
+  custom1
+  custom2
+  custom3
+  decisionForChrist
+  gospelPresentationStart
+  gospelPresentationComplete
+  inviteFriend
+  prayerRequest
+  rsvp
+  share
+  specialVideoStart
+  specialVideoComplete
 }
 
 type Journey
@@ -161,6 +178,9 @@ type Journey
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
+
+  """used to see if a template has a site created for it"""
+  templateSite: Boolean
 
   """used in a plausible share link to embed report"""
   plausibleToken: String
@@ -254,35 +274,6 @@ extend type Query {
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
   journeysEmailPreference(email: String!): JourneysEmailPreference
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int!
-  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType): PlausibleStatsAggregateResponse!
-
-  """
-  This endpoint allows you to break down your stats by some property.
-  If you are familiar with SQL family databases, this endpoint corresponds to
-  running `GROUP BY` on a certain property in your stats, then ordering by the
-  count.
-  Check out the [properties](https://plausible.io/docs/stats-api#properties)
-  section for a reference of all the properties you can use in this query.
-  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
-  `Top countries` and similar reports.
-  Currently, it is only possible to break down on one property at a time.
-  Using a list of properties with one query is not supported. So if you want
-  a breakdown by both `event:page` and `visit:source` for example, you would
-  have to make multiple queries (break down on one property and filter on
-  another) and then manually/programmatically group the results together in one
-  report. This also applies for breaking down by time periods. To get a daily
-  breakdown for every page, you would have to break down on `event:page` and
-  make multiple queries for each date.
-  """
-  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
-
-  """
-  This endpoint provides timeseries data over a certain time period.
-  If you are familiar with the Plausible dashboard, this endpoint
-  corresponds to the main visitor graph.
-  """
-  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
   qrCode(id: ID!): QrCode!
   qrCodes(where: QrCodesFilter!): [QrCode!]!
   teams: [Team!]!
@@ -453,12 +444,9 @@ type Mutation {
   period of the previous JourneyViewEvent
   """
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
@@ -472,7 +460,7 @@ type Mutation {
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -588,6 +576,7 @@ type ButtonBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
   label: String! @shareable
   variant: ButtonVariant @shareable
   color: ButtonColor @shareable
@@ -603,6 +592,7 @@ input ButtonBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
   variant: ButtonVariant
   color: ButtonColor
@@ -613,6 +603,7 @@ input ButtonBlockCreateInput {
 
 input ButtonBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   variant: ButtonVariant
   color: ButtonColor
@@ -630,6 +621,7 @@ type CardBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
 
   """backgroundColor should be a HEX color value e.g #FFFFFF for white."""
   backgroundColor: String @shareable
@@ -670,6 +662,7 @@ input CardBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   backgroundColor: String
   backdropBlur: Int
   fullscreen: Boolean
@@ -679,6 +672,7 @@ input CardBlockCreateInput {
 
 input CardBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   coverBlockId: ID
   backgroundColor: String
   backdropBlur: Int
@@ -753,6 +747,16 @@ enum IconName {
   ContactSupportRounded
   Launch
   MailOutline
+  ArrowLeftContained2
+  ArrowRightContained2
+  MessageChat1
+  Home4
+  LinkAngled
+  Volume5
+  Note2
+  UserProfile2
+  UsersProfiles3
+  Phone
 }
 
 enum IconColor {
@@ -894,6 +898,7 @@ type RadioOptionBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
   label: String! @shareable
   action: Action
   pollOptionImageBlockId: ID @shareable
@@ -903,11 +908,13 @@ input RadioOptionBlockCreateInput {
   id: ID
   journeyId: ID!
   parentBlockId: ID!
+  eventLabel: BlockEventLabel
   label: String!
 }
 
 input RadioOptionBlockUpdateInput {
   parentBlockId: ID
+  eventLabel: BlockEventLabel
   label: String
   pollOptionImageBlockId: ID
 }
@@ -1234,6 +1241,8 @@ type VideoBlock implements Block
   journeyId: ID! @shareable
   parentBlockId: ID @shareable
   parentOrder: Int @shareable
+  eventLabel: BlockEventLabel @shareable
+  endEventLabel: BlockEventLabel @shareable
 
   """startAt dictates at which point of time the video should start playing"""
   startAt: Int @shareable
@@ -1580,80 +1589,6 @@ type JourneyViewEvent implements Event
   language: Language
 }
 
-input RadioQuestionSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the selected radioOption block"""
-  value: String
-}
-
-type RadioQuestionSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the radioQuestionBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the selected radioOptionBlock"""
-  value: String
-}
-
-input SignUpSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """name from the signUpBlock form"""
-  name: String!
-
-  """email from the signUpBlock form"""
-  email: String!
-}
-
-type SignUpSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the block belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """null for signUpSubmissionEvent"""
-  label: String
-
-  """name from the signUpBlock form"""
-  value: String
-
-  """email from the signUpBlock form"""
-  email: String
-}
-
 input StepViewEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -1757,44 +1692,6 @@ type StepPreviousEvent implements Event
 
   """stepName of the previous stepBlock"""
   value: String
-}
-
-input TextResponseSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """response from the TextResponseBlock form"""
-  value: String!
-}
-
-type TextResponseSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-
-  """ID of the journey that the buttonBlock belongs to"""
-  journeyId: ID!
-
-  """time event was created"""
-  createdAt: DateTime!
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """response from the TextResponseBlock form"""
-  value: String
-
-  """the id of the block this event originates from"""
-  blockId: String
 }
 
 input VideoStartEventCreateInput {
@@ -2232,6 +2129,7 @@ input JourneysFilter {
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions {
@@ -2248,6 +2146,9 @@ input JourneysQueryOptions {
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+
+  """skip custom domain routing filter (for admin template customization)"""
+  skipRoutingFilter: Boolean
 }
 
 enum JourneysReportType {
@@ -2658,207 +2559,6 @@ input JourneysEmailPreferenceUpdateInput {
   value: Boolean!
 }
 
-type PlausibleStatsAggregateValue
-  @shareable
-{
-  value: Float!
-  change: Int
-}
-
-type PlausibleStatsAggregateResponse
-  @shareable
-{
-  """The number of unique visitors."""
-  visitors: PlausibleStatsAggregateValue
-
-  """The number of visits/sessions."""
-  visits: PlausibleStatsAggregateValue
-
-  """The number of pageview events."""
-  pageviews: PlausibleStatsAggregateValue
-
-  """
-  The number of pageviews divided by the number of visits.
-  Returns a floating point number. Currently only supported in Aggregate and
-  Timeseries endpoints.
-  """
-  viewsPerVisit: PlausibleStatsAggregateValue
-
-  """Bounce rate percentage."""
-  bounceRate: PlausibleStatsAggregateValue
-
-  """Visit duration in seconds."""
-  visitDuration: PlausibleStatsAggregateValue
-
-  """
-  The number of events (pageviews + custom events). When filtering by a goal,
-   this metric corresponds to "Total Conversions" in the dashboard.
-  """
-  events: PlausibleStatsAggregateValue
-
-  """
-  The percentage of visitors who completed the goal. Requires an `event:goal`
-  filter or `event:goal` property in the breakdown endpoint
-  """
-  conversionRate: PlausibleStatsAggregateValue
-
-  """
-  The average time users spend on viewing a single page. Requires an
-  `event:page` filter or `event:page` property in the breakdown endpoint.
-  """
-  timeOnPage: PlausibleStatsAggregateValue
-}
-
-input PlausibleStatsAggregateFilter {
-  """
-  See [time periods](https://plausible.io/docs/stats-api#time-periods).
-  If not specified, it will default to 30d.
-  """
-  period: String
-
-  """
-  date in the standard ISO-8601 format (YYYY-MM-DD).
-  When using a custom range, the date parameter expects two ISO-8601 formatted
-  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-  for the whole date range inclusive of the start and end dates.
-  """
-  date: String
-
-  """
-  See [filtering](https://plausible.io/docs/stats-api#filtering)
-  section for more details.
-  """
-  filters: String
-
-  """
-  Off by default. You can specify `previous_period` to calculate the percent
-  difference with the previous period for each metric. The previous period
-  will be of the exact same length as specified in the period parameter.
-  """
-  interval: String
-}
-
-input PlausibleStatsBreakdownFilter {
-  """
-  Which [property](https://plausible.io/docs/stats-api#properties)
-  to break down the stats by.
-  """
-  property: String!
-
-  """
-  See [time periods](https://plausible.io/docs/stats-api#time-periods).
-  If not specified, it will default to 30d.
-  """
-  period: String
-
-  """
-  date in the standard ISO-8601 format (YYYY-MM-DD).
-  When using a custom range, the date parameter expects two ISO-8601 formatted
-  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-  for the whole date range inclusive of the start and end dates.
-  """
-  date: String
-
-  """
-  Limit the number of results. Maximum value is 1000. Defaults to 100.
-  If you want to get more than 1000 results, you can make multiple requests
-  and paginate the results by specifying the page parameter (e.g. make the
-  same request with page=1, then page=2, etc)
-  """
-  limit: Int
-
-  """
-  Number of the page, used to paginate results.
-  Importantly, the page numbers start from 1 not 0.
-  """
-  page: Int
-
-  """
-  See [filtering](https://plausible.io/docs/stats-api#filtering)
-  section for more details.
-  """
-  filters: String
-}
-
-type PlausibleStatsResponse
-  @shareable
-{
-  """
-  On breakdown queries, this is the property that was broken down by.
-  On aggregate queries, this is the date the stats are for.
-  """
-  property: String!
-
-  """The number of unique visitors."""
-  visitors: Int
-
-  """The number of visits/sessions."""
-  visits: Int
-
-  """The number of pageview events."""
-  pageviews: Int
-
-  """
-  The number of pageviews divided by the number of visits.
-  Returns a floating point number. Currently only supported in Aggregate and
-  Timeseries endpoints.
-  """
-  viewsPerVisit: Float
-
-  """Bounce rate percentage."""
-  bounceRate: Int
-
-  """Visit duration in seconds."""
-  visitDuration: Int
-
-  """
-  The number of events (pageviews + custom events). When filtering by a goal,
-   this metric corresponds to "Total Conversions" in the dashboard.
-  """
-  events: Int
-
-  """
-  The percentage of visitors who completed the goal. Requires an `event:goal`
-  filter or `event:goal` property in the breakdown endpoint
-  """
-  conversionRate: Int
-
-  """
-  The average time users spend on viewing a single page. Requires an
-  `event:page` filter or `event:page` property in the breakdown endpoint.
-  """
-  timeOnPage: Float
-}
-
-input PlausibleStatsTimeseriesFilter {
-  """
-  See [time periods](https://plausible.io/docs/stats-api#time-periods).
-  If not specified, it will default to 30d.
-  """
-  period: String
-
-  """
-  date in the standard ISO-8601 format (YYYY-MM-DD).
-  When using a custom range, the date parameter expects two ISO-8601 formatted
-  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-  for the whole date range inclusive of the start and end dates.
-  """
-  date: String
-
-  """
-  See [filtering](https://plausible.io/docs/stats-api#filtering)
-  section for more details.
-  """
-  filters: String
-
-  """
-  Choose your reporting interval. Valid options are date (always) and month
-  (when specified period is longer than one calendar month). Defaults to month
-  for 6mo and 12mo, otherwise falls back to date.
-  """
-  interval: String
-}
-
 extend type ShortLink
   @key(fields: "id")
 {
@@ -2926,6 +2626,12 @@ input TeamCreateInput {
 input TeamUpdateInput {
   title: String!
   publicTitle: String
+}
+
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
 }
 
 type UserInvite
@@ -3254,12 +2960,6 @@ input VisitorUpdateInput {
 
   """The phone number of the visitor"""
   phone: String
-}
-
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
 }
 
 enum link__Purpose {

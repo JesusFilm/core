@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ContactActionType, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ContactActionType, BlockEventLabel, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardPollCreate
@@ -117,6 +117,8 @@ export interface CardPollCreate_radioOption1_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardPollCreate_radioOption1_action = CardPollCreate_radioOption1_action_NavigateToBlockAction | CardPollCreate_radioOption1_action_LinkAction | CardPollCreate_radioOption1_action_EmailAction | CardPollCreate_radioOption1_action_ChatAction | CardPollCreate_radioOption1_action_PhoneAction;
@@ -134,6 +136,7 @@ export interface CardPollCreate_radioOption1 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_radioOption2_action_NavigateToBlockAction {
@@ -177,6 +180,8 @@ export interface CardPollCreate_radioOption2_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardPollCreate_radioOption2_action = CardPollCreate_radioOption2_action_NavigateToBlockAction | CardPollCreate_radioOption2_action_LinkAction | CardPollCreate_radioOption2_action_EmailAction | CardPollCreate_radioOption2_action_ChatAction | CardPollCreate_radioOption2_action_PhoneAction;
@@ -194,6 +199,7 @@ export interface CardPollCreate_radioOption2 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_radioOption3_action_NavigateToBlockAction {
@@ -237,6 +243,8 @@ export interface CardPollCreate_radioOption3_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardPollCreate_radioOption3_action = CardPollCreate_radioOption3_action_NavigateToBlockAction | CardPollCreate_radioOption3_action_LinkAction | CardPollCreate_radioOption3_action_EmailAction | CardPollCreate_radioOption3_action_ChatAction | CardPollCreate_radioOption3_action_PhoneAction;
@@ -254,6 +262,7 @@ export interface CardPollCreate_radioOption3 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_radioOption4_action_NavigateToBlockAction {
@@ -297,6 +306,8 @@ export interface CardPollCreate_radioOption4_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardPollCreate_radioOption4_action = CardPollCreate_radioOption4_action_NavigateToBlockAction | CardPollCreate_radioOption4_action_LinkAction | CardPollCreate_radioOption4_action_EmailAction | CardPollCreate_radioOption4_action_ChatAction | CardPollCreate_radioOption4_action_PhoneAction;
@@ -314,6 +325,7 @@ export interface CardPollCreate_radioOption4 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate_body_settings {
@@ -371,6 +383,7 @@ export interface CardPollCreate_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardPollCreate {

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { MultiselectBlockCreateInput, MultiselectOptionBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
+import { MultiselectBlockCreateInput, MultiselectOptionBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MultiselectWithButtonCreate
@@ -75,6 +75,8 @@ export interface MultiselectWithButtonCreate_button_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MultiselectWithButtonCreate_button_action = MultiselectWithButtonCreate_button_action_NavigateToBlockAction | MultiselectWithButtonCreate_button_action_LinkAction | MultiselectWithButtonCreate_button_action_EmailAction | MultiselectWithButtonCreate_button_action_ChatAction | MultiselectWithButtonCreate_button_action_PhoneAction;
@@ -101,6 +103,7 @@ export interface MultiselectWithButtonCreate_button {
   submitEnabled: boolean | null;
   action: MultiselectWithButtonCreate_button_action | null;
   settings: MultiselectWithButtonCreate_button_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MultiselectWithButtonCreate_startIcon {
@@ -164,6 +167,8 @@ export interface MultiselectWithButtonCreate_buttonUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MultiselectWithButtonCreate_buttonUpdate_action = MultiselectWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | MultiselectWithButtonCreate_buttonUpdate_action_LinkAction | MultiselectWithButtonCreate_buttonUpdate_action_EmailAction | MultiselectWithButtonCreate_buttonUpdate_action_ChatAction | MultiselectWithButtonCreate_buttonUpdate_action_PhoneAction;
@@ -190,6 +195,7 @@ export interface MultiselectWithButtonCreate_buttonUpdate {
   submitEnabled: boolean | null;
   action: MultiselectWithButtonCreate_buttonUpdate_action | null;
   settings: MultiselectWithButtonCreate_buttonUpdate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface MultiselectWithButtonCreate {

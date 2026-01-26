@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, ContactActionType } from "./globalTypes";
+import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioQuestionBlockCreate
@@ -58,6 +58,8 @@ export interface RadioQuestionBlockCreate_radioOption1_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type RadioQuestionBlockCreate_radioOption1_action = RadioQuestionBlockCreate_radioOption1_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption1_action_LinkAction | RadioQuestionBlockCreate_radioOption1_action_EmailAction | RadioQuestionBlockCreate_radioOption1_action_ChatAction | RadioQuestionBlockCreate_radioOption1_action_PhoneAction;
@@ -75,6 +77,7 @@ export interface RadioQuestionBlockCreate_radioOption1 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
@@ -118,6 +121,8 @@ export interface RadioQuestionBlockCreate_radioOption2_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type RadioQuestionBlockCreate_radioOption2_action = RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction | RadioQuestionBlockCreate_radioOption2_action_LinkAction | RadioQuestionBlockCreate_radioOption2_action_EmailAction | RadioQuestionBlockCreate_radioOption2_action_ChatAction | RadioQuestionBlockCreate_radioOption2_action_PhoneAction;
@@ -135,6 +140,7 @@ export interface RadioQuestionBlockCreate_radioOption2 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface RadioQuestionBlockCreate {

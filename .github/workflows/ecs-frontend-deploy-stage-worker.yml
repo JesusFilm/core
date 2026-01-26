@@ -1,5 +1,4 @@
 name: ECS FrontEnd Deployment
-
 on:
   workflow_call:
     inputs:
@@ -33,11 +32,15 @@ on:
         required: true
       DOPPLER_ARCLIGHT_TOKEN:
         required: true
+      DOPPLER_CMS_TOKEN:
+        required: true
       DOPPLER_DOCS_TOKEN:
         required: true
       DOPPLER_JOURNEYS_TOKEN:
         required: true
       DOPPLER_JOURNEYS_ADMIN_TOKEN:
+        required: true
+      DOPPLER_PLAYER_TOKEN:
         required: true
       DOPPLER_WATCH_TOKEN:
         required: true
@@ -49,7 +52,6 @@ on:
         required: true
       DATADOG_API_KEY:
         required: true
-
 jobs:
   build-and-deploy:
     environment: Stage
@@ -79,31 +81,17 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
-
+        run: pnpm install --frozen-lockfile
       - name: nx Install
-        run: pnpm add -g nx --silent
-
+        run: pnpm add -g nx
       - name: Install Doppler
-        run: |
-          sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates curl gnupg
-          curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | sudo apt-key add -
-          echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | sudo tee /etc/apt/sources.list.d/doppler-cli.list
-          sudo apt-get update && sudo apt-get -y install doppler
-
-      - name: Get affected apps
-        run: |
-          echo "apps=$(pnpm exec ts-node tools/scripts/affected-apps.ts --projects apps/${{ inputs.name }})" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-        id: affected-apps
-
+        uses: dopplerhq/cli-action@v3
       - name: Prisma Generate
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
           all: true
       - name: Build ${{ inputs.name }}
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         env:
           DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
@@ -113,9 +101,11 @@ jobs:
           DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
           DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
           DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+          DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
           DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+          DOPPLER_PLAYER_TOKEN: ${{ secrets.DOPPLER_PLAYER_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
@@ -134,27 +124,18 @@ jobs:
         with:
           targets: upload-sourcemaps
           projects: ${{ inputs.name }}
-
-      # ECS Deployment
       - name: Configure ECS AWS credentials
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
-
       - name: Login to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v2
-
       - name: Set up Docker Buildx
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: docker/setup-buildx-action@v3
-
       - name: Build and push Docker image to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: build-image-ecs
         uses: docker/build-push-action@v6
         with:
@@ -166,13 +147,9 @@ jobs:
             ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
           build-args: |
             SERVICE_VERSION=${{ env.IMAGE_TAG }}
-
       - name: Set image output
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
-
       - name: Restart task definition
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER

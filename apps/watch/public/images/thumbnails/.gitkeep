@@ -1,0 +1,17 @@
+# This file ensures the thumbnails directory is tracked by git
+# Place manually processed thumbnail images here to override default Cloudflare images
+# Supported formats: .jpg, .jpeg, .png, .webp, .gif
+#
+# Enhanced naming convention with fallback hierarchy (most specific first):
+# 1. {contentId}-{orientation}-{containerSlug}-{variantSlug}-{languageId}.{ext}
+# 2. {contentId}-{orientation}-{containerSlug}-{variantSlug}.{ext}
+# 3. {contentId}-{orientation}-{containerSlug}.{ext}
+# 4. {contentId}-{orientation}.{ext}
+# 5. {contentId}.{ext}
+#
+# Examples:
+# - 1_jf-0-0-vertical-watch-jesus-film-english-529.jpg (most specific)
+# - 1_jf-0-0-vertical-watch-jesus-film-english.jpg
+# - 1_jf-0-0-vertical-watch.jpg
+# - 1_jf-0-0-vertical.jpg
+# - 1_jf-0-0.jpg (fallback to basic contentId)

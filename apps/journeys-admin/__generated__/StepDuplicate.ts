@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: StepDuplicate
@@ -57,6 +57,8 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepDuplicate_blockDuplicate_ButtonBlock_action = StepDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | StepDuplicate_blockDuplicate_ButtonBlock_action_EmailAction | StepDuplicate_blockDuplicate_ButtonBlock_action_ChatAction | StepDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction;
@@ -83,6 +85,7 @@ export interface StepDuplicate_blockDuplicate_ButtonBlock {
   submitEnabled: boolean | null;
   action: StepDuplicate_blockDuplicate_ButtonBlock_action | null;
   settings: StepDuplicate_blockDuplicate_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepDuplicate_blockDuplicate_CardBlock {
@@ -120,6 +123,7 @@ export interface StepDuplicate_blockDuplicate_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepDuplicate_blockDuplicate_IconBlock {
@@ -209,6 +213,8 @@ export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneActio
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepDuplicate_blockDuplicate_RadioOptionBlock_action = StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_ChatAction | StepDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction;
@@ -226,6 +232,7 @@ export interface StepDuplicate_blockDuplicate_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface StepDuplicate_blockDuplicate_RadioQuestionBlock {
@@ -277,6 +284,8 @@ export interface StepDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepDuplicate_blockDuplicate_SignUpBlock_action = StepDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | StepDuplicate_blockDuplicate_SignUpBlock_action_EmailAction | StepDuplicate_blockDuplicate_SignUpBlock_action_ChatAction | StepDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction;
@@ -468,6 +477,8 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepDuplicate_blockDuplicate_VideoBlock_action = StepDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_VideoBlock_action_LinkAction | StepDuplicate_blockDuplicate_VideoBlock_action_EmailAction | StepDuplicate_blockDuplicate_VideoBlock_action_ChatAction | StepDuplicate_blockDuplicate_VideoBlock_action_PhoneAction;
@@ -547,6 +558,8 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
    * action that should be performed when the video ends
    */
   action: StepDuplicate_blockDuplicate_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -590,6 +603,8 @@ export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_Ph
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_ChatAction | StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction;

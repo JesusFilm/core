@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -125,6 +125,8 @@ export interface CardFormCreate_button_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardFormCreate_button_action = CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction | CardFormCreate_button_action_ChatAction | CardFormCreate_button_action_PhoneAction;
@@ -151,6 +153,7 @@ export interface CardFormCreate_button {
   submitEnabled: boolean | null;
   action: CardFormCreate_button_action | null;
   settings: CardFormCreate_button_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormCreate_startIcon {
@@ -214,6 +217,8 @@ export interface CardFormCreate_buttonUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction | CardFormCreate_buttonUpdate_action_ChatAction | CardFormCreate_buttonUpdate_action_PhoneAction;
@@ -240,6 +245,7 @@ export interface CardFormCreate_buttonUpdate {
   submitEnabled: boolean | null;
   action: CardFormCreate_buttonUpdate_action | null;
   settings: CardFormCreate_buttonUpdate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormCreate_body_settings {
@@ -297,6 +303,7 @@ export interface CardFormCreate_cardBlockUpdate {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface CardFormCreate {

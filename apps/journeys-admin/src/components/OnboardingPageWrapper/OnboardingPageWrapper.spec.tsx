@@ -32,6 +32,12 @@ describe('OnboardingPageWrapper', () => {
       </MockedProvider>
     )
 
+    await waitFor(() =>
+      expect(
+        screen.getAllByRole('link', { name: 'Privacy Policy' })[0]
+      ).toHaveAttribute('href', `https://www.cru.org/us/en/about/privacy.html`)
+    )
+
     expect(
       screen.getAllByRole('link', { name: 'Feedback & Support' })[0]
     ).toHaveAttribute(
