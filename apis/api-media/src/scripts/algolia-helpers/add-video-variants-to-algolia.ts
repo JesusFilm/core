@@ -7,7 +7,10 @@
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient, getAlgoliaConfig } from '../../lib/algolia/algoliaClient'
+import {
+  getAlgoliaClient,
+  getAlgoliaConfig
+} from '../../lib/algolia/algoliaClient'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate/algoliaVideoVariantUpdate'
 
 async function main(): Promise<void> {

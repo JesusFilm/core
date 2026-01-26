@@ -6,7 +6,10 @@
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient, getAlgoliaConfig } from '../../lib/algolia/algoliaClient'
+import {
+  getAlgoliaClient,
+  getAlgoliaConfig
+} from '../../lib/algolia/algoliaClient'
 
 // Helper script to used to add hasAvailableLanguages field to all videos in Algolia
 // Could be used to add any field to the index
