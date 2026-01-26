@@ -49,15 +49,21 @@ describe('service', () => {
     })
 
     expect(renderMock).toHaveBeenCalledTimes(2)
-    expect(renderMock.mock.calls[1]).toEqual([expect.anything(), { plainText: true }])
+    expect(renderMock.mock.calls[1]).toEqual([
+      expect.anything(),
+      { plainText: true }
+    ])
 
-    expect(sendEmailMock).toHaveBeenCalledWith({
-      to: 'test@example.com',
-      subject: 'Verify your email address on Next Steps',
-      text: 'Mocked plain text email content',
-      html: '<div>Mocked HTML email content</div>',
-      from: '"Next Steps Support" <support@nextstep.is>'
-    }, undefined)
+    expect(sendEmailMock).toHaveBeenCalledWith(
+      {
+        to: 'test@example.com',
+        subject: 'Verify your email address on Next Steps',
+        text: 'Mocked plain text email content',
+        html: '<div>Mocked HTML email content</div>',
+        from: '"Next Steps Support" <support@nextstep.is>'
+      },
+      undefined
+    )
   })
 
   it('should send Jesus film app email if app type is JesusFilmApp', async () => {
@@ -82,14 +88,20 @@ describe('service', () => {
     })
 
     expect(renderMock).toHaveBeenCalledTimes(2)
-    expect(renderMock.mock.calls[1]).toEqual([expect.anything(), { plainText: true }])
+    expect(renderMock.mock.calls[1]).toEqual([
+      expect.anything(),
+      { plainText: true }
+    ])
 
-    expect(sendEmailMock).toHaveBeenCalledWith({
-      to: 'test@example.com',
-      subject: 'Verify your email address on Jesus Film App',
-      text: 'Mocked plain text email content',
-      html: '<div>Mocked HTML email content</div>',
-      from: '"Jesus Film App Support" <no-reply@jesusfilm.org>'
-    }, undefined)
+    expect(sendEmailMock).toHaveBeenCalledWith(
+      {
+        to: 'test@example.com',
+        subject: 'Verify your email address on Jesus Film App',
+        text: 'Mocked plain text email content',
+        html: '<div>Mocked HTML email content</div>',
+        from: '"Jesus Film App Support" <no-reply@jesusfilm.org>'
+      },
+      undefined
+    )
   })
 })
