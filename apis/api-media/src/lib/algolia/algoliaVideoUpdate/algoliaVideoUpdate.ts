@@ -231,7 +231,7 @@ export async function updateVideoPublishedStatus(
   logger?: Logger
 ): Promise<void> {
   try {
-    const client = await getAlgoliaClient(logger)
+    const client = getAlgoliaClient()
     const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
 
     if (client == null || !videoVariantsIndex) {
