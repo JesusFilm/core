@@ -7,7 +7,7 @@
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../../lib/algolia/algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../../lib/algolia/algoliaClient'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate/algoliaVideoVariantUpdate'
 
 async function main(): Promise<void> {
@@ -38,33 +38,30 @@ async function main(): Promise<void> {
     console.log('ℹ️ No video variants found with the specified videoId')
     return
   }
+
+  // Algolia is required for this script. These will throw if misconfigured.
+  const client = getAlgoliaClient()
+  const { videoVariantsIndex } = getAlgoliaConfig()
+
   // Check Algolia for presence of each variant as an object (objectID === videoVariant.id)
-  const client = await getAlgoliaClient()
-  const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
-  if (client == null || videoVariantsIndex === '') {
-    console.log(
-      '⚠️ Algolia client/index not configured; skipping presence check'
+  const ids: string[] = videoVariants.map((v) => v.id)
+  const results: PromiseSettledResult<unknown>[] = await Promise.allSettled(
+    ids.map((id) =>
+      // In our indexing, objectID === videoVariant.id
+      client.getObject({ indexName: videoVariantsIndex, objectID: id })
     )
-  } else {
-    const ids: string[] = videoVariants.map((v) => v.id)
-    const results: PromiseSettledResult<unknown>[] = await Promise.allSettled(
-      ids.map((id) =>
-        // In our indexing, objectID === videoVariant.id
-        client.getObject({ indexName: videoVariantsIndex, objectID: id })
-      )
-    )
-    const missingIds: string[] = []
-    let presentCount = 0
-    results.forEach((res, idx) => {
-      if (res.status === 'fulfilled') presentCount++
-      else missingIds.push(ids[idx])
-    })
-    console.log(
-      `🔍 Algolia presence: ${presentCount} present, ${missingIds.length} missing`
-    )
-    if (missingIds.length > 0) {
-      console.log(`🧭 Missing in Algolia: ${missingIds.join(', ')}`)
-    }
+  )
+  const missingIds: string[] = []
+  let presentCount = 0
+  results.forEach((res, idx) => {
+    if (res.status === 'fulfilled') presentCount++
+    else missingIds.push(ids[idx])
+  })
+  console.log(
+    `🔍 Algolia presence: ${presentCount} present, ${missingIds.length} missing`
+  )
+  if (missingIds.length > 0) {
+    console.log(`🧭 Missing in Algolia: ${missingIds.join(', ')}`)
   }
 
   // Update all variants regardless of presence check results

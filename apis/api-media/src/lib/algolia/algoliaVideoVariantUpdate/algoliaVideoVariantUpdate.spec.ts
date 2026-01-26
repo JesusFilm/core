@@ -9,10 +9,7 @@ const saveObjectsSpy = jest.fn()
 
 // Mock the algolia client helper
 jest.mock('../algoliaClient', () => ({
-  getAlgoliaClient: () => ({
-    deleteObject: deleteObjectSpy,
-    saveObjects: saveObjectsSpy
-  }),
+  getAlgoliaClient: jest.fn(),
   getAlgoliaConfig: () => ({
     appId: 'test-app-id',
     apiKey: 'test-api-key',
@@ -48,6 +45,7 @@ describe('algoliaVideoVariantUpdate', () => {
 
   // Get the mocked functions
   const { getLanguages } = require('../languages')
+  const { getAlgoliaClient } = require('../algoliaClient')
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -57,6 +55,11 @@ describe('algoliaVideoVariantUpdate', () => {
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
     deleteObjectSpy.mockResolvedValue({})
 
+    getAlgoliaClient.mockReturnValue({
+      deleteObject: deleteObjectSpy,
+      saveObjects: saveObjectsSpy
+    })
+
     getLanguages.mockResolvedValue(mockLanguages)
   })
 
@@ -64,13 +67,16 @@ describe('algoliaVideoVariantUpdate', () => {
     jest.resetAllMocks()
   })
 
-  it('should skip update when algolia client is null', async () => {
-    getAlgoliaClient.mockResolvedValueOnce(null)
+  it('should not continue when algolia client creation fails', async () => {
+    getAlgoliaClient.mockImplementationOnce(() => {
+      throw new Error('Algolia client failed')
+    })
 
     await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
 
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      'algolia client not found, skipping update'
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      expect.any(Error),
+      'failed to update video variant test-variant-id in algolia'
     )
     expect(saveObjectsSpy).not.toHaveBeenCalled()
   })

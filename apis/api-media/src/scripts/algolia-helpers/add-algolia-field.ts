@@ -6,21 +6,16 @@
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../../lib/algolia/algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../../lib/algolia/algoliaClient'
 
 // Helper script to used to add hasAvailableLanguages field to all videos in Algolia
 // Could be used to add any field to the index
 async function main(): Promise<void> {
   console.log('🚀 Adding hasAvailableLanguages to videos index...')
-  const client = await getAlgoliaClient()
-
-  const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
+  // Algolia is required for this script. These will throw if misconfigured.
+  const client = getAlgoliaClient()
+  const { videosIndex } = getAlgoliaConfig()
   console.log(`📋 Using Algolia index: ${videosIndex}`)
-
-  if (client == null) {
-    console.error('❌ Algolia client not found')
-    process.exit(1)
-  }
 
   // Get all videos with their hasAvailableLanguages
   const videos = await prisma.video.findMany({

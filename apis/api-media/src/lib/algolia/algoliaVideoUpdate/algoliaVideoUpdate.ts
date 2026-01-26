@@ -9,11 +9,11 @@ export async function updateVideoInAlgolia(
   videoId: string,
   logger?: Logger
 ): Promise<void> {
-  const client = getAlgoliaClient()
-  const algoliaConfig = getAlgoliaConfig()
-  const languages = await getLanguages(logger)
-
   try {
+    const client = getAlgoliaClient()
+    const algoliaConfig = getAlgoliaConfig()
+    const languages = await getLanguages(logger)
+
     const video = await prisma.video.findUnique({
       where: { id: videoId },
       select: {
@@ -234,7 +234,7 @@ export async function updateVideoPublishedStatus(
     const client = getAlgoliaClient()
     const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
 
-    if (client == null || !videoVariantsIndex) {
+    if (!videoVariantsIndex) {
       logger?.warn(
         'algolia client or index not found, skipping video published status update'
       )
