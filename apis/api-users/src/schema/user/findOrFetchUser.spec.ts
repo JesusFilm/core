@@ -65,7 +65,7 @@ describe('findOrFetchUser', () => {
       'userId',
       'amin@email.com',
       undefined,
-      'NextSteps'
+      undefined
     )
   })
 
@@ -89,6 +89,19 @@ describe('findOrFetchUser', () => {
       'amin@email.com',
       undefined,
       'JesusFilmApp'
+    )
+  })
+
+  it('should pass app type when provided', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValueOnce(user)
+    const data = await findOrFetchUser({}, 'userId', undefined, 'NextSteps')
+    expect(data).toEqual(user)
+    expect(verifyUser).toHaveBeenCalledWith(
+      'userId',
+      'amin@email.com',
+      undefined,
+      'NextSteps'
     )
   })
 })

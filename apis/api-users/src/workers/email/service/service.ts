@@ -45,7 +45,28 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
-  const logo = job.data.app ?? 'NextSteps'
+
+  let from: string | undefined
+  let subject: string
+  let logo: AppType
+
+  switch (job.data?.app ?? 'NextSteps') {
+    case 'JesusFilmApp':
+      from = '"Jesus Film App Support" <no-reply@jesusfilm.org>'
+      subject = 'Verify your email address on Jesus Film App'
+      logo = 'JesusFilmApp'
+      break
+    case 'NextSteps':
+      from = '"Next Steps Support" <support@nextstep.is>'
+      subject = 'Verify your email address on Next Steps'
+      logo = 'NextSteps'
+      break
+    default:
+      from = '"Next Steps Support" <support@nextstep.is>'
+      subject = 'Verify your email address on Next Steps'
+      logo = 'NextSteps'
+      break
+  }
 
   const html = await render(
     EmailVerifyEmail({
@@ -67,21 +88,6 @@ export async function service(
       plainText: true
     }
   )
-
-  let from: string | undefined
-  let subject: string
-
-  switch (logo) {
-    case 'JesusFilmApp':
-      from = '"Jesus Film App Support" <support@jesusfilmapp.com>'
-      subject = 'Verify your email address on Jesus Film App'
-      break
-    case 'NextSteps':
-    default:
-      from = '"Next Steps Support" <support@nextstep.is>'
-      subject = 'Verify your email address on Next Steps'
-      break
-  }
 
   await sendEmail(
     {

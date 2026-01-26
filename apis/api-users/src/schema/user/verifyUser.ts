@@ -12,7 +12,7 @@ export async function verifyUser(
   userId: string,
   email: string,
   redirect?: string,
-  app: AppType = 'NextSteps'
+  app?: AppType | undefined
 ): Promise<void> {
   const isExample = email.endsWith('@example.com')
   const token = isExample

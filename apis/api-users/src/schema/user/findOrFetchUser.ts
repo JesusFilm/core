@@ -8,7 +8,7 @@ export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
   redirect: string | undefined = undefined,
-  app: AppType = 'NextSteps'
+  app?: AppType | undefined
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
