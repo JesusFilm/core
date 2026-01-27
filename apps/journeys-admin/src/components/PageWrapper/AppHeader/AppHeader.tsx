@@ -68,12 +68,14 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
-            <Item
-              label={t('Language')}
-              icon={<LanguageIcon sx={{ color: 'white' }} />}
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
               onClick={() => setOpen(true)}
-              variant="icon-button"
-            />
+            >
+              <LanguageIcon sx={{ color: 'white' }} />
+            </IconButton>
             <HelpScoutBeacon
               iconButtonColor="secondary"
               userInfo={{
