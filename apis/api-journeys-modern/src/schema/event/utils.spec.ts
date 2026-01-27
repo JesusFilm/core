@@ -569,7 +569,7 @@ describe('event utils', () => {
       expect(mockWriteValues).not.toHaveBeenCalled()
     })
 
-    it('should append new values with semicolon when updating existing row', async () => {
+    it('should overwrite Date with latest timestamp when updating existing row', async () => {
       const mockSync = {
         id: 'sync-id',
         journeyId: 'journey-id',
@@ -591,14 +591,14 @@ describe('event utils', () => {
       mockReadValues
         .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
         .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([['visitor-id', '2024-01-01', 'Option A']]) // existing row with value
+        .mockResolvedValueOnce([['visitor-id', '2024-01-01T00:00:00.000Z']]) // existing row
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
         row: [
           'visitor-id',
-          '2024-01-01T00:00:00.000Z',
+          '2024-01-02T00:00:00.000Z',
           '',
           '',
           '',
@@ -607,18 +607,16 @@ describe('event utils', () => {
         ]
       })
 
-      // Should call updateRangeValues with merged values (semicolon separated)
+      // Should update the row and overwrite the Date column (no aggregation)
       expect(mockUpdateRangeValues).toHaveBeenCalledWith(
         expect.objectContaining({
-          values: expect.arrayContaining([
-            expect.arrayContaining(['visitor-id'])
-          ])
+          values: [['visitor-id', '2024-01-02T00:00:00.000Z']]
         })
       )
       expect(mockWriteValues).not.toHaveBeenCalled()
     })
 
-    it('should not duplicate values when appending to existing row', async () => {
+    it('should match a concatenated visitorId cell and then overwrite it', async () => {
       const mockSync = {
         id: 'sync-id',
         journeyId: 'journey-id',
@@ -639,27 +637,30 @@ describe('event utils', () => {
       mockEnsureSheet.mockResolvedValue(undefined)
       mockReadValues
         .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
-        .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([
-          ['visitor-id', '2024-01-01', 'Option A; Option B']
-        ]) // existing row with already appended values
+        .mockResolvedValueOnce([['visitor-id; old-junk']]) // concatenated visitorId cell
+        .mockResolvedValueOnce([['visitor-id; old-junk', '2024-01-01T00:00:00.000Z']]) // existing row
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
         row: [
           'visitor-id',
-          '2024-01-01T00:00:00.000Z',
+          '2024-01-02T00:00:00.000Z',
           '',
           '',
           '',
-          'block-id-label',
-          'Option A' // value that already exists
+          '',
+          ''
         ]
       })
 
-      // Should call updateRangeValues without duplicating 'Option A'
-      expect(mockUpdateRangeValues).toHaveBeenCalled()
+      // Should update the existing row (not append) and canonicalize visitorId cell
+      expect(mockWriteValues).not.toHaveBeenCalled()
+      expect(mockUpdateRangeValues).toHaveBeenCalledWith(
+        expect.objectContaining({
+          values: [['visitor-id', '2024-01-02T00:00:00.000Z']]
+        })
+      )
       expect(mockWriteValues).not.toHaveBeenCalled()
     })
 
@@ -748,6 +749,85 @@ describe('event utils', () => {
         expect.objectContaining({
           values: expect.arrayContaining([expect.any(Array)]),
           append: true
+        })
+      )
+    })
+
+    it('should prefer non-fallback labels over "Card 3" when building headers', async () => {
+      const mockSync = {
+        id: 'sync-id',
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+
+      const stepId = 'step-block-1'
+      const cardId = 'card-block-1'
+      const emailBlockId = 'email-block-1'
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        blocks: [
+          {
+            id: stepId,
+            typename: 'StepBlock',
+            parentBlockId: null,
+            parentOrder: 0,
+            nextBlockId: null,
+            deletedAt: null
+          },
+          {
+            id: cardId,
+            typename: 'CardBlock',
+            parentBlockId: stepId,
+            parentOrder: 0,
+            deletedAt: null
+          },
+          {
+            id: emailBlockId,
+            typename: 'TextResponseBlock',
+            parentBlockId: cardId,
+            parentOrder: 0,
+            deletedAt: null
+          }
+        ]
+      } as any)
+
+      // Existing events first produced a fallback label ("Card 3"), later a proper label ("Email")
+      prismaMock.event.findMany.mockResolvedValue([
+        { blockId: emailBlockId, label: 'Card 3' },
+        { blockId: emailBlockId, label: 'Email' }
+      ] as any)
+
+      mockGetTeamGoogleAccessToken.mockResolvedValue({
+        accessToken: 'access-token'
+      })
+      mockEnsureSheet.mockResolvedValue(undefined)
+
+      // Force header update by returning an existing header missing the computed dynamic column
+      mockReadValues
+        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
+        .mockResolvedValueOnce([]) // no existing visitor rows
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: [
+          'visitor-id',
+          '2024-01-01T00:00:00.000Z',
+          '',
+          '',
+          '',
+          `${emailBlockId}-Email`,
+          'test@example.com'
+        ]
+      })
+
+      expect(mockUpdateRangeValues).toHaveBeenCalledWith(
+        expect.objectContaining({
+          values: [['Visitor ID', 'Date', 'Email']]
         })
       )
     })

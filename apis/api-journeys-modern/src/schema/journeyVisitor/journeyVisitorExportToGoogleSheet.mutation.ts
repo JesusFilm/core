@@ -305,16 +305,26 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       // Normalize labels and deduplicate by blockId (keep only first label per blockId)
       // This prevents creating multiple columns for the same block when events have different labels
       const headerMap = new Map<string, { blockId: string; label: string }>()
+      const normalizeLabel = (label: string | null | undefined): string =>
+        (label ?? '').replace(/\s+/g, ' ').trim()
+      const isFallbackLabel = (label: string): boolean => {
+        const normalized = normalizeLabel(label)
+        if (normalized === '') return true
+        return /^(card|step)\s*\d+$/i.test(normalized)
+      }
       blockHeadersResult
         .filter((header) => header.blockId != null)
         .forEach((header) => {
-          const normalizedLabel = (header.label ?? '')
-            .replace(/\s+/g, ' ')
-            .trim()
+          const normalizedLabel = normalizeLabel(header.label)
           // Key by blockId only to ensure one column per block
           const key = header.blockId!
-          // Only add if not already present (keeps first label encountered for each blockId)
-          if (!headerMap.has(key)) {
+          const existing = headerMap.get(key)
+          // Prefer non-empty/non-fallback labels if they appear later.
+          // This prevents early placeholder labels like "Card 3" from locking in bad headers forever.
+          if (
+            existing == null ||
+            (isFallbackLabel(existing.label) && !isFallbackLabel(normalizedLabel))
+          ) {
             headerMap.set(key, {
               blockId: header.blockId!,
               label: normalizedLabel

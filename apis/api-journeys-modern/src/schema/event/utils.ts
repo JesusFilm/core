@@ -264,6 +264,16 @@ export async function appendEventToGoogleSheets({
   row: (string | number | null)[]
   sheetName?: string
 }): Promise<void> {
+  const normalizeLabel = (label: string | null | undefined): string =>
+    (label ?? '').replace(/\s+/g, ' ').trim()
+
+  const isFallbackLabel = (label: string): boolean => {
+    const normalized = normalizeLabel(label)
+    if (normalized === '') return true
+    // Journey builder sometimes sends placeholder-like labels such as "Card 3" or "Step 2"
+    return /^(card|step)\s*\d+$/i.test(normalized)
+  }
+
   const syncs = await prisma.googleSheetsSync.findMany({
     where: { journeyId, teamId, deletedAt: null }
   })
@@ -324,11 +334,16 @@ export async function appendEventToGoogleSheets({
   blockHeadersResult
     .filter((header) => header.blockId != null)
     .forEach((header) => {
-      const normalizedLabel = (header.label ?? '').replace(/\s+/g, ' ').trim()
+      const normalizedLabel = normalizeLabel(header.label)
       // Key by blockId only to ensure one column per block
       const key = header.blockId!
-      // Only add if not already present (keeps first label encountered for each blockId)
-      if (!headerMap.has(key)) {
+      const existing = headerMap.get(key)
+      // Prefer non-empty/non-fallback labels if they appear later.
+      // This prevents early placeholder labels like "Card 3" from locking in bad headers forever.
+      if (
+        existing == null ||
+        (isFallbackLabel(existing.label) && !isFallbackLabel(normalizedLabel))
+      ) {
         headerMap.set(key, {
           blockId: header.blockId!,
           label: normalizedLabel
@@ -485,8 +500,21 @@ export async function appendEventToGoogleSheets({
       })
       let foundRowNumber: number | null = null
       for (let i = 0; i < idColumnValues.length; i++) {
-        const cellVal = idColumnValues[i]?.[0] ?? ''
-        if (cellVal === visitorId && visitorId !== '') {
+        const rawCellVal = idColumnValues[i]?.[0] ?? ''
+        const cellVal = String(rawCellVal).trim()
+        if (visitorId === '') continue
+
+        // Be resilient to historic bad writes where visitorId got concatenated.
+        // Match exact OR match as a ';'-delimited token.
+        const normalizedCellVal = cellVal.startsWith("'")
+          ? cellVal.slice(1).trim()
+          : cellVal
+        const tokens = normalizedCellVal
+          .split(';')
+          .map((t) => t.trim())
+          .filter((t) => t !== '')
+
+        if (normalizedCellVal === visitorId || tokens.includes(visitorId)) {
           foundRowNumber = firstDataRow + i
           break
         }
@@ -501,32 +529,23 @@ export async function appendEventToGoogleSheets({
         const existingRow: string[] = (existingRowRes[0] ?? []).map(
           (value) => value ?? ''
         )
-        const mergedRow = alignedRow.map((value, index) => {
+        const mergedRow = alignedRow.map((newValue, index) => {
+          const key = updatedFinalHeader[index] ?? ''
           const existingValue = existingRow[index] ?? ''
-          // If new value is empty, keep existing
-          if (value === '') return existingValue
-          // If existing value is empty, use new value
-          if (existingValue === '') return value
-          // Both values exist: split both by ';', merge unique parts, and rejoin
-          const existingParts = existingValue.split(';').map((s) => s.trim())
-          const newParts = value.split(';').map((s) => s.trim())
-          const seen = new Set<string>()
-          const merged: string[] = []
-          // Add existing parts first (preserving order)
-          for (const part of existingParts) {
-            if (part !== '' && !seen.has(part)) {
-              seen.add(part)
-              merged.push(part)
-            }
+
+          // Always keep visitorId canonical so future lookups work (single row per visitor).
+          if (key === 'visitorId') {
+            return visitorId !== '' ? visitorId : existingValue
           }
-          // Add new parts that aren't already present
-          for (const part of newParts) {
-            if (part !== '' && !seen.has(part)) {
-              seen.add(part)
-              merged.push(part)
-            }
+
+          // Date should represent latest event timestamp (single value, never aggregated).
+          if (key === 'date') {
+            return createdAt !== '' ? createdAt : existingValue
           }
-          return merged.join('; ')
+
+          // For all other fields, treat a non-empty incoming value as authoritative (overwrite).
+          if (newValue === '') return existingValue
+          return newValue
         })
 
         await updateRangeValues({
