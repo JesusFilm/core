@@ -28,3 +28,11 @@ _Wallaby.js hangs at 'Discovering Testing Framework' after running 'Smart Start'
 2. Run '>Wallaby.js: Select Configuration'
 3. Select 'wallaby.js' from the drop-down of configuration options.
 4. IMPORTANT: Wallaby.js will attempt to run ALL tests inside the core monorepo. Run '>Wallaby.js: Stop', then run '>Wallaby.js: Smart Start'.
+
+_Activating OSS license failed because of expired paid license / Wallaby.js doesn't recognize my organization email_
+
+1. [Register your organization email](https://wallabyjs.com/oss/) for a free OSS license on Wallaby.js official website
+    * If you own an expired paid license key, either remove it from your account, or contact Wallaby.js support team for assistance
+2. Ensure Wallaby.js sends a confirmation email to you via your registered email address
+3. Re-submit the same organization email in the Wallaby.js license activation submission field.
+For more information about licensing, see [Wallaby.js's documentation](https://wallabyjs.com/docs/support/license/)
