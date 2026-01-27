@@ -12,22 +12,34 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('AddJourneyFab', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
+  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => false))
 
-  // Cannot test mobile in unit test until we can useMediaQuery
-  it.skip('should open side panel drawer on fab click', async () => {
+  // Cannot test mobile in unit test until we can useMediaQuery ||| YES WE CAN!!!!!!!!!!!!!
+  it('should open side panel drawer on fab click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
-        <PageWrapper title="test open side drawer">
+        <PageWrapper 
+          title="test open side drawer"
+          sidePanelTitle="test side panel title"
+          sidePanelChildren={<div>test side panel children</div>}
+        >
           <AddJourneyFab />
         </PageWrapper>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
+
+    expect(() => getByTestId('mobile-side-panel')).toThrow()
     fireEvent.click(getByRole('button', { name: 'Add' }))
 
     await waitFor(() =>
-      expect(getByTestId('mobile-side-drawer')).toBeInTheDocument()
+      expect(getByTestId('mobile-side-panel')).toBeInTheDocument()
     )
+
+    fireEvent.click(getByTestId('close-side-drawer'))
+
+    await waitFor(() => {
+      expect(() => getByTestId('mobile-side-panel')).toThrow()
+    })
   })
 })

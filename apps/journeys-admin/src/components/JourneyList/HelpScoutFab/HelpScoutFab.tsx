@@ -48,7 +48,7 @@ export function HelpScoutFab(): ReactElement {
             }}
             data-testid="HelpScoutFab"
         >
-            {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
+            {beaconOpen ? <XCircleContained data-testid="HelpScoutFabCloseIcon" /> : <HelpCircleContained data-testid="HelpScoutFabHelpIcon" />}
         </Fab>
     )
 }
