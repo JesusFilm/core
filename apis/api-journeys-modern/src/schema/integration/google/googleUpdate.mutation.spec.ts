@@ -136,7 +136,8 @@ describe('integrationGoogleUpdate', () => {
           accessSecretCipherText: 'encrypted-secret',
           accessSecretIv: 'iv',
           accessSecretTag: 'tag',
-          accountEmail: 'updated@example.com'
+          accountEmail: 'updated@example.com',
+          oauthStale: false
         }
       })
     )
