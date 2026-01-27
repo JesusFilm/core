@@ -3,15 +3,20 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
+import LanguageIcon from '@mui/icons-material/Language'
 import Image from 'next/image'
 import { User } from 'next-firebase-auth'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
+
+import { LanguageSwitcher } from '../../LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
+import { Item } from '../../Editor/Toolbar/Items/Item'
 
 export interface MainBodyContainerProps {
   onClick: () => void
@@ -23,6 +28,8 @@ export function AppHeader({
   user
 }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
+  const { t } = useTranslation('apps-journeys-admin')
+  const [open, setOpen] = useState(false)
 
   return (
     <Box
@@ -53,7 +60,7 @@ export function AppHeader({
               direction="row"
               flexGrow={1}
               justifyContent="center"
-              sx={{ ml: -9 }}
+              sx={{ mx: -9 }}
             >
               <Image
                 src={taskbarIcon}
@@ -62,6 +69,14 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
+
+            <Item
+              label={t('Language')}
+              icon={<LanguageIcon sx={{ color: 'white' }} />}
+              onClick={() => setOpen(true)}
+              variant="icon-button"
+            />
+
             <HelpScoutBeacon
               iconButtonColor="secondary"
               userInfo={{
@@ -70,6 +85,9 @@ export function AppHeader({
               }}
             />
           </Stack>
+          {open && (
+            <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
+          )}
         </Toolbar>
       </AppBar>
     </Box>
