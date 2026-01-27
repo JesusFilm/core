@@ -15,7 +15,7 @@ import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 import { LanguageSwitcher } from '../../LanguageSwitcher'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 import { Item } from '../../Editor/Toolbar/Items/Item'
 
 export interface MainBodyContainerProps {
@@ -69,14 +69,12 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
-
             <Item
               label={t('Language')}
               icon={<LanguageIcon sx={{ color: 'white' }} />}
               onClick={() => setOpen(true)}
               variant="icon-button"
             />
-
             <HelpScoutBeacon
               iconButtonColor="secondary"
               userInfo={{
