@@ -1,7 +1,7 @@
 FROM node:22-alpine
 
 # -------------------------
-# System deps for sharp / vips
+# System deps for sharp / vips / canvas
 # -------------------------
 RUN apk add --no-cache \
   build-base \
@@ -13,7 +13,21 @@ RUN apk add --no-cache \
   nasm \
   bash \
   vips-dev \
-  git
+  git \
+  cairo-dev \
+  pango-dev \
+  jpeg-dev \
+  giflib-dev \
+  pixman-dev \
+  freetype-dev \
+  fontconfig-dev \
+  cairo \
+  pango \
+  jpeg \
+  giflib \
+  pixman \
+  fontconfig \
+  ttf-dejavu
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
