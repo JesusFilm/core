@@ -578,11 +578,17 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         eventWhere,
         userTimezone
       )) {
-        // Align row data to columns using column key
-        // Column order is determined by exportOrder, matching uses key
-        const aligned = columns.map((col) => {
-          const value = row[col.key] ?? ''
-          return sanitizeGoogleSheetsCell(value)
+        // Build a lookup map from the row using the same keys as getJourneyVisitors
+        // The row already contains keys like 'visitorId', 'date', and '${blockId}-${label}'
+        const rowLookup = new Map<string, string>()
+        for (const [key, value] of Object.entries(row)) {
+          rowLookup.set(key, sanitizeGoogleSheetsCell(value))
+        }
+
+        // Iterate over finalHeader to produce aligned values matching the header row order
+        // This ensures each column gets its corresponding value (or empty string if missing)
+        const aligned = finalHeader.map((key) => {
+          return rowLookup.get(key) ?? ''
         })
         values.push(aligned)
       }
