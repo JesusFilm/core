@@ -52,7 +52,7 @@ export async function service(
 
   switch (job.data?.app ?? 'NextSteps') {
     case 'JesusFilmApp':
-      from = '"Jesus Film App Support" <accounts@jesusfilm.org>'
+      from = '"Jesus Film App Support" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address on Jesus Film App'
       logo = 'JesusFilmApp'
       break
