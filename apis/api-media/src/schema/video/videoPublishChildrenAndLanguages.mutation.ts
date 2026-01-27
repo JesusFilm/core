@@ -133,7 +133,9 @@ builder.mutationFields((t) => ({
       try {
         // Update videos index for parent + all children (hasAvailableLanguages relies on availableLanguages)
         await Promise.all(
-          [parent.id, ...allChildIds].map((videoId) => updateVideoInAlgolia(videoId))
+          [parent.id, ...allChildIds].map((videoId) =>
+            updateVideoInAlgolia(videoId)
+          )
         )
       } catch (error) {
         console.error('Algolia update error:', error)
