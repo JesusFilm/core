@@ -14,6 +14,7 @@ import {
   DESKTOP_CONTAINER_PADDING,
   DESKTOP_CONTAINER_WIDTH,
   MOBILE_APP_BAR_GAP,
+  MOBILE_CONTAINER_BOTTOM,
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
   MOBILE_CONTAINER_WIDTH
@@ -84,10 +85,10 @@ export function BeaconInit({
         }
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: ${DESKTOP_APP_BAR_GAP};
-          right: ${DESKTOP_CONTAINER_PADDING};
           width: ${DESKTOP_CONTAINER_WIDTH};
           height: ${DESKTOP_CONTAINER_HEIGHT};
-          max-height: ${DESKTOP_CONTAINER_MAX_HEIGHT};
+          right: ${DESKTOP_CONTAINER_PADDING};
+          max-height: ${DESKTOP_CONTAINER_MAX_HEIGHT}
         }
         ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
@@ -95,6 +96,7 @@ export function BeaconInit({
             width: ${MOBILE_CONTAINER_WIDTH};
             height: ${MOBILE_CONTAINER_HEIGHT};
             max-height: ${MOBILE_CONTAINER_MAX_HEIGHT};
+            right: 0px !important;
             border-radius: 0px;
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
@@ -107,7 +109,7 @@ export function BeaconInit({
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             position: fixed !important;
             top: 30px !important;
-            right: 25px !important;
+            right: 0px !important;
             // width: 325px !important;
           }
         }

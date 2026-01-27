@@ -20,12 +20,16 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
+  const theme = useTheme()
+  const mdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
@@ -64,12 +68,12 @@ function IndexPage(): ReactElement {
               <Typography variant="subtitle1">
                 {t('Create a New Journey')}
               </Typography>
-              <HelpScoutBeacon
+              {mdUp && <HelpScoutBeacon
                 userInfo={{
                   name: user?.displayName ?? '',
                   email: user?.email ?? ''
                 }}
-              />
+              />}
             </>
           ) : undefined
         }
