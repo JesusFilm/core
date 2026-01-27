@@ -10,29 +10,32 @@ Wallaby.js is a powerful continuous testing tool that runs your unit tests in re
 
 #### Installation and Setup
 
-1. Install the 'Wallaby.js' extension in your IDE
-2. As Wallaby.js is free for open-source projects such as core, activate your OSS license by opening Wallaby.js settings -> 'Manage License Key' -> Submit your organization email
-3. Open the command palette (F1) and run '>Wallaby.js: Smart Start'
-4. Wallaby.js will now run the unit tests within any unit test file that is opened and focused. For more information on using Wallaby.js, please read the [documentation on their official website](https://wallabyjs.com/docs/).
+1. [Register your organization email](https://wallabyjs.com/oss/) for a free OSS license on Wallaby.js official website
+    * Ensure Wallaby.js sends a confirmation email to you via your registered email address
+2. Install the 'Wallaby.js' extension in your IDE
+3. Activate your OSS license by opening Wallaby.js extension settings -> 'Manage License Key' -> Submit your organization email
+4. Open the command palette (F1) and run '>Wallaby.js: Smart Start'
+5. Wallaby.js will now run the unit tests within any unit test file that is opened and focused. 
+
+For more information on using Wallaby.js, please read the [documentation on their official website](https://wallabyjs.com/docs/).
 
 #### Common Issues
 
-_Wallaby.js fails to verify the open-source state of core_
+##### _Wallaby.js fails to verify the open-source state of core_
 
 1. Try running '>Wallaby.js: Smart Start' again
 2. (If persisting) uninstall Wallaby.js from your IDE, open Docker Desktop -> click 'app-1' -> 'Files' -> home/node/ -> delete the .wallaby folder, then restart from step 1 again.
 
-_Wallaby.js hangs at 'Discovering Testing Framework' after running 'Smart Start'_
+##### _Wallaby.js hangs at 'Discovering Testing Framework' after running 'Smart Start'_
 
 1. Stop Wallaby.js by running '>Wallaby.js: Stop'
 2. Run '>Wallaby.js: Select Configuration'
 3. Select 'wallaby.js' from the drop-down of configuration options.
-4. IMPORTANT: Wallaby.js will attempt to run ALL tests inside the core monorepo. Run '>Wallaby.js: Stop', then run '>Wallaby.js: Smart Start'.
+4. **IMPORTANT:** Wallaby.js will attempt to run ALL tests inside the core monorepo. Run '>Wallaby.js: Stop', then run '>Wallaby.js: Smart Start'.
 
-_Activating OSS license failed because of expired paid license / Wallaby.js doesn't recognize my organization email_
+##### _Activating OSS license failed because of expired paid license_
 
-1. [Register your organization email](https://wallabyjs.com/oss/) for a free OSS license on Wallaby.js official website
-    * If you own an expired paid license key, either remove it from your account, or contact Wallaby.js support team for assistance
-2. Ensure Wallaby.js sends a confirmation email to you via your registered email address
-3. Re-submit the same organization email in the Wallaby.js license activation submission field.
+1. If you own an expired paid license key, either remove it from your account, or contact Wallaby.js support team for assistance in removing it
+2. When the expired key is removed from your account, proceed through the installation and setup instructions as usual
+
 For more information about licensing, see [Wallaby.js's documentation](https://wallabyjs.com/docs/support/license/)
