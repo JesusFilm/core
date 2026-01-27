@@ -99,7 +99,7 @@ describe('service', () => {
         subject: 'Verify your email address on Jesus Film App',
         text: 'Mocked plain text email content',
         html: '<div>Mocked HTML email content</div>',
-        from: '"Jesus Film App Support" <accounts@jesusfilm.org>'
+        from: '"Jesus Film App Support" <no-reply@jesusfilm.org>'
       },
       undefined
     )
