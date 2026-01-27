@@ -1,22 +1,21 @@
+import LanguageIcon from '@mui/icons-material/Language'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import LanguageIcon from '@mui/icons-material/Language'
 import Image from 'next/image'
 import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { HelpScoutBeacon } from '../../HelpScoutBeacon'
-import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
-
-import { LanguageSwitcher } from '../../LanguageSwitcher'
-import { useTranslation } from 'next-i18next'
 import { Item } from '../../Editor/Toolbar/Items/Item'
+import { HelpScoutBeacon } from '../../HelpScoutBeacon'
+import { LanguageSwitcher } from '../../LanguageSwitcher'
+import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
   onClick: () => void
