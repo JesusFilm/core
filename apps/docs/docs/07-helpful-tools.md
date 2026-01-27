@@ -13,7 +13,7 @@ Wallaby.js is a powerful continuous testing tool that runs your unit tests in re
 1. Install the 'Wallaby.js' extension in your IDE
 2. As Wallaby.js is free for open-source projects such as core, activate your OSS license by opening Wallaby.js settings -> 'Manage License Key' -> Submit your organization email
 3. Open the command palette (F1) and run '>Wallaby.js: Smart Start'
-4. Wallaby.js will now run the unit tests within any unit test file that is opened and focused. Fore mor information on using Wallaby.js, please read the [documentation on their official website](https://wallabyjs.com/docs/).
+4. Wallaby.js will now run the unit tests within any unit test file that is opened and focused. For more information on using Wallaby.js, please read the [documentation on their official website](https://wallabyjs.com/docs/).
 
 #### Common Issues
 
