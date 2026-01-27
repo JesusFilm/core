@@ -1,9 +1,11 @@
-FROM node:22-bookworm-slim
+FROM node:22-bookworm-slim AS base
 
-# -------------------------
-# System deps for sharp / vips / canvas (runtime only, no build tools needed)
-# -------------------------
-RUN apt-get update && apt-get install -y \
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+ARG SERVICE_VERSION=0.0.1
+ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
   # sharp
   libglib2.0-0 \
   libexpat1 \
@@ -16,41 +18,28 @@ RUN apt-get update && apt-get install -y \
   librsvg2-2 \
   && rm -rf /var/lib/apt/lists/*
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-ARG SERVICE_VERSION=0.0.1
-ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
+WORKDIR /app
 
-# -------------------------
-# Workspace root
-# -------------------------
-WORKDIR /opt
+FROM base AS build
 
-# Copy only what pnpm needs to resolve CMS
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/cms/package.json ./apps/cms/package.json
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-# Enable pnpm and prepare the version from package.json
 RUN corepack enable && corepack prepare --activate
 
-# Install ONLY cms prod deps (--prod skips devDependencies; filter restricts to cms closure)
-# --ignore-scripts skips root "prepare: husky install" and other lifecycle scripts
-# Mount pnpm store cache (works in GitHub Actions with Buildx)
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-  pnpm install \
-  --frozen-lockfile \
-  --prod \
-  --ignore-scripts \
-  --filter ./apps/cms...
+COPY apps/cms ./apps/cms
 
-# -------------------------
-# Copy CMS source and pre-built dist from workflow (no build in container)
-# -------------------------
-COPY --chown=node:node apps/cms ./apps/cms
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+  pnpm deploy --prod --filter cms ./apps/cms/deploy
 
-WORKDIR /opt/apps/cms
+WORKDIR /app/apps/cms/deploy
+
+RUN ["npm", "run", "build"]
+
+FROM base AS runtime
+
+COPY --from=build --chown=node:node /app/apps/cms/deploy .
 
 USER node
 
 EXPOSE 1337
-CMD ["pnpm", "run", "start"]
+CMD ["npm", "run", "start"]
