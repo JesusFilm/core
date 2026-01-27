@@ -581,15 +581,34 @@ describe('event utils', () => {
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
       prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
+        blocks: [
+          {
+            id: 'step-block-1',
+            typename: 'StepBlock',
+            parentBlockId: null,
+            parentOrder: 0,
+            nextBlockId: null,
+            deletedAt: null
+          },
+          {
+            id: 'block-id',
+            typename: 'RadioQuestionBlock',
+            parentBlockId: 'step-block-1',
+            parentOrder: 0,
+            nextBlockId: null,
+            deletedAt: null
+          }
+        ]
       } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
+      prismaMock.event.findMany.mockResolvedValue([
+        { blockId: 'block-id', label: 'Poll' }
+      ] as any)
       mockGetTeamGoogleAccessToken.mockResolvedValue({
         accessToken: 'access-token'
       })
       mockEnsureSheet.mockResolvedValue(undefined)
       mockReadValues
-        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
+        .mockResolvedValueOnce([['Visitor ID', 'Date', 'Poll']]) // existing header
         .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
         .mockResolvedValueOnce([
           ['visitor-id', '2024-01-01T00:00:00.000Z', 'Option A']
@@ -604,7 +623,7 @@ describe('event utils', () => {
           '',
           '',
           '',
-          'block-id-label',
+          'block-id-Poll',
           'Option B' // new value to append
         ]
       })
