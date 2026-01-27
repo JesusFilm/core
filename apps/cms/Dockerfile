@@ -1,19 +1,19 @@
 FROM node:22-bookworm-slim
 
 # -------------------------
-# System deps for sharp / vips / canvas
+# System deps for sharp / vips / canvas (runtime only, no build tools needed)
 # -------------------------
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  build-essential \
-  libvips-dev \
-  libcairo2-dev \
-  libpango1.0-dev \
-  libjpeg-dev \
-  libgif-dev \
-  libpng-dev \
-  libpixman-1-dev \
-  libfreetype6-dev \
-  libfontconfig1-dev \
+RUN apt-get update && apt-get install -y \
+  # sharp
+  libglib2.0-0 \
+  libexpat1 \
+  ca-certificates \
+  # canvas
+  libcairo2 \
+  libpango-1.0-0 \
+  libjpeg62-turbo \
+  libgif7 \
+  librsvg2-2 \
   && rm -rf /var/lib/apt/lists/*
 
 ARG NODE_ENV=production
