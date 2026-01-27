@@ -13,6 +13,7 @@ import {
 } from '../../lib/google/sheets'
 import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
+import { logger } from '../logger'
 
 import { computeConnectedBlockIds } from './export/connectivity'
 import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
@@ -578,11 +579,17 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         eventWhere,
         userTimezone
       )) {
-        // Align row data to columns using column key
-        // Column order is determined by exportOrder, matching uses key
-        const aligned = columns.map((col) => {
-          const value = row[col.key] ?? ''
-          return sanitizeGoogleSheetsCell(value)
+        // Build a lookup map from the row using the same keys as getJourneyVisitors
+        // The row already contains keys like 'visitorId', 'date', and '${blockId}-${label}'
+        const rowLookup = new Map<string, string>()
+        for (const [key, value] of Object.entries(row)) {
+          rowLookup.set(key, sanitizeGoogleSheetsCell(value))
+        }
+
+        // Iterate over finalHeader to produce aligned values matching the header row order
+        // This ensures each column gets its corresponding value (or empty string if missing)
+        const aligned = finalHeader.map((key) => {
+          return rowLookup.get(key) ?? ''
         })
         values.push(aligned)
       }
@@ -618,7 +625,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         .filter((col) => col.blockId != null && col.exportOrder == null)
         .map((col, index) => {
           // Find the actual position in the columns array (accounting for base columns)
-          const columnPosition = columns.findIndex((c) => c.blockId === col.blockId)
+          const columnPosition = columns.findIndex(
+            (c) => c.blockId === col.blockId
+          )
           return {
             blockId: col.blockId!,
             // exportOrder is the position after base columns (1-based for block columns)
@@ -628,14 +637,23 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         .filter(({ exportOrder }) => exportOrder > 0)
 
       if (blocksToUpdate.length > 0) {
-        await Promise.all(
-          blocksToUpdate.map(({ blockId, exportOrder }) =>
-            prisma.block.update({
-              where: { id: blockId },
-              data: { exportOrder }
-            })
+        try {
+          await Promise.all(
+            blocksToUpdate.map(({ blockId, exportOrder }) =>
+              prisma.block.update({
+                where: { id: blockId },
+                data: { exportOrder }
+              })
+            )
           )
-        )
+        } catch (error) {
+          // Best-effort: log error but don't rethrow so the mutation can return success
+          // The sheet write and sync have already succeeded at this point
+          logger.error(
+            { error, blocksToUpdate, journeyId },
+            'Failed to update exportOrder on blocks after successful sheet export'
+          )
+        }
       }
 
       return { spreadsheetId, spreadsheetUrl, sheetName }

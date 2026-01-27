@@ -25,7 +25,8 @@ describe('crypto', () => {
     accessSecretIv: 'dx+2iBr7yYvilLIC',
     accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA==',
     accountEmail: null,
-    userId: null
+    userId: null,
+    oauthStale: false
   }
 
   describe('encryptSymmetric', () => {
