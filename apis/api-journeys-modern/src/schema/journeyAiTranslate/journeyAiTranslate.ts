@@ -380,7 +380,7 @@ If there is no Bible translation available, use the the most popular English Bib
   chapter:verse separator to match the target language's conventions.
 
   - References may appear in various formats (e.g., "Luke 2:10", "Luke 2:10-12", 
-  "Mark 10:1, 3"). Always translate the book name and preserve the reference structure 
+  "Mark 10:1, 3", "1 Peter 3:15"). Always translate the book name and preserve the reference structure 
   while adapting formatting to the target language.
 `
 
