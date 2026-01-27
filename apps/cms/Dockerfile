@@ -33,11 +33,14 @@ COPY apps/cms/package.json ./apps/cms/package.json
 # Enable pnpm and prepare the version from package.json
 RUN corepack enable && corepack prepare --activate
 
-# Install ONLY cms deps
+# Install ONLY cms prod deps (--prod skips devDependencies; filter restricts to cms closure)
+# --ignore-scripts skips root "prepare: husky install" and other lifecycle scripts
 # Mount pnpm store cache (works in GitHub Actions with Buildx)
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
   pnpm install \
   --frozen-lockfile \
+  --prod \
+  --ignore-scripts \
   --filter ./apps/cms...
 
 # -------------------------
