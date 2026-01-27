@@ -7,7 +7,6 @@ import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 export function HelpScoutFab(): ReactElement {
     const router = useRouter()
-    const [loaded, setLoaded] = useState(false)
     const [beaconOpen, setBeaconOpen] = useState(false)
 
     function handleBeaconToggle(): void {
@@ -20,10 +19,6 @@ export function HelpScoutFab(): ReactElement {
             })
         }
     }
-
-    useEffect(() => {
-        handleBeaconToggle()
-    }, [loaded, setBeaconOpen])
 
     const handleBeaconClick = (): void => {
         if (window.Beacon != null) {
@@ -48,7 +43,7 @@ export function HelpScoutFab(): ReactElement {
             }}
             data-testid="HelpScoutFab"
         >
-            {beaconOpen ? <XCircleContained data-testid="HelpScoutFabCloseIcon" /> : <HelpCircleContained data-testid="HelpScoutFabHelpIcon" />}
+            {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
         </Fab>
     )
 }

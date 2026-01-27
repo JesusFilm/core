@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { HelpScoutFab } from './HelpScoutFab'
@@ -11,6 +11,7 @@ jest.mock('next/router', () => ({
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('HelpScoutBeacon', () => {
+
     beforeEach(() => {
         window.Beacon = jest.fn()
     })
@@ -55,17 +56,43 @@ describe('HelpScoutBeacon', () => {
         expect(push).toHaveBeenCalledWith('https://support.nextstep.is/')
     })
 
-    it('should change icon when beacon is toggled', () => {
+    it('should change icon when beacon is toggled', async () => {
+
+        let openCallback = jest.fn()
+        let closeCallback = jest.fn()
+        let isOpen = false
+
+        const mockBeacon = jest.fn((...args: unknown[]) => {
+            if (args[0] === 'on' && args[1] === 'open') {
+                openCallback = args[2] as jest.Mock
+                openCallback()
+            } else if (args[0] === 'on' && args[1] === 'close') {
+                closeCallback = args[2] as jest.Mock
+                closeCallback()
+            } else if (args[0] === 'toggle') {
+                isOpen = !isOpen
+                if (isOpen && openCallback) {
+                    openCallback()
+                } else if (!isOpen && closeCallback) {
+                    closeCallback()
+                }
+            }
+        })
+
+        window.Beacon = mockBeacon
+
         mockedUseRouter.mockReturnValue({
             events: {
                 on: jest.fn(),
                 off: jest.fn()
             }
         } as unknown as NextRouter)
+
         render(<HelpScoutFab />)
+        expect(screen.getByTestId('HelpCircleContainedIcon')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('HelpScoutFab'))
-        expect(screen.getByTestId('HelpScoutFabCloseIcon')).toBeInTheDocument()
+        await waitFor(() => expect(screen.getByTestId('XCircleContainedIcon')).toBeInTheDocument())
         fireEvent.click(screen.getByTestId('HelpScoutFab'))
-        expect(screen.getByTestId('HelpScoutFabHelpIcon')).toBeInTheDocument()
+        await waitFor(() => expect(screen.getByTestId('HelpCircleContainedIcon')).toBeInTheDocument())
     })
 })

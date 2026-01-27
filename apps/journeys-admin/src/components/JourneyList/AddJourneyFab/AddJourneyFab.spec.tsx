@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { PageWrapper } from '../../PageWrapper'
@@ -12,13 +11,11 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('AddJourneyFab', () => {
-  beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => false))
-
-  // Cannot test mobile in unit test until we can useMediaQuery ||| YES WE CAN!!!!!!!!!!!!!
+  // Cannot test mobile in unit test until we can useMediaQuery because sx uses CSS media queries, which JSDOM does not evaluate
   it('should open side panel drawer on fab click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
-        <PageWrapper 
+        <PageWrapper
           title="test open side drawer"
           sidePanelTitle="test side panel title"
           sidePanelChildren={<div>test side panel children</div>}
