@@ -24,34 +24,6 @@ interface RefreshGoogleTokenContext {
   [key: string]: unknown
 }
 
-/**
- * Marks the integration as having stale OAuth credentials and sends an email notification
- * to the user to reconnect their Google account.
- */
-async function handleStaleOAuth(
-  integrationId: string,
-  teamId: string,
-  accountEmail?: string | null
-): Promise<void> {
-  try {
-    // Mark the integration as stale
-    const integration = await prisma.integration.update({
-      where: { id: integrationId },
-      data: { oauthStale: true },
-      include: { team: true }
-    })
-  } catch (error) {
-    logger.error(
-      {
-        integrationId,
-        teamId,
-        error: error instanceof Error ? error.message : String(error)
-      },
-      'Failed to handle stale OAuth'
-    )
-  }
-}
-
 async function refreshGoogleToken(
   integration: IntegrationTokenData,
   errorMessage: string,
@@ -118,31 +90,12 @@ async function refreshGoogleToken(
       errorDetails,
       'Failed to refresh Google OAuth token, falling back to treating secret as access token'
     )
-
-    // Mark the integration as stale
-    if (context?.integrationId != null && context?.teamId != null) {
-      await handleStaleOAuth(
-        context.integrationId,
-        context.teamId,
-        integration.accountEmail
-      )
-    }
   }
 
   // Fallback: treat secret as access_token
   throw new Error(
     'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
   )
-}
-
-/**
- * Error thrown when the Google integration OAuth credentials are stale and require re-authorization.
- */
-export class StaleOAuthError extends Error {
-  constructor(message: string = 'Google integration OAuth credentials are stale. Re-authorization is required.') {
-    super(message)
-    this.name = 'StaleOAuthError'
-  }
 }
 
 export async function getTeamGoogleAccessToken(
@@ -155,18 +108,12 @@ export async function getTeamGoogleAccessToken(
       accessSecretCipherText: true,
       accessSecretIv: true,
       accessSecretTag: true,
-      accountEmail: true,
-      oauthStale: true
+      accountEmail: true
     }
   })
 
   if (integration == null) {
     throw new Error('Google integration not configured for this team')
-  }
-
-  // If the integration is marked as stale, don't attempt to refresh the token
-  if (integration.oauthStale) {
-    throw new StaleOAuthError()
   }
 
   return refreshGoogleToken(
@@ -182,12 +129,10 @@ export async function getIntegrationGoogleAccessToken(
   const integration = await prisma.integration.findUnique({
     where: { id: integrationId },
     select: {
-      teamId: true,
       accessSecretCipherText: true,
       accessSecretIv: true,
       accessSecretTag: true,
-      accountEmail: true,
-      oauthStale: true
+      accountEmail: true
     }
   })
 
@@ -195,13 +140,7 @@ export async function getIntegrationGoogleAccessToken(
     throw new Error('Google integration not found')
   }
 
-  // If the integration is marked as stale, don't attempt to refresh the token
-  if (integration.oauthStale) {
-    throw new StaleOAuthError()
-  }
-
   return refreshGoogleToken(integration, 'Google integration not found', {
-    integrationId,
-    teamId: integration.teamId
+    integrationId
   })
 }

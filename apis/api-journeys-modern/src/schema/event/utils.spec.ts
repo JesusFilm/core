@@ -1,10 +1,7 @@
 import { format } from 'date-fns'
 
 import { prismaMock } from '../../../test/prismaMock'
-import {
-  StaleOAuthError,
-  getTeamGoogleAccessToken
-} from '../../lib/google/googleAuth'
+import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
 import {
   ensureSheet,
   readValues,
@@ -25,15 +22,7 @@ import {
 } from './utils'
 
 jest.mock('../../lib/google/googleAuth', () => ({
-  getTeamGoogleAccessToken: jest.fn(),
-  StaleOAuthError: class StaleOAuthError extends Error {
-    constructor(
-      message: string = 'Google integration OAuth credentials are stale. Re-authorization is required.'
-    ) {
-      super(message)
-      this.name = 'StaleOAuthError'
-    }
-  }
+  getTeamGoogleAccessToken: jest.fn()
 }))
 
 jest.mock('../../lib/google/sheets', () => ({
@@ -483,48 +472,6 @@ describe('event utils', () => {
       })
 
       expect(mockGetTeamGoogleAccessToken).not.toHaveBeenCalled()
-    })
-
-    it('should skip sync silently when integration is stale', async () => {
-      const mockSync = {
-        id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id',
-        sheetName: 'Sheet1',
-        deletedAt: null
-      }
-
-      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      // Throw StaleOAuthError when trying to get access token
-      mockGetTeamGoogleAccessToken.mockRejectedValue(new StaleOAuthError())
-
-      // Should not throw, should return silently
-      await expect(
-        appendEventToGoogleSheets({
-          journeyId: 'journey-id',
-          teamId: 'team-id',
-          row: [
-            'visitor-id',
-            '2024-01-01T00:00:00.000Z',
-            'John Doe',
-            'john@example.com',
-            '+1234567890',
-            'block-id-label',
-            'dynamic-value'
-          ]
-        })
-      ).resolves.toBeUndefined()
-
-      // Should not attempt any sheet operations
-      expect(mockEnsureSheet).not.toHaveBeenCalled()
-      expect(mockReadValues).not.toHaveBeenCalled()
-      expect(mockWriteValues).not.toHaveBeenCalled()
-      expect(mockUpdateRangeValues).not.toHaveBeenCalled()
     })
 
     it('should append new row when visitor does not exist in sheet', async () => {

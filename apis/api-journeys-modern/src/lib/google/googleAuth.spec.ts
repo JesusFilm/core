@@ -5,7 +5,6 @@ import { decryptSymmetric } from '@core/yoga/crypto'
 import { prismaMock } from '../../../test/prismaMock'
 
 import {
-  StaleOAuthError,
   getIntegrationGoogleAccessToken,
   getTeamGoogleAccessToken
 } from './googleAuth'
@@ -28,12 +27,10 @@ describe('googleAuth', () => {
   describe('getTeamGoogleAccessToken', () => {
     it('should return access token from refresh token', async () => {
       const mockIntegration = {
-        id: 'integration-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
-        accountEmail: 'test@example.com',
-        oauthStale: false
+        accountEmail: 'test@example.com'
       }
 
       prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
@@ -54,8 +51,7 @@ describe('googleAuth', () => {
           accessSecretCipherText: true,
           accessSecretIv: true,
           accessSecretTag: true,
-          accountEmail: true,
-          oauthStale: true
+          accountEmail: true
         }
       })
 
@@ -80,38 +76,12 @@ describe('googleAuth', () => {
       })
     })
 
-    it('should throw StaleOAuthError when integration is stale', async () => {
-      const mockIntegration = {
-        id: 'integration-id',
-        accessSecretCipherText: 'ciphertext',
-        accessSecretIv: 'iv',
-        accessSecretTag: 'tag',
-        accountEmail: 'test@example.com',
-        oauthStale: true
-      }
-
-      prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
-
-      await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
-        StaleOAuthError
-      )
-      await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
-        'Google integration OAuth credentials are stale. Re-authorization is required.'
-      )
-
-      // Should not attempt to decrypt or refresh
-      expect(mockDecryptSymmetric).not.toHaveBeenCalled()
-      expect(mockAxios.post).not.toHaveBeenCalled()
-    })
-
     it('should throw re-authorization required error when refresh fails', async () => {
       const mockIntegration = {
-        id: 'integration-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
-        accountEmail: 'test@example.com',
-        oauthStale: false
+        accountEmail: 'test@example.com'
       }
 
       prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
@@ -133,12 +103,10 @@ describe('googleAuth', () => {
 
     it('should throw error when integration missing required fields', async () => {
       prismaMock.integration.findFirst.mockResolvedValue({
-        id: 'integration-id',
         accessSecretCipherText: null,
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
-        accountEmail: 'test@example.com',
-        oauthStale: false
+        accountEmail: 'test@example.com'
       } as any)
 
       await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
@@ -150,12 +118,10 @@ describe('googleAuth', () => {
   describe('getIntegrationGoogleAccessToken', () => {
     it('should return access token from refresh token', async () => {
       const mockIntegration = {
-        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
-        accountEmail: 'integration@example.com',
-        oauthStale: false
+        accountEmail: 'integration@example.com'
       }
 
       prismaMock.integration.findUnique.mockResolvedValue(
@@ -174,12 +140,10 @@ describe('googleAuth', () => {
       expect(prismaMock.integration.findUnique).toHaveBeenCalledWith({
         where: { id: 'integration-id' },
         select: {
-          teamId: true,
           accessSecretCipherText: true,
           accessSecretIv: true,
           accessSecretTag: true,
-          accountEmail: true,
-          oauthStale: true
+          accountEmail: true
         }
       })
 
@@ -189,42 +153,12 @@ describe('googleAuth', () => {
       })
     })
 
-    it('should throw StaleOAuthError when integration is stale', async () => {
-      const mockIntegration = {
-        teamId: 'team-id',
-        accessSecretCipherText: 'ciphertext',
-        accessSecretIv: 'iv',
-        accessSecretTag: 'tag',
-        accountEmail: 'integration@example.com',
-        oauthStale: true
-      }
-
-      prismaMock.integration.findUnique.mockResolvedValue(
-        mockIntegration as any
-      )
-
-      await expect(
-        getIntegrationGoogleAccessToken('integration-id')
-      ).rejects.toThrow(StaleOAuthError)
-      await expect(
-        getIntegrationGoogleAccessToken('integration-id')
-      ).rejects.toThrow(
-        'Google integration OAuth credentials are stale. Re-authorization is required.'
-      )
-
-      // Should not attempt to decrypt or refresh
-      expect(mockDecryptSymmetric).not.toHaveBeenCalled()
-      expect(mockAxios.post).not.toHaveBeenCalled()
-    })
-
     it('should throw re-authorization required error when refresh fails', async () => {
       const mockIntegration = {
-        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
-        accountEmail: 'integration@example.com',
-        oauthStale: false
+        accountEmail: 'integration@example.com'
       }
 
       prismaMock.integration.findUnique.mockResolvedValue(
@@ -250,12 +184,10 @@ describe('googleAuth', () => {
 
     it('should throw error when integration missing required fields', async () => {
       prismaMock.integration.findUnique.mockResolvedValue({
-        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: null,
         accessSecretTag: 'tag',
-        accountEmail: 'test@example.com',
-        oauthStale: false
+        accountEmail: 'test@example.com'
       } as any)
 
       await expect(
@@ -267,12 +199,10 @@ describe('googleAuth', () => {
       delete process.env.GOOGLE_CLIENT_SECRET
 
       const mockIntegration = {
-        teamId: 'team-id',
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',
-        accountEmail: 'test@example.com',
-        oauthStale: false
+        accountEmail: 'test@example.com'
       }
 
       prismaMock.integration.findUnique.mockResolvedValue(
