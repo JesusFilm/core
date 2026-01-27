@@ -198,7 +198,8 @@ describe('journeyVisitorExportToGoogleSheet', () => {
             content: true,
             x: true,
             y: true,
-            deletedAt: true
+            deletedAt: true,
+            exportOrder: true
           },
           orderBy: { updatedAt: 'asc' }
         }
