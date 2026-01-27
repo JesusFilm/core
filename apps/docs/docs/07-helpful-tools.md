@@ -36,6 +36,6 @@ For more information on using Wallaby.js, please read the [documentation on thei
 ##### _Activating OSS license failed because of expired paid license_
 
 1. If you own an expired paid license key, either remove it from your account, or contact Wallaby.js support team for assistance in removing it
-2. When the expired key is removed from your account, proceed through the installation and setup instructions as usual
+2. When the expired key is removed from your account, proceed through the installation and setup instructions as usual.
 
 For more information about licensing, see [Wallaby.js's documentation](https://wallabyjs.com/docs/support/license/)
