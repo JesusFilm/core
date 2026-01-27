@@ -114,7 +114,7 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         with:
-          targets: fetch-secrets, extract-translations, build
+          targets: ${{ inputs.name == 'cms' && 'fetch-secrets' || 'fetch-secrets, extract-translations, build' }}
           projects: ${{ inputs.name }}
           args: --c=production
       - name: upload sourcemaps to datadog
