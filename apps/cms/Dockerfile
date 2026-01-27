@@ -41,16 +41,13 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
   --filter ./apps/cms...
 
 # -------------------------
-# Copy CMS source only
+# Copy CMS source and pre-built dist from workflow (no build in container)
 # -------------------------
-COPY apps/cms ./apps/cms
+COPY --chown=node:node apps/cms ./apps/cms
 
 WORKDIR /opt/apps/cms
 
-RUN chown -R node:node /opt/apps/cms
 USER node
-
-RUN ["pnpm", "run", "build"]
 
 EXPOSE 1337
 CMD ["pnpm", "run", "start"]
