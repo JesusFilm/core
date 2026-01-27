@@ -1,3 +1,4 @@
+import LanguageIcon from '@mui/icons-material/Language'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -5,12 +6,13 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
 import { User } from 'next-firebase-auth'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
+import { LanguageSwitcher } from '../../LanguageSwitcher'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
@@ -23,6 +25,7 @@ export function AppHeader({
   user
 }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
+  const [open, setOpen] = useState(false)
 
   return (
     <Box
@@ -62,6 +65,15 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              onClick={() => setOpen(true)}
+              aria-label="language"
+            >
+              <LanguageIcon sx={{ color: 'background.paper' }} />
+            </IconButton>
             <HelpScoutBeacon
               iconButtonColor="secondary"
               userInfo={{
@@ -70,6 +82,9 @@ export function AppHeader({
               }}
             />
           </Stack>
+          {open && (
+            <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
+          )}
         </Toolbar>
       </AppBar>
     </Box>
