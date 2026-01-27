@@ -133,7 +133,9 @@ export function buildJourneyExportColumns({
   const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
 
   // Separate blocks with exportOrder (fixed positions) from those without
-  const headersWithExportOrder: Array<BlockHeaderRecord & { exportOrder: number }> = []
+  const headersWithExportOrder: Array<
+    BlockHeaderRecord & { exportOrder: number }
+  > = []
   const headersWithoutExportOrder: BlockHeaderRecord[] = []
 
   const deduplicatedHeaders = deduplicateBlockHeadersByBlockId(blockHeaders)
@@ -151,10 +153,15 @@ export function buildJourneyExportColumns({
   headersWithExportOrder.sort((a, b) => a.exportOrder - b.exportOrder)
 
   // Sort blocks without exportOrder by render tree order
-  headersWithoutExportOrder.sort((a, b) => compareHeadersByRenderOrder(a, b, orderIndex))
+  headersWithoutExportOrder.sort((a, b) =>
+    compareHeadersByRenderOrder(a, b, orderIndex)
+  )
 
   // Combine: blocks with exportOrder first (maintaining their positions), then new blocks
-  const orderedHeaders = [...headersWithExportOrder, ...headersWithoutExportOrder]
+  const orderedHeaders = [
+    ...headersWithExportOrder,
+    ...headersWithoutExportOrder
+  ]
 
   const blockColumns = orderedHeaders.map<JourneyExportColumn>((item) => {
     // Normalize label: replace all newlines/multiple spaces with single space, then trim

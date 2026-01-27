@@ -618,7 +618,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         .filter((col) => col.blockId != null && col.exportOrder == null)
         .map((col, index) => {
           // Find the actual position in the columns array (accounting for base columns)
-          const columnPosition = columns.findIndex((c) => c.blockId === col.blockId)
+          const columnPosition = columns.findIndex(
+            (c) => c.blockId === col.blockId
+          )
           return {
             blockId: col.blockId!,
             // exportOrder is the position after base columns (1-based for block columns)

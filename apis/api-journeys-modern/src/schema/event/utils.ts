@@ -431,7 +431,7 @@ export async function appendEventToGoogleSheets({
       const rowMap: Record<string, string> = {}
       if (visitorId !== '') rowMap.visitorId = visitorId
       if (createdAt !== '') rowMap.date = createdAt
-      
+
       // Store event data with the column key
       // Column order is determined by exportOrder, matching uses key
       if (eventColumnKey != null && dynamicValue !== '') {
