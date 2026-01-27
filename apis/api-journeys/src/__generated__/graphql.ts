@@ -393,6 +393,28 @@ export type ChatOpenEventCreateInput = {
   value?: InputMaybe<MessagePlatform>;
 };
 
+export type CheckVideoInAlgoliaMismatch = {
+  __typename?: 'CheckVideoInAlgoliaMismatch';
+  actual?: Maybe<Scalars['String']['output']>;
+  expected?: Maybe<Scalars['String']['output']>;
+  field?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoInAlgoliaResult = {
+  __typename?: 'CheckVideoInAlgoliaResult';
+  error?: Maybe<Scalars['String']['output']>;
+  mismatches?: Maybe<Array<CheckVideoInAlgoliaMismatch>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+  recordUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoVariantsInAlgoliaResult = {
+  __typename?: 'CheckVideoVariantsInAlgoliaResult';
+  browseUrl?: Maybe<Scalars['String']['output']>;
+  missingVariants?: Maybe<Array<Scalars['String']['output']>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
@@ -1900,6 +1922,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
+  updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2743,6 +2767,16 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3645,6 +3679,8 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  checkVideoInAlgolia: CheckVideoInAlgoliaResult;
+  checkVideoVariantsInAlgolia: CheckVideoVariantsInAlgoliaResult;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -3812,6 +3848,16 @@ export type QueryBlockArgs = {
 
 export type QueryBlocksArgs = {
   where?: InputMaybe<BlocksFilter>;
+};
+
+
+export type QueryCheckVideoInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type QueryCheckVideoVariantsInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
