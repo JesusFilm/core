@@ -9,12 +9,15 @@ const BATCH_SIZE = 1000
 
 export async function importLanguages(
   strapi: Core.Strapi,
-  lastLanguageImport: Date | null
+  lastLanguageImport: Date | undefined
 ): Promise<{ imported: number; errors: string[] }> {
   const localeService = strapi.plugins['i18n'].services.locales
 
   const errors: string[] = []
   let imported = 0
+
+  const languagesCount = await languagesPrisma.language.count()
+  strapi.log.info(`LanguageImport: Importing ${languagesCount} languages`)
 
   try {
     const where = lastLanguageImport
@@ -67,7 +70,8 @@ export async function importLanguages(
             remoteId: language.id,
             bcp47: language.bcp47,
             name: languageName,
-            iso3: language.iso3 ?? null
+            iso3: language.iso3,
+            slug: language.slug
           }
 
           let languageStrapi
@@ -102,7 +106,7 @@ export async function importLanguages(
                     data: { name: value }
                   })
                 } catch (error) {
-                  strapi.log.error(`Failed to create name ${translationLanguage.bcp47} for language ${language.id}: ${error}`)
+                  strapi.log.error(`LanguageImport: Failed to create name ${translationLanguage.bcp47} for language ${language.id}: ${error}`)
                 }
               }
             }
@@ -110,7 +114,7 @@ export async function importLanguages(
 
           imported++
         } catch (error) {
-          const errorMessage = `Failed to import language ${language.id}: ${
+          const errorMessage = `LanguageImport: Failed to import language ${language.id}: ${
             error instanceof Error ? error.message : String(error)
           }`
           errors.push(errorMessage)
@@ -122,9 +126,11 @@ export async function importLanguages(
       if (languages.length < BATCH_SIZE) {
         hasMore = false
       }
+
+      strapi.log.info(`LanguageImport: ${imported} / ${languagesCount} imported`)
     }
   } catch (error) {
-    const errorMessage = `Failed to query languages: ${
+    const errorMessage = `LanguageImport: Failed to query languages: ${
       error instanceof Error ? error.message : String(error)
     }`
     errors.push(errorMessage)

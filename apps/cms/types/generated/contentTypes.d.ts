@@ -584,8 +584,10 @@ export interface ApiImportStateImportState extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
-    lastLanguageImport: Schema.Attribute.DateTime
-    lastMediaImport: Schema.Attribute.DateTime
+    lastLanguageImportedAt: Schema.Attribute.DateTime
+    lastVideoEditionImportedAt: Schema.Attribute.DateTime
+    lastVideoImportedAt: Schema.Attribute.DateTime
+    lastVideoVariantImportedAt: Schema.Attribute.DateTime
     locale: Schema.Attribute.String & Schema.Attribute.Private
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -637,9 +639,55 @@ export interface ApiLanguageLanguage extends Struct.CollectionTypeSchema {
     remoteId: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique
+    slug: Schema.Attribute.UID &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true
+        }
+      }>
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
+    video_variants: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::video-variant.video-variant'
+    >
+  }
+}
+
+export interface ApiVideoEditionVideoEdition
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'video_editions'
+  info: {
+    displayName: 'Video Edition'
+    pluralName: 'video-editions'
+    singularName: 'video-edition'
+  }
+  options: {
+    draftAndPublish: true
+  }
+  attributes: {
+    createdAt: Schema.Attribute.DateTime
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    locale: Schema.Attribute.String & Schema.Attribute.Private
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::video-edition.video-edition'
+    > &
+      Schema.Attribute.Private
+    name: Schema.Attribute.String & Schema.Attribute.Required
+    publishedAt: Schema.Attribute.DateTime
+    subtitles: Schema.Attribute.Component<'video-edition.subtitle', true>
+    updatedAt: Schema.Attribute.DateTime
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private
+    video: Schema.Attribute.Relation<'manyToOne', 'api::video.video'>
+    video_variants: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::video-variant.video-variant'
+    >
   }
 }
 
@@ -656,18 +704,12 @@ export interface ApiVideoVariantVideoVariant
     draftAndPublish: false
   }
   attributes: {
-    apiMediaId: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
-    dash: Schema.Attribute.String
-    downloadable: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>
-    duration: Schema.Attribute.Integer
-    edition: Schema.Attribute.String & Schema.Attribute.DefaultTo<'base'>
+    downloads: Schema.Attribute.Component<'video-variant.download', true>
     hls: Schema.Attribute.String
-    languageId: Schema.Attribute.String & Schema.Attribute.Required
+    language: Schema.Attribute.Relation<'manyToOne', 'api::language.language'>
     lengthInMilliseconds: Schema.Attribute.Integer
     locale: Schema.Attribute.String & Schema.Attribute.Private
     localizations: Schema.Attribute.Relation<
@@ -675,18 +717,18 @@ export interface ApiVideoVariantVideoVariant
       'api::video-variant.video-variant'
     > &
       Schema.Attribute.Private
-    masterHeight: Schema.Attribute.Integer
-    masterUrl: Schema.Attribute.String
-    masterWidth: Schema.Attribute.Integer
-    published: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>
     publishedAt: Schema.Attribute.DateTime
-    share: Schema.Attribute.String
-    slug: Schema.Attribute.String & Schema.Attribute.Required
+    remoteId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
-    version: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1>
     video: Schema.Attribute.Relation<'manyToOne', 'api::video.video'>
+    video_edition: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::video-edition.video-edition'
+    >
   }
 }
 
@@ -707,6 +749,7 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     }
   }
   attributes: {
+    children: Schema.Attribute.Relation<'manyToMany', 'api::video.video'>
     createdAt: Schema.Attribute.DateTime
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
@@ -737,6 +780,7 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required
     locale: Schema.Attribute.String
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::video.video'>
+    parents: Schema.Attribute.Relation<'manyToMany', 'api::video.video'>
     publishedAt: Schema.Attribute.DateTime
     remoteId: Schema.Attribute.String &
       Schema.Attribute.Required &
@@ -764,6 +808,14 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
+    video_editions: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::video-edition.video-edition'
+    >
+    video_variants: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::video-variant.video-variant'
+    >
   }
 }
 
@@ -1392,6 +1444,7 @@ declare module '@strapi/strapi' {
       'api::client.client': ApiClientClient
       'api::import-state.import-state': ApiImportStateImportState
       'api::language.language': ApiLanguageLanguage
+      'api::video-edition.video-edition': ApiVideoEditionVideoEdition
       'api::video-variant.video-variant': ApiVideoVariantVideoVariant
       'api::video.video': ApiVideoVideo
       'plugin::content-releases.release': PluginContentReleasesRelease

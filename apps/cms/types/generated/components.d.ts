@@ -68,8 +68,48 @@ export interface SharedStudyQuestion extends Struct.ComponentSchema {
     displayName: 'Study Question'
   }
   attributes: {
-    locale: Schema.Attribute.String & Schema.Attribute.Required
     value: Schema.Attribute.Text & Schema.Attribute.Required
+  }
+}
+
+export interface VideoEditionSubtitle extends Struct.ComponentSchema {
+  collectionName: 'components_video_edition_subtitles'
+  info: {
+    displayName: 'Subtitle'
+  }
+  attributes: {
+    language: Schema.Attribute.Relation<'oneToOne', 'api::language.language'>
+    srtSrc: Schema.Attribute.String
+    vttSrc: Schema.Attribute.String
+  }
+}
+
+export interface VideoVariantDownload extends Struct.ComponentSchema {
+  collectionName: 'components_video_variant_downloads'
+  info: {
+    displayName: 'Download'
+  }
+  attributes: {
+    bitrate: Schema.Attribute.Integer & Schema.Attribute.Required
+    height: Schema.Attribute.Integer & Schema.Attribute.Required
+    quality: Schema.Attribute.Enumeration<
+      [
+        'low',
+        'high',
+        'sd',
+        'highest',
+        'distroLow',
+        'distroSd',
+        'distroHigh',
+        'fhd',
+        'qhd',
+        'uhd'
+      ]
+    > &
+      Schema.Attribute.Required
+    size: Schema.Attribute.Integer & Schema.Attribute.Required
+    url: Schema.Attribute.String & Schema.Attribute.Required
+    width: Schema.Attribute.Integer & Schema.Attribute.Required
   }
 }
 
@@ -82,6 +122,8 @@ declare module '@strapi/strapi' {
       'shared.seo': SharedSeo
       'shared.slider': SharedSlider
       'shared.study-question': SharedStudyQuestion
+      'video-edition.subtitle': VideoEditionSubtitle
+      'video-variant.download': VideoVariantDownload
     }
   }
 }

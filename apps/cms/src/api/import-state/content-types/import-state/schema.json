@@ -12,10 +12,16 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "lastLanguageImport": {
+    "lastLanguageImportedAt": {
       "type": "datetime"
     },
-    "lastMediaImport": {
+    "lastVideoImportedAt": {
+      "type": "datetime"
+    },
+    "lastVideoVariantImportedAt": {
+      "type": "datetime"
+    },
+    "lastVideoEditionImportedAt": {
       "type": "datetime"
     }
   }

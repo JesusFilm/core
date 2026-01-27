@@ -82,6 +82,30 @@
       },
       "component": "shared.study-question",
       "repeatable": true
+    },
+    "parents": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::video.video",
+      "inversedBy": "children"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::video.video",
+      "mappedBy": "parents"
+    },
+    "video_variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::video-variant.video-variant",
+      "mappedBy": "video"
+    },
+    "video_editions": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::video-edition.video-edition",
+      "mappedBy": "video"
     }
   }
 }

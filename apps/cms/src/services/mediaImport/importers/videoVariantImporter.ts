@@ -4,92 +4,96 @@ import { PrismaClient } from '.prisma/api-media-client'
 
 const mediaPrisma = new PrismaClient()
 
+const BATCH_SIZE = 1000
+
 export async function importVideoVariants(
   strapi: Core.Strapi,
-  lastMediaImport: Date | null
+  _lastMediaImport: Date | undefined
 ): Promise<{ imported: number; errors: string[] }> {
   const errors: string[] = []
   let imported = 0
 
-  try {
-    // Note: VideoVariant model doesn't have updatedAt field, so we import all variants
-    // Incremental sync would require updatedAt field in the Prisma schema
-    const variants = await mediaPrisma.videoVariant.findMany({
-      include: {
-        video: true
-      }
-    })
+  const videoMap = Object.fromEntries((await strapi.documents('api::video.video').findMany({
+    fields: ['remoteId', 'documentId']
+  })).map(({ documentId, remoteId }) => [remoteId, documentId]))
 
-    for (const variant of variants) {
-      try {
-        const videoDocuments = await strapi.entityService.findMany(
-          'api::video.video',
-          {
-            filters: { remoteId: { $eq: variant.videoId } },
-            limit: 1
-          }
-        )
+  const languageMap = Object.fromEntries((await strapi.documents('api::language.language').findMany({
+    fields: ['remoteId', 'documentId']
+  })).map(({ documentId, remoteId }) => [remoteId, documentId]))
 
-        if (!videoDocuments || videoDocuments.length === 0) {
-          errors.push(
-            `Skipping variant ${variant.id}: video ${variant.videoId} not found`
-          )
-          continue
-        }
+  const videoVariantsMap = Object.fromEntries((await strapi.documents('api::video-variant.video-variant').findMany({
+    fields: ['remoteId', 'documentId']
+  })).map(({ documentId, remoteId }) => [remoteId, documentId]))
 
-        const videoId = videoDocuments[0].id
-
-        const data = {
-          apiMediaId: variant.id,
-          video: videoId,
-          languageId: variant.languageId,
-          slug: variant.slug,
-          duration: variant.duration ?? undefined,
-          lengthInMilliseconds: variant.lengthInMilliseconds ?? undefined,
-          hls: variant.hls ?? undefined,
-          dash: variant.dash ?? undefined,
-          share: variant.share ?? undefined,
-          downloadable: variant.downloadable,
-          published: variant.published,
-          version: variant.version,
-          edition: variant.edition,
-          masterUrl: variant.masterUrl ?? undefined,
-          masterWidth: variant.masterWidth ?? undefined,
-          masterHeight: variant.masterHeight ?? undefined
-        }
-
-        const existing = await strapi.entityService.findMany(
-          'api::video-variant.video-variant',
-          {
-            filters: { apiMediaId: variant.id },
-            limit: 1
-          }
-        )
-
-        if (existing && existing.length > 0) {
-          await strapi.entityService.update(
-            'api::video-variant.video-variant',
-            existing[0].id,
-            { data }
-          )
-        } else {
-          await strapi.entityService.create(
-            'api::video-variant.video-variant',
-            { data }
-          )
-        }
-
-        imported++
-      } catch (error) {
-        const errorMessage = `Failed to import variant ${variant.id}: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-        errors.push(errorMessage)
-        strapi.log.error(errorMessage, error)
+  const videoVariantsCount = await mediaPrisma.videoVariant.count({
+    where: {
+      video: {
+        published: true
       }
     }
+  })
+  strapi.log.info(`VideoVariantImport: Importing ${videoVariantsCount} video variants`)
+
+  try {
+    let skip = 0
+    let hasMore = true
+    while (hasMore) {
+      const variants = await mediaPrisma.videoVariant.findMany({
+        where: {
+          published: true
+        },
+        skip,
+        take: BATCH_SIZE
+      })
+      if (variants.length === 0) {
+        hasMore = false
+        break
+      }
+
+      for (const variant of variants) {
+        try {
+          const data = {
+            remoteId: variant.id,
+            duration: variant.duration,
+            lengthInMilliseconds: variant.lengthInMilliseconds,
+            hls: variant.hls,
+            downloadable: variant.downloadable,
+            language: languageMap[variant.languageId],
+            video: videoMap[variant.videoId]
+          }
+
+          const existingDocumentId = videoVariantsMap[variant.id]
+
+          if (existingDocumentId) {
+            await strapi.documents('api::video-variant.video-variant').update({
+              documentId: existingDocumentId,
+              data
+            })
+          } else {
+            await strapi.documents('api::video-variant.video-variant').create({
+              data
+            })
+          }
+
+          imported++
+        } catch (error) {
+          const errorMessage = `Failed to import variant ${variant.id}: ${
+            error instanceof Error ? error.message : String(error)
+          }`
+          errors.push(errorMessage)
+          strapi.log.error(errorMessage, error)
+        }
+      }
+
+      skip += variants.length
+      if (variants.length < BATCH_SIZE) {
+        hasMore = false
+      }
+
+      strapi.log.info(`VideoVariantImport: ${imported} / ${videoVariantsCount} imported`)
+    }
   } catch (error) {
-    const errorMessage = `Failed to query video variants: ${
+    const errorMessage = `VideoVariantImport: Failed to query video variants: ${
       error instanceof Error ? error.message : String(error)
     }`
     errors.push(errorMessage)

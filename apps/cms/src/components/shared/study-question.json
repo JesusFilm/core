@@ -8,10 +8,6 @@
     "value": {
       "type": "text",
       "required": true
-    },
-    "locale": {
-      "type": "string",
-      "required": true
     }
   },
   "config": {}

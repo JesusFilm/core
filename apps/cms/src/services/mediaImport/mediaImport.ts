@@ -4,107 +4,52 @@ import { Input } from '@strapi/types/dist/modules/documents/params/data'
 import { importLanguages } from './importers/languageImporter'
 import { importVideos } from './importers/videoImporter'
 import { importVideoVariants } from './importers/videoVariantImporter'
-import type { ImportStats } from './types'
 
 export async function runMediaImport(
   strapi: Core.Strapi
-): Promise<ImportStats> {
-  const startTime = Date.now()
-  const errors: string[] = []
-  let languagesImported = 0
-  let videosImported = 0
-  const videoVariantsImported = 0
+): Promise<void> {
 
-  try {
-    const importState = await strapi
+    const importState = {...(await strapi
       .documents('api::import-state.import-state')
-      .findFirst()
+      .findFirst()), importStartedAt: new Date() }
 
-    const state = {
-      lastLanguageImport: importState?.lastLanguageImport
-        ? new Date(importState.lastLanguageImport)
-        : null,
-      lastMediaImport: importState?.lastMediaImport
-        ? new Date(importState.lastMediaImport)
-        : null
-    }
+    strapi.log.info('Starting media import...', importState)
 
-    strapi.log.info('Starting media import...', {
-      lastLanguageImport: state.lastLanguageImport,
-      lastMediaImport: state.lastMediaImport
+    // await importAndLogErrors(strapi, importLanguages, 'LanguageImport', importState)
+    // await importAndLogErrors(strapi, importVideos, 'VideoImport', importState)
+    await importAndLogErrors(strapi, importVideoVariants, 'VideoVariantImport', importState)
+    strapi.log.info('Media import finished')
+}
+
+type ImportState = {
+  importStartedAt: Date
+  lastLanguageImportedAt?: Date | string | null
+  lastVideoImportedAt?: Date | string | null
+  lastVideoVariantImportedAt?: Date | string | null
+  lastVideoEditionImportedAt?: Date | string | null
+}
+type ImportFn = (strapi: Core.Strapi, lastImportedAt: Date | undefined) => Promise<{ imported: number; errors: string[] }>
+type Typename = 'LanguageImport' | 'VideoImport' | 'VideoVariantImport' | 'VideoEditionImport'
+
+async function importAndLogErrors(strapi: Core.Strapi, importFunction: ImportFn, typename: Typename, importState: ImportState) {
+  const importStateKey = `last${typename}ImportedAt`
+  const lastImportedAt = importState[importStateKey] as Date | string | undefined
+  const formattedLastImportedAt = lastImportedAt ? (lastImportedAt instanceof Date ? lastImportedAt : new Date(lastImportedAt)) : undefined
+  if (formattedLastImportedAt) {
+    strapi.log.info(`${typename}: Importing from ${formattedLastImportedAt.toISOString()}`)
+  } else {
+    strapi.log.info(`${typename}: Importing all records`)
+  }
+  const result = await importFunction(strapi, formattedLastImportedAt)
+  if (result.errors.length > 0) {
+    strapi.log.warn(`${typename}: ${result.imported} imported with ${result.errors.length} error(s)`)
+  } else {
+    strapi.log.info(`${typename}: ${result.imported} imported`)
+    await upsertImportState(strapi, {
+      [importStateKey]: importState.importStartedAt
     })
-    const currentLastLanguageImport = new Date()
-
-    const languageResult = await importLanguages(
-      strapi,
-      state.lastLanguageImport
-    )
-    languagesImported = languageResult.imported
-    errors.push(...languageResult.errors)
-
-    if (languageResult.errors.length === 0) {
-      await upsertImportState(strapi, {
-        lastLanguageImport: currentLastLanguageImport
-      })
-      strapi.log.info(
-        `Language import completed: ${languagesImported} imported`
-      )
-    } else {
-      strapi.log.warn(
-        `Language import completed with errors: ${languagesImported} imported, ${languageResult.errors.length} errors`
-      )
-    }
-
-    const videoResult = await importVideos(strapi, state.lastMediaImport)
-    videosImported = videoResult.imported
-    errors.push(...videoResult.errors)
-    
-    strapi.log.info(
-      `Video import completed: ${videosImported} imported`
-    )
-
-    // const currentLastMediaImport = new Date()
-
-    // const variantResult = await importVideoVariants(
-    //   strapi,
-    //   state.lastMediaImport
-    // )
-    // videoVariantsImported = variantResult.imported
-    // errors.push(...variantResult.errors)
-
-    // if (videoResult.errors.length === 0 && variantResult.errors.length === 0) {
-    //   await upsertImportState(strapi, {
-    //     lastMediaImport: currentLastMediaImport
-    //   })
-    //   strapi.log.info(
-    //     `Media import completed: ${videosImported} videos, ${videoVariantsImported} variants imported`
-    //   )
-    // } else {
-    //   strapi.log.warn(
-    //     `Media import completed with errors: ${videosImported} videos, ${videoVariantsImported} variants imported, ${videoResult.errors.length + variantResult.errors.length} errors`
-    //   )
-    // }
-  } catch (error) {
-    const errorMessage = `Media import failed: ${
-      error instanceof Error ? error.message : String(error)
-    }`
-    errors.push(errorMessage)
-    strapi.log.error(errorMessage, error)
   }
-
-  const duration = Date.now() - startTime
-
-  const stats: ImportStats = {
-    languagesImported,
-    videosImported,
-    videoVariantsImported,
-    errors,
-    duration
-  }
-
-  strapi.log.info('Media import finished', stats)
-
-  return stats
+  return result
 }
 
 async function upsertImportState(

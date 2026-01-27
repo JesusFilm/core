@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_video_edition_subtitles",
+  "info": {
+    "displayName": "Subtitle"
+  },
+  "options": {},
+  "attributes": {
+    "vttSrc": {
+      "type": "string"
+    },
+    "srtSrc": {
+      "type": "string"
+    },
+    "language": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::language.language"
+    }
+  },
+  "config": {}
+}

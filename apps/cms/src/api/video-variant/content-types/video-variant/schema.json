@@ -12,7 +12,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "apiMediaId": {
+    "remoteId": {
       "type": "string",
       "required": true,
       "unique": true
@@ -20,18 +20,14 @@
     "video": {
       "type": "relation",
       "relation": "manyToOne",
-      "target": "api::video.video"
+      "target": "api::video.video",
+      "inversedBy": "video_variants"
     },
-    "languageId": {
-      "type": "string",
-      "required": true
-    },
-    "slug": {
-      "type": "string",
-      "required": true
-    },
-    "duration": {
-      "type": "integer"
+    "language": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::language.language",
+      "inversedBy": "video_variants"
     },
     "lengthInMilliseconds": {
       "type": "integer"
@@ -39,36 +35,16 @@
     "hls": {
       "type": "string"
     },
-    "dash": {
-      "type": "string"
+    "downloads": {
+      "type": "component",
+      "component": "video-variant.download",
+      "repeatable": true
     },
-    "share": {
-      "type": "string"
-    },
-    "downloadable": {
-      "type": "boolean",
-      "default": true
-    },
-    "published": {
-      "type": "boolean",
-      "default": true
-    },
-    "version": {
-      "type": "integer",
-      "default": 1
-    },
-    "edition": {
-      "type": "string",
-      "default": "base"
-    },
-    "masterUrl": {
-      "type": "string"
-    },
-    "masterWidth": {
-      "type": "integer"
-    },
-    "masterHeight": {
-      "type": "integer"
+    "video_edition": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::video-edition.video-edition",
+      "inversedBy": "video_variants"
     }
   }
 }

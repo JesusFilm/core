@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "video_editions",
+  "info": {
+    "singularName": "video-edition",
+    "pluralName": "video-editions",
+    "displayName": "Video Edition"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "video_variants": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::video-variant.video-variant",
+      "mappedBy": "video_edition"
+    },
+    "video": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::video.video",
+      "inversedBy": "video_editions"
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "subtitles": {
+      "type": "component",
+      "component": "video-edition.subtitle",
+      "repeatable": true
+    }
+  }
+}

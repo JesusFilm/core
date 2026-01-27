@@ -2,13 +2,11 @@ import type { Core } from '@strapi/strapi'
 
 import { PrismaClient } from '.prisma/api-media-client'
 
-import { languageIdToLocale } from '../lib/languageMapping'
-
 const mediaPrisma = new PrismaClient()
 
 export async function importVideos(
   strapi: Core.Strapi,
-  _lastMediaImport: Date | null
+  _lastMediaImport: Date | undefined
 ): Promise<{ imported: number; errors: string[] }> {
   const localeService = strapi.plugins['i18n'].services.locales
   const locales = await localeService.find()
@@ -32,6 +30,8 @@ export async function importVideos(
       }
     })
 
+    strapi.log.info(`VideoImport: Importing ${videos.length} videos`)
+
     for (const video of videos) {
       try {
         const groupedByLanguage = new Map<
@@ -41,7 +41,7 @@ export async function importVideos(
             snippet?: string
             description?: string
             imageAlt?: string
-            studyQuestions?: { value: string, locale: string }[]
+            studyQuestions?: { value: string }[]
           }
         >()
 
@@ -85,8 +85,7 @@ export async function importVideos(
           if (!langData.studyQuestions) {
             langData.studyQuestions = []
           }
-          const locale = locales.find(({ id }) => id.toString() === question.languageId)
-          langData.studyQuestions.push({ value: question.value, locale: locale?.code ?? 'en' })
+          langData.studyQuestions.push({ value: question.value })
         }
 
         let videoDocument = await strapi.documents('api::video.video').findFirst({
@@ -157,6 +156,27 @@ export async function importVideos(
         strapi.log.error(errorMessage, error)
       }
     }
+
+    strapi.log.info(`Adding children to ${videos.length} videos`)
+
+    for (const video of videos) {
+      const videosMap = Object.fromEntries((await strapi.documents('api::video.video').findMany({
+        filters: {
+          remoteId: { $in: [...video.childIds, video.id] }
+        },
+        fields: ['remoteId', 'documentId']
+      })).map(({ documentId, remoteId }) => [remoteId, documentId]))
+      const videoDocumentId = videosMap[video.id]
+
+      const children = video.childIds.map((childId) => videosMap[childId]).filter((documentId) => documentId != null)
+
+      await strapi.documents('api::video.video').update({
+        documentId: videoDocumentId,
+        data: {
+          children
+        }
+      })
+    }
   } catch (error) {
     const errorMessage = `Failed to query videos: ${
       error instanceof Error ? error.message : String(error)
@@ -164,6 +184,5 @@ export async function importVideos(
     errors.push(errorMessage)
     strapi.log.error(errorMessage, error)
   }
-
   return { imported, errors }
 }

@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_video_variant_downloads",
+  "info": {
+    "displayName": "Download"
+  },
+  "options": {},
+  "attributes": {
+    "size": {
+      "type": "integer",
+      "required": true
+    },
+    "quality": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "low",
+        "high",
+        "sd",
+        "highest",
+        "distroLow",
+        "distroSd",
+        "distroHigh",
+        "fhd",
+        "qhd",
+        "uhd"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "height": {
+      "type": "integer",
+      "required": true
+    },
+    "width": {
+      "type": "integer",
+      "required": true
+    },
+    "bitrate": {
+      "type": "integer",
+      "required": true
+    }
+  },
+  "config": {}
+}
