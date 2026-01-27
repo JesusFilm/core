@@ -2048,7 +2048,6 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   user: User
   accountEmail: String
-  oauthStale: Boolean!
 }
 
 type IntegrationGrowthSpaces implements Integration
