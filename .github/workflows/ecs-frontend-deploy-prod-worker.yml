@@ -134,10 +134,11 @@ jobs:
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v2
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: useblacksmith/setup-docker-builder@v1
+
       - name: Build and push Docker image to Amazon ECR
         id: build-image-ecs
-        uses: docker/build-push-action@v6
+        uses: useblacksmith/build-push-action@v2
         with:
           context: .
           file: apps/${{ inputs.name }}/Dockerfile
