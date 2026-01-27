@@ -29,6 +29,8 @@ interface SubtitleUpdateParams {
   player: Player & { textTracks?: () => TextTrackList }
   subtitleLanguageId?: string | null
   subtitleOn?: boolean
+  preferredSubtitleLanguageIds?: Array<string | null | undefined>
+  debugAvailableLanguages?: boolean
 }
 
 export function useSubtitleUpdate() {
@@ -40,7 +42,9 @@ export function useSubtitleUpdate() {
     async ({
       player,
       subtitleLanguageId,
-      subtitleOn
+      subtitleOn,
+      preferredSubtitleLanguageIds,
+      debugAvailableLanguages
     }: SubtitleUpdateParams): Promise<void> => {
       // Guard against invalid player state
       if (!player || !player.el_ || !player.el_.parentNode) {
@@ -67,12 +71,32 @@ export function useSubtitleUpdate() {
           variables: { id: variant.slug }
         })
 
-        const selected = data?.video?.variant?.subtitle?.find(
-          (subtitle) => subtitle.language.id === subtitleLanguageId
-        )
+        if (debugAvailableLanguages) {
+          const available = data?.video?.variant?.subtitle?.map((subtitle) => ({
+            id: subtitle.language.id,
+            bcp47: subtitle.language.bcp47 ?? undefined,
+            name: subtitle.language.name.at(0)?.value
+          }))
+          console.log('Carousel subtitle languages:', available ?? [])
+        }
 
-        if (selected == null) {
-          // Disable all subtitle tracks when subtitle language is not found
+        const subtitles = data?.video?.variant?.subtitle ?? []
+        const preferredIds =
+          preferredSubtitleLanguageIds?.filter(
+            (id): id is string => typeof id === 'string' && id.length > 0
+          ) ?? []
+        const fallbackIds =
+          subtitleLanguageId != null ? [subtitleLanguageId] : []
+        const candidateIds = preferredIds.length > 0 ? preferredIds : fallbackIds
+        const activeSubtitle = candidateIds
+          .map((id) => subtitles.find((subtitle) => subtitle.language.id === id))
+          .find((subtitle) => subtitle != null)
+        const activeLanguageId = activeSubtitle?.language.id
+        const activeLanguageCode = activeSubtitle?.language.bcp47 ?? undefined
+        const activeLanguageLabel = activeSubtitle?.language.name.at(0)?.value
+
+        if (activeSubtitle == null || activeLanguageId == null) {
+          // Disable all subtitle tracks when no subtitles are available
           for (let i = 0; i < tracks.length; i++) {
             const track = tracks[i]
             if (track.kind === 'subtitles') {
@@ -93,11 +117,11 @@ export function useSubtitleUpdate() {
         try {
           player.addRemoteTextTrack(
             {
-              id: subtitleLanguageId,
-              src: selected.value,
+              id: activeLanguageId,
+              src: activeSubtitle.value,
               kind: 'subtitles',
-              srclang: selected.language.bcp47 ?? undefined,
-              label: selected.language.name.at(0)?.value,
+              srclang: activeLanguageCode,
+              label: activeLanguageLabel,
               mode: 'showing',
               default: true
             },
@@ -113,11 +137,13 @@ export function useSubtitleUpdate() {
           for (let i = 0; i < updatedTracks.length; i++) {
             const track = updatedTracks[i]
             if (track.kind === 'subtitles') {
-              if (track.id === subtitleLanguageId) {
-                track.mode = 'showing'
-              } else {
-                track.mode = 'disabled'
-              }
+              const isActive =
+                (activeLanguageId != null && track.id === activeLanguageId) ||
+                (activeLanguageCode != null &&
+                  track.language === activeLanguageCode) ||
+                (activeLanguageLabel != null &&
+                  track.label === activeLanguageLabel)
+              track.mode = isActive ? 'showing' : 'disabled'
             }
           }
         } catch (error) {

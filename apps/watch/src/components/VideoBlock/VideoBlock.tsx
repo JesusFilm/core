@@ -14,7 +14,6 @@ import { useWatch } from '../../libs/watchContext'
 import { useSubtitleUpdate } from '../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../types/inserts'
 
-import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 import { MuxInsertLogoOverlay } from './MuxInsertLogoOverlay'
 import { VideoControls } from './VideoControls'
 
@@ -86,7 +85,7 @@ export function VideoBlock({
     dispatch: dispatchPlayer
   } = usePlayer()
   const {
-    state: { subtitleLanguageId, subtitleOn }
+    state: { audioLanguageId, subtitleLanguageId, subtitleOn }
   } = useWatch()
   const isFullscreen = useFullscreen()
   const [collapsed, setCollapsed] = useState(mute)
@@ -138,34 +137,11 @@ export function VideoBlock({
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
   }, [pauseVideoOnScrollAway])
 
-  // Hide native subtitles when video element is available
   useEffect(() => {
     if (videoRef.current == null) return
 
     const videoElement = videoRef.current
-    const hideNativeSubtitles = () => {
-      // Add CSS class immediately
-      videoElement.classList.add('hero-hide-native-subtitles')
-
-      // Disable any existing text tracks
-      const tracks = videoElement.textTracks
-      if (tracks != null) {
-        for (let i = 0; i < tracks.length; i++) {
-          const track = tracks[i]
-          if (track.kind === 'subtitles') {
-            track.mode = 'disabled'
-          }
-        }
-      }
-    }
-
-    // Hide immediately and also on any track additions
-    hideNativeSubtitles()
-
-    const handleLoadStart = () => hideNativeSubtitles()
     const handleLoadedMetadata = () => {
-      hideNativeSubtitles()
-
       // Detect aspect ratio and set appropriate class
       if (videoElement.videoWidth && videoElement.videoHeight) {
         const ratio = videoElement.videoWidth / videoElement.videoHeight
@@ -190,26 +166,18 @@ export function VideoBlock({
           aspectClass = 'aspect-video'
         }
 
-        console.log('🎯 Applied Tailwind aspect ratio class (aspect-video is fallback):', aspectClass)
+        console.log(
+          '🎯 Applied Tailwind aspect ratio class (aspect-video is fallback):',
+          aspectClass
+        )
         setAspectRatioClass(aspectClass)
       }
     }
-    const handleCanPlay = () => hideNativeSubtitles()
-    const handleAddTrack = () => {
-      // Small delay to ensure track is fully added
-      setTimeout(hideNativeSubtitles, 10)
-    }
 
-    videoElement.addEventListener('loadstart', handleLoadStart)
     videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
-    videoElement.addEventListener('canplay', handleCanPlay)
-    videoElement.textTracks.addEventListener?.('addtrack', handleAddTrack)
 
     return () => {
-      videoElement.removeEventListener('loadstart', handleLoadStart)
       videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
-      videoElement.removeEventListener('canplay', handleCanPlay)
-      videoElement.textTracks.removeEventListener?.('addtrack', handleAddTrack)
     }
   }, [videoRef.current])
 
@@ -331,25 +299,6 @@ export function VideoBlock({
       })
 
       player.ready(() => {
-        // Immediately hide native subtitles to prevent flash before custom overlay renders
-        const textTracks = (
-          player as Player & { textTracks?: () => TextTrackList }
-        ).textTracks?.()
-        if (textTracks != null) {
-          for (let i = 0; i < textTracks.length; i++) {
-            const track = textTracks[i]
-            if (track.kind === 'subtitles') {
-              track.mode = 'disabled'
-            }
-          }
-        }
-
-        // Also hide via CSS class as additional safeguard
-        const element = player.el() as HTMLElement | null
-        if (element != null) {
-          element.classList.add('hero-hide-native-subtitles')
-        }
-
         setPlayerReady(true)
       })
 
@@ -536,10 +485,8 @@ export function VideoBlock({
     onMuxInsertComplete
   ])
 
-  const { subtitleUpdate } = useSubtitleUpdate()
-
   const effectiveSubtitleLanguageId =
-    subtitleLanguageId ?? variant?.language.id ?? null
+    subtitleLanguageId ?? audioLanguageId ?? variant?.language.id ?? null
 
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
@@ -571,6 +518,10 @@ export function VideoBlock({
     }
   }, [currentMuxInsert?.id, variant?.id, playerReady])
 
+  const { subtitleUpdate } = useSubtitleUpdate()
+  const shouldEnableSubtitles = true
+  const shouldLogSubtitleLanguages = placement === 'carouselItem'
+
   useEffect(() => {
     const player = playerRef.current
     if (player == null || !playerReady) return
@@ -578,23 +529,28 @@ export function VideoBlock({
     void subtitleUpdate({
       player,
       subtitleLanguageId: effectiveSubtitleLanguageId,
-      subtitleOn: mute || subtitleOn
+      subtitleOn: shouldEnableSubtitles,
+      preferredSubtitleLanguageIds: [
+        subtitleLanguageId,
+        audioLanguageId,
+        variant?.language.id
+      ],
+      debugAvailableLanguages: shouldLogSubtitleLanguages
     })
   }, [
     effectiveSubtitleLanguageId,
     subtitleOn,
     mute,
+    subtitleLanguageId,
+    audioLanguageId,
+    shouldEnableSubtitles,
+    shouldLogSubtitleLanguages,
     subtitleUpdate,
     playerReady,
-    // Include video source dependencies to trigger subtitle update when video changes
     currentMuxInsert?.id,
-    variant?.id
+    variant?.id,
+    variant?.language.id
   ])
-
-  const shouldShowOverlay =
-    playerReady &&
-    (mute || (subtitleOn ?? false)) &&
-    !(placement === 'singleVideo' && wasUnmuted)
 
   return (
     <div
@@ -626,7 +582,8 @@ export function VideoBlock({
               'video-height-unmuted': placement === 'singleVideo' ? wasUnmuted : !collapsed,
               'video-height-muted': placement === 'singleVideo' ? !wasUnmuted : collapsed,
               'video-placement-single': placement === 'singleVideo',
-              'video-placement-carousel': placement === 'carouselItem'
+              'video-placement-carousel': placement === 'carouselItem',
+              'show-video-overlay': collapsed && !(placement === 'singleVideo' && wasUnmuted)
             }
           )}
           data-testid="VideoBlockPlayerContainer"
@@ -636,15 +593,11 @@ export function VideoBlock({
             <video
               data-testid="VideoBlockPlayer"
               ref={videoRef}
-              className={clsx(
-                'vjs hero-hide-native-subtitles max-h-[100vh] max-w-[100vw]',
-                {
-                  // 
-                  'object-cover': !isFullscreen && collapsed,
-                  'object-contain': isFullscreen || !collapsed,
-                  'cursor-pointer': placement == 'carouselItem'
-                }
-              )}
+              className={clsx('vjs max-h-[100vh] max-w-[100vw]', {
+                'object-cover': !isFullscreen && collapsed,
+                'object-contain': isFullscreen || !collapsed,
+                'cursor-pointer': placement == 'carouselItem'
+              })}
               style={{
                 // Show video when we have a source, hide when we don't (but keep element in DOM)
                 display: (currentMuxInsert?.urls.hls || variant?.hls) ? 'block' : 'none',
@@ -681,7 +634,7 @@ export function VideoBlock({
                 </div>
               </div>
             )}
-            <div
+            {/* <div
               className={`pointer-events-none absolute inset-0 z-1 transition-opacity duration-300 ${
                 collapsed && !(placement === 'singleVideo' && wasUnmuted)
                   ? 'opacity-70'
@@ -692,14 +645,7 @@ export function VideoBlock({
                 backgroundImage: 'url(/assets/overlay.svg)',
                 backgroundSize: '1600px auto'
               }}
-            />
-            {/* Subtitles */}
-            <HeroSubtitleOverlay
-              player={playerRef.current}
-              subtitleLanguageId={effectiveSubtitleLanguageId}
-              visible={shouldShowOverlay}
-            />
-
+            /> */}
             <MuxInsertLogoOverlay
               variantId={
                 currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id

@@ -14,7 +14,6 @@ import { useWatch } from '../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../types/inserts'
 
-import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 import { MuxInsertLogoOverlay } from './MuxInsertLogoOverlay'
 import { VideoControls } from './VideoControls'
 
@@ -63,7 +62,7 @@ export function VideoBlockPlayer({
     dispatch: dispatchPlayer
   } = usePlayer()
   const {
-    state: { subtitleLanguageId, subtitleOn }
+    state: { audioLanguageId, subtitleLanguageId, subtitleOn }
   } = useWatch()
   const isFullscreen = useFullscreen()
   const [playerReady, setPlayerReady] = useState(false)
@@ -94,96 +93,6 @@ export function VideoBlockPlayer({
     window.addEventListener('scroll', pauseVideoOnScrollAway, { passive: true })
     return () => window.removeEventListener('scroll', pauseVideoOnScrollAway)
   }, [pauseVideoOnScrollAway])
-
-  // Immediately hide native subtitles when video element is available
-  useEffect(() => {
-    if (videoRef.current == null) return
-
-    const videoElement = videoRef.current
-    const hideNativeSubtitles = () => {
-      // Add CSS class immediately
-      videoElement.classList.add('hero-hide-native-subtitles')
-
-      // Disable any existing text tracks
-      const tracks = videoElement.textTracks
-      if (tracks != null) {
-        for (let i = 0; i < tracks.length; i++) {
-          const track = tracks[i]
-          if (track.kind === 'subtitles') {
-            track.mode = 'disabled'
-          }
-        }
-      }
-    }
-
-    // Hide immediately and also on any track additions
-    hideNativeSubtitles()
-
-    const handleLoadStart = () => hideNativeSubtitles()
-    const handleLoadedMetadata = () => hideNativeSubtitles()
-    const handleCanPlay = () => hideNativeSubtitles()
-    const handleAddTrack = () => {
-      // Small delay to ensure track is fully added
-      setTimeout(hideNativeSubtitles, 10)
-    }
-
-    videoElement.addEventListener('loadstart', handleLoadStart)
-    videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
-    videoElement.addEventListener('canplay', handleCanPlay)
-    videoElement.textTracks.addEventListener?.('addtrack', handleAddTrack)
-
-    return () => {
-      videoElement.removeEventListener('loadstart', handleLoadStart)
-      videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
-      videoElement.removeEventListener('canplay', handleCanPlay)
-      videoElement.textTracks.removeEventListener?.('addtrack', handleAddTrack)
-    }
-  }, [videoRef.current])
-
-  // Immediately hide native subtitles when video element is available
-  useEffect(() => {
-    if (videoRef.current == null) return
-
-    const videoElement = videoRef.current
-    const hideNativeSubtitles = () => {
-      // Add CSS class immediately
-      videoElement.classList.add('hero-hide-native-subtitles')
-
-      // Disable any existing text tracks
-      const tracks = videoElement.textTracks
-      if (tracks != null) {
-        for (let i = 0; i < tracks.length; i++) {
-          const track = tracks[i]
-          if (track.kind === 'subtitles') {
-            track.mode = 'disabled'
-          }
-        }
-      }
-    }
-
-    // Hide immediately and also on any track additions
-    hideNativeSubtitles()
-
-    const handleLoadStart = () => hideNativeSubtitles()
-    const handleLoadedMetadata = () => hideNativeSubtitles()
-    const handleCanPlay = () => hideNativeSubtitles()
-    const handleAddTrack = () => {
-      // Small delay to ensure track is fully added
-      setTimeout(hideNativeSubtitles, 10)
-    }
-
-    videoElement.addEventListener('loadstart', handleLoadStart)
-    videoElement.addEventListener('loadedmetadata', handleLoadedMetadata)
-    videoElement.addEventListener('canplay', handleCanPlay)
-    videoElement.textTracks.addEventListener?.('addtrack', handleAddTrack)
-
-    return () => {
-      videoElement.removeEventListener('loadstart', handleLoadStart)
-      videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata)
-      videoElement.removeEventListener('canplay', handleCanPlay)
-      videoElement.textTracks.removeEventListener?.('addtrack', handleAddTrack)
-    }
-  }, [videoRef.current])
 
   useEffect(() => {
     const setupPlayer = async () => {
@@ -264,25 +173,6 @@ export function VideoBlockPlayer({
       })
 
       player.ready(() => {
-        // Immediately hide native subtitles to prevent flash before custom overlay renders
-        const textTracks = (
-          player as Player & { textTracks?: () => TextTrackList }
-        ).textTracks?.()
-        if (textTracks != null) {
-          for (let i = 0; i < textTracks.length; i++) {
-            const track = textTracks[i]
-            if (track.kind === 'subtitles') {
-              track.mode = 'disabled'
-            }
-          }
-        }
-
-        // Also hide via CSS class as additional safeguard
-        const element = player.el() as HTMLElement | null
-        if (element != null) {
-          element.classList.add('hero-hide-native-subtitles')
-        }
-
         setPlayerReady(true)
       })
 
@@ -432,9 +322,11 @@ export function VideoBlockPlayer({
   ])
 
   const { subtitleUpdate } = useSubtitleUpdate()
+  const shouldEnableSubtitles = true
+  const shouldLogSubtitleLanguages = placement === 'carouselItem'
 
   const effectiveSubtitleLanguageId =
-    subtitleLanguageId ?? variant?.language.id ?? null
+    subtitleLanguageId ?? audioLanguageId ?? variant?.language.id ?? null
 
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
@@ -454,7 +346,13 @@ export function VideoBlockPlayer({
     void subtitleUpdate({
       player,
       subtitleLanguageId: effectiveSubtitleLanguageId,
-      subtitleOn: mute || subtitleOn
+      subtitleOn: shouldEnableSubtitles,
+      preferredSubtitleLanguageIds: [
+        subtitleLanguageId,
+        audioLanguageId,
+        variant?.language.id
+      ],
+      debugAvailableLanguages: shouldLogSubtitleLanguages
     })
   }, [
     playerRef,
@@ -462,16 +360,15 @@ export function VideoBlockPlayer({
     subtitleOn,
     variant,
     mute,
+    subtitleLanguageId,
+    audioLanguageId,
+    shouldEnableSubtitles,
+    shouldLogSubtitleLanguages,
     subtitleUpdate,
     playerReady,
     subtitleUpdate,
     playerReady
   ])
-
-  const shouldShowOverlay =
-    playerReady &&
-    (mute || (subtitleOn ?? false)) &&
-    !(placement === 'singleVideo' && wasUnmuted)
 
   return (
     <>
@@ -493,9 +390,7 @@ export function VideoBlockPlayer({
               key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
               data-testid="VideoBlockPlayer"
               ref={videoRef}
-              className={clsx(
-                'vjs hero-hide-native-subtitles max-h-[100vh] max-w-[100vw]',
-                {
+              className={clsx('vjs max-h-[100vh] max-w-[100vw]', {
                   'md:[&_.vjs-tech]:object-cover':
                     (() => {
                       const condition = !isFullscreen && collapsed;
@@ -509,8 +404,7 @@ export function VideoBlockPlayer({
                       return condition;
                     })(),
                   'cursor-pointer': placement == 'carouselItem'
-                }
-              )}
+                })}
               // style={{
               //   position: 'absolute',
               //   top: 0,
@@ -557,13 +451,6 @@ export function VideoBlockPlayer({
               }}
             />
           )}
-          {/* Subtitles */}
-          <HeroSubtitleOverlay
-            player={playerRef.current}
-            subtitleLanguageId={effectiveSubtitleLanguageId}
-            visible={shouldShowOverlay}
-          />
-
           <MuxInsertLogoOverlay
             variantId={
               currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id

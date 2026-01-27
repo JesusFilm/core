@@ -332,30 +332,106 @@
     display: none !important;
   }
 
-  @keyframes heroSubtitleFadeIn {
+  .show-video-overlay .vjs:after {
+    content: '';
+    /* inset: 0; */
+    top:0;
+    right:0;
+    /* bottom:0; */
+    height:100vh;
+    left:0;
+    object-fit: cover;
+    position: absolute;
+    background-image: url('../public/images/overlay.svg');
+    background-repeat: repeat;
+    background-size: auto;
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+    backdrop-filter: brightness(.4) saturate(.6) sepia(.4);
+                
+
+  }
+
+  /* Default Video.js subtitles */
+  .vjs-text-track-display {
+    z-index:1;
+    /* top:100px !important; */
+    /* bottom:90% !important; */
+    /* transform: translateY(50%); */
+    /* text-align: center; */
+  }
+
+  /* .video-placement-single */
+
+  .video-placement-carousel .vjs-text-track-display .vjs-text-track-cue,
+  .video-placement-carousel .vjs-text-track-display .vjs-text-track-cue > div,
+  .video-placement-carousel .vjs-text-track-display ::cue {
+    /* color: #fff !important; */
+    /* font-size: 20px !important; */
+    /* font-family: var(--font-sans) !important; */
+    /* font-weight:600; */
+    /* top: 50%; */
+    /* inset:0 0 0 !important; */
+    font-size: 20px !important;
+    text-transform: uppercase;
+    font-weight:800;
+    bottom:-20px;
+    /* text-shadow:
+      0 1px 2px rgba(0,0,0,0.7),
+      0 0px 1px rgba(0,0,0,0.5);
+    background: transparent !important;
+    text-align: center;
+    opacity: 0; */
+    /* animation: fadeInSubtitle 0.4s ease-out forwards; */
+  }
+
+  .vjs-text-track-display .vjs-text-track-cue,
+  .vjs-text-track-display ::cue {
+    height: 100% !important;
+    color: #fff !important;
+    font-size: 24px !important;
+    font-family: var(--font-sans) !important;
+    font-weight:600;
+    /* top: 50%; */
+    inset:0 !important;
+    text-shadow:
+      0 1px 2px rgba(0,0,0,0.7),
+      0 0px 1px rgba(0,0,0,0.5);
+    background: transparent !important;
+    /* text-align: center; */
+    opacity: 0;
+    animation: fadeInSubtitle 0.4s ease-out forwards;
+  }
+
+  .vjs-text-track-display .vjs-text-track-cue > div {
+    inset:auto !important;
+    bottom: 50px !important;
+    transform: translateX(-50%);
+    background: none !important;
+    position: absolute !important;
+  }
+
+
+
+  .vjs-text-track-display {
+    bottom: 0!important;
+    text-align: center;
+  }
+
+
+  .vjs-text-track-cue {
+
+  }
+
+  @keyframes fadeInSubtitle {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(15px);
     }
     to {
       opacity: 1;
       transform: translateY(0);
     }
-  }
-
-  .hero-subtitle-line {
-    display: inline-block;
-    animation: heroSubtitleFadeIn 280ms ease-out forwards;
-    will-change: transform, opacity;
-  }
-
-  /* Aggressive native subtitle hiding */
-  .hero-hide-native-subtitles .vjs-text-track-display,
-  .hero-hide-native-subtitles ::cue,
-  .hero-hide-native-subtitles video::cue {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
   }
 
   .responsive-container {

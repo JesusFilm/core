@@ -50,12 +50,6 @@ jest.mock('./VideoControls', () => ({
   MuxInsertLogoOverlay: () => null
 }))
 
-jest.mock('./HeroSubtitleOverlay', () => ({
-  HeroSubtitleOverlay: () => (
-    <div data-testid="HeroSubtitleOverlay">HeroSubtitleOverlay</div>
-  )
-}))
-
 describe('VideoBlockPlayer', () => {
   const defaultProps = {
     isPreview: false,
