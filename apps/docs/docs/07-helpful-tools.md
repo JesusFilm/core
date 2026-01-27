@@ -11,11 +11,11 @@ Wallaby.js is a powerful continuous testing tool that runs your unit tests in re
 #### Installation and Setup
 
 1. [Register your organization email](https://wallabyjs.com/oss/) for a free OSS license on Wallaby.js official website
-    * Ensure Wallaby.js sends a confirmation email to you via your registered email address
+   - Ensure Wallaby.js sends a confirmation email to you via your registered email address
 2. Install the 'Wallaby.js' extension in your IDE
 3. Activate your OSS license by opening Wallaby.js extension settings -> 'Manage License Key' -> Submit your organization email
 4. Open the command palette (F1) and run '>Wallaby.js: Smart Start'
-5. Wallaby.js will now run the unit tests within any unit test file that is opened and focused. 
+5. Wallaby.js will now run the unit tests within any unit test file that is opened and focused.
 
 For more information on using Wallaby.js, please read the [documentation on their official website](https://wallabyjs.com/docs/).
 
