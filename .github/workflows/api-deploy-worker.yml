@@ -45,6 +45,7 @@ jobs:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       SKIP_ENV_VALIDATION: 1
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    timeout-minutes: 20
     strategy:
       matrix:
         node-version: [22]

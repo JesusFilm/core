@@ -17,6 +17,7 @@ jobs:
     env:
       IMAGE_TAG: ${{ github.sha }}
     runs-on: blacksmith-2vcpu-ubuntu-2204
+    timeout-minutes: 20
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4

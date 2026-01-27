@@ -66,6 +66,7 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
+    timeout-minutes: 20
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
