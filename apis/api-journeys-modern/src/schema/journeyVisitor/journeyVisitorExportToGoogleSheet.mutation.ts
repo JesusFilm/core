@@ -13,6 +13,7 @@ import {
 } from '../../lib/google/sheets'
 import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
+import { logger } from '../logger'
 
 import { computeConnectedBlockIds } from './export/connectivity'
 import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
@@ -636,14 +637,23 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         .filter(({ exportOrder }) => exportOrder > 0)
 
       if (blocksToUpdate.length > 0) {
-        await Promise.all(
-          blocksToUpdate.map(({ blockId, exportOrder }) =>
-            prisma.block.update({
-              where: { id: blockId },
-              data: { exportOrder }
-            })
+        try {
+          await Promise.all(
+            blocksToUpdate.map(({ blockId, exportOrder }) =>
+              prisma.block.update({
+                where: { id: blockId },
+                data: { exportOrder }
+              })
+            )
           )
-        )
+        } catch (error) {
+          // Best-effort: log error but don't rethrow so the mutation can return success
+          // The sheet write and sync have already succeeded at this point
+          logger.error(
+            { error, blocksToUpdate, journeyId },
+            'Failed to update exportOrder on blocks after successful sheet export'
+          )
+        }
       }
 
       return { spreadsheetId, spreadsheetUrl, sheetName }
