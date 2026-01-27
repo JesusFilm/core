@@ -502,7 +502,10 @@ export async function appendEventToGoogleSheets({
           (value) => value ?? ''
         )
         const mergedRow = alignedRow.map((value, index) => {
+          const key = updatedFinalHeader[index] ?? ''
           const existingValue = existingRow[index] ?? ''
+          // Date should represent the latest event timestamp (single value, never aggregated).
+          if (key === 'date') return value === '' ? existingValue : value
           // If new value is empty, keep existing
           if (value === '') return existingValue
           // If existing value is empty, use new value

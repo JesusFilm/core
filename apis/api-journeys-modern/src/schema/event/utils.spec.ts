@@ -569,7 +569,7 @@ describe('event utils', () => {
       expect(mockWriteValues).not.toHaveBeenCalled()
     })
 
-    it('should append new values with semicolon when updating existing row', async () => {
+    it('should overwrite Date with latest timestamp when updating existing row', async () => {
       const mockSync = {
         id: 'sync-id',
         journeyId: 'journey-id',
@@ -591,14 +591,16 @@ describe('event utils', () => {
       mockReadValues
         .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
         .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([['visitor-id', '2024-01-01', 'Option A']]) // existing row with value
+        .mockResolvedValueOnce([
+          ['visitor-id', '2024-01-01T00:00:00.000Z', 'Option A']
+        ]) // existing row with value
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
         row: [
           'visitor-id',
-          '2024-01-01T00:00:00.000Z',
+          '2024-01-02T00:00:00.000Z',
           '',
           '',
           '',
@@ -607,12 +609,12 @@ describe('event utils', () => {
         ]
       })
 
-      // Should call updateRangeValues with merged values (semicolon separated)
+      // Should update the row, overwrite the Date column, and merge dynamic values.
       expect(mockUpdateRangeValues).toHaveBeenCalledWith(
         expect.objectContaining({
-          values: expect.arrayContaining([
-            expect.arrayContaining(['visitor-id'])
-          ])
+          values: [
+            ['visitor-id', '2024-01-02T00:00:00.000Z', 'Option A; Option B']
+          ]
         })
       )
       expect(mockWriteValues).not.toHaveBeenCalled()
