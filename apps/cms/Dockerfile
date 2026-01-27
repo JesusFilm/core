@@ -1,41 +1,25 @@
-FROM node:22-alpine
+FROM node:22-bookworm-slim
 
 # -------------------------
 # System deps for sharp / vips / canvas
 # -------------------------
-RUN apk add --no-cache \
-  build-base \
-  gcc \
-  autoconf \
-  automake \
-  zlib-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  build-essential \
+  libvips-dev \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
   libpng-dev \
-  nasm \
-  bash \
-  vips-dev \
-  git \
-  cairo-dev \
-  pango-dev \
-  jpeg-dev \
-  giflib-dev \
-  pixman-dev \
-  freetype-dev \
-  fontconfig-dev \
-  cairo \
-  pango \
-  jpeg \
-  giflib \
-  pixman \
-  fontconfig \
-  ttf-dejavu
+  libpixman-1-dev \
+  libfreetype6-dev \
+  libfontconfig1-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
-
-# Enable pnpm
-RUN corepack enable
 
 # -------------------------
 # Workspace root
@@ -46,8 +30,13 @@ WORKDIR /opt
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/cms/package.json ./apps/cms/package.json
 
+# Enable pnpm and prepare the version from package.json
+RUN corepack enable && corepack prepare --activate
+
 # Install ONLY cms deps
-RUN pnpm install \
+# Mount pnpm store cache (works in GitHub Actions with Buildx)
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+  pnpm install \
   --frozen-lockfile \
   --filter ./apps/cms...
 
