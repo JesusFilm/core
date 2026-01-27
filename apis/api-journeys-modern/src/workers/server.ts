@@ -25,11 +25,20 @@ function run({
   jobData,
   concurrency
 }: RunOptions): void {
+  if (concurrency != null && !(Number.isFinite(concurrency) && concurrency > 0)) {
+    logger.warn(
+      { queue: queueName, concurrency },
+      'invalid concurrency; using default'
+    )
+  }
+
+  const workerOptions: ConstructorParameters<typeof Worker>[2] =
+    typeof concurrency === 'number' && Number.isFinite(concurrency) && concurrency > 0
+      ? { connection, concurrency }
+      : { connection }
+
   // eslint-disable-next-line no-new
-  new Worker(queueName, job, {
-    connection,
-    concurrency: concurrency ?? undefined
-  })
+  new Worker(queueName, job, workerOptions)
 
   async function job(job: Job): Promise<void> {
     const childLogger = logger.child({
