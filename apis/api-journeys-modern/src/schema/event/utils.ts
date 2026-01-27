@@ -25,7 +25,8 @@ try {
   // Avoid requiring Redis in tests
   if (process.env.NODE_ENV !== 'test') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    googleSheetsSyncQueue = require('../../workers/googleSheetsSync/queue').queue
+    googleSheetsSyncQueue =
+      require('../../workers/googleSheetsSync/queue').queue
   }
 } catch {
   googleSheetsSyncQueue = null
@@ -241,12 +242,12 @@ export async function resetEventsEmailDelay(
  * Queue an event to be synced to Google Sheets.
  * This function adds a job to the worker queue which processes events one at a time
  * to avoid race conditions when multiple events are created simultaneously.
- * 
+ *
  * Jobs are configured with:
  * - 3 retry attempts on failure
  * - Immediate expiration on success (removeOnComplete: true)
  * - 1 hour expiration on failure (removeOnFail: { age: ONE_HOUR })
- * 
+ *
  * Note: No job is created if there are no active syncs for the journey.
  * Syncs are fetched here and passed to the worker to minimize database calls.
  */
