@@ -427,7 +427,8 @@
   },
   "pnpm": {
     "overrides": {
-      "strapi-blurhash>canvas": "^3.2.1"
+      "strapi-blurhash>canvas": "^3.2.1",
+      "hls.js": "1.6.15"
     }
   }
 }
