@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "試試新設計。",
+  "Better search, languages, and collections.": "更好的搜尋、語言和收藏。",
+  "Better search. Better language support. Better collections.": "更好的搜尋功能。更好的語言支援。更好的收藏。",
+  "New Design": "全新設計",
   "close": "關閉",
   "No Downloads Available": "無下載",
   "Highest": "最高",
@@ -36,8 +40,6 @@
   "Language": "語言",
   "Subtitles are not available in {{language}}.": "字幕不適用於 {{language}}。",
   "Subtitles": "字幕",
-  "Available Languages": "可用語言",
-  "Other Languages": "其他語言",
   "Show subtitles": "顯示字幕",
   "Read more...": "閱讀全文...",
   "Related questions": "相關問題",
@@ -46,7 +48,7 @@
   "Have a private discussion with someone who is ready to listen.": "與願意傾聽的人進行私人討論。",
   "Chat with a person": "與人聊天",
   "Ask a Bible question": "詢問聖經問題",
-  "Clip ": "夾子 ",
+  "Clip ": "片段 ",
   " of ": " 的 ",
   "If you could ask the creator of this video a question, what would it be?": "如果您可以問這段影片的創作者一個問題，您會是什麼？",
   "Bible Quotes": "聖經語錄",
@@ -92,9 +94,5 @@
   "Short Film": "短片",
   "Behind The Scenes": "幕後花絮",
   "Trailer": "預告片",
-  "Available in {{count}} languages._other": "提供 {{count}} 語言版本。",
-  "Better search. Better language support. Better collections.": "更好的搜尋。更好的語言支援。更好的收藏。",
-  "Better search, languages, and collections.": "更好的搜尋、語言和收藏。",
-  "Try the new design.": "試試新的設計。",
-  "New Design": "新設計"
+  "Available in {{count}} languages._other": "提供 {{count}} 語言版本。"
 }
