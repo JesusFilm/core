@@ -25,7 +25,17 @@ import {
   buildRenderTree,
   computeOrderIndex
 } from '../../../schema/journeyVisitor/export/order'
-import { GoogleSheetsSyncJobData } from '../queue'
+import {
+  GoogleSheetsSyncAppendJobData,
+  GoogleSheetsSyncBackfillJobData,
+  GoogleSheetsSyncCreateJobData,
+  GoogleSheetsSyncJobData,
+  isBackfillJob,
+  isCreateJob
+} from '../queue'
+
+import { backfillService } from './backfill'
+import { createService } from './create'
 
 const journeyBlockSelect = {
   id: true,
@@ -39,8 +49,34 @@ const journeyBlockSelect = {
   exportOrder: true
 } as const
 
+/**
+ * Main service dispatcher for Google Sheets sync jobs.
+ * Routes to appropriate handler based on job type.
+ */
 export async function service(
   job: Job<GoogleSheetsSyncJobData>,
+  logger?: Logger
+): Promise<void> {
+  // Handle backfill jobs
+  if (isBackfillJob(job.data)) {
+    return backfillService(job as Job<GoogleSheetsSyncBackfillJobData>, logger)
+  }
+
+  // Handle create jobs (initial sheet export)
+  if (isCreateJob(job.data)) {
+    return createService(job as Job<GoogleSheetsSyncCreateJobData>, logger)
+  }
+
+  // Handle append jobs (default for legacy jobs without 'type' field)
+  return appendService(job as Job<GoogleSheetsSyncAppendJobData>, logger)
+}
+
+/**
+ * Append service: adds or updates a single event row in Google Sheets.
+ * This is the real-time sync that happens when events are created.
+ */
+async function appendService(
+  job: Job<GoogleSheetsSyncAppendJobData>,
   logger?: Logger
 ): Promise<void> {
   const { journeyId, teamId, row, sheetName, syncs } = job.data
