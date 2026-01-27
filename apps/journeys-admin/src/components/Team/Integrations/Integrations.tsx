@@ -27,7 +27,7 @@ export function Integrations(): ReactElement {
       >
         <BreadcrumbNavigation />
         <Stack direction="row" gap={4} sx={{ flexWrap: 'wrap', mt: 10 }}>
-          {teamIntegrations && (
+          {teamIntegrations === true && (
             <IntegrationsButton
               url={`/teams/${
                 router.query.teamId as string

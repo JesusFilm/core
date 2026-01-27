@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Essaie le nouveau design.",
+  "Better search, languages, and collections.": "Meilleure recherche, langues et collections.",
+  "Better search. Better language support. Better collections.": "Meilleure recherche. Meilleure prise en charge des langues. Meilleures collections.",
+  "New Design": "Nouvelle conception",
   "close": "fermer",
   "No Downloads Available": "Aucun téléchargement disponible",
   "Highest": "Le plus haut",
@@ -36,8 +40,6 @@
   "Language": "Langue",
   "Subtitles are not available in {{language}}.": "Les sous-titres ne sont pas disponibles sur {{language}}.",
   "Subtitles": "Sous-titres",
-  "Available Languages": "Langues disponibles",
-  "Other Languages": "Autres langues",
   "Show subtitles": "Afficher les sous-titres",
   "Read more...": "Lire la suite...",
   "Related questions": "Questions connexes",
@@ -58,7 +60,7 @@
   "Share Link": "Lien de partage",
   "Embed Code": "Code d'intégration",
   "Copy Code": "Copier le code",
-  "Playing now": "Jouer maintenant",
+  "Playing now": "En cours de lecture",
   "{{ languageCount }} Languages": "{{ languageCount }} Les langues",
   "Description": "Description",
   "Discussion": "Discussion",
@@ -68,7 +70,7 @@
   "Play": "Jouer",
   "Play Video": "Jouer la vidéo",
   "{{ duration }} min": "{{ duration }} min",
-  "Play with sound": "Joue avec le son",
+  "Play with sound": "Lire avec le son",
   "Sorry, no results": "Désolé, pas de résultats",
   "Try removing or changing something from your request": "Essaie de supprimer ou de changer quelque chose dans ta demande",
   "Languages": "Les langues",
@@ -93,9 +95,5 @@
   "Behind The Scenes": "Dans les coulisses",
   "Trailer": "Bande-annonce",
   "Available in {{count}} languages._one": "Disponible dans la langue {{count}} .",
-  "Available in {{count}} languages._other": "Disponible en {{count}} langues.",
-  "Better search. Better language support. Better collections.": "Meilleure recherche. Meilleur support linguistique. Meilleures collections.",
-  "Better search, languages, and collections.": "Meilleure recherche, langues et collections.",
-  "Try the new design.": "Essayez le nouveau design.",
-  "New Design": "Nouveau Design"
+  "Available in {{count}} languages._other": "Disponible en {{count}} langues."
 }
