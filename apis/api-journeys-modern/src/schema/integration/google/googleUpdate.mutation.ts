@@ -97,7 +97,8 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
               accessSecretCipherText: ciphertext,
               accessSecretIv: iv,
               accessSecretTag: tag,
-              accountEmail
+              accountEmail,
+              oauthStale: false // Clear stale flag on successful reconnection
             }
           })
         }
