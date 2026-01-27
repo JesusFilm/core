@@ -25,7 +25,10 @@ function run({
   jobData,
   concurrency
 }: RunOptions): void {
-  if (concurrency != null && !(Number.isFinite(concurrency) && concurrency > 0)) {
+  if (
+    concurrency != null &&
+    !(Number.isFinite(concurrency) && concurrency > 0)
+  ) {
     logger.warn(
       { queue: queueName, concurrency },
       'invalid concurrency; using default'
@@ -33,7 +36,9 @@ function run({
   }
 
   const workerOptions: ConstructorParameters<typeof Worker>[2] =
-    typeof concurrency === 'number' && Number.isFinite(concurrency) && concurrency > 0
+    typeof concurrency === 'number' &&
+    Number.isFinite(concurrency) &&
+    concurrency > 0
       ? { connection, concurrency }
       : { connection }
 

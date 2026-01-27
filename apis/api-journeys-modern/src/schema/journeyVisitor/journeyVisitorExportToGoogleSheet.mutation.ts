@@ -22,9 +22,7 @@ try {
 
 // Test helper to inject a mock queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export function __setGoogleSheetsSyncQueueForExportTests(
-  mockQueue: any
-): void {
+export function __setGoogleSheetsSyncQueueForExportTests(mockQueue: any): void {
   googleSheetsSyncQueue = mockQueue
 }
 

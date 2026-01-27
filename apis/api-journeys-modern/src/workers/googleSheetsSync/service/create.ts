@@ -99,7 +99,9 @@ async function* getJourneyVisitors(
       const eventValuesByKey = new Map<string, string[]>()
       journeyVisitor.events.forEach((event) => {
         if (event.blockId) {
-          const normalizedLabel = (event.label ?? '').replace(/\s+/g, ' ').trim()
+          const normalizedLabel = (event.label ?? '')
+            .replace(/\s+/g, ' ')
+            .trim()
           const key = `${event.blockId}-${normalizedLabel}`
           const eventValue = event.value ?? ''
           if (!eventValuesByKey.has(key)) {
