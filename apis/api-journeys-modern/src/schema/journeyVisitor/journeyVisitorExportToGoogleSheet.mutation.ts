@@ -44,7 +44,8 @@ const journeyBlockSelect = {
   content: true,
   x: true,
   y: true,
-  deletedAt: true
+  deletedAt: true,
+  exportOrder: true
 } as const
 
 interface JourneyVisitorExportRow {
@@ -570,16 +571,17 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
         sanitizeGoogleSheetsCell(cell)
       )
+
       const values: (string | null)[][] = [sanitizedHeaderRow]
       for await (const row of getJourneyVisitors(
         journeyId,
         eventWhere,
         userTimezone
       )) {
-        const aligned = finalHeader.map((k) => {
-          // Handle empty header columns (no header columns)
-          if (k === '' || k.trim() === '') return ''
-          const value = row[k] ?? ''
+        // Align row data to columns using column key
+        // Column order is determined by exportOrder, matching uses key
+        const aligned = columns.map((col) => {
+          const value = row[col.key] ?? ''
           return sanitizeGoogleSheetsCell(value)
         })
         values.push(aligned)
@@ -608,6 +610,33 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       }
 
       await prisma.googleSheetsSync.create({ data: syncData })
+
+      // Update exportOrder on blocks that don't have it set yet
+      // This preserves column order for future exports and syncs
+      // exportOrder is 1-based for block columns (columns array includes base columns at start)
+      const blocksToUpdate = columns
+        .filter((col) => col.blockId != null && col.exportOrder == null)
+        .map((col, index) => {
+          // Find the actual position in the columns array (accounting for base columns)
+          const columnPosition = columns.findIndex((c) => c.blockId === col.blockId)
+          return {
+            blockId: col.blockId!,
+            // exportOrder is the position after base columns (1-based for block columns)
+            exportOrder: columnPosition - baseColumns.length + 1
+          }
+        })
+        .filter(({ exportOrder }) => exportOrder > 0)
+
+      if (blocksToUpdate.length > 0) {
+        await Promise.all(
+          blocksToUpdate.map(({ blockId, exportOrder }) =>
+            prisma.block.update({
+              where: { id: blockId },
+              data: { exportOrder }
+            })
+          )
+        )
+      }
 
       return { spreadsheetId, spreadsheetUrl, sheetName }
     }
