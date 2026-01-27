@@ -24,7 +24,7 @@ FROM base AS build
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
-RUN corepack enable && corepack prepare --activate
+RUN corepack enable && corepack prepare pnpm --activate
 
 COPY apps/cms ./apps/cms
 
