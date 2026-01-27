@@ -6,13 +6,11 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
 import { User } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { Item } from '../../Editor/Toolbar/Items/Item'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { LanguageSwitcher } from '../../LanguageSwitcher'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
@@ -27,7 +25,6 @@ export function AppHeader({
   user
 }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
-  const { t } = useTranslation('apps-journeys-admin')
   const [open, setOpen] = useState(false)
 
   return (
@@ -73,8 +70,9 @@ export function AppHeader({
               edge="start"
               color="inherit"
               onClick={() => setOpen(true)}
+              aria-label="language"
             >
-              <LanguageIcon sx={{ color: 'white' }} />
+              <LanguageIcon sx={{ color: 'background.paper' }} />
             </IconButton>
             <HelpScoutBeacon
               iconButtonColor="secondary"
