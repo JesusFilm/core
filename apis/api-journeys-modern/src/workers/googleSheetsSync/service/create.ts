@@ -278,12 +278,25 @@ export async function createService(
   // Ensure sheet exists (it should already exist, but just in case)
   await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
 
-  // Build data rows
+  // Build and write header row first
   const sanitizedHeaderRow = headerRow.map((cell) =>
     sanitizeGoogleSheetsCell(cell)
   )
 
-  const values: (string | null)[][] = [sanitizedHeaderRow]
+  // Write header row (overwrites any existing content)
+  await writeValues({
+    accessToken,
+    spreadsheetId,
+    sheetTitle: sheetName,
+    values: [sanitizedHeaderRow],
+    append: false
+  })
+
+  // Stream visitor rows in fixed-size batches to avoid OOM for large journeys
+  const BATCH_SIZE = 500
+  let batch: string[][] = []
+  let totalRowCount = 0
+
   for await (const row of getJourneyVisitors(
     journeyId,
     eventWhere,
@@ -294,17 +307,32 @@ export async function createService(
       rowLookup.set(key, sanitizeGoogleSheetsCell(value))
     }
     const aligned = finalHeader.map((key) => rowLookup.get(key) ?? '')
-    values.push(aligned)
+    batch.push(aligned)
+    totalRowCount++
+
+    // Flush batch when it reaches the size limit
+    if (batch.length >= BATCH_SIZE) {
+      await writeValues({
+        accessToken,
+        spreadsheetId,
+        sheetTitle: sheetName,
+        values: batch,
+        append: true
+      })
+      batch = []
+    }
   }
 
-  // Write all data at once
-  await writeValues({
-    accessToken,
-    spreadsheetId,
-    sheetTitle: sheetName,
-    values,
-    append: false
-  })
+  // Flush any remaining rows in the final batch
+  if (batch.length > 0) {
+    await writeValues({
+      accessToken,
+      spreadsheetId,
+      sheetTitle: sheetName,
+      values: batch,
+      append: true
+    })
+  }
 
   // Update exportOrder on blocks that don't have it set yet
   const blocksToUpdate = columns
@@ -342,7 +370,7 @@ export async function createService(
       journeyId,
       spreadsheetId,
       sheetName,
-      rowCount: values.length - 1
+      rowCount: totalRowCount
     },
     'Initial export completed successfully'
   )
