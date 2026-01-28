@@ -5,6 +5,7 @@ EXPOSE 4004
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
+ENV PRISMA_LOCATION_USERS=/app/node_modules/.prisma/api-users-client
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -15,11 +16,15 @@ RUN apk upgrade --update-cache --available && \
 WORKDIR /app
 COPY ./dist/apps/api-journeys-modern .
 COPY ./libs/prisma/journeys/db ./prisma
+COPY ./libs/prisma/users/db ./prisma-users
 
 RUN corepack enable && corepack prepare pnpm --activate
 RUN pnpm install --prod --silent
 RUN pnpm add @prisma/client@6.18.0
 RUN pnpm add -D prisma@6.18.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
-    
-CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma && node ./main.js
+RUN pnpm exec prisma generate --generator client --schema ./prisma-users/schema.prisma
+
+CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma \
+ && pnpm exec prisma migrate deploy --schema ./prisma-users/schema.prisma \
+ && node ./main.js
