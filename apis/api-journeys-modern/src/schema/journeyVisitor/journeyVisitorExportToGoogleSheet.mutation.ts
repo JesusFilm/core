@@ -480,7 +480,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
             ? aligned
             : [
                 ...aligned,
-                ...Array.from({ length: rowWidth - aligned.length }).map(() => '')
+                ...Array.from({ length: rowWidth - aligned.length }).map(
+                  () => ''
+                )
               ]
         values.push(padded)
       }

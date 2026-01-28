@@ -66,4 +66,3 @@ export function formatGoogleSheetsDateFromIso(
   if (isNaN(parsed.getTime())) return isoOrDate
   return formatDateYmdInTimeZone(parsed, timeZone)
 }
-

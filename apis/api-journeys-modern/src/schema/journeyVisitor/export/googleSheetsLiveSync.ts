@@ -52,9 +52,7 @@ async function withVisitorSheetLock<T>(
     release = resolve
   })
 
-  const tail = previous
-    .catch(() => undefined)
-    .then(() => current)
+  const tail = previous.catch(() => undefined).then(() => current)
 
   visitorSheetLocks.set(key, tail)
 
@@ -95,7 +93,9 @@ export async function appendEventToGoogleSheets({
   })
   if (journey == null) return
 
-  const journeyBlocks = journey.blocks.filter((block) => block.deletedAt == null)
+  const journeyBlocks = journey.blocks.filter(
+    (block) => block.deletedAt == null
+  )
   const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
   const simpleBlocks: SimpleBlock[] = journeyBlocks.map((block) => ({
     id: block.id,
@@ -132,9 +132,8 @@ export async function appendEventToGoogleSheets({
     orderBy: { createdAt: 'asc' }
   })
 
-  const normalizedBlockHeaders = buildNormalizedBlockHeadersFromEvents(
-    blockHeadersResult
-  )
+  const normalizedBlockHeaders =
+    buildNormalizedBlockHeadersFromEvents(blockHeadersResult)
 
   const baseColumns = getDefaultBaseColumns()
   const resolveBaseColumnLabel = getDefaultBaseColumnLabelResolver()
@@ -377,11 +376,11 @@ export async function appendEventToGoogleSheets({
   })
 
   // If all syncs failed, throw so callers (e.g. the worker) can retry.
-  const allFailed = results.length > 0 && results.every((r) => r.status === 'rejected')
+  const allFailed =
+    results.length > 0 && results.every((r) => r.status === 'rejected')
   if (allFailed) {
     throw new Error(
       `All Google Sheets syncs failed: ${syncs.map((s) => s.spreadsheetId).join(', ')}`
     )
   }
 }
-
