@@ -1,0 +1,19 @@
+type RadioQuestionSubmissionEvent implements Event @shareable {
+  id: ID!
+  """
+  ID of the journey that the radioQuestionBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the selected radioOptionBlock
+  """
+  value: String
+}

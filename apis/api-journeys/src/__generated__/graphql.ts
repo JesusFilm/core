@@ -992,7 +992,6 @@ export type IntegrationGoogle = Integration & {
   __typename?: 'IntegrationGoogle';
   accountEmail?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  oauthStale: Scalars['Boolean']['output'];
   team: Team;
   type: IntegrationType;
   user?: Maybe<User>;
@@ -4368,10 +4367,14 @@ export type RadioQuestionBlockCreateInput = {
 
 export type RadioQuestionSubmissionEvent = Event & {
   __typename?: 'RadioQuestionSubmissionEvent';
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  /** ID of the journey that the radioQuestionBlock belongs to */
   journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
+  /** label of the selected radioOptionBlock */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4496,11 +4499,16 @@ export type SignUpBlockUpdateInput = {
 
 export type SignUpSubmissionEvent = Event & {
   __typename?: 'SignUpSubmissionEvent';
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
+  /** email from the signUpBlock form */
   email?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  /** ID of the journey that the block belongs to */
   journeyId: Scalars['ID']['output'];
+  /** null for signUpSubmissionEvent */
   label?: Maybe<Scalars['String']['output']>;
+  /** name from the signUpBlock form */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4861,11 +4869,16 @@ export type TextResponseBlockUpdateInput = {
 
 export type TextResponseSubmissionEvent = Event & {
   __typename?: 'TextResponseSubmissionEvent';
+  /** the id of the block this event originates from */
   blockId?: Maybe<Scalars['String']['output']>;
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  /** ID of the journey that the TextResponseBlock belongs to */
   journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
+  /** response from the TextResponseBlock form */
   value?: Maybe<Scalars['String']['output']>;
 };
 
