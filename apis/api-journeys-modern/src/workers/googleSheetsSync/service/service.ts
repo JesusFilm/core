@@ -13,6 +13,8 @@ import {
   writeValues
 } from '../../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../../../schema/journeyVisitor/export/connectivity'
+import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from '../../../schema/journeyVisitor/export/csv'
+import { formatDateYmdInTimeZone } from '../../../schema/journeyVisitor/export/date'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
@@ -38,6 +40,206 @@ const journeyBlockSelect = {
   deletedAt: true,
   exportOrder: true
 } as const
+
+interface EventHeaderRecord {
+  blockId: string | null
+  label: string | null
+}
+
+function normalizeLabel(label: string | null | undefined): string {
+  return (label ?? '').replace(/\\s+/g, ' ').trim()
+}
+
+/**
+ * Normalize labels and deduplicate by blockId (keep only one label per block).
+ * Keep the first non-empty label encountered for each blockId.
+ */
+function buildNormalizedBlockHeadersFromEvents(
+  headers: EventHeaderRecord[]
+): Array<{ blockId: string; label: string }> {
+  const headerMap = new Map<string, { blockId: string; label: string }>()
+
+  headers
+    .filter((header) => header.blockId != null)
+    .forEach((header) => {
+      const blockId = header.blockId!
+      const normalized = normalizeLabel(header.label)
+      if (normalized === '') return
+      if (headerMap.has(blockId)) return
+      headerMap.set(blockId, { blockId, label: normalized })
+    })
+
+  return Array.from(headerMap.values())
+}
+
+/**
+ * Format a date string for Google Sheets to match export format (YYYY-MM-DD in timezone).
+ * If the string cannot be parsed, fall back to the original string.
+ */
+function formatGoogleSheetsDateFromIso(
+  isoOrDate: string,
+  timeZone: string
+): string {
+  const parsed = new Date(isoOrDate)
+  if (isNaN(parsed.getTime())) return isoOrDate
+  return formatDateYmdInTimeZone(parsed, timeZone)
+}
+
+interface MergeGoogleSheetsHeaderParams {
+  baseKeys: string[]
+  columns: JourneyExportColumn[]
+  desiredHeaderKeys: string[]
+  existingHeaderRowLabels: string[]
+  userTimezone: string
+  getCardHeading: (blockId: string | null | undefined) => string
+  baseColumnLabelResolver?: BaseColumnLabelResolver
+}
+
+interface MergeGoogleSheetsHeaderResult {
+  finalHeaderKeys: string[]
+  finalHeaderRowLabels: string[]
+  writeWidth: number
+}
+
+function addLabelMapping(
+  map: Map<string, string>,
+  label: string,
+  key: string
+): void {
+  const normalized = normalizeLabel(label)
+  if (normalized === '') return
+
+  const existing = map.get(normalized)
+  if (existing != null && existing !== key) {
+    // Ambiguous label -> do not map to avoid incorrect alignment.
+    map.set(normalized, '')
+    return
+  }
+  map.set(normalized, key)
+}
+
+function mergeGoogleSheetsHeader({
+  baseKeys,
+  columns,
+  desiredHeaderKeys,
+  existingHeaderRowLabels,
+  userTimezone,
+  getCardHeading,
+  baseColumnLabelResolver
+}: MergeGoogleSheetsHeaderParams): MergeGoogleSheetsHeaderResult {
+  const { headerRow: desiredHeaderRowLabels } = buildHeaderRows({
+    columns,
+    userTimezone,
+    getCardHeading,
+    baseColumnLabelResolver
+  })
+
+  // Map canonical header labels (and sanitized variants) -> column key.
+  const headerLabelToKey = new Map<string, string>()
+  desiredHeaderRowLabels.forEach((label, index) => {
+    const key = desiredHeaderKeys[index] ?? ''
+    if (key === '' || label == null) return
+
+    addLabelMapping(headerLabelToKey, label, key)
+    addLabelMapping(headerLabelToKey, sanitizeCSVCell(label), key)
+    addLabelMapping(headerLabelToKey, sanitizeGoogleSheetsCell(label), key)
+  })
+
+  // Map raw column labels -> key (helps reconcile legacy sheets where Multiselect used to be just "Multi")
+  // Only map when unique.
+  const columnLabelToKey = new Map<string, string>()
+  columns.forEach((column) => {
+    if (column.key === '' || column.label == null) return
+    addLabelMapping(columnLabelToKey, column.label, column.key)
+    addLabelMapping(columnLabelToKey, sanitizeCSVCell(column.label), column.key)
+    addLabelMapping(
+      columnLabelToKey,
+      sanitizeGoogleSheetsCell(column.label),
+      column.key
+    )
+  })
+
+  const resolveExistingLabelToKey = (label: string): string => {
+    const normalized = normalizeLabel(label)
+    if (normalized === '') return ''
+
+    const fromHeader = headerLabelToKey.get(normalized)
+    if (fromHeader != null && fromHeader !== '') return fromHeader
+
+    const fromColumn = columnLabelToKey.get(normalized)
+    if (fromColumn != null && fromColumn !== '') return fromColumn
+
+    // If existing cell already contains a key, keep it.
+    if (desiredHeaderKeys.includes(normalized)) return normalized
+
+    // Preserve legacy/unknown columns as their own keys (placeholder behavior).
+    return normalized
+  }
+
+  // Ensure base headers exist in the correct order at start.
+  const merged: string[] = []
+  for (const baseKey of baseKeys) {
+    if (baseKey !== '' && !merged.includes(baseKey)) merged.push(baseKey)
+  }
+
+  for (const label of existingHeaderRowLabels) {
+    const key = resolveExistingLabelToKey(label ?? '')
+    if (key === '' || merged.includes(key)) continue
+    merged.push(key)
+  }
+
+  for (const key of desiredHeaderKeys) {
+    if (key === '' || merged.includes(key)) continue
+    merged.push(key)
+  }
+
+  // Preserve original labels for unknown keys
+  const unknownKeyToExistingLabel = new Map<string, string>()
+  for (const label of existingHeaderRowLabels) {
+    const key = resolveExistingLabelToKey(label ?? '')
+    if (key === '') continue
+    if (desiredHeaderKeys.includes(key)) continue
+    if (!unknownKeyToExistingLabel.has(key)) {
+      unknownKeyToExistingLabel.set(key, label ?? '')
+    }
+  }
+
+  const mergedColumns: JourneyExportColumn[] = merged.map((key) => {
+    const existingCol = columns.find((c) => c.key === key)
+    if (existingCol != null) return existingCol
+    return {
+      key,
+      label: unknownKeyToExistingLabel.get(key) ?? key,
+      blockId: null,
+      typename: ''
+    }
+  })
+
+  const { headerRow: mergedHeaderRowLabels } = buildHeaderRows({
+    columns: mergedColumns,
+    userTimezone,
+    getCardHeading,
+    baseColumnLabelResolver
+  })
+
+  const existingWidth = existingHeaderRowLabels.length
+  const writeWidth = Math.max(existingWidth, mergedHeaderRowLabels.length)
+  const paddedHeaderRowLabels =
+    writeWidth === mergedHeaderRowLabels.length
+      ? mergedHeaderRowLabels
+      : [
+          ...mergedHeaderRowLabels,
+          ...Array.from({ length: writeWidth - mergedHeaderRowLabels.length }).map(
+            () => ''
+          )
+        ]
+
+  return {
+    finalHeaderKeys: merged,
+    finalHeaderRowLabels: paddedHeaderRowLabels,
+    writeWidth
+  }
+}
 
 export async function service(
   job: Job<GoogleSheetsSyncJobData>,
@@ -101,23 +303,9 @@ export async function service(
     orderBy: { createdAt: 'asc' }
   })
 
-  // Normalize labels and deduplicate by blockId (keep only first label per blockId)
-  // This prevents creating multiple columns for the same block when events have different labels
-  const headerMap = new Map<string, { blockId: string; label: string }>()
-  blockHeadersResult
-    .filter((header) => header.blockId != null)
-    .forEach((header) => {
-      const normalizedLabel = (header.label ?? '').replace(/\s+/g, ' ').trim()
-      // Key by blockId only to ensure one column per block
-      const key = header.blockId!
-      // Only add if not already present (keeps first label encountered for each blockId)
-      if (!headerMap.has(key)) {
-        headerMap.set(key, {
-          blockId: header.blockId!,
-          label: normalizedLabel
-        })
-      }
-    })
+  const normalizedBlockHeaders = buildNormalizedBlockHeadersFromEvents(
+    blockHeadersResult as EventHeaderRecord[]
+  )
 
   const baseColumns: JourneyExportColumn[] = [
     { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
@@ -146,9 +334,8 @@ export async function service(
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
-  // Extract blockId and find the column key for this event
-  // The column key is used for matching row data to columns
-  let eventColumnKey: string | null = null
+  let keyForRow = dynamicKey
+
   if (dynamicKey !== '') {
     // Longest-prefix match to avoid prefix collisions (order-independent)
     // e.g., if we have block IDs "block-1" and "block-1-extended", we need
@@ -158,24 +345,22 @@ export async function service(
       .sort((a, b) => b.id.length - a.id.length)[0]
 
     if (matchedBlock != null) {
-      // Check if there's already a header entry for this blockId
-      const existingHeader = headerMap.get(matchedBlock.id)
+      const existingHeader = normalizedBlockHeaders.find(
+        (h: { blockId: string; label: string }) => h.blockId === matchedBlock.id
+      )
 
       if (existingHeader != null) {
-        // Use the existing column key for this blockId
-        eventColumnKey = `${existingHeader.blockId}-${existingHeader.label}`
+        keyForRow = `${existingHeader.blockId}-${existingHeader.label}`
       } else {
-        // No existing column for this block - normalize and add to headerMap
         const prefix = `${matchedBlock.id}-`
         const rawLabel = dynamicKey.startsWith(prefix)
           ? dynamicKey.substring(prefix.length)
           : ''
-        // Normalize label to match how historical headers are normalized
         const normalizedLabel = rawLabel.replace(/\s+/g, ' ').trim()
-        eventColumnKey = `${matchedBlock.id}-${normalizedLabel}`
+        keyForRow = `${matchedBlock.id}-${normalizedLabel}`
 
         if (connectedBlockIds.has(matchedBlock.id)) {
-          headerMap.set(matchedBlock.id, {
+          normalizedBlockHeaders.push({
             blockId: matchedBlock.id,
             label: normalizedLabel
           })
@@ -184,45 +369,19 @@ export async function service(
     }
   }
 
-  // Rebuild columns with the potentially updated headerMap
-  const updatedBlockHeaders = Array.from(headerMap.values())
   const updatedColumns = buildJourneyExportColumns({
     baseColumns,
-    blockHeaders: updatedBlockHeaders,
+    blockHeaders: normalizedBlockHeaders,
     journeyBlocks,
     orderIndex
   })
-  const updatedFinalHeader = updatedColumns.map((column) => column.key)
+  const updatedDesiredHeaderKeys = updatedColumns.map((column) => column.key)
 
   // Update all synced sheets - use allSettled so one failure doesn't abort others
   const results = await Promise.allSettled(
     syncs.map(async (sync) => {
       // Use sync-specific timezone for header and data formatting
       const syncTimezone = sync.timezone ?? 'UTC'
-
-      const { headerRow } = buildHeaderRows({
-        columns: updatedColumns,
-        userTimezone: syncTimezone,
-        getCardHeading: (blockId) =>
-          getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
-        baseColumnLabelResolver: resolveBaseColumnLabel
-      })
-
-      const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
-
-      const rowMap: Record<string, string> = {}
-      if (visitorId !== '') rowMap.visitorId = visitorId
-      if (createdAt !== '') rowMap.date = createdAt
-
-      // Store event data with the column key
-      // Column order is determined by exportOrder, matching uses key
-      if (eventColumnKey != null && dynamicValue !== '') {
-        rowMap[eventColumnKey] = dynamicValue
-      }
-
-      // Align row to columns using column key
-      const alignedRow = updatedColumns.map((col) => rowMap[col.key] ?? '')
-      const lastColA1 = columnIndexToA1(updatedFinalHeader.length - 1)
 
       const tabName =
         sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
@@ -232,22 +391,74 @@ export async function service(
         sheetTitle: tabName
       })
 
-      const headerRange = `${tabName}!A1:${columnIndexToA1(
-        updatedFinalHeader.length - 1
-      )}1`
       const existingHeaderRows = await readValues({
         accessToken,
         spreadsheetId: sync.spreadsheetId,
-        range: headerRange
+        range: `${tabName}!A1:ZZ1`
       })
       const existingHeaderRow: string[] = (existingHeaderRows[0] ?? []).map(
         (value) => value ?? ''
       )
 
+      const mergedHeader = mergeGoogleSheetsHeader({
+        baseKeys: ['visitorId', 'date'],
+        columns: updatedColumns,
+        desiredHeaderKeys: updatedDesiredHeaderKeys,
+        existingHeaderRowLabels: existingHeaderRow,
+        userTimezone: syncTimezone,
+        getCardHeading: (blockId: string | null | undefined) =>
+          getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
+        baseColumnLabelResolver: resolveBaseColumnLabel
+      })
+
+      const finalHeaderKeys = mergedHeader.finalHeaderKeys
+      const headerWriteWidth = mergedHeader.writeWidth
+      const keysByIndex: string[] =
+        finalHeaderKeys.length >= headerWriteWidth
+          ? finalHeaderKeys
+          : [
+              ...finalHeaderKeys,
+              ...Array.from({
+                length: headerWriteWidth - finalHeaderKeys.length
+              }).map(() => '')
+            ]
+
+      const rowMap: Record<string, string> = {}
+      if (visitorId !== '') rowMap.visitorId = sanitizeGoogleSheetsCell(visitorId)
+      if (createdAt !== '') {
+        rowMap.date = sanitizeGoogleSheetsCell(
+          formatGoogleSheetsDateFromIso(createdAt, syncTimezone)
+        )
+      }
+      if (keyForRow !== '' && dynamicValue !== '') {
+        rowMap[keyForRow] = sanitizeGoogleSheetsCell(dynamicValue)
+      }
+
+      const alignedRow: string[] = keysByIndex.map((key) => {
+        if (key === '') return ''
+        return rowMap[key] ?? ''
+      })
+
+      const lastColA1 = columnIndexToA1(headerWriteWidth - 1)
+      const headerRange = `${tabName}!A1:${lastColA1}1`
+      const sanitizedHeaderRow = mergedHeader.finalHeaderRowLabels.map((cell) =>
+        sanitizeGoogleSheetsCell(cell ?? '')
+      )
+
+      const existingHeaderRowPadded =
+        existingHeaderRow.length >= sanitizedHeaderRow.length
+          ? existingHeaderRow
+          : [
+              ...existingHeaderRow,
+              ...Array.from({
+                length: sanitizedHeaderRow.length - existingHeaderRow.length
+              }).map(() => '')
+            ]
+
       const headerChanged =
-        existingHeaderRow.length !== sanitizedHeaderRow.length ||
+        existingHeaderRowPadded.length !== sanitizedHeaderRow.length ||
         sanitizedHeaderRow.some(
-          (cell, index) => cell !== (existingHeaderRow[index] ?? '')
+          (cell, index) => cell !== (existingHeaderRowPadded[index] ?? '')
         )
 
       if (headerChanged) {
@@ -268,8 +479,19 @@ export async function service(
       })
       let foundRowNumber: number | null = null
       for (let i = 0; i < idColumnValues.length; i++) {
-        const cellVal = idColumnValues[i]?.[0] ?? ''
-        if (cellVal === visitorId && visitorId !== '') {
+        const rawCellVal = idColumnValues[i]?.[0] ?? ''
+        const cellVal = String(rawCellVal).trim()
+        if (visitorId === '') continue
+
+        const normalizedCellVal = cellVal.startsWith("'")
+          ? cellVal.slice(1).trim()
+          : cellVal
+        const tokens = normalizedCellVal
+          .split(';')
+          .map((t) => t.trim())
+          .filter((t) => t !== '')
+
+        if (normalizedCellVal === visitorId || tokens.includes(visitorId)) {
           foundRowNumber = firstDataRow + i
           break
         }
@@ -285,7 +507,21 @@ export async function service(
           (value) => value ?? ''
         )
         const mergedRow = alignedRow.map((value, index) => {
+          const key = keysByIndex[index] ?? ''
           const existingValue = existingRow[index] ?? ''
+
+          if (key === 'visitorId') {
+            return visitorId !== ''
+              ? sanitizeGoogleSheetsCell(visitorId)
+              : existingValue
+          }
+          if (key === 'date') {
+            if (createdAt === '') return existingValue
+            return sanitizeGoogleSheetsCell(
+              formatGoogleSheetsDateFromIso(createdAt, syncTimezone)
+            )
+          }
+
           // If new value is empty, keep existing
           if (value === '') return existingValue
           // If existing value is empty, use new value
