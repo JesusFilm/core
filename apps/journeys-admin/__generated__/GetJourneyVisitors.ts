@@ -36,7 +36,7 @@ export interface GetJourneyVisitors_visitors_edges_node_visitor {
 }
 
 export interface GetJourneyVisitors_visitors_edges_node_events_JourneyEvent {
-  __typename: "JourneyEvent" | "JourneyViewEvent" | "RadioQuestionSubmissionEvent" | "SignUpSubmissionEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "MultiselectSubmissionEvent";
+  __typename: "JourneyEvent" | "JourneyViewEvent" | "StepViewEvent" | "StepNextEvent" | "StepPreviousEvent" | "VideoStartEvent" | "VideoPlayEvent" | "VideoPauseEvent" | "VideoCompleteEvent" | "VideoExpandEvent" | "VideoCollapseEvent" | "VideoProgressEvent" | "ButtonClickEvent" | "ChatOpenEvent" | "RadioQuestionSubmissionEvent" | "MultiselectSubmissionEvent" | "SignUpSubmissionEvent";
   id: string;
   createdAt: any;
   label: string | null;
@@ -46,21 +46,9 @@ export interface GetJourneyVisitors_visitors_edges_node_events_JourneyEvent {
 export interface GetJourneyVisitors_visitors_edges_node_events_TextResponseSubmissionEvent {
   __typename: "TextResponseSubmissionEvent";
   id: string;
-  /**
-   * time event was created
-   */
   createdAt: any;
-  /**
-   * stepName of the parent stepBlock
-   */
   label: string | null;
-  /**
-   * response from the TextResponseBlock form
-   */
   value: string | null;
-  /**
-   * the id of the block this event originates from
-   */
   blockId: string | null;
 }
 

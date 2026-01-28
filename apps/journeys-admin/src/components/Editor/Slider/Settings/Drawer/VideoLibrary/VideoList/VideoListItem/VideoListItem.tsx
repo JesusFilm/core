@@ -23,6 +23,7 @@ export interface VideoListItemProps {
   title?: string
   description?: string
   image?: string
+  imageHigh?: string
   duration?: number
   source: VideoBlockSource
   onSelect: (block: VideoBlockUpdateInput) => void
@@ -33,6 +34,7 @@ export function VideoListItem({
   title,
   description,
   image,
+  imageHigh,
   source,
   duration: time,
   onSelect: handleSelect
@@ -48,7 +50,12 @@ export function VideoListItem({
   }
 
   const onSelect = (block: VideoBlockUpdateInput): void => {
-    if (handleSelect != null) handleSelect(block)
+    if (handleSelect != null)
+      if (imageHigh) {
+        handleSelect({ ...block, image: imageHigh })
+      } else {
+        handleSelect(block)
+      }
     handleClose()
   }
 

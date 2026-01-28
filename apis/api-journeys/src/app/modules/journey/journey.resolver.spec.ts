@@ -1330,6 +1330,83 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('should duplicate archived journeys with correct copy suffix', async () => {
+      // Reset mocks from beforeEach
+      prismaService.journey.findUnique.mockReset()
+      prismaService.journey.findMany.mockReset()
+
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      const archivedJourney = {
+        ...journey,
+        title: 'test',
+        archivedAt: new Date('2021-11-19T12:34:56.647Z')
+      }
+      const archivedJourneyWithUserTeam = {
+        ...journeyWithUserTeam,
+        ...archivedJourney
+      }
+      const archivedJourneyWithUserTeamAndCustomizationFields = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        ...archivedJourneyWithUserTeam
+      }
+
+      prismaService.journey.findUnique
+        .mockResolvedValueOnce(
+          archivedJourneyWithUserTeamAndCustomizationFields
+        )
+        .mockResolvedValueOnce(archivedJourneyWithUserTeam)
+      prismaService.journey.findMany.mockResolvedValueOnce([archivedJourney])
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+      blockService.getDuplicateChildren.mockResolvedValue([
+        duplicatedStep,
+        duplicatedButton,
+        duplicatedNextStep
+      ])
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          ...omit(archivedJourney, [
+            'parentBlockId',
+            'nextBlockId',
+            'hostId',
+            'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
+            'publishedAt',
+            'teamId',
+            'createdAt',
+            'strategySlug',
+            'logoImageBlockId',
+            'menuStepBlockId',
+            'templateSite'
+          ]),
+          id: 'duplicateJourneyId',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          slug: `${archivedJourney.title}-copy`,
+          title: `${archivedJourney.title} copy`,
+          template: false,
+          featuredAt: null,
+          archivedAt: null,
+          team: {
+            connect: { id: 'teamId' }
+          },
+          userJourneys: {
+            create: {
+              userId: 'userId',
+              role: UserJourneyRole.owner
+            }
+          },
+          journeyTags: undefined
+        }
+      })
+    })
+
     it('duplicates a template journey', async () => {
       const journeyTags = [
         {

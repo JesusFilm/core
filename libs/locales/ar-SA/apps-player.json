@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "المشغل",
+    "description": "انتقل إلى /pl/[playlistId] لعرض قائمة التشغيل"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | مشروع فيلم يسوع"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "قائمة تشغيل",
+    "pageTitle": "{title} بواسطة {name}",
+    "thisPlaylistIsEmpty": "قائمة التشغيل هذه فارغة",
+    "defaultDescription": "شارك صديقك مقاطع الفيديو هذه كتشجيع لك. اضغط على زر التشغيل للتعرف على قصص مبهجة عن إيجاد السلام في يسوع.",
+    "description": "شارك صديقك {name} هذه الفيديوهات كتشجيع لك. اضغط على زر التشغيل للتعرف على قصص مبهجة عن إيجاد السلام في يسوع."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "لا يوجد فيديو متاح"
+  },
+  "PlaylistList": {
+    "noThumbnail": "لا توجد صورة مصغرة"
+  },
+  "StudyQuestions": {
+    "title": "أسئلة الدراسة"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "لمشاهدة هذا الفيديو، يرجى تمكين JavaScript، والنظر في الترقية إلى متصفح ويب <link>يدعم فيديو HTML5</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "صديقك <strong>{name}</strong> شاركك مقاطع الفيديو هذه كتشجيع لك. أفضل طريقة لمشاهدة مقاطع الفيديو هذه هي تنزيل تطبيقنا.",
+    "downloadOnAppStore": "تحميل على متجر التطبيقات",
+    "getItOnGooglePlay": "احصل عليه من جوجل بلاي"
+  }
+}
