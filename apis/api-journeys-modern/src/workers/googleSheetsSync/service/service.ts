@@ -337,41 +337,6 @@ export async function service(
   const dynamicKey = safe(row[5])
   const dynamicValue = safe(row[6])
 
-  let keyForRow = dynamicKey
-
-  if (dynamicKey !== '') {
-    // Longest-prefix match to avoid prefix collisions (order-independent)
-    // e.g., if we have block IDs "block-1" and "block-1-extended", we need
-    // to match the longest one that fits
-    const matchedBlock = journeyBlocks
-      .filter((b) => dynamicKey === b.id || dynamicKey.startsWith(`${b.id}-`))
-      .sort((a, b) => b.id.length - a.id.length)[0]
-
-    if (matchedBlock != null) {
-      const existingHeader = normalizedBlockHeaders.find(
-        (h: { blockId: string; label: string }) => h.blockId === matchedBlock.id
-      )
-
-      if (existingHeader != null) {
-        keyForRow = `${existingHeader.blockId}-${existingHeader.label}`
-      } else {
-        const prefix = `${matchedBlock.id}-`
-        const rawLabel = dynamicKey.startsWith(prefix)
-          ? dynamicKey.substring(prefix.length)
-          : ''
-        const normalizedLabel = rawLabel.replace(/\s+/g, ' ').trim()
-        keyForRow = `${matchedBlock.id}-${normalizedLabel}`
-
-        if (connectedBlockIds.has(matchedBlock.id)) {
-          normalizedBlockHeaders.push({
-            blockId: matchedBlock.id,
-            label: normalizedLabel
-          })
-        }
-      }
-    }
-  }
-
   const updatedColumns = buildJourneyExportColumns({
     baseColumns,
     blockHeaders: normalizedBlockHeaders,
@@ -379,6 +344,36 @@ export async function service(
     orderIndex
   })
   const updatedDesiredHeaderKeys = updatedColumns.map((column) => column.key)
+
+  // Match the incoming event's key to an existing export column key.
+  // Do NOT create new columns based on dynamicKey (non-submission events can produce bad keys).
+  let keyForRow = ''
+  if (dynamicKey !== '') {
+    if (updatedDesiredHeaderKeys.includes(dynamicKey)) {
+      keyForRow = dynamicKey
+    } else {
+      // Map a bare blockId / `${blockId}-` to the block's known header key (e.g. SignUpSubmissionEvent rows).
+      const matchedBlock = journeyBlocks
+        .filter(
+          (b) =>
+            connectedBlockIds.has(b.id) &&
+            (dynamicKey === b.id || dynamicKey.startsWith(`${b.id}-`))
+        )
+        .sort((a, b) => b.id.length - a.id.length)[0]
+
+      if (matchedBlock != null) {
+        const headerForBlock = normalizedBlockHeaders.find(
+          (h) => h.blockId === matchedBlock.id && h.label.trim() !== ''
+        )
+        if (headerForBlock != null) {
+          const candidateKey = `${headerForBlock.blockId}-${headerForBlock.label}`
+          if (updatedDesiredHeaderKeys.includes(candidateKey)) {
+            keyForRow = candidateKey
+          }
+        }
+      }
+    }
+  }
 
   // Update all synced sheets - use allSettled so one failure doesn't abort others
   const results = await Promise.allSettled(
