@@ -13,7 +13,10 @@ import {
   writeValues
 } from '../../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../../../schema/journeyVisitor/export/connectivity'
-import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from '../../../schema/journeyVisitor/export/csv'
+import {
+  sanitizeCSVCell,
+  sanitizeGoogleSheetsCell
+} from '../../../schema/journeyVisitor/export/csv'
 import { formatDateYmdInTimeZone } from '../../../schema/journeyVisitor/export/date'
 import {
   type BaseColumnLabelResolver,
@@ -229,9 +232,9 @@ function mergeGoogleSheetsHeader({
       ? mergedHeaderRowLabels
       : [
           ...mergedHeaderRowLabels,
-          ...Array.from({ length: writeWidth - mergedHeaderRowLabels.length }).map(
-            () => ''
-          )
+          ...Array.from({
+            length: writeWidth - mergedHeaderRowLabels.length
+          }).map(() => '')
         ]
 
   return {
@@ -424,7 +427,8 @@ export async function service(
             ]
 
       const rowMap: Record<string, string> = {}
-      if (visitorId !== '') rowMap.visitorId = sanitizeGoogleSheetsCell(visitorId)
+      if (visitorId !== '')
+        rowMap.visitorId = sanitizeGoogleSheetsCell(visitorId)
       if (createdAt !== '') {
         rowMap.date = sanitizeGoogleSheetsCell(
           formatGoogleSheetsDateFromIso(createdAt, syncTimezone)
