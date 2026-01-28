@@ -2,7 +2,7 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
 type Translation = {
@@ -20,14 +20,9 @@ export async function updateVideoVariantInAlgolia(
   logger?: Logger
 ): Promise<void> {
   try {
-    const client = await getAlgoliaClient(logger)
+    const client = getAlgoliaClient()
+    const algoliaConfig = getAlgoliaConfig()
     const languages = await getLanguages(logger)
-    const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
-
-    if (client == null) {
-      logger?.warn('algolia client not found, skipping update')
-      return
-    }
 
     const videoVariant = await prisma.videoVariant.findUnique({
       where: { id: videoVariantId },
@@ -48,7 +43,7 @@ export async function updateVideoVariantInAlgolia(
     if (videoVariant == null) {
       logger?.warn(`video variant ${videoVariantId} not found`)
       await client.deleteObject({
-        indexName: videoVariantsIndex,
+        indexName: algoliaConfig.videoVariantsIndex,
         objectID: videoVariantId
       })
       return
@@ -67,7 +62,7 @@ export async function updateVideoVariantInAlgolia(
       )
 
       await client.deleteObject({
-        indexName: videoVariantsIndex,
+        indexName: algoliaConfig.videoVariantsIndex,
         objectID: videoVariantId
       })
 
@@ -115,7 +110,7 @@ export async function updateVideoVariantInAlgolia(
     }
 
     const result = await client.saveObjects({
-      indexName: videoVariantsIndex,
+      indexName: algoliaConfig.videoVariantsIndex,
       objects: [transformedVideo],
       waitForTasks: true
     })
@@ -124,7 +119,7 @@ export async function updateVideoVariantInAlgolia(
       `Successfully saved to Algolia. Tasks: ${result.map((r) => r.taskID).join(', ')}`
     )
     logger?.info(
-      `Record ${videoVariant.id} is now available in index ${videoVariantsIndex}`
+      `Record ${videoVariant.id} is now available in index ${algoliaConfig.videoVariantsIndex}`
     )
   } catch (error) {
     logger?.error(

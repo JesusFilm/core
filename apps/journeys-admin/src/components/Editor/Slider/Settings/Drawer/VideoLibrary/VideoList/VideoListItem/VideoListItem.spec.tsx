@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { GET_VIDEO } from '../../VideoFromLocal/LocalDetails/LocalDetails'
 import { videos } from '../data'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+
 import { VideoListItem } from './VideoListItem'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
