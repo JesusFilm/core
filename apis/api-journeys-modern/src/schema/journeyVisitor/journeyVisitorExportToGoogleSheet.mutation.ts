@@ -105,7 +105,14 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       _parent,
       // filter and select are accepted for backward compatibility but not used
       // Data processing now happens asynchronously in the worker
-      { journeyId, filter: _filter, select: _select, destination, integrationId, timezone },
+      {
+        journeyId,
+        filter: _filter,
+        select: _select,
+        destination,
+        integrationId,
+        timezone
+      },
       context
     ) => {
       // Use user's timezone or default to UTC
