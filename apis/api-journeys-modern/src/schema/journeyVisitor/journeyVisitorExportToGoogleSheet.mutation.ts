@@ -490,7 +490,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         spreadsheetId,
         sheetTitle: sheetName,
         values,
-        append: false
+        append: false,
+        valueInputOption: 'USER_ENTERED'
       })
 
       // Record Google Sheets sync configuration for this journey

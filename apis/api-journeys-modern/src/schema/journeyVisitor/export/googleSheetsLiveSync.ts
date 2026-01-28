@@ -282,7 +282,8 @@ export async function appendEventToGoogleSheets({
             accessToken,
             spreadsheetId: sync.spreadsheetId,
             range: headerRange,
-            values: [sanitizedHeaderRow]
+            values: [sanitizedHeaderRow],
+            valueInputOption: 'RAW'
           })
         }
 
@@ -347,7 +348,8 @@ export async function appendEventToGoogleSheets({
             accessToken,
             spreadsheetId: sync.spreadsheetId,
             range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`,
-            values: [mergedRow]
+            values: [mergedRow],
+            valueInputOption: 'USER_ENTERED'
           })
           return
         }
@@ -357,7 +359,8 @@ export async function appendEventToGoogleSheets({
           spreadsheetId: sync.spreadsheetId,
           sheetTitle: tabName,
           values: [alignedRow],
-          append: true
+          append: true,
+          valueInputOption: 'USER_ENTERED'
         })
       })
     })
