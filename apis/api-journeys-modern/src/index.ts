@@ -5,7 +5,6 @@ import { yoga } from './yoga'
 
 import './workers/server'
 
-console.log('running')
 const port = 4004
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 createServer(yoga).listen(port, () => {
