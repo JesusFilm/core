@@ -416,6 +416,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
     destination: JourneyVisitorGoogleSheetDestinationInput!
     integrationId: ID!
     """

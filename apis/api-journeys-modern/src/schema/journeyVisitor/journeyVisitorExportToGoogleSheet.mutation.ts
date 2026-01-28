@@ -7,6 +7,9 @@ import { Action, ability, subject } from '../../lib/auth/ability'
 import { getIntegrationGoogleAccessToken } from '../../lib/google/googleAuth'
 import { createSpreadsheet, ensureSheet } from '../../lib/google/sheets'
 import { builder } from '../builder'
+import { JourneyEventsFilter } from '../event/journey/inputs'
+
+import { JourneyVisitorExportSelect } from './inputs'
 
 // Queue for Google Sheets sync - lazily loaded to avoid Redis in tests
 let googleSheetsSyncQueue: any
@@ -88,6 +91,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
     nullable: false,
     args: {
       journeyId: t.arg.id({ required: true }),
+      filter: t.arg({ type: JourneyEventsFilter, required: false }),
+      select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
       destination: t.arg({ type: ExportDestinationInput, required: true }),
       integrationId: t.arg.id({ required: true }),
       timezone: t.arg.string({
@@ -98,7 +103,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
     },
     resolve: async (
       _parent,
-      { journeyId, destination, integrationId, timezone },
+      // filter and select are accepted for backward compatibility but not used
+      // Data processing now happens asynchronously in the worker
+      { journeyId, filter: _filter, select: _select, destination, integrationId, timezone },
       context
     ) => {
       // Use user's timezone or default to UTC

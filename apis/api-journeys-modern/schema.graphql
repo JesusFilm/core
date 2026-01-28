@@ -1376,6 +1376,8 @@ type Mutation {
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
     destination: JourneyVisitorGoogleSheetDestinationInput!
     integrationId: ID!
 
