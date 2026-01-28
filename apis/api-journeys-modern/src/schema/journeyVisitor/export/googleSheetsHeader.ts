@@ -1,7 +1,4 @@
-import {
-  sanitizeCSVCell,
-  sanitizeGoogleSheetsCell
-} from './csv'
+import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './csv'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
@@ -85,7 +82,11 @@ export function mergeGoogleSheetsHeader({
     if (column.key === '' || column.label == null) return
     addLabelMapping(columnLabelToKey, column.label, column.key)
     addLabelMapping(columnLabelToKey, sanitizeCSVCell(column.label), column.key)
-    addLabelMapping(columnLabelToKey, sanitizeGoogleSheetsCell(column.label), column.key)
+    addLabelMapping(
+      columnLabelToKey,
+      sanitizeGoogleSheetsCell(column.label),
+      column.key
+    )
   })
 
   const resolveExistingLabelToKey = (label: string): string => {
@@ -142,9 +143,9 @@ export function mergeGoogleSheetsHeader({
       ? mergedHeaderRowLabels
       : [
           ...mergedHeaderRowLabels,
-          ...Array.from({ length: writeWidth - mergedHeaderRowLabels.length }).map(
-            () => ''
-          )
+          ...Array.from({
+            length: writeWidth - mergedHeaderRowLabels.length
+          }).map(() => '')
         ]
 
   return {
@@ -153,4 +154,3 @@ export function mergeGoogleSheetsHeader({
     writeWidth
   }
 }
-
