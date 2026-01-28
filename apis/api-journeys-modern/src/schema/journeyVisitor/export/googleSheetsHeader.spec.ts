@@ -6,7 +6,12 @@ describe('googleSheetsHeader', () => {
       const columns = [
         { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
         { key: 'date', label: 'Date', blockId: null, typename: '' },
-        { key: 'b1-Name', label: 'Name', blockId: 'b1', typename: 'TextResponseBlock' }
+        {
+          key: 'b1-Name',
+          label: 'Name',
+          blockId: 'b1',
+          typename: 'TextResponseBlock'
+        }
       ]
 
       const desiredHeaderKeys = ['visitorId', 'date', 'b1-Name']
@@ -40,4 +45,3 @@ describe('googleSheetsHeader', () => {
     })
   })
 })
-
