@@ -14,11 +14,10 @@ import {
   DESKTOP_CONTAINER_PADDING,
   DESKTOP_CONTAINER_WIDTH,
   MOBILE_APP_BAR_GAP,
-  MOBILE_CONTAINER_BOTTOM,
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
-  MOBILE_CONTAINER_WIDTH
-} from './constants'
+  MOBILE_CONTAINER_PADDING
+} from './constants'  
 
 interface BeaconInitProps {
   loaded: boolean
@@ -93,11 +92,11 @@ export function BeaconInit({
         ${breakpoints.down('md')} {
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
             top: ${MOBILE_APP_BAR_GAP};
-            width: ${MOBILE_CONTAINER_WIDTH};
+            width: calc(100% - ${MOBILE_CONTAINER_PADDING} * 2);
             height: ${MOBILE_CONTAINER_HEIGHT};
+            left: ${MOBILE_CONTAINER_PADDING};
+            right: ${MOBILE_CONTAINER_PADDING};
             max-height: ${MOBILE_CONTAINER_MAX_HEIGHT};
-            right: 0px !important;
-            border-radius: 0px;
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             // position: fixed !important;
