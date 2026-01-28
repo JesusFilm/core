@@ -13,6 +13,7 @@ import {
 } from '../../lib/google/sheets'
 import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
+import { logger } from '../logger'
 
 import { computeConnectedBlockIds } from './export/connectivity'
 import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
@@ -44,7 +45,8 @@ const journeyBlockSelect = {
   content: true,
   x: true,
   y: true,
-  deletedAt: true
+  deletedAt: true,
+  exportOrder: true
 } as const
 
 interface JourneyVisitorExportRow {
@@ -570,17 +572,24 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
         sanitizeGoogleSheetsCell(cell)
       )
+
       const values: (string | null)[][] = [sanitizedHeaderRow]
       for await (const row of getJourneyVisitors(
         journeyId,
         eventWhere,
         userTimezone
       )) {
-        const aligned = finalHeader.map((k) => {
-          // Handle empty header columns (no header columns)
-          if (k === '' || k.trim() === '') return ''
-          const value = row[k] ?? ''
-          return sanitizeGoogleSheetsCell(value)
+        // Build a lookup map from the row using the same keys as getJourneyVisitors
+        // The row already contains keys like 'visitorId', 'date', and '${blockId}-${label}'
+        const rowLookup = new Map<string, string>()
+        for (const [key, value] of Object.entries(row)) {
+          rowLookup.set(key, sanitizeGoogleSheetsCell(value))
+        }
+
+        // Iterate over finalHeader to produce aligned values matching the header row order
+        // This ensures each column gets its corresponding value (or empty string if missing)
+        const aligned = finalHeader.map((key) => {
+          return rowLookup.get(key) ?? ''
         })
         values.push(aligned)
       }
@@ -608,6 +617,44 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       }
 
       await prisma.googleSheetsSync.create({ data: syncData })
+
+      // Update exportOrder on blocks that don't have it set yet
+      // This preserves column order for future exports and syncs
+      // exportOrder is 1-based for block columns (columns array includes base columns at start)
+      const blocksToUpdate = columns
+        .filter((col) => col.blockId != null && col.exportOrder == null)
+        .map((col, index) => {
+          // Find the actual position in the columns array (accounting for base columns)
+          const columnPosition = columns.findIndex(
+            (c) => c.blockId === col.blockId
+          )
+          return {
+            blockId: col.blockId!,
+            // exportOrder is the position after base columns (1-based for block columns)
+            exportOrder: columnPosition - baseColumns.length + 1
+          }
+        })
+        .filter(({ exportOrder }) => exportOrder > 0)
+
+      if (blocksToUpdate.length > 0) {
+        try {
+          await Promise.all(
+            blocksToUpdate.map(({ blockId, exportOrder }) =>
+              prisma.block.update({
+                where: { id: blockId },
+                data: { exportOrder }
+              })
+            )
+          )
+        } catch (error) {
+          // Best-effort: log error but don't rethrow so the mutation can return success
+          // The sheet write and sync have already succeeded at this point
+          logger.error(
+            { error, blocksToUpdate, journeyId },
+            'Failed to update exportOrder on blocks after successful sheet export'
+          )
+        }
+      }
 
       return { spreadsheetId, spreadsheetUrl, sheetName }
     }
