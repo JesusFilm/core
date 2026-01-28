@@ -183,7 +183,9 @@ export function GoogleSheetsSyncDialog({
   const [syncIdPendingDelete, setSyncIdPendingDelete] = useState<string | null>(
     null
   )
-  const [backfillingSyncId, setBackfillingSyncId] = useState<string | null>(null)
+  const [backfillingSyncId, setBackfillingSyncId] = useState<string | null>(
+    null
+  )
 
   useEffect(() => {
     if (!open) return
@@ -615,7 +617,9 @@ export function GoogleSheetsSyncDialog({
               }}
             />
             <Box sx={{ display: 'flex', gap: 0.5 }}>
-              <Tooltip title={t('Backfill - Replace all data with fresh export')}>
+              <Tooltip
+                title={t('Backfill - Replace all data with fresh export')}
+              >
                 <IconButton
                   onClick={() => handleBackfillSync(sync.id)}
                   disabled={backfillingSyncId === sync.id || isDeleting}
@@ -851,13 +855,25 @@ export function GoogleSheetsSyncDialog({
                           />
                         </TableCell>
                         <TableCell sx={{ width: 100 }} align="right">
-                          <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-                            <Tooltip title={t('Backfill - Replace all data with fresh export')}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              gap: 0.5,
+                              justifyContent: 'flex-end'
+                            }}
+                          >
+                            <Tooltip
+                              title={t(
+                                'Backfill - Replace all data with fresh export'
+                              )}
+                            >
                               <IconButton
                                 aria-label={t('Backfill sync')}
                                 color="primary"
                                 size="small"
-                                disabled={backfillingSyncId === sync.id || isDeleting}
+                                disabled={
+                                  backfillingSyncId === sync.id || isDeleting
+                                }
                                 onClick={(event) => {
                                   event.stopPropagation()
                                   void handleBackfillSync(sync.id)
@@ -878,7 +894,9 @@ export function GoogleSheetsSyncDialog({
                               aria-label={t('Delete sync')}
                               color="error"
                               size="small"
-                              disabled={isDeleting || backfillingSyncId === sync.id}
+                              disabled={
+                                isDeleting || backfillingSyncId === sync.id
+                              }
                               onClick={(event) => {
                                 event.stopPropagation()
                                 handleRequestDeleteSync(sync.id)
