@@ -12,8 +12,8 @@ import { JourneyListContent } from './JourneyListContent'
 import { JourneyListView } from './JourneyListView'
 import type { ContentType, JourneyStatusFilter } from './JourneyListView'
 import { SortOrder } from './JourneySort'
-import { HelpScoutFab } from './HelpScoutFab/HelpScoutFab'
 import Stack from '@mui/material/Stack'
+import { HelpScoutBeacon } from '../HelpScoutBeacon/HelpScoutBeacon'
 
 export interface JourneyListProps {
   sortOrder?: SortOrder
@@ -121,7 +121,7 @@ export function JourneyList({
       {activeTab === 'active' && currentContentType === 'journeys' && (
         <Stack direction="row" sx={{ zIndex: 3, gap: 2, justifyContent: 'flex-end', position: 'fixed', bottom: 16, right: 16}}>
           <AddJourneyFab />
-          <HelpScoutFab />
+          <HelpScoutBeacon variant="fab" />
         </Stack>
       )}
     </>

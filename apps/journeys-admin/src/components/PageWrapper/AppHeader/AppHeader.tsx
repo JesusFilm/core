@@ -74,13 +74,6 @@ export function AppHeader({
             >
               <LanguageIcon sx={{ color: 'background.paper' }} />
             </IconButton>
-            <HelpScoutBeacon
-              iconButtonColor="secondary"
-              userInfo={{
-                name: user?.displayName ?? '',
-                email: user?.email ?? ''
-              }}
-            />
           </Stack>
           {open && (
             <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
