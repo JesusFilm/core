@@ -1,6 +1,26 @@
-import { formatGoogleSheetsDateFromIso } from './googleSheetsSyncShared'
+import {
+  buildNormalizedBlockHeadersFromEvents,
+  formatGoogleSheetsDateFromIso
+} from './googleSheetsSyncShared'
 
 describe('googleSheetsSyncShared', () => {
+  describe('buildNormalizedBlockHeadersFromEvents', () => {
+    it('keeps the first non-empty label encountered for each blockId', () => {
+      const result = buildNormalizedBlockHeadersFromEvents([
+        { blockId: 'b1', label: null },
+        { blockId: 'b1', label: '   ' },
+        { blockId: 'b1', label: 'First' },
+        { blockId: 'b1', label: 'Second' },
+        { blockId: 'b2', label: '  Two  ' }
+      ])
+
+      expect(result).toEqual([
+        { blockId: 'b1', label: 'First' },
+        { blockId: 'b2', label: 'Two' }
+      ])
+    })
+  })
+
   describe('formatGoogleSheetsDateFromIso', () => {
     it('formats a UTC timestamp into YYYY-MM-DD in the provided timezone', () => {
       // 2026-01-27T01:30:00Z is still 2026-01-26 in America/Chicago (UTC-6)
