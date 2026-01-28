@@ -16,11 +16,17 @@ import { JourneyEventsFilter } from '../event/journey/inputs'
 import { logger } from '../logger'
 
 import { computeConnectedBlockIds } from './export/connectivity'
-import { sanitizeCSVCell, sanitizeGoogleSheetsCell } from './export/csv'
+import { sanitizeGoogleSheetsCell } from './export/csv'
 import {
   formatDateYmdInTimeZone,
   parseDateInTimeZoneToUtc
 } from './export/date'
+import { mergeGoogleSheetsHeader } from './export/googleSheetsHeader'
+import {
+  buildNormalizedBlockHeadersFromEvents,
+  getDefaultBaseColumnLabelResolver,
+  getDefaultBaseColumns
+} from './export/googleSheetsSyncShared'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
@@ -304,34 +310,13 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         orderBy: { createdAt: 'asc' }
       })
 
-      // Normalize labels and deduplicate by blockId (keep only first label per blockId)
-      // This prevents creating multiple columns for the same block when events have different labels
-      const headerMap = new Map<string, { blockId: string; label: string }>()
-      blockHeadersResult
-        .filter((header) => header.blockId != null)
-        .forEach((header) => {
-          const normalizedLabel = (header.label ?? '')
-            .replace(/\s+/g, ' ')
-            .trim()
-          // Key by blockId only to ensure one column per block
-          const key = header.blockId!
-          // Only add if not already present (keeps first label encountered for each blockId)
-          if (!headerMap.has(key)) {
-            headerMap.set(key, {
-              blockId: header.blockId!,
-              label: normalizedLabel
-            })
-          }
-        })
-      const normalizedBlockHeaders = Array.from(headerMap.values())
+      const normalizedBlockHeaders =
+        buildNormalizedBlockHeadersFromEvents(blockHeadersResult)
 
       const getCardHeading = (blockId: string | null | undefined) =>
         getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
 
-      const baseColumns: JourneyExportColumn[] = [
-        { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
-        { key: 'date', label: 'Date', blockId: null, typename: '' }
-      ]
+      const baseColumns: JourneyExportColumn[] = getDefaultBaseColumns()
       const columns = buildJourneyExportColumns({
         baseColumns,
         blockHeaders: normalizedBlockHeaders,
@@ -339,18 +324,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         orderIndex
       })
 
-      const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
-        column,
-        userTimezone
-      }) => {
-        if (column.key === 'visitorId') return 'Visitor ID'
-        if (column.key === 'date') {
-          return userTimezone !== 'UTC' && userTimezone !== ''
-            ? `Date (${userTimezone})`
-            : 'Date'
-        }
-        return column.label
-      }
+      const resolveBaseColumnLabel: BaseColumnLabelResolver =
+        getDefaultBaseColumnLabelResolver()
 
       const { headerRow } = buildHeaderRows({
         columns,
@@ -463,112 +438,21 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         const existingHeaderRow: string[] = (headerRes[0] ?? []).map(
           (v) => v ?? ''
         )
-        if (existingHeaderRow.length > 0) {
-          // Extract keys from existing header row
-          // The header row contains display labels, we need to map them back to column keys
-          // Note: legacy sheets may have labels written through sanitizeCSVCell, so we need to
-          // compare against both raw and sanitized labels to match correctly
-          const existingHeader: string[] = existingHeaderRow.map((label) => {
-            // Skip empty labels (no header columns)
-            if (label.trim() === '') return ''
-
-            // Normalize the existing label to match our normalized column labels
-            const normalizedExistingLabel = label.replace(/\s+/g, ' ').trim()
-
-            // Try to find matching column by normalized label
-            const matchingCol = columns.find(
-              (c) => c.label === normalizedExistingLabel
-            )
-            if (matchingCol) return matchingCol.key
-
-            // Check if it's a standard column label (handle sanitized versions too)
-            const sanitizedVisitorId = sanitizeCSVCell('Visitor ID')
-            if (label === 'Visitor ID' || label === sanitizedVisitorId) {
-              return 'visitorId'
-            }
-            // Date labels may have timezone suffix, check if it starts with sanitized "Date"
-            const sanitizedDate = sanitizeCSVCell('Date')
-            if (
-              label === 'Date' ||
-              label.startsWith('Date') ||
-              label === sanitizedDate ||
-              label.startsWith(sanitizedDate)
-            ) {
-              return 'date'
-            }
-
-            // Check for Poll or Multiselect patterns (with or without card heading)
-            if (label === 'Poll' || label.startsWith('Poll (')) {
-              // Try to find matching Poll column by key
-              const pollCol = columns.find(
-                (c) => c.typename === 'RadioQuestionBlock' && c.key === label
-              )
-              if (pollCol) return pollCol.key
-            }
-            if (label === 'Multiselect' || label.startsWith('Multiselect (')) {
-              // Try to find matching Multiselect column by key
-              const multiselectCol = columns.find(
-                (c) => c.typename === 'MultiselectBlock' && c.key === label
-              )
-              if (multiselectCol) return multiselectCol.key
-            }
-
-            // If not found, check if it's a key directly
-            if (desiredHeader.includes(label)) return label
-
-            // For existing columns not in current export, use label as key
-            // This handles legacy columns that may not match current structure
-            return label
-          })
-
-          // Ensure base headers exist in the correct order at start
-          // Filter out empty strings (no header columns) before merging
-          const base: string[] = ['visitorId', 'date']
-          const merged: string[] = []
-          for (const b of base) if (!merged.includes(b)) merged.push(b)
-          for (const h of existingHeader)
-            if (h !== '' && h.trim() !== '' && !merged.includes(h))
-              merged.push(h)
-          for (const h of desiredHeader)
-            if (h !== '' && h.trim() !== '' && !merged.includes(h))
-              merged.push(h)
-          finalHeader = merged
-
-          // Rebuild header row for merged columns
-          const mergedColumns: JourneyExportColumn[] = finalHeader.map(
-            (key) => {
-              // Handle empty header columns (no header columns)
-              if (key === '' || key.trim() === '') {
-                return {
-                  key: '',
-                  label: '',
-                  blockId: null,
-                  typename: ''
-                }
-              }
-              const existingCol = columns.find((c) => c.key === key)
-              if (existingCol) return existingCol
-              // For columns not in current export, create placeholder
-              return {
-                key,
-                label: key,
-                blockId: null,
-                typename: ''
-              }
-            }
-          )
-
-          const mergedRows = buildHeaderRows({
-            columns: mergedColumns,
-            userTimezone,
-            getCardHeading,
-            baseColumnLabelResolver: resolveBaseColumnLabel
-          })
-          finalHeaderRow = mergedRows.headerRow
-        }
+        const mergedHeader = mergeGoogleSheetsHeader({
+          baseKeys: ['visitorId', 'date'],
+          columns,
+          desiredHeaderKeys: desiredHeader,
+          existingHeaderRowLabels: existingHeaderRow,
+          userTimezone,
+          getCardHeading,
+          baseColumnLabelResolver: resolveBaseColumnLabel
+        })
+        finalHeader = mergedHeader.finalHeaderKeys
+        finalHeaderRow = mergedHeader.finalHeaderRowLabels
       }
 
       // Build data rows aligned to finalHeader with sanitization for Google Sheets
+      const rowWidth = finalHeaderRow.length
       const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
         sanitizeGoogleSheetsCell(cell)
       )
@@ -591,7 +475,16 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         const aligned = finalHeader.map((key) => {
           return rowLookup.get(key) ?? ''
         })
-        values.push(aligned)
+        const padded =
+          aligned.length >= rowWidth
+            ? aligned
+            : [
+                ...aligned,
+                ...Array.from({ length: rowWidth - aligned.length }).map(
+                  () => ''
+                )
+              ]
+        values.push(padded)
       }
 
       await writeValues({
@@ -599,7 +492,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         spreadsheetId,
         sheetTitle: sheetName,
         values,
-        append: false
+        append: false,
+        valueInputOption: 'USER_ENTERED'
       })
 
       // Record Google Sheets sync configuration for this journey
