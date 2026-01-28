@@ -24,6 +24,7 @@ RUN pnpm add @prisma/client@6.18.0
 RUN pnpm add -D prisma@6.18.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
 RUN pnpm exec prisma generate --generator client --schema ./prisma-users/schema.prisma
+
 CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma \
  && pnpm exec prisma migrate deploy --schema ./prisma-users/schema.prisma \
  && node ./main.js
