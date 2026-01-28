@@ -1,7 +1,7 @@
 type TextResponseSubmissionEvent implements Event @shareable {
   id: ID!
   """
-  ID of the journey that the buttonBlock belongs to
+  ID of the journey that the TextResponseBlock belongs to
   """
   journeyId: ID!
   """

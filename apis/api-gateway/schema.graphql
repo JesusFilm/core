@@ -1599,7 +1599,7 @@ type StepPreviousEvent implements Event @join__type(graph: API_JOURNEYS)  @join_
 type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
   id: ID!
   """
-  ID of the journey that the buttonBlock belongs to
+  ID of the journey that the TextResponseBlock belongs to
   """
   journeyId: ID!
   """
