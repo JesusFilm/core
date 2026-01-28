@@ -40,16 +40,14 @@ describe('googleSheetsSyncShared', () => {
     it('handles day-boundary changes correctly (timezone ahead of UTC)', () => {
       // 2026-01-27T23:30:00Z becomes next day in Asia/Tokyo (UTC+9)
       expect(
-        formatGoogleSheetsDateFromIso(
-          '2026-01-27T23:30:00.000Z',
-          'Asia/Tokyo'
-        )
+        formatGoogleSheetsDateFromIso('2026-01-27T23:30:00.000Z', 'Asia/Tokyo')
       ).toBe('2026-01-28')
     })
 
     it('returns the input when the ISO string cannot be parsed', () => {
-      expect(formatGoogleSheetsDateFromIso('not-a-date', 'UTC')).toBe('not-a-date')
+      expect(formatGoogleSheetsDateFromIso('not-a-date', 'UTC')).toBe(
+        'not-a-date'
+      )
     })
   })
 })
-
