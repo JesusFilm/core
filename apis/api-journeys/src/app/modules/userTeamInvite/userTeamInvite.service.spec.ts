@@ -35,6 +35,7 @@ describe('UserTeamService', () => {
       } as unknown as Team
       const email = 'tav@example.com'
       const sender = {
+        id: 'senderId',
         firstName: 'Joe',
         lastName: 'Ro-Nimo',
         email: 'joe@example.com',
@@ -76,7 +77,7 @@ describe('UserTeamService', () => {
         ]
       } as unknown as TeamWithUserTeam
       const sender = {
-        id: 'userId',
+        id: 'senderId',
         email: 'joRoNimo@example.com',
         firstName: 'Joe',
         lastName: 'Ro-Nimo',
