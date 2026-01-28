@@ -1,16 +1,8 @@
-import { format } from 'date-fns'
-
 import { prismaMock } from '../../../test/prismaMock'
-import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
-import {
-  ensureSheet,
-  readValues,
-  updateRangeValues,
-  writeValues
-} from '../../lib/google/sheets'
 
 import {
   __setEmailQueueForTests,
+  __setGoogleSheetsSyncQueueForTests,
   appendEventToGoogleSheets,
   getByUserIdAndJourneyId,
   getEventContext,
@@ -21,44 +13,30 @@ import {
   validateBlockEvent
 } from './utils'
 
-jest.mock('../../lib/google/googleAuth', () => ({
-  getTeamGoogleAccessToken: jest.fn()
-}))
-
-jest.mock('../../lib/google/sheets', () => ({
-  ensureSheet: jest.fn(),
-  readValues: jest.fn(),
-  updateRangeValues: jest.fn(),
-  writeValues: jest.fn(),
-  columnIndexToA1: jest.fn((n) => String.fromCharCode(65 + n))
-}))
-
-const mockQueue = {
+const mockEmailQueue = {
   getJob: jest.fn(),
   remove: jest.fn(),
   add: jest.fn()
 }
 
+const mockGoogleSheetsSyncQueue = {
+  add: jest.fn()
+}
+
 jest.mock('../../workers/emailEvents/queue', () => ({
-  queue: mockQueue
+  queue: mockEmailQueue
 }))
 
-const mockGetTeamGoogleAccessToken =
-  getTeamGoogleAccessToken as jest.MockedFunction<
-    typeof getTeamGoogleAccessToken
-  >
-const mockEnsureSheet = ensureSheet as jest.MockedFunction<typeof ensureSheet>
-const mockReadValues = readValues as jest.MockedFunction<typeof readValues>
-const mockUpdateRangeValues = updateRangeValues as jest.MockedFunction<
-  typeof updateRangeValues
->
-const mockWriteValues = writeValues as jest.MockedFunction<typeof writeValues>
+jest.mock('../../workers/googleSheetsSync/queue', () => ({
+  queue: mockGoogleSheetsSyncQueue
+}))
 
 describe('event utils', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    // Set up email queue mock before tests run
-    __setEmailQueueForTests(mockQueue)
+    // Set up queue mocks before tests run
+    __setEmailQueueForTests(mockEmailQueue)
+    __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
     // Clear NODE_ENV to allow queue to work
     delete process.env.NODE_ENV
   })
@@ -362,16 +340,16 @@ describe('event utils', () => {
 
   describe('sendEventsEmail', () => {
     beforeEach(() => {
-      __setEmailQueueForTests(mockQueue)
+      __setEmailQueueForTests(mockEmailQueue)
       delete process.env.NODE_ENV
     })
 
     it('should add email job to queue', async () => {
-      mockQueue.getJob.mockResolvedValue(null)
+      mockEmailQueue.getJob.mockResolvedValue(null)
 
       await sendEventsEmail('journey-id', 'visitor-id')
 
-      expect(mockQueue.add).toHaveBeenCalledWith(
+      expect(mockEmailQueue.add).toHaveBeenCalledWith(
         'visitor-event',
         { journeyId: 'journey-id', visitorId: 'visitor-id' },
         expect.objectContaining({
@@ -385,14 +363,14 @@ describe('event utils', () => {
 
     it('should remove existing job before adding new one', async () => {
       const existingJob = { id: 'existing-job' }
-      mockQueue.getJob.mockResolvedValue(existingJob as any)
+      mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
       await sendEventsEmail('journey-id', 'visitor-id')
 
-      expect(mockQueue.remove).toHaveBeenCalledWith(
+      expect(mockEmailQueue.remove).toHaveBeenCalledWith(
         'visitor-event-journey-id-visitor-id'
       )
-      expect(mockQueue.add).toHaveBeenCalled()
+      expect(mockEmailQueue.add).toHaveBeenCalled()
     })
 
     it('should not send email in test environment', async () => {
@@ -400,16 +378,16 @@ describe('event utils', () => {
 
       await sendEventsEmail('journey-id', 'visitor-id')
 
-      expect(mockQueue.add).not.toHaveBeenCalled()
+      expect(mockEmailQueue.add).not.toHaveBeenCalled()
 
       // Restore for other tests
-      __setEmailQueueForTests(mockQueue)
+      __setEmailQueueForTests(mockEmailQueue)
     })
   })
 
   describe('resetEventsEmailDelay', () => {
     beforeEach(() => {
-      __setEmailQueueForTests(mockQueue)
+      __setEmailQueueForTests(mockEmailQueue)
       delete process.env.NODE_ENV
     })
 
@@ -417,7 +395,7 @@ describe('event utils', () => {
       const existingJob = {
         changeDelay: jest.fn().mockResolvedValue(undefined)
       }
-      mockQueue.getJob.mockResolvedValue(existingJob as any)
+      mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
       await resetEventsEmailDelay('journey-id', 'visitor-id', 300)
 
@@ -428,7 +406,7 @@ describe('event utils', () => {
       const existingJob = {
         changeDelay: jest.fn().mockResolvedValue(undefined)
       }
-      mockQueue.getJob.mockResolvedValue(existingJob as any)
+      mockEmailQueue.getJob.mockResolvedValue(existingJob as any)
 
       await resetEventsEmailDelay('journey-id', 'visitor-id', 60)
 
@@ -436,11 +414,11 @@ describe('event utils', () => {
     })
 
     it('should return early if job does not exist', async () => {
-      mockQueue.getJob.mockResolvedValue(null)
+      mockEmailQueue.getJob.mockResolvedValue(null)
 
       await resetEventsEmailDelay('journey-id', 'visitor-id')
 
-      expect(mockQueue.getJob).toHaveBeenCalledWith(
+      expect(mockEmailQueue.getJob).toHaveBeenCalledWith(
         'visitor-event-journey-id-visitor-id'
       )
     })
@@ -450,16 +428,18 @@ describe('event utils', () => {
 
       await resetEventsEmailDelay('journey-id', 'visitor-id')
 
-      expect(mockQueue.getJob).not.toHaveBeenCalled()
+      expect(mockEmailQueue.getJob).not.toHaveBeenCalled()
 
       // Restore for other tests
-      __setEmailQueueForTests(mockQueue)
+      __setEmailQueueForTests(mockEmailQueue)
     })
   })
 
   describe('appendEventToGoogleSheets', () => {
     beforeEach(() => {
       jest.clearAllMocks()
+      __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
+      delete process.env.NODE_ENV
     })
 
     it('should return early when no sync config exists', async () => {
@@ -471,222 +451,97 @@ describe('event utils', () => {
         row: ['visitor-id', '2024-01-01', 'Name', 'email@test.com', '', '', '']
       })
 
-      expect(mockGetTeamGoogleAccessToken).not.toHaveBeenCalled()
+      expect(mockGoogleSheetsSyncQueue.add).not.toHaveBeenCalled()
     })
 
-    it('should append new row when visitor does not exist in sheet', async () => {
+    it('should add job to queue with correct data when syncs exist', async () => {
       const mockSync = {
         id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
         spreadsheetId: 'spreadsheet-id',
         sheetName: 'Sheet1',
-        deletedAt: null
+        timezone: 'UTC'
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      // Mock header reads (1 row: header row)
-      mockReadValues
-        .mockResolvedValueOnce([['']]) // existing header (empty)
-        .mockResolvedValueOnce([]) // no existing visitor rows
+
+      const row = [
+        'visitor-id',
+        '2024-01-01T00:00:00.000Z',
+        'John Doe',
+        'john@example.com',
+        '+1234567890',
+        'block-id-label',
+        'dynamic-value'
+      ]
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01T00:00:00.000Z',
-          'John Doe',
-          'john@example.com',
-          '+1234567890',
-          'block-id-label',
-          'dynamic-value'
-        ]
+        row
       })
 
-      expect(mockWriteValues).toHaveBeenCalledWith(
+      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
+        'google-sheets-sync',
+        {
+          journeyId: 'journey-id',
+          teamId: 'team-id',
+          row,
+          sheetName: undefined,
+          syncs: [mockSync]
+        },
         expect.objectContaining({
-          accessToken: 'access-token',
-          spreadsheetId: 'spreadsheet-id',
-          sheetTitle: 'Sheet1',
-          values: expect.arrayContaining([expect.any(Array)]),
-          append: true
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 1000 },
+          removeOnComplete: true,
+          removeOnFail: { age: 3600 }
         })
       )
-      expect(mockUpdateRangeValues).toHaveBeenCalled()
     })
 
-    it('should update existing row when visitor exists in sheet', async () => {
+    it('should pass sheetName to queue when provided', async () => {
       const mockSync = {
         id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
         spreadsheetId: 'spreadsheet-id',
         sheetName: 'Sheet1',
-        deletedAt: null
+        timezone: 'UTC'
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      mockReadValues
-        .mockResolvedValueOnce([['']]) // existing header (1 row)
-        .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([
-          ['visitor-id', '2024-01-01', 'John Doe', 'john@example.com', '']
-        ]) // existing row data
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01T00:00:00.000Z',
-          'John Doe',
-          'john@example.com',
-          '',
-          '',
-          ''
-        ]
+        row: ['visitor-id', '2024-01-01', '', '', '', '', ''],
+        sheetName: 'CustomSheet'
       })
 
-      expect(mockReadValues).toHaveBeenCalledTimes(3)
-      expect(mockUpdateRangeValues).toHaveBeenCalled()
-      expect(mockWriteValues).not.toHaveBeenCalled()
-    })
-
-    it('should append new values with semicolon when updating existing row', async () => {
-      const mockSync = {
-        id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id',
-        sheetName: 'Sheet1',
-        deletedAt: null
-      }
-
-      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      mockReadValues
-        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
-        .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([['visitor-id', '2024-01-01', 'Option A']]) // existing row with value
-
-      await appendEventToGoogleSheets({
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01T00:00:00.000Z',
-          '',
-          '',
-          '',
-          'block-id-label',
-          'Option B' // new value to append
-        ]
-      })
-
-      // Should call updateRangeValues with merged values (semicolon separated)
-      expect(mockUpdateRangeValues).toHaveBeenCalledWith(
+      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
+        'google-sheets-sync',
         expect.objectContaining({
-          values: expect.arrayContaining([
-            expect.arrayContaining(['visitor-id'])
-          ])
-        })
+          sheetName: 'CustomSheet'
+        }),
+        expect.any(Object)
       )
-      expect(mockWriteValues).not.toHaveBeenCalled()
     })
 
-    it('should not duplicate values when appending to existing row', async () => {
-      const mockSync = {
-        id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id',
+    it('should pass multiple syncs to queue when they exist', async () => {
+      const mockSync1 = {
+        id: 'sync-id-1',
+        spreadsheetId: 'spreadsheet-id-1',
         sheetName: 'Sheet1',
-        deletedAt: null
+        timezone: 'UTC'
+      }
+      const mockSync2 = {
+        id: 'sync-id-2',
+        spreadsheetId: 'spreadsheet-id-2',
+        sheetName: 'Sheet2',
+        timezone: 'Pacific/Auckland'
       }
 
-      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      mockReadValues
-        .mockResolvedValueOnce([['Visitor ID', 'Date']]) // existing header
-        .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
-        .mockResolvedValueOnce([
-          ['visitor-id', '2024-01-01', 'Option A; Option B']
-        ]) // existing row with already appended values
-
-      await appendEventToGoogleSheets({
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01T00:00:00.000Z',
-          '',
-          '',
-          '',
-          'block-id-label',
-          'Option A' // value that already exists
-        ]
-      })
-
-      // Should call updateRangeValues without duplicating 'Option A'
-      expect(mockUpdateRangeValues).toHaveBeenCalled()
-      expect(mockWriteValues).not.toHaveBeenCalled()
-    })
-
-    it('should use date-based sheet name when not provided', async () => {
-      const mockSync = {
-        id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id',
-        sheetName: null,
-        deletedAt: null
-      }
-
-      const today = format(new Date(), 'yyyy-MM-dd')
-
-      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      mockReadValues
-        .mockResolvedValueOnce([['']]) // existing header (1 row)
-        .mockResolvedValueOnce([]) // no existing visitor rows
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([
+        mockSync1,
+        mockSync2
+      ] as any)
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
@@ -694,225 +549,38 @@ describe('event utils', () => {
         row: ['visitor-id', '2024-01-01', '', '', '', '', '']
       })
 
-      expect(mockEnsureSheet).toHaveBeenCalledWith(
+      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
+        'google-sheets-sync',
         expect.objectContaining({
-          sheetTitle: today
-        })
+          syncs: [mockSync1, mockSync2]
+        }),
+        expect.any(Object)
       )
     })
 
-    it('should merge headers when dynamic keys are present', async () => {
+    it('should not add job when queue is null', async () => {
+      __setGoogleSheetsSyncQueueForTests(null)
+
       const mockSync = {
         id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
         spreadsheetId: 'spreadsheet-id',
         sheetName: 'Sheet1',
-        deletedAt: null
+        timezone: 'UTC'
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      // First call: read header (1 row, but missing 'Date' column to trigger header update)
-      // Second call: check for existing visitor (empty = new visitor)
-      mockReadValues
-        .mockResolvedValueOnce([['Visitor ID']]) // existing header missing 'Date' column
-        .mockResolvedValueOnce([]) // no existing visitor
-      mockUpdateRangeValues.mockResolvedValue(undefined)
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01',
-          '',
-          '',
-          '',
-          'block-id-custom-field',
-          'custom-value'
-        ]
+        row: ['visitor-id', '2024-01-01', '', '', '', '', '']
       })
 
-      // Headers should be updated when existing header differs from computed header
-      expect(mockUpdateRangeValues).toHaveBeenCalled()
-      // Then row should be appended
-      expect(mockWriteValues).toHaveBeenCalledWith(
-        expect.objectContaining({
-          values: expect.arrayContaining([expect.any(Array)]),
-          append: true
-        })
-      )
-    })
+      // Queue was set to null, so findMany should not even be called
+      expect(prismaMock.googleSheetsSync.findMany).not.toHaveBeenCalled()
 
-    it('should use existing column key when event label differs from existing events for same blockId', async () => {
-      // This test validates the fix for the issue where events with different labels
-      // (e.g., "Step 3" vs "card 2") for the same blockId should go to the same column
-      const mockSync = {
-        id: 'sync-id',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id',
-        sheetName: 'Sheet1',
-        deletedAt: null
-      }
-
-      const radioQuestionBlockId = 'radio-question-block-123'
-
-      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: [
-          {
-            id: 'step-block-1',
-            typename: 'StepBlock',
-            parentBlockId: null,
-            parentOrder: 0,
-            nextBlockId: null,
-            deletedAt: null
-          },
-          {
-            id: 'card-block-1',
-            typename: 'CardBlock',
-            parentBlockId: 'step-block-1',
-            parentOrder: 0,
-            deletedAt: null
-          },
-          {
-            id: radioQuestionBlockId,
-            typename: 'RadioQuestionBlock',
-            parentBlockId: 'card-block-1',
-            parentOrder: 0,
-            deletedAt: null
-          }
-        ]
-      } as any)
-      // Simulate existing events with "card 2" label for the same blockId
-      prismaMock.event.findMany.mockResolvedValue([
-        { blockId: radioQuestionBlockId, label: 'card 2' }
-      ] as any)
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      mockReadValues
-        .mockResolvedValueOnce([['Visitor ID', 'Date', 'Poll']]) // existing header
-        .mockResolvedValueOnce([]) // no existing visitor rows
-
-      // New event comes in with "Step 3" label (different from existing "card 2")
-      await appendEventToGoogleSheets({
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01T00:00:00.000Z',
-          '',
-          '',
-          '',
-          `${radioQuestionBlockId}-Step 3`, // Frontend sent "Step 3" as label
-          'Option A'
-        ]
-      })
-
-      // The value should be written to the existing column (blockId-card 2), not create a new one
-      expect(mockWriteValues).toHaveBeenCalledWith(
-        expect.objectContaining({
-          values: expect.arrayContaining([
-            expect.arrayContaining(['visitor-id'])
-          ]),
-          append: true
-        })
-      )
-    })
-
-    it('should update all synced sheets when multiple syncs exist', async () => {
-      const mockSync1 = {
-        id: 'sync-id-1',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id-1',
-        sheetName: 'Sheet1',
-        deletedAt: null
-      }
-      const mockSync2 = {
-        id: 'sync-id-2',
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        spreadsheetId: 'spreadsheet-id-2',
-        sheetName: 'Sheet2',
-        deletedAt: null
-      }
-
-      prismaMock.googleSheetsSync.findMany.mockResolvedValue([
-        mockSync1,
-        mockSync2
-      ] as any)
-      prismaMock.journey.findUnique.mockResolvedValue({
-        blocks: []
-      } as any)
-      prismaMock.event.findMany.mockResolvedValue([])
-      mockGetTeamGoogleAccessToken.mockResolvedValue({
-        accessToken: 'access-token'
-      })
-      mockEnsureSheet.mockResolvedValue(undefined)
-      // Mock header reads for both sheets
-      mockReadValues
-        .mockResolvedValueOnce([['']]) // sheet 1: existing header
-        .mockResolvedValueOnce([]) // sheet 1: no existing visitor rows
-        .mockResolvedValueOnce([['']]) // sheet 2: existing header
-        .mockResolvedValueOnce([]) // sheet 2: no existing visitor rows
-
-      await appendEventToGoogleSheets({
-        journeyId: 'journey-id',
-        teamId: 'team-id',
-        row: [
-          'visitor-id',
-          '2024-01-01T00:00:00.000Z',
-          'John Doe',
-          'john@example.com',
-          '+1234567890',
-          'block-id-label',
-          'dynamic-value'
-        ]
-      })
-
-      // Ensure both sheets were accessed
-      expect(mockEnsureSheet).toHaveBeenCalledTimes(2)
-      expect(mockEnsureSheet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          spreadsheetId: 'spreadsheet-id-1',
-          sheetTitle: 'Sheet1'
-        })
-      )
-      expect(mockEnsureSheet).toHaveBeenCalledWith(
-        expect.objectContaining({
-          spreadsheetId: 'spreadsheet-id-2',
-          sheetTitle: 'Sheet2'
-        })
-      )
-
-      // Both sheets should have rows written
-      expect(mockWriteValues).toHaveBeenCalledTimes(2)
-      expect(mockWriteValues).toHaveBeenCalledWith(
-        expect.objectContaining({
-          spreadsheetId: 'spreadsheet-id-1',
-          sheetTitle: 'Sheet1',
-          append: true
-        })
-      )
-      expect(mockWriteValues).toHaveBeenCalledWith(
-        expect.objectContaining({
-          spreadsheetId: 'spreadsheet-id-2',
-          sheetTitle: 'Sheet2',
-          append: true
-        })
-      )
+      // Restore for other tests
+      __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
     })
   })
 })
