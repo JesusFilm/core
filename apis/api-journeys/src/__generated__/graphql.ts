@@ -4874,7 +4874,7 @@ export type TextResponseSubmissionEvent = Event & {
   /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  /** ID of the journey that the buttonBlock belongs to */
+  /** ID of the journey that the TextResponseBlock belongs to */
   journeyId: Scalars['ID']['output'];
   /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
