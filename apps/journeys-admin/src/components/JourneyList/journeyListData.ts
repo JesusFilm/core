@@ -138,6 +138,33 @@ export const templateJourney: Journey = {
   template: true
 }
 
+export const nonCustomizableLocalTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'journeyId',
+  title: 'Local Template Journey Heading',
+  description: 'a local template journey',
+  template: true,
+  team: { __typename: 'Team', id: 'teamId' }
+}
+
+export const nonCustomizableGlobalTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'journeyId',
+  title: 'Global Template Journey Heading',
+  description: 'a global template journey',
+  template: true,
+  team: { __typename: 'Team', id: 'jfp-team' }
+}
+
+export const templateJourneyFromTemplate: Journey = {
+  ...defaultJourney,
+  id: 'template-journey-from-template-id',
+  title: 'Template Journey From Template Heading',
+  description: 'a template journey from template',
+  template: true,
+  fromTemplateId: 'template-journey-id'
+}
+
 export const customizableTemplateJourney: Journey = {
   ...templateJourney,
   journeyCustomizationDescription: 'a customizable template journey',
