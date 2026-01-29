@@ -1,5 +1,5 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter'
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
 
 import { EnvironmentBanner } from '../components/EnvironmentBanner'
 import { AuthProvider } from '../libs/auth/AuthProvider'
@@ -9,32 +9,40 @@ import { SnackbarProvider } from '../libs/SnackbarProvider'
 import { ApolloProvider } from './_ApolloProvider'
 import { UploadVideoVariantProvider } from './_UploadVideoVariantProvider'
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: {
   children: React.ReactNode
-}): Promise<ReactNode> {
-  const user = await getUser()
-
+}): ReactNode {
   return (
     <html lang="en">
       <body>
         <EnvironmentBanner />
-        <AuthProvider user={user}>
-          <ApolloProvider user={user}>
-            <SnackbarProvider
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'right'
-              }}
-            >
-              <UploadVideoVariantProvider>
-                <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
-              </UploadVideoVariantProvider>
-            </SnackbarProvider>
-          </ApolloProvider>
-        </AuthProvider>
+        <Suspense fallback={null}>
+          <UserProviders>{children}</UserProviders>
+        </Suspense>
       </body>
     </html>
+  )
+}
+
+async function UserProviders({ children }: { children: React.ReactNode }) {
+  const user = await getUser()
+
+  return (
+    <AuthProvider user={user}>
+      <ApolloProvider user={user}>
+        <SnackbarProvider
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+        >
+          <UploadVideoVariantProvider>
+            <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+          </UploadVideoVariantProvider>
+        </SnackbarProvider>
+      </ApolloProvider>
+    </AuthProvider>
   )
 }
