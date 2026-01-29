@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { formatISO } from 'date-fns'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -11,13 +12,12 @@ import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
 import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
 import { buildPlausibleDateRange } from './buildPlausibleDateRange'
 
+import { AnalyticsOverlaySwitch } from '.'
+
 jest.mock('./buildPlausibleDateRange')
 
 const mockBuildPlausibleDateRange =
   buildPlausibleDateRange as jest.MockedFunction<typeof buildPlausibleDateRange>
-
-import { AnalyticsOverlaySwitch } from '.'
-import { formatISO } from 'date-fns'
 
 const mockCurrentDate = '2024-06-02'
 

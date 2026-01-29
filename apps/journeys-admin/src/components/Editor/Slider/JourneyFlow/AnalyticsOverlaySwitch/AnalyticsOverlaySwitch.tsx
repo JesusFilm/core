@@ -10,8 +10,9 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
 
-import { buildPlausibleDateRange } from './buildPlausibleDateRange'
 import { DateRangePicker } from '../../../../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
+
+import { buildPlausibleDateRange } from './buildPlausibleDateRange'
 
 // Used to for filter all time stats
 export const earliestStatsCollected = '2024-06-01'
