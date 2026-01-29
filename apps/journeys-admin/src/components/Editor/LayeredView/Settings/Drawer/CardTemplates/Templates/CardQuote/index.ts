@@ -1,0 +1,1 @@
+export { CardQuote } from './CardQuote'

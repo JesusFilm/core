@@ -1,5 +1,5 @@
 import { User } from 'next-firebase-auth'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -16,6 +16,8 @@ import { FontLoader } from './FontLoader/FontLoader'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
+import ToggleButton from '@mui/material/ToggleButton'
+import { LayeredView } from './LayeredView'
 
 interface EditorProps {
   journey?: Journey
@@ -35,6 +37,7 @@ export function Editor({
   initialState,
   user
 }: EditorProps): ReactElement {
+  const [newFlow, setNewFlow] = useState(true)
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -64,7 +67,11 @@ export function Editor({
             />
             <Hotkeys />
             <Toolbar user={user} />
-            <Slider />
+            {/* <ToggleButton value={newFlow} onChange={() => setNewFlow(!newFlow)}>
+              {newFlow ? 'New Flow' : 'Old Flow'}
+            </ToggleButton>
+            {newFlow ? <LayeredView /> : <Slider />} */}
+            <LayeredView />
             <Fab variant="mobile" />
           </HotkeysProvider>
         </MuxVideoUploadProvider>

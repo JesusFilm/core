@@ -1,0 +1,1 @@
+export { VideoBlockEditorSettingsPosterLibrary } from './VideoBlockEditorSettingsPosterLibrary'

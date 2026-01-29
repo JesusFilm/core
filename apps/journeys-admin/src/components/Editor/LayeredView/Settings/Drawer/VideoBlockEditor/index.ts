@@ -1,0 +1,1 @@
+export { VideoBlockEditor } from './VideoBlockEditor'
