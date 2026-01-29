@@ -1,5 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { formatISO } from 'date-fns'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -8,12 +10,22 @@ import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
 
 import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
+import { buildPlausibleDateRange } from './buildPlausibleDateRange'
 
 import { AnalyticsOverlaySwitch } from '.'
+
+jest.mock('./buildPlausibleDateRange')
+
+const mockBuildPlausibleDateRange =
+  buildPlausibleDateRange as jest.MockedFunction<typeof buildPlausibleDateRange>
 
 const mockCurrentDate = '2024-06-02'
 
 describe('AnalyticsOverlaySwitch', () => {
+  beforeEach(() => {
+    mockBuildPlausibleDateRange.mockClear()
+  })
+
   beforeAll(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date('2024-06-02'))
@@ -24,6 +36,9 @@ describe('AnalyticsOverlaySwitch', () => {
   })
 
   it('toggles showAnalytics', async () => {
+    mockBuildPlausibleDateRange.mockReturnValue(
+      `${earliestStatsCollected},${mockCurrentDate}`
+    )
     const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
     const journey = { id: 'journeyId' } as unknown as GetJourney_journey
     const request = {
@@ -77,5 +92,56 @@ describe('AnalyticsOverlaySwitch', () => {
     })
     screen.getByRole('checkbox').click()
     expect(showAnalytics).toHaveTextContent('false')
+  })
+
+  it('gets analytics for selected date range', async () => {
+    const selectedStartDate = new Date('2024-06-05')
+    const selectedEndDate = new Date('2024-06-10')
+    const formattedDateRange = `${formatISO(selectedStartDate, {
+      representation: 'date'
+    })},${formatISO(selectedEndDate, { representation: 'date' })}`
+
+    // Pretend the date picker has already produced our custom range
+    mockBuildPlausibleDateRange.mockReturnValue(formattedDateRange)
+
+    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              ...getJourneyAnalytics.request,
+              variables: {
+                ...getJourneyAnalytics.request.variables,
+                period: 'custom',
+                date: formattedDateRange
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider>
+            {({ state: { analytics } }) => (
+              <>
+                <div data-testid="analytics">{JSON.stringify(analytics)}</div>
+                <AnalyticsOverlaySwitch />
+              </>
+            )}
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const analyticsCheckbox = screen.getByRole('checkbox')
+    fireEvent.click(analyticsCheckbox)
+
+    // Verify the network call was made with the mocked date range
+    await waitFor(() => {
+      expect(result).toHaveBeenCalled()
+    })
   })
 })
