@@ -171,10 +171,9 @@ export function GoogleSheetsSyncDialog({
   const [
     loadSyncs,
     { data: syncsData, loading: syncsLoading, called: syncsCalled }
-  ] = useLazyQuery<
-    GoogleSheetsSyncsQueryData,
-    GoogleSheetsSyncsQueryVariables
-  >(GET_GOOGLE_SHEETS_SYNCS)
+  ] = useLazyQuery<GoogleSheetsSyncsQueryData, GoogleSheetsSyncsQueryVariables>(
+    GET_GOOGLE_SHEETS_SYNCS
+  )
   const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
 
   const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
@@ -218,7 +217,7 @@ export function GoogleSheetsSyncDialog({
   useEffect(() => {
     if (open) return
     if (deletingSyncId != null) return
-      setSyncIdPendingDelete(null)
+    setSyncIdPendingDelete(null)
   }, [open, deletingSyncId])
 
   const googleSheetsSyncs = syncsData?.googleSheetsSyncs ?? []
