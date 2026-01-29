@@ -15,6 +15,7 @@ import { MainPanelHeader } from './MainPanelHeader'
 import { NavigationDrawer } from './NavigationDrawer'
 import { SidePanel } from './SidePanel'
 import { usePageWrapperStyles } from './utils/usePageWrapperStyles'
+import { HelpScoutBeacon } from '../HelpScoutBeacon'
 
 interface PageWrapperProps {
   showAppHeader?: boolean
@@ -115,7 +116,12 @@ export function PageWrapper({
             }}
           >
             {showAppHeader && (
+              <>
               <AppHeader onClick={() => setOpen(!open)} user={user} />
+              <Box sx={{ position: 'fixed', bottom: 16, right: 16, zIndex: (theme) => theme.zIndex.modal + 3 }}>
+                <HelpScoutBeacon variant="fab" />
+              </Box>
+              </>
             )}
 
             <Stack

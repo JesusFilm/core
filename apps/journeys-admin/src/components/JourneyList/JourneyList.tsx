@@ -118,12 +118,13 @@ export function JourneyList({
           sortOrder={sortOrder}
         />
       </Box>
-      {activeTab === 'active' && currentContentType === 'journeys' && (
-        <Stack direction="row" sx={{ zIndex: 3, gap: 2, justifyContent: 'flex-end', position: 'fixed', bottom: 16, right: 16}}>
-          <AddJourneyFab />
-          <HelpScoutBeacon variant="fab" />
+        <Stack direction="row" sx={{ zIndex: 3, gap: 2, justifyContent: 'flex-end', position: 'fixed', bottom: 16, right: 16 + 56}}>
+        {activeTab === 'active' && currentContentType === 'journeys' && (
+          <>
+            <AddJourneyFab />
+          </>
+        )}
         </Stack>
-      )}
     </>
   )
 }

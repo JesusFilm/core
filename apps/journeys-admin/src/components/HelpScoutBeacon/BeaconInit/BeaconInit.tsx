@@ -82,6 +82,15 @@ export function BeaconInit({
         .BeaconFabButtonFrame {
           display: ${BEACON_ICON_DISPLAY};
         }
+        .c-BeaconCloseButton {
+          display: none !important;
+        }
+        .hsds-beacon .BeaconContainer::before {
+          top: 0 !important;
+          left: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          }
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: ${DESKTOP_APP_BAR_GAP};
           width: ${DESKTOP_CONTAINER_WIDTH};
@@ -90,12 +99,17 @@ export function BeaconInit({
           max-height: ${DESKTOP_CONTAINER_MAX_HEIGHT}
         }
         ${breakpoints.down('md')} {
+          .hsds-beacon .BeaconContainer.is-configDisplayRight::before {
+            left: -${MOBILE_CONTAINER_PADDING} !important;
+            width: calc(100vw + ${MOBILE_CONTAINER_PADDING}) !important;
+            top: -${MOBILE_APP_BAR_GAP} !important;
+          }
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
             top: ${MOBILE_APP_BAR_GAP};
             width: calc(100% - ${MOBILE_CONTAINER_PADDING} * 2);
             height: ${MOBILE_CONTAINER_HEIGHT};
-            left: ${MOBILE_CONTAINER_PADDING};
             right: ${MOBILE_CONTAINER_PADDING};
+            left: ${MOBILE_CONTAINER_PADDING};
             max-height: ${MOBILE_CONTAINER_MAX_HEIGHT};
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
