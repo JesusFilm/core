@@ -28,7 +28,8 @@ locals {
       dns_name = var.ecs_config.alb.dns_name
     }
     alb_target_group = merge(var.ecs_config.alb_target_group, {
-      port = local.port
+      port                  = local.port
+      health_check_matcher  = "204"
     })
     auto_scaling = {
       max_capacity = var.env == "stage" ? 1 : 4
