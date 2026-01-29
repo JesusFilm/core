@@ -281,6 +281,7 @@ export async function appendEventToGoogleSheets({
   await googleSheetsSyncQueue.add(
     'google-sheets-sync',
     {
+      type: 'append',
       journeyId,
       teamId,
       row,
