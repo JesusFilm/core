@@ -366,11 +366,22 @@ Field names to translate per block type:
 Ensure translations maintain the meaning while being culturally appropriate for ${input.textLanguageName}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
 
-If you are in the process of translating and you recognize passages from the
+IMPORTANT - Bible Content Handling:
+- If you are in the process of translating and you recognize passages from the
 Bible you should not translate that content. Instead, you should rely on a Bible
 translation available from the previous journey analysis and use that content directly. 
 You must never make changes to content from the Bible yourself. 
-If there is no Bible translation was available, use the the most popular English Bible translation available. 
+If there is no Bible translation available, use the the most popular English Bible translation available. 
+
+- Bible REFERENCES (book names like "Luke", "Mark", "James" followed by chapter:verse 
+  notation like "2:10" or "13:1") MUST be translated to the target language. 
+  Examples: "Luke 2:10" should become "Lucas 2:10" in Spanish, "Lukas 2,10" in German 
+  (note German uses comma instead of colon). Translate the book name and adapt the 
+  chapter:verse separator to match the target language's conventions.
+
+  - References may appear in various formats (e.g., "Luke 2:10", "Luke 2:10-12", 
+  "Mark 10:1, 3", "1 Peter 3:15"). Always translate the book name and preserve the reference structure 
+  while adapting formatting to the target language.
 `
 
             // Create a map of valid block IDs for quick lookup
