@@ -16,7 +16,7 @@ import {
   MOBILE_APP_BAR_GAP,
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
-  MOBILE_CONTAINER_WIDTH
+  MOBILE_CONTAINER_PADDING
 } from './constants'
 
 interface BeaconInitProps {
@@ -82,20 +82,35 @@ export function BeaconInit({
         .BeaconFabButtonFrame {
           display: ${BEACON_ICON_DISPLAY};
         }
+        .c-BeaconCloseButton {
+          display: none !important;
+        }
+        .hsds-beacon .BeaconContainer::before {
+          top: 0 !important;
+          left: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          }
         .hsds-beacon .BeaconContainer.is-configDisplayRight {
           top: ${DESKTOP_APP_BAR_GAP};
-          right: ${DESKTOP_CONTAINER_PADDING};
           width: ${DESKTOP_CONTAINER_WIDTH};
           height: ${DESKTOP_CONTAINER_HEIGHT};
-          max-height: ${DESKTOP_CONTAINER_MAX_HEIGHT};
+          right: ${DESKTOP_CONTAINER_PADDING};
+          max-height: ${DESKTOP_CONTAINER_MAX_HEIGHT}
         }
         ${breakpoints.down('md')} {
+          .hsds-beacon .BeaconContainer.is-configDisplayRight::before {
+            left: -${MOBILE_CONTAINER_PADDING} !important;
+            width: calc(100vw + ${MOBILE_CONTAINER_PADDING}) !important;
+            top: -${MOBILE_APP_BAR_GAP} !important;
+          }
           .hsds-beacon .BeaconContainer.is-configDisplayRight {
             top: ${MOBILE_APP_BAR_GAP};
-            width: ${MOBILE_CONTAINER_WIDTH};
+            width: calc(100% - ${MOBILE_CONTAINER_PADDING} * 2);
             height: ${MOBILE_CONTAINER_HEIGHT};
+            right: ${MOBILE_CONTAINER_PADDING};
+            left: ${MOBILE_CONTAINER_PADDING};
             max-height: ${MOBILE_CONTAINER_MAX_HEIGHT};
-            border-radius: 0px;
           }
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             // position: fixed !important;
@@ -107,7 +122,7 @@ export function BeaconInit({
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             position: fixed !important;
             top: 30px !important;
-            right: 25px !important;
+            right: 0px !important;
             // width: 325px !important;
           }
         }

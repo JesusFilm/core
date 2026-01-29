@@ -1,5 +1,7 @@
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -26,6 +28,8 @@ function IndexPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
+  const theme = useTheme()
+  const mdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
@@ -64,12 +68,14 @@ function IndexPage(): ReactElement {
               <Typography variant="subtitle1">
                 {t('Create a New Journey')}
               </Typography>
-              <HelpScoutBeacon
-                userInfo={{
-                  name: user?.displayName ?? '',
-                  email: user?.email ?? ''
-                }}
-              />
+              {mdUp && (
+                <HelpScoutBeacon
+                  userInfo={{
+                    name: user?.displayName ?? '',
+                    email: user?.email ?? ''
+                  }}
+                />
+              )}
             </>
           ) : undefined
         }

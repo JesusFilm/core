@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { HelpScoutBeacon } from './HelpScoutBeacon'
@@ -64,6 +64,9 @@ describe('HelpScoutBeacon', () => {
       'open',
       expect.any(Function)
     )
+    expect(screen.getByTestId('HelpCircleContainedIcon')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Help' }))
+    expect(window.Beacon).toHaveBeenCalledWith('toggle')
   })
 
   it('should open beacon', () => {

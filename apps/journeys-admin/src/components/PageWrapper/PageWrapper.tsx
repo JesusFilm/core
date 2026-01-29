@@ -8,6 +8,7 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
+import { HelpScoutBeacon } from '../HelpScoutBeacon'
 
 import { AppHeader } from './AppHeader'
 import { MainPanelBody } from './MainPanelBody'
@@ -115,7 +116,19 @@ export function PageWrapper({
             }}
           >
             {showAppHeader && (
-              <AppHeader onClick={() => setOpen(!open)} user={user} />
+              <>
+                <AppHeader onClick={() => setOpen(!open)} user={user} />
+                <Box
+                  sx={{
+                    position: 'fixed',
+                    bottom: 16,
+                    right: 16,
+                    zIndex: (theme) => theme.zIndex.modal + 3
+                  }}
+                >
+                  <HelpScoutBeacon variant="fab" />
+                </Box>
+              </>
             )}
 
             <Stack

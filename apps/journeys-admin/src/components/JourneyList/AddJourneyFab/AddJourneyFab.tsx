@@ -25,9 +25,6 @@ export function AddJourneyFab(): ReactElement {
         })
       }}
       sx={{
-        position: 'fixed',
-        bottom: 16,
-        right: 16,
         zIndex: 3,
         display: { xs: 'flex', md: 'none' }
       }}
