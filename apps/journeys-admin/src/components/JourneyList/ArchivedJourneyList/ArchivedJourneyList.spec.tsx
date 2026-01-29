@@ -260,6 +260,31 @@ describe('ArchivedJourneyList', () => {
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
 
+    it('should show "No journeys have been restored" when no journeys to restore', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList
+                event="restoreAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Unarchive' }))
+
+      await waitFor(() =>
+        expect(getByText('No journeys have been restored')).toBeInTheDocument()
+      )
+    })
+
     it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
       const { getByText } = render(
         <MockedProvider
@@ -379,6 +404,31 @@ describe('ArchivedJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should show "No journeys have been trashed" when no journeys to trash', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedJourneyList
+                event="trashAllArchived"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+      await waitFor(() =>
+        expect(getByText('No journeys have been trashed')).toBeInTheDocument()
+      )
     })
 
     it('should call refetchTemplateStats when trashing journeys with fromTemplateId', async () => {

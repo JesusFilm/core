@@ -315,6 +315,31 @@ describe('TrashedJourneyList', () => {
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
 
+    it('should show "No journeys have been restored" when no journeys to restore', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList
+                event="restoreAllTrashed"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Restore Journeys')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
+
+      await waitFor(() =>
+        expect(getByText('No journeys have been restored')).toBeInTheDocument()
+      )
+    })
+
     it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
       const { getByText, getByRole } = render(
         <MockedProvider
@@ -420,6 +445,31 @@ describe('TrashedJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should show "No journeys have been deleted" when no journeys to delete', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList
+                event="deleteAllTrashed"
+                user={{ id: 'user-id1' } as unknown as User}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
+
+      await waitFor(() =>
+        expect(getByText('No journeys have been deleted')).toBeInTheDocument()
+      )
     })
   })
 })

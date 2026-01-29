@@ -51,7 +51,7 @@ export function TrashedTemplateList({
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Templates Restored'), {
           variant: 'success'
         })
         const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
@@ -66,7 +66,7 @@ export function TrashedTemplateList({
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys Deleted'), {
+        enqueueSnackbar(t('Templates Deleted'), {
           variant: 'success'
         })
         void refetch()
@@ -81,12 +81,14 @@ export function TrashedTemplateList({
   >()
 
   async function handleRestoreSubmit(): Promise<void> {
+    const journeyIds = data?.journeys?.map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No templates have been restored'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      await restoreTrashed({
-        variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
-        }
-      })
+      await restoreTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -99,12 +101,14 @@ export function TrashedTemplateList({
   }
 
   async function handleDeleteSubmit(): Promise<void> {
+    const journeyIds = data?.journeys?.map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No templates have been deleted'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      await deleteTrashed({
-        variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
-        }
-      })
+      await deleteTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -166,6 +170,7 @@ export function TrashedTemplateList({
               >
                 <JourneyProvider
                   value={{
+                    // @ts-expect-error - JourneyFields types differ between journeys-admin and journeys/ui packages
                     journey: journey as unknown as JourneyFields,
                     variant: 'admin'
                   }}

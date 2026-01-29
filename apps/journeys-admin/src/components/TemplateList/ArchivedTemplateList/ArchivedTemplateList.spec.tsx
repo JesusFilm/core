@@ -267,6 +267,28 @@ describe('ArchivedTemplateList', () => {
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
 
+    it('should show "No templates have been restored" when no templates to restore', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedTemplateList event="restoreAllArchived" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Unarchive Templates')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Unarchive' }))
+
+      await waitFor(() =>
+        expect(getByText('No templates have been restored')).toBeInTheDocument()
+      )
+    })
+
     it('should call refetchTemplateStats when restoring templates with fromTemplateId', async () => {
       const { getByText } = render(
         <MockedProvider
@@ -376,6 +398,28 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should show "No templates have been trashed" when no templates to trash', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ArchivedTemplateList event="trashAllArchived" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Trash Templates')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+      await waitFor(() =>
+        expect(getByText('No templates have been trashed')).toBeInTheDocument()
+      )
     })
 
     it('should call refetchTemplateStats when trashing templates with fromTemplateId', async () => {

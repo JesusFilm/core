@@ -296,8 +296,21 @@ export function JourneyListContent({
   }
 
   async function handlePrimarySubmit(): Promise<void> {
+    const journeyIds = getOwnerFilteredIds()
+    if (!journeyIds?.length) {
+      const isTemplate = contentType === 'templates'
+      const messageKey = isTemplate
+        ? status === 'active'
+          ? 'No templates have been archived'
+          : 'No templates have been restored'
+        : status === 'active'
+          ? 'No journeys have been archived'
+          : 'No journeys have been restored'
+      enqueueSnackbar(t(messageKey), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      const journeyIds = getOwnerFilteredIds()
       await primaryMutation({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -311,8 +324,21 @@ export function JourneyListContent({
   }
 
   async function handleSecondarySubmit(): Promise<void> {
+    const journeyIds = getOwnerFilteredIds()
+    if (!journeyIds?.length) {
+      const isTemplate = contentType === 'templates'
+      const messageKey = isTemplate
+        ? status === 'trashed'
+          ? 'No templates have been deleted'
+          : 'No templates have been trashed'
+        : status === 'trashed'
+          ? 'No journeys have been deleted'
+          : 'No journeys have been trashed'
+      enqueueSnackbar(t(messageKey), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      const journeyIds = getOwnerFilteredIds()
       await secondaryMutation({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -611,6 +637,7 @@ export function JourneyListContent({
                   >
                     <JourneyProvider
                       value={{
+                        // @ts-expect-error - JourneyFields types differ between journeys-admin and journeys/ui packages
                         journey: journey as unknown as JourneyFields,
                         variant: 'admin'
                       }}

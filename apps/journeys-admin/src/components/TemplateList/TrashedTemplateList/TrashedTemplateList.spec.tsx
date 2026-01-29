@@ -316,6 +316,28 @@ describe('TrashedTemplateList', () => {
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
 
+    it('should show "No templates have been restored" when no templates to restore', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedTemplateList event="restoreAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Restore Templates')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
+
+      await waitFor(() =>
+        expect(getByText('No templates have been restored')).toBeInTheDocument()
+      )
+    })
+
     it('should call refetchTemplateStats when restoring templates with fromTemplateId', async () => {
       const { getByText } = render(
         <MockedProvider
@@ -410,6 +432,28 @@ describe('TrashedTemplateList', () => {
       )
       fireEvent.click(getByText('Delete Forever'))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should show "No templates have been deleted" when no templates to delete', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedTemplateList event="deleteAllTrashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Delete Templates Forever')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
+
+      await waitFor(() =>
+        expect(getByText('No templates have been deleted')).toBeInTheDocument()
+      )
     })
   })
 })

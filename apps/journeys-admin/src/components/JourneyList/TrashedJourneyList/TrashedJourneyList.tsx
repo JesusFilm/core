@@ -82,15 +82,20 @@ export function TrashedJourneyList({
   >()
 
   async function handleRestoreSubmit(): Promise<void> {
+    const journeyIds = data?.journeys
+      ?.filter(
+        (journey) =>
+          journey.userJourneys?.find(
+            (userJourney) => userJourney.user?.id === (user?.id ?? '')
+          )?.role === 'owner'
+      )
+      .map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No journeys have been restored'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
       await restoreTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -104,15 +109,20 @@ export function TrashedJourneyList({
   }
 
   async function handleDeleteSubmit(): Promise<void> {
+    const journeyIds = data?.journeys
+      ?.filter(
+        (journey) =>
+          journey.userJourneys?.find(
+            (userJourney) => userJourney.user?.id === (user?.id ?? '')
+          )?.role === 'owner'
+      )
+      .map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No journeys have been deleted'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
       await deleteTrashed({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {

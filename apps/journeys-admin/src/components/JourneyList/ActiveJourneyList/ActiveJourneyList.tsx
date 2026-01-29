@@ -78,15 +78,20 @@ export function ActiveJourneyList({
   const [trashDialogOpen, setTrashDialogOpen] = useState<boolean | undefined>()
 
   async function handleArchiveSubmit(): Promise<void> {
+    const journeyIds = data?.journeys
+      ?.filter(
+        (journey) =>
+          journey.userJourneys?.find(
+            (userJourney) => userJourney.user?.id === (user?.id ?? '')
+          )?.role === 'owner'
+      )
+      .map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No journeys have been archived'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
       await archive({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -100,15 +105,20 @@ export function ActiveJourneyList({
   }
 
   async function handleTrashSubmit(): Promise<void> {
+    const journeyIds = data?.journeys
+      ?.filter(
+        (journey) =>
+          journey.userJourneys?.find(
+            (userJourney) => userJourney.user?.id === (user?.id ?? '')
+          )?.role === 'owner'
+      )
+      .map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No journeys have been trashed'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
-        )
-        .map((journey) => journey.id)
       await trash({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {

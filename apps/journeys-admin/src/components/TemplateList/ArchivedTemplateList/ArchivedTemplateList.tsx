@@ -51,7 +51,7 @@ export function ArchivedTemplateList({
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
+        enqueueSnackbar(t('Templates Restored'), {
           variant: 'success'
         })
 
@@ -67,7 +67,7 @@ export function ArchivedTemplateList({
   const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys Trashed'), {
+        enqueueSnackbar(t('Templates Trashed'), {
           variant: 'success'
         })
 
@@ -86,12 +86,14 @@ export function ArchivedTemplateList({
   const [openTrashDialog, setOpenTrashDialog] = useState<boolean | undefined>()
 
   async function handleRestoreSubmit(): Promise<void> {
+    const journeyIds = data?.journeys?.map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No templates have been restored'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      await restore({
-        variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
-        }
-      })
+      await restore({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -104,12 +106,14 @@ export function ArchivedTemplateList({
   }
 
   async function handleTrashSubmit(): Promise<void> {
+    const journeyIds = data?.journeys?.map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No templates have been trashed'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      await trash({
-        variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
-        }
-      })
+      await trash({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -160,6 +164,7 @@ export function ArchivedTemplateList({
               >
                 <JourneyProvider
                   value={{
+                    // @ts-expect-error - JourneyFields types differ between journeys-admin and journeys/ui packages
                     journey: journey as unknown as JourneyFields,
                     variant: 'admin'
                   }}
