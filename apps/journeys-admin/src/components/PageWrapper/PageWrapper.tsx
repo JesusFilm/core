@@ -131,7 +131,7 @@ export function PageWrapper({
                     zIndex: (theme) => theme.zIndex.modal + 3
                   }}
                 >
-                  <HelpScoutBeacon variant="fab" userInfo={userInfo}/>
+                  <HelpScoutBeacon variant="fab" userInfo={userInfo} />
                 </Box>
               </>
             )}
