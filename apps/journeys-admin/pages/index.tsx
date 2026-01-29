@@ -1,4 +1,6 @@
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -15,12 +17,10 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
-import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -61,11 +61,7 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
-        sidePanelTitle={
-          showSidePanel ? (
-            <SidePanelTitle />
-          ) : undefined
-        }
+        sidePanelTitle={showSidePanel ? <SidePanelTitle /> : undefined}
       >
         <JourneyList user={user} />
       </PageWrapper>
