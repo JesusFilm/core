@@ -31,6 +31,7 @@ export const yoga = createYoga<
   logging: logger,
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
+    const authorization = request.headers.get('authorization')
     const user =
       process.env.NODE_ENV !== 'test' ||
       request.headers.get('authorization') != null
@@ -49,7 +50,8 @@ export const yoga = createYoga<
               where: { userId: user.id }
             })
           )?.roles ?? [],
-        clientName
+        clientName,
+        authorization
       }
 
     const interopToken = request.headers.get('interop-token')
@@ -60,13 +62,15 @@ export const yoga = createYoga<
         ...initContextCache(),
         type: 'interop',
         ...interopContext,
-        clientName
+        clientName,
+        authorization
       }
 
     return {
       ...initContextCache(),
       type: 'public',
-      clientName
+      clientName,
+      authorization
     }
   },
   plugins: [

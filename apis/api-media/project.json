@@ -109,6 +109,12 @@
         "command": "pnpm exec ts-node apis/api-media/src/workers/cli.ts seed"
       }
     },
+    "ai-subtitles-worker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/workers/muxSubtitles/worker.ts"
+      }
+    },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {

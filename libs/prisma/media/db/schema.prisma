@@ -73,6 +73,8 @@ enum MuxSubtitleTrackSource {
 }
 
 enum MuxSubtitleTrackStatus {
+  not_requested
+  queued
   processing
   ready
   errored
@@ -80,13 +82,17 @@ enum MuxSubtitleTrackStatus {
 
 model MuxSubtitleTrack {
   id         String                 @id @default(uuid())
-  trackId    String                 @unique
+  trackId    String?                @unique
   source     MuxSubtitleTrackSource
   status     MuxSubtitleTrackStatus
+  workflowRunId String?
+  vttUrl     String?
+  errorMessage String?
   bcp47      String
   muxVideoId String
   muxVideo   MuxVideo               @relation(fields: [muxVideoId], references: [id], onDelete: Cascade)
 
+  @@unique([muxVideoId, bcp47, source])
   @@index(trackId(type: Hash))
 }
 
