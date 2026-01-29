@@ -113,7 +113,7 @@ describe('PageWrapper', () => {
     })
 
     it('should show the side nav bar', () => {
-      ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
+      ; (useMediaQuery as jest.Mock).mockImplementation(() => true)
 
       const { getByTestId, getByText, queryByRole } = render(
         <MockedProvider>
@@ -128,4 +128,44 @@ describe('PageWrapper', () => {
       expect(getByText('Projects')).toBeInTheDocument()
     })
   })
+
+  describe('HelpScoutBeacon', () => {
+    beforeEach(() => {
+      window.Beacon = jest.fn()
+    })
+
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('should render HelpScoutBeacon with fab variant when showAppHeader is true', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper showAppHeader={true} title="Page title" />
+        </MockedProvider>
+      )
+      expect(getByTestId('HelpScoutBeaconFab')).toBeInTheDocument()
+    })
+
+    it('should not render HelpScoutBeacon when showAppHeader is false', () => {
+      const { queryByTestId } = render(
+        <MockedProvider>
+          <PageWrapper showAppHeader={false} title="Page title" />
+        </MockedProvider>
+      )
+      expect(queryByTestId('HelpScoutBeaconFab')).not.toBeInTheDocument()
+    })
+
+    it('should render HelpScoutBeacon fab by default', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper title="Page title" />
+        </MockedProvider>
+      )
+      expect(getByTestId('HelpScoutBeaconFab')).toBeInTheDocument()
+    })
+  })
+
 })
+
+

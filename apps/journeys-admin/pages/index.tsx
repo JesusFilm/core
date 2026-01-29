@@ -1,7 +1,4 @@
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -15,13 +12,15 @@ import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
-import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -64,19 +63,7 @@ function IndexPage(): ReactElement {
         sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
         sidePanelTitle={
           showSidePanel ? (
-            <>
-              <Typography variant="subtitle1">
-                {t('Create a New Journey')}
-              </Typography>
-              {mdUp && (
-                <HelpScoutBeacon
-                  userInfo={{
-                    name: user?.displayName ?? '',
-                    email: user?.email ?? ''
-                  }}
-                />
-              )}
-            </>
+            <SidePanelTitle />
           ) : undefined
         }
       >
