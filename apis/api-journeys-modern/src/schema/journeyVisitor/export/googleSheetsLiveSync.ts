@@ -340,14 +340,26 @@ export async function appendEventToGoogleSheets({
             }
 
             if (newValue === '') return existingValue
+
+            // Normalize: trim and strip leading apostrophe (sheet escaping)
+            const normalize = (val: string): string => {
+              const trimmed = val.trim()
+              return trimmed.startsWith("'") ? trimmed.slice(1) : trimmed
+            }
+
+            const normalizedNewValue = normalize(newValue)
+
+            // Short-circuit if newValue is empty or whitespace-only after normalization
+            if (normalizedNewValue === '') return existingValue
             if (existingValue === '') return newValue
 
             // Append non-unique values, joining with semicolon
             const existingTokens = existingValue
               .split(';')
-              .map((t) => t.trim())
+              .map((t) => normalize(t))
               .filter((t) => t !== '')
-            if (existingTokens.includes(newValue.trim())) {
+
+            if (existingTokens.includes(normalizedNewValue)) {
               return existingValue // Value already exists, don't append
             }
             return `${existingValue}; ${newValue}`
