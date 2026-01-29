@@ -340,7 +340,17 @@ export async function appendEventToGoogleSheets({
             }
 
             if (newValue === '') return existingValue
-            return newValue
+            if (existingValue === '') return newValue
+
+            // Append non-unique values, joining with semicolon
+            const existingTokens = existingValue
+              .split(';')
+              .map((t) => t.trim())
+              .filter((t) => t !== '')
+            if (existingTokens.includes(newValue.trim())) {
+              return existingValue // Value already exists, don't append
+            }
+            return `${existingValue}; ${newValue}`
           })
 
           await updateRangeValues({
