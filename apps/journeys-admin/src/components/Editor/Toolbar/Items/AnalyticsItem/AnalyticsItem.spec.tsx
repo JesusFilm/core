@@ -56,6 +56,10 @@ describe('AnalyticsItem', () => {
     jest.clearAllMocks()
   })
 
+  afterAll(() => {
+    jest.restoreAllMocks()
+  })
+
   it('should link to journey reports page as a list item', async () => {
     const { getByRole } = render(
       <SnackbarProvider>
