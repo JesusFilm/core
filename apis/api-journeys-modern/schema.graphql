@@ -1363,6 +1363,11 @@ type Mutation {
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
+
+  """
+  Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
+  """
+  googleSheetsSyncBackfill(id: ID!): GoogleSheetsSync!
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
