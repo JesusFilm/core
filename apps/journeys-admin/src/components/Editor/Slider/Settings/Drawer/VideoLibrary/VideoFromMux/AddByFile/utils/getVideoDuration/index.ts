@@ -1,0 +1,1 @@
+export { getVideoDuration } from './getVideoDuration'
