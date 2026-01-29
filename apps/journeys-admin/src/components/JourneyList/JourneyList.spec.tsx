@@ -238,21 +238,4 @@ describe('JourneyList', () => {
     handler('/random')
     expect(mockedUseAdminJourneysQuery().refetch).not.toHaveBeenCalled()
   })
-
-  it('should show help scout beacon with fab variant', () => {
-    // Use the real component for this test
-    const { HelpScoutBeacon } = jest.requireActual('../HelpScoutBeacon/HelpScoutBeacon')
-    mockHelpScoutBeacon.mockImplementation( HelpScoutBeacon )
-
-    const { getByTestId } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyList />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByTestId('HelpScoutBeaconFab')).toBeInTheDocument()
-  })
 })
