@@ -1010,7 +1010,6 @@ export class JourneyResolver {
     const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
-    console.log(results.length)
     return await Promise.all(
       results.map(
         async (journey) =>
