@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -7,28 +6,6 @@ import {
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
-
-import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
-import {
-  columnIndexToA1,
-  ensureSheet,
-  readValues,
-  updateRangeValues,
-  writeValues
-} from '../../lib/google/sheets'
-import { computeConnectedBlockIds } from '../journeyVisitor/export/connectivity'
-import {
-  type BaseColumnLabelResolver,
-  type JourneyExportColumn,
-  buildHeaderRows,
-  buildJourneyExportColumns,
-  getCardHeading
-} from '../journeyVisitor/export/headings'
-import {
-  type SimpleBlock,
-  buildRenderTree,
-  computeOrderIndex
-} from '../journeyVisitor/export/order'
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -42,14 +19,34 @@ try {
   emailQueue = null
 }
 
+// Queue for Google Sheets sync
+let googleSheetsSyncQueue: any
+try {
+  // Avoid requiring Redis in tests
+  if (process.env.NODE_ENV !== 'test') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    googleSheetsSyncQueue =
+      require('../../workers/googleSheetsSync/queue').queue
+  }
+} catch {
+  googleSheetsSyncQueue = null
+}
+
 // Test helper to inject a mock queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function __setEmailQueueForTests(mockQueue: any): void {
   emailQueue = mockQueue
 }
 
+// Test helper to inject a mock Google Sheets sync queue
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function __setGoogleSheetsSyncQueueForTests(mockQueue: any): void {
+  googleSheetsSyncQueue = mockQueue
+}
+
 const TWO_MINUTES = 2 * 60 * 1000
 export const ONE_DAY = 24 * 60 * 60 // in seconds
+const ONE_HOUR = 60 * 60 // in seconds
 
 export async function validateBlockEvent(
   userId: string,
@@ -241,18 +238,19 @@ export async function resetEventsEmailDelay(
   await existingJob.changeDelay(delayMs)
 }
 
-// Live Google Sheets sync: append row per event when a sync config exists
-const journeyBlockSelect = {
-  id: true,
-  typename: true,
-  parentBlockId: true,
-  parentOrder: true,
-  nextBlockId: true,
-  action: true,
-  content: true,
-  deletedAt: true
-} as const
-
+/**
+ * Queue an event to be synced to Google Sheets.
+ * This function adds a job to the worker queue which processes events one at a time
+ * to avoid race conditions when multiple events are created simultaneously.
+ *
+ * Jobs are configured with:
+ * - 3 retry attempts on failure
+ * - Immediate expiration on success (removeOnComplete: true)
+ * - 1 hour expiration on failure (removeOnFail: { age: ONE_HOUR })
+ *
+ * Note: No job is created if there are no active syncs for the journey.
+ * Syncs are fetched here and passed to the worker to minimize database calls.
+ */
 export async function appendEventToGoogleSheets({
   journeyId,
   teamId,
@@ -264,227 +262,39 @@ export async function appendEventToGoogleSheets({
   row: (string | number | null)[]
   sheetName?: string
 }): Promise<void> {
+  if (process.env.NODE_ENV === 'test' || googleSheetsSyncQueue == null) return
+
+  // Fetch syncs upfront to pass to the worker
   const syncs = await prisma.googleSheetsSync.findMany({
-    where: { journeyId, teamId, deletedAt: null }
+    where: { journeyId, teamId, deletedAt: null },
+    select: {
+      id: true,
+      spreadsheetId: true,
+      sheetName: true,
+      timezone: true
+    }
   })
+
+  // No syncs configured - skip job creation
   if (syncs.length === 0) return
 
-  const journey = await prisma.journey.findUnique({
-    where: { id: journeyId },
-    select: {
-      blocks: {
-        select: journeyBlockSelect
-      }
-    }
-  })
-  if (journey == null) return
-
-  const journeyBlocks = journey.blocks.filter(
-    (block) => block.deletedAt == null
-  )
-  const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
-  const simpleBlocks: SimpleBlock[] = journeyBlocks.map((block) => ({
-    id: block.id,
-    typename: block.typename,
-    parentBlockId: block.parentBlockId ?? null,
-    parentOrder: block.parentOrder ?? null
-  }))
-  const treeRoots = buildRenderTree(simpleBlocks)
-  const orderIndex = computeOrderIndex(treeRoots)
-
-  // Apply connectivity filter to only include blocks from connected steps
-  const connectedBlockIds = computeConnectedBlockIds({ journeyBlocks })
-
-  const blockHeadersResult = await prisma.event.findMany({
-    where: {
+  await googleSheetsSyncQueue.add(
+    'google-sheets-sync',
+    {
       journeyId,
-      blockId: { in: Array.from(connectedBlockIds) },
-      // Only include submission events
-      typename: {
-        in: [
-          'RadioQuestionSubmissionEvent',
-          'MultiselectSubmissionEvent',
-          'TextResponseSubmissionEvent',
-          'SignUpSubmissionEvent'
-        ]
-      }
+      teamId,
+      row,
+      sheetName,
+      syncs
     },
-    select: {
-      blockId: true,
-      label: true
-    },
-    distinct: ['blockId', 'label']
-  })
-
-  // Normalize labels and deduplicate by normalized key
-  const headerMap = new Map<string, { blockId: string; label: string }>()
-  blockHeadersResult
-    .filter((header) => header.blockId != null)
-    .forEach((header) => {
-      const normalizedLabel = (header.label ?? '').replace(/\s+/g, ' ').trim()
-      const key = `${header.blockId}-${normalizedLabel}`
-      // Only add if not already present (handles duplicates with different whitespace)
-      if (!headerMap.has(key)) {
-        headerMap.set(key, {
-          blockId: header.blockId!,
-          label: normalizedLabel
-        })
-      }
-    })
-  const normalizedBlockHeaders = Array.from(headerMap.values())
-
-  const baseColumns: JourneyExportColumn[] = [
-    { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
-    { key: 'date', label: 'Date', blockId: null, typename: '' }
-  ]
-  const columns = buildJourneyExportColumns({
-    baseColumns,
-    blockHeaders: normalizedBlockHeaders,
-    journeyBlocks,
-    orderIndex
-  })
-
-  const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
-    column,
-    userTimezone
-  }) => {
-    if (column.key === 'visitorId') return 'Visitor ID'
-    if (column.key === 'date') {
-      return userTimezone !== 'UTC' && userTimezone !== ''
-        ? `Date (${userTimezone})`
-        : 'Date'
+    {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 1000
+      },
+      removeOnComplete: true,
+      removeOnFail: { age: ONE_HOUR }
     }
-    return column.label
-  }
-
-  const finalHeader = columns.map((column) => column.key)
-
-  const { accessToken } = await getTeamGoogleAccessToken(teamId)
-
-  const safe = (value: string | number | null | undefined): string =>
-    value == null ? '' : String(value)
-  const visitorId = safe(row[0])
-  const createdAt = safe(row[1])
-  const dynamicKey = safe(row[5])
-  const dynamicValue = safe(row[6])
-
-  // Update all synced sheets - use allSettled so one failure doesn't abort others
-  const results = await Promise.allSettled(
-    syncs.map(async (sync) => {
-      // Use sync-specific timezone for header and data formatting
-      const syncTimezone = sync.timezone ?? 'UTC'
-
-      const { headerRow } = buildHeaderRows({
-        columns,
-        userTimezone: syncTimezone,
-        getCardHeading: (blockId) =>
-          getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
-        baseColumnLabelResolver: resolveBaseColumnLabel
-      })
-
-      const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
-
-      const rowMap: Record<string, string> = {}
-      if (visitorId !== '') rowMap.visitorId = visitorId
-      if (createdAt !== '') rowMap.date = createdAt
-      if (dynamicKey !== '' && dynamicValue !== '') {
-        rowMap[dynamicKey] = dynamicValue
-      }
-
-      const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
-      const lastColA1 = columnIndexToA1(finalHeader.length - 1)
-
-      const tabName =
-        sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
-      await ensureSheet({
-        accessToken,
-        spreadsheetId: sync.spreadsheetId,
-        sheetTitle: tabName
-      })
-
-      const headerRange = `${tabName}!A1:${columnIndexToA1(
-        finalHeader.length - 1
-      )}1`
-      const existingHeaderRows = await readValues({
-        accessToken,
-        spreadsheetId: sync.spreadsheetId,
-        range: headerRange
-      })
-      const existingHeaderRow: string[] = (existingHeaderRows[0] ?? []).map(
-        (value) => value ?? ''
-      )
-
-      const headerChanged =
-        existingHeaderRow.length !== sanitizedHeaderRow.length ||
-        sanitizedHeaderRow.some(
-          (cell, index) => cell !== (existingHeaderRow[index] ?? '')
-        )
-
-      if (headerChanged) {
-        await updateRangeValues({
-          accessToken,
-          spreadsheetId: sync.spreadsheetId,
-          range: headerRange,
-          values: [sanitizedHeaderRow]
-        })
-      }
-
-      const firstDataRow = 2
-      const idColumnRange = `${tabName}!A${firstDataRow}:A1000000`
-      const idColumnValues = await readValues({
-        accessToken,
-        spreadsheetId: sync.spreadsheetId,
-        range: idColumnRange
-      })
-      let foundRowNumber: number | null = null
-      for (let i = 0; i < idColumnValues.length; i++) {
-        const cellVal = idColumnValues[i]?.[0] ?? ''
-        if (cellVal === visitorId && visitorId !== '') {
-          foundRowNumber = firstDataRow + i
-          break
-        }
-      }
-
-      if (foundRowNumber != null) {
-        const existingRowRes = await readValues({
-          accessToken,
-          spreadsheetId: sync.spreadsheetId,
-          range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`
-        })
-        const existingRow: string[] = (existingRowRes[0] ?? []).map(
-          (value) => value ?? ''
-        )
-        const mergedRow = alignedRow.map((value, index) =>
-          value !== '' ? value : (existingRow[index] ?? '')
-        )
-
-        await updateRangeValues({
-          accessToken,
-          spreadsheetId: sync.spreadsheetId,
-          range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`,
-          values: [mergedRow]
-        })
-        return
-      }
-
-      await writeValues({
-        accessToken,
-        spreadsheetId: sync.spreadsheetId,
-        sheetTitle: tabName,
-        values: [alignedRow],
-        append: true
-      })
-    })
   )
-
-  // Log errors for any failed syncs
-  results.forEach((result, index) => {
-    if (result.status === 'rejected') {
-      const sync = syncs[index]
-      console.error(
-        `Failed to sync event to Google Sheet (spreadsheetId: ${sync.spreadsheetId}, sheetName: ${sync.sheetName}):`,
-        result.reason
-      )
-    }
-  })
 }

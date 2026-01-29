@@ -1,23 +1,3 @@
-input SignUpSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  name from the signUpBlock form
-  """
-  name: String!
-  """
-  email from the signUpBlock form
-  """
-  email: String!
-}
-
 type SignUpSubmissionEvent implements Event @shareable {
   id: ID!
   """
@@ -40,10 +20,4 @@ type SignUpSubmissionEvent implements Event @shareable {
   email from the signUpBlock form
   """
   email: String
-}
-
-extend type Mutation {
-  signUpSubmissionEventCreate(
-    input: SignUpSubmissionEventCreateInput!
-  ): SignUpSubmissionEvent!
 }

@@ -14,9 +14,6 @@ import { ChatOpenEventCreateInput } from './inputs'
 
 builder.mutationField('chatOpenEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     nullable: false,
     type: ChatOpenEventRef,
     args: {

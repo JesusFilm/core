@@ -54,7 +54,9 @@ export function ImageThumbnail({
       ) : (
         <Icon
           data-testid="imageThumbnailPlaceholder"
-          sx={{ color: 'secondary.light' }}
+          sx={{
+            color: 'secondary.light'
+          }}
         >
           {icon}
         </Icon>
