@@ -637,7 +637,7 @@ export function JourneyListContent({
                   >
                     <JourneyProvider
                       value={{
-                        // @ts-expect-error - JourneyFields types differ between journeys-admin and journeys/ui packages
+                        // @ts-ignore - JourneyFields types differ between journeys-admin and journeys/ui packages
                         journey: journey as unknown as JourneyFields,
                         variant: 'admin'
                       }}
