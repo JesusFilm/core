@@ -1,5 +1,7 @@
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -20,8 +22,6 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -68,12 +68,14 @@ function IndexPage(): ReactElement {
               <Typography variant="subtitle1">
                 {t('Create a New Journey')}
               </Typography>
-              {mdUp && <HelpScoutBeacon
-                userInfo={{
-                  name: user?.displayName ?? '',
-                  email: user?.email ?? ''
-                }}
-              />}
+              {mdUp && (
+                <HelpScoutBeacon
+                  userInfo={{
+                    name: user?.displayName ?? '',
+                    email: user?.email ?? ''
+                  }}
+                />
+              )}
             </>
           ) : undefined
         }

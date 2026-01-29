@@ -17,7 +17,7 @@ import {
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
   MOBILE_CONTAINER_PADDING
-} from './constants'  
+} from './constants'
 
 interface BeaconInitProps {
   loaded: boolean

@@ -4,8 +4,8 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
-import { ThemeProvider } from '../ThemeProvider'
 import { HelpScoutBeacon } from '../HelpScoutBeacon'
+import { ThemeProvider } from '../ThemeProvider'
 
 import { JourneyList } from '.'
 
@@ -31,13 +31,13 @@ jest.mock('../../libs/useAdminJourneysQuery', () => ({
   useAdminJourneysQuery: jest.fn()
 }))
 
-
 jest.mock('../HelpScoutBeacon/HelpScoutBeacon', () => ({
   HelpScoutBeacon: jest.fn()
 }))
 
-
-const mockHelpScoutBeacon = HelpScoutBeacon as jest.MockedFunction<typeof HelpScoutBeacon>
+const mockHelpScoutBeacon = HelpScoutBeacon as jest.MockedFunction<
+  typeof HelpScoutBeacon
+>
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockedUseAdminJourneysQuery =
   useAdminJourneysQuery as jest.MockedFunction<typeof useAdminJourneysQuery>

@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
+import { HelpScoutBeacon } from '../HelpScoutBeacon/HelpScoutBeacon'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 
 import { AddJourneyFab } from './AddJourneyFab'
@@ -12,8 +14,6 @@ import { JourneyListContent } from './JourneyListContent'
 import { JourneyListView } from './JourneyListView'
 import type { ContentType, JourneyStatusFilter } from './JourneyListView'
 import { SortOrder } from './JourneySort'
-import Stack from '@mui/material/Stack'
-import { HelpScoutBeacon } from '../HelpScoutBeacon/HelpScoutBeacon'
 
 export interface JourneyListProps {
   sortOrder?: SortOrder
@@ -118,13 +118,23 @@ export function JourneyList({
           sortOrder={sortOrder}
         />
       </Box>
-        <Stack direction="row" sx={{ zIndex: 3, gap: 2, justifyContent: 'flex-end', position: 'fixed', bottom: 16, right: 16 + 56}}>
+      <Stack
+        direction="row"
+        sx={{
+          zIndex: 3,
+          gap: 2,
+          justifyContent: 'flex-end',
+          position: 'fixed',
+          bottom: 16,
+          right: 16 + 56
+        }}
+      >
         {activeTab === 'active' && currentContentType === 'journeys' && (
           <>
             <AddJourneyFab />
           </>
         )}
-        </Stack>
+      </Stack>
     </>
   )
 }
