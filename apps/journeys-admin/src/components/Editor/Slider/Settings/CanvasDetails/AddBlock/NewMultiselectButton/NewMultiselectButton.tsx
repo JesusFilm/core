@@ -213,7 +213,7 @@ export function NewMultiselectButton(): ReactElement {
   const [multiselectWithButtonDelete] = useMutation(
     MULTISELECT_WITH_BUTTON_DELETE
   )
-  const [multiselectWithButtonRestore] = useMutation(
+  const [multiselectWithButtonRestore] = useMutation<MultiselectWithButtonRestore, MultiselectWithButtonRestoreVariables>(
     MULTISELECT_WITH_BUTTON_RESTORE
   )
   const { journey } = useJourney()
