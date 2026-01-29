@@ -697,6 +697,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
+  oauthStale: Boolean!
   user: User
 }
 

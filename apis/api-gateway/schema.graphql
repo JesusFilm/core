@@ -1835,6 +1835,7 @@ type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  
   type: IntegrationType!
   user: User
   accountEmail: String
+  oauthStale: Boolean! @join__field(graph: API_JOURNEYS) @join__field(graph: API_JOURNEYS_MODERN)
 }
 
 type IntegrationGrowthSpaces implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {

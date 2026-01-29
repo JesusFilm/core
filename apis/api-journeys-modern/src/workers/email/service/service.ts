@@ -10,6 +10,7 @@ import {
 import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 
+import { GoogleReconnectEmail } from '../../../emails/templates/GoogleReconnect'
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../../emails/templates/JourneyShared'
 import { JourneySharedNoAccountEmail } from '../../../emails/templates/JourneyShared/JourneySharedNoAccount'
@@ -21,6 +22,7 @@ import { env } from '../../../env'
 
 import {
   ApiJourneysJob,
+  GoogleReconnectJob,
   JourneyAccessRequest,
   JourneyEditInviteJob,
   JourneyRequestApproved,
@@ -84,6 +86,9 @@ export async function service(job: Job<ApiJourneysJob>): Promise<void> {
       break
     case 'journey-access-request':
       await journeyAccessRequest(job as Job<JourneyAccessRequest>)
+      break
+    case 'google-reconnect':
+      await googleReconnectEmail(job as Job<GoogleReconnectJob>)
       break
   }
 }
@@ -464,4 +469,59 @@ export async function journeyEditInvite(
       text
     })
   }
+}
+
+export async function googleReconnectEmail(
+  job: Job<GoogleReconnectJob>
+): Promise<void> {
+  const { data } = await apollo.query({
+    query: GET_USER,
+    variables: { userId: job.data.userId }
+  })
+
+  if (data.user == null) throw new Error('User not found')
+
+  // check recipient preferences
+  const preferences = await prisma.journeysEmailPreference.findFirst({
+    where: {
+      email: data.user.email
+    }
+  })
+  // do not send email if account notifications are disabled
+  if (
+    preferences?.accountNotifications === false ||
+    preferences?.unsubscribeAll === true
+  )
+    return
+
+  // Construct URL to the integration details page where user can reconnect
+  const reconnectUrl = `${env.JOURNEYS_ADMIN_URL}/teams/${job.data.teamId}/integrations/${job.data.integrationId}`
+
+  const html = await render(
+    GoogleReconnectEmail({
+      teamName: job.data.teamName,
+      accountEmail: job.data.accountEmail,
+      reconnectUrl,
+      recipient: data.user
+    })
+  )
+
+  const text = await render(
+    GoogleReconnectEmail({
+      teamName: job.data.teamName,
+      accountEmail: job.data.accountEmail,
+      reconnectUrl,
+      recipient: data.user
+    }),
+    {
+      plainText: true
+    }
+  )
+
+  await sendEmail({
+    to: data.user.email,
+    subject: `Action required: Reconnect your Google account for ${job.data.teamName}`,
+    text,
+    html
+  })
 }

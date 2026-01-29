@@ -557,6 +557,11 @@ export interface IntegrationGoogleCreateInput {
   redirectUri: string;
 }
 
+export interface IntegrationGoogleUpdateInput {
+  code: string;
+  redirectUri: string;
+}
+
 export interface IntegrationGrowthSpacesCreateInput {
   accessId: string;
   accessSecret: string;

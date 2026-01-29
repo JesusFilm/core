@@ -8,6 +8,7 @@ export type ApiJourneysJob =
   | JourneyAccessRequest
   | TeamInviteAccepted
   | TeamRemoved
+  | GoogleReconnectJob
 
 export type Journey = Prisma.JourneyGetPayload<{
   include: {
@@ -68,6 +69,14 @@ export type TeamWithUserTeam = Prisma.TeamGetPayload<{
     userTeams: true
   }
 }>
+
+export interface GoogleReconnectJob {
+  userId: string
+  teamId: string
+  teamName: string
+  integrationId: string
+  accountEmail?: string
+}
 
 export interface VerifyUserJob {
   userId: string

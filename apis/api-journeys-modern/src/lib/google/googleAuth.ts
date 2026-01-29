@@ -6,6 +6,17 @@ import { decryptSymmetric } from '@core/yoga/crypto'
 import { env } from '../../env'
 import { logger } from '../../logger'
 
+// Email queue for sending Google reconnect notifications
+let emailQueue: any
+try {
+  if (process.env.NODE_ENV !== 'test') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    emailQueue = require('../../workers/email/queue').queue
+  }
+} catch {
+  emailQueue = null
+}
+
 export interface GoogleAuthResult {
   accessToken: string
   accountEmail?: string | null
@@ -22,6 +33,62 @@ interface RefreshGoogleTokenContext {
   integrationId?: string
   teamId?: string
   [key: string]: unknown
+}
+
+/**
+ * Marks the integration as having stale OAuth credentials and sends an email notification
+ * to the user to reconnect their Google account.
+ */
+async function handleStaleOAuth(
+  integrationId: string,
+  teamId: string,
+  accountEmail?: string | null
+): Promise<void> {
+  try {
+    // Mark the integration as stale
+    const integration = await prisma.integration.update({
+      where: { id: integrationId },
+      data: { oauthStale: true },
+      include: { team: true }
+    })
+
+    // If there's no userId, we can't send an email
+    if (integration.userId == null) {
+      logger.warn(
+        { integrationId, teamId },
+        'Cannot send Google reconnect email: no userId on integration'
+      )
+      return
+    }
+
+    // Queue email notification if queue is available
+    if (emailQueue != null) {
+      await emailQueue.add(
+        'google-reconnect',
+        {
+          userId: integration.userId,
+          teamId,
+          teamName: integration.team.title,
+          integrationId,
+          accountEmail: accountEmail ?? undefined
+        },
+        {
+          jobId: `google-reconnect-${integrationId}`,
+          removeOnComplete: true,
+          removeOnFail: { age: 24 * 60 * 60, count: 50 }
+        }
+      )
+    }
+  } catch (error) {
+    logger.error(
+      {
+        integrationId,
+        teamId,
+        error: error instanceof Error ? error.message : String(error)
+      },
+      'Failed to handle stale OAuth'
+    )
+  }
 }
 
 async function refreshGoogleToken(
@@ -90,6 +157,15 @@ async function refreshGoogleToken(
       errorDetails,
       'Failed to refresh Google OAuth token, falling back to treating secret as access token'
     )
+
+    // Mark the integration as stale and send email notification
+    if (context?.integrationId != null && context?.teamId != null) {
+      await handleStaleOAuth(
+        context.integrationId,
+        context.teamId,
+        integration.accountEmail
+      )
+    }
   }
 
   // Fallback: treat secret as access_token
@@ -129,6 +205,7 @@ export async function getIntegrationGoogleAccessToken(
   const integration = await prisma.integration.findUnique({
     where: { id: integrationId },
     select: {
+      teamId: true,
       accessSecretCipherText: true,
       accessSecretIv: true,
       accessSecretTag: true,
@@ -141,6 +218,7 @@ export async function getIntegrationGoogleAccessToken(
   }
 
   return refreshGoogleToken(integration, 'Google integration not found', {
-    integrationId
+    integrationId,
+    teamId: integration.teamId
   })
 }

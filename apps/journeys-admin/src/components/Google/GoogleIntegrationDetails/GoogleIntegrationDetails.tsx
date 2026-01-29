@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -16,17 +17,30 @@ import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 
 import { GoogleIntegrationDeleteSyncDialog } from './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog'
 import { GoogleIntegrationRemoveDialog } from './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog'
+
+export const INTEGRATION_GOOGLE_UPDATE = gql`
+  mutation IntegrationGoogleUpdate(
+    $id: ID!
+    $input: IntegrationGoogleUpdateInput!
+  ) {
+    integrationGoogleUpdate(id: $id, input: $input) {
+      id
+    }
+  }
+`
 
 export const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
   query GoogleSheetsSyncsByIntegration($filter: GoogleSheetsSyncsFilter!) {
@@ -64,9 +78,13 @@ interface GoogleSheetsSyncsByIntegrationQuery {
 
 export function GoogleIntegrationDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
   const integrationId = router.query.integrationId
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false)
+  const [code, setCode] = useState<string | undefined>()
+  const [redirectUri, setRedirectUri] = useState<string | undefined>()
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { data, loading: integrationLoading } = useIntegrationQuery({
     teamId: router.query.teamId as string
@@ -80,6 +98,8 @@ export function GoogleIntegrationDetails(): ReactElement {
         }
       : undefined
   )
+
+  const [integrationGoogleUpdate] = useMutation(INTEGRATION_GOOGLE_UPDATE)
 
   const { data: syncsData, loading: syncsLoading } =
     useQuery<GoogleSheetsSyncsByIntegrationQuery>(
@@ -142,8 +162,91 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   const canManageSyncs = isIntegrationOwner || isTeamManager
 
+  // Check if the OAuth is stale (token refresh has failed)
+  const isOAuthStale =
+    integrationOwner?.__typename === 'IntegrationGoogle' &&
+    integrationOwner.oauthStale === true
+
+  const staticRedirectUri = useMemo(() => {
+    if (typeof window === 'undefined') return undefined
+    const origin = window.location.origin
+    return `${origin}/api/integrations/google/callback`
+  }, [])
+
+  const oauthUrl = useMemo(() => {
+    if (typeof router.query.teamId !== 'string') return undefined
+    return getGoogleOAuthUrl(router.query.teamId, window.location.pathname)
+  }, [router.query.teamId])
+
+  async function handleClick(): Promise<void> {
+    if (typeof integrationId !== 'string') return
+
+    try {
+      setLoading(true)
+      const { data } = await integrationGoogleUpdate({
+        variables: {
+          id: integrationId,
+          input: {
+            code,
+            redirectUri
+          }
+        }
+      })
+      if (data?.integrationGoogleUpdate?.id != null) {
+        enqueueSnackbar(t('Google settings saved'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      } else {
+        enqueueSnackbar(
+          t('Google settings failed. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    const authCode = router.query.code as string | undefined
+    if (authCode != null && staticRedirectUri != null) {
+      setCode(authCode)
+      setRedirectUri(staticRedirectUri)
+      void handleClick()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.query.code, staticRedirectUri])
+
+  useEffect(() => {
+    const selectedIntegration = data?.integrations.find(
+      (integration) => integration.id === integrationId
+    )
+    if (selectedIntegration != null) {
+      setCode(undefined)
+      setRedirectUri(undefined)
+    }
+  }, [data?.integrations, integrationId])
+
   return (
     <Stack gap={4}>
+      {isOAuthStale && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {t(
+            'Your Google account authorization has expired. Please reconnect your Google account to resume syncing.'
+          )}
+        </Alert>
+      )}
       <Stack>
         {data?.integrations
           .filter((i) => i.id === integrationId)
@@ -152,22 +255,34 @@ export function GoogleIntegrationDetails(): ReactElement {
               <Typography variant="body1" component="span">
                 {t('Connected Google Account')}
               </Typography>
-              {
-                // @ts-expect-error union narrowing not applied
-                i.accountEmail ?? t('Unknown')
-              }
+              {i.__typename === 'IntegrationGoogle'
+                ? (i.accountEmail ?? t('Unknown'))
+                : t('Unknown')}
             </Stack>
           ))}
       </Stack>
-      <Stack direction="row" justifyContent="flex-end">
+      <Stack direction="row" justifyContent="flex-end" gap={2}>
+        <Button
+          variant="outlined"
+          href={oauthUrl}
+          disabled={
+            oauthUrl == null ||
+            loading ||
+            integrationLoading ||
+            isIntegrationOwner !== true
+          }
+          aria-label={t('Reconnect with Google')}
+        >
+          {t('Reconnect with Google')}
+        </Button>
         <Button
           onClick={() => setConfirmOpen(true)}
-          disabled={integrationLoading || !canManageSyncs}
+          disabled={loading || integrationLoading || !canManageSyncs}
         >
           {t('Remove')}
         </Button>
       </Stack>
-      {/* <Stack gap={4}>
+      <Stack gap={4}>
         <Typography variant="h6">{t('Google Sheets Syncs')}</Typography>
         {syncsLoading ? (
           <Box
@@ -440,7 +555,7 @@ export function GoogleIntegrationDetails(): ReactElement {
             </Stack>
           </>
         )}
-      </Stack> */}
+      </Stack>
 
       <GoogleIntegrationRemoveDialog
         open={confirmOpen}

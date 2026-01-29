@@ -54,16 +54,20 @@ describe('GoogleIntegrationDetails', () => {
     canManageSyncs = true,
     integrations = [
       {
+        __typename: 'IntegrationGoogle' as const,
         id: 'integrationId',
         accountEmail: 'user@example.com',
+        oauthStale: false,
         user: { id: 'userId' }
       }
     ]
   }: {
     canManageSyncs?: boolean
     integrations?: Array<{
+      __typename?: 'IntegrationGoogle'
       id: string
       accountEmail?: string
+      oauthStale?: boolean
       user?: { id: string }
     }>
   }): void {
@@ -116,7 +120,19 @@ describe('GoogleIntegrationDetails', () => {
   })
 
   it('disables remove button when user cannot manage syncs', () => {
-    setupMocks({ canManageSyncs: false })
+    // User is not the integration owner (different userId) and not a team manager
+    setupMocks({
+      canManageSyncs: false,
+      integrations: [
+        {
+          __typename: 'IntegrationGoogle' as const,
+          id: 'integrationId',
+          accountEmail: 'user@example.com',
+          oauthStale: false,
+          user: { id: 'differentUserId' } // Different user owns this integration
+        }
+      ]
+    })
 
     const { getByRole } = render(
       <MockedProvider mocks={[]}>
