@@ -69,6 +69,11 @@ export function PageWrapper({
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
 
+  const userInfo = {
+    name: user?.displayName ?? '',
+    email: user?.email ?? ''
+  }
+
   return (
     <PageProvider initialState={initialState}>
       <Box
@@ -126,7 +131,7 @@ export function PageWrapper({
                     zIndex: (theme) => theme.zIndex.modal + 3
                   }}
                 >
-                  <HelpScoutBeacon variant="fab" />
+                  <HelpScoutBeacon variant="fab" userInfo={userInfo}/>
                 </Box>
               </>
             )}
