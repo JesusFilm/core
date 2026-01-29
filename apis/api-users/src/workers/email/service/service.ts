@@ -6,12 +6,14 @@ import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
 
 import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
+import { type AppType } from '../../../schema/user/enums/app'
 
 export interface VerifyUserJob {
   userId: string
   email: string
   token: string
   redirect: string | undefined
+  app?: AppType
 }
 
 export async function service(
@@ -43,11 +45,35 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
+
+  let from: string | undefined
+  let subject: string
+  let logo: AppType
+
+  switch (job.data?.app ?? 'NextSteps') {
+    case 'JesusFilmApp':
+      from = '"Jesus Film App Support" <no-reply@jesusfilm.org>'
+      subject = 'Verify your email address on Jesus Film App'
+      logo = 'JesusFilmApp'
+      break
+    case 'NextSteps':
+      from = '"Next Steps Support" <support@nextstep.is>'
+      subject = 'Verify your email address on Next Steps'
+      logo = 'NextSteps'
+      break
+    default:
+      from = '"Next Steps Support" <support@nextstep.is>'
+      subject = 'Verify your email address on Next Steps'
+      logo = 'NextSteps'
+      break
+  }
+
   const html = await render(
     EmailVerifyEmail({
       token: job.data.token,
       recipient,
-      inviteLink: url
+      inviteLink: url,
+      logo
     })
   )
 
@@ -55,7 +81,8 @@ export async function service(
     EmailVerifyEmail({
       token: job.data.token,
       recipient,
-      inviteLink: url
+      inviteLink: url,
+      logo
     }),
     {
       plainText: true
@@ -65,9 +92,10 @@ export async function service(
   await sendEmail(
     {
       to: job.data.email,
-      subject: 'Verify your email address on Next Steps',
+      subject,
       text,
-      html
+      html,
+      from
     },
     logger
   )

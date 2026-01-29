@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum App {
+  JesusFilmApp = "JesusFilmApp",
+  NextSteps = "NextSteps"
+}
+
 export enum BlockEventLabel {
   custom1 = "custom1",
   custom2 = "custom2",
@@ -469,6 +474,7 @@ export interface ChatOpenEventCreateInput {
 
 export interface CreateVerificationRequestInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface CustomDomainCreateInput {
@@ -729,6 +735,7 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface MultiselectBlockCreateInput {
