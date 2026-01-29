@@ -1,5 +1,6 @@
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -13,10 +14,10 @@ import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
-import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
@@ -26,6 +27,8 @@ function IndexPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
+  const theme = useTheme()
+  const mdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
@@ -58,21 +61,7 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
-        sidePanelTitle={
-          showSidePanel ? (
-            <>
-              <Typography variant="subtitle1">
-                {t('Create a New Journey')}
-              </Typography>
-              <HelpScoutBeacon
-                userInfo={{
-                  name: user?.displayName ?? '',
-                  email: user?.email ?? ''
-                }}
-              />
-            </>
-          ) : undefined
-        }
+        sidePanelTitle={showSidePanel ? <SidePanelTitle /> : undefined}
       >
         <JourneyList user={user} />
       </PageWrapper>
