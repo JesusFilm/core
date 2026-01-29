@@ -66,6 +66,7 @@ jobs:
     strategy:
       matrix:
         node-version: [22]
+    timeout-minutes: 20
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -113,7 +114,7 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         with:
-          targets: fetch-secrets, extract-translations, build
+          targets: ${{ inputs.name == 'cms' && 'fetch-secrets' || 'fetch-secrets, extract-translations, build' }}
           projects: ${{ inputs.name }}
           args: --c=production
       - name: upload sourcemaps to datadog
@@ -134,10 +135,11 @@ jobs:
         id: login-ecr-ecs
         uses: aws-actions/amazon-ecr-login@v2
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: useblacksmith/setup-docker-builder@v1
+
       - name: Build and push Docker image to Amazon ECR
         id: build-image-ecs
-        uses: docker/build-push-action@v6
+        uses: useblacksmith/build-push-action@v2
         with:
           context: .
           file: apps/${{ inputs.name }}/Dockerfile
