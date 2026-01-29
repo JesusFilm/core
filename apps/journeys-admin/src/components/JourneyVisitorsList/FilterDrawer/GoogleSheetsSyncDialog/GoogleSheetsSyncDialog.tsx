@@ -30,7 +30,7 @@ import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { KeyboardEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -163,7 +163,6 @@ export function GoogleSheetsSyncDialog({
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
   const [pickerActive, setPickerActive] = useState(false)
-  const hasAutoOpenedAddSyncDialogRef = useRef(false)
 
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
@@ -235,8 +234,6 @@ export function GoogleSheetsSyncDialog({
     // Skip if we're already handling integration creation return flow
     const integrationCreated = router.query.integrationCreated === 'true'
     if (integrationCreated) return
-    // Only auto-open once (avoid re-opening if user closes it)
-    if (hasAutoOpenedAddSyncDialogRef.current) return
 
     // If there are no active or history syncs, open the add dialog directly
     if (activeSyncs.length === 0 && historySyncs.length === 0) {
