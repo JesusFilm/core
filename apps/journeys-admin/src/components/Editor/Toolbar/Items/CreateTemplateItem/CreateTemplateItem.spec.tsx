@@ -39,16 +39,14 @@ describe('CreateTemplateItem', () => {
   it('should create a global template on menu card click', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyTemplate: {
-            id: 'templateId',
-            template: true
-          }
+    const result = jest.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
         }
       }
-    })
+    }))
     const journeyDuplicateMock = jest.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
@@ -136,16 +134,14 @@ describe('CreateTemplateItem', () => {
   it('should create a global template on menu card click with journey from props', async () => {
     const push = jest.fn()
     mockUseRouter.mockReturnValue({ push } as unknown as NextRouter)
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyTemplate: {
-            id: 'templateId',
-            template: true
-          }
+    const result = jest.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
         }
       }
-    })
+    }))
     const journeyDuplicateMock = jest.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
@@ -235,16 +231,14 @@ describe('CreateTemplateItem', () => {
       pathname: '/',
       query
     } as unknown as NextRouter)
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyTemplate: {
-            id: 'templateId',
-            template: true
-          }
+    const result = jest.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
         }
       }
-    })
+    }))
     const journeyDuplicateMock = jest.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
@@ -365,16 +359,14 @@ describe('CreateTemplateItem', () => {
       pathname: '/',
       query
     } as unknown as NextRouter)
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyTemplate: {
-            id: 'templateId',
-            template: true
-          }
+    const result = jest.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
         }
       }
-    })
+    }))
     const journeyDuplicateMock = jest.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
@@ -484,16 +476,14 @@ describe('CreateTemplateItem', () => {
       push,
       pathname: '/journeys/[journeyId]'
     } as unknown as NextRouter)
-    const result = jest.fn(() => {
-      return {
-        data: {
-          journeyTemplate: {
-            id: 'templateId',
-            template: true
-          }
+    const result = jest.fn(() => ({
+      data: {
+        journeyTemplate: {
+          id: 'templateId',
+          template: true
         }
       }
-    })
+    }))
     const journeyDuplicateMock = jest.fn().mockResolvedValue({
       data: {
         journeyDuplicate: {
