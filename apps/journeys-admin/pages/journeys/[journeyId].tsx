@@ -167,7 +167,7 @@ export const getServerSideProps = withUserTokenSSR({
       variables: { id: data.journey?.id }
     })
   } catch (error) {
-    console.log("test")
+    console.log('test')
     if (error.message === 'journey not found') {
       return {
         redirect: {
