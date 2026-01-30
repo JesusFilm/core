@@ -109,6 +109,7 @@ builder.mutationField('googleSheetsSyncBackfill', (t) =>
             integrationId: sync.integrationId
           },
           {
+            jobId: `backfill-${sync.id}`,
             attempts: 3,
             backoff: {
               type: 'exponential',

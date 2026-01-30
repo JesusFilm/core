@@ -5,5 +5,9 @@ export const logger = pino({
     level(level) {
       return { level }
     }
+  },
+  serializers: {
+    err: pino.stdSerializers.err,
+    error: pino.stdSerializers.err
   }
 }).child({ service: 'api-journeys-modern' })
