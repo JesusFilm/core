@@ -30,6 +30,7 @@ import type { MultiselectBlockCreate } from '../../../../../../../../__generated
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
+import { MultiselectWithButtonRestore, MultiselectWithButtonRestoreVariables } from '../../../../../../../../__generated__/MultiselectWithButtonRestore'
 
 export const MULTISELECT_BLOCK_CREATE = gql`
   ${MULTISELECT_QUESTION_FIELDS}
@@ -462,28 +463,22 @@ export function NewMultiselectButton(): ReactElement {
               endIconId: blocks.buttonBlock.endIconId as string
             },
             optimisticResponse: {
-              multiselect: blocks.multiselectBlock,
-              option1: blocks.option1,
-              option2: blocks.option2,
-              button: blocks.buttonBlock,
-              startIcon: {
+              multiselect: [blocks.multiselectBlock],
+              option1: [blocks.option1],
+              option2: [blocks.option2],
+              button: [blocks.buttonBlock],
+              startIcon: [{
                 id: blocks.buttonBlock.startIconId as string,
                 parentBlockId: blocks.buttonBlock.id,
                 parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
                 __typename: 'IconBlock'
-              },
-              endIcon: {
+              }],
+              endIcon: [{
                 id: blocks.buttonBlock.endIconId as string,
                 parentBlockId: blocks.buttonBlock.id,
                 parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
                 __typename: 'IconBlock'
-              }
+              }]
             },
             update(cache, { data }) {
               if (data == null) return
