@@ -10,18 +10,22 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
 
 interface DuplicateJourneyMenuItemProps {
   id?: string
   handleCloseMenu: () => void
+  journey?: Journey
   fromTemplateId?: string | null
 }
 
 export function DuplicateJourneyMenuItem({
   id,
   handleCloseMenu,
+  journey,
   fromTemplateId
 }: DuplicateJourneyMenuItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -116,6 +120,7 @@ export function DuplicateJourneyMenuItem({
           setOpen(false)
         }}
         submitAction={handleDuplicateJourney}
+        journey={journey as unknown as JourneyFields}
       />
     </>
   )
