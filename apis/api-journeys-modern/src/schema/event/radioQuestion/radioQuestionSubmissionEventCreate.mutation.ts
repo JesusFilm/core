@@ -10,9 +10,6 @@ import { RadioQuestionSubmissionEventRef } from './radioQuestionSubmissionEvent'
 
 builder.mutationField('radioQuestionSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     nullable: false,
     type: RadioQuestionSubmissionEventRef,
     args: {

@@ -76,7 +76,6 @@ const VariantTemplate: VariantStory = {
   )
 }
 
-// Add ArrowBackRounded, ChevronLeftRounded
 export const Variant = {
   ...VariantTemplate,
   args: {
@@ -84,25 +83,35 @@ export const Variant = {
     iconColor: null,
     iconSize: IconSize.lg,
     variants: [
-      IconName.ArrowForwardRounded,
       IconName.ArrowBackRounded,
+      IconName.ArrowForwardRounded,
+      IconName.ArrowLeftContained2,
+      IconName.ArrowRightContained2,
       IconName.BeenhereRounded,
       IconName.ChatBubbleOutlineRounded,
       IconName.CheckCircleRounded,
-      IconName.ChevronRightRounded,
       IconName.ChevronLeftRounded,
+      IconName.ChevronRightRounded,
       IconName.ContactSupportRounded,
       IconName.FormatQuoteRounded,
+      IconName.Home4,
+      IconName.Launch,
+      IconName.LinkAngled,
       IconName.LiveTvRounded,
       IconName.LockOpenRounded,
+      IconName.MailOutline,
       IconName.MenuBookRounded,
+      IconName.MessageChat1,
+      IconName.Note2,
+      IconName.Phone,
       IconName.PlayArrowRounded,
       IconName.RadioButtonUncheckedRounded,
       IconName.SendRounded,
       IconName.SubscriptionsRounded,
       IconName.TranslateRounded,
-      IconName.Launch,
-      IconName.MailOutline
+      IconName.UserProfile2,
+      IconName.UsersProfiles3,
+      IconName.Volume5
     ],
     language: {
       __typename: 'Language',
@@ -148,7 +157,7 @@ export const Color = {
   ...ColorTemplate,
   args: {
     __typename: 'IconBlock',
-    iconName: IconName.CheckCircleRounded,
+    iconName: IconName.ChevronLeftRounded,
     iconSize: IconSize.lg,
     variants: [
       IconColor.inherit,
@@ -190,7 +199,7 @@ export const Size = {
   args: {
     id: 'icon',
     __typename: 'IconBlock',
-    iconName: IconName.CheckCircleRounded,
+    iconName: IconName.ChevronLeftRounded,
     iconColor: null,
     variants: [
       IconSize.inherit,

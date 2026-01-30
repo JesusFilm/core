@@ -5,14 +5,13 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 
-import { Align } from './Align'
+import { Align, getAlignIcon } from './Align'
 import { Color } from './Color'
 import { Variant } from './Variant'
 
@@ -72,7 +71,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
 
           <Accordion
             id={`${id}-typography-alignment`}
-            icon={<AlignLeftIcon />}
+            icon={getAlignIcon(align)}
             name={t('Text Alignment')}
             value={capitalize(align?.toString() ?? 'Left')}
           >

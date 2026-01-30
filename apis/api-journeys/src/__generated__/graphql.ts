@@ -393,6 +393,28 @@ export type ChatOpenEventCreateInput = {
   value?: InputMaybe<MessagePlatform>;
 };
 
+export type CheckVideoInAlgoliaMismatch = {
+  __typename?: 'CheckVideoInAlgoliaMismatch';
+  actual?: Maybe<Scalars['String']['output']>;
+  expected?: Maybe<Scalars['String']['output']>;
+  field?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoInAlgoliaResult = {
+  __typename?: 'CheckVideoInAlgoliaResult';
+  error?: Maybe<Scalars['String']['output']>;
+  mismatches?: Maybe<Array<CheckVideoInAlgoliaMismatch>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+  recordUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoVariantsInAlgoliaResult = {
+  __typename?: 'CheckVideoVariantsInAlgoliaResult';
+  browseUrl?: Maybe<Scalars['String']['output']>;
+  missingVariants?: Maybe<Array<Scalars['String']['output']>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
@@ -857,6 +879,8 @@ export enum IconColor {
 export enum IconName {
   ArrowBackRounded = 'ArrowBackRounded',
   ArrowForwardRounded = 'ArrowForwardRounded',
+  ArrowLeftContained2 = 'ArrowLeftContained2',
+  ArrowRightContained2 = 'ArrowRightContained2',
   BeenhereRounded = 'BeenhereRounded',
   ChatBubbleOutlineRounded = 'ChatBubbleOutlineRounded',
   CheckCircleRounded = 'CheckCircleRounded',
@@ -864,16 +888,24 @@ export enum IconName {
   ChevronRightRounded = 'ChevronRightRounded',
   ContactSupportRounded = 'ContactSupportRounded',
   FormatQuoteRounded = 'FormatQuoteRounded',
+  Home4 = 'Home4',
   Launch = 'Launch',
+  LinkAngled = 'LinkAngled',
   LiveTvRounded = 'LiveTvRounded',
   LockOpenRounded = 'LockOpenRounded',
   MailOutline = 'MailOutline',
   MenuBookRounded = 'MenuBookRounded',
+  MessageChat1 = 'MessageChat1',
+  Note2 = 'Note2',
+  Phone = 'Phone',
   PlayArrowRounded = 'PlayArrowRounded',
   RadioButtonUncheckedRounded = 'RadioButtonUncheckedRounded',
   SendRounded = 'SendRounded',
   SubscriptionsRounded = 'SubscriptionsRounded',
-  TranslateRounded = 'TranslateRounded'
+  TranslateRounded = 'TranslateRounded',
+  UserProfile2 = 'UserProfile2',
+  UsersProfiles3 = 'UsersProfiles3',
+  Volume5 = 'Volume5'
 }
 
 export enum IconSize {
@@ -1520,6 +1552,8 @@ export type JourneysQueryOptions = {
   hostname?: InputMaybe<Scalars['String']['input']>;
   /** limit results to journeys in a journey collection (currently only available when using hostname option) */
   journeyCollection?: InputMaybe<Scalars['Boolean']['input']>;
+  /** skip custom domain routing filter (for admin template customization) */
+  skipRoutingFilter?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum JourneysReportType {
@@ -1888,6 +1922,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
+  updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2731,6 +2767,16 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3633,6 +3679,8 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  checkVideoInAlgolia: CheckVideoInAlgoliaResult;
+  checkVideoVariantsInAlgolia: CheckVideoVariantsInAlgoliaResult;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -3800,6 +3848,16 @@ export type QueryBlockArgs = {
 
 export type QueryBlocksArgs = {
   where?: InputMaybe<BlocksFilter>;
+};
+
+
+export type QueryCheckVideoInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type QueryCheckVideoVariantsInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -4322,14 +4380,10 @@ export type RadioQuestionSubmissionEvent = Event & {
 
 export type RadioQuestionSubmissionEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
   radioOptionBlockId: Scalars['ID']['input'];
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** label of the selected radioOption block */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -4460,13 +4514,9 @@ export type SignUpSubmissionEvent = Event & {
 
 export type SignUpSubmissionEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** email from the signUpBlock form */
   email: Scalars['String']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** name from the signUpBlock form */
   name: Scalars['String']['input'];
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4824,7 +4874,7 @@ export type TextResponseSubmissionEvent = Event & {
   /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  /** ID of the journey that the buttonBlock belongs to */
+  /** ID of the journey that the TextResponseBlock belongs to */
   journeyId: Scalars['ID']['output'];
   /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
@@ -4834,13 +4884,9 @@ export type TextResponseSubmissionEvent = Event & {
 
 export type TextResponseSubmissionEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** response from the TextResponseBlock form */
   value: Scalars['String']['input'];
 };
 
