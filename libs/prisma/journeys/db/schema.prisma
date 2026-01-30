@@ -631,6 +631,7 @@ model Block {
   max                        Int?
   settings                   Json                 @default("{ }") // block settings
   exportOrder                Int? // column order for CSV exports and Google Sheets syncs
+  customizable               Boolean?
 
   @@unique([slug, journeyId])
   @@index(journeyId)

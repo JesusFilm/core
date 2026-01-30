@@ -37,6 +37,9 @@ Find a frontend implementation at https://github.com/woltapp/blurhash
     }),
     scale: t.exposeInt('scale', {
       nullable: true
+    }),
+    customizable: t.exposeBoolean('customizable', {
+      nullable: true
     })
   })
 })

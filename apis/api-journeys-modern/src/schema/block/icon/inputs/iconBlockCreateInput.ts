@@ -14,6 +14,7 @@ export const IconBlockCreateInput = builder.inputType('IconBlockCreateInput', {
     journeyId: t.id({ required: true }),
     name: t.field({ type: IconName, required: false }),
     color: t.field({ type: IconColor, required: false }),
-    size: t.field({ type: IconSize, required: false })
+    size: t.field({ type: IconSize, required: false }),
+    customizable: t.boolean({ required: false })
   })
 })

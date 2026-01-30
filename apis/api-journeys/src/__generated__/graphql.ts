@@ -842,6 +842,7 @@ export type HostUpdateInput = {
 export type IconBlock = Block & {
   __typename?: 'IconBlock';
   color?: Maybe<IconColor>;
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   name?: Maybe<IconName>;
@@ -852,6 +853,7 @@ export type IconBlock = Block & {
 
 export type IconBlockCreateInput = {
   color?: InputMaybe<IconColor>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -862,6 +864,7 @@ export type IconBlockCreateInput = {
 
 export type IconBlockUpdateInput = {
   color?: InputMaybe<IconColor>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<IconName>;
   size?: InputMaybe<IconSize>;
 };
@@ -934,6 +937,7 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
@@ -950,6 +954,7 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -968,6 +973,7 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -5306,6 +5312,7 @@ export type VideoBlock = Block & {
   /** action that should be performed when the video ends */
   action?: Maybe<Action>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field
@@ -5381,6 +5388,7 @@ export type VideoBlock = Block & {
 
 export type VideoBlockCreateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   endAt?: InputMaybe<Scalars['Int']['input']>;
@@ -5439,6 +5447,7 @@ export enum VideoBlockSource {
 
 export type VideoBlockUpdateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   endAt?: InputMaybe<Scalars['Int']['input']>;

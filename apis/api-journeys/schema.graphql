@@ -786,6 +786,7 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
+  customizable: Boolean @shareable
 }
 
 input IconBlockCreateInput {
@@ -798,12 +799,14 @@ input IconBlockCreateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  customizable: Boolean
 }
 
 input IconBlockUpdateInput {
   name: IconName
   color: IconColor
   size: IconSize
+  customizable: Boolean
 }
 
 type ImageBlock implements Block
@@ -826,6 +829,7 @@ type ImageBlock implements Block
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+  customizable: Boolean @shareable
 }
 
 input ImageBlockCreateInput {
@@ -852,6 +856,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -868,6 +873,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 type MultiselectBlock implements Block
@@ -1322,6 +1328,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit @shareable
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
+  customizable: Boolean @shareable
 }
 
 """
