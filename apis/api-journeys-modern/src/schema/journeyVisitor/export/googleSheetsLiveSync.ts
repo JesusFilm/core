@@ -203,12 +203,16 @@ export async function appendEventToGoogleSheets({
           sheetTitle: tabName
         })
 
+        // Read both header rows: Row 1 = display labels, Row 2 = blockId keys
         const existingHeaderRows = await readValues({
           accessToken,
           spreadsheetId: sync.spreadsheetId,
-          range: `${tabName}!A1:ZZ1`
+          range: `${tabName}!A1:ZZ2`
         })
         const existingHeaderRow: string[] = (existingHeaderRows[0] ?? []).map(
+          (value: unknown) => (value ?? '') as string
+        )
+        const existingBlockIdRow: string[] = (existingHeaderRows[1] ?? []).map(
           (value: unknown) => (value ?? '') as string
         )
 
@@ -220,6 +224,7 @@ export async function appendEventToGoogleSheets({
           columns: updatedColumns,
           desiredHeaderKeys: updatedDesiredHeaderKeys,
           existingHeaderRowLabels: existingHeaderRow,
+          existingBlockIdRow,
           userTimezone: syncTimezone,
           getCardHeading: getCardHeadingForSync,
           baseColumnLabelResolver: resolveBaseColumnLabel
@@ -255,9 +260,12 @@ export async function appendEventToGoogleSheets({
         })
 
         const lastColA1 = columnIndexToA1(headerWriteWidth - 1)
-        const headerRange = `${tabName}!A1:${lastColA1}1`
+        const headerRange = `${tabName}!A1:${lastColA1}2`
         const sanitizedHeaderRow = mergedHeader.finalHeaderRowLabels.map(
           (cell) => sanitizeGoogleSheetsCell(cell ?? '')
+        )
+        const sanitizedBlockIdRow = mergedHeader.finalBlockIdRow.map((cell) =>
+          sanitizeGoogleSheetsCell(cell ?? '')
         )
 
         const existingHeaderRowPadded =
@@ -270,10 +278,24 @@ export async function appendEventToGoogleSheets({
                 }).map(() => '')
               ]
 
+        const existingBlockIdRowPadded =
+          existingBlockIdRow.length >= sanitizedBlockIdRow.length
+            ? existingBlockIdRow
+            : [
+                ...existingBlockIdRow,
+                ...Array.from({
+                  length: sanitizedBlockIdRow.length - existingBlockIdRow.length
+                }).map(() => '')
+              ]
+
         const headerChanged =
           existingHeaderRowPadded.length !== sanitizedHeaderRow.length ||
           sanitizedHeaderRow.some(
             (cell, index) => cell !== (existingHeaderRowPadded[index] ?? '')
+          ) ||
+          existingBlockIdRowPadded.length !== sanitizedBlockIdRow.length ||
+          sanitizedBlockIdRow.some(
+            (cell, index) => cell !== (existingBlockIdRowPadded[index] ?? '')
           )
 
         if (headerChanged) {
@@ -281,12 +303,13 @@ export async function appendEventToGoogleSheets({
             accessToken,
             spreadsheetId: sync.spreadsheetId,
             range: headerRange,
-            values: [sanitizedHeaderRow],
+            values: [sanitizedHeaderRow, sanitizedBlockIdRow],
             valueInputOption: 'RAW'
           })
         }
 
-        const firstDataRow = 2
+        // Data starts at row 3 (after 2 header rows)
+        const firstDataRow = 3
         const idColumnRange = `${tabName}!A${firstDataRow}:A1000000`
         const idColumnValues = await readValues({
           accessToken,

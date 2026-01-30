@@ -266,7 +266,7 @@ export async function backfillService(
     return column.label
   }
 
-  const { headerRow } = buildHeaderRows({
+  const { headerRow, blockIdRow } = buildHeaderRows({
     columns,
     userTimezone,
     getCardHeading,
@@ -284,12 +284,15 @@ export async function backfillService(
   // Clear existing data
   await clearSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
 
-  // Build data rows
+  // Build header rows - Row 1: display labels, Row 2: blockId keys for stable column matching
   const sanitizedHeaderRow = headerRow.map((cell) =>
     sanitizeGoogleSheetsCell(cell)
   )
+  const sanitizedBlockIdRow = blockIdRow.map((cell) =>
+    sanitizeGoogleSheetsCell(cell)
+  )
 
-  const values: (string | null)[][] = [sanitizedHeaderRow]
+  const values: (string | null)[][] = [sanitizedHeaderRow, sanitizedBlockIdRow]
   for await (const row of getJourneyVisitors(
     journeyId,
     eventWhere,
@@ -318,7 +321,7 @@ export async function backfillService(
       journeyId,
       spreadsheetId,
       sheetName,
-      rowCount: values.length - 1
+      rowCount: values.length - 2 // Subtract 2 header rows (display labels + blockId keys)
     },
     'Backfill completed successfully'
   )

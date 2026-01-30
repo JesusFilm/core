@@ -214,6 +214,8 @@ interface BuildHeaderRowsOptions {
 
 export interface HeaderRows {
   headerRow: string[]
+  /** Second header row containing the blockId keys for stable column matching */
+  blockIdRow: string[]
 }
 
 export function buildHeaderRows({
@@ -251,5 +253,9 @@ export function buildHeaderRows({
     return column.label
   })
 
-  return { headerRow }
+  // Build the blockId row using the column key (which contains blockId-label for block columns)
+  // This provides stable column matching when appending data
+  const blockIdRow = columns.map((column) => column.key)
+
+  return { headerRow, blockIdRow }
 }

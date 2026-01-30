@@ -263,7 +263,7 @@ export async function createService(
     return column.label
   }
 
-  const { headerRow } = buildHeaderRows({
+  const { headerRow, blockIdRow } = buildHeaderRows({
     columns,
     userTimezone,
     getCardHeading,
@@ -278,17 +278,20 @@ export async function createService(
   // Ensure sheet exists (it should already exist, but just in case)
   await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
 
-  // Build and write header row first
+  // Build header rows - Row 1: display labels, Row 2: blockId keys for stable column matching
   const sanitizedHeaderRow = headerRow.map((cell) =>
     sanitizeGoogleSheetsCell(cell)
   )
+  const sanitizedBlockIdRow = blockIdRow.map((cell) =>
+    sanitizeGoogleSheetsCell(cell)
+  )
 
-  // Write header row (overwrites any existing content)
+  // Write both header rows (overwrites any existing content)
   await writeValues({
     accessToken,
     spreadsheetId,
     sheetTitle: sheetName,
-    values: [sanitizedHeaderRow],
+    values: [sanitizedHeaderRow, sanitizedBlockIdRow],
     append: false
   })
 

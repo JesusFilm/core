@@ -10,6 +10,8 @@ export interface MergeGoogleSheetsHeaderParams {
   columns: JourneyExportColumn[]
   desiredHeaderKeys: string[]
   existingHeaderRowLabels: string[]
+  /** Second header row containing blockId keys - used for stable column matching */
+  existingBlockIdRow: string[]
   userTimezone: string
   getCardHeading: (blockId: string | null | undefined) => string
   baseColumnLabelResolver?: BaseColumnLabelResolver
@@ -18,6 +20,8 @@ export interface MergeGoogleSheetsHeaderParams {
 export interface MergeGoogleSheetsHeaderResult {
   finalHeaderKeys: string[]
   finalHeaderRowLabels: string[]
+  /** Second header row containing blockId keys for stable column matching */
+  finalBlockIdRow: string[]
   writeWidth: number
 }
 
@@ -46,6 +50,11 @@ function addLabelMapping(
  * Merge an existing Google Sheets header row (labels) with the desired export columns (keys),
  * producing a final ordered list of header keys and the corresponding header labels to write.
  *
+ * Column order is determined by:
+ * 1. If existingBlockIdRow has valid keys, use those to preserve column positions
+ * 2. Only append new columns that don't exist in the blockId row
+ * 3. Column order never changes, only new columns are appended
+ *
  * This is shared by the initial export and the live sync to prevent header drift.
  */
 export function mergeGoogleSheetsHeader({
@@ -53,6 +62,7 @@ export function mergeGoogleSheetsHeader({
   columns,
   desiredHeaderKeys,
   existingHeaderRowLabels,
+  existingBlockIdRow,
   userTimezone,
   getCardHeading,
   baseColumnLabelResolver
@@ -64,6 +74,67 @@ export function mergeGoogleSheetsHeader({
     baseColumnLabelResolver
   })
 
+  // Check if we have a valid blockId row (second header row with stable keys)
+  const hasBlockIdRow =
+    existingBlockIdRow.length > 0 &&
+    existingBlockIdRow.some((key) => key != null && key.trim() !== '')
+
+  // If we have a blockId row, use it directly for stable column matching
+  if (hasBlockIdRow) {
+    // Start with existing blockId row keys - these define the current column order
+    const merged: string[] = []
+
+    // First, add all existing keys from the blockId row (preserving their positions)
+    for (const key of existingBlockIdRow) {
+      const normalizedKey = (key ?? '').trim()
+      if (normalizedKey !== '' && !merged.includes(normalizedKey)) {
+        merged.push(normalizedKey)
+      }
+    }
+
+    // Then append any new desired keys that don't exist yet
+    for (const key of desiredHeaderKeys) {
+      if (key === '' || merged.includes(key)) continue
+      merged.push(key)
+    }
+
+    const mergedColumns: JourneyExportColumn[] = merged.map((key) => {
+      const existingCol = columns.find((c) => c.key === key)
+      if (existingCol != null) return existingCol
+      return { key, label: key, blockId: null, typename: '' }
+    })
+
+    const { headerRow: mergedHeaderRowLabels, blockIdRow: mergedBlockIdRow } =
+      buildHeaderRows({
+        columns: mergedColumns,
+        userTimezone,
+        getCardHeading,
+        baseColumnLabelResolver
+      })
+
+    const existingWidth = Math.max(
+      existingHeaderRowLabels.length,
+      existingBlockIdRow.length
+    )
+    const writeWidth = Math.max(existingWidth, mergedHeaderRowLabels.length)
+
+    const padArray = (arr: string[], targetLength: number): string[] =>
+      arr.length >= targetLength
+        ? arr
+        : [
+            ...arr,
+            ...Array.from({ length: targetLength - arr.length }).map(() => '')
+          ]
+
+    return {
+      finalHeaderKeys: merged,
+      finalHeaderRowLabels: padArray(mergedHeaderRowLabels, writeWidth),
+      finalBlockIdRow: padArray(mergedBlockIdRow, writeWidth),
+      writeWidth
+    }
+  }
+
+  // Fallback: No blockId row exists (legacy sheet) - use label-based matching
   // Map canonical header labels (and sanitized variants) -> column key.
   const headerLabelToKey = new Map<string, string>()
   desiredHeaderRowLabels.forEach((label, index) => {
@@ -129,28 +200,29 @@ export function mergeGoogleSheetsHeader({
     return { key, label: key, blockId: null, typename: '' }
   })
 
-  const { headerRow: mergedHeaderRowLabels } = buildHeaderRows({
-    columns: mergedColumns,
-    userTimezone,
-    getCardHeading,
-    baseColumnLabelResolver
-  })
+  const { headerRow: mergedHeaderRowLabels, blockIdRow: mergedBlockIdRow } =
+    buildHeaderRows({
+      columns: mergedColumns,
+      userTimezone,
+      getCardHeading,
+      baseColumnLabelResolver
+    })
 
   const existingWidth = existingHeaderRowLabels.length
   const writeWidth = Math.max(existingWidth, mergedHeaderRowLabels.length)
-  const paddedHeaderRowLabels =
-    writeWidth === mergedHeaderRowLabels.length
-      ? mergedHeaderRowLabels
+
+  const padArray = (arr: string[], targetLength: number): string[] =>
+    arr.length >= targetLength
+      ? arr
       : [
-          ...mergedHeaderRowLabels,
-          ...Array.from({
-            length: writeWidth - mergedHeaderRowLabels.length
-          }).map(() => '')
+          ...arr,
+          ...Array.from({ length: targetLength - arr.length }).map(() => '')
         ]
 
   return {
     finalHeaderKeys: merged,
-    finalHeaderRowLabels: paddedHeaderRowLabels,
+    finalHeaderRowLabels: padArray(mergedHeaderRowLabels, writeWidth),
+    finalBlockIdRow: padArray(mergedBlockIdRow, writeWidth),
     writeWidth
   }
 }
