@@ -27,10 +27,13 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
 // Note: multiselect option creation is part of the same mutation operation type
+import {
+  MultiselectWithButtonRestore,
+  MultiselectWithButtonRestoreVariables
+} from '../../../../../../../../__generated__/MultiselectWithButtonRestore'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
-import { MultiselectWithButtonRestore, MultiselectWithButtonRestoreVariables } from '../../../../../../../../__generated__/MultiselectWithButtonRestore'
 
 export const MULTISELECT_BLOCK_CREATE = gql`
   ${MULTISELECT_QUESTION_FIELDS}
@@ -214,9 +217,10 @@ export function NewMultiselectButton(): ReactElement {
   const [multiselectWithButtonDelete] = useMutation(
     MULTISELECT_WITH_BUTTON_DELETE
   )
-  const [multiselectWithButtonRestore] = useMutation<MultiselectWithButtonRestore, MultiselectWithButtonRestoreVariables>(
-    MULTISELECT_WITH_BUTTON_RESTORE
-  )
+  const [multiselectWithButtonRestore] = useMutation<
+    MultiselectWithButtonRestore,
+    MultiselectWithButtonRestoreVariables
+  >(MULTISELECT_WITH_BUTTON_RESTORE)
   const { journey } = useJourney()
   const {
     state: { selectedStep, selectedBlockId },
@@ -467,18 +471,22 @@ export function NewMultiselectButton(): ReactElement {
               option1: [blocks.option1],
               option2: [blocks.option2],
               button: [blocks.buttonBlock],
-              startIcon: [{
-                id: blocks.buttonBlock.startIconId as string,
-                parentBlockId: blocks.buttonBlock.id,
-                parentOrder: null,
-                __typename: 'IconBlock'
-              }],
-              endIcon: [{
-                id: blocks.buttonBlock.endIconId as string,
-                parentBlockId: blocks.buttonBlock.id,
-                parentOrder: null,
-                __typename: 'IconBlock'
-              }]
+              startIcon: [
+                {
+                  id: blocks.buttonBlock.startIconId as string,
+                  parentBlockId: blocks.buttonBlock.id,
+                  parentOrder: null,
+                  __typename: 'IconBlock'
+                }
+              ],
+              endIcon: [
+                {
+                  id: blocks.buttonBlock.endIconId as string,
+                  parentBlockId: blocks.buttonBlock.id,
+                  parentOrder: null,
+                  __typename: 'IconBlock'
+                }
+              ]
             },
             update(cache, { data }) {
               if (data == null) return
