@@ -50,6 +50,8 @@ function addLabelMapping(
  * - Existing columns are NEVER moved or rearranged
  * - New columns are ONLY appended at the end
  * - Column order is determined by exportOrder on blocks when creating new sheets
+ * - Blocks with exportOrder use position-based matching (not label matching) to avoid
+ *   ambiguity when multiple blocks have the same display label (e.g., multiple "Poll" columns)
  *
  * This is shared by the initial export and the live sync to prevent header drift.
  */
@@ -67,6 +69,18 @@ export function mergeGoogleSheetsHeader({
     userTimezone,
     getCardHeading,
     baseColumnLabelResolver
+  })
+
+  // Build a map from exportOrder position -> column key for blocks with exportOrder.
+  // This allows us to match columns by position rather than by (potentially ambiguous) label.
+  const exportOrderToKey = new Map<number, string>()
+  columns.forEach((column) => {
+    if (column.exportOrder != null && column.key !== '') {
+      // exportOrder is 1-indexed relative to block columns (after base columns)
+      // So exportOrder 1 = position baseKeys.length (e.g., position 2 if base keys are visitorId, date)
+      const position = baseKeys.length + column.exportOrder - 1
+      exportOrderToKey.set(position, column.key)
+    }
   })
 
   // Map canonical header labels (and sanitized variants) -> column key.
@@ -94,9 +108,19 @@ export function mergeGoogleSheetsHeader({
     )
   })
 
-  const resolveExistingLabelToKey = (label: string): string => {
+  const resolveExistingLabelToKey = (
+    label: string,
+    columnIndex: number
+  ): string => {
     const normalized = normalizeLabel(label)
     if (normalized === '') return ''
+
+    // First, check if this position has a block with exportOrder that maps here.
+    // This takes priority over label matching to handle ambiguous labels (e.g., multiple "Poll" columns).
+    const keyFromExportOrder = exportOrderToKey.get(columnIndex)
+    if (keyFromExportOrder != null) {
+      return keyFromExportOrder
+    }
 
     const fromHeader = headerLabelToKey.get(normalized)
     if (fromHeader != null && fromHeader !== '') return fromHeader
@@ -134,8 +158,9 @@ export function mergeGoogleSheetsHeader({
     const existingKeys = new Set<string>()
 
     // First, process existing headers in their EXACT order
-    for (const label of existingHeaderRowLabels) {
-      const key = resolveExistingLabelToKey(label ?? '')
+    for (let i = 0; i < existingHeaderRowLabels.length; i++) {
+      const label = existingHeaderRowLabels[i]
+      const key = resolveExistingLabelToKey(label ?? '', i)
       if (key === '') {
         // Preserve empty columns as placeholders to maintain positions
         merged.push('')

@@ -193,5 +193,104 @@ describe('googleSheetsHeader', () => {
         'b2-Second'
       ])
     })
+
+    it('uses exportOrder to resolve ambiguous labels (e.g., multiple Poll columns)', () => {
+      // Scenario: Two poll blocks with the same display label "Poll"
+      // The first poll has exportOrder=1, the second poll is new (no exportOrder yet)
+      const columns = [
+        { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
+        { key: 'date', label: 'Date', blockId: null, typename: '' },
+        {
+          key: 'poll1-Question1',
+          label: 'Question1',
+          blockId: 'poll1',
+          typename: 'RadioQuestionBlock',
+          exportOrder: 1 // This poll was synced before and has exportOrder
+        },
+        {
+          key: 'poll2-Question2',
+          label: 'Question2',
+          blockId: 'poll2',
+          typename: 'RadioQuestionBlock',
+          exportOrder: null // This is a new poll, no exportOrder yet
+        }
+      ]
+
+      const desiredHeaderKeys = [
+        'visitorId',
+        'date',
+        'poll1-Question1',
+        'poll2-Question2'
+      ]
+
+      // Existing sheet has "Poll" in column C (index 2), which is ambiguous
+      // because both poll blocks would generate the label "Poll" (no card heading)
+      const existingHeaderRowLabels = ['Visitor ID', 'Date', 'Poll']
+
+      const merged = mergeGoogleSheetsHeader({
+        baseKeys: ['visitorId', 'date'],
+        columns,
+        desiredHeaderKeys,
+        existingHeaderRowLabels,
+        userTimezone: 'UTC',
+        // Both polls would show as "Poll" (no card heading)
+        getCardHeading: () => '',
+        baseColumnLabelResolver: ({ column }) => column.label
+      })
+
+      // The first poll with exportOrder=1 should match position 2 (baseKeys.length + 1 - 1)
+      // The second poll should be appended at the end
+      expect(merged.finalHeaderKeys).toEqual([
+        'visitorId',
+        'date',
+        'poll1-Question1', // Matched by exportOrder position
+        'poll2-Question2' // Appended as new column
+      ])
+    })
+
+    it('handles multiple blocks with exportOrder at existing positions', () => {
+      // Scenario: Two blocks with exportOrder, both already in the sheet
+      const columns = [
+        { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
+        { key: 'date', label: 'Date', blockId: null, typename: '' },
+        {
+          key: 'b1-Label1',
+          label: 'Label1',
+          blockId: 'b1',
+          typename: 'RadioQuestionBlock',
+          exportOrder: 1
+        },
+        {
+          key: 'b2-Label2',
+          label: 'Label2',
+          blockId: 'b2',
+          typename: 'RadioQuestionBlock',
+          exportOrder: 2
+        }
+      ]
+
+      const desiredHeaderKeys = ['visitorId', 'date', 'b1-Label1', 'b2-Label2']
+
+      // Both columns exist in the sheet (with potentially different labels)
+      const existingHeaderRowLabels = ['Visitor ID', 'Date', 'Poll 1', 'Poll 2']
+
+      const merged = mergeGoogleSheetsHeader({
+        baseKeys: ['visitorId', 'date'],
+        columns,
+        desiredHeaderKeys,
+        existingHeaderRowLabels,
+        userTimezone: 'UTC',
+        getCardHeading: () => '',
+        baseColumnLabelResolver: ({ column }) => column.label
+      })
+
+      // Both blocks should be matched by their exportOrder positions
+      expect(merged.finalHeaderKeys).toEqual([
+        'visitorId',
+        'date',
+        'b1-Label1', // exportOrder=1 -> position 2
+        'b2-Label2' // exportOrder=2 -> position 3
+      ])
+    })
   })
 })
