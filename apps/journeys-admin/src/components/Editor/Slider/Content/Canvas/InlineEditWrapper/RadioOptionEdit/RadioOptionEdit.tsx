@@ -11,11 +11,18 @@ import { RadioOption } from '@core/journeys/ui/RadioOption'
 import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 import {
+  RadioOptionBlockCreate,
+  RadioOptionBlockCreateVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockCreate'
+import {
   RadioOptionBlockUpdateContent,
   RadioOptionBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { InlineEditInput } from '../InlineEditInput'
+import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
+import { handleCreateRadioOption } from '../RadioQuestionEdit/utils/handleCreateRadioOption/handleCreateRadioOption'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -126,6 +133,12 @@ export function RadioOptionEdit({
     })
   }
 
+  const { addBlock } = useBlockCreateCommand()
+  const [radioOptionBlockCreate] = useMutation<
+    RadioOptionBlockCreate,
+    RadioOptionBlockCreateVariables
+  >(RADIO_OPTION_BLOCK_CREATE)
+
   return (
     <RadioOption
       {...radioOptionProps}
@@ -157,6 +170,21 @@ export function RadioOptionEdit({
           onChange={(e) => {
             setValue(e.currentTarget.value)
             handleSubmit(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              handleSubmit(value)
+
+              handleCreateRadioOption({
+                dispatch,
+                addBlock,
+                radioOptionBlockCreate,
+                parentBlockId: radioOptionProps.parentBlockId,
+                journey,
+                selectedStep
+              })
+            }
           }}
           onClick={(e) => e.stopPropagation()}
         />
