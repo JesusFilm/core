@@ -272,6 +272,7 @@ model Integration {
   accessSecretIv         String?
   accessSecretTag        String?
   accountEmail           String?
+  oauthStale             Boolean            @default(false) // Indicates OAuth token refresh has failed and re-authorization is required
   googleSheetsSyncs      GoogleSheetsSync[]
   team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
@@ -629,6 +630,7 @@ model Block {
   min                        Int?
   max                        Int?
   settings                   Json                 @default("{ }") // block settings
+  exportOrder                Int? // column order for CSV exports and Google Sheets syncs
 
   @@unique([slug, journeyId])
   @@index(journeyId)

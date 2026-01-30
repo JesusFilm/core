@@ -1,0 +1,23 @@
+type SignUpSubmissionEvent implements Event @shareable {
+  id: ID!
+  """
+  ID of the journey that the block belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for signUpSubmissionEvent
+  """
+  label: String
+  """
+  name from the signUpBlock form
+  """
+  value: String
+  """
+  email from the signUpBlock form
+  """
+  email: String
+}
