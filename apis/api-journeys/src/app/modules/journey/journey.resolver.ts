@@ -964,7 +964,7 @@ export class JourneyResolver {
       results.map(
         async (journey) =>
           await this.prismaService.journey.update({
-            where: { id: journey.id },
+            where: { id: journey.id, updatedAt: journey.updatedAt },
             data: {
               status: JourneyStatus.archived,
               archivedAt: new Date(),
@@ -989,7 +989,7 @@ export class JourneyResolver {
       results.map(
         async (journey) =>
           await this.prismaService.journey.update({
-            where: { id: journey.id },
+            where: { id: journey.id, updatedAt: journey.updatedAt },
             data: {
               status: JourneyStatus.deleted,
               deletedAt: new Date(),
@@ -1014,7 +1014,7 @@ export class JourneyResolver {
       results.map(
         async (journey) =>
           await this.prismaService.journey.update({
-            where: { id: journey.id },
+            where: { id: journey.id, updatedAt: journey.updatedAt },
             data: {
               status: JourneyStatus.trashed,
               trashedAt: new Date(),
@@ -1039,7 +1039,7 @@ export class JourneyResolver {
       results.map(
         async (journey) =>
           await this.prismaService.journey.update({
-            where: { id: journey.id },
+            where: { id: journey.id, updatedAt: journey.updatedAt },
             data: {
               status: JourneyStatus.published,
               publishedAt: new Date(),

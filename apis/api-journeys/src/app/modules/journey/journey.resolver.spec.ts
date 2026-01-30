@@ -2385,7 +2385,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledTimes(2)
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(1, {
-        where: { id: 'journeyId' },
+        where: { id: 'journeyId', updatedAt: journey.updatedAt },
         data: {
           status: JourneyStatus.archived,
           archivedAt: new Date(),
@@ -2393,7 +2393,7 @@ describe('JourneyResolver', () => {
         }
       })
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(2, {
-        where: { id: 'journey2Id' },
+        where: { id: 'journey2Id', updatedAt: journey2.updatedAt },
         data: {
           status: JourneyStatus.archived,
           archivedAt: new Date(),
@@ -2436,7 +2436,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledTimes(2)
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(1, {
-        where: { id: 'journeyId' },
+        where: { id: 'journeyId', updatedAt: journey.updatedAt },
         data: {
           status: JourneyStatus.deleted,
           deletedAt: new Date(),
@@ -2444,7 +2444,7 @@ describe('JourneyResolver', () => {
         }
       })
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(2, {
-        where: { id: 'journey2Id' },
+        where: { id: 'journey2Id', updatedAt: journey2.updatedAt },
         data: {
           status: JourneyStatus.deleted,
           deletedAt: new Date(),
@@ -2487,7 +2487,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledTimes(2)
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(1, {
-        where: { id: 'journeyId' },
+        where: { id: 'journeyId', updatedAt: journey.updatedAt },
         data: {
           status: JourneyStatus.trashed,
           trashedAt: new Date(),
@@ -2495,7 +2495,7 @@ describe('JourneyResolver', () => {
         }
       })
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(2, {
-        where: { id: 'journey2Id' },
+        where: { id: 'journey2Id', updatedAt: journey2.updatedAt },
         data: {
           status: JourneyStatus.trashed,
           trashedAt: new Date(),
@@ -2538,7 +2538,7 @@ describe('JourneyResolver', () => {
       })
       expect(prismaService.journey.update).toHaveBeenCalledTimes(2)
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(1, {
-        where: { id: 'journeyId' },
+        where: { id: 'journeyId', updatedAt: journey.updatedAt },
         data: {
           status: JourneyStatus.published,
           publishedAt: new Date(),
@@ -2546,7 +2546,7 @@ describe('JourneyResolver', () => {
         }
       })
       expect(prismaService.journey.update).toHaveBeenNthCalledWith(2, {
-        where: { id: 'journey2Id' },
+        where: { id: 'journey2Id', updatedAt: journey2.updatedAt },
         data: {
           status: JourneyStatus.published,
           publishedAt: new Date(),
