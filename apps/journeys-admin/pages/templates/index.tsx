@@ -23,6 +23,7 @@ import {
 } from '../../__generated__/GetLanguages'
 import { GetMe } from '../../__generated__/GetMe'
 import { GetTags } from '../../__generated__/GetTags'
+import { FeatureBaseMessenger } from '../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
@@ -69,6 +70,12 @@ function TemplateIndexPage(): ReactElement {
             userInfo={{
               name: user?.displayName ?? '',
               email: user?.email ?? ''
+            }}
+          />
+          <FeatureBaseMessenger
+            userInfo={{
+              email: user?.email ?? '',
+              userId: user?.id ?? ''
             }}
           />
         </Box>

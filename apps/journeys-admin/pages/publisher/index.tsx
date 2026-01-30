@@ -18,6 +18,7 @@ import {
   GetAdminJourneysVariables
 } from '../../__generated__/GetAdminJourneys'
 import { JourneyStatus, Role } from '../../__generated__/globalTypes'
+import { FeatureBaseMessenger } from '../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
@@ -70,6 +71,12 @@ function PublisherIndexPage(): ReactElement {
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </Stack>

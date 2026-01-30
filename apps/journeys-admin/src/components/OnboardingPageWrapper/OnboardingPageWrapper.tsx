@@ -11,6 +11,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { FeatureBaseMessenger } from '../FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../HelpScoutBeacon'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
@@ -52,6 +53,12 @@ export function OnboardingPageWrapper({
           userInfo={{
             name: user?.displayName ?? '',
             email: user?.email ?? ''
+          }}
+        />
+        <FeatureBaseMessenger
+          userInfo={{
+            email: user?.email ?? '',
+            userId: user?.id ?? ''
           }}
         />
       </Box>

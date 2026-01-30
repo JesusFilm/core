@@ -12,6 +12,7 @@ import { ReactElement } from 'react'
 
 import { JourneysReportType } from '../../__generated__/globalTypes'
 import { MemoizedDynamicReport } from '../../src/components/DynamicPowerBiReport'
+import { FeatureBaseMessenger } from '../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
@@ -48,6 +49,12 @@ function ReportsJourneysPage(): ReactElement {
                 userInfo={{
                   name: user?.displayName ?? '',
                   email: user?.email ?? ''
+                }}
+              />
+              <FeatureBaseMessenger
+                userInfo={{
+                  email: user?.email ?? '',
+                  userId: user?.id ?? ''
                 }}
               />
             </Box>

@@ -11,6 +11,7 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { GrowthSpacesCreateIntegration } from '../../../../../src/components/GrowthSpaces'
+import { FeatureBaseMessenger } from '../../../../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
@@ -44,6 +45,12 @@ function GrowthSpacesConfigPage(): ReactElement {
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </Stack>

@@ -21,6 +21,7 @@ import {
 } from '../../__generated__/GetJourneys'
 import { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
+import { FeatureBaseMessenger } from '../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
@@ -84,6 +85,12 @@ function TemplateDetailsPage(): ReactElement {
                   email: user?.email ?? ''
                 }}
               />
+              <FeatureBaseMessenger
+                userInfo={{
+                  email: user?.email ?? '',
+                  userId: user?.id ?? ''
+                }}
+              />
             </Stack>
           }
           showAppHeader={userSignedIn}
@@ -102,6 +109,12 @@ function TemplateDetailsPage(): ReactElement {
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </Box>

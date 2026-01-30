@@ -28,6 +28,7 @@ import {
   UserTeamRole
 } from '../../../../__generated__/globalTypes'
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
+import { FeatureBaseMessenger } from '../../../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
@@ -297,6 +298,12 @@ function JourneyVisitorsPage({
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </>

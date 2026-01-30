@@ -23,6 +23,7 @@ import {
 } from '../../../__generated__/UpdatePlausibleDashboardViewed'
 import { UserJourneyOpen } from '../../../__generated__/UserJourneyOpen'
 import { MemoizedDynamicReport } from '../../../src/components/DynamicPowerBiReport'
+import { FeatureBaseMessenger } from '../../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../../src/components/HelpScoutBeacon'
 import { NotificationPopover } from '../../../src/components/NotificationPopover'
 import { PageWrapper } from '../../../src/components/PageWrapper'
@@ -94,6 +95,12 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
                 userInfo={{
                   name: user?.displayName ?? '',
                   email: user?.email ?? ''
+                }}
+              />
+              <FeatureBaseMessenger
+                userInfo={{
+                  email: user?.email ?? '',
+                  userId: user?.id ?? ''
                 }}
               />
             </Box>

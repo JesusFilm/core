@@ -10,6 +10,7 @@ import { ReactElement } from 'react'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import { FeatureBaseMessenger } from '../../FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
@@ -67,6 +68,12 @@ export function AppHeader({
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </Stack>

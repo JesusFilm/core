@@ -12,6 +12,7 @@ import { ReactElement, Suspense } from 'react'
 
 import { GoogleIntegrationDetails } from '../../../../src/components/Google'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
+import { FeatureBaseMessenger } from '../../../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
@@ -49,6 +50,12 @@ function IntegrationPage(): ReactElement {
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </Stack>

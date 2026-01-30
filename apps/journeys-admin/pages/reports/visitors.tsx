@@ -10,6 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { FeatureBaseMessenger } from '../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
@@ -47,6 +48,12 @@ function ReportsVisitorsPage(): ReactElement {
                 userInfo={{
                   name: user?.displayName ?? '',
                   email: user?.email ?? ''
+                }}
+              />
+              <FeatureBaseMessenger
+                userInfo={{
+                  email: user?.email ?? '',
+                  userId: user?.id ?? ''
                 }}
               />
             </Box>

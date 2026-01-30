@@ -14,6 +14,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { FeatureBaseMessenger } from '../../../FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
@@ -130,6 +131,12 @@ export function Menu({ user }: MenuProps): ReactElement {
                 email: user?.email ?? ''
               }}
               handleClick={handleCloseMenu}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
+              }}
             />
           </>
         )}

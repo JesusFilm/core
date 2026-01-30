@@ -15,6 +15,7 @@ import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import i18nConfig from '../next-i18next.config'
+import { FeatureBaseChangelog } from '../src/components/FeatureBaseChangelog'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
 import { initAuth } from '../src/libs/firebaseClient/initAuth'
@@ -123,6 +124,7 @@ function JourneysAdminApp({
                   gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
                   dataLayer={{ userId: user?.id }}
                 />
+                <FeatureBaseChangelog userName={user?.displayName} />
                 <Component {...pageProps} />
               </SnackbarProvider>
             </TeamProvider>

@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -13,6 +14,8 @@ import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
+import { FeatureBaseFeedback } from '../src/components/FeatureBaseFeedback'
+import { FeatureBaseMessenger } from '../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
@@ -75,6 +78,16 @@ function IndexPage(): ReactElement {
         }
       >
         <JourneyList user={user} />
+        <FeatureBaseFeedback
+          userEmail={user?.email ?? undefined}
+          userName={user?.displayName ?? undefined}
+        />
+        <FeatureBaseMessenger
+          userInfo={{
+            email: user?.email ?? '',
+            userId: user?.id ?? ''
+          }}
+        />
       </PageWrapper>
     </>
   )

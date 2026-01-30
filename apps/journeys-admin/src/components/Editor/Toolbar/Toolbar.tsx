@@ -38,6 +38,7 @@ import {
   UpdatePlausibleJourneyFlowViewedVariables
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import logo from '../../../../public/taskbar-icon.svg'
+import { FeatureBaseMessenger } from '../../FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
@@ -359,6 +360,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
             userInfo={{
               name: user?.displayName ?? '',
               email: user?.email ?? ''
+            }}
+          />
+          <FeatureBaseMessenger
+            userInfo={{
+              email: user?.email ?? '',
+              userId: user?.id ?? ''
             }}
           />
         </Box>

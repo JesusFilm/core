@@ -10,6 +10,7 @@ import { ReactElement } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
+import { FeatureBaseMessenger } from '../../../../src/components/FeatureBaseMessenger'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { TeamIntegrations } from '../../../../src/components/Team/TeamIntegrations'
@@ -45,6 +46,12 @@ function IntegrationsIndexPage(): ReactElement {
               userInfo={{
                 name: user?.displayName ?? '',
                 email: user?.email ?? ''
+              }}
+            />
+            <FeatureBaseMessenger
+              userInfo={{
+                email: user?.email ?? '',
+                userId: user?.id ?? ''
               }}
             />
           </Stack>
