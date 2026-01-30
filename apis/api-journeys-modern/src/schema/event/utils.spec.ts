@@ -31,6 +31,19 @@ jest.mock('../../workers/googleSheetsSync/queue', () => ({
   queue: mockGoogleSheetsSyncQueue
 }))
 
+const mockLogger = {
+  warn: jest.fn(),
+  error: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn()
+}
+
+jest.mock('../logger', () => ({
+  get logger() {
+    return mockLogger
+  }
+}))
+
 describe('event utils', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -440,6 +453,7 @@ describe('event utils', () => {
       jest.clearAllMocks()
       __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
       delete process.env.NODE_ENV
+      mockLogger.warn.mockClear()
     })
 
     it('should return early when no sync config exists', async () => {
@@ -520,9 +534,6 @@ describe('event utils', () => {
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      const consoleWarnSpy = jest
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {})
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
@@ -531,11 +542,10 @@ describe('event utils', () => {
       })
 
       expect(mockGoogleSheetsSyncQueue.add).not.toHaveBeenCalled()
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('missing integrationId')
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        { syncId: 'sync-id', journeyId: 'journey-id', teamId: 'team-id' },
+        'Skipping Google Sheets sync: missing integrationId'
       )
-
-      consoleWarnSpy.mockRestore()
     })
 
     it('should skip syncs without sheetName', async () => {
@@ -548,9 +558,6 @@ describe('event utils', () => {
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
-      const consoleWarnSpy = jest
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {})
 
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
@@ -559,11 +566,10 @@ describe('event utils', () => {
       })
 
       expect(mockGoogleSheetsSyncQueue.add).not.toHaveBeenCalled()
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('missing sheetName')
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        { syncId: 'sync-id', journeyId: 'journey-id', teamId: 'team-id' },
+        'Skipping Google Sheets sync: missing sheetName'
       )
-
-      consoleWarnSpy.mockRestore()
     })
 
     it('should queue separate backfill jobs for multiple syncs', async () => {
