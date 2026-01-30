@@ -80,6 +80,7 @@ describe('algoliaVideoUpdate', () => {
       primaryLanguageId: '529',
       childIds: ['child1', 'child2'],
       restrictDownloadPlatforms: [],
+      published: true,
       restrictViewPlatforms: [],
       title: [
         { value: 'Test Video Title', languageId: '529' },
@@ -104,6 +105,7 @@ describe('algoliaVideoUpdate', () => {
         { id: 'banner-image-id', aspectRatio: 'banner' },
         { id: 'hd-image-id', aspectRatio: 'hd' }
       ],
+      availableLanguages: ['529', '3934'],
       variants: [
         {
           published: true,
@@ -130,6 +132,9 @@ describe('algoliaVideoUpdate', () => {
           subType: 'segment',
           contentType: 'video',
           lengthInMilliseconds: 120000,
+          published: true,
+          restrictViewPlatforms: [],
+          hasAvailableLanguages: true,
           titles: [
             { value: 'Test Video Title', languageId: '529', bcp47: 'en' },
             {
@@ -150,7 +155,6 @@ describe('algoliaVideoUpdate', () => {
           ],
           keywords: ['creation', 'genesis'],
           isDownloadable: true,
-          restrictViewArclight: false,
           downloadSizes: {
             approximateSmallDownloadSizeInBytes: 1000000,
             approximateLargeDownloadSizeInBytes: 5000000
@@ -166,7 +170,6 @@ describe('algoliaVideoUpdate', () => {
             }
           ],
           containsCount: 2,
-          published: true,
           imageUrls: {
             thumbnail:
               'https://imagedelivery.net/test-account/hd-image-id/f=jpg,w=120,h=68,q=95',
@@ -200,6 +203,7 @@ describe('algoliaVideoUpdate', () => {
       primaryLanguageId: '529',
       childIds: [],
       restrictDownloadPlatforms: [],
+      published: true,
       restrictViewPlatforms: [],
       title: [{ value: 'Test Collection', languageId: '529' }],
       description: [],
@@ -207,6 +211,7 @@ describe('algoliaVideoUpdate', () => {
       bibleCitation: [],
       keywords: [],
       images: [],
+      availableLanguages: [],
       variants: [
         {
           published: false,
@@ -224,11 +229,33 @@ describe('algoliaVideoUpdate', () => {
       indexName: 'test-videos',
       objects: [
         expect.objectContaining({
+          objectID: 'collection-id',
+          mediaComponentId: 'collection-id',
           componentType: 'container',
+          subType: 'collection',
           contentType: 'none',
+          lengthInMilliseconds: 0,
+          published: true,
+          restrictViewPlatforms: [],
+          hasAvailableLanguages: false,
+          titles: [
+            { value: 'Test Collection', languageId: '529', bcp47: 'en' }
+          ],
+          descriptions: [],
+          studyQuestions: [],
+          keywords: [],
           isDownloadable: false,
           downloadSizes: {},
-          published: false
+          primaryLanguageId: 529,
+          bibleCitations: [],
+          containsCount: 0,
+          imageUrls: {
+            thumbnail: null,
+            videoStill: null,
+            mobileCinematicHigh: null,
+            mobileCinematicLow: null,
+            mobileCinematicVeryLow: null
+          }
         })
       ],
       waitForTasks: true
@@ -249,6 +276,8 @@ describe('algoliaVideoUpdate', () => {
       bibleCitation: [],
       keywords: [],
       images: [],
+      published: true,
+      availableLanguages: [],
       variants: [
         {
           published: true,
@@ -266,7 +295,9 @@ describe('algoliaVideoUpdate', () => {
       indexName: 'test-videos',
       objects: [
         expect.objectContaining({
-          restrictViewArclight: true
+          hasAvailableLanguages: false,
+          restrictViewPlatforms: ['arclight'],
+          published: true
         })
       ],
       waitForTasks: true

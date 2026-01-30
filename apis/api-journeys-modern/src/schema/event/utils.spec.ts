@@ -483,6 +483,7 @@ describe('event utils', () => {
       expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
         'google-sheets-sync',
         {
+          type: 'append',
           journeyId: 'journey-id',
           teamId: 'team-id',
           row,
