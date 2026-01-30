@@ -312,6 +312,38 @@ export async function backfillService(
     append: false
   })
 
+  // Update exportOrder on blocks that don't have it set yet.
+  // This ensures columns maintain their positions for future syncs.
+  const blocksToUpdate = columns
+    .filter((col) => col.blockId != null && col.exportOrder == null)
+    .map((col) => {
+      const columnPosition = columns.findIndex((c) => c.blockId === col.blockId)
+      return {
+        blockId: col.blockId!,
+        // exportOrder is 1-indexed relative to block columns (after base columns)
+        exportOrder: columnPosition - baseColumns.length + 1
+      }
+    })
+    .filter(({ exportOrder }) => exportOrder > 0)
+
+  if (blocksToUpdate.length > 0) {
+    try {
+      await Promise.all(
+        blocksToUpdate.map(({ blockId, exportOrder }) =>
+          prisma.block.update({
+            where: { id: blockId },
+            data: { exportOrder }
+          })
+        )
+      )
+    } catch (error) {
+      logger?.error(
+        { error, blocksToUpdate, journeyId },
+        'Failed to update exportOrder on blocks after backfill'
+      )
+    }
+  }
+
   logger?.info(
     {
       syncId,

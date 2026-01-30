@@ -46,6 +46,11 @@ function addLabelMapping(
  * Merge an existing Google Sheets header row (labels) with the desired export columns (keys),
  * producing a final ordered list of header keys and the corresponding header labels to write.
  *
+ * IMPORTANT: This function strictly preserves the existing header order.
+ * - Existing columns are NEVER moved or rearranged
+ * - New columns are ONLY appended at the end
+ * - Column order is determined by exportOrder on blocks when creating new sheets
+ *
  * This is shared by the initial export and the live sync to prevent header drift.
  */
 export function mergeGoogleSheetsHeader({
@@ -106,24 +111,57 @@ export function mergeGoogleSheetsHeader({
     return normalized
   }
 
-  // Ensure base headers exist in the correct order at start.
-  const merged: string[] = []
-  for (const baseKey of baseKeys) {
-    if (baseKey !== '' && !merged.includes(baseKey)) merged.push(baseKey)
-  }
+  // Check if this is a new sheet (no existing headers)
+  const hasExistingHeaders = existingHeaderRowLabels.some(
+    (label) => normalizeLabel(label ?? '') !== ''
+  )
 
-  for (const label of existingHeaderRowLabels) {
-    const key = resolveExistingLabelToKey(label ?? '')
-    if (key === '' || merged.includes(key)) continue
-    merged.push(key)
-  }
+  let merged: string[]
 
-  for (const key of desiredHeaderKeys) {
-    if (key === '' || merged.includes(key)) continue
-    merged.push(key)
+  if (!hasExistingHeaders) {
+    // New sheet: use base keys first, then desired keys in their exportOrder-based order
+    merged = []
+    for (const baseKey of baseKeys) {
+      if (baseKey !== '' && !merged.includes(baseKey)) merged.push(baseKey)
+    }
+    for (const key of desiredHeaderKeys) {
+      if (key === '' || merged.includes(key)) continue
+      merged.push(key)
+    }
+  } else {
+    // Existing sheet: STRICTLY preserve existing column order, only append new columns
+    merged = []
+    const existingKeys = new Set<string>()
+
+    // First, process existing headers in their EXACT order
+    for (const label of existingHeaderRowLabels) {
+      const key = resolveExistingLabelToKey(label ?? '')
+      if (key === '') {
+        // Preserve empty columns as placeholders to maintain positions
+        merged.push('')
+      } else if (!existingKeys.has(key)) {
+        merged.push(key)
+        existingKeys.add(key)
+      } else {
+        // Duplicate key - preserve position with empty placeholder
+        merged.push('')
+      }
+    }
+
+    // Remove trailing empty placeholders for cleaner output
+    while (merged.length > 0 && merged[merged.length - 1] === '') {
+      merged.pop()
+    }
+
+    // Append new keys that don't exist in the sheet yet
+    for (const key of desiredHeaderKeys) {
+      if (key === '' || existingKeys.has(key)) continue
+      merged.push(key)
+    }
   }
 
   const mergedColumns: JourneyExportColumn[] = merged.map((key) => {
+    if (key === '') return { key: '', label: '', blockId: null, typename: '' }
     const existingCol = columns.find((c) => c.key === key)
     if (existingCol != null) return existingCol
     return { key, label: key, blockId: null, typename: '' }

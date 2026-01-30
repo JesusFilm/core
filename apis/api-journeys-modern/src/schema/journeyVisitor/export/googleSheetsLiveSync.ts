@@ -36,7 +36,8 @@ const journeyBlockSelect = {
   nextBlockId: true,
   action: true,
   content: true,
-  deletedAt: true
+  deletedAt: true,
+  exportOrder: true
 } as const
 
 const visitorSheetLocks = new Map<string, Promise<void>>()
@@ -404,5 +405,40 @@ export async function appendEventToGoogleSheets({
     throw new Error(
       `All Google Sheets syncs failed: ${syncs.map((s) => s.spreadsheetId).join(', ')}`
     )
+  }
+
+  // Update exportOrder on blocks that don't have it set yet.
+  // This ensures new columns get a stable position for future syncs.
+  const blocksToUpdate = updatedColumns
+    .filter((col) => col.blockId != null && col.exportOrder == null)
+    .map((col) => {
+      const columnPosition = updatedColumns.findIndex(
+        (c) => c.blockId === col.blockId
+      )
+      return {
+        blockId: col.blockId!,
+        // exportOrder is 1-indexed relative to block columns (after base columns)
+        exportOrder: columnPosition - baseColumns.length + 1
+      }
+    })
+    .filter(({ exportOrder }) => exportOrder > 0)
+
+  if (blocksToUpdate.length > 0) {
+    try {
+      await Promise.all(
+        blocksToUpdate.map(({ blockId, exportOrder }) =>
+          prisma.block.update({
+            where: { id: blockId },
+            data: { exportOrder }
+          })
+        )
+      )
+    } catch (error) {
+      // Log but don't throw - exportOrder update is not critical for the sync itself
+      console.error(
+        'Failed to update exportOrder on blocks during live sync:',
+        error
+      )
+    }
   }
 }
