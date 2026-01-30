@@ -27,7 +27,8 @@ export const ImageBlockCreateInput = builder.inputType(
       }),
       scale: t.int({ required: false }),
       focalTop: t.int({ required: false }),
-      focalLeft: t.int({ required: false })
+      focalLeft: t.int({ required: false }),
+      customizable: t.boolean({ required: false })
     })
   }
 )
