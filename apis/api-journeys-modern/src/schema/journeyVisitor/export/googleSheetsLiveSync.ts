@@ -185,14 +185,24 @@ export async function appendEventToGoogleSheets({
     }
   }
 
-  const results = await Promise.allSettled(
-    syncs.map(async (sync) => {
-      const syncTimezone = sync.timezone ?? 'UTC'
+  // Process syncs sequentially to avoid hitting Google Sheets API rate limits
+  // (60 read requests per minute per user). Each sync makes multiple read calls,
+  // so parallel processing can easily exceed the limit.
+  const results: Array<PromiseSettledResult<void>> = []
+  for (let i = 0; i < syncs.length; i++) {
+    const sync = syncs[i]
+    const syncTimezone = sync.timezone ?? 'UTC'
 
-      const tabName =
-        sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
-      const lockKey = `${sync.spreadsheetId}:${tabName}:${visitorId}`
+    const tabName =
+      sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
+    const lockKey = `${sync.spreadsheetId}:${tabName}:${visitorId}`
 
+    // Add 1-second delay between syncs to avoid burst requests (except for first sync)
+    if (i > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
+
+    try {
       await withVisitorSheetLock(lockKey, async () => {
         // Small debounce to coalesce rapid-fire events for same visitor into a single row update.
         // (Prevents read-before-append races that create duplicate rows.)
@@ -385,8 +395,11 @@ export async function appendEventToGoogleSheets({
           valueInputOption: 'USER_ENTERED'
         })
       })
-    })
-  )
+      results.push({ status: 'fulfilled', value: undefined })
+    } catch (error) {
+      results.push({ status: 'rejected', reason: error })
+    }
+  }
 
   results.forEach((result, index) => {
     if (result.status === 'rejected') {
