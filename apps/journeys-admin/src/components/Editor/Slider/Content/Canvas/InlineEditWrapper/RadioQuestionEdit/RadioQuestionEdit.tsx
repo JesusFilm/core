@@ -77,7 +77,7 @@ export function RadioQuestionEdit({
                 radioOptionBlockCreate,
                 parentBlockId: id,
                 journey,
-                siblingCount: selectedBlock?.children?.length ?? 0
+                siblingCount: props.children.length
               })
           : undefined
       }
