@@ -23,6 +23,7 @@ import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateComman
 import { InlineEditInput } from '../InlineEditInput'
 import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
 import { handleCreateRadioOption } from '../RadioQuestionEdit/utils/handleCreateRadioOption/handleCreateRadioOption'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -176,13 +177,18 @@ export function RadioOptionEdit({
               e.preventDefault()
               handleSubmit(value)
 
+              const parentBlock = searchBlocks(selectedStep?.children ?? [], radioOptionProps.parentBlockId ?? '')
+              const siblingCount = parentBlock?.children?.length ?? 0
+
+              if (siblingCount >= 12) return
+
               handleCreateRadioOption({
                 dispatch,
                 addBlock,
                 radioOptionBlockCreate,
                 parentBlockId: radioOptionProps.parentBlockId,
                 journey,
-                selectedStep
+                siblingCount
               })
             }
           }}

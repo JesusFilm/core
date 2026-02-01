@@ -1,12 +1,8 @@
 import { MutationFunction, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TreeBlock } from '@core/journeys/ui/block'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
-
 import {
   BlockFields_RadioOptionBlock,
-  BlockFields_StepBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { JourneyFields } from '../../../../../../../../../../__generated__/JourneyFields'
 import {
@@ -25,34 +21,43 @@ interface HandleCreateRadioOptionProps {
     RadioOptionBlockCreateVariables
   >
   parentBlockId: string | null
+  siblingCount: number | null
   journey?: JourneyFields
-  selectedStep?: TreeBlock<BlockFields_StepBlock>
-  siblingCount?: number | undefined
 }
+
+/**
+ * Creates a new radio option block and adds it to the radio question.
+ *
+ * This function creates a new radio option block with a generated UUID, adds it to the
+ * command stack via addBlock, and executes a GraphQL mutation to persist it on the server.
+ * The function also updates the Apollo cache and sets editor focus to the newly created block.
+ *
+ * The function returns early if the journey is not provided, as it's required for the mutation.
+ *
+ * @param {HandleCreateRadioOptionProps} props - The function parameters
+ * @param {(action: any) => void} props.dispatch - Editor dispatch function to update editor state
+ * @param {(params: { block: BlockFields_RadioOptionBlock; execute: () => void }) => void} props.addBlock - Function to add a block to the command stack
+ * @param {MutationFunction<RadioOptionBlockCreate, RadioOptionBlockCreateVariables>} props.radioOptionBlockCreate - GraphQL mutation function to create a radio option block
+ * @param {string | null} props.parentBlockId - The ID of the parent radio question block
+ * @param {number | null} props.siblingCount - The number of existing sibling options (used for parentOrder)
+ * @param {JourneyFields} [props.journey] - Optional journey fields. Required for the mutation to execute.
+ * @returns {void}
+ */
 export function handleCreateRadioOption({
   dispatch,
   addBlock,
   radioOptionBlockCreate,
   parentBlockId,
   journey,
-  selectedStep,
   siblingCount
 }: HandleCreateRadioOptionProps): void {
   if (journey == null) return
-
-  console.log('siblingCount', siblingCount)
-
-  const parentOrder =
-    siblingCount ??
-    searchBlocks(selectedStep?.children ?? [], parentBlockId ?? '')?.children
-      ?.length ??
-    0
 
   const radioOptionBlock: BlockFields_RadioOptionBlock = {
     id: uuidv4(),
     label: '',
     parentBlockId: parentBlockId ?? '',
-    parentOrder: parentOrder,
+    parentOrder: siblingCount,
     action: null,
     pollOptionImageBlockId: null,
     eventLabel: null,

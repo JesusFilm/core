@@ -32,6 +32,20 @@ interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
   wrappers?: WrappersProps
 }
 
+/**
+ * Editor component for radio question blocks that allows adding new radio options.
+ * 
+ * This component wraps the RadioQuestion component with editor functionality,
+ * including the ability to create new radio option blocks. It enforces a maximum
+ * of 12 options per radio question and provides an addOption handler when the
+ * limit hasn't been reached.
+ *
+ * @param {RadioQuestionEditProps} props - The component props
+ * @param {string} props.id - The unique identifier of the radio question block
+ * @param {WrappersProps} [props.wrappers] - Optional wrapper props for block rendering
+ * @param {RadioQuestionFields} props - Additional props from TreeBlock<RadioQuestionFields>
+ * @returns {ReactElement} The rendered RadioQuestion component with editor capabilities
+ */
 export function RadioQuestionEdit({
   id,
   wrappers,
@@ -48,12 +62,14 @@ export function RadioQuestionEdit({
     dispatch
   } = useEditor()
 
+  const maxOptions = props.children.length >= 12
+
   return (
     <RadioQuestion
       {...props}
       id={id}
       addOption={
-        props.children.length < 12
+        !maxOptions
           ? () =>
               handleCreateRadioOption({
                 dispatch,
@@ -61,8 +77,7 @@ export function RadioQuestionEdit({
                 radioOptionBlockCreate,
                 parentBlockId: id,
                 journey,
-                selectedStep: undefined,
-                siblingCount: selectedBlock?.children?.length
+                siblingCount: selectedBlock?.children?.length ?? 0
               })
           : undefined
       }
