@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Try the new design.",
+  "Better search, languages, and collections.": "Better search, languages, and collections.",
+  "Better search. Better language support. Better collections.": "Better search. Better language support. Better collections.",
+  "New Design": "New Design",
   "close": "close",
   "No Downloads Available": "No Downloads Available",
   "Highest": "Highest",
@@ -36,8 +40,6 @@
   "Language": "Bahasa",
   "Subtitles are not available in {{language}}.": "Subtitles are not available in {{language}}.",
   "Subtitles": "Subtitles",
-  "Available Languages": "Bahasa yang Tersedia",
-  "Other Languages": "Other Languages",
   "Show subtitles": "Show subtitles",
   "Read more...": "Read more...",
   "Related questions": "Related questions",
@@ -92,9 +94,5 @@
   "Short Film": "Short Film",
   "Behind The Scenes": "Behind The Scenes",
   "Trailer": "Trailer",
-  "Available in {{count}} languages._other": "Available in {{count}} languages.",
-  "Better search. Better language support. Better collections.": "Carian yang lebih baik. Sokongan bahasa yang lebih baik. Koleksi yang lebih baik.",
-  "Better search, languages, and collections.": "Carian, bahasa, dan koleksi yang lebih baik.",
-  "Try the new design.": "Cuba reka bentuk baharu.",
-  "New Design": "Reka Bentuk Baharu"
+  "Available in {{count}} languages._other": "Available in {{count}} languages."
 }

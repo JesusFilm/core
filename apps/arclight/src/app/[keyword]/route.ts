@@ -99,10 +99,6 @@ app.openapi(keywordRoute, async (c) => {
     if (data?.shortLink?.__typename === 'QueryShortLinkByPathSuccess') {
       const { to, brightcoveId, redirectType, bitrate } = data.shortLink.data
 
-      if (to && typeof to === 'string') {
-        return c.redirect(to, 302)
-      }
-
       if (
         redirectType &&
         brightcoveId &&
@@ -124,6 +120,9 @@ app.openapi(keywordRoute, async (c) => {
             err
           )
         }
+      }
+      if (to && typeof to === 'string') {
+        return c.redirect(to, 302)
       }
     }
     return c.json({ error: 'Keyword not found or invalid' }, 404)
