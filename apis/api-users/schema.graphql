@@ -7,9 +7,17 @@ input CreateVerificationRequestInput {
 
 input MeInput {
   redirect: String
+  createGuestIfAnonymous: Boolean
+}
+
+input MergeGuestInput {
+  firstName: String!
+  lastName: String!
+  email: String!
 }
 
 type Mutation {
+  mergeGuest(input: MergeGuestInput!): User!
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
   validateEmail(email: String!, token: String!): User
@@ -25,9 +33,10 @@ type User
   @key(fields: "id")
 {
   id: ID!
+  userId: String!
   firstName: String!
   lastName: String
-  email: String!
+  email: String
   imageUrl: String
   superAdmin: Boolean
   emailVerified: Boolean!

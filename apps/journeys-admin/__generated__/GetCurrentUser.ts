@@ -10,7 +10,11 @@
 export interface GetCurrentUser_me {
   __typename: "User";
   id: string;
-  email: string;
+  userId: string;
+  email: string | null;
+  firstName: string;
+  lastName: string | null;
+  emailVerified: boolean;
 }
 
 export interface GetCurrentUser {

@@ -92,5 +92,16 @@ describe('MailChimpService', () => {
         'Mailchimp Audience ID is undefined'
       )
     })
+
+    it('should no-op when user has no email (e.g. anonymous/guest)', async () => {
+      const userWithoutEmail: User = {
+        ...user,
+        email: null
+      }
+      await expect(
+        mailChimpService.syncUser(userWithoutEmail)
+      ).resolves.toBeUndefined()
+      expect(mailchimp.lists.setListMember).not.toHaveBeenCalled()
+    })
   })
 })

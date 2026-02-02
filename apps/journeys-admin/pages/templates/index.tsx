@@ -27,6 +27,7 @@ import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { GuestUserTest } from '../../src/components/GuestUserTest/GuestUserTest'
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -43,17 +44,19 @@ function TemplateIndexPage(): ReactElement {
   }, [user.id, query])
 
   const userSignedIn = user?.id != null
+  const isAnonymous = user.firebaseUser?.isAnonymous ?? false
+  const signedInNonAnonymous = userSignedIn && !isAnonymous
 
   return (
     <>
       <NextSeo title={t('Journey Templates')} />
       <PageWrapper
         title={t('Journey Templates')}
-        user={user}
+        user={signedInNonAnonymous ? user : undefined}
         mainBodyPadding={false}
         showMainHeader={false}
-        showAppHeader={userSignedIn}
-        showNavBar={userSignedIn}
+        showAppHeader={signedInNonAnonymous}
+        showNavBar={signedInNonAnonymous}
         fadeInNavBar
         backgroundColor="background.paper"
       >
@@ -78,6 +81,7 @@ function TemplateIndexPage(): ReactElement {
             px: { xs: 6, sm: 8, md: 10 }
           }}
         >
+          <GuestUserTest />
           <TemplateGallery />
         </Box>
       </PageWrapper>

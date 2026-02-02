@@ -2,6 +2,7 @@ import { builder } from '../../builder'
 
 export const MeInput = builder.inputType('MeInput', {
   fields: (t) => ({
-    redirect: t.string({ required: false })
+    redirect: t.string({ required: false }),
+    createGuestIfAnonymous: t.boolean({ required: false })
   })
 })

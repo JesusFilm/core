@@ -550,6 +550,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  mergeGuest(input: MergeGuestInput!) : User! @join__field(graph: API_USERS) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
@@ -2185,9 +2186,10 @@ type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__t
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
+  userId: String! @join__field(graph: API_USERS) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
-  email: String! @join__field(graph: API_USERS) 
+  email: String @join__field(graph: API_USERS) 
   imageUrl: String @join__field(graph: API_USERS) 
   superAdmin: Boolean @join__field(graph: API_USERS) 
   emailVerified: Boolean! @join__field(graph: API_USERS) 
@@ -5454,5 +5456,12 @@ input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
 
 input MeInput @join__type(graph: API_USERS)  {
   redirect: String
+  createGuestIfAnonymous: Boolean
+}
+
+input MergeGuestInput @join__type(graph: API_USERS)  {
+  firstName: String!
+  lastName: String!
+  email: String!
 }
     
