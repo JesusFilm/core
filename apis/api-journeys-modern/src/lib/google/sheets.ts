@@ -209,20 +209,22 @@ export async function writeValues({
   spreadsheetId,
   sheetTitle,
   values,
-  append
+  append,
+  valueInputOption = 'RAW'
 }: {
   accessToken: string
   spreadsheetId: string
   sheetTitle: string
   values: (string | number | null)[][]
   append?: boolean
+  valueInputOption?: 'RAW' | 'USER_ENTERED'
 }): Promise<void> {
   const range = `${sheetTitle}!A1`
   const baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`
   const url =
     append === true
-      ? `${baseUrl}:append?valueInputOption=RAW`
-      : `${baseUrl}?valueInputOption=RAW`
+      ? `${baseUrl}:append?valueInputOption=${valueInputOption}`
+      : `${baseUrl}?valueInputOption=${valueInputOption}`
   const method = append === true ? 'POST' : 'PUT'
   const res = await fetch(url, {
     method,
@@ -282,14 +284,16 @@ export async function updateRangeValues({
   accessToken,
   spreadsheetId,
   range,
-  values
+  values,
+  valueInputOption = 'RAW'
 }: {
   accessToken: string
   spreadsheetId: string
   range: string
   values: (string | number | null)[][]
+  valueInputOption?: 'RAW' | 'USER_ENTERED'
 }): Promise<void> {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW`
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?valueInputOption=${valueInputOption}`
   const res = await fetch(url, {
     method: 'PUT',
     headers: {
@@ -301,6 +305,35 @@ export async function updateRangeValues({
   if (!res.ok) {
     throw new Error(
       `Sheets updateRangeValues failed: ${res.status} ${await res.text()}`
+    )
+  }
+}
+
+/**
+ * Clear all data from a sheet while preserving the sheet itself.
+ * Used for backfill operations that need to replace all content.
+ */
+export async function clearSheet({
+  accessToken,
+  spreadsheetId,
+  sheetTitle
+}: {
+  accessToken: string
+  spreadsheetId: string
+  sheetTitle: string
+}): Promise<void> {
+  const range = `${sheetTitle}!A:ZZ`
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:clear`
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  if (!res.ok) {
+    throw new Error(
+      `Sheets clearSheet failed: ${res.status} ${await res.text()}`
     )
   }
 }
