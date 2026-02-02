@@ -1,6 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
-import useMediaQuery from '@mui/material/useMediaQuery'
+
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -27,8 +26,6 @@ function IndexPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
-  const theme = useTheme()
-  const mdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
 
   // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
