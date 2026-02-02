@@ -27,6 +27,7 @@ describe('WebsiteCover', () => {
     scale: null,
     focalLeft: 50,
     focalTop: 50,
+    customizable: null,
     children: []
   }
 
@@ -77,6 +78,7 @@ describe('WebsiteCover', () => {
       },
       variantLanguages: []
     },
+    customizable: null,
     children: []
   }
 

@@ -56,6 +56,7 @@ const video: TreeBlock<VideoFields> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  customizable: null,
   children: []
 }
 

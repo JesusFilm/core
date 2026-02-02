@@ -55,6 +55,7 @@ describe('CardWrapper', () => {
           showGeneratedSubtitles: null,
           eventLabel: null,
           endEventLabel: null,
+          customizable: null,
           children: [
             {
               id: 'image5.id',
@@ -70,7 +71,7 @@ describe('CardWrapper', () => {
               scale: null,
               focalLeft: 50,
               focalTop: 50,
-            customizable: null
+              customizable: null
             }
           ]
         }
@@ -104,7 +105,7 @@ describe('CardWrapper', () => {
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
-              customizable: null
+                customizable: null
               }
             ],
             endAt: null,
@@ -129,7 +130,7 @@ describe('CardWrapper', () => {
             showGeneratedSubtitles: null,
             eventLabel: null,
             endEventLabel: null,
-          customizable: null
+            customizable: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -189,6 +190,7 @@ describe('CardWrapper', () => {
           showGeneratedSubtitles: null,
           eventLabel: null,
           endEventLabel: null,
+          customizable: null,
           children: [
             {
               id: 'image5.id',
@@ -204,7 +206,7 @@ describe('CardWrapper', () => {
               scale: null,
               focalLeft: 50,
               focalTop: 50,
-            customizable: null
+              customizable: null
             }
           ]
         }
@@ -238,7 +240,7 @@ describe('CardWrapper', () => {
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
-              customizable: null
+                customizable: null
               }
             ],
             endAt: null,
@@ -263,7 +265,7 @@ describe('CardWrapper', () => {
             showGeneratedSubtitles: null,
             eventLabel: null,
             endEventLabel: null,
-          customizable: null
+            customizable: null
           }
         ],
         coverBlockId: 'video5.id',

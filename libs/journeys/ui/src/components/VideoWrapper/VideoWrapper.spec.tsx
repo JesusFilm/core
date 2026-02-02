@@ -38,6 +38,7 @@ describe('VideoWrapper', () => {
       showGeneratedSubtitles: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: [
         {
           id: 'image5.id',
@@ -53,7 +54,7 @@ describe('VideoWrapper', () => {
           scale: null,
           focalLeft: 50,
           focalTop: 50,
-        customizable: null
+          customizable: null
         }
       ]
     }
@@ -81,7 +82,7 @@ describe('VideoWrapper', () => {
             scale: null,
             focalLeft: 50,
             focalTop: 50,
-          customizable: null
+            customizable: null
           }
         ],
         endAt: null,
@@ -106,7 +107,7 @@ describe('VideoWrapper', () => {
         showGeneratedSubtitles: null,
         eventLabel: null,
         endEventLabel: null,
-      customizable: null
+        customizable: null
       },
       undefined
     )
@@ -138,6 +139,7 @@ describe('VideoWrapper', () => {
       showGeneratedSubtitles: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: [
         {
           id: 'image5.id',
@@ -153,7 +155,7 @@ describe('VideoWrapper', () => {
           scale: null,
           focalLeft: 50,
           focalTop: 50,
-        customizable: null
+          customizable: null
         }
       ]
     }
@@ -181,7 +183,7 @@ describe('VideoWrapper', () => {
             scale: null,
             focalLeft: 50,
             focalTop: 50,
-          customizable: null
+            customizable: null
           }
         ],
         endAt: null,
@@ -206,7 +208,7 @@ describe('VideoWrapper', () => {
         showGeneratedSubtitles: null,
         eventLabel: null,
         endEventLabel: null,
-      customizable: null
+        customizable: null
       },
       undefined
     )

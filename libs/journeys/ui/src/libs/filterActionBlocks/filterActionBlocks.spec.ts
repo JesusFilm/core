@@ -84,6 +84,7 @@ const image: TreeBlock<ImageBlock> = {
   scale: null,
   focalLeft: 50,
   focalTop: 50,
+  customizable: null,
   children: []
 }
 

@@ -235,6 +235,7 @@ describe('BlockRenderer', () => {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
     const { getByRole } = render(<BlockRenderer block={block} />)
@@ -260,6 +261,7 @@ describe('BlockRenderer', () => {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -824,6 +826,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       fullsize: null,
       action: null,
+      customizable: null,
       children: []
     }
     const { getByTestId } = render(
@@ -884,6 +887,7 @@ describe('BlockRenderer', () => {
       fullsize: null,
       action: null,
       parentOrder: 0,
+      customizable: null,
       children: []
     }
     const { getByTestId } = render(

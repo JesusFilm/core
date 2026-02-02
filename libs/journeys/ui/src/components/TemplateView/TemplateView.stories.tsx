@@ -83,7 +83,8 @@ const primaryImageBlock: PrimaryImageBlock = {
   parentOrder: 1,
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
