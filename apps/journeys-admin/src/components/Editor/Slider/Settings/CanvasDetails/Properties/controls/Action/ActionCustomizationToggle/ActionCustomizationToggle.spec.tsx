@@ -10,14 +10,14 @@ import {
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
 
-import { CustomizationToggle } from './CustomizationToggle'
+import { ActionCustomizationToggle } from './ActionCustomizationToggle'
 
 const mockAddAction = jest.fn()
 jest.mock('../../../../../../../utils/useActionCommand', () => ({
   useActionCommand: () => ({ addAction: mockAddAction })
 }))
 
-describe('CustomizationToggle', () => {
+describe('ActionCustomizationToggle', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.restoreAllMocks()
@@ -46,7 +46,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -73,7 +73,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
@@ -104,7 +104,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -144,7 +144,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -195,7 +195,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -242,7 +242,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -272,7 +272,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -311,7 +311,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -357,7 +357,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
@@ -398,7 +398,7 @@ describe('CustomizationToggle', () => {
 
     render(
       <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-        <CustomizationToggle />
+        <ActionCustomizationToggle />
       </EditorProvider>
     )
 
