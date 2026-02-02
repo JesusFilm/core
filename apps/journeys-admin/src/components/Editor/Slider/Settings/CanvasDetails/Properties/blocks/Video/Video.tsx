@@ -12,6 +12,7 @@ import Play1Icon from '@core/shared/ui/icons/Play1'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
+import { BlockCustomizationToggle } from '../../controls/BlockCustomizationToggle'
 import { getAction } from '../../controls/Action/utils/actions'
 import { EventLabel } from '../../controls/EventLabel'
 import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
@@ -75,7 +76,10 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
             : (block.title ?? '')
         }
       >
-        <VideoOptions />
+        <>
+          <VideoOptions />
+          {journey?.template && <BlockCustomizationToggle />}
+        </>
       </Accordion>
     </Box>
   )
