@@ -1,6 +1,5 @@
+import { Button, Column, Row, Section, Text } from '@react-email/components'
 import { ReactElement } from 'react'
-
-import { Text, Section, Row, Column, Button } from '@react-email/components'
 
 export function NextStepsVerificationFooter(): ReactElement {
   return (
