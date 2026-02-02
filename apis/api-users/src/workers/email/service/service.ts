@@ -29,7 +29,7 @@ export async function service(
     redirectParam = `&redirect=${encodeURIComponent(job.data.redirect)}`
   }
 
-  const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
+  const defaultInviteLink = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
     job.data.token
   }&email=${emailAlias ?? job.data.email}${redirectParam}`
 
@@ -48,23 +48,27 @@ export async function service(
 
   let from: string | undefined
   let subject: string
-  let logo: AppType
+  let url: string
+  let appType: NonNullable<AppType>
 
   switch (job.data?.app ?? 'NextSteps') {
     case 'JesusFilmApp':
       from = '"Jesus Film App Support" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address on Jesus Film App'
-      logo = 'JesusFilmApp'
+      url = ''
+      appType = 'JesusFilmApp'
       break
     case 'NextSteps':
       from = '"Next Steps Support" <support@nextstep.is>'
       subject = 'Verify your email address on Next Steps'
-      logo = 'NextSteps'
+      url = defaultInviteLink
+      appType = 'NextSteps'
       break
     default:
       from = '"Next Steps Support" <support@nextstep.is>'
       subject = 'Verify your email address on Next Steps'
-      logo = 'NextSteps'
+      url = defaultInviteLink
+      appType = 'NextSteps'
       break
   }
 
@@ -73,7 +77,7 @@ export async function service(
       token: job.data.token,
       recipient,
       inviteLink: url,
-      logo
+      app: appType
     })
   )
 
@@ -82,7 +86,7 @@ export async function service(
       token: job.data.token,
       recipient,
       inviteLink: url,
-      logo
+      app: appType
     }),
     {
       plainText: true

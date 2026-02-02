@@ -1,33 +1,27 @@
-import {
-  Body,
-  Column,
-  Head,
-  Html,
-  Link,
-  Preview,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
+import { Body, Head, Html, Preview } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
-  ActionButton,
-  ActionCard,
   BodyWrapper,
   EmailContainer,
   Footer,
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-import { Logo } from '@core/yoga/email/types'
+
+import type { AppType } from '../../../schema/user/enums/app'
+import {
+  getFooterContent,
+  getPreviewText,
+  getVerificationContent
+} from './utils'
 
 interface VerifyEmailProps {
   inviteLink: string
   token: string
   story?: boolean
-  logo?: Logo
+  app: NonNullable<AppType>
   recipient: {
     firstName: string
     lastName: string
@@ -45,9 +39,14 @@ export const EmailVerifyEmail = ({
   recipient,
   token,
   story = false,
-  logo
+  app
 }: VerifyEmailProps): ReactElement => {
-  const previewText = `Verify your email address on Next Steps`
+  const VerificationContent = getVerificationContent(app)
+  const FooterContent = getFooterContent(app)
+  const previewText = getPreviewText(app)
+
+  const showUnsubscribeLink = app !== 'JesusFilmApp'
+
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -58,46 +57,19 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header logo={logo} />
+      <Header logo={app} />
       <EmailContainer>
         <BodyWrapper>
-          <ActionCard recipient={recipient}>
-            <Section align="center" className="px-[28px]">
-              <Row>
-                <th>
-                  <Text className="mt-0 mb-[24px] text-center text-[16px] leading-[28px] font-semibold">
-                    Verify your email address to start making interactive
-                    Journeys!
-                  </Text>
-                </th>
-              </Row>
-              <Row className="px-[28px]">
-                <Column align="center">
-                  <ActionButton
-                    buttonText="Verify Email Address"
-                    url={inviteLink}
-                  />
-                </Column>
-              </Row>
-              <Row>
-                <Text className="mt-[24px] mb-[0px] text-center text-[14px] leading-[24px] font-[400]">
-                  If the link above does not work, enter the following code at
-                  the link below:
-                </Text>
-                <Text className="my-0 text-center text-[14px] leading-[24px] font-[400]">
-                  {token}
-                </Text>
-                <Link href={inviteLink} style={{ textDecoration: 'none' }}>
-                  <Text className="mt-[24px] text-center text-[12px] leading-[16px] font-[400] text-[#C52D3A]">
-                    {inviteLink}
-                  </Text>
-                </Link>
-              </Row>
-            </Section>
-          </ActionCard>
+          <VerificationContent
+            inviteLink={inviteLink}
+            recipient={recipient}
+            token={token}
+          />
         </BodyWrapper>
-        <Footer />
-        <UnsubscribeLink recipientEmail={recipient.email} />
+        <FooterContent />
+        {showUnsubscribeLink && (
+          <UnsubscribeLink recipientEmail={recipient.email} />
+        )}
       </EmailContainer>
     </>
   )
@@ -146,7 +118,7 @@ EmailVerifyEmail.PreviewProps = {
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
   inviteLink: 'https://admin.nextstep.is/users/verify',
-  logo: 'NextSteps'
+  app: 'NextSteps'
 } satisfies VerifyEmailProps
 
 export default EmailVerifyEmail

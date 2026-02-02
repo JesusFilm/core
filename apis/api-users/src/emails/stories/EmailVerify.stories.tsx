@@ -15,7 +15,7 @@ const Template: StoryObj<typeof EmailVerifyEmail> = {
       recipient={args.recipient}
       token={args.token}
       inviteLink="https://admin.nextstep.is/"
-      logo={args.logo}
+      app={args.app}
       story
     />
   )
@@ -24,7 +24,7 @@ const Template: StoryObj<typeof EmailVerifyEmail> = {
 export const Default = {
   ...Template,
   args: {
-    logo: 'NextSteps',
+    app: 'NextSteps',
     email: 'joeronimo@example.com',
     token: '123456',
     recipient: {
@@ -40,7 +40,7 @@ export const Default = {
 export const JesusFilmApp = {
   ...Template,
   args: {
-    logo: 'JesusFilmApp',
+    app: 'JesusFilmApp',
     email: 'joeronimo@example.com',
     token: '123456',
     recipient: {

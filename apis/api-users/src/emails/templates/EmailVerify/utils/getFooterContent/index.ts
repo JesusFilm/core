@@ -1,0 +1,1 @@
+export { getFooterContent } from './getFooterContent'
