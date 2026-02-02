@@ -2,6 +2,7 @@ import LanguageIcon from '@mui/icons-material/Language'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
@@ -14,6 +15,8 @@ import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { LanguageSwitcher } from '../../LanguageSwitcher'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'react-i18next'
 
 export interface MainBodyContainerProps {
   onClick: () => void
@@ -26,6 +29,8 @@ export function AppHeader({
 }: MainBodyContainerProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   const [open, setOpen] = useState(false)
+  const { i18n } = useTranslation('apps-journeys-admin')
+  const currentLanguageCode = (i18n?.language ?? '').slice(-2).toUpperCase()
 
   return (
     <Box
@@ -42,7 +47,13 @@ export function AppHeader({
         }}
       >
         <Toolbar variant={toolbar.variant}>
-          <Stack direction="row" flexGrow={1} alignItems="center">
+          <Stack
+            direction="row"
+            flexGrow={1}
+            alignItems="center"
+            position="relative"
+            width="100%"
+          >
             <IconButton
               size="large"
               edge="start"
@@ -56,7 +67,15 @@ export function AppHeader({
               direction="row"
               flexGrow={1}
               justifyContent="center"
-              sx={{ mx: -9 }}
+              sx={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
             >
               <Image
                 src={taskbarIcon}
@@ -71,8 +90,21 @@ export function AppHeader({
               color="inherit"
               onClick={() => setOpen(true)}
               aria-label="language"
+              sx={{
+                position: 'fixed',
+                right: 12,
+                border: '1.5px solid white',
+                borderRadius: 2,
+                paddingX: '7px',
+                paddingY: '3px'
+              }}
             >
-              <LanguageIcon sx={{ color: 'background.paper' }} />
+              <LanguageIcon
+                sx={{ color: 'background.paper', mr: 1 }}
+                fontSize="small"
+              />
+              <Typography sx={{}}>{currentLanguageCode}</Typography>
+              <ExpandMoreIcon fontSize="small" />
             </IconButton>
           </Stack>
           {open && (
