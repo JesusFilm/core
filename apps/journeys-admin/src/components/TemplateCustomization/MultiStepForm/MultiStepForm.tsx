@@ -22,6 +22,7 @@ import {
   SocialScreen,
   TextScreen
 } from './Screens'
+import { MediaScreen } from './Screens/MediaScreen'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
@@ -48,6 +49,13 @@ function renderScreen(
     case 'links':
       return (
         <LinksScreen
+          handleNext={handleNext}
+          handleScreenNavigation={handleScreenNavigation}
+        />
+      )
+    case 'media':
+      return (
+        <MediaScreen
           handleNext={handleNext}
           handleScreenNavigation={handleScreenNavigation}
         />

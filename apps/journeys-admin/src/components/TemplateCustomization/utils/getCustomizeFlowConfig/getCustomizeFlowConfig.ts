@@ -8,6 +8,7 @@ export type CustomizationScreen =
   | 'text'
   | 'links'
   | 'social'
+  | 'media'
   | 'done'
 
 export interface CustomizeFlowConfig {
@@ -61,6 +62,8 @@ export function getCustomizeFlowConfig(
 
   // Check for customizable links
   const hasCustomizableLinks = links.length > 0
+
+  // Check for media
 
   // Build screens array based on capabilities
   const screens: CustomizationScreen[] = [...baseScreens]
