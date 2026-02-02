@@ -522,7 +522,6 @@ export interface IconBlockCreateInput {
   name?: IconName | null;
   color?: IconColor | null;
   size?: IconSize | null;
-  customizable?: boolean | null;
 }
 
 export interface ImageBlockCreateInput {
