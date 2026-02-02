@@ -153,6 +153,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_MultiselectOptionBlock {
@@ -560,6 +561,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
   action: StepBlockRestoreFromAction_blockRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

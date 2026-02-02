@@ -153,6 +153,7 @@ export interface CardQuoteRestore_image_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_image_MultiselectOptionBlock {
@@ -550,6 +551,7 @@ export interface CardQuoteRestore_image_VideoBlock {
   action: CardQuoteRestore_image_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -758,6 +760,7 @@ export interface CardQuoteRestore_subtitle_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_subtitle_MultiselectOptionBlock {
@@ -1155,6 +1158,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
   action: CardQuoteRestore_subtitle_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1363,6 +1367,7 @@ export interface CardQuoteRestore_title_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_title_MultiselectOptionBlock {
@@ -1760,6 +1765,7 @@ export interface CardQuoteRestore_title_VideoBlock {
   action: CardQuoteRestore_title_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1968,6 +1974,7 @@ export interface CardQuoteRestore_body_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_body_MultiselectOptionBlock {
@@ -2365,6 +2372,7 @@ export interface CardQuoteRestore_body_VideoBlock {
   action: CardQuoteRestore_body_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
