@@ -31,6 +31,19 @@ jest.mock('../../workers/googleSheetsSync/queue', () => ({
   queue: mockGoogleSheetsSyncQueue
 }))
 
+const mockLogger = {
+  warn: jest.fn(),
+  error: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn()
+}
+
+jest.mock('../logger', () => ({
+  get logger() {
+    return mockLogger
+  }
+}))
+
 describe('event utils', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -440,6 +453,7 @@ describe('event utils', () => {
       jest.clearAllMocks()
       __setGoogleSheetsSyncQueueForTests(mockGoogleSheetsSyncQueue)
       delete process.env.NODE_ENV
+      mockLogger.warn.mockClear()
     })
 
     it('should return early when no sync config exists', async () => {
@@ -454,12 +468,13 @@ describe('event utils', () => {
       expect(mockGoogleSheetsSyncQueue.add).not.toHaveBeenCalled()
     })
 
-    it('should add job to queue with correct data when syncs exist', async () => {
+    it('should add backfill job to queue with correct data when syncs exist', async () => {
       const mockSync = {
         id: 'sync-id',
         spreadsheetId: 'spreadsheet-id',
         sheetName: 'Sheet1',
-        timezone: 'UTC'
+        timezone: 'UTC',
+        integrationId: 'integration-id'
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
@@ -481,29 +496,41 @@ describe('event utils', () => {
       })
 
       expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
-        'google-sheets-sync',
+        'google-sheets-sync-backfill',
         {
+          type: 'backfill',
           journeyId: 'journey-id',
           teamId: 'team-id',
-          row,
-          sheetName: undefined,
-          syncs: [mockSync]
+          syncId: 'sync-id',
+          spreadsheetId: 'spreadsheet-id',
+          sheetName: 'Sheet1',
+          timezone: 'UTC',
+          integrationId: 'integration-id'
         },
         expect.objectContaining({
+          jobId: 'backfill-sync-id',
+          delay: expect.any(Number),
           attempts: 3,
           backoff: { type: 'exponential', delay: 1000 },
           removeOnComplete: true,
           removeOnFail: { age: 3600 }
         })
       )
+
+      // Verify delay is between 1-60 seconds (1000-60000ms)
+      const callArgs = mockGoogleSheetsSyncQueue.add.mock.calls[0]
+      const delay = callArgs[2]?.delay
+      expect(delay).toBeGreaterThanOrEqual(1000)
+      expect(delay).toBeLessThanOrEqual(60000)
     })
 
-    it('should pass sheetName to queue when provided', async () => {
+    it('should skip syncs without integrationId', async () => {
       const mockSync = {
         id: 'sync-id',
         spreadsheetId: 'spreadsheet-id',
         sheetName: 'Sheet1',
-        timezone: 'UTC'
+        timezone: 'UTC',
+        integrationId: null
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
@@ -511,31 +538,54 @@ describe('event utils', () => {
       await appendEventToGoogleSheets({
         journeyId: 'journey-id',
         teamId: 'team-id',
-        row: ['visitor-id', '2024-01-01', '', '', '', '', ''],
-        sheetName: 'CustomSheet'
+        row: ['visitor-id', '2024-01-01', '', '', '', '', '']
       })
 
-      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
-        'google-sheets-sync',
-        expect.objectContaining({
-          sheetName: 'CustomSheet'
-        }),
-        expect.any(Object)
+      expect(mockGoogleSheetsSyncQueue.add).not.toHaveBeenCalled()
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        { syncId: 'sync-id', journeyId: 'journey-id', teamId: 'team-id' },
+        'Skipping Google Sheets sync: missing integrationId'
       )
     })
 
-    it('should pass multiple syncs to queue when they exist', async () => {
+    it('should skip syncs without sheetName', async () => {
+      const mockSync = {
+        id: 'sync-id',
+        spreadsheetId: 'spreadsheet-id',
+        sheetName: null,
+        timezone: 'UTC',
+        integrationId: 'integration-id'
+      }
+
+      prismaMock.googleSheetsSync.findMany.mockResolvedValue([mockSync] as any)
+
+      await appendEventToGoogleSheets({
+        journeyId: 'journey-id',
+        teamId: 'team-id',
+        row: ['visitor-id', '2024-01-01', '', '', '', '', '']
+      })
+
+      expect(mockGoogleSheetsSyncQueue.add).not.toHaveBeenCalled()
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        { syncId: 'sync-id', journeyId: 'journey-id', teamId: 'team-id' },
+        'Skipping Google Sheets sync: missing sheetName'
+      )
+    })
+
+    it('should queue separate backfill jobs for multiple syncs', async () => {
       const mockSync1 = {
         id: 'sync-id-1',
         spreadsheetId: 'spreadsheet-id-1',
         sheetName: 'Sheet1',
-        timezone: 'UTC'
+        timezone: 'UTC',
+        integrationId: 'integration-id-1'
       }
       const mockSync2 = {
         id: 'sync-id-2',
         spreadsheetId: 'spreadsheet-id-2',
         sheetName: 'Sheet2',
-        timezone: 'Pacific/Auckland'
+        timezone: 'Pacific/Auckland',
+        integrationId: 'integration-id-2'
       }
 
       prismaMock.googleSheetsSync.findMany.mockResolvedValue([
@@ -549,12 +599,42 @@ describe('event utils', () => {
         row: ['visitor-id', '2024-01-01', '', '', '', '', '']
       })
 
-      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledWith(
-        'google-sheets-sync',
+      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenCalledTimes(2)
+      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenNthCalledWith(
+        1,
+        'google-sheets-sync-backfill',
+        {
+          type: 'backfill',
+          journeyId: 'journey-id',
+          teamId: 'team-id',
+          syncId: 'sync-id-1',
+          spreadsheetId: 'spreadsheet-id-1',
+          sheetName: 'Sheet1',
+          timezone: 'UTC',
+          integrationId: 'integration-id-1'
+        },
         expect.objectContaining({
-          syncs: [mockSync1, mockSync2]
-        }),
-        expect.any(Object)
+          jobId: 'backfill-sync-id-1',
+          delay: expect.any(Number)
+        })
+      )
+      expect(mockGoogleSheetsSyncQueue.add).toHaveBeenNthCalledWith(
+        2,
+        'google-sheets-sync-backfill',
+        {
+          type: 'backfill',
+          journeyId: 'journey-id',
+          teamId: 'team-id',
+          syncId: 'sync-id-2',
+          spreadsheetId: 'spreadsheet-id-2',
+          sheetName: 'Sheet2',
+          timezone: 'Pacific/Auckland',
+          integrationId: 'integration-id-2'
+        },
+        expect.objectContaining({
+          jobId: 'backfill-sync-id-2',
+          delay: expect.any(Number)
+        })
       )
     })
 

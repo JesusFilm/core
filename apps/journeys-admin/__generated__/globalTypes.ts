@@ -662,13 +662,6 @@ export interface JourneyUpdateInput {
   socialNodeY?: number | null;
 }
 
-export interface JourneyVisitorExportSelect {
-  name?: boolean | null;
-  email?: boolean | null;
-  phone?: boolean | null;
-  createdAt?: boolean | null;
-}
-
 export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
