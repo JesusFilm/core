@@ -3,39 +3,23 @@ import type { Logger } from 'pino'
 
 import { prisma as languagesPrisma } from '@core/prisma/languages/client'
 
-type AlgoliaLanguagesConfig = {
-  appId: string
-  apiKey: string
-  languagesIndex: string
-}
-
-function getOptionalEnv(name: string): string | undefined {
+function getRequiredEnv(name: string): string {
   const value = process.env[name]
-  if (value == null || value.trim() === '') return undefined
+  if (value == null || value.trim() === '') {
+    throw new Error(`Missing required env var: ${name}`)
+  }
   return value
-}
-
-function getAlgoliaLanguagesConfig(): AlgoliaLanguagesConfig | null {
-  const appId = getOptionalEnv('ALGOLIA_APPLICATION_ID')
-  const apiKey = getOptionalEnv('ALGOLIA_API_KEY')
-  const languagesIndex = getOptionalEnv('ALGOLIA_INDEX_LANGUAGES')
-
-  if (appId == null || apiKey == null || languagesIndex == null) return null
-
-  return { appId, apiKey, languagesIndex }
 }
 
 export async function updateLanguageInAlgoliaFromMedia(
   languageId: string,
   logger?: Logger
 ): Promise<void> {
-  const config = getAlgoliaLanguagesConfig()
-  if (config == null) {
-    logger?.warn('Algolia languages config missing, skipping update')
-    return
-  }
-
-  const client = algoliasearch(config.appId, config.apiKey)
+  const appId = getRequiredEnv('ALGOLIA_APPLICATION_ID')
+  const apiKey = getRequiredEnv('ALGOLIA_API_KEY')
+  const languagesIndex = getRequiredEnv('ALGOLIA_INDEX_LANGUAGES')
+  
+  const client = algoliasearch(appId, apiKey)
 
   try {
     const language = await languagesPrisma.language.findUnique({
@@ -113,7 +97,7 @@ export async function updateLanguageInAlgoliaFromMedia(
     }
 
     await client.saveObjects({
-      indexName: config.languagesIndex,
+      indexName: languagesIndex,
       objects: [transformedLanguage],
       waitForTasks: true
     })
