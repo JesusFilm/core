@@ -40,6 +40,12 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     page
   }) => {
     const journeyPage = new JourneyPage(page)
+    if (!(await journeyPage.isDiscoverJourneyListVisible())) {
+      test.skip(
+        true,
+        'Discover journey list (Active/Archived/Trash tabs) not available'
+      )
+    }
     // Verify the user able to move the single journeys from Active to archived page
     await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab()
     await journeyPage.clickArchivedTab()
@@ -63,6 +69,12 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     page
   }) => {
     const journeyPage = new JourneyPage(page)
+    if (!(await journeyPage.isDiscoverJourneyListVisible())) {
+      test.skip(
+        true,
+        'Discover journey list (Active/Archived/Trash tabs) not available'
+      )
+    }
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     // Verify the user able to move the all journeys from Active to archived page

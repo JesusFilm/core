@@ -5,7 +5,7 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
-import { generateRandomNumber } from '../framework/helpers'
+import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
@@ -424,12 +424,28 @@ export class JourneyPage {
       .click()
   }
 
+  /** Returns true if the discover journey list (Active/Archived/Trash tabs) is visible. */
+  async isDiscoverJourneyListVisible(): Promise<boolean> {
+    const tab = this.page.locator(
+      'button[id*="archived-status-panel-tab"]'
+    ).first()
+    return await tab.isVisible().catch(() => false)
+  }
+
   async clickArchivedTab() {
     const archivedTab = this.page.locator(
       'button[id*="archived-status-panel-tab"]'
     )
-    await expect(archivedTab).toBeVisible({ timeout: sixtySecondsTimeout })
-    await archivedTab.click()
+    const visible = await archivedTab.first().isVisible().catch(() => false)
+    if (!visible) {
+      const baseUrl = await getBaseUrl()
+      const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
+      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    }
+    await expect(archivedTab.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    await archivedTab.first().click()
     await expect(
       this.page.locator(
         'button[id*="archived-status-panel-tab"][aria-selected="true"]'
@@ -633,7 +649,7 @@ export class JourneyPage {
           `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     this.journeyList = await this.page
       .locator(
         `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`

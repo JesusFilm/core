@@ -163,7 +163,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.chooseColorForIcon('Primary') //Leading Icon propety - Choose color for selected Icon as 'Primary'
     await cardLevelActionPage.clickButtonPropertyDropdown('Trailing Icon') //Clicking the 'Variant' property dropdown in the Button properties drawer
     await cardLevelActionPage.clickIconDropdown() //Clicking Icon dropdown for 'Leading Icon' property
-    await cardLevelActionPage.chooseIconFromList('Chat Bubble') //Choose "Arrow Right" icon option from the list for Leading Icon property
+    await cardLevelActionPage.chooseIconFromList('Chat') // Trailing Icon: app label is "Chat" for ChatBubbleOutlineRounded
     await cardLevelActionPage.chooseColorForIcon('Error') //Leading Icon propety - Choose color for selected Icon as 'Primary'
     await cardLevelActionPage.enterButtonNameInCard(buttonName) //Enter Button name in the card
     await cardLevelActionPage.verifyButtonPropertyUpdatedInCard(buttonName) //Button Name To validate in Card along with above selected properties

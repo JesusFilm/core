@@ -1311,8 +1311,12 @@ export class CardLevelActionPage {
       .click()
   }
   async chooseIconFromList(iconName: string) {
-    //"Arrow Right", "Chat Bubble"
-    await this.page.getByRole('option', { name: iconName }).click()
+    const option = this.page.getByRole('option', {
+      name: iconName,
+      exact: true
+    })
+    await expect(option).toBeVisible({ timeout: sixtySecondsTimeout })
+    await option.click()
   }
   async chooseColorForIcon(iconColor: string) {
     await this.page

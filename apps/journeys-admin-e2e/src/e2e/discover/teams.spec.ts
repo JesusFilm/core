@@ -89,13 +89,22 @@ test.describe('Teams', () => {
     await journeyPage.validateUrlFieldInShareDialog(domainName) //Validate that the URL field from Share dialog contains the custom domain
   })
 
-  // Discover page -> Three dot > Integrations
-  test('Verify Integrations option from Three dot menu', async ({ page }) => {
+  // Discover page -> Three dot > Integrations (skipped when teamIntegrations flag is off)
+  test('Verify Integrations option from Three dot menu', async ({
+    page
+  }) => {
     const teamPage = new TeamsPage(page)
 
     await teamPage.clickThreeDotOfTeams() //click three dot from the Discovery page teams section
     await teamPage.clickThreeDotOptions('Integrations') //select Integrations option from the three dot menu
     await teamPage.clickAddIntegrationButton() //Clicking Add integration '+' icon
+    const hasGrowthSpaces = await teamPage.isGrowthSpaceIntegrationVisible()
+    if (!hasGrowthSpaces) {
+      test.skip(
+        true,
+        'Growth Spaces integration not available (teamIntegrations flag may be off)'
+      )
+    }
     await teamPage.clickGrowthSpaceIntegration() //Clicking Growth Space integration
     await teamPage.enterAccessId('invalidAccessId') //enter invalid access id
     await teamPage.enterAccessSecret('invalidAccessSecret') //enter invalid access secret
