@@ -32,7 +32,7 @@ describe('getHeaderElements', () => {
           scale: 1,
           focalLeft: 50,
           focalTop: 50,
-        customizable: null
+          customizable: null
         }
       }
 

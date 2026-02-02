@@ -33,7 +33,7 @@ describe('ImageBlockEditor', () => {
     scale: null,
     focalLeft: 50,
     focalTop: 50,
-  customizable: null
+    customizable: null
   }
 
   it('should render the ImageBlockEditor', () => {
@@ -141,7 +141,7 @@ describe('ImageBlockEditor', () => {
         scale: 100,
         focalLeft: 50,
         focalTop: 50,
-      customizable: null
+        customizable: null
       })
     )
   })

@@ -19,7 +19,7 @@ const image: TreeBlock<ImageBlock> = {
   scale: null,
   focalLeft: 50,
   focalTop: 50,
-      customizable: null
+  customizable: null
 }
 
 const response = { ...image, parentOrder: 0 }

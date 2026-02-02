@@ -53,7 +53,7 @@ export function UnsplashList({
       scale: 100,
       focalLeft: 50,
       focalTop: 50,
-    customizable: null
+      customizable: null
     })
   }
 

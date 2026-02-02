@@ -58,7 +58,7 @@ export function AIGallery({
           scale: 100,
           focalLeft: 50,
           focalTop: 50,
-        customizable: null
+          customizable: null
         })
       } else {
         enqueueSnackbar(t('Something went wrong, please try again!'), {

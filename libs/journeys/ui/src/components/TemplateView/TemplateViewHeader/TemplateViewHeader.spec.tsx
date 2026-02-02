@@ -99,7 +99,7 @@ describe('TemplateViewHeader', () => {
         scale: null,
         focalLeft: 50,
         focalTop: 50,
-      customizable: null
+        customizable: null
       }
     }
     const { getByText, getByRole } = render(
@@ -147,7 +147,7 @@ describe('TemplateViewHeader', () => {
         scale: null,
         focalLeft: 50,
         focalTop: 50,
-      customizable: null
+        customizable: null
       }
     }
     const { queryByText, queryByRole } = render(

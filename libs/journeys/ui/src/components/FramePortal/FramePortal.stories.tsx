@@ -64,7 +64,7 @@ const block: TreeBlock<Block> = {
           scale: null,
           focalLeft: 50,
           focalTop: 50,
-        customizable: null
+          customizable: null
         },
         {
           id: 'typographyBlockId1',

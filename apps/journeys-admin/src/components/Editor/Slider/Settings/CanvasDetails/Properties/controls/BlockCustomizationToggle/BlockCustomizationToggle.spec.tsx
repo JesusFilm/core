@@ -19,10 +19,10 @@ import {
   VideoBlockUpdate,
   VideoBlockUpdateVariables
 } from '../../../../../../../../../__generated__/VideoBlockUpdate'
-import { IMAGE_BLOCK_UPDATE } from '../../blocks/Image/Options/ImageOptions'
-import { VIDEO_BLOCK_UPDATE } from '../../blocks/Video/Options/VideoOptions'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
+import { IMAGE_BLOCK_UPDATE } from '../../blocks/Image/Options/ImageOptions'
+import { VIDEO_BLOCK_UPDATE } from '../../blocks/Video/Options/VideoOptions'
 
 import { BlockCustomizationToggle } from './BlockCustomizationToggle'
 

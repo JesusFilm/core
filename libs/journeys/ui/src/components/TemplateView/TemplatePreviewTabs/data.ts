@@ -62,7 +62,7 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -111,7 +111,7 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -160,7 +160,7 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -188,7 +188,7 @@ export const journeyVideoBlocks: Blocks[] = [
     action: null,
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'CardBlock',
@@ -259,7 +259,7 @@ export const journeyVideoBlocks: Blocks[] = [
     },
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'CardBlock',
@@ -372,7 +372,7 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -422,7 +422,7 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -457,7 +457,7 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -509,7 +509,7 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -561,7 +561,7 @@ export const videoBlocksFiltered = [
     },
     eventLabel: null,
     endEventLabel: null,
-  customizable: null
+    customizable: null
   },
   {
     __typename: 'VideoBlock',

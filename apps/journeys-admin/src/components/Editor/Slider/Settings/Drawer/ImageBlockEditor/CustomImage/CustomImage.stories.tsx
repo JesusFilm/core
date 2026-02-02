@@ -32,7 +32,7 @@ const Template: StoryObj<typeof CustomImage> = {
             scale: null,
             focalLeft: 50,
             focalTop: 50,
-          customizable: null
+            customizable: null
           }}
           onChange={noop}
         />

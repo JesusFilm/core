@@ -152,7 +152,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
       scale: null,
       focalLeft: 50,
       focalTop: 50,
-    customizable: null
+      customizable: null
     }
 
     add({

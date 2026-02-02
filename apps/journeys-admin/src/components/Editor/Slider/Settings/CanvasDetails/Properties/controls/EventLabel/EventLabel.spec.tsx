@@ -966,7 +966,7 @@ describe('EventLabel', () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: BlockEventLabel.specialVideoStart,
         endEventLabel: null,
-      customizable: null
+        customizable: null
       })
 
       const executeMock = createVideoStartEventLabelUpdateMock(
@@ -1027,7 +1027,7 @@ describe('EventLabel', () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: BlockEventLabel.specialVideoStart,
         endEventLabel: null,
-      customizable: null
+        customizable: null
       })
 
       const executeMock = createVideoStartEventLabelUpdateMock(
@@ -1101,7 +1101,7 @@ describe('EventLabel', () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: null,
         endEventLabel: null,
-      customizable: null
+        customizable: null
       })
 
       const executeMock = createVideoEndEventLabelUpdateMock(

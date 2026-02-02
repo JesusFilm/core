@@ -151,7 +151,7 @@ describe('TemplateView', () => {
         scale: null,
         focalLeft: 50,
         focalTop: 50,
-      customizable: null
+        customizable: null
       }
     }
     const { getAllByText, getAllByRole } = render(
@@ -199,7 +199,7 @@ describe('TemplateView', () => {
         scale: null,
         focalLeft: 50,
         focalTop: 50,
-      customizable: null
+        customizable: null
       }
     }
     const { queryAllByText, queryAllByRole } = render(
