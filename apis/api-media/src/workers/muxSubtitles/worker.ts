@@ -1,11 +1,16 @@
 import { createServer } from 'node:http'
 import { URL } from 'node:url'
+import { config } from 'dotenv'
+import { join } from 'node:path'
 
 import { logger } from '../lib/logger'
 
 import { getMuxSubtitlesWorkflowBundle } from './workflowBundle'
 import { registerMuxSubtitleSteps } from './steps'
 import { dynamicImport } from '../../lib/dynamicImport'
+
+// Load environment variables
+config({ path: join(process.cwd(), 'apis/api-media/.env') })
 
 const port = Number(process.env.MUX_SUBTITLES_WORKER_PORT ?? 4015)
 

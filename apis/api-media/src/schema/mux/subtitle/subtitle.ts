@@ -2,15 +2,16 @@ import { GraphQLError } from 'graphql'
 
 import { MuxSubtitleTrackStatus, prisma } from '@core/prisma/media/client'
 
-import { builder } from '../../builder'
 import { dynamicImport } from '../../../lib/dynamicImport'
-
-import { isValidMuxGeneratedSubtitleLanguageCode } from '../video/service'
-import { getMuxTrackByBcp47 } from './service'
+import { logger } from '../../../logger'
 import {
-  muxAiSubtitlesWorkflow,
-  MuxAiSubtitleWorkflowInput
+  MuxAiSubtitleWorkflowInput,
+  muxAiSubtitlesWorkflow
 } from '../../../workers/muxSubtitles/workflow'
+import { builder } from '../../builder'
+import { isValidMuxGeneratedSubtitleLanguageCode } from '../video/service'
+
+import { getMuxTrackByBcp47 } from './service'
 
 function normalizeLegacyStatus(status: MuxSubtitleTrackStatus): MuxSubtitleTrackStatus {
   if (status === MuxSubtitleTrackStatus.queued || status === MuxSubtitleTrackStatus.not_requested)
@@ -31,8 +32,15 @@ function assertAiSubtitleAdminToken(authorization: string | null | undefined): v
     throw new Error('Missing AI_SUBTITLE_ADMIN_TOKEN')
   }
 
-  const token = authorization?.replace(/^Bearer\\s+/i, '')
-  if (token !== expected) {
+  if (authorization == null) {
+    throw new GraphQLError('Unauthorized', {
+      extensions: { code: 'UNAUTHORIZED' }
+    })
+  }
+
+  const token = authorization.trim().replace(/^Bearer\s+/i, '').trim()
+  if (token !== expected.trim()) {
+
     throw new GraphQLError('Unauthorized', {
       extensions: { code: 'UNAUTHORIZED' }
     })
@@ -211,10 +219,9 @@ builder.mutationFields((t) => ({
         variantsForMux = [videoVariant]
       } else {
         variantsForMux = await prisma.videoVariant.findMany({
-          where: { muxVideoId, edition }
+          where: { muxVideoId, edition: edition ?? undefined }
         })
       }
-
       if (variantsForMux.length === 0) {
         throw new Error('No video variant found for muxVideoId and edition')
       }
@@ -244,17 +251,9 @@ builder.mutationFields((t) => ({
         }
       })
 
-      if (
-        existing != null &&
-        (existing.status === 'queued' || existing.status === 'processing')
-      ) {
-        return existing
-      }
-
       if (existing?.status === 'ready' && existing.vttUrl != null) {
         return existing
       }
-
       const queuedTrack = await prisma.muxSubtitleTrack.upsert({
         ...query,
         where: {
@@ -279,6 +278,8 @@ builder.mutationFields((t) => ({
         }
       })
 
+      logger.info({ id: queuedTrack.id, muxVideoId, bcp47 }, '[MuxSubtitles] 📝 Created/Updated MuxSubtitleTrack with status: "queued"')
+
       const { start } = await dynamicImport('workflow/api')
       const baseUrl =
         process.env.MUX_SUBTITLES_WORKER_URL ??
@@ -296,11 +297,20 @@ builder.mutationFields((t) => ({
         assetId: muxVideo.assetId,
         bcp47,
         languageId: String(languageId),
-        edition,
+        edition: edition ?? 'base',
         videoId: selectedVariant.videoId
       }
 
-      const run = await start(muxAiSubtitlesWorkflow, [workflowInput])
+      logger.info({ muxVideoId, bcp47 }, '[MuxSubtitles] 🚀 Starting workflow')
+
+      let run
+      try {
+        run = await start(muxAiSubtitlesWorkflow, [workflowInput])
+        logger.info({ muxVideoId, bcp47, workflowRunId: run.runId }, '[MuxSubtitles] ✅ Workflow started successfully!')
+      } catch (error) {
+        logger.error({ muxVideoId, bcp47, error: error instanceof Error ? error.message : String(error) }, '[MuxSubtitles] ❌ Failed to start workflow')
+        throw error
+      }
 
       return await prisma.muxSubtitleTrack.update({
         ...query,

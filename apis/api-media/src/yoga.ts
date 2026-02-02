@@ -30,6 +30,7 @@ export const yoga = createYoga<
   schema,
   logging: logger,
   context: async ({ request, params }) => {
+
     const payload = get(params, 'extensions.jwt.payload')
     const authorization = request.headers.get('authorization')
     const user =
@@ -76,7 +77,8 @@ export const yoga = createYoga<
   plugins: [
     tracingPlugin,
     useForwardedJWT({}),
-    process.env.NODE_ENV !== 'test'
+    // Disable HMAC validation in development for direct access to GraphQL playground
+    process.env.NODE_ENV !== 'test' && process.env.DEPLOYMENT_ENV !== 'dev'
       ? useHmacSignatureValidation({
           secret: process.env.GATEWAY_HMAC_SECRET ?? ''
         })

@@ -311,6 +311,7 @@ type Mutation {
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
+  requestMuxAiSubtitles(muxVideoId: ID!, bcp47: String!, languageId: ID!, edition: String, videoVariantId: ID): MutationRequestMuxAiSubtitlesResult!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
@@ -445,6 +446,12 @@ type MutationPlaylistUpdateSuccess {
   data: Playlist!
 }
 
+union MutationRequestMuxAiSubtitlesResult = Error | MutationRequestMuxAiSubtitlesSuccess
+
+type MutationRequestMuxAiSubtitlesSuccess {
+  data: MuxSubtitleTrack!
+}
+
 input MutationShortLinkCreateInput {
   """the unique identifier for the short link (will generate if not given)"""
   id: String
@@ -563,11 +570,14 @@ input MutationVideoOriginUpdateInput {
 
 type MuxSubtitleTrack {
   id: ID!
-  trackId: String!
+  trackId: String
   source: String!
   status: String!
   bcp47: String!
   muxVideoId: ID!
+  workflowRunId: String
+  vttUrl: String
+  errorMessage: String
 }
 
 type MuxVideo

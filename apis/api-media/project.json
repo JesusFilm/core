@@ -112,7 +112,7 @@
     "ai-subtitles-worker": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/workers/muxSubtitles/worker.ts"
+        "command": "pnpm exec ts-node -r tsconfig-paths/register --project tsconfig.base.json apis/api-media/src/workers/muxSubtitles/worker.ts | pnpm exec pino-pretty --config .pino-prettyrc.js"
       }
     },
     "export-language-slugs": {
