@@ -26,6 +26,7 @@ export interface PosterImageBlockCreate_imageBlockCreate {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface PosterImageBlockCreate_videoBlockUpdate {

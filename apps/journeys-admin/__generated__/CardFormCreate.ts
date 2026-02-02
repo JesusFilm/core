@@ -26,6 +26,7 @@ export interface CardFormCreate_image {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormCreate_subtitle_settings {
