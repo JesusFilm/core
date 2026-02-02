@@ -25,9 +25,6 @@ export const IconBlock = builder.prismaObject('Block', {
       type: IconSize,
       nullable: true,
       resolve: (block) => block.size as IconSizeType
-    }),
-    customizable: t.exposeBoolean('customizable', {
-      nullable: true
     })
   })
 })
