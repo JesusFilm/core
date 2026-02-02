@@ -5,6 +5,13 @@ import { ReactElement } from 'react'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { usePage } from '../../../libs/PageWrapperProvider'
+import {
+  MOBILE_FAB_BOTTOM_OFFSET,
+  MOBILE_FAB_RIGHT_OFFSET,
+  MOBILE_HELPSCOUT_FAB_MARGIN_X,
+  MOBILE_HELPSCOUT_FAB_WIDTH,
+  MOBILE_HELPSCOUT_FAB_Z_INDEX
+} from '../../HelpScoutBeacon/constants'
 
 export function AddJourneyFab(): ReactElement {
   const {
@@ -26,9 +33,12 @@ export function AddJourneyFab(): ReactElement {
       }}
       sx={{
         position: 'fixed',
-        bottom: 16,
-        right: 16,
-        zIndex: 3,
+        bottom: MOBILE_FAB_BOTTOM_OFFSET,
+        right:
+          MOBILE_FAB_RIGHT_OFFSET +
+          MOBILE_HELPSCOUT_FAB_WIDTH +
+          MOBILE_HELPSCOUT_FAB_MARGIN_X,
+        zIndex: MOBILE_HELPSCOUT_FAB_Z_INDEX,
         display: { xs: 'flex', md: 'none' }
       }}
       data-testid="AddJourneyFab"
