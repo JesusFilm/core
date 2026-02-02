@@ -4,13 +4,6 @@ import { render } from '@testing-library/react'
 
 import { SidePanelTitle } from './SidePanelTitle'
 
-jest.mock('next-firebase-auth', () => ({
-  useUser: () => ({
-    displayName: 'Test User',
-    email: 'test@example.com'
-  })
-}))
-
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()

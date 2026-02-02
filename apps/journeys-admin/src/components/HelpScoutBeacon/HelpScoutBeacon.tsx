@@ -13,8 +13,13 @@ import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 import { BeaconInit } from './BeaconInit'
+import { 
+  MOBILE_HELPSCOUT_FAB_HEIGHT,
+  MOBILE_HELPSCOUT_FAB_WIDTH,
+  MOBILE_HELPSCOUT_FAB_Z_INDEX
+} from './constants'
 
-export interface HelpScoutBeaconProps {
+interface HelpScoutBeaconProps {
   variant?: 'iconButton' | 'menuItem' | 'fab'
   iconButtonColor?: 'primary' | 'secondary'
   handleClick?: () => void
@@ -103,9 +108,9 @@ export function HelpScoutBeacon({
           size="large"
           color="primary"
           sx={{
-            height: 48,
-            width: 48,
-            zIndex: 3,
+            height: MOBILE_HELPSCOUT_FAB_HEIGHT,
+            width: MOBILE_HELPSCOUT_FAB_WIDTH,
+            zIndex: MOBILE_HELPSCOUT_FAB_Z_INDEX,
             display: { xs: 'flex', md: 'none' }
           }}
           data-testid="HelpScoutBeaconFab"

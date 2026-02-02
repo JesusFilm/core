@@ -16,7 +16,8 @@ import {
   MOBILE_APP_BAR_GAP,
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
-  MOBILE_CONTAINER_PADDING
+  MOBILE_CONTAINER_PADDING,
+  BEACON_CLOSE_BUTTON_DISPLAY
 } from './constants'
 
 interface BeaconInitProps {
@@ -83,7 +84,7 @@ export function BeaconInit({
           display: ${BEACON_ICON_DISPLAY};
         }
         .c-BeaconCloseButton {
-          display: none !important;
+          display: ${BEACON_CLOSE_BUTTON_DISPLAY};
         }
         .hsds-beacon .BeaconContainer::before {
           top: 0 !important;
@@ -122,7 +123,7 @@ export function BeaconInit({
           .NotificationsFramecss__NotificationsFrameUI-sc-1ah8ai4-1 {
             position: fixed !important;
             top: 30px !important;
-            right: 0px !important;
+            right: 25px !important;
             // width: 325px !important;
           }
         }

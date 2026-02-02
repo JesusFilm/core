@@ -42,6 +42,11 @@ function IndexPage(): ReactElement {
     (router?.query?.type as 'journeys' | 'templates') ?? 'journeys'
   const showSidePanel = currentContentType === 'journeys'
 
+  const userInfo = {
+    name: user?.displayName ?? '',
+    email: user?.email ?? ''
+  }
+
   return (
     <>
       <NextSeo title={t('Journeys')} />
@@ -61,7 +66,7 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
-        sidePanelTitle={showSidePanel ? <SidePanelTitle /> : undefined}
+        sidePanelTitle={showSidePanel ? <SidePanelTitle name={userInfo.name} email={userInfo.email} /> : undefined}
       >
         <JourneyList user={user} />
       </PageWrapper>
