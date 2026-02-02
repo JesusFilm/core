@@ -1820,6 +1820,8 @@ export type Mutation = {
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
   fixVideoLanguages: Scalars['Boolean']['output'];
+  /** Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events. */
+  googleSheetsSyncBackfill: GoogleSheetsSync;
   googleSheetsSyncCreate: GoogleSheetsSync;
   googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
@@ -2290,6 +2292,11 @@ export type MutationEnableMuxDownloadArgs = {
 
 export type MutationFixVideoLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncBackfillArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
