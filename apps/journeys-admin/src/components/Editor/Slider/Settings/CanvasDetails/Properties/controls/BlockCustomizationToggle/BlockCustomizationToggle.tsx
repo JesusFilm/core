@@ -1,8 +1,32 @@
+import { useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
+import {
+  BlockFields_ImageBlock as ImageBlock,
+  BlockFields_VideoBlock as VideoBlock
+} from '../../../../../../../../../__generated__/BlockFields'
+import {
+  ImageBlockUpdateInput,
+  VideoBlockUpdateInput
+} from '../../../../../../../../../__generated__/globalTypes'
+import {
+  ImageBlockUpdate,
+  ImageBlockUpdateVariables
+} from '../../../../../../../../../__generated__/ImageBlockUpdate'
+import {
+  VideoBlockUpdate,
+  VideoBlockUpdateVariables
+} from '../../../../../../../../../__generated__/VideoBlockUpdate'
+import { IMAGE_BLOCK_UPDATE } from '../../blocks/Image/Options/ImageOptions'
+import { VIDEO_BLOCK_UPDATE } from '../../blocks/Video/Options/VideoOptions'
 
 /**
  * BlockCustomizationToggle - "Needs Customization" toggle for block-level customizable content.
@@ -12,31 +36,70 @@ import { ReactElement } from 'react'
  * per journey created from the template (e.g. ImageBlock, VideoBlock, and later LogoImageBlock).
  *
  * - Renders a Switch with "Needs Customization" label; state is driven by the selected block's
- *   `customizable` field (once backend supports it).
+ *   `customizable` field.
  * - Template gating is done at the call site: parents (Image/Video/Logo properties) should
  *   only render this component when `journey?.template` is true, same pattern as Action.tsx.
  * - Toggle changes are persisted via block update mutation and are undo/redoable via useCommand.
  *
- * @returns {ReactElement} The toggle UI (Stack with Switch and label), or null when not applicable
+ * @returns {ReactElement} The toggle UI (Stack with Switch and label)
  */
 export function BlockCustomizationToggle(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { selectedBlock }
+  } = useEditor()
+  const { add } = useCommand()
+  const [imageBlockUpdate] = useMutation<
+    ImageBlockUpdate,
+    ImageBlockUpdateVariables
+  >(IMAGE_BLOCK_UPDATE)
+  const [videoBlockUpdate] = useMutation<
+    VideoBlockUpdate,
+    VideoBlockUpdateVariables
+  >(VIDEO_BLOCK_UPDATE)
 
-  // Once backend adds `customizable` to ImageBlock / VideoBlock (and later LogoImageBlock):
-  // - useEditor() → state.selectedBlock
-  // - Narrow selectedBlock to ImageBlock | VideoBlock (and later logo block type); if not one of these, return null
-  // - customizable = selectedBlock?.customizable ?? false
-  // - disabled = selectedBlock == null
-  // - Template check: handled at call site (Image/Video/Logo properties panels), same as Action.tsx: only render this component when journey?.template (e.g. {journey?.template && <BlockCustomizationToggle />})
+  const block: TreeBlock<ImageBlock | VideoBlock> | undefined =
+    selectedBlock?.__typename === 'ImageBlock' ||
+    selectedBlock?.__typename === 'VideoBlock'
+      ? (selectedBlock as TreeBlock<ImageBlock | VideoBlock>)
+      : undefined
 
-  function handleChange(_event: React.ChangeEvent<HTMLInputElement>): void {
-    // Once backend and block update mutation exist:
-    // - newCustomizable = event.target.checked
-    // - useCommand().add({ parameters: { execute: { customizable: newCustomizable }, undo: { customizable: selectedBlock.customizable } }, execute({ customizable }) { call imageBlockUpdate / videoBlockUpdate (etc.) with id: selectedBlock.id, input: { customizable }, optimisticResponse } })
-    // - Same pattern as TextResponse Required (useCommand + block update mutation + optimistic response)
+  const customizable = block?.customizable ?? false
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
+    if (block == null) return
+    const newCustomizable = event.target.checked
+    const undoCustomizable = block.customizable ?? false
+
+    add({
+      parameters: {
+        execute: { customizable: newCustomizable },
+        undo: { customizable: undoCustomizable }
+      },
+      execute({ customizable: value }) {
+        if (block.__typename === 'ImageBlock') {
+          const input: ImageBlockUpdateInput = { customizable: value }
+          void imageBlockUpdate({
+            variables: { id: block.id, input },
+            optimisticResponse: {
+              imageBlockUpdate: { ...block, customizable: value }
+            }
+          })
+          return
+        }
+        if (block.__typename === 'VideoBlock') {
+          const input: VideoBlockUpdateInput = { customizable: value }
+          void videoBlockUpdate({
+            variables: { id: block.id, input },
+            optimisticResponse: {
+              videoBlockUpdate: { ...block, customizable: value }
+            }
+          })
+        }
+      }
+    })
   }
 
-  // checked → block.customizable, disabled → selectedBlock == null (once implemented; template gating is at call site)
   return (
     <Stack
       direction="row"
@@ -48,8 +111,8 @@ export function BlockCustomizationToggle(): ReactElement {
       }}
     >
       <Switch
-        disabled={false}
-        checked={false}
+        disabled={block == null}
+        checked={customizable}
         onChange={handleChange}
         inputProps={{ 'aria-label': t('Toggle customizable') }}
       />
