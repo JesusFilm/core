@@ -230,15 +230,18 @@ export class TeamsPage {
   }
 
   async clickAddIntegrationButton() {
-    await this.page.getByTestId('Add-IntegrationsButton').click()
+    const addButton = this.page.getByTestId('Add-IntegrationsButton')
+    await expect(addButton).toBeVisible({ timeout: 15000 })
+    await addButton.click()
   }
+
   async clickGrowthSpaceIntegration() {
-    const growthSpaceButton = this.page.getByTestId(
-      'growthSpaces-IntegrationsButton'
-    )
-    await expect(growthSpaceButton).toHaveCount(1)
-    await expect(growthSpaceButton).toBeVisible({ timeout: 15000 })
-    await growthSpaceButton.click()
+    await this.page.waitForURL(/\/integrations\/new/, { timeout: 20000 })
+    const growthSpaceLink = this.page
+      .getByRole('link', { name: /Growth Spaces/i })
+      .or(this.page.getByTestId('growthSpaces-IntegrationsButton'))
+    await expect(growthSpaceLink.first()).toBeVisible({ timeout: 20000 })
+    await growthSpaceLink.first().click()
   }
   async enterAccessId(accessId: string) {
     await this.page

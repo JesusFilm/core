@@ -425,7 +425,11 @@ export class JourneyPage {
   }
 
   async clickArchivedTab() {
-    await this.page.locator('button[id*="archived-status-panel-tab"]').click()
+    const archivedTab = this.page.locator(
+      'button[id*="archived-status-panel-tab"]'
+    )
+    await expect(archivedTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await archivedTab.click()
     await expect(
       this.page.locator(
         'button[id*="archived-status-panel-tab"][aria-selected="true"]'
@@ -464,7 +468,11 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    await this.page.locator('button[id*="trashed-status-panel-tab"]').click()
+    const trashTab = this.page.locator(
+      'button[id*="trashed-status-panel-tab"]'
+    )
+    await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await trashTab.click()
     await expect(
       this.page.locator(
         'button[id*="trashed-status-panel-tab"][aria-selected="true"]'
@@ -509,7 +517,11 @@ export class JourneyPage {
   }
 
   async clickActiveTab() {
-    await this.page.locator('button[id*="active-status-panel-tab"]').click()
+    const activeTab = this.page.locator(
+      'button[id*="active-status-panel-tab"]'
+    )
+    await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await activeTab.click()
     await expect(
       this.page.locator(
         'button[id*="active-status-panel-tab"][aria-selected="true"]'
@@ -779,27 +791,23 @@ export class JourneyPage {
   }
 
   async clickSortByIcon() {
-    await this.page
-      .locator('div[aria-label="journey status tabs"] div[role="button"]')
-      .click()
+    const sortByButton = this.page.getByRole('button', {
+      name: /Sort By/i
+    })
+    await expect(sortByButton).toBeVisible({ timeout: thirtySecondsTimeout })
+    await sortByButton.click()
   }
 
   async clickSortOpion(sortOption: string) {
-    await this.page
-      .locator(
-        'div[aria-label="sort-by-options"] span[class*="MuiFormControlLabel"]',
-        { hasText: sortOption }
-      )
-      .click()
+    const option = this.page.getByRole('radio', { name: sortOption })
+    await expect(option).toBeVisible({ timeout: thirtySecondsTimeout })
+    await option.click()
   }
 
   async verifySelectedSortOptionInSortByIcon(selectedSortOption: string) {
     await expect(
-      this.page.locator(
-        'div[aria-label="journey status tabs"] div[role="button"]',
-        { hasText: selectedSortOption }
-      )
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+      this.page.getByRole('button', { name: /Sort By/i })
+    ).toContainText(selectedSortOption, { timeout: thirtySecondsTimeout })
   }
 
   async verifyJouyneysAreSortedByNames() {
