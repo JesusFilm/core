@@ -15,6 +15,7 @@ type ImageBlock implements Block @shareable {
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+  customizable: Boolean @shareable
 }
 
 input ImageBlockCreateInput {
@@ -40,6 +41,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -55,6 +57,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 extend type Mutation {

@@ -522,6 +522,7 @@ export interface IconBlockCreateInput {
   name?: IconName | null;
   color?: IconColor | null;
   size?: IconSize | null;
+  customizable?: boolean | null;
 }
 
 export interface ImageBlockCreateInput {
@@ -537,6 +538,7 @@ export interface ImageBlockCreateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  customizable?: boolean | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -549,6 +551,7 @@ export interface ImageBlockUpdateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  customizable?: boolean | null;
 }
 
 export interface IntegrationGoogleCreateInput {
@@ -995,6 +998,7 @@ export interface VideoBlockCreateInput {
   posterBlockId?: string | null;
   subtitleLanguageId?: string | null;
   showGeneratedSubtitles?: boolean | null;
+  customizable?: boolean | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -1017,6 +1021,7 @@ export interface VideoBlockUpdateInput {
   subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
   showGeneratedSubtitles?: boolean | null;
+  customizable?: boolean | null;
 }
 
 export interface VideoCollapseEventCreateInput {
