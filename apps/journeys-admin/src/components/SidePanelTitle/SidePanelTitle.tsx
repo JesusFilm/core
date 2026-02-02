@@ -11,7 +11,10 @@ interface SidePanelTitleProps {
   email?: string
 }
 
-export function SidePanelTitle({ name, email }: SidePanelTitleProps): ReactElement {
+export function SidePanelTitle({
+  name,
+  email
+}: SidePanelTitleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const theme = useTheme()
   const mdUp = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
@@ -19,7 +22,9 @@ export function SidePanelTitle({ name, email }: SidePanelTitleProps): ReactEleme
   return (
     <>
       <Typography variant="subtitle1">{t('Create a New Journey')}</Typography>
-      {mdUp && <HelpScoutBeacon userInfo={{ name: name ?? '', email: email ?? '' }} />}
+      {mdUp && (
+        <HelpScoutBeacon userInfo={{ name: name ?? '', email: email ?? '' }} />
+      )}
     </>
   )
 }

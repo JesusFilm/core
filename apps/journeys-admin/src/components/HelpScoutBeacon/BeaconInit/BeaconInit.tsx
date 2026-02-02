@@ -6,6 +6,7 @@ import { ReactElement, useEffect } from 'react'
 import { FormObject } from '@core/journeys/ui/beaconHooks'
 
 import {
+  BEACON_CLOSE_BUTTON_DISPLAY,
   BEACON_ICON_DISPLAY,
   BEACON_STYLE,
   DESKTOP_APP_BAR_GAP,
@@ -16,8 +17,7 @@ import {
   MOBILE_APP_BAR_GAP,
   MOBILE_CONTAINER_HEIGHT,
   MOBILE_CONTAINER_MAX_HEIGHT,
-  MOBILE_CONTAINER_PADDING,
-  BEACON_CLOSE_BUTTON_DISPLAY
+  MOBILE_CONTAINER_PADDING
 } from './constants'
 
 interface BeaconInitProps {

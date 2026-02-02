@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { usePage } from '../../../libs/PageWrapperProvider'
-import { 
+import {
   MOBILE_FAB_BOTTOM_OFFSET,
   MOBILE_FAB_RIGHT_OFFSET,
   MOBILE_HELPSCOUT_FAB_MARGIN_X,
@@ -34,7 +34,10 @@ export function AddJourneyFab(): ReactElement {
       sx={{
         position: 'fixed',
         bottom: MOBILE_FAB_BOTTOM_OFFSET,
-        right: MOBILE_FAB_RIGHT_OFFSET + MOBILE_HELPSCOUT_FAB_WIDTH + MOBILE_HELPSCOUT_FAB_MARGIN_X,
+        right:
+          MOBILE_FAB_RIGHT_OFFSET +
+          MOBILE_HELPSCOUT_FAB_WIDTH +
+          MOBILE_HELPSCOUT_FAB_MARGIN_X,
         zIndex: MOBILE_HELPSCOUT_FAB_Z_INDEX,
         display: { xs: 'flex', md: 'none' }
       }}

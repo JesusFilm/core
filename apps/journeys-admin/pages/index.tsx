@@ -1,5 +1,4 @@
 import Stack from '@mui/material/Stack'
-
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -63,7 +62,11 @@ function IndexPage(): ReactElement {
           </Stack>
         }
         sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
-        sidePanelTitle={showSidePanel ? <SidePanelTitle name={userInfo.name} email={userInfo.email} /> : undefined}
+        sidePanelTitle={
+          showSidePanel ? (
+            <SidePanelTitle name={userInfo.name} email={userInfo.email} />
+          ) : undefined
+        }
       >
         <JourneyList user={user} />
       </PageWrapper>

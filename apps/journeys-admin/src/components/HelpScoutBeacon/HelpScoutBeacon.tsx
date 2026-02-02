@@ -13,7 +13,7 @@ import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 import { BeaconInit } from './BeaconInit'
-import { 
+import {
   MOBILE_HELPSCOUT_FAB_HEIGHT,
   MOBILE_HELPSCOUT_FAB_WIDTH,
   MOBILE_HELPSCOUT_FAB_Z_INDEX

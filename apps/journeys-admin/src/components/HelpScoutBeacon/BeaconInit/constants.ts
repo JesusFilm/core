@@ -18,5 +18,5 @@ export const BEACON_STYLE = `icon`
 // hides beacon icon from visibility
 export const BEACON_ICON_DISPLAY = 'none !important'
 
-// hides helpscout beacon's default close button 
+// hides helpscout beacon's default close button
 export const BEACON_CLOSE_BUTTON_DISPLAY = 'none !important'
