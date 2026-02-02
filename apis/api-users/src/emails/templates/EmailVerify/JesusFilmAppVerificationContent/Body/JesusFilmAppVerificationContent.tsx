@@ -21,10 +21,8 @@ export const JesusFilmAppVerificationContent = ({
         </Row>
         <Row>
           <Text className="mt-[24px] mb-[8px] text-center text-[14px] leading-[24px] font-[400]">
-            Your verification code is
-          </Text>
-          <Text className="my-0 text-center text-[14px] leading-[24px] font-[400] text-[#C52D3A]">
-            {token}
+            Your verification code is{' '}
+            <strong className="text-[#C52D3A]">{token}</strong>
           </Text>
         </Row>
       </Section>
