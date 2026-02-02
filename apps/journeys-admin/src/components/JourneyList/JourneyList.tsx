@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useEffect, useState } from 'react'
@@ -117,11 +116,9 @@ export function JourneyList({
           sortOrder={sortOrder}
         />
       </Box>
-      {activeTab === 'active' && currentContentType === 'journeys' && (
-        <>
+        {activeTab === 'active' && currentContentType === 'journeys' && (
           <AddJourneyFab />
-        </>
-      )}
+        )}
     </>
   )
 }

@@ -147,7 +147,7 @@ describe('PageWrapper', () => {
       expect(getByTestId('HelpScoutBeaconFab')).toBeInTheDocument()
     })
 
-    it('should not render HelpScoutBeacon when showAppHeader is false', () => {
+    it('should not render HelpScoutBeacon fab when showAppHeader is false', () => {
       const { queryByTestId } = render(
         <MockedProvider>
           <PageWrapper showAppHeader={false} title="Page title" />
