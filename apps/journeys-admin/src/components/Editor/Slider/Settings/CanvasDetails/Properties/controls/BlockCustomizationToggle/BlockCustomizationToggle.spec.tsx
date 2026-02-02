@@ -8,7 +8,6 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_ImageBlock as ImageBlock,
-  BlockFields_TypographyBlock as TypographyBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
@@ -428,8 +427,9 @@ describe('BlockCustomizationToggle', () => {
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     fireEvent.click(toggle)
 
-    await waitFor(() => {})
-    expect(imageBlockUpdateResult).not.toHaveBeenCalled()
+    await waitFor(() => {
+      expect(imageBlockUpdateResult).not.toHaveBeenCalled()
+    })
   })
 
   it('undo after toggling ImageBlock customizable calls imageBlockUpdate with customizable false', async () => {
