@@ -4,6 +4,46 @@ packages:
   - libs/**
   - workers/**
 
+catalog:
+  # Apollo GraphQL
+  '@apollo/client': ^3.8.3
+  '@apollo/client-integration-nextjs': ^0.12.0
+  # DnD Kit
+  '@dnd-kit/core': ^6.1.0
+  '@dnd-kit/sortable': ^10.0.0
+  # MUI Core
+  '@mui/icons-material': ^7.1.1
+  '@mui/material': ^7.1.1
+  '@mui/material-nextjs': ^7.1.1
+  '@mui/system': ^7.1.1
+  # MUI X
+  '@mui/x-data-grid': ^8.5.2
+  '@mui/x-date-pickers': ^8.5.2
+  # Storybook
+  '@storybook/nextjs': ^9.0.17
+  storybook: ^9.0.18
+  # Testing
+  '@testing-library/react': 16.3.0
+  '@testing-library/user-event': ^14.4.3
+  # Core packages
+  axios: ^1.6.8
+  firebase: ^9.16.0
+  form-data: ^4.0.0
+  formik: ^2.4.4
+  lodash: ^4.17.21
+  next: ^15.5.7
+  next-i18next: 15.4.2
+  node-fetch: ^2.7.0
+  notistack: ^3.0.1
+  qs: ^6.13.1
+  react: ^19.0.0
+  react-dom: ^19.0.0
+  react-dropzone: ^14.2.3
+  uuid: ^10.0.0
+  video.js: ^8.17.4
+  yup: ^1.0.0
+  zod: ^4.1.12
+
 onlyBuiltDependencies:
   - '@apollo/protobufjs'
   - '@datadog/native-appsec'
