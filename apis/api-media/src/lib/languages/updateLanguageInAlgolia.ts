@@ -18,7 +18,7 @@ export async function updateLanguageInAlgoliaFromMedia(
   const appId = getRequiredEnv('ALGOLIA_APPLICATION_ID')
   const apiKey = getRequiredEnv('ALGOLIA_API_KEY')
   const languagesIndex = getRequiredEnv('ALGOLIA_INDEX_LANGUAGES')
-  
+
   const client = algoliasearch(appId, apiKey)
 
   try {
