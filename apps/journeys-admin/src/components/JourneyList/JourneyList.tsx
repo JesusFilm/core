@@ -43,42 +43,44 @@ export function JourneyList({
   const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
-    if (!router.isReady) return
-    const sortByFromQuery = router.query.sortBy as string
-    const sortByFromStorage =
-      typeof window !== 'undefined'
-        ? localStorage.getItem('journeyListSortBy')
-        : null
-    const sortBy = sortByFromQuery || sortByFromStorage
-    if (sortBy && Object.values(SortOrder).includes(sortBy as SortOrder)) {
-      setSortOrder((prev) => (prev !== sortBy ? (sortBy as SortOrder) : prev))
-      if (sortByFromQuery && typeof window !== 'undefined') {
-        localStorage.setItem('journeyListSortBy', sortByFromQuery)
-      } else if (sortByFromStorage && !sortByFromQuery) {
-        void router.replace(
-          { query: { ...router.query, sortBy: sortByFromStorage } },
-          undefined,
-          { shallow: true }
-        )
-      }
+    if (!router.isReady || window === undefined) return
+
+    const dataFromURL = router.query.sortBy as string | undefined
+    const dataFromStorage = localStorage.getItem('journeyListSortBy')
+
+    const sortingCheck = (dataFromURL || dataFromStorage) as SortOrder
+    const isValidSort =
+      sortingCheck && Object.values(SortOrder).includes(sortingCheck)
+
+    if (!isValidSort) return
+    setSortOrder((prev) => (prev !== sortingCheck ? sortingCheck : prev))
+
+    if (dataFromURL) {
+      localStorage.setItem('journeyListSortBy', dataFromURL)
+      return
+    }
+
+    if (dataFromStorage) {
+      void router.replace(
+        { query: { ...router.query, sortBy: dataFromStorage } },
+        undefined,
+        { shallow: true }
+      )
     }
   }, [router.isReady, router.query.sortBy, router])
 
-  const handleSetSortOrder = (
-    order: SortOrder | ((prev: SortOrder | undefined) => SortOrder | undefined)
-  ) => {
-    const newOrder = typeof order === 'function' ? order(sortOrder) : order
-    if (newOrder) {
-      setSortOrder(newOrder)
+  const handleSetSortOrder = (order: SortOrder) => {
+    if (order) {
+      setSortOrder(order)
       if (router.isReady) {
         void router.push(
-          { query: { ...router.query, sortBy: newOrder } },
+          { query: { ...router.query, sortBy: order } },
           undefined,
           { shallow: true }
         )
       }
       if (typeof window !== 'undefined')
-        localStorage.setItem('journeyListSortBy', newOrder)
+        localStorage.setItem('journeyListSortBy', order)
     }
   }
 
