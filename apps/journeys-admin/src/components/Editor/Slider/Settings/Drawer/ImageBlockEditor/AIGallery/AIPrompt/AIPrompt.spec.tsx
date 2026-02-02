@@ -18,7 +18,8 @@ describe('AIPrompt', () => {
     parentOrder: 0,
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   it('should have prefilled textfield on existing prompt', async () => {

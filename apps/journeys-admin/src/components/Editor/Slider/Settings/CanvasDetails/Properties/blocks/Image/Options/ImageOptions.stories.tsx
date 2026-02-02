@@ -34,7 +34,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const Template: StoryObj<{ block: TreeBlock<ImageBlock> }> = {

@@ -19,7 +19,8 @@ describe('ZoomImage', () => {
     blurhash: 'blurhash',
     scale: 100,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const imageBlockResult = {

@@ -107,7 +107,8 @@ describe('CardVideo', () => {
             mediaVideo: null,
             action: null,
             eventLabel: null,
-            endEventLabel: null
+            endEventLabel: null,
+            customizable: null
           }
         ]
       }
@@ -161,7 +162,8 @@ describe('CardVideo', () => {
           mediaVideo: null,
           action: null,
           eventLabel: null,
-          endEventLabel: null
+          endEventLabel: null,
+          customizable: null
         }
       }
     }
@@ -204,7 +206,8 @@ describe('CardVideo', () => {
             mediaVideo: null,
             action: null,
             eventLabel: null,
-            endEventLabel: null
+            endEventLabel: null,
+            customizable: null
           }
         ]
       }

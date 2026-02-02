@@ -142,7 +142,8 @@ export function HostAvatarsButton(): ReactElement {
                   parentOrder: 0,
                   scale: null,
                   focalLeft: 50,
-                  focalTop: 50
+                  focalTop: 50,
+                  customizable: null
                 }
               : null
           }

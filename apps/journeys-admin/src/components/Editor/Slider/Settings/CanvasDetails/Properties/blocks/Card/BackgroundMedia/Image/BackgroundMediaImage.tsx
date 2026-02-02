@@ -106,7 +106,8 @@ export function BackgroundMediaImage({
       parentOrder: null,
       scale: 100,
       focalTop: 50,
-      focalLeft: 50
+      focalLeft: 50,
+      customizable: null
     }
 
     add({

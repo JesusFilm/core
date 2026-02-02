@@ -45,7 +45,8 @@ describe('ImageUpload', () => {
     parentOrder: 0,
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+  customizable: null
   }
 
   const cfResponse = {
@@ -153,7 +154,8 @@ describe('ImageUpload', () => {
         src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
         scale: 100,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+      customizable: null
       })
     )
     expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
@@ -475,7 +477,8 @@ describe('ImageUpload', () => {
       src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
       scale: 100,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+    customizable: null
     })
   })
 })

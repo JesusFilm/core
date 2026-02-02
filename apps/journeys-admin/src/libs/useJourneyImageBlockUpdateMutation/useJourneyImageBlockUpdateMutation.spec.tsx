@@ -42,7 +42,8 @@ describe('useJourneyImageBlockUpdateMutation', () => {
             blurhash: 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.',
             scale: 1.2,
             focalTop: 0.3,
-            focalLeft: 0.7
+            focalLeft: 0.7,
+            customizable: null
           }
         }
       }))

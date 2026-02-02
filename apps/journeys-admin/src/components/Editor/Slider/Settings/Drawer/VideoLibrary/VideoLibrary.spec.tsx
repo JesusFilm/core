@@ -208,6 +208,7 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
                 children: []
               }}
             />
@@ -267,6 +268,7 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
                 children: []
               }}
             />
@@ -457,6 +459,7 @@ describe('VideoLibrary', () => {
                   posterBlockId: 'poster1.id',
                   eventLabel: null,
                   endEventLabel: null,
+                  customizable: null,
                   children: []
                 }}
                 onSelect={onSelect}
@@ -580,6 +583,7 @@ describe('VideoLibrary', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -705,6 +709,7 @@ describe('VideoLibrary', () => {
                   posterBlockId: 'poster1.id',
                   eventLabel: null,
                   endEventLabel: null,
+                  customizable: null,
                   children: []
                 }}
                 onSelect={onSelect}
@@ -818,6 +823,7 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
                 children: [],
                 source: VideoBlockSource.internal
               }}
@@ -887,6 +893,7 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
                 children: [],
                 source: VideoBlockSource.mux
               }}

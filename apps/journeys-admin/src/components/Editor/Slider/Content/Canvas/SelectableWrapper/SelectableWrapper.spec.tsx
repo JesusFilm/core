@@ -96,7 +96,8 @@ describe('SelectableWrapper', () => {
     children: [],
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const radioOption1: TreeBlock<RadioOptionFields> = {

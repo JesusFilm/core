@@ -62,7 +62,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -78,6 +79,7 @@ const video: TreeBlock<VideoBlock> = {
   action: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,

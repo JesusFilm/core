@@ -54,7 +54,8 @@ export function Custom404(): ReactElement {
       width: 3244,
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'TypographyBlock',
