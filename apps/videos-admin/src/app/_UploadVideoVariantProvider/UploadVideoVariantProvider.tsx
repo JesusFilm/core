@@ -1,6 +1,6 @@
 'use client'
 
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer } from 'react'
@@ -10,7 +10,6 @@ import { graphql } from '@core/shared/gql'
 
 import { getExtension } from '../(dashboard)/videos/[videoId]/audio/add/_utils/getExtension'
 import { refreshToken } from '../../app/api'
-import { useCreateR2AssetMutation } from '../../libs/useCreateR2Asset/useCreateR2Asset'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   mutation CreateMuxVideoUploadByUrl(
@@ -66,9 +65,43 @@ export const GET_MY_MUX_VIDEO = graphql(`
   }
 `)
 
+export const PREPARE_R2_MULTIPART = gql`
+  mutation PrepareCloudflareR2Multipart(
+    $input: CloudflareR2MultipartPrepareInput!
+  ) {
+    cloudflareR2MultipartPrepare(input: $input) {
+      id
+      uploadId
+      fileName
+      publicUrl
+      partSize
+      parts {
+        partNumber
+        uploadUrl
+      }
+    }
+  }
+`
+
+export const COMPLETE_R2_MULTIPART = gql`
+  mutation CloudflareR2CompleteMultipart(
+    $input: CloudflareR2CompleteMultipartInput!
+  ) {
+    cloudflareR2CompleteMultipart(input: $input) {
+      id
+      fileName
+      publicUrl
+    }
+  }
+`
+
 interface UploadVideoVariantState {
   isUploading: boolean
   uploadProgress: number
+  uploadedBytes: number
+  totalBytes: number
+  uploadSpeedBps: number | null
+  etaSeconds: number | null
   isProcessing: boolean
   error: string | null
   muxVideoId: string | null
@@ -99,6 +132,10 @@ interface UploadVideoVariantContextType {
 const initialState: UploadVideoVariantState = {
   isUploading: false,
   uploadProgress: 0,
+  uploadedBytes: 0,
+  totalBytes: 0,
+  uploadSpeedBps: null,
+  etaSeconds: null,
   isProcessing: false,
   error: null,
   muxVideoId: null,
@@ -115,6 +152,23 @@ const UploadVideoVariantContext = createContext<
   UploadVideoVariantContextType | undefined
 >(undefined)
 
+const MIN_MULTIPART_PART_SIZE = 5 * 1024 * 1024
+const DEFAULT_MULTIPART_PART_SIZE = 64 * 1024 * 1024
+const MAX_MULTIPART_PARTS = 10000
+
+function calculateMultipartPartSize(fileSize: number): number {
+  if (fileSize <= DEFAULT_MULTIPART_PART_SIZE) {
+    return Math.max(fileSize, MIN_MULTIPART_PART_SIZE)
+  }
+
+  const partsWithDefault = Math.ceil(fileSize / DEFAULT_MULTIPART_PART_SIZE)
+  if (partsWithDefault <= MAX_MULTIPART_PARTS)
+    return DEFAULT_MULTIPART_PART_SIZE
+
+  const sizedForMaxParts = Math.ceil(fileSize / MAX_MULTIPART_PARTS)
+  return Math.max(MIN_MULTIPART_PART_SIZE, sizedForMaxParts)
+}
+
 type UploadAction =
   | {
       type: 'START_UPLOAD'
@@ -125,8 +179,15 @@ type UploadAction =
       published: boolean
       onComplete?: () => void
       videoSlug?: string
+      totalBytes: number
     }
-  | { type: 'SET_PROGRESS'; progress: number }
+  | {
+      type: 'SET_PROGRESS'
+      progress: number
+      uploadedBytes?: number
+      uploadSpeedBps?: number | null
+      etaSeconds?: number | null
+    }
   | { type: 'START_PROCESSING'; muxVideoId: string }
   | { type: 'COMPLETE' }
   | { type: 'SET_ERROR'; error: string }
@@ -141,6 +202,10 @@ function uploadReducer(
       return {
         ...initialState,
         isUploading: true,
+        uploadedBytes: 0,
+        totalBytes: action.totalBytes,
+        uploadSpeedBps: null,
+        etaSeconds: null,
         videoId: action.videoId,
         languageId: action.languageId,
         languageSlug: action.languageSlug,
@@ -150,7 +215,17 @@ function uploadReducer(
         videoSlug: action.videoSlug ?? null
       }
     case 'SET_PROGRESS':
-      return { ...state, uploadProgress: action.progress }
+      return {
+        ...state,
+        uploadProgress: action.progress,
+        uploadedBytes: action.uploadedBytes ?? state.uploadedBytes,
+        uploadSpeedBps:
+          action.uploadSpeedBps !== undefined
+            ? action.uploadSpeedBps
+            : state.uploadSpeedBps,
+        etaSeconds:
+          action.etaSeconds !== undefined ? action.etaSeconds : state.etaSeconds
+      }
     case 'START_PROCESSING':
       return {
         ...state,
@@ -177,7 +252,8 @@ export function UploadVideoVariantProvider({
   const [state, dispatch] = useReducer(uploadReducer, initialState)
   const { enqueueSnackbar } = useSnackbar()
 
-  const [createR2Asset] = useCreateR2AssetMutation()
+  const [prepareR2Multipart] = useMutation(PREPARE_R2_MULTIPART)
+  const [completeR2Multipart] = useMutation(COMPLETE_R2_MULTIPART)
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
   const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
@@ -308,16 +384,17 @@ export function UploadVideoVariantProvider({
         edition,
         published,
         onComplete,
-        videoSlug
+        videoSlug,
+        totalBytes: file.size
       })
 
       const videoVariantId = `${languageId}_${videoId}`
       const extension = getExtension(file.name)
-      // Create R2 asset
-      const r2Response = await createR2Asset({
+      const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`
+      const r2Response = await prepareR2Multipart({
         variables: {
           input: {
-            fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`,
+            fileName,
             contentType: file.type,
             originalFilename: file.name,
             contentLength: file.size,
@@ -326,46 +403,152 @@ export function UploadVideoVariantProvider({
         }
       })
 
+      const multipartData = r2Response.data?.cloudflareR2MultipartPrepare
+
       if (
-        r2Response.data?.cloudflareR2Create?.uploadUrl == null ||
-        r2Response.data?.cloudflareR2Create?.publicUrl == null
+        multipartData?.uploadId == null ||
+        multipartData?.publicUrl == null ||
+        multipartData?.parts == null
       ) {
-        const errorMessage = 'Failed to create R2 asset'
+        const errorMessage = 'Failed to prepare R2 multipart upload'
         dispatch({ type: 'SET_ERROR', error: errorMessage })
         enqueueSnackbar(errorMessage, { variant: 'error' })
         return
       }
 
-      // Upload to R2 with progress tracking and periodic auth keep-alive
-      const abortController = new AbortController()
+      const partSize =
+        multipartData.partSize ?? calculateMultipartPartSize(file.size)
+      const parts = multipartData.parts
 
-      // Keep session alive every 45s while uploading large files
+      if (parts.length === 0) {
+        const errorMessage = 'Failed to prepare R2 multipart upload'
+        dispatch({ type: 'SET_ERROR', error: errorMessage })
+        enqueueSnackbar(errorMessage, { variant: 'error' })
+        return
+      }
+
+      const abortController = new AbortController()
       const keepAliveInterval = setInterval(() => {
         void refreshToken().catch(() => undefined)
       }, 45000)
 
+      const uploadedParts: Array<{ partNumber: number; eTag: string }> = []
+      const totalSize = file.size
+      let uploadedBytes = 0
+      let lastProgressTime = Date.now()
+      let lastProgressUploaded = 0
+
       try {
-        await axios.put(r2Response.data.cloudflareR2Create.uploadUrl, file, {
-          headers: {
-            'Content-Type': file.type
-          },
-          signal: abortController.signal as unknown as AbortSignal,
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / (progressEvent.total ?? 100)
-            )
-            dispatch({ type: 'SET_PROGRESS', progress: percentCompleted })
+        const sortedParts = [...parts].sort(
+          (first, second) => first.partNumber - second.partNumber
+        )
+
+        for (const part of sortedParts) {
+          const start = (part.partNumber - 1) * partSize
+          if (start >= file.size) break
+
+          const end = Math.min(start + partSize, file.size)
+          const chunk = file.slice(start, end)
+
+          if (part.uploadUrl == null) {
+            throw new Error(`Missing upload URL for part ${part.partNumber}`)
           }
-        })
+
+          const uploadResult = await axios.put(part.uploadUrl, chunk, {
+            headers: {
+              'Content-Type': file.type
+            },
+            signal: abortController.signal as unknown as AbortSignal,
+            onUploadProgress: (progressEvent) => {
+              const loaded = progressEvent.loaded ?? 0
+              const totalUploaded = uploadedBytes + loaded
+              const percentCompleted = Math.round(
+                (totalUploaded * 100) / totalSize
+              )
+
+              const now = Date.now()
+              const deltaBytes = totalUploaded - lastProgressUploaded
+              const deltaTimeMs = now - lastProgressTime
+              const speedBps =
+                deltaTimeMs > 0 ? (deltaBytes * 1000) / deltaTimeMs : null
+              const etaSeconds =
+                speedBps != null && speedBps > 0
+                  ? Math.max(0, (totalSize - totalUploaded) / speedBps)
+                  : null
+
+              dispatch({
+                type: 'SET_PROGRESS',
+                progress: percentCompleted,
+                uploadedBytes: totalUploaded,
+                uploadSpeedBps: speedBps,
+                etaSeconds
+              })
+
+              lastProgressUploaded = totalUploaded
+              lastProgressTime = now
+            }
+          })
+
+          const headers = uploadResult.headers as Record<
+            string,
+            string | string[] | undefined
+          > &
+            Partial<{ get: (name: string) => string | null }>
+
+          const eTagHeader =
+            headers?.etag ??
+            headers?.ETag ??
+            headers?.ETAG ??
+            headers?.['ETag'] ??
+            headers?.get?.('etag') ??
+            headers?.get?.('ETag')
+
+          if (eTagHeader == null) {
+            const availableHeaders = headers
+              ? Object.keys(headers).join(', ')
+              : 'none'
+            throw new Error(
+              `Missing ETag for part ${part.partNumber}. Available headers: ${availableHeaders}`
+            )
+          }
+
+          uploadedBytes += chunk.size
+          dispatch({
+            type: 'SET_PROGRESS',
+            progress: Math.round((uploadedBytes * 100) / totalSize),
+            uploadedBytes
+          })
+
+          uploadedParts.push({
+            partNumber: part.partNumber,
+            eTag: Array.isArray(eTagHeader)
+              ? eTagHeader[0].replace(/"/g, '')
+              : eTagHeader.replace(/"/g, '')
+          })
+        }
       } finally {
         clearInterval(keepAliveInterval)
         abortController.abort()
       }
 
-      // Create Mux video
+      if (uploadedParts.length === 0) {
+        throw new Error('No parts uploaded to R2')
+      }
+
+      await completeR2Multipart({
+        variables: {
+          input: {
+            id: multipartData.id,
+            fileName: multipartData.fileName,
+            uploadId: multipartData.uploadId,
+            parts: uploadedParts
+          }
+        }
+      })
+
       const muxResponse = await createMuxVideo({
         variables: {
-          url: r2Response.data.cloudflareR2Create.publicUrl,
+          url: multipartData.publicUrl,
           userGenerated: false,
           downloadable: true,
           maxResolution: 'uhd'

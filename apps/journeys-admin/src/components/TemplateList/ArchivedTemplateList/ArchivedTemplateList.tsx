@@ -14,11 +14,15 @@ import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
-  RESTORE_ARCHIVED_JOURNEYS,
-  TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import type { JourneyListProps } from '../../JourneyList/JourneyList'
+import {
+  RESTORE_ARCHIVED_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 
@@ -39,14 +43,23 @@ export function ArchivedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
+
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -57,6 +70,12 @@ export function ArchivedTemplateList({
         enqueueSnackbar(t('Journeys Trashed'), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysTrash)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }

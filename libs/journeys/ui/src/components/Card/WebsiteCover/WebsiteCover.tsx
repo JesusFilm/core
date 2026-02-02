@@ -146,9 +146,13 @@ export function WebsiteCover({
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        overflowY: 'auto',
+        overflowY: 'scroll',
         overflowX: 'hidden',
-        backgroundColor: baseBackgroundColor
+        backgroundColor: baseBackgroundColor,
+        '&::-webkit-scrollbar': {
+          display: 'none'
+        },
+        scrollbarWidth: 'none'
       }}
     >
       {VideoSection}

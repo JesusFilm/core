@@ -1,0 +1,1 @@
+export { DialogLangSwitch } from './DialogLangSwitch'

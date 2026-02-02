@@ -26,7 +26,10 @@ function CustomizePage() {
   const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,
-    idType: IdType.databaseId
+    idType: IdType.databaseId,
+    options: {
+      skipRoutingFilter: true
+    }
   })
 
   return (
@@ -79,7 +82,10 @@ export const getServerSideProps = withUserTokenSSR()(async ({
       query: GET_JOURNEY,
       variables: {
         id: journeyId.toString(),
-        idType: IdType.databaseId
+        idType: IdType.databaseId,
+        options: {
+          skipRoutingFilter: true
+        }
       }
     })
   } catch (error) {

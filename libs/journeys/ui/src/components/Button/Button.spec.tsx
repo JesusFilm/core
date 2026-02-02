@@ -6,6 +6,7 @@ import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  BlockEventLabel,
   ButtonAlignment,
   ButtonColor,
   ButtonSize,
@@ -21,7 +22,11 @@ import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import {
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import {
   ButtonFields,
@@ -105,6 +110,7 @@ const block: TreeBlock<ButtonFields> = {
     __typename: 'ButtonBlockSettings',
     alignment: ButtonAlignment.justify
   },
+  eventLabel: null,
   children: []
 }
 
@@ -128,6 +134,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -150,7 +157,14 @@ const activeBlock: TreeBlock<StepBlock> = {
 }
 
 const journey = {
-  id: 'journey.id'
+  id: 'journey.id',
+  language: {
+    __typename: 'Language',
+    id: '1',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: []
+  }
 } as unknown as Journey
 
 describe('Button', () => {
@@ -192,80 +206,11 @@ describe('Button', () => {
       }))
     }
 
-    it('should not submit form on empty form', async () => {
-      mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn().mockResolvedValue({})
-      const handleSubmitMock = jest.fn()
-
-      blockHistoryVar([activeBlock])
-      treeBlocksVar([activeBlock])
-
-      const formikContextMock = {
-        values: { field1: '', field2: '' },
-        validateForm: validateFormMock,
-        handleSubmit: handleSubmitMock
-      }
-
-      const useFormikContextMock = useFormikContext as jest.Mock
-      useFormikContextMock.mockReturnValue(formikContextMock)
-
-      render(
-        <MockedProvider mocks={[mockButtonClickEvent]}>
-          <Button {...submitButtonMock} />
-        </MockedProvider>
-      )
-
-      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
-
-      fireEvent.click(submitButton)
-
-      await waitFor(() => {
-        expect(validateFormMock).toHaveBeenCalled()
-        expect(mockButtonClickEvent.result).toHaveBeenCalled()
-        expect(handleSubmitMock).not.toHaveBeenCalled()
-      })
-    })
-
     it('should prevent handleAction when validaton fails', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({
         field1: 'Error'
       })
-      const handleSubmitMock = jest.fn()
-
-      blockHistoryVar([activeBlock])
-      treeBlocksVar([activeBlock])
-
-      const formikContextMock = {
-        values: { field1: 'asd', field2: '' },
-        validateForm: validateFormMock,
-        handleSubmit: handleSubmitMock
-      }
-
-      const useFormikContextMock = useFormikContext as jest.Mock
-      useFormikContextMock.mockReturnValue(formikContextMock)
-
-      render(
-        <MockedProvider mocks={[mockButtonClickEvent]}>
-          <Button {...submitButtonMock} />
-        </MockedProvider>
-      )
-
-      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
-
-      fireEvent.click(submitButton)
-
-      await waitFor(() => {
-        expect(validateFormMock).toHaveBeenCalled()
-        expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
-        expect(handleAction).not.toHaveBeenCalled()
-      })
-    })
-
-    it('should create button click event if form is valid and not empty', async () => {
-      mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn().mockResolvedValue({})
-      const handleSubmitMock = jest.fn()
       const submitFormMock = jest.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
@@ -274,8 +219,42 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
-        submitForm: submitFormMock,
-        handleSubmit: handleSubmitMock
+        submitForm: submitFormMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(submitFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+        expect(handleAction).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should create button click event if form is valid and not empty', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({})
+      const submitFormMock = jest.fn().mockResolvedValue(undefined)
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        validateForm: validateFormMock,
+        submitForm: submitFormMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
@@ -377,12 +356,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'buttonClick',
+          target: actionToTarget(action),
+          journeyId: 'journey.id'
         })
       }
     })
@@ -461,12 +447,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'buttonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'buttonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'buttonClick',
+          target: actionToTarget(action),
+          journeyId: 'journey.id'
         })
       }
     })
@@ -494,6 +487,7 @@ describe('Button', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           children: []
         }
       ]
@@ -688,12 +682,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -766,12 +767,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -846,12 +854,201 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
+        })
+      }
+    })
+  })
+
+  it('should call plausible with eventLabel for buttonClick events', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const buttonBlock = {
+      ...block,
+      eventLabel: BlockEventLabel.custom1
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuid',
+          action: undefined,
+          actionValue: undefined
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonBlock.label,
+                  action: undefined,
+                  actionValue: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(mockPlausible).toHaveBeenCalledWith(
+      'buttonClick',
+      expect.any(Object)
+    )
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+      u: expect.stringContaining(`/journey.id/button`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        label: 'stepName',
+        value: 'This is a button',
+        action: undefined,
+        actionValue: undefined,
+        key: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom1,
+          blockId: 'button',
+          target: null,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom1,
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom1,
+          journeyId: 'journey.id'
+        })
+      }
+    })
+  })
+
+  it('should call plausible with eventLabel for chatButtonClick events', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const action: ButtonFields_action = {
+      __typename: 'LinkAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      url: 'https://m.me/some-user',
+      customizable: null,
+      parentStepId: null
+    }
+
+    const buttonBlock = {
+      ...block,
+      action,
+      eventLabel: BlockEventLabel.custom2
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: MessagePlatform.facebook
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(mockPlausible).toHaveBeenCalledWith(
+      'chatButtonClick',
+      expect.any(Object)
+    )
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom2, {
+      u: expect.stringContaining(`/journey.id/button`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: 'facebook',
+        key: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom2,
+          blockId: 'button',
+          target: action,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom2,
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom2,
+          journeyId: 'journey.id'
         })
       }
     })
@@ -910,7 +1107,7 @@ describe('Button', () => {
           __typename: 'IconBlock',
           parentBlockId: 'id',
           parentOrder: 0,
-          iconName: IconName.CheckCircleRounded,
+          iconName: IconName.ChevronLeftRounded,
           iconColor: null,
           iconSize: IconSize.md,
           children: []
@@ -922,11 +1119,11 @@ describe('Button', () => {
         <Button {...iconBlock} />
       </MockedProvider>
     )
-    expect(screen.getByTestId('CheckCircleRoundedIcon')).toHaveClass(
+    expect(screen.getByTestId('ChevronLeftRoundedIcon')).toHaveClass(
       'MuiSvgIcon-root'
     )
     expect(
-      screen.getByTestId('CheckCircleRoundedIcon').parentElement
+      screen.getByTestId('ChevronLeftRoundedIcon').parentElement
     ).toHaveClass('MuiButton-startIcon')
   })
 
@@ -940,7 +1137,7 @@ describe('Button', () => {
           __typename: 'IconBlock',
           parentBlockId: 'id',
           parentOrder: 0,
-          iconName: IconName.CheckCircleRounded,
+          iconName: IconName.ChevronLeftRounded,
           iconColor: IconColor.primary,
           iconSize: IconSize.md,
           children: []
@@ -952,12 +1149,143 @@ describe('Button', () => {
         <Button {...iconBlock} />
       </MockedProvider>
     )
-    expect(screen.getByTestId('CheckCircleRoundedIcon')).toHaveClass(
+    expect(screen.getByTestId('ChevronLeftRoundedIcon')).toHaveClass(
       'MuiSvgIcon-root'
     )
     expect(
-      screen.getByTestId('CheckCircleRoundedIcon').parentElement
+      screen.getByTestId('ChevronLeftRoundedIcon').parentElement
     ).toHaveClass('MuiButton-endIcon')
+  })
+
+  describe('rtl', () => {
+    it('should swap icon positions for RTL in journey viewer', () => {
+      const rtlJourney: Journey = {
+        id: 'journey.id',
+        language: {
+          __typename: 'Language',
+          id: '529',
+          bcp47: 'ar',
+          iso3: 'arb',
+          name: [
+            {
+              __typename: 'LanguageName',
+              value: 'Arabic',
+              primary: false
+            }
+          ]
+        }
+      } as unknown as Journey
+
+      const iconBlock: TreeBlock<ButtonFields> = {
+        ...block,
+        startIconId: 'start',
+        endIconId: 'end',
+        children: [
+          {
+            id: 'start',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 0,
+            iconName: IconName.ChevronLeftRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          },
+          {
+            id: 'end',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 1,
+            iconName: IconName.ChevronRightRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey: rtlJourney, variant: 'default' }}>
+            <Button {...iconBlock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      // In RTL journey viewer, startIcon should render in endIcon position
+      expect(
+        screen.getByTestId('ChevronLeftRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-endIcon')
+
+      // In RTL journey viewer, endIcon should render in startIcon position
+      expect(
+        screen.getByTestId('ChevronRightRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-startIcon')
+    })
+
+    it('should not swap icon positions for RTL in editor', () => {
+      const rtlJourney: Journey = {
+        id: 'journey.id',
+        language: {
+          __typename: 'Language',
+          id: '529',
+          bcp47: 'ar',
+          iso3: 'arb',
+          name: [
+            {
+              __typename: 'LanguageName',
+              value: 'Arabic',
+              primary: false
+            }
+          ]
+        }
+      } as unknown as Journey
+
+      const iconBlock: TreeBlock<ButtonFields> = {
+        ...block,
+        startIconId: 'start',
+        endIconId: 'end',
+        children: [
+          {
+            id: 'start',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 0,
+            iconName: IconName.ChevronLeftRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          },
+          {
+            id: 'end',
+            __typename: 'IconBlock',
+            parentBlockId: 'id',
+            parentOrder: 1,
+            iconName: IconName.ChevronRightRounded,
+            iconColor: null,
+            iconSize: IconSize.md,
+            children: []
+          }
+        ]
+      }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey: rtlJourney, variant: 'admin' }}>
+            <Button {...iconBlock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      // In editor, icons should remain in their original positions
+      expect(
+        screen.getByTestId('ChevronLeftRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-startIcon')
+
+      expect(
+        screen.getByTestId('ChevronRightRoundedIcon').parentElement
+      ).toHaveClass('MuiButton-endIcon')
+    })
   })
 
   it('should call actionHandler on click', () => {
@@ -1266,6 +1594,13 @@ describe('Button', () => {
   describe('customization string resolution', () => {
     it('resolves label using journey customization fields on default variant', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
@@ -1295,6 +1630,13 @@ describe('Button', () => {
 
     it('does not resolve label on admin variant for template journeys', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         template: true,
         journeyCustomizationFields: [
           {
@@ -1325,6 +1667,13 @@ describe('Button', () => {
 
     it('replaces custom fields within mixed strings and leaves other text intact', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',
@@ -1354,6 +1703,13 @@ describe('Button', () => {
 
     it('uses defaultValue when value is null', () => {
       const journeyWithFields = {
+        language: {
+          __typename: 'Language',
+          id: '1',
+          bcp47: 'en',
+          iso3: 'eng',
+          name: []
+        },
         journeyCustomizationFields: [
           {
             __typename: 'JourneyCustomizationField',

@@ -2,17 +2,16 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
-type Translation = {
-  languageId: string
-  value: string
-}
-
-function sortByEnglishFirst(a: Translation): number {
-  if (a.languageId === '529') return -1
-  return 0
+function sortByEnglishFirst(
+  a: { languageId?: string },
+  b: { languageId?: string }
+): number {
+  const aIsEn = a?.languageId === '529'
+  const bIsEn = b?.languageId === '529'
+  return aIsEn === bIsEn ? 0 : aIsEn ? -1 : 1
 }
 
 export async function updateVideoVariantInAlgolia(
@@ -20,14 +19,9 @@ export async function updateVideoVariantInAlgolia(
   logger?: Logger
 ): Promise<void> {
   try {
-    const client = await getAlgoliaClient(logger)
+    const client = getAlgoliaClient()
+    const algoliaConfig = getAlgoliaConfig()
     const languages = await getLanguages(logger)
-    const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
-
-    if (client == null) {
-      logger?.warn('algolia client not found, skipping update')
-      return
-    }
 
     const videoVariant = await prisma.videoVariant.findUnique({
       where: { id: videoVariantId },
@@ -48,29 +42,21 @@ export async function updateVideoVariantInAlgolia(
     if (videoVariant == null) {
       logger?.warn(`video variant ${videoVariantId} not found`)
       await client.deleteObject({
-        indexName: videoVariantsIndex,
+        indexName: algoliaConfig.videoVariantsIndex,
         objectID: videoVariantId
       })
       return
     }
 
-    if (!videoVariant.published) {
+    const imageAccount = process.env.CLOUDFLARE_IMAGE_ACCOUNT
+    const isValidImageAccount =
+      imageAccount != null &&
+      imageAccount !== '' &&
+      imageAccount !== 'testAccount'
+    if (!isValidImageAccount) {
       logger?.warn(
-        `video variant ${videoVariantId} is not published, skipping update`
+        `CLOUDFLARE_IMAGE_ACCOUNT is missing or invalid ("${imageAccount}"). Skipping Algolia update for ${videoVariantId} to avoid polluting prod.`
       )
-      return
-    }
-
-    if (videoVariant.video?.restrictViewPlatforms.includes('watch')) {
-      logger?.warn(
-        `video variant ${videoVariantId} is restricted from view on watch, skipping update and removing from algolia`
-      )
-
-      await client.deleteObject({
-        indexName: videoVariantsIndex,
-        objectID: videoVariantId
-      })
-
       return
     }
 
@@ -78,13 +64,18 @@ export async function updateVideoVariantInAlgolia(
       ({ aspectRatio }) => aspectRatio === 'banner'
     )
     let image = ''
-    if (cfImage != null)
-      image = `https://imagedelivery.net/${
-        process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-      }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
+    if (cfImage != null) {
+      const version = videoVariant.version ?? 1
+      image = `https://imagedelivery.net/${imageAccount}/${cfImage.id}/f=jpg,w=1280,h=600,q=95?v=${version}`
+    }
 
-    const sortedTitles =
-      videoVariant.video?.title.sort(sortByEnglishFirst) ?? []
+    const sortedTitles = [...(videoVariant.video?.title ?? [])].sort(
+      sortByEnglishFirst
+    )
+
+    const sortedDescription = [...(videoVariant.video?.description ?? [])].sort(
+      sortByEnglishFirst
+    )
 
     const transformedVideo = {
       objectID: videoVariant.id,
@@ -94,9 +85,7 @@ export async function updateVideoVariantInAlgolia(
         value: title?.value ?? '',
         languageId: title?.languageId ?? ''
       })),
-      description: videoVariant.video?.description
-        ?.sort(sortByEnglishFirst)
-        .map((description) => description?.value),
+      description: sortedDescription.map((d) => d?.value),
       duration: videoVariant.duration,
       languageId: videoVariant.languageId,
       languageEnglishName: languages[videoVariant.languageId]?.english,
@@ -110,12 +99,15 @@ export async function updateVideoVariantInAlgolia(
       imageAlt:
         videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
           ?.value ?? '',
-      childrenCount: videoVariant.video?.childIds.length,
+      childrenCount: videoVariant.video?.childIds.length ?? 0,
+      videoPublished: videoVariant.video?.published ?? false,
+      published: videoVariant.published ?? false,
+      restrictViewPlatforms: videoVariant.video?.restrictViewPlatforms ?? [],
       manualRanking: videoVariant.languageId === '529' ? 0 : 1
     }
 
     const result = await client.saveObjects({
-      indexName: videoVariantsIndex,
+      indexName: algoliaConfig.videoVariantsIndex,
       objects: [transformedVideo],
       waitForTasks: true
     })
@@ -124,7 +116,7 @@ export async function updateVideoVariantInAlgolia(
       `Successfully saved to Algolia. Tasks: ${result.map((r) => r.taskID).join(', ')}`
     )
     logger?.info(
-      `Record ${videoVariant.id} is now available in index ${videoVariantsIndex}`
+      `Record ${videoVariant.id} is now available in index ${algoliaConfig.videoVariantsIndex}`
     )
   } catch (error) {
     logger?.error(

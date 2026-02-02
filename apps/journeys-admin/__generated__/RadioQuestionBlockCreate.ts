@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, ContactActionType } from "./globalTypes";
+import { RadioQuestionBlockCreateInput, RadioOptionBlockCreateInput, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioQuestionBlockCreate
@@ -77,6 +77,7 @@ export interface RadioQuestionBlockCreate_radioOption1 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface RadioQuestionBlockCreate_radioOption2_action_NavigateToBlockAction {
@@ -139,6 +140,7 @@ export interface RadioQuestionBlockCreate_radioOption2 {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface RadioQuestionBlockCreate {

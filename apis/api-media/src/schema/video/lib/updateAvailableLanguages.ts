@@ -32,27 +32,22 @@ export async function calculateAvailableLanguages(
     return []
   }
 
-  const isCollection = ['collection', 'series', 'featureFilm'].includes(
-    video.label
-  )
-
-  if (isCollection && video.children.length > 0) {
-    // For collections: aggregate availableLanguages from all published children
-    const childLanguages = new Set<string>()
-    for (const child of video.children) {
-      for (const lang of child.availableLanguages) {
-        childLanguages.add(lang)
-      }
-    }
-    return Array.from(childLanguages).sort((a, b) => Number(a) - Number(b))
-  } else if (!isCollection) {
-    // For regular videos: get languages from published variants
-    return video.variants
-      .map((v) => v.languageId)
-      .sort((a, b) => Number(a) - Number(b))
+  const languageSet = new Set<string>()
+  // Always include published variants on the video itself
+  for (const variant of video.variants) {
+    languageSet.add(variant.languageId)
   }
 
-  return []
+  // If there are children, include their availableLanguages
+  if (video.children.length > 0) {
+    for (const child of video.children) {
+      for (const lang of child.availableLanguages) {
+        languageSet.add(lang)
+      }
+    }
+  }
+
+  return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
 }
 
 // Updates a video's availableLanguages field based on current state
@@ -102,26 +97,23 @@ export async function addLanguageToVideo(
   videoId: string,
   languageId: string
 ): Promise<void> {
-  try {
-    await prisma.video.update({
-      where: {
-        id: videoId,
-        NOT: {
-          availableLanguages: {
-            has: languageId
-          }
-        }
-      },
-      data: {
-        availableLanguages: {
-          push: languageId
-        }
-      }
-    })
-  } catch {
-    // If update fails (e.g., language already exists), that's fine
-    // We just wanted to ensure it's in the array
-  }
+  // availableLanguages is nullable in the DB. If it's NULL, Prisma filters like
+  // "NOT { availableLanguages: { has: ... } }" can silently no-op due to SQL NULL
+  // semantics. Coalesce NULL -> [] in code, then set the updated array.
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    select: { availableLanguages: true }
+  })
+
+  if (video == null) return
+
+  const currentLanguages = video.availableLanguages ?? []
+  if (currentLanguages.includes(languageId)) return
+
+  await prisma.video.update({
+    where: { id: videoId },
+    data: { availableLanguages: { set: [...currentLanguages, languageId] } }
+  })
 }
 
 // Removes a language from a video's availableLanguages if no published variants use it

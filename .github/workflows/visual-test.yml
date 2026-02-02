@@ -3,7 +3,7 @@ on:
   push:
     branches: [never]
   # push:
-  #   branches: [main, feature/*]
+  #   branches: [main]
   # pull_request:
   #   branches: [main, feature/*]
   #   types: [labeled, synchronize]
@@ -30,7 +30,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
       - name: nx Install
         run: pnpm add -g nx --silent

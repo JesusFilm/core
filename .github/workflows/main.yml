@@ -1,7 +1,7 @@
 name: Main
 on:
   push:
-    branches: [main, feature/*]
+    branches: [main]
   pull_request:
     branches: [main, feature/*]
   merge_group:
@@ -33,7 +33,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -53,9 +53,11 @@ jobs:
           DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
           DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
           DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+          DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
           DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+          DOPPLER_PLAYER_TOKEN: ${{ secrets.DOPPLER_PLAYER_TOKEN }}
           DOPPLER_SHORT_LINKS_TOKEN: ${{ secrets.DOPPLER_SHORT_LINKS_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
@@ -93,7 +95,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:

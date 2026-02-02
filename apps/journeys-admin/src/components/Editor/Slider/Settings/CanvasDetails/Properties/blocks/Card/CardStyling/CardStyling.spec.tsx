@@ -36,6 +36,7 @@ const initialBlock: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -120,6 +121,7 @@ describe('CardStyling', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     render(
@@ -149,6 +151,7 @@ describe('CardStyling', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     const step: TreeBlock<StepBlock> = {
@@ -188,6 +191,7 @@ describe('CardStyling', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: []
     }
     render(
