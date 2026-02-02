@@ -7,7 +7,6 @@ export const IconBlockUpdateInput = builder.inputType('IconBlockUpdateInput', {
   fields: (t) => ({
     name: t.field({ type: IconName, required: false }),
     color: t.field({ type: IconColor, required: false }),
-    size: t.field({ type: IconSize, required: false }),
-    customizable: t.boolean({ required: false })
+    size: t.field({ type: IconSize, required: false })
   })
 })

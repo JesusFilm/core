@@ -842,7 +842,6 @@ export type HostUpdateInput = {
 export type IconBlock = Block & {
   __typename?: 'IconBlock';
   color?: Maybe<IconColor>;
-  customizable?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   name?: Maybe<IconName>;
@@ -853,7 +852,6 @@ export type IconBlock = Block & {
 
 export type IconBlockCreateInput = {
   color?: InputMaybe<IconColor>;
-  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -864,7 +862,6 @@ export type IconBlockCreateInput = {
 
 export type IconBlockUpdateInput = {
   color?: InputMaybe<IconColor>;
-  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<IconName>;
   size?: InputMaybe<IconSize>;
 };
