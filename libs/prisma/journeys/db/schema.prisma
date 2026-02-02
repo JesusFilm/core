@@ -148,7 +148,7 @@ model Event {
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
-  journey                 Journey?          @relation(fields: [journeyId], references: [id])
+  journey                 Journey?          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
   @@index(visitorId)
@@ -272,6 +272,7 @@ model Integration {
   accessSecretIv         String?
   accessSecretTag        String?
   accountEmail           String?
+  oauthStale             Boolean            @default(false) // Indicates OAuth token refresh has failed and re-authorization is required
   googleSheetsSyncs      GoogleSheetsSync[]
   team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
@@ -369,7 +370,7 @@ model JourneyTag {
   id        String  @id @default(uuid())
   tagId     String
   journeyId String
-  journey   Journey @relation(fields: [journeyId], references: [id])
+  journey   Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([journeyId, tagId])
   @@index([tagId])
@@ -629,6 +630,7 @@ model Block {
   min                        Int?
   max                        Int?
   settings                   Json                 @default("{ }") // block settings
+  exportOrder                Int? // column order for CSV exports and Google Sheets syncs
 
   @@unique([slug, journeyId])
   @@index(journeyId)
@@ -725,7 +727,7 @@ model QrCode {
   color           String? @default("#000000")
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
-  journey         Journey @relation(fields: [journeyId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 }
 
 model JourneyEventsExportLog {
@@ -736,7 +738,7 @@ model JourneyEventsExportLog {
   eventsFilter   String[]
   dateRangeStart DateTime?
   dateRangeEnd   DateTime?
-  journey        Journey   @relation(fields: [journeyId], references: [id])
+  journey        Journey   @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
   @@index(createdAt)

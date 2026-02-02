@@ -102,7 +102,17 @@ export enum IconName {
     SubscriptionsRounded = "SubscriptionsRounded",
     ContactSupportRounded = "ContactSupportRounded",
     Launch = "Launch",
-    MailOutline = "MailOutline"
+    MailOutline = "MailOutline",
+    ArrowLeftContained2 = "ArrowLeftContained2",
+    ArrowRightContained2 = "ArrowRightContained2",
+    MessageChat1 = "MessageChat1",
+    Home4 = "Home4",
+    LinkAngled = "LinkAngled",
+    Volume5 = "Volume5",
+    Note2 = "Note2",
+    UserProfile2 = "UserProfile2",
+    UsersProfiles3 = "UsersProfiles3",
+    Phone = "Phone"
 }
 
 export enum IconColor {
@@ -542,23 +552,6 @@ export class JourneyViewEventCreateInput {
     value?: Nullable<string>;
 }
 
-export class RadioQuestionSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    radioOptionBlockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class SignUpSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    name: string;
-    email: string;
-}
-
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -579,14 +572,6 @@ export class StepPreviousEventCreateInput {
     previousStepId: string;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class TextResponseSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -694,6 +679,7 @@ export class JourneysQueryOptions {
     hostname?: Nullable<string>;
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
+    skipRoutingFilter?: Nullable<boolean>;
 }
 
 export class JourneyCreateInput {
@@ -1139,17 +1125,11 @@ export abstract class IMutation {
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
-    abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
-
-    abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
-
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
-
-    abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 
@@ -1928,6 +1908,13 @@ export class Team {
     qrCodes: QrCode[];
 }
 
+export class Translation {
+    __typename?: 'Translation';
+    value: string;
+    language: Language;
+    primary: boolean;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -2020,13 +2007,6 @@ export class VisitorsConnection {
     __typename?: 'VisitorsConnection';
     edges: VisitorEdge[];
     pageInfo: PageInfo;
-}
-
-export class Translation {
-    __typename?: 'Translation';
-    value: string;
-    language: Language;
-    primary: boolean;
 }
 
 export class Video {

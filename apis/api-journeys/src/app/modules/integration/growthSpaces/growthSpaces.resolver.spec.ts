@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { Integration, Prisma, Team } from '@core/prisma/journeys/client'
 
 import { IntegrationGrowthSpacesCreateInput } from '../../../../__generated__/graphql'
@@ -12,6 +11,7 @@ import {
   UserTeamRole
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../../lib/CaslAuthModule'
 import { PrismaService } from '../../../lib/prisma.service'
 
 import { IntegrationGrowthSpacesResolver } from './growthSpaces.resolver'
@@ -41,7 +41,8 @@ const integration: Integration = {
   accessSecretIv: 'dx+2iBr7yYvilLIC',
   accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA==',
   userId: null,
-  accountEmail: null
+  accountEmail: null,
+  oauthStale: false
 }
 
 const teamWithUserTeam: Team = {

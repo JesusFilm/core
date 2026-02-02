@@ -37,7 +37,8 @@ const journeyBlockSelect = {
   content: true,
   x: true,
   y: true,
-  deletedAt: true
+  deletedAt: true,
+  exportOrder: true
 } as const
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
@@ -326,10 +327,13 @@ builder.queryField('journeyVisitorExport', (t) => {
             blockId: true,
             label: true
           },
-          distinct: ['blockId', 'label']
+          distinct: ['blockId', 'label'],
+          // Order by createdAt to ensure consistent "first" label per blockId
+          orderBy: { createdAt: 'asc' }
         })
 
-        // Normalize labels and deduplicate by normalized key
+        // Normalize labels and deduplicate by blockId (keep only first label per blockId)
+        // This prevents creating multiple columns for the same block when events have different labels
         const headerMap = new Map<string, { blockId: string; label: string }>()
         blockHeadersResult
           .filter((header) => header.blockId != null)
@@ -337,8 +341,9 @@ builder.queryField('journeyVisitorExport', (t) => {
             const normalizedLabel = (header.label ?? '')
               .replace(/\s+/g, ' ')
               .trim()
-            const key = `${header.blockId}-${normalizedLabel}`
-            // Only add if not already present (handles duplicates with different whitespace)
+            // Key by blockId only to ensure one column per block
+            const key = header.blockId!
+            // Only add if not already present (keeps first label encountered for each blockId)
             if (!headerMap.has(key)) {
               headerMap.set(key, {
                 blockId: header.blockId!,
@@ -380,22 +385,36 @@ builder.queryField('journeyVisitorExport', (t) => {
           baseColumnLabelResolver: resolveBaseColumnLabel
         })
         // Stream rows directly to CSV without collecting in memory
+        // Use column index as key for the stringifier
+        const columnKeys = columns.map((_, index) => `col_${index}`)
         const { stringifier, onEndPromise, getContent } = createCsvStringifier(
-          columns.map((col) => ({ key: col.key }))
+          columnKeys.map((key) => ({ key }))
         )
 
         // Write the header row (sanitized)
         const sanitizedHeaderRow = headerRow.map((cell) =>
           sanitizeCSVCell(cell)
         )
-        stringifier.write(sanitizedHeaderRow)
+        const headerRowObj: Record<string, string> = {}
+        columnKeys.forEach((key, index) => {
+          headerRowObj[key] = sanitizedHeaderRow[index] ?? ''
+        })
+        stringifier.write(headerRowObj)
 
         for await (const row of getJourneyVisitors(
           journeyId,
           eventWhere,
           userTimezone
         )) {
-          stringifier.write(row)
+          // Align row data to columns using column key
+          // Column order is determined by exportOrder, matching uses key
+          const alignedRowObj: Record<string, string> = {}
+          columns.forEach((col, index) => {
+            const colKey = `col_${index}`
+            // Match row data by column key (includes blockId-label)
+            alignedRowObj[colKey] = row[col.key] ?? ''
+          })
+          stringifier.write(alignedRowObj)
         }
         stringifier.end()
         await onEndPromise

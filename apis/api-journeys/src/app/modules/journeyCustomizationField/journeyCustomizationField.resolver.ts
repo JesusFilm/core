@@ -4,11 +4,11 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
 import { JourneyCustomizationField } from '.prisma/api-journeys-client'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility } from '../../lib/CaslAuthModule'
 import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString'
 import { PrismaService } from '../../lib/prisma.service'
 

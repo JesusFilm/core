@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "播放器",
+    "description": "导航至 /pl/[playlistId]，查看播放列表"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | 耶稣电影项目"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "播放列表",
+    "pageTitle": "{title} 作者： {name}",
+    "thisPlaylistIsEmpty": "该播放列表为空",
+    "defaultDescription": "您的朋友分享了这些视频来鼓励您。按下播放键，观看在耶稣里寻找平安的振奋人心的故事。",
+    "description": "您的朋友 {name} 分享了这些视频作为对您的鼓励。按下播放键，观看在耶稣里寻找平安的振奋人心的故事。"
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "无视频"
+  },
+  "PlaylistList": {
+    "noThumbnail": "无缩略图"
+  },
+  "StudyQuestions": {
+    "title": "学习问题"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "要观看此视频，请启用 JavaScript，并考虑升级到<link>支持 HTML5 视频</link>的网络浏览器"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "你的朋友 <strong>{name}</strong>与您分享这些视频是对您的鼓励。观看这些视频的最佳方式是下载我们的应用程序。",
+    "downloadOnAppStore": "在应用商店下载",
+    "getItOnGooglePlay": "在 Google Play 上获取"
+  }
+}

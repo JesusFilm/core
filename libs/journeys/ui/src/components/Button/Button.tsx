@@ -30,6 +30,7 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import { getJourneyRTL } from '../../libs/rtl'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 
@@ -119,6 +120,7 @@ export function Button({
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
 
   const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
 
@@ -362,6 +364,12 @@ export function Button({
     handleAction(router, action, nextStepSlug)
   }
 
+  // In journey viewer with RTL: swap startIcon/endIcon positions so trailing icons appear on the left
+  // In editor: FramePortal sets dir="rtl" on iframe, so MUI Button handles icon swapping automatically
+  const shouldSwapIcons = variant !== 'admin' && rtl
+  const leadingIcon = shouldSwapIcons ? endIcon : startIcon
+  const trailingIcon = shouldSwapIcons ? startIcon : endIcon
+
   return (
     // Margin added via Box so it's ignored by admin selection border outline
     <Box
@@ -385,8 +393,8 @@ export function Button({
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
-        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
-        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+        startIcon={leadingIcon != null ? <Icon {...leadingIcon} /> : undefined}
+        endIcon={trailingIcon != null ? <Icon {...trailingIcon} /> : undefined}
         onClick={handleClick}
         sx={{
           outline: '2px solid',
