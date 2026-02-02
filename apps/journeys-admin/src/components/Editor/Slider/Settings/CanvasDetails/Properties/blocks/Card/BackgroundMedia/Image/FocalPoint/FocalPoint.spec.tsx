@@ -37,8 +37,7 @@ describe('FocalPoint', () => {
     width: imageBlock.width,
     height: imageBlock.height,
     focalLeft: 50,
-    focalTop: 50,
-    customizable: null
+    focalTop: 50
   }
 
   beforeEach(() => {
