@@ -19,8 +19,8 @@ import {
 import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
-import { ChatAction } from './ChatAction'
 import { ActionCustomizationToggle } from './ActionCustomizationToggle'
+import { ChatAction } from './ChatAction'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
