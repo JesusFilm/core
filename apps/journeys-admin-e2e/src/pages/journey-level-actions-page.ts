@@ -200,9 +200,12 @@ export class JourneyLevelActions {
   }
 
   async clickSelectTeamDropDownIcon(): Promise<void> {
-    await this.page
-      .locator('div[role="dialog"] div[aria-haspopup="listbox"]')
-      .click()
+    const dropdown = this.page
+      .getByTestId('team-duplicate-select')
+      .locator('div[aria-haspopup="listbox"]')
+    await expect(dropdown).toHaveCount(1)
+    await expect(dropdown).toBeVisible()
+    await dropdown.click()
   }
 
   async selectTeamToCopyTheJourney(): Promise<void> {
@@ -230,9 +233,11 @@ export class JourneyLevelActions {
   }
 
   async verifyCopiedTeamNameUpdatedInTeamSelectDropdown(): Promise<void> {
-    await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.selectedTeam
-    )
+    const teamSelectDropdown = this.page
+      .getByTestId('TeamSelect')
+      .locator('div[aria-haspopup="listbox"]')
+    await expect(teamSelectDropdown).toHaveCount(1)
+    await expect(teamSelectDropdown).toHaveText(this.selectedTeam)
   }
 
   async verifyCopiedJournetInSelectedTeamList(): Promise<void> {
