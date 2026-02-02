@@ -121,4 +121,3 @@ export async function updateLanguageInAlgoliaFromMedia(
     logger?.error(error, `failed to update language ${languageId} in algolia`)
   }
 }
-

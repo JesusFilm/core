@@ -22,4 +22,3 @@ export async function ensureLanguageHasVideosTrue(
 
   await updateLanguageInAlgoliaFromMedia(languageId)
 }
-
