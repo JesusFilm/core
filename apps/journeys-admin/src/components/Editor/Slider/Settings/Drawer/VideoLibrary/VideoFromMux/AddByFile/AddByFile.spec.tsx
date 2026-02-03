@@ -138,6 +138,7 @@ const TestWrapper = ({
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: false,
+              customizable: null,
               mediaVideo: null,
               eventLabel: null,
               endEventLabel: null,

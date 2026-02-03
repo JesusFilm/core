@@ -55,7 +55,8 @@ describe('SocialScreenSocialImage', () => {
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     }
   }
 
@@ -144,7 +145,8 @@ describe('SocialScreenSocialImage', () => {
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
           scale: null,
           focalTop: null,
-          focalLeft: null
+          focalLeft: null,
+          customizable: null
         }
       }
     }))
@@ -203,7 +205,8 @@ describe('SocialScreenSocialImage', () => {
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
           scale: null,
           focalTop: null,
-          focalLeft: null
+          focalLeft: null,
+          customizable: null
         }
       }
     }))

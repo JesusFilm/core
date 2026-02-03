@@ -142,7 +142,8 @@ export function BackgroundMediaVideo({
           : null,
       showGeneratedSubtitles: null,
       eventLabel: null,
-      endEventLabel: null
+      endEventLabel: null,
+      customizable: null
     }
 
     add({

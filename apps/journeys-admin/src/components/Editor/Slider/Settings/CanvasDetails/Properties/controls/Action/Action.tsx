@@ -19,8 +19,8 @@ import {
 import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
+import { ActionCustomizationToggle } from './ActionCustomizationToggle'
 import { ChatAction } from './ChatAction'
-import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
@@ -129,7 +129,7 @@ export function Action(): ReactElement {
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
         {(isLink || isEmail || isChat || isPhone) && journey?.template && (
-          <CustomizationToggle />
+          <ActionCustomizationToggle />
         )}
       </Stack>
     </>

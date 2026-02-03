@@ -60,6 +60,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  customizable: null,
   children: []
 }
 
@@ -124,6 +125,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   posterBlockId: 'poster1.id',
+  customizable: null,
   children: []
 }
 
@@ -456,6 +458,7 @@ describe('VideoBlockEditor', () => {
           scale: null,
           focalTop: null,
           focalLeft: null,
+          customizable: null,
           children: []
         }
       ]

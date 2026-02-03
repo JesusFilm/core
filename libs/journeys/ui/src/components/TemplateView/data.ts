@@ -164,7 +164,8 @@ export const publishedJourney: Journey = {
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       id: 'typographyBlockId1',
@@ -375,7 +376,8 @@ export const blocks: Block[] = [
     action: null,
     posterBlockId: 'image0.id',
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     id: 'image0.id',
@@ -389,7 +391,8 @@ export const blocks: Block[] = [
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
   {
     id: 'step1.id',
@@ -483,7 +486,8 @@ export const blocks: Block[] = [
     blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
 
   {
@@ -600,7 +604,8 @@ export const blocks: Block[] = [
     blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
   {
     id: 'step3.id',
@@ -701,7 +706,8 @@ export const blocks: Block[] = [
     blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
   {
     id: 'step4.id',
@@ -758,7 +764,8 @@ export const blocks: Block[] = [
     action: null,
     posterBlockId: 'posterBlockId',
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     id: 'posterBlockId',
@@ -772,7 +779,8 @@ export const blocks: Block[] = [
     parentOrder: 0,
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
   {
     id: 'step5.id',
@@ -808,7 +816,8 @@ export const blocks: Block[] = [
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
   {
     __typename: 'SignUpBlock',
@@ -862,7 +871,8 @@ export const blocks: Block[] = [
     blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   },
   {
     id: 'typographyBlockId11',

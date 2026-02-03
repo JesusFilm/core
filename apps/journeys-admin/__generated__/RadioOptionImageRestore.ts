@@ -29,6 +29,7 @@ export interface RadioOptionImageRestore_blockRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export type RadioOptionImageRestore_blockRestore = RadioOptionImageRestore_blockRestore_StepBlock | RadioOptionImageRestore_blockRestore_ImageBlock;

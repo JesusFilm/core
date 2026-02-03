@@ -1,8 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -62,6 +63,7 @@ describe('Video', () => {
       variantLanguages: []
     },
     posterBlockId: null,
+    customizable: null,
     children: []
   }
 
@@ -99,6 +101,45 @@ describe('Video', () => {
     )
 
     expect(getAllByTestId('EventLabelSelect')).toHaveLength(2)
+  })
+
+  it('should not render BlockCustomizationToggle when journey is not a template', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider initialState={{ selectedBlock: video }}>
+              <Video {...video} />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+  })
+
+  it('should render BlockCustomizationToggle when journey is a template', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <CommandProvider>
+              <EditorProvider initialState={{ selectedBlock: video }}>
+                <Video {...video} />
+              </EditorProvider>
+            </CommandProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
   })
 
   it('should open property drawer for video options', () => {
