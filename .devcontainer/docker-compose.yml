@@ -4,7 +4,7 @@ services:
     volumes:
       - core-workspace:/workspaces
       - core-node-user:/home/node
-    entrypoint: ["/bin/bash", "-lc"]
+    entrypoint: ['/bin/bash', '-lc']
     command:
       - |
         LOGFILE=/workspaces/bootstrap.log
@@ -74,7 +74,7 @@ services:
       PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     depends_on:
       bootstrap:
         condition: service_completed_successfully
@@ -98,13 +98,13 @@ services:
       - 6379:6379
     command:
       [
-        "redis-server",
-        "--appendonly",
-        "no",
-        "--maxmemory",
-        "500mb",
-        "--maxmemory-policy",
-        "noeviction",
+        'redis-server',
+        '--appendonly',
+        'no',
+        '--maxmemory',
+        '500mb',
+        '--maxmemory-policy',
+        'noeviction'
       ]
     volumes:
       - redis-data:/data
@@ -120,7 +120,7 @@ services:
       SRH_TOKEN: example_token
       SRH_CONNECTION_STRING: redis://redis:6379
   maildev:
-    image: "maildev/maildev:latest"
+    image: 'maildev/maildev:latest'
     restart: unless-stopped
     ports:
       - 1080:1080
