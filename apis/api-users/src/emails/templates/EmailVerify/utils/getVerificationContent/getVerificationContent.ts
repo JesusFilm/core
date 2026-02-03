@@ -9,10 +9,10 @@ export function getVerificationContent(
   app: NonNullable<AppType>
 ): ComponentType<VerificationContentProps> {
   switch (app) {
-    case 'Default':
-      return JesusFilmAppVerificationContent
     case 'NextSteps':
-    default:
       return NextStepsVerificationContent
+    case 'Default':
+    default:
+      return JesusFilmAppVerificationContent
   }
 }
