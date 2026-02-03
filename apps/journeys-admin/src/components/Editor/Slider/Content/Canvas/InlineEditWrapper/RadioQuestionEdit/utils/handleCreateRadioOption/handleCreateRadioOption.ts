@@ -1,9 +1,7 @@
 import { MutationFunction, gql } from '@apollo/client'
 import { v4 as uuidv4 } from 'uuid'
 
-import {
-  BlockFields_RadioOptionBlock,
-} from '../../../../../../../../../../__generated__/BlockFields'
+import { BlockFields_RadioOptionBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { JourneyFields } from '../../../../../../../../../../__generated__/JourneyFields'
 import {
   RadioOptionBlockCreate,

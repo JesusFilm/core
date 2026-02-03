@@ -9,6 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import {
   RadioOptionBlockCreate,
@@ -23,7 +24,6 @@ import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateComman
 import { InlineEditInput } from '../InlineEditInput'
 import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
 import { handleCreateRadioOption } from '../RadioQuestionEdit/utils/handleCreateRadioOption/handleCreateRadioOption'
-import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -177,7 +177,10 @@ export function RadioOptionEdit({
               e.preventDefault()
               handleSubmit(value)
 
-              const parentBlock = searchBlocks(selectedStep?.children ?? [], radioOptionProps.parentBlockId ?? '')
+              const parentBlock = searchBlocks(
+                selectedStep?.children ?? [],
+                radioOptionProps.parentBlockId ?? ''
+              )
               const siblingCount = parentBlock?.children?.length ?? 0
 
               if (siblingCount >= 12) return

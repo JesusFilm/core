@@ -42,7 +42,7 @@ export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
-  addOption?: (() => void)
+  addOption?: () => void
 }
 
 /**

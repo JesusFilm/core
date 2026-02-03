@@ -9,13 +9,12 @@ describe('handleCreateRadioOption', () => {
   const parentBlockId = 'parentBlockId'
   const journey = { id: 'journeyId' } as unknown as JourneyFields
   const siblingCount = 3
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('should create a radio option block when sibling count is provided', () => {
-
-
     handleCreateRadioOption({
       dispatch,
       addBlock,
@@ -72,7 +71,7 @@ describe('handleCreateRadioOption', () => {
       radioOptionBlockCreate,
       parentBlockId: 'parentBlockId',
       journey: undefined,
-      siblingCount,
+      siblingCount
     })
 
     expect(addBlock).not.toHaveBeenCalled()
