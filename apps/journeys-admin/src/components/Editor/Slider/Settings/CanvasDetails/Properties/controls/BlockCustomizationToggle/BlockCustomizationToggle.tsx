@@ -81,7 +81,7 @@ export function BlockCustomizationToggle({
   function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
     if (targetBlock == null) return
     const newCustomizable = event.target.checked
-    const undoCustomizable = targetBlock.customizable ?? false
+    const undoCustomizable = customizable
 
     add({
       parameters: {
