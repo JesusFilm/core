@@ -67,7 +67,7 @@ export function getCustomizeFlowConfig(
   const hasCustomizableLinks = links.length > 0
 
   // Check for media
-const hasCustomizableMedia = getJourneyMedia(journey).length > 0
+  const hasCustomizableMedia = getJourneyMedia(journey).length > 0
 
   // Build screens array based on capabilities
   const screens: CustomizationScreen[] = [...baseScreens]
