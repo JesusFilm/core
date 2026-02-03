@@ -2,7 +2,6 @@ import LanguageIcon from '@mui/icons-material/Language'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Image from 'next/image'
@@ -12,7 +11,6 @@ import { ReactElement, useState } from 'react'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
-import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { LanguageSwitcher } from '../../LanguageSwitcher'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 import Typography from '@mui/material/Typography'
@@ -95,16 +93,23 @@ export function AppHeader({
                 right: 12,
                 border: '1.5px solid white',
                 borderRadius: 2,
-                paddingX: '7px',
-                paddingY: '3px'
+                height: '25px',
+                width: '52px'
               }}
             >
               <LanguageIcon
-                sx={{ color: 'background.paper', mr: 1 }}
+                sx={{ fontSize: '12.36px', color: 'background.paper', mr: 1 }}
                 fontSize="small"
               />
-              <Typography sx={{}}>{currentLanguageCode}</Typography>
-              <ExpandMoreIcon fontSize="small" />
+              <Typography
+                sx={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                {currentLanguageCode}
+              </Typography>
             </IconButton>
           </Stack>
           {open && (
