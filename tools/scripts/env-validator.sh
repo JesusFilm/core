@@ -30,8 +30,15 @@ for arg in "$@"; do
     # Get the environment variable value
     env_value="${!name}"
 
-    # Compare values
+    # Compare values (allow Codex host DB override when requested)
     if [ "$env_value" != "$value" ]; then
+        if [ "${CODEX_HOST_DB:-}" = "1" ] && [[ "$value" == *"@db:"* ]]; then
+            alt_value="${value/@db:/@localhost:}"
+            alt_loopback="${value/@db:/@127.0.0.1:}"
+            if [ "$env_value" = "$alt_value" ] || [ "$env_value" = "$alt_loopback" ]; then
+                continue
+            fi
+        fi
         echo "Warning: Environment variable $name does not match expected value" >&2
         echo "Expected: $value" >&2
         echo "Actual: $env_value" >&2
