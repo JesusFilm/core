@@ -11,6 +11,7 @@ import {
 } from '@core/yoga/email/components'
 
 import type { AppType } from '../../../schema/user/enums/app'
+
 import {
   getFooterContent,
   getPreviewText,
