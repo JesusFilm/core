@@ -41,7 +41,8 @@ const integration: Integration = {
   accessSecretIv: 'dx+2iBr7yYvilLIC',
   accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA==',
   userId: null,
-  accountEmail: null
+  accountEmail: null,
+  oauthStale: false
 }
 
 const teamWithUserTeam: Team = {
