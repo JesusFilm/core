@@ -17,7 +17,20 @@ describe('getJourneyMedia', () => {
         __typename: 'ImageBlock',
         customizable: true,
         id: 'logo-1'
-      }
+      },
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-1',
+          label: 'Hi {{firstName}}',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://example.com',
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        },
+      ]
     } as unknown as Journey
     expect(getJourneyMedia(journey)).toEqual([{ __typename: 'ImageBlock', id: 'logo-1', customizable: true }])
   })
@@ -25,6 +38,17 @@ describe('getJourneyMedia', () => {
   it('should extract customizable image blocks', () => {
     const journey = {
       blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-1',
+          label: 'Hi {{firstName}}',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://example.com',
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        },
         { __typename: 'ImageBlock', id: 'img-1', customizable: true },
       ]
     } as unknown as Journey
@@ -34,6 +58,17 @@ describe('getJourneyMedia', () => {
   it('should extract customizable video blocks', () => {
     const journey = {
       blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-1',
+          label: 'Hi {{firstName}}',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://example.com',
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        },
         { __typename: 'VideoBlock', id: 'vid-1', customizable: true },
       ]
     } as unknown as Journey

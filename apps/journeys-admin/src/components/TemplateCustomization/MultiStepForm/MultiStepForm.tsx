@@ -20,9 +20,9 @@ import {
   LanguageScreen,
   LinksScreen,
   SocialScreen,
-  TextScreen
+  TextScreen,
+  MediaScreen,
 } from './Screens'
-import { MediaScreen } from './Screens/MediaScreen'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
