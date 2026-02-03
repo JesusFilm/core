@@ -1,7 +1,7 @@
 import { builder } from '../../builder'
 
 export const User = builder.prismaObject('User', {
-  'name': 'User',
+  name: 'User',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     firstName: t.field({
@@ -55,4 +55,3 @@ export const AuthenticatedUser = builder.prismaObject('User', {
     emailVerified: t.exposeBoolean('emailVerified', { nullable: false })
   })
 })
-
