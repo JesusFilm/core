@@ -255,14 +255,14 @@ describe('JourneyList', () => {
 
   it('should display "title" in URL when sorting by name is selected', async () => {
     const user = userEvent.setup()
-    const replaceMock = jest.fn()
+    const pushMock = jest.fn()
     Storage.prototype.setItem = jest.fn()
     Storage.prototype.getItem = jest.fn()
 
     mockedUseRouter.mockReturnValue({
-      query: { status: 'active', type: 'journeys', sortBy: SortOrder.TITLE },
-      push: jest.fn(),
-      replace: replaceMock,
+      query: { status: 'active', type: 'journeys' },
+      push: pushMock,
+      replace: jest.fn(),
       events: { on: jest.fn(), off: jest.fn() }
     } as unknown as NextRouter)
 
@@ -282,7 +282,7 @@ describe('JourneyList', () => {
       'journeyListSortBy',
       SortOrder.TITLE
     )
-    expect(replaceMock).toHaveBeenCalledWith(
+    expect(pushMock).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({ sortBy: SortOrder.TITLE })
       }),
