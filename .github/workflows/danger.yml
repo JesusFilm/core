@@ -15,6 +15,9 @@ on:
       - ready_for_review
       - review_requested
       - review_request_removed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 jobs:
   danger:
     runs-on: blacksmith-2vcpu-ubuntu-2204
