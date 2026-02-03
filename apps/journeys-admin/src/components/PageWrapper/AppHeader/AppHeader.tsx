@@ -45,27 +45,19 @@ export function AppHeader({
         }}
       >
         <Toolbar variant={toolbar.variant}>
-          <Stack
-            direction="row"
-            flexGrow={1}
-            alignItems="center"
-            position="relative"
-            width="100%"
-          >
-            <Stack
-              direction="row"
-              flexGrow={1}
-              justifyContent="center"
-              sx={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
+          <Stack direction="row" alignItems="center" width="100%">
+            <Stack direction="row" flexGrow={1} justifyContent="left">
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={onClick}
+              >
+                <Menu1Icon sx={{ color: 'background.paper' }} />
+              </IconButton>
+            </Stack>
+            <Stack direction="row" flexGrow={1} justifyContent="center">
               <Image
                 src={taskbarIcon}
                 width={32}
@@ -73,44 +65,34 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={onClick}
-            >
-              <Menu1Icon sx={{ color: 'background.paper' }} />
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              onClick={() => setOpen(true)}
-              aria-label="language"
-              sx={{
-                position: 'fixed',
-                right: 12,
-                border: '1.5px solid white',
-                borderRadius: 2,
-                height: '25px',
-                width: '52px'
-              }}
-            >
-              <LanguageIcon
-                sx={{ fontSize: '12.36px', color: 'background.paper', mr: 1 }}
-                fontSize="small"
-              />
-              <Typography
+            <Stack direction="row" flexGrow={1} justifyContent="right">
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                onClick={() => setOpen(true)}
+                aria-label="language"
                 sx={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  fontFamily: 'Montserrat'
+                  border: '1.5px solid white',
+                  borderRadius: 2,
+                  height: '25px',
+                  width: '52px'
                 }}
               >
-                {currentLanguageCode}
-              </Typography>
-            </IconButton>
+                <LanguageIcon
+                  sx={{ fontSize: '12.36px', color: 'background.paper', mr: 1 }}
+                />
+                <Typography
+                  sx={{
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    fontFamily: 'Montserrat'
+                  }}
+                >
+                  {currentLanguageCode}
+                </Typography>
+              </IconButton>
+            </Stack>
           </Stack>
           {open && (
             <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
