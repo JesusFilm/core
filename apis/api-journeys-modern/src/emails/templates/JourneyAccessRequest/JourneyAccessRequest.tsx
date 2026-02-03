@@ -18,8 +18,8 @@ import {
   EmailContainer,
   Footer,
   Header,
-  UnsubscribeLink,
-  NextStepsFooterContent
+  NextStepsFooterContent,
+  UnsubscribeLink
 } from '@core/yoga/email/components'
 import { JourneyForEmails } from '@core/yoga/email/types/types'
 import { User } from '@core/yoga/firebaseClient'
