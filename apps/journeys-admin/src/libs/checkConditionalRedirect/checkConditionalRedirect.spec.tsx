@@ -39,7 +39,11 @@ describe('checkConditionalRedirect', () => {
       query: jest
         .fn()
         .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: { me: { emailVerified: false, __typename: 'AuthenticatedUser' } } })
+        .mockResolvedValueOnce({
+          data: {
+            me: { emailVerified: false, __typename: 'AuthenticatedUser' }
+          }
+        })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({
@@ -58,7 +62,11 @@ describe('checkConditionalRedirect', () => {
       query: jest
         .fn()
         .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: { me: { emailVerified: false, __typename: 'AuthenticatedUser' } } })
+        .mockResolvedValueOnce({
+          data: {
+            me: { emailVerified: false, __typename: 'AuthenticatedUser' }
+          }
+        })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })

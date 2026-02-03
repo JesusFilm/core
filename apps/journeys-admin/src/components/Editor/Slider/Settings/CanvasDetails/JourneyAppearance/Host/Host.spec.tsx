@@ -21,7 +21,11 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { GET_ALL_TEAM_HOSTS, Host } from './Host'
 
-const user1 = { id: 'userId', email: 'admin@email.com', __typename: 'AuthenticatedUser' }
+const user1 = {
+  id: 'userId',
+  email: 'admin@email.com',
+  __typename: 'AuthenticatedUser'
+}
 
 jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
