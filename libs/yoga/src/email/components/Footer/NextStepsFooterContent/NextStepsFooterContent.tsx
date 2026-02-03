@@ -1,7 +1,7 @@
 import { Button, Column, Row, Section, Text } from '@react-email/components'
 import { ReactElement } from 'react'
 
-export function NextStepsVerificationFooter(): ReactElement {
+export function NextStepsFooterContent(): ReactElement {
   return (
     <>
       <Text

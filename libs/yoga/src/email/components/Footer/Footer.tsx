@@ -1,11 +1,4 @@
-import {
-  Button,
-  Column,
-  Container,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
+import { Container } from '@react-email/components'
 import { ReactElement, ReactNode } from 'react'
 
 interface FooterProps {

@@ -17,6 +17,7 @@ import {
   EmailContainer,
   Footer,
   Header,
+  NextStepsFooterContent,
   UnsubscribeLink
 } from '@core/yoga/email/components'
 import { User } from '@core/yoga/firebaseClient'
@@ -71,7 +72,9 @@ export const TeamRemovedEmail = ({
             </Section>
           </ActionCard>
         </BodyWrapper>
-        <Footer />
+        <Footer>
+          <NextStepsFooterContent />
+        </Footer>
         <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
       </EmailContainer>
     </>

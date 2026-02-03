@@ -1,2 +1,1 @@
-export { Footer } from './Footer'
 export { NextStepsFooterContent } from './NextStepsFooterContent'

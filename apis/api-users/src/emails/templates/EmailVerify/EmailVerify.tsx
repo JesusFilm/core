@@ -5,7 +5,6 @@ import { ReactElement, ReactNode } from 'react'
 import {
   BodyWrapper,
   EmailContainer,
-  Footer,
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'

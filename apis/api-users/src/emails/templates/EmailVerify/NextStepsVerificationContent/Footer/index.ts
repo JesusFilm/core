@@ -1,1 +1,0 @@
-export { NextStepsVerificationFooter } from './NextStepsVerificationFooter'
