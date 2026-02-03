@@ -7,9 +7,9 @@ import {
 export type JourneyMedia = ImageBlock | VideoBlock
 
 export function getJourneyMedia(journey?: Journey): JourneyMedia[] {
-  const customizableLogoBlock = (
-    journey?.logoImageBlock?.customizable ? [journey?.logoImageBlock] : []
-  )
+  const customizableLogoBlock = journey?.logoImageBlock?.customizable
+    ? [journey?.logoImageBlock]
+    : []
   const customizableImageBlocks =
     journey?.blocks?.filter(
       (block): block is ImageBlock =>
