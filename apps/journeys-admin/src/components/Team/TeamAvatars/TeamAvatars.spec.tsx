@@ -12,7 +12,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Joe',
         lastName: 'Bloggs',
@@ -25,7 +25,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Mike',
         lastName: 'The Guy',
@@ -38,7 +38,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Bob',
         lastName: 'The Builder',
@@ -54,7 +54,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Joe',
         lastName: 'Bloggs',
@@ -67,7 +67,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Mike',
         lastName: 'The Guy',
@@ -80,7 +80,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Bob',
         lastName: 'The Builder',
@@ -93,7 +93,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Hello',
         lastName: 'Kitty',
@@ -106,7 +106,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Serena',
         lastName: 'Williams',
@@ -119,7 +119,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Jonathan',
         lastName: 'G',
@@ -132,7 +132,7 @@ describe('TeamAvatars', () => {
       __typename: 'UserTeam',
       id: 'userTeamId1',
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId',
         firstName: 'Meme',
         lastName: 'Guy',

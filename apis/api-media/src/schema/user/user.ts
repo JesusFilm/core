@@ -4,12 +4,12 @@ import { builder } from '../builder'
 
 import { MediaRole } from './enums/mediaRole'
 
-export const UserRef = builder.externalRef(
-  'User',
+export const AuthenticatedUserRef = builder.externalRef(
+  'AuthenticatedUser',
   builder.selection<{ id: string }>('id')
 )
 
-UserRef.implement({
+AuthenticatedUserRef.implement({
   externalFields: (t) => ({
     id: t.id({ nullable: false })
   }),

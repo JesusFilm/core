@@ -10,7 +10,7 @@ import { TeamCreateInput, UserTeamRole } from "./globalTypes";
 // ====================================================
 
 export interface TeamCreate_teamCreate_userTeams_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;

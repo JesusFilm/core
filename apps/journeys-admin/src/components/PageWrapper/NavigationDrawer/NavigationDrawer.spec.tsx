@@ -100,7 +100,7 @@ describe('NavigationDrawer', () => {
             email: 'amin@email.com',
             superAdmin: true,
             emailVerified: true,
-            __typename: 'User'
+            __typename: 'AuthenticatedUser'
           }
         }
       }

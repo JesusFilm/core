@@ -1,5 +1,5 @@
 import { builder } from '../builder'
-import { UserRef } from '../user'
+import { AuthenticatedUserRef } from '../user'
 
 import { UserJourneyRole } from './enums/userJourneyRole'
 
@@ -17,7 +17,7 @@ export const UserJourneyRef = builder.prismaObject('UserJourney', {
     openedAt: t.expose('openedAt', { type: 'DateTime', nullable: true }),
     journey: t.relation('journey'),
     user: t.field({
-      type: UserRef,
+      type: AuthenticatedUserRef,
       resolve: (userJourney) => ({
         id: userJourney.userId
       })

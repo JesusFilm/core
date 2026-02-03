@@ -6,7 +6,7 @@ import { Avatar } from '.'
 
 describe('Avatar', () => {
   const apiUser: ApiUser = {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '1',
     firstName: 'Person',
     lastName: 'One',

@@ -43,7 +43,7 @@ describe('UserMenu', () => {
         <SnackbarProvider>
           <UserMenu
             apiUser={{
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'userId',
               firstName: 'Amin',
               lastName: 'One',
@@ -86,7 +86,7 @@ describe('UserMenu', () => {
         <SnackbarProvider>
           <UserMenu
             apiUser={{
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'userId',
               firstName: 'Amin',
               lastName: 'One',
@@ -152,7 +152,7 @@ describe('UserMenu', () => {
           <TeamProvider>
             <UserMenu
               apiUser={{
-                __typename: 'User',
+                __typename: 'AuthenticatedUser',
                 id: 'userId',
                 firstName: 'Amin',
                 lastName: 'One',
@@ -194,7 +194,7 @@ describe('UserMenu', () => {
         <SnackbarProvider>
           <UserMenu
             apiUser={{
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'userId',
               firstName: 'Amin',
               lastName: 'One',

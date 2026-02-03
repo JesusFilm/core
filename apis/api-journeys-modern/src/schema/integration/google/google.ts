@@ -1,5 +1,5 @@
 import { builder } from '../../builder'
-import { UserRef } from '../../user'
+import { AuthenticatedUserRef } from '../../user'
 import { IntegrationRef } from '../integration'
 
 export const IntegrationGoogleRef = builder.prismaObject('Integration', {
@@ -11,7 +11,7 @@ export const IntegrationGoogleRef = builder.prismaObject('Integration', {
     accountEmail: t.exposeString('accountEmail', { nullable: true }),
     team: t.relation('team', { nullable: false }),
     user: t.field({
-      type: UserRef,
+      type: AuthenticatedUserRef,
       nullable: true,
       resolve: async (integration) => {
         if (integration.userId == null) return null

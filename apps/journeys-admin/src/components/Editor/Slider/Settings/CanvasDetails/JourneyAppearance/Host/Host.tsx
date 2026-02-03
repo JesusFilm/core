@@ -75,7 +75,7 @@ export function Host(): ReactElement {
   const userInTeam =
     data == null || data.userTeams.length === 0 || journey?.team == null
       ? false
-      : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
+      : data.userTeams.find((userTeam) => userTeam.user?.__typename === 'AuthenticatedUser' && user.__typename === 'AuthenticatedUser' && userTeam.user.email === user.email) !=
         null
 
   // Fetch all hosts made for a team

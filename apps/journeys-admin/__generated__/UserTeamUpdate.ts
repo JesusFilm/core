@@ -10,7 +10,7 @@ import { UserTeamUpdateInput, UserTeamRole } from "./globalTypes";
 // ====================================================
 
 export interface UserTeamUpdate_userTeamUpdate_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
 }
 

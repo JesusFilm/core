@@ -7,11 +7,11 @@ import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
 import { CreateVerificationRequestInput, MeInput } from './inputs'
-import { User } from './objects'
+import { AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
-builder.asEntity(User, {
+builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
@@ -47,8 +47,8 @@ builder.asEntity(User, {
 })
 
 builder.queryFields((t) => ({
-  me: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'User',
+  me: t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
+    type: User,
     nullable: true,
     args: {
       input: t.arg({
@@ -56,16 +56,24 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    resolve: async (query, _parent, { input }, ctx) => {
-      return await findOrFetchUser(
-        query,
+    resolve: async (_parent, { input }, ctx) => {
+      const user = await findOrFetchUser(
+        {},
         ctx.currentUser.id,
         input?.redirect ?? undefined
       )
+      if (user == null) return null
+
+      // Return appropriate type based on whether user has email
+      if (user.email != null) {
+        return user
+      }
+      // Anonymous user - only return id
+      return { id: user.id }
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       id: t.arg.id({ required: true })
@@ -77,7 +85,7 @@ builder.queryFields((t) => ({
       })
   }),
   userByEmail: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       email: t.arg.string({ required: true })
@@ -135,7 +143,7 @@ builder.mutationFields((t) => ({
     }
   }),
   validateEmail: t.field({
-    type: User,
+    type: AuthenticatedUser,
     args: {
       email: t.arg.string({ required: true }),
       token: t.arg.string({ required: true })
@@ -152,7 +160,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const validatedEmail = await validateEmail(user.userId, user.email, token)
+      const validatedEmail = await validateEmail(user.userId, email, token)
       if (!validatedEmail)
         throw new GraphQLError('Invalid token', {
           extensions: { code: 'FORBIDDEN' }

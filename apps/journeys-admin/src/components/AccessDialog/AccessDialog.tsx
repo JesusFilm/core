@@ -93,13 +93,13 @@ export function AccessDialog({
 
   const currentUserJourney = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === user.email
+      (userJourney) => userJourney.user?.__typename === 'AuthenticatedUser' && user.__typename === 'AuthenticatedUser' && userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])
 
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
     return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
-      return email === user?.email
+      return user?.__typename === 'AuthenticatedUser' && email === user.email
     })
   }, [data?.journey?.team?.userTeams, user])
 

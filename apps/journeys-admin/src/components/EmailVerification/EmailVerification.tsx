@@ -43,7 +43,7 @@ export function EmailVerification({
   }
   return (
     <Dialog
-      open={!apiUser.emailVerified}
+      open={apiUser?.__typename === 'AuthenticatedUser' && !apiUser.emailVerified}
       // onClose={onClose}
       dialogTitle={{
         title: t('Please verify your email'),

@@ -16,7 +16,7 @@ export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;

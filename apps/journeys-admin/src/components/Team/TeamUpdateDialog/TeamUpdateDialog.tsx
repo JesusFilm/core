@@ -54,9 +54,12 @@ export function TeamUpdateDialog({
   }, [loadUser])
 
   const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
-    return activeTeam?.userTeams?.find(({ user: { email } }) => {
-      return email === currentUser?.email
-    })?.role
+    if (currentUser?.__typename === 'AuthenticatedUser') {
+      return activeTeam?.userTeams?.find(({ user: { email } }) => {
+        return email === currentUser.email
+      })?.role
+    }
+    return undefined
   }, [activeTeam, currentUser])
 
   async function handleSubmit(

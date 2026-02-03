@@ -10,7 +10,7 @@ import { UserTeamFilterInput, UserTeamRole } from "./globalTypes";
 // ====================================================
 
 export interface GetUserTeamsAndInvites_userTeams_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   email: string;
   firstName: string;
   id: string;

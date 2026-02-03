@@ -7,8 +7,8 @@ export class IntegrationGoogleResolver {
   @ResolveField()
   user(
     @Parent() integration: Integration
-  ): { __typename: 'User'; id: string } | null {
+  ): { __typename: 'AuthenticatedUser'; id: string } | null {
     if (integration.userId == null) return null
-    return { __typename: 'User', id: integration.userId }
+    return { __typename: 'AuthenticatedUser', id: integration.userId }
   }
 }

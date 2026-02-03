@@ -13,8 +13,13 @@ import {
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser {
     me {
-      id
-      email
+      ... on AuthenticatedUser {
+        id
+        email
+      }
+      ... on AnonymousUser {
+        id
+      }
     }
   }
 `
@@ -29,5 +34,8 @@ export function useCurrentUserLazyQuery(): {
     return { loadUser, data: data.me }
   }
 
-  return { loadUser, data: { __typename: 'User', id: '', email: '' } }
+  return {
+    loadUser,
+    data: { __typename: 'AuthenticatedUser', id: '', email: '' }
+  }
 }

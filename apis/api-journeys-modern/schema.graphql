@@ -7,6 +7,13 @@ interface Action {
   parentBlock: Block!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
 interface Block {
   id: ID!
   journeyId: ID!
@@ -697,7 +704,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: User
+  user: AuthenticatedUser
 }
 
 input IntegrationGoogleCreateInput {
@@ -2250,13 +2257,6 @@ enum TypographyVariant {
   overline
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-}
-
 type UserAgent
   @shareable
 {
@@ -2290,7 +2290,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: User
+  user: AuthenticatedUser
   journeyNotification: JourneyNotification
 }
 
@@ -2316,7 +2316,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  user: AuthenticatedUser!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 
