@@ -43,45 +43,29 @@ export function JourneyList({
   const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
-    if (!router.isReady || window === undefined) return
-
-    const dataFromURL = router.query.sortBy as string | undefined
-    const dataFromStorage = localStorage.getItem('journeyListSortBy')
-
-    const sortingCheck = (dataFromURL || dataFromStorage) as SortOrder
-    const isValidSort =
-      sortingCheck && Object.values(SortOrder).includes(sortingCheck)
-
+    const sortByFromQuery = router.query.sortBy
+    const sortByFromStorage = localStorage.getItem('journeyListSortBy')
+    const sortOrder = (sortByFromQuery ?? sortByFromStorage) as SortOrder
+    const isValidSort = Object.values(SortOrder).includes(sortOrder)
     if (!isValidSort) return
-    setSortOrder((prev) => (prev !== sortingCheck ? sortingCheck : prev))
 
-    if (dataFromURL) {
-      localStorage.setItem('journeyListSortBy', dataFromURL)
-      return
-    }
+    setSortOrder(sortOrder)
+    localStorage.setItem('journeyListSortBy', sortOrder)
 
-    if (dataFromStorage) {
-      void router.replace(
-        { query: { ...router.query, sortBy: dataFromStorage } },
-        undefined,
-        { shallow: true }
-      )
-    }
-  }, [router.isReady, router.query.sortBy, router])
+    void router.replace(
+      { query: { ...router.query, sortBy: sortOrder } },
+      undefined,
+      { shallow: true }
+    )
+  }, [router.query.sortBy])
 
-  const handleSetSortOrder = (order: SortOrder) => {
-    if (order) {
-      setSortOrder(order)
-      if (router.isReady) {
-        void router.push(
-          { query: { ...router.query, sortBy: order } },
-          undefined,
-          { shallow: true }
-        )
-      }
-      if (typeof window !== 'undefined')
-        localStorage.setItem('journeyListSortBy', order)
-    }
+  function handleSetSortOrder(order: SortOrder) {
+    setSortOrder(order)
+    void router.push({ query: { ...router.query, sortBy: order } }, undefined, {
+      shallow: true
+    })
+
+    localStorage.setItem('journeyListSortBy', order)
   }
 
   useEffect(() => {
