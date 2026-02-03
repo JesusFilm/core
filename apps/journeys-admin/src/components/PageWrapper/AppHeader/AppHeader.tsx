@@ -14,7 +14,7 @@ import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { LanguageSwitcher } from '../../LanguageSwitcher'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 import Typography from '@mui/material/Typography'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 export interface MainBodyContainerProps {
   onClick: () => void
