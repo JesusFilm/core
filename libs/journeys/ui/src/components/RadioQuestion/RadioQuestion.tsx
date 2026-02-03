@@ -42,7 +42,7 @@ export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
-  addOption: (() => void) | undefined
+  addOption?: (() => void)
 }
 
 /**
@@ -67,9 +67,10 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
  * @param {TreeBlock[]} props.children - Array of child blocks (radio options)
  * @param {() => string} [props.uuid] - Optional UUID generator function
  * @param {WrappersProps} [props.wrappers] - Optional wrapper props for block rendering
- * @param {() => void} [props.addOption] - Optional callback to add a new radio option, pass undefined if the maximum number of options has been reached
+ * @param {() => void} [props.addOption] - Optional callback to add a new radio option, omit if the maximum number of options has been reached or pass undefined if the maximum number of options has been reached
  * @returns {ReactElement} The rendered radio question component (GridVariant or ListVariant)
  */
+
 export function RadioQuestion({
   id: blockId,
   gridView,
