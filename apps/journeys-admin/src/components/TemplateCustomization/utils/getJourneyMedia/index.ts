@@ -1,1 +1,1 @@
-export { getJourneyMedia } from './getJourneyMedia'
+export { getJourneyMedia, type JourneyMedia } from './getJourneyMedia'
