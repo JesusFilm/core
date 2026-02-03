@@ -34,8 +34,8 @@ import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDelet
 import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
-import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 import { VideoBlockEditor } from '../../../../../../Drawer/VideoBlockEditor'
+import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 
 export const COVER_VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
@@ -72,7 +72,7 @@ export function BackgroundMediaVideo({
 }: BackgroundMediaVideoProps): ReactElement {
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
-  ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
+  )
   const { add } = useCommand()
   const { journey } = useJourney()
   const {

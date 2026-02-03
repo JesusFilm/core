@@ -32,8 +32,8 @@ import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDelet
 import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
-import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
+import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 
 import { FocalPoint } from './FocalPoint'
 import { ZoomImage } from './ZoomImage/ZoomImage'
@@ -73,7 +73,7 @@ export function BackgroundMediaImage({
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
-  ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
+  )
   const { add } = useCommand()
   const { journey } = useJourney()
   const {

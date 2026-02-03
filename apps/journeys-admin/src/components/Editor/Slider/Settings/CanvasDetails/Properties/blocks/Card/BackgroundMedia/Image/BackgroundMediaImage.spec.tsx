@@ -30,12 +30,12 @@ import {
   CoverImageBlockUpdateVariables
 } from '../../../../../../../../../../../__generated__/CoverImageBlockUpdate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
-import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -89,7 +89,7 @@ const journey: Journey = {
   createdAt: '2021-11-19T12:34:56.647Z',
   updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
-  blocks: [] as TreeBlock[],
+  blocks: [],
   primaryImageBlock: null,
   creatorDescription: null,
   creatorImageBlock: null,

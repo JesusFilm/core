@@ -38,12 +38,12 @@ import {
   CoverVideoBlockUpdateVariables
 } from '../../../../../../../../../../../__generated__/CoverVideoBlockUpdate'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../../__generated__/GetJourney'
-import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import {
   GetVideo,
   GetVideoVariables
 } from '../../../../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
