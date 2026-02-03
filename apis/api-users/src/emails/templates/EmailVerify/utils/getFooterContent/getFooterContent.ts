@@ -10,8 +10,7 @@ export function getFooterContent(app: NonNullable<AppType>): ComponentType {
     case 'NextSteps':
       return NextStepsFooterContent
     case 'Default':
-      return JesusFilmVerificationFooter
     default:
-      return NextStepsFooterContent
+      return JesusFilmVerificationFooter
   }
 }
