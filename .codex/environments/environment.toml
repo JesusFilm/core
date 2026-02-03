@@ -1,0 +1,20 @@
+version = 1
+name = "JFP Core"
+
+[setup]
+script = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+./run/codex/setup.sh
+'''
+
+[[actions]]
+name = "Secrets: fetch (dev)"
+icon = "tool"
+command = "DOPPLER_CONFIG=dev nx run-many --all --target=fetch-secrets"
+
+[[actions]]
+name = "Start: backend (nf start)"
+icon = "tool"
+command = "nf start"
