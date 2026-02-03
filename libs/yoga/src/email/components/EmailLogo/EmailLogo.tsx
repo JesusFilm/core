@@ -3,20 +3,16 @@ import { ReactElement } from 'react'
 
 import { type Logo } from '../../types'
 
-export function EmailLogo({
-  logo = 'NextSteps'
-}: {
-  logo?: Logo
-}): ReactElement {
+export function EmailLogo({ logo }: { logo?: Logo }): ReactElement {
   let logoUrl: string
   switch (logo) {
-    case 'JesusFilmApp':
+    case 'NextSteps':
+      logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
+      break
+    case 'Default':
+    default:
       logoUrl =
         'https://www.jesusfilm.org/wp-content/uploads/2023/04/JFP-RED.svg'
-      break
-    case 'NextSteps':
-    default:
-      logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
       break
   }
 

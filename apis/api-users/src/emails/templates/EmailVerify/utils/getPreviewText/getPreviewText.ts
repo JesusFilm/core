@@ -2,8 +2,8 @@ import type { AppType } from '../../../../../schema/user/enums/app'
 
 export function getPreviewText(app: NonNullable<AppType>): string {
   switch (app) {
-    case 'JesusFilmApp':
-      return 'Verify your email address on Jesus Film App'
+    case 'Default':
+      return 'Verify your email address with the Jesus Film Project'
     case 'NextSteps':
       return 'Verify your email address on Next Steps'
     default:

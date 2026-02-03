@@ -29,10 +29,6 @@ export async function service(
     redirectParam = `&redirect=${encodeURIComponent(job.data.redirect)}`
   }
 
-  const defaultInviteLink = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
-    job.data.token
-  }&email=${emailAlias ?? job.data.email}${redirectParam}`
-
   const user = await prisma.user.findUnique({
     where: { userId: job.data.userId }
   })
@@ -52,22 +48,16 @@ export async function service(
   let appType: NonNullable<AppType>
 
   switch (job.data?.app ?? 'NextSteps') {
-    case 'JesusFilmApp':
-      from = '"Jesus Film App Support" <no-reply@jesusfilm.org>'
-      subject = 'Verify your email address on Jesus Film App'
-      url = `https://jesusfilm.org/resources/user/verify?token=${job.data.token}`
-      appType = 'JesusFilmApp'
+    case 'Default':
+      from = '"Jesus Film Project" <no-reply@jesusfilm.org>'
+      subject = 'Verify your email address with the Jesus Film Project'
+      url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}/resources/user/verify?token=${job.data.token}`
+      appType = 'Default'
       break
     case 'NextSteps':
       from = '"Next Steps Support" <support@nextstep.is>'
       subject = 'Verify your email address on Next Steps'
-      url = defaultInviteLink
-      appType = 'NextSteps'
-      break
-    default:
-      from = '"Next Steps Support" <support@nextstep.is>'
-      subject = 'Verify your email address on Next Steps'
-      url = defaultInviteLink
+      url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${job.data.token}&email=${emailAlias ?? job.data.email}${redirectParam}`
       appType = 'NextSteps'
       break
   }

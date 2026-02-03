@@ -103,7 +103,7 @@ describe('verifyUser', () => {
   it('should use app if provided', async () => {
     const email = 'tav@example.com'
     const userId = 'userId2'
-    await verifyUser(userId, email, undefined, 'JesusFilmApp')
+    await verifyUser(userId, email, undefined, 'Default')
     expect(queue.add).toHaveBeenCalledWith(
       'verifyUser',
       {
@@ -111,7 +111,7 @@ describe('verifyUser', () => {
         token: expect.any(String),
         userId,
         redirect: undefined,
-        app: 'JesusFilmApp'
+        app: 'Default'
       },
       {
         jobId: expect.any(String),

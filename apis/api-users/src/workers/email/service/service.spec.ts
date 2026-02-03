@@ -66,7 +66,7 @@ describe('service', () => {
     )
   })
 
-  it('should send Jesus film app email if app type is JesusFilmApp', async () => {
+  it('should send Jesus Film Project email if app type is Default', async () => {
     const job: Job<VerifyUserJob, unknown, string> = {
       name: 'verifyUser',
       data: {
@@ -74,7 +74,7 @@ describe('service', () => {
         email: 'test@example.com',
         token: '123456',
         redirect: undefined,
-        app: 'JesusFilmApp'
+        app: 'Default'
       }
     } as unknown as Job<VerifyUserJob, unknown, string>
 
@@ -96,10 +96,10 @@ describe('service', () => {
     expect(sendEmailMock).toHaveBeenCalledWith(
       {
         to: 'test@example.com',
-        subject: 'Verify your email address on Jesus Film App',
+        subject: 'Verify your email address with the Jesus Film Project',
         text: 'Mocked plain text email content',
         html: '<div>Mocked HTML email content</div>',
-        from: '"Jesus Film App Support" <no-reply@jesusfilm.org>'
+        from: '"Jesus Film Project" <no-reply@jesusfilm.org>'
       },
       undefined
     )

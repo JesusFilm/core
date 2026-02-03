@@ -1,0 +1,1 @@
+export { getVerificationContent } from './getVerificationContent'

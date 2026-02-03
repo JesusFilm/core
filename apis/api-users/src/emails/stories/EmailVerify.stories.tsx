@@ -40,7 +40,7 @@ export const Default = {
 export const JesusFilmApp = {
   ...Template,
   args: {
-    app: 'JesusFilmApp',
+    app: 'Default',
     email: 'joeronimo@example.com',
     token: '123456',
     recipient: {

@@ -28,9 +28,9 @@ export async function sendEmail(
   )
     throw new Error('Example email address')
 
-  if (from == null) from = '"Next Steps Support" <support@nextstep.is>'
-
-  const transporter = nodemailer.createTransport(process.env.SMTP_URL, { from })
+  const transporter = nodemailer.createTransport(process.env.SMTP_URL, {
+    from: from ?? '"Next Steps Support" <support@nextstep.is>'
+  })
 
   await transporter.sendMail({
     to,

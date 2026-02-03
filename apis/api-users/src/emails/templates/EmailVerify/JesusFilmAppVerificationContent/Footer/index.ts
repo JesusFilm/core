@@ -1,1 +1,1 @@
-export { JesusFilmAppVerificationFooter } from './JesusFilmAppVerificationFooter'
+export { JesusFilmVerificationFooter } from './JesusFilmVerificationFooter'

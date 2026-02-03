@@ -1,7 +1,7 @@
 import { Button, Column, Row } from '@react-email/components'
 import { ReactElement } from 'react'
 
-export function JesusFilmAppVerificationFooter(): ReactElement {
+export function JesusFilmVerificationFooter(): ReactElement {
   return (
     <Row>
       <Column align="center">

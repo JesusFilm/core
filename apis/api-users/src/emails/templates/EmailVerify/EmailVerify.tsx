@@ -5,7 +5,6 @@ import { ReactElement, ReactNode } from 'react'
 import {
   BodyWrapper,
   EmailContainer,
-  Footer,
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
@@ -43,10 +42,10 @@ export const EmailVerifyEmail = ({
   app
 }: VerifyEmailProps): ReactElement => {
   const VerificationContent = getVerificationContent(app)
-  const FooterContent = getFooterContent(app)
+  const FooterContentComponent = getFooterContent(app)
   const previewText = getPreviewText(app)
 
-  const showUnsubscribeLink = app !== 'JesusFilmApp'
+  const showUnsubscribeLink = app !== 'Default'
 
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
@@ -67,9 +66,7 @@ export const EmailVerifyEmail = ({
             token={token}
           />
         </BodyWrapper>
-        <Footer>
-          <FooterContent />
-        </Footer>
+        <FooterContentComponent />
         {showUnsubscribeLink && (
           <UnsubscribeLink recipientEmail={recipient.email} />
         )}

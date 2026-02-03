@@ -72,7 +72,7 @@ describe('findOrFetchUser', () => {
   it('should allow verification email to be sent on a per app basis', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
     prismaMock.user.create.mockResolvedValueOnce(user)
-    const data = await findOrFetchUser({}, 'userId', undefined, 'JesusFilmApp')
+    const data = await findOrFetchUser({}, 'userId', undefined, 'Default')
     expect(data).toEqual(user)
     expect(prismaMock.user.create).toHaveBeenCalledWith({
       data: {
@@ -88,7 +88,7 @@ describe('findOrFetchUser', () => {
       'userId',
       'amin@email.com',
       undefined,
-      'JesusFilmApp'
+      'Default'
     )
   })
 

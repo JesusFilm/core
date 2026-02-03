@@ -7,7 +7,11 @@ import { BodyTitle } from './BodyTitle'
 import { BodyWrapper } from './BodyWrapper'
 import { EmailContainer } from './EmailContainer'
 import { EmailLogo } from './EmailLogo'
-import { Footer, NextStepsFooterContent } from './Footer'
+import {
+  DefaultFooter,
+  NextStepsFooter,
+  NextStepsFooterContent
+} from './Footer'
 import { Header } from './Header'
 import { UnsubscribeLink } from './UnsubscribeLink'
 
@@ -16,13 +20,14 @@ export {
   BodyText,
   BodyTitle,
   BodyWrapper,
+  DefaultFooter,
   EmailContainer,
   EmailLogo,
-  Footer,
   Header,
+  NextStepsFooter,
+  NextStepsFooterContent,
   UnsubscribeLink,
   ActionButton,
   ActionJourneyView,
-  ActionSender,
-  NextStepsFooterContent
+  ActionSender
 }

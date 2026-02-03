@@ -16,9 +16,8 @@ import {
   ActionSender,
   BodyWrapper,
   EmailContainer,
-  Footer,
   Header,
-  NextStepsFooterContent,
+  NextStepsFooter,
   UnsubscribeLink
 } from '@core/yoga/email/components'
 import { JourneyForEmails } from '@core/yoga/email/types/types'
@@ -87,9 +86,7 @@ export const JourneyAccessRequestEmail = ({
             />
           </ActionCard>
         </BodyWrapper>
-        <Footer>
-          <NextStepsFooterContent />
-        </Footer>
+        <NextStepsFooter />
         <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
       </EmailContainer>
     </>

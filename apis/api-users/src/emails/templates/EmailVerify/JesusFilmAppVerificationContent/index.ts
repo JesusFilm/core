@@ -1,2 +1,2 @@
 export { JesusFilmAppVerificationContent } from './Body'
-export { JesusFilmAppVerificationFooter } from './Footer'
+export { JesusFilmVerificationFooter } from './Footer'

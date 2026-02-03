@@ -1,6 +1,6 @@
 import { builder } from '../../builder'
 
-const APP_VALUES = ['NextSteps', 'JesusFilmApp'] as const
+const APP_VALUES = ['NextSteps', 'Default'] as const
 
 export type AppType = (typeof APP_VALUES)[number] | null
 

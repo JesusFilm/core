@@ -15,9 +15,8 @@ import {
   ActionCard,
   BodyWrapper,
   EmailContainer,
-  Footer,
   Header,
-  NextStepsFooterContent,
+  NextStepsFooter,
   UnsubscribeLink
 } from '@core/yoga/email/components'
 import { User } from '@core/yoga/firebaseClient'
@@ -70,9 +69,7 @@ export const TeamInviteAcceptedEmail = ({
             </Section>
           </ActionCard>
         </BodyWrapper>
-        <Footer>
-          <NextStepsFooterContent />
-        </Footer>
+        <NextStepsFooter />
         <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
       </EmailContainer>
     </>

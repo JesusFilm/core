@@ -101,7 +101,7 @@ describe('api-users', () => {
         document: ME_QUERY,
         variables: {
           input: {
-            app: 'JesusFilmApp'
+            app: 'Default'
           }
         }
       })
@@ -109,7 +109,7 @@ describe('api-users', () => {
         {},
         'testUserId',
         undefined,
-        'JesusFilmApp'
+        'Default'
       )
       expect(data).toHaveProperty(
         'data.me',
@@ -286,7 +286,7 @@ describe('api-users', () => {
         document: CREATE_VERIFICATION_REQUEST_MUTATION,
         variables: {
           input: {
-            app: 'JesusFilmApp'
+            app: 'Default'
           }
         }
       })
@@ -294,7 +294,7 @@ describe('api-users', () => {
         'testUserId',
         'test@example.com',
         undefined,
-        'JesusFilmApp'
+        'Default'
       )
       expect(data).toHaveProperty('data.createVerificationRequest', true)
     })
