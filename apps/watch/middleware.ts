@@ -97,10 +97,18 @@ export const config = {
   matcher: ['/watch/((?!assets).*)', '/watch']
 }
 
+/** Paths that look like static assets; do not rewrite so they are served from public/ */
+const STATIC_ASSET_EXT = /\.(svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|otf|css|js|map)(\?.*)?$/i
+
 export async function middleware(req: NextRequest): Promise<NextResponse> {
+  const pathname = req.nextUrl.pathname
+
+  if (STATIC_ASSET_EXT.test(pathname)) {
+    return NextResponse.next()
+  }
+
   const locale = getLocale(req) ?? DEFAULT_LOCALE
   const rewriteUrl = req.nextUrl.clone()
-  const pathname = req.nextUrl.pathname
 
   if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
     rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
