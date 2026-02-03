@@ -27,5 +27,5 @@ if [ "$config" = "stg_dev" ]; then
   DOPPLER_CONFIG="$config" pnpm exec nx run-many --projects=tag:doppler_config:stg_dev --target=fetch-secrets
 else
   echo "Fetching secrets using DOPPLER_CONFIG=$config (all projects)..."
-  DOPPLER_CONFIG="$config" pnpm exec nx run-many --all --target=fetch-secrets
+  DOPPLER_CONFIG="$config" pnpm exec nx run-many --all --target=fetch-secrets --exclude=video-importer
 fi
