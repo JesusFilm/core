@@ -4,8 +4,10 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { User } from 'next-firebase-auth'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
@@ -13,8 +15,6 @@ import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
 import { LanguageSwitcher } from '../../LanguageSwitcher'
 import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 
 export interface MainBodyContainerProps {
   onClick: () => void
