@@ -5,6 +5,7 @@ export function getPreviewText(app: NonNullable<AppType>): string {
     case 'JesusFilmApp':
       return 'Verify your email address on Jesus Film App'
     case 'NextSteps':
+      return 'Verify your email address on Next Steps'
     default:
       return 'Verify your email address on Next Steps'
   }

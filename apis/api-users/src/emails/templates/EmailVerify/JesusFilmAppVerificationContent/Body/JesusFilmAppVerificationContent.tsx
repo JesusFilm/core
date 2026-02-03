@@ -1,14 +1,15 @@
-import { Row, Section, Text } from '@react-email/components'
+import { Column, Row, Section, Text } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { ActionCard } from '@core/yoga/email/components'
+import { ActionButton, ActionCard } from '@core/yoga/email/components'
 
 import type { VerificationContentProps } from '../../NextStepsVerificationContent/Body'
 
 export const JesusFilmAppVerificationContent = ({
   recipient,
-  token
-}: Omit<VerificationContentProps, 'inviteLink'>): ReactElement => {
+  token,
+  inviteLink
+}: VerificationContentProps): ReactElement => {
   return (
     <ActionCard recipient={recipient}>
       <Section align="center" className="px-[28px]">
@@ -18,6 +19,11 @@ export const JesusFilmAppVerificationContent = ({
               Verify your email address to complete your account setup.
             </Text>
           </th>
+        </Row>
+        <Row className="px-[28px]">
+          <Column align="center">
+            <ActionButton buttonText="Verify Email Address" url={inviteLink} />
+          </Column>
         </Row>
         <Row>
           <Text className="mt-[24px] mb-[8px] text-center text-[14px] leading-[24px] font-[400]">

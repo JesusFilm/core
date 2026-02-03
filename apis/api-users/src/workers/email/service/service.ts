@@ -55,7 +55,7 @@ export async function service(
     case 'JesusFilmApp':
       from = '"Jesus Film App Support" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address on Jesus Film App'
-      url = ''
+      url = `https://jesusfilm.org/resources/user/verify?token=${job.data.token}`
       appType = 'JesusFilmApp'
       break
     case 'NextSteps':

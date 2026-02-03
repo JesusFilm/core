@@ -11,7 +11,8 @@ export function EmailLogo({
   let logoUrl: string
   switch (logo) {
     case 'JesusFilmApp':
-      logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
+      logoUrl =
+        'https://www.jesusfilm.org/wp-content/uploads/2023/04/JFP-RED.svg'
       break
     case 'NextSteps':
     default:
