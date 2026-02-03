@@ -93,7 +93,10 @@ export function AccessDialog({
 
   const currentUserJourney = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.__typename === 'AuthenticatedUser' && user.__typename === 'AuthenticatedUser' && userJourney.user?.email === user.email
+      (userJourney) =>
+        userJourney.user?.__typename === 'AuthenticatedUser' &&
+        user.__typename === 'AuthenticatedUser' &&
+        userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])
 

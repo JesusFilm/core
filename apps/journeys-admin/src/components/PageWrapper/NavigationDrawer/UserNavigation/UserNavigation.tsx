@@ -135,20 +135,21 @@ export function UserNavigation({
           />
         </ListItemButton>
       )}
-      {data.me?.__typename === 'AuthenticatedUser' && data.me.superAdmin === true && (
-        <ListItemButton
-          data-testid="NavigationListItemImpersonate"
-          onClick={handleImpersonateClick}
-        >
-          <ListItemIcon>
-            <UserProfile3Icon />
-          </ListItemIcon>
-          <ListItemText
-            primary={t('Impersonate')}
-            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-          />
-        </ListItemButton>
-      )}
+      {data.me?.__typename === 'AuthenticatedUser' &&
+        data.me.superAdmin === true && (
+          <ListItemButton
+            data-testid="NavigationListItemImpersonate"
+            onClick={handleImpersonateClick}
+          >
+            <ListItemIcon>
+              <UserProfile3Icon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('Impersonate')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
+          </ListItemButton>
+        )}
       {data.me?.__typename === 'AuthenticatedUser' && (
         <ListItemButton
           data-testid="NavigationListItemProfile"
@@ -167,15 +168,16 @@ export function UserNavigation({
           />
         </ListItemButton>
       )}
-      {profileAnchorEl !== undefined && data.me?.__typename === 'AuthenticatedUser' && (
-        <UserMenu
-          apiUser={data.me}
-          profileOpen={profileOpen}
-          profileAnchorEl={profileAnchorEl}
-          handleProfileClose={handleProfileClose}
-          user={user}
-        />
-      )}
+      {profileAnchorEl !== undefined &&
+        data.me?.__typename === 'AuthenticatedUser' && (
+          <UserMenu
+            apiUser={data.me}
+            profileOpen={profileOpen}
+            profileAnchorEl={profileAnchorEl}
+            handleProfileClose={handleProfileClose}
+            user={user}
+          />
+        )}
       {impersonateOpen != null && (
         <ImpersonateDialog
           open={impersonateOpen}
