@@ -57,7 +57,6 @@ function renderScreen(
       return (
         <MediaScreen
           handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
         />
       )
     case 'social':
