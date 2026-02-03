@@ -18,7 +18,6 @@ jest.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
   useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
-      __typename: 'User',
       ...user1
     }
   })
