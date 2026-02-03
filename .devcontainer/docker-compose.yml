@@ -75,9 +75,6 @@ services:
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    # Prevent ENOSPC: file watcher limit (Cursor + Nx + multiple dev servers exceed default)
-    sysctls:
-      - fs.inotify.max_user_watches=5242880
     depends_on:
       bootstrap:
         condition: service_completed_successfully
