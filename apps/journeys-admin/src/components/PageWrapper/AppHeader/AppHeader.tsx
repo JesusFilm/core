@@ -28,7 +28,7 @@ export function AppHeader({
   const { toolbar } = usePageWrapperStyles()
   const [open, setOpen] = useState(false)
   const { i18n } = useTranslation('apps-journeys-admin')
-  const currentLanguageCode = (i18n?.language ?? '').slice(-2).toUpperCase()
+  const currentLanguageCode = (i18n?.language ?? '').slice(0, 2)
 
   return (
     <Box
@@ -73,22 +73,16 @@ export function AppHeader({
                 onClick={() => setOpen(true)}
                 aria-label="language"
                 sx={{
-                  border: '1.5px solid white',
-                  borderRadius: 2,
-                  height: '25px',
-                  width: '52px'
+                  border: '1.75px solid white',
+                  borderRadius: 2.25,
+                  height: 25,
+                  width: 52
                 }}
               >
                 <LanguageIcon
-                  sx={{ fontSize: '12.36px', color: 'background.paper', mr: 1 }}
+                  sx={{ fontSize: 13, color: 'background.paper', mr: 1 }}
                 />
-                <Typography
-                  sx={{
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    fontFamily: 'Montserrat'
-                  }}
-                >
+                <Typography variant="overline2" sx={{ fontSize: 12 }}>
                   {currentLanguageCode}
                 </Typography>
               </IconButton>
