@@ -1,19 +1,5 @@
 #!/bin/bash
 
-# Function to extract name and value from argument
-parse_arg() {
-    local arg=$1
-    if [[ $arg =~ ^--([^=]+)=(.*)$ ]]; then
-        name="${BASH_REMATCH[1]}"
-        value="${BASH_REMATCH[2]}"
-        declare -a result=("$name" "$value")
-        printf '%s\n' "${result[@]}"
-    else
-        echo "Invalid argument format: $arg" >&2
-        exit 1
-    fi
-}
-
 # Store the command to run (last argument)
 command_to_run=""
 validation_failed=0
@@ -32,14 +18,14 @@ for arg in "$@"; do
         continue
     fi
 
-    # Parse the argument into array
-    readarray -t parsed < <(parse_arg "$arg")
-    if [ $? -ne 0 ]; then
+    if [[ "$arg" != --*=* ]]; then
+        echo "Invalid argument format: $arg" >&2
         exit 1
     fi
 
-    name="${parsed[0]}"
-    value="${parsed[1]}"
+    name="${arg#--}"
+    name="${name%%=*}"
+    value="${arg#*=}"
 
     # Get the environment variable value
     env_value="${!name}"
