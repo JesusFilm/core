@@ -52,15 +52,6 @@ export function AppHeader({
             position="relative"
             width="100%"
           >
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={onClick}
-            >
-              <Menu1Icon sx={{ color: 'background.paper' }} />
-            </IconButton>
             <Stack
               direction="row"
               flexGrow={1}
@@ -82,6 +73,15 @@ export function AppHeader({
                 alt="Next Steps"
               />
             </Stack>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={onClick}
+            >
+              <Menu1Icon sx={{ color: 'background.paper' }} />
+            </IconButton>
             <IconButton
               size="large"
               edge="start"
