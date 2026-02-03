@@ -5,6 +5,7 @@ import { ReactElement, ReactNode } from 'react'
 import {
   BodyWrapper,
   EmailContainer,
+  Footer,
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
@@ -66,7 +67,9 @@ export const EmailVerifyEmail = ({
             token={token}
           />
         </BodyWrapper>
-        <FooterContent />
+        <Footer>
+          <FooterContent />
+        </Footer>
         {showUnsubscribeLink && (
           <UnsubscribeLink recipientEmail={recipient.email} />
         )}
