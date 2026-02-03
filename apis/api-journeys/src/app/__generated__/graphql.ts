@@ -1556,6 +1556,25 @@ export class JourneyViewEvent implements Event {
     language?: Nullable<Language>;
 }
 
+export class RadioQuestionSubmissionEvent implements Event {
+    __typename?: 'RadioQuestionSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
+export class SignUpSubmissionEvent implements Event {
+    __typename?: 'SignUpSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    email?: Nullable<string>;
+}
+
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
@@ -1581,6 +1600,16 @@ export class StepPreviousEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+}
+
+export class TextResponseSubmissionEvent implements Event {
+    __typename?: 'TextResponseSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    blockId?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {

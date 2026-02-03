@@ -2,6 +2,7 @@ import compact from 'lodash/compact'
 
 import { Platform, prisma } from '@core/prisma/media/client'
 
+import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   videoCacheReset,
@@ -483,6 +484,12 @@ builder.mutationFields((t) => ({
       if (newVariant.published) {
         await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
         await updateParentCollectionLanguages(newVariant.videoId)
+        // Keep videos index (hasAvailableLanguages) in sync
+        try {
+          await updateVideoInAlgolia(newVariant.videoId)
+        } catch (error) {
+          console.error('Algolia update error:', error)
+        }
       }
 
       // Handle parent variant creation for child videos
@@ -592,6 +599,13 @@ builder.mutationFields((t) => ({
 
           // Cascade update to parent collections
           await updateParentCollectionLanguages(currentVariant.videoId)
+
+          // Keep videos index (hasAvailableLanguages) in sync
+          try {
+            await updateVideoInAlgolia(currentVariant.videoId)
+          } catch (error) {
+            console.error('Algolia update error:', error)
+          }
         } catch (error) {
           console.error('Language management update error:', error)
         }
@@ -728,6 +742,13 @@ builder.mutationFields((t) => ({
 
         // Cascade update to parent collections
         await updateParentCollectionLanguages(videoId)
+
+        // Keep videos index (hasAvailableLanguages) in sync
+        try {
+          await updateVideoInAlgolia(videoId)
+        } catch (error) {
+          console.error('Algolia update error:', error)
+        }
       } catch (error) {
         console.error('Language management cleanup error:', error)
       }

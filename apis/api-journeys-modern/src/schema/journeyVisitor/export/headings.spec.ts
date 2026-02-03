@@ -1,4 +1,8 @@
-import { BlockHeaderRecord, deduplicateBlockHeadersByBlockId } from './headings'
+import {
+  type BlockHeaderRecord,
+  buildJourneyExportColumns,
+  deduplicateBlockHeadersByBlockId
+} from './headings'
 
 describe('headings', () => {
   describe('deduplicateBlockHeadersByBlockId', () => {
@@ -63,6 +67,60 @@ describe('headings', () => {
       expect(result[0].blockId).toBe('block3')
       expect(result[1].blockId).toBe('block1')
       expect(result[2].blockId).toBe('block2')
+    })
+  })
+
+  describe('buildJourneyExportColumns', () => {
+    it('orders block columns by exportOrder first, then render order', () => {
+      const journeyBlocks = [
+        {
+          id: 'b1',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          exportOrder: 2
+        },
+        {
+          id: 'b2',
+          typename: 'MultiselectBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          exportOrder: 1
+        },
+        {
+          id: 'b3',
+          typename: 'TextResponseBlock',
+          parentBlockId: null,
+          parentOrder: 2,
+          exportOrder: null
+        }
+      ]
+
+      const blockHeaders: BlockHeaderRecord[] = [
+        { blockId: 'b3', label: 'Third' },
+        { blockId: 'b2', label: 'Second' },
+        { blockId: 'b1', label: 'First' }
+      ]
+
+      // Render order places b1 before b2 before b3, but exportOrder should pin b2 then b1 first.
+      const orderIndex = new Map<string, number>([
+        ['b1', 0],
+        ['b2', 1],
+        ['b3', 2]
+      ])
+
+      const columns = buildJourneyExportColumns({
+        baseColumns: [],
+        blockHeaders,
+        journeyBlocks,
+        orderIndex
+      })
+
+      expect(columns.map((c) => c.key)).toEqual([
+        'b2-Second',
+        'b1-First',
+        'b3-Third'
+      ])
     })
   })
 })

@@ -37,7 +37,8 @@ const journeyBlockSelect = {
   content: true,
   x: true,
   y: true,
-  deletedAt: true
+  deletedAt: true,
+  exportOrder: true
 } as const
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
@@ -384,22 +385,36 @@ builder.queryField('journeyVisitorExport', (t) => {
           baseColumnLabelResolver: resolveBaseColumnLabel
         })
         // Stream rows directly to CSV without collecting in memory
+        // Use column index as key for the stringifier
+        const columnKeys = columns.map((_, index) => `col_${index}`)
         const { stringifier, onEndPromise, getContent } = createCsvStringifier(
-          columns.map((col) => ({ key: col.key }))
+          columnKeys.map((key) => ({ key }))
         )
 
         // Write the header row (sanitized)
         const sanitizedHeaderRow = headerRow.map((cell) =>
           sanitizeCSVCell(cell)
         )
-        stringifier.write(sanitizedHeaderRow)
+        const headerRowObj: Record<string, string> = {}
+        columnKeys.forEach((key, index) => {
+          headerRowObj[key] = sanitizedHeaderRow[index] ?? ''
+        })
+        stringifier.write(headerRowObj)
 
         for await (const row of getJourneyVisitors(
           journeyId,
           eventWhere,
           userTimezone
         )) {
-          stringifier.write(row)
+          // Align row data to columns using column key
+          // Column order is determined by exportOrder, matching uses key
+          const alignedRowObj: Record<string, string> = {}
+          columns.forEach((col, index) => {
+            const colKey = `col_${index}`
+            // Match row data by column key (includes blockId-label)
+            alignedRowObj[colKey] = row[col.key] ?? ''
+          })
+          stringifier.write(alignedRowObj)
         }
         stringifier.end()
         await onEndPromise
