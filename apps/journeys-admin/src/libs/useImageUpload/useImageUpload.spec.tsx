@@ -1,8 +1,10 @@
-import { renderHook, act, waitFor } from '@testing-library/react'
-import { useDropzone, ErrorCode } from 'react-dropzone'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
-import { useImageUpload } from './useImageUpload'
+import { ErrorCode, useDropzone } from 'react-dropzone'
+
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
+
+import { useImageUpload } from './useImageUpload'
 
 jest.mock('react-dropzone', () => ({
   ...jest.requireActual('react-dropzone'),
@@ -24,7 +26,10 @@ jest.mock('../useCloudflareUploadByFileMutation', () => ({
 
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 const mockUseDropzone = useDropzone as jest.MockedFunction<typeof useDropzone>
-const mockUseCloudflareUploadByFileMutation = useCloudflareUploadByFileMutation as jest.MockedFunction<typeof useCloudflareUploadByFileMutation>
+const mockUseCloudflareUploadByFileMutation =
+  useCloudflareUploadByFileMutation as jest.MockedFunction<
+    typeof useCloudflareUploadByFileMutation
+  >
 
 describe('useImageUpload', () => {
   let originalEnv: NodeJS.ProcessEnv
@@ -72,7 +77,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -111,7 +118,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -132,7 +141,10 @@ describe('useImageUpload', () => {
 
     expect(onUploadStart).toHaveBeenCalled()
     expect(createCloudflareUploadByFile).toHaveBeenCalled()
-    expect(mockFetch).toHaveBeenCalledWith('https://upload.url', expect.any(Object))
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://upload.url',
+      expect.any(Object)
+    )
     expect(onUploadComplete).toHaveBeenCalledWith(
       'https://imagedelivery.net/cloudflare-key/image-id/public'
     )
@@ -162,7 +174,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
@@ -192,7 +206,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
