@@ -8,8 +8,8 @@
 //==============================================================
 
 export enum App {
-  JesusFilmApp = "JesusFilmApp",
-  NextSteps = "NextSteps"
+  Default = "Default",
+  NextSteps = "NextSteps",
 }
 
 export enum BlockEventLabel {

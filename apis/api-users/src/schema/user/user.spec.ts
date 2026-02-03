@@ -87,7 +87,7 @@ describe('api-users', () => {
         {},
         'testUserId',
         undefined,
-        undefined
+        'NextSteps'
       )
       expect(data).toHaveProperty(
         'data.me',
