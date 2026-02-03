@@ -424,14 +424,6 @@ export class JourneyPage {
       .click()
   }
 
-  /** Returns true if the discover journey list (Active/Archived/Trash tabs) is visible. */
-  async isDiscoverJourneyListVisible(): Promise<boolean> {
-    const tab = this.page.locator(
-      'button[id*="archived-status-panel-tab"]'
-    ).first()
-    return await tab.isVisible().catch(() => false)
-  }
-
   async clickArchivedTab() {
     const archivedTab = this.page.locator(
       'button[id*="archived-status-panel-tab"]'

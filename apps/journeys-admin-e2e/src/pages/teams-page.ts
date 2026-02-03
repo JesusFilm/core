@@ -235,15 +235,6 @@ export class TeamsPage {
     await addButton.click()
   }
 
-  /** Returns true if Growth Spaces integration card is visible (teamIntegrations flag on). */
-  async isGrowthSpaceIntegrationVisible(): Promise<boolean> {
-    await this.page.waitForURL(/\/integrations\/new/, { timeout: 20000 })
-    const link = this.page
-      .getByRole('link', { name: /Growth Spaces/i })
-      .or(this.page.getByTestId('growthSpaces-IntegrationsButton'))
-    return await link.first().isVisible().catch(() => false)
-  }
-
   async clickGrowthSpaceIntegration() {
     await this.page.waitForURL(/\/integrations\/new/, { timeout: 20000 })
     const growthSpaceLink = this.page
