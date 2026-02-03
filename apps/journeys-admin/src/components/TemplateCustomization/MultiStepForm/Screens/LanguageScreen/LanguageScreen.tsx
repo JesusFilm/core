@@ -1,12 +1,15 @@
+import { gql, useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
+import { getApp } from 'firebase/app'
+import { getAuth, signInAnonymously } from 'firebase/auth'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -16,12 +19,25 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { JourneyProfileCreate } from '../../../../../../__generated__/JourneyProfileCreate'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
+import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
+import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+
+const JOURNEY_PROFILE_CREATE = gql`
+  mutation JourneyProfileCreate {
+    journeyProfileCreate {
+      id
+      userId
+      acceptedTermsAt
+    }
+  }
+`
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -43,6 +59,13 @@ export function LanguageScreen({
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
+
+  useEffect(() => {
+    const firebaseUserId = user?.id ?? null
+    const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
+    console.log('[LanguageScreen] Firebase user id:', firebaseUserId)
+    console.log('[LanguageScreen] Is anonymous user:', isAnonymous)
+  }, [user?.id, user?.firebaseUser?.isAnonymous])
 
   const isParentTemplate = journey?.fromTemplateId == null
 
@@ -109,10 +132,16 @@ export function LanguageScreen({
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { loadUser } = useCurrentUserLazyQuery()
+  const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
+    JOURNEY_PROFILE_CREATE
+  )
+  const [teamCreate] = useTeamCreateMutation()
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
   async function handleSubmit(values: FormikValues) {
+    console.log('isSignedIn', isSignedIn, loading)
     setLoading(true)
     if (journey == null) {
       setLoading(false)
@@ -147,6 +176,90 @@ export function LanguageScreen({
       )
       handleNext()
       setLoading(false)
+    } else {
+      console.log('--------- HERE')
+      const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
+
+      try {
+        if (!isAnonymous) {
+          await signInAnonymously(getAuth(getApp()))
+        }
+        const result = await loadUser()
+        if (result?.data?.me == null) {
+          enqueueSnackbar(
+            t('Unable to continue as guest. Please try again or sign in.'),
+            { variant: 'error' }
+          )
+          setLoading(false)
+          return
+        }
+
+        const teamName = t('My Team')
+
+        const [profileResult, teamResult] = await Promise.all([
+          journeyProfileCreate(),
+          teamCreate({
+            variables: {
+              input: {
+                title: teamName,
+                publicTitle: teamName
+              }
+            }
+          })
+        ])
+
+        if (
+          profileResult?.data?.journeyProfileCreate == null ||
+          teamResult?.data?.teamCreate == null
+        ) {
+          enqueueSnackbar(
+            t('Unable to continue as guest. Please try again or sign in.'),
+            { variant: 'error' }
+          )
+          setLoading(false)
+          return
+        }
+
+        const teamId = teamResult.data.teamCreate.id
+        const journeyId =
+          languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
+        if (journeyId == null) {
+          enqueueSnackbar(
+            t('Unable to continue as guest. Please try again or sign in.'),
+            { variant: 'error' }
+          )
+          setLoading(false)
+          return
+        }
+
+        const { data: duplicateData } = await journeyDuplicate({
+          variables: { id: journeyId, teamId, forceNonTemplate: true }
+        })
+        if (duplicateData?.journeyDuplicate == null) {
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          setLoading(false)
+          return
+        }
+
+        // await router.push(
+        //   `/templates/${duplicateData.journeyDuplicate.id}/customize`,
+        //   undefined,
+        //   { shallow: true }
+        // )
+      } catch (error) {
+        enqueueSnackbar(
+          t('Unable to continue as guest. Please try again or sign in.'),
+          { variant: 'error' }
+        )
+      } finally {
+        handleNext()
+        setLoading(false)
+      }
     }
   }
 
@@ -241,7 +354,7 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={templateCustomizationGuestFlow || loading}
+                  disabled={loading}
                   ariaLabel={t('Next')}
                 />
               </Stack>
