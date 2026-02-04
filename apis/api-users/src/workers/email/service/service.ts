@@ -51,10 +51,10 @@ export async function service(
   let html: string | undefined
 
   switch (job.data?.app ?? 'NextSteps') {
-    case 'Default':
+    case 'JFPOne':
       from = '"Jesus Film Project" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address with the Jesus Film Project'
-      url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}/resources/user/verify?token=${job.data.token}`
+      url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}?token=${job.data.token}`
       html = await render(
         EmailVerifyEmail({
           token: job.data.token,

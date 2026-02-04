@@ -20,7 +20,7 @@ const Template: StoryObj<typeof EmailVerifyEmail> = {
   )
 }
 
-export const Default = {
+export const JFPOne = {
   ...Template,
   args: {
     email: 'joeronimo@example.com',

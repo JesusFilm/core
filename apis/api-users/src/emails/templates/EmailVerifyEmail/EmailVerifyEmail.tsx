@@ -54,7 +54,7 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header logo="Default" />
+      <Header logo="JFPOne" />
       <EmailContainer>
         <BodyWrapper>
           <ActionCard recipient={recipient}>

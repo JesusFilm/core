@@ -2,7 +2,7 @@ import { Img } from '@react-email/components'
 import { ReactElement } from 'react'
 
 export interface EmailLogoProps {
-  logo?: 'Default' | 'NextSteps'
+  logo?: 'JFPOne' | 'NextSteps'
 }
 
 export function EmailLogo({ logo }: EmailLogoProps): ReactElement {
@@ -11,10 +11,9 @@ export function EmailLogo({ logo }: EmailLogoProps): ReactElement {
     case 'NextSteps':
       logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
       break
-    case 'Default':
+    case 'JFPOne':
     default:
-      logoUrl =
-        'https://www.jesusfilm.org/wp-content/uploads/2023/04/JFP-RED.svg'
+      logoUrl = 'https://jesusfilm.org/watch/assets/jesus-film-logo-full.png'
       break
   }
 

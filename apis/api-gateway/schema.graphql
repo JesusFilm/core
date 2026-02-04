@@ -3851,7 +3851,7 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
 
 enum App @join__type(graph: API_USERS)  {
   NextSteps @join__enumValue(graph: API_USERS) 
-  Default @join__enumValue(graph: API_USERS) 
+  JFPOne @join__enumValue(graph: API_USERS) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {

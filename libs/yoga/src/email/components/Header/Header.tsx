@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import { EmailLogo } from '../EmailLogo'
 
 export interface HeaderProps {
-  logo?: 'Default' | 'NextSteps'
+  logo?: 'JFPOne' | 'NextSteps'
 }
 
 export function Header({ logo }: HeaderProps): ReactElement {

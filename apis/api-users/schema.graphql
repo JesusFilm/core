@@ -3,7 +3,7 @@ extend schema
 
 enum App {
   NextSteps
-  Default
+  JFPOne
 }
 
 input CreateVerificationRequestInput {

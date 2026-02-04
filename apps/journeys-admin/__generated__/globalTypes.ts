@@ -8,7 +8,7 @@
 //==============================================================
 
 export enum App {
-  Default = "Default",
+  JFPOne = "JFPOne",
   NextSteps = "NextSteps",
 }
 
