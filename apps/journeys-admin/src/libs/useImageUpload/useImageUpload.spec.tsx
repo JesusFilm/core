@@ -163,7 +163,9 @@ describe('useImageUpload', () => {
           () =>
             resolve({
               data: {
-                createCloudflareUploadByFile: { uploadUrl: 'https://upload.url' }
+                createCloudflareUploadByFile: {
+                  uploadUrl: 'https://upload.url'
+                }
               }
             }),
           100
