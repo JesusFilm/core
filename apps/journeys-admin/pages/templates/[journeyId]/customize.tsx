@@ -1,5 +1,5 @@
-import absoluteUrl from 'next-absolute-url'
 import { useRouter } from 'next/router'
+import absoluteUrl from 'next-absolute-url'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
