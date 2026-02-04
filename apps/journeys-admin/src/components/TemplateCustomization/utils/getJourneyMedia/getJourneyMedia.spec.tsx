@@ -81,4 +81,39 @@ describe('getJourneyMedia', () => {
       { __typename: 'VideoBlock', id: 'vid-1', customizable: true }
     ])
   })
+
+  it('should extract all three combinations of customizable blocks', () => {
+    const journey = {
+      logoImageBlock: {
+        __typename: 'ImageBlock',
+        customizable: true,
+        id: 'logo-1'
+      },
+      blocks: [
+        { __typename: 'ImageBlock', id: 'img-1', customizable: true },
+        { __typename: 'ImageBlock', id: 'img-2', customizable: false },
+        { __typename: 'VideoBlock', id: 'vid-1', customizable: true },
+        { __typename: 'VideoBlock', id: 'vid-2', customizable: false }
+      ]
+    } as unknown as Journey
+    expect(getJourneyMedia(journey)).toEqual([
+      { __typename: 'ImageBlock', id: 'logo-1', customizable: true },
+      { __typename: 'ImageBlock', id: 'img-1', customizable: true },
+      { __typename: 'VideoBlock', id: 'vid-1', customizable: true }
+    ])
+  })
+
+  it('should not extract non-customizable logo', () => {
+    const journey = {
+      logoImageBlock: {
+        __typename: 'ImageBlock',
+        customizable: false,
+        id: 'logo-1'
+      },
+      blocks: [{ __typename: 'ImageBlock', id: 'img-1', customizable: true }]
+    } as unknown as Journey
+    expect(getJourneyMedia(journey)).toEqual([
+      { __typename: 'ImageBlock', id: 'img-1', customizable: true }
+    ])
+  })
 })

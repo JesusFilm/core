@@ -84,7 +84,7 @@ describe('getCustomizeFlowConfig', () => {
     })
   })
 
-  it('should include text, links, and media screens when journey has both capabilities', () => {
+  it('should include text, links, and media screens when journey has all three capabilities', () => {
     const journey = {
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
       journeyCustomizationFields: [
