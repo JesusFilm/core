@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Accept,
   DropzoneOptions,
@@ -69,19 +69,32 @@ export function useImageUpload(
   } = useImageUploadOptions
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [loading, setLoading] = useState(false)
+  const loadingRef = useRef(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
   const [errorCode, setErrorCode] = useState<ImageUploadErrorCode | undefined>(
     undefined
   )
+  const successTimeoutRef = useRef<NodeJS.Timeout>(undefined)
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current != null) {
+        clearTimeout(successTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleDrop = async (
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
   ): Promise<void> => {
+    if (loadingRef.current) return
+
     if (rejectedFiles.length > 0) {
       const error = rejectedFiles[0].errors[0].code as ImageUploadErrorCode
       setErrorCode(error)
       setLoading(false)
+      loadingRef.current = false
       setSuccess(false)
       onUploadError?.(error)
       return
@@ -92,6 +105,7 @@ export function useImageUpload(
     }
 
     setLoading(true)
+    loadingRef.current = true
     setSuccess(undefined)
     setErrorCode(undefined)
     onUploadStart?.()
@@ -118,7 +132,13 @@ export function useImageUpload(
             process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
           }/${response.result.id as string}/public`
           onUploadComplete(src)
-          setTimeout(() => setSuccess(undefined), 4000)
+          if (successTimeoutRef.current != null) {
+            clearTimeout(successTimeoutRef.current)
+          }
+          successTimeoutRef.current = setTimeout(
+            () => setSuccess(undefined),
+            4000
+          )
         } else {
           setSuccess(false)
           if (response.errors?.length > 0) {
@@ -137,6 +157,7 @@ export function useImageUpload(
       onUploadError?.(error)
     } finally {
       setLoading(false)
+      loadingRef.current = false
     }
   }
 
@@ -164,6 +185,7 @@ export function useImageUpload(
 
   const resetState = (): void => {
     setLoading(false)
+    loadingRef.current = false
     setSuccess(undefined)
     setErrorCode(undefined)
   }

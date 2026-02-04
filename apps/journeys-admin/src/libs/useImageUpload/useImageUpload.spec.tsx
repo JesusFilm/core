@@ -105,6 +105,7 @@ describe('useImageUpload', () => {
   })
 
   it('should handle successful upload', async () => {
+    jest.useFakeTimers()
     const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
       data: {
         createCloudflareUploadByFile: {
@@ -146,6 +147,49 @@ describe('useImageUpload', () => {
     )
     expect(result.current.loading).toBe(false)
     expect(result.current.success).toBe(true)
+
+    act(() => {
+      jest.advanceTimersByTime(4000)
+    })
+
+    expect(result.current.success).toBeUndefined()
+    jest.useRealTimers()
+  })
+
+  it('should not start a new upload if one is already in progress', async () => {
+    const createCloudflareUploadByFile = jest.fn().mockReturnValue(
+      new Promise((resolve) =>
+        setTimeout(
+          () =>
+            resolve({
+              data: {
+                createCloudflareUploadByFile: { uploadUrl: 'https://upload.url' }
+              }
+            }),
+          100
+        )
+      )
+    )
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
+
+    const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const file = new File(['file'], 'test.png', { type: 'image/png' })
+
+    let dropPromise1: Promise<void> | void
+    let dropPromise2: Promise<void> | void
+
+    await act(async () => {
+      dropPromise1 = onDrop?.([file], [], {} as any)
+      dropPromise2 = onDrop?.([file], [], {} as any)
+      if (dropPromise1 != null) await dropPromise1
+      if (dropPromise2 != null) await dropPromise2
+    })
+
+    expect(createCloudflareUploadByFile).toHaveBeenCalledTimes(1)
   })
 
   it('should handle rejected files', async () => {
