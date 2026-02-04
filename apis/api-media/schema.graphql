@@ -9,6 +9,14 @@ type ArclightApiKey
   defaultPlatform: DefaultPlatform!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  mediaUserRoles: [MediaRole!]!
+}
+
 interface BaseError {
   message: String
 }
