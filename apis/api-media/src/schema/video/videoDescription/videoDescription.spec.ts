@@ -191,7 +191,9 @@ describe('videoDescription', () => {
           document: DELETE_VIDEO_DESCRIPTION_MUTATION,
           variables: { id: 'id' }
         })
-        expect(result).toHaveProperty('data.videoDescriptionDelete', { id: 'id' })
+        expect(result).toHaveProperty('data.videoDescriptionDelete', {
+          id: 'id'
+        })
       })
 
       it('should reject if not publisher', async () => {
