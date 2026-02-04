@@ -95,17 +95,17 @@ test.describe('Teams', () => {
   test.skip('Verify Integrations option from Three dot menu', async ({
     page
   }) => {
-      const teamPage = new TeamsPage(page)
+    const teamPage = new TeamsPage(page)
 
-      await teamPage.clickThreeDotOfTeams() //click three dot from the Discovery page teams section
-      await teamPage.clickThreeDotOptions('Integrations') //select Integrations option from the three dot menu
-      await teamPage.clickAddIntegrationButton() //Clicking Add integration '+' icon
-      await teamPage.clickGrowthSpaceIntegration() //Clicking Growth Space integration
-      await teamPage.enterAccessId('invalidAccessId') //enter invalid access id
-      await teamPage.enterAccessSecret('invalidAccessSecret') //enter invalid access secret
-      await teamPage.clickSaveBtnForintegration() //click save btn after entered the access id and secret
-      await new JourneyLevelActions(page).verifySnackBarMsg(
-        'invalid credentials for Growth Spaces integration'
-      ) //verify toast message
+    await teamPage.clickThreeDotOfTeams() //click three dot from the Discovery page teams section
+    await teamPage.clickThreeDotOptions('Integrations') //select Integrations option from the three dot menu
+    await teamPage.clickAddIntegrationButton() //Clicking Add integration '+' icon
+    await teamPage.clickGrowthSpaceIntegration() //Clicking Growth Space integration
+    await teamPage.enterAccessId('invalidAccessId') //enter invalid access id
+    await teamPage.enterAccessSecret('invalidAccessSecret') //enter invalid access secret
+    await teamPage.clickSaveBtnForintegration() //click save btn after entered the access id and secret
+    await new JourneyLevelActions(page).verifySnackBarMsg(
+      'invalid credentials for Growth Spaces integration'
+    ) //verify toast message
   })
 })

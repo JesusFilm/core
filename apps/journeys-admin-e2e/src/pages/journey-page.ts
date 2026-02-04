@@ -348,7 +348,7 @@ export class JourneyPage {
       .click({ delay: 3000 })
     await expect(this.page.getByTestId('JourneyDetailsDialog')).toBeHidden({
       timeout: thirtySecondsTimeout
-    })  
+    })
   }
 
   async backToHome() {
@@ -431,7 +431,10 @@ export class JourneyPage {
     const archivedTab = this.page.locator(
       'button[id*="archived-status-panel-tab"]'
     )
-    const visible = await archivedTab.first().isVisible().catch(() => false)
+    const visible = await archivedTab
+      .first()
+      .isVisible()
+      .catch(() => false)
     if (!visible) {
       const baseUrl = await getBaseUrl()
       const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
@@ -479,9 +482,7 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    const trashTab = this.page.locator(
-      'button[id*="trashed-status-panel-tab"]'
-    )
+    const trashTab = this.page.locator('button[id*="trashed-status-panel-tab"]')
     await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
     await trashTab.click()
     await expect(
@@ -528,9 +529,7 @@ export class JourneyPage {
   }
 
   async clickActiveTab() {
-    const activeTab = this.page.locator(
-      'button[id*="active-status-panel-tab"]'
-    )
+    const activeTab = this.page.locator('button[id*="active-status-panel-tab"]')
     await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
     await activeTab.click()
     await expect(

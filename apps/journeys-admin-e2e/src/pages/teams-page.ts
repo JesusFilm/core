@@ -108,7 +108,9 @@ export class TeamsPage {
 
   /** Team selector dropdown in header - scoped to avoid strict mode (multiple listboxes on page). */
   private getTeamSelectDropdown() {
-    return this.page.getByTestId('TeamSelect').locator('div[aria-haspopup="listbox"]')
+    return this.page
+      .getByTestId('TeamSelect')
+      .locator('div[aria-haspopup="listbox"]')
   }
 
   async clickTeamSelectionDropDown() {
@@ -165,10 +167,9 @@ export class TeamsPage {
   }
 
   async verifyRenamedTeamNameUpdatedInTeamSelectDropdown() {
-    await expect(this.getTeamSelectDropdown()).toHaveText(
-      this.renameTeamName,
-      { timeout: 60000 }
-    )
+    await expect(this.getTeamSelectDropdown()).toHaveText(this.renameTeamName, {
+      timeout: 60000
+    })
   }
 
   async enterTeamMember() {
