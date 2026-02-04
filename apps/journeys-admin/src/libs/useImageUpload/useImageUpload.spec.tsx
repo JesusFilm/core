@@ -175,7 +175,9 @@ describe('useImageUpload', () => {
       })
     })
 
-    renderHook(() => useImageUpload({ onUploadComplete, onUploadError }))
+    const { result } = renderHook(
+      () => useImageUpload({ onUploadComplete, onUploadError })
+    )
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
     const file = new File(['file'], 'test.png', { type: 'image/png' })
@@ -185,6 +187,43 @@ describe('useImageUpload', () => {
     })
 
     expect(onUploadError).toHaveBeenCalledWith(5000)
+    expect(result.current.errorCode).toBe(5000)
+  })
+
+  it('should handle numeric Cloudflare error code', async () => {
+    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+      data: {
+        createCloudflareUploadByFile: {
+          uploadUrl: 'https://upload.url'
+        }
+      }
+    })
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
+
+    getMockFetch().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        success: false,
+        errors: [{ code: 10003, message: 'Cloudflare error' }]
+      })
+    })
+
+    const { result } = renderHook(
+      () => useImageUpload({ onUploadComplete, onUploadError })
+    )
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const file = new File(['file'], 'test.png', { type: 'image/png' })
+
+    await act(async () => {
+      await onDrop?.([file], [], {} as any)
+    })
+
+    expect(onUploadError).toHaveBeenCalledWith(10003)
+    expect(result.current.errorCode).toBe(10003)
+    expect(result.current.loading).toBe(false)
   })
 
   it('should handle fetch exception', async () => {
@@ -211,5 +250,57 @@ describe('useImageUpload', () => {
     })
 
     expect(onUploadError).toHaveBeenCalledWith('unknown-error')
+  })
+
+  it('should handle failed mutation', async () => {
+    const createCloudflareUploadByFile = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Mutation failed'))
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
+
+    const { result } = renderHook(
+      () => useImageUpload({ onUploadComplete, onUploadError })
+    )
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const file = new File(['file'], 'test.png', { type: 'image/png' })
+
+    await act(async () => {
+      await onDrop?.([file], [], {} as any)
+    })
+
+    expect(onUploadError).toHaveBeenCalledWith('unknown-error')
+    expect(result.current.loading).toBe(false)
+    expect(result.current.success).toBe(false)
+  })
+
+  it('should handle missing uploadUrl in mutation response', async () => {
+    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
+      data: {
+        createCloudflareUploadByFile: {
+          uploadUrl: null
+        }
+      }
+    })
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
+
+    const { result } = renderHook(
+      () => useImageUpload({ onUploadComplete, onUploadError })
+    )
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const file = new File(['file'], 'test.png', { type: 'image/png' })
+
+    await act(async () => {
+      await onDrop?.([file], [], {} as any)
+    })
+
+    expect(onUploadError).toHaveBeenCalledWith('unknown-error')
+    expect(result.current.loading).toBe(false)
+    expect(result.current.success).toBe(false)
   })
 })

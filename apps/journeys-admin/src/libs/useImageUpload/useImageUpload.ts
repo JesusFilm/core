@@ -9,10 +9,18 @@ import {
 
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
+/**
+ * Error codes for image upload.
+ * ErrorCode: standard react-dropzone errors (e.g. 'file-too-large')
+ * number: specific Cloudflare API error codes (e.g. 10003)
+ * 'unknown-error': fallback for unexpected failures
+ */
+export type ImageUploadErrorCode = ErrorCode | number | 'unknown-error'
+
 export interface UseImageUploadOptions {
   onUploadComplete: (url: string) => void
   onUploadStart?: () => void
-  onUploadError?: (errorCode: ErrorCode) => void
+  onUploadError?: (errorCode: ImageUploadErrorCode) => void
   maxSize?: number
   accept?: Accept
   disabled?: boolean
@@ -31,7 +39,7 @@ export interface UseImageUploadReturn {
   isDragReject: boolean
   loading: boolean
   success: boolean | undefined
-  errorCode: ErrorCode | undefined
+  errorCode: ImageUploadErrorCode | undefined
   acceptedFiles: readonly File[]
   fileRejections: readonly FileRejection[]
   resetState: () => void
@@ -61,14 +69,16 @@ export function useImageUpload({
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
-  const [errorCode, setErrorCode] = useState<ErrorCode | undefined>(undefined)
+  const [errorCode, setErrorCode] = useState<ImageUploadErrorCode | undefined>(
+    undefined
+  )
 
   const handleDrop = async (
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
   ): Promise<void> => {
     if (rejectedFiles.length > 0) {
-      const error = rejectedFiles[0].errors[0].code as ErrorCode
+      const error = rejectedFiles[0].errors[0].code as ImageUploadErrorCode
       setErrorCode(error)
       setLoading(false)
       setSuccess(false)
@@ -80,19 +90,20 @@ export function useImageUpload({
       return
     }
 
-    const { data } = await createCloudflareUploadByFile({})
     setLoading(true)
     setSuccess(undefined)
     setErrorCode(undefined)
     onUploadStart?.()
 
-    if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
-      const file = acceptedFiles[0]
-      const formData = new FormData()
-      formData.append('file', file)
+    try {
+      const { data } = await createCloudflareUploadByFile({})
 
-      const uploadUrl = data.createCloudflareUploadByFile.uploadUrl
-      try {
+      if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
+        const file = acceptedFiles[0]
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const uploadUrl = data.createCloudflareUploadByFile.uploadUrl
         const response = await (
           await fetch(uploadUrl, {
             method: 'POST',
@@ -110,19 +121,21 @@ export function useImageUpload({
         } else {
           setSuccess(false)
           if (response.errors?.length > 0) {
-            const error = response.errors[0].code as ErrorCode
+            const error = response.errors[0].code as ImageUploadErrorCode
             setErrorCode(error)
             onUploadError?.(error)
           }
         }
-      } catch {
-        setSuccess(false)
-        const error = 'unknown-error' as ErrorCode
-        setErrorCode(error)
-        onUploadError?.(error)
-      } finally {
-        setLoading(false)
+      } else {
+        throw new Error('No upload URL')
       }
+    } catch {
+      setSuccess(false)
+      const error: ImageUploadErrorCode = 'unknown-error'
+      setErrorCode(error)
+      onUploadError?.(error)
+    } finally {
+      setLoading(false)
     }
   }
 
