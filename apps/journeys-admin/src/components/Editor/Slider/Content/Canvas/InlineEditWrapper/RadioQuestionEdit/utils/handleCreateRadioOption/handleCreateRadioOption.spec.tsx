@@ -1,6 +1,16 @@
+import { v4 as uuidv4 } from 'uuid'
+
 import { JourneyFields } from '../../../../../../../../../../__generated__/JourneyFields'
 
 import { handleCreateRadioOption } from './handleCreateRadioOption'
+
+
+jest.mock('uuid', () => ({
+  __esModule: true,
+  v4: jest.fn()
+}))
+
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('handleCreateRadioOption', () => {
   const dispatch = jest.fn()
@@ -15,6 +25,8 @@ describe('handleCreateRadioOption', () => {
   })
 
   it('should create a radio option block when sibling count is provided', () => {
+    mockUuidv4.mockReturnValueOnce('newOption.id')
+
     handleCreateRadioOption({
       dispatch,
       addBlock,
@@ -27,7 +39,7 @@ describe('handleCreateRadioOption', () => {
     expect(addBlock).toHaveBeenCalledTimes(1)
     expect(addBlock).toHaveBeenCalledWith({
       block: {
-        id: expect.any(String),
+        id: 'newOption.id',
         parentBlockId: 'parentBlockId',
         parentOrder: 3,
         __typename: 'RadioOptionBlock',

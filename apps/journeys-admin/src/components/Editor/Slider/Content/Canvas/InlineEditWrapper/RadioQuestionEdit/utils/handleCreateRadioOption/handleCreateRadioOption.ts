@@ -19,7 +19,7 @@ interface HandleCreateRadioOptionProps {
     RadioOptionBlockCreateVariables
   >
   parentBlockId: string | null
-  siblingCount: number | null
+  siblingCount: number
   journey?: JourneyFields
 }
 
