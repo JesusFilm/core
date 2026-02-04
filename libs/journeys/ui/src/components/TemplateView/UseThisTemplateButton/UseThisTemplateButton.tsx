@@ -7,11 +7,11 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { AccountCheckDialog } from '../AccountCheckDialog'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 interface UseThisTemplateButtonProps {
   variant?: 'menu-item' | 'button'
