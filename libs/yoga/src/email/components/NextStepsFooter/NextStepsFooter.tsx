@@ -1,9 +1,16 @@
-import { Button, Column, Row, Section, Text } from '@react-email/components'
+import {
+  Button,
+  Column,
+  Container,
+  Row,
+  Section,
+  Text
+} from '@react-email/components'
 import { ReactElement } from 'react'
 
-export function NextStepsFooterContent(): ReactElement {
+export function NextStepsFooter(): ReactElement {
   return (
-    <>
+    <Container className="h-[72px] px-[60px]" align="center">
       <Text
         className="text-center text-[14px] leading-[20px] font-bold tracking-[2px]"
         style={{
@@ -38,6 +45,8 @@ export function NextStepsFooterContent(): ReactElement {
           </Column>
         </Row>
       </Section>
-    </>
+    </Container>
   )
 }
+
+export default NextStepsFooter

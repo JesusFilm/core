@@ -1,27 +1,30 @@
-import { Body, Head, Html, Preview } from '@react-email/components'
+import {
+  Body,
+  Column,
+  Head,
+  Html,
+  Preview,
+  Row,
+  Section,
+  Text
+} from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
 
 import {
+  ActionButton,
+  ActionCard,
   BodyWrapper,
   EmailContainer,
+  Footer,
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-
-import type { AppType } from '../../../schema/user/enums/app'
-
-import {
-  getFooterContent,
-  getPreviewText,
-  getVerificationContent
-} from './utils'
 
 interface VerifyEmailProps {
   inviteLink: string
   token: string
   story?: boolean
-  app: NonNullable<AppType>
   recipient: {
     firstName: string
     lastName: string
@@ -38,15 +41,9 @@ export const EmailVerifyEmail = ({
   inviteLink,
   recipient,
   token,
-  story = false,
-  app
+  story = false
 }: VerifyEmailProps): ReactElement => {
-  const VerificationContent = getVerificationContent(app)
-  const FooterContentComponent = getFooterContent(app)
-  const previewText = getPreviewText(app)
-
-  const showUnsubscribeLink = app !== 'Default'
-
+  const previewText = `Verify your email address with the Jesus Film Project`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -57,19 +54,37 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header logo={app} />
+      <Header logo="Default" />
       <EmailContainer>
         <BodyWrapper>
-          <VerificationContent
-            inviteLink={inviteLink}
-            recipient={recipient}
-            token={token}
-          />
+          <ActionCard recipient={recipient}>
+            <Section align="center" className="px-[28px]">
+              <Row>
+                <th>
+                  <Text className="mt-0 mb-[24px] text-center text-[16px] leading-[28px] font-semibold">
+                    Verify your email address to complete your account setup.
+                  </Text>
+                </th>
+              </Row>
+              <Row className="px-[28px]">
+                <Column align="center">
+                  <ActionButton
+                    buttonText="Verify Email Address"
+                    url={inviteLink}
+                  />
+                </Column>
+              </Row>
+              <Row>
+                <Text className="mt-[24px] mb-[8px] text-center text-[14px] leading-[24px] font-[400]">
+                  Your verification code is{' '}
+                  <strong className="text-[#C52D3A]">{token}</strong>
+                </Text>
+              </Row>
+            </Section>
+          </ActionCard>
         </BodyWrapper>
-        <FooterContentComponent />
-        {showUnsubscribeLink && (
-          <UnsubscribeLink recipientEmail={recipient.email} />
-        )}
+        <Footer />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )
@@ -117,8 +132,7 @@ EmailVerifyEmail.PreviewProps = {
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
-  inviteLink: 'https://admin.nextstep.is/users/verify',
-  app: 'NextSteps'
+  inviteLink: 'https://admin.nextstep.is/users/verify'
 } satisfies VerifyEmailProps
 
 export default EmailVerifyEmail

@@ -1,9 +1,11 @@
 import { Img } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { type Logo } from '../../types'
+export interface EmailLogoProps {
+  logo?: 'Default' | 'NextSteps'
+}
 
-export function EmailLogo({ logo }: { logo?: Logo }): ReactElement {
+export function EmailLogo({ logo }: EmailLogoProps): ReactElement {
   let logoUrl: string
   switch (logo) {
     case 'NextSteps':

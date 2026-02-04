@@ -5,8 +5,9 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
 
-import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
-import { type AppType } from '../../../schema/user/enums/app'
+import { EmailVerifyEmail } from '../../../emails/templates/EmailVerifyEmail'
+import { EmailVerifyNextSteps } from '../../../emails/templates/EmailVerifyNextSteps'
+import { AppType } from '../../../schema/user/enums/app'
 
 export interface VerifyUserJob {
   userId: string
@@ -18,7 +19,8 @@ export interface VerifyUserJob {
 
 export async function service(
   job: Job<VerifyUserJob>,
-  logger?: Logger
+  logger?: Logger,
+  app?: AppType
 ): Promise<void> {
   let emailAlias: string | undefined
   if (job.data.email.includes('+'))
@@ -43,45 +45,53 @@ export async function service(
   }
 
   let from: string | undefined
-  let subject: string
-  let url: string
-  let appType: NonNullable<AppType>
+  let subject: string | undefined
+  let url: string | undefined
+  let text: string | undefined
+  let html: string | undefined
 
   switch (job.data?.app ?? 'NextSteps') {
     case 'Default':
       from = '"Jesus Film Project" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address with the Jesus Film Project'
       url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}/resources/user/verify?token=${job.data.token}`
-      appType = 'Default'
+      html = await render(
+        EmailVerifyEmail({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        })
+      )
+      text = await render(
+        EmailVerifyEmail({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        }),
+        { plainText: true }
+      )
       break
     case 'NextSteps':
       from = '"Next Steps Support" <support@nextstep.is>'
       subject = 'Verify your email address on Next Steps'
       url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${job.data.token}&email=${emailAlias ?? job.data.email}${redirectParam}`
-      appType = 'NextSteps'
+      html = await render(
+        EmailVerifyNextSteps({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        })
+      )
+      text = await render(
+        EmailVerifyNextSteps({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        }),
+        { plainText: true }
+      )
       break
   }
-
-  const html = await render(
-    EmailVerifyEmail({
-      token: job.data.token,
-      recipient,
-      inviteLink: url,
-      app: appType
-    })
-  )
-
-  const text = await render(
-    EmailVerifyEmail({
-      token: job.data.token,
-      recipient,
-      inviteLink: url,
-      app: appType
-    }),
-    {
-      plainText: true
-    }
-  )
 
   await sendEmail(
     {

@@ -1,3 +1,1 @@
-export { DefaultFooter } from './DefaultFooter'
-export { NextStepsFooter } from './NextStepsFooter'
-export { NextStepsFooterContent } from './NextStepsFooterContent'
+export { Footer } from './Footer'

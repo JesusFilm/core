@@ -1,1 +1,0 @@
-export { getVerificationContent } from './getVerificationContentComponent'

@@ -4,8 +4,6 @@ export enum UserJourneyRole {
   owner = 'owner'
 }
 
-export type Logo = 'Default' | 'NextSteps'
-
 export interface JourneyForEmails {
   id: string
   slug: string

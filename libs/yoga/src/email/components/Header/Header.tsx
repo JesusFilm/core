@@ -1,11 +1,10 @@
 import { Column, Container, Row, Section } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { Logo } from '../../types'
 import { EmailLogo } from '../EmailLogo'
 
 export interface HeaderProps {
-  logo?: Logo
+  logo?: 'Default' | 'NextSteps'
 }
 
 export function Header({ logo }: HeaderProps): ReactElement {
