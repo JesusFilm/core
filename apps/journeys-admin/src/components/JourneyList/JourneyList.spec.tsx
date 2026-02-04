@@ -241,16 +241,11 @@ describe('JourneyList', () => {
       </MockedProvider>
     )
 
-    const sortByButton = screen.getByRole('button', { name: 'Sort By' })
-    fireEvent.click(sortByButton)
+    fireEvent.click(screen.getByRole('button', { name: 'Sort By' }))
 
-    const nameSort = screen.getByText('Name')
-    const lastModifySort = screen.getByText('Last Modified')
-    const dateCreatedSort = screen.getByText('Date Created')
-
-    expect(nameSort).toBeInTheDocument()
-    expect(lastModifySort).toBeInTheDocument()
-    expect(dateCreatedSort).toBeInTheDocument()
+    expect(screen.getByText('Name')).toBeInTheDocument()
+    expect(screen.getByText('Last Modified')).toBeInTheDocument()
+    expect(screen.getByText('Date Created')).toBeInTheDocument()
   })
 
   it('should display "title" in URL when sorting by name is selected', async () => {
@@ -272,11 +267,8 @@ describe('JourneyList', () => {
       </MockedProvider>
     )
 
-    const sortByButton = screen.getByRole('button', { name: 'Sort By' })
-    await user.click(sortByButton)
-
-    const nameSort = screen.getByText('Name')
-    await user.click(nameSort)
+    await user.click(screen.getByRole('button', { name: 'Sort By' }))
+    await user.click(screen.getByText('Name'))
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
@@ -314,11 +306,8 @@ describe('JourneyList', () => {
       </MockedProvider>
     )
 
-    const sortByButton = screen.getByRole('button', { name: 'Sort By' })
-    await user.click(sortByButton)
-
-    const lastModifySort = screen.getByText('Last Modified')
-    await user.click(lastModifySort)
+    await user.click(screen.getByRole('button', { name: 'Sort By' }))
+    await user.click(screen.getByText('Last Modified'))
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
@@ -356,11 +345,8 @@ describe('JourneyList', () => {
       </MockedProvider>
     )
 
-    const sortByButton = screen.getByRole('button', { name: 'Sort By' })
-    await user.click(sortByButton)
-
-    const dateCreatedSort = screen.getByText('Date Created')
-    await user.click(dateCreatedSort)
+    await user.click(screen.getByRole('button', { name: 'Sort By' }))
+    await user.click(screen.getByText('Date Created'))
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
