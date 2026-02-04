@@ -64,7 +64,7 @@ export async function findOrFetchUser(
     userId,
     firstName,
     lastName,
-    email: email ?? '',
+    email: email ?? null,
     imageUrl,
     emailVerified
   }
