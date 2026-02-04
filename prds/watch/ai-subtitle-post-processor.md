@@ -49,7 +49,7 @@ Introduce a deterministic, language/script-aware post-processing step that conve
 ## 4) Architecture Overview
 
 ### Pipeline position
-Whisper transcription segments
+Mux transcript primitives (via `fetchTranscriptForAsset`)
 → **AI Subtitle Post-Processor (this PRD)**
 → Validator (non-AI, mandatory)
 → Attach WebVTT text track to Mux
@@ -60,12 +60,17 @@ Whisper transcription segments
 - Deterministic validator as the gatekeeper
 - Deterministic fallback formatter if AI fails twice (coverage > vibes)
 
+### MuxDataAdapter (required component)
+All Mux media data access MUST be centralized in a single `MuxDataAdapter` module. This module is the only place allowed to import from `@mux/ai/primitives` and provides:
+- `getTranscript(assetId, bcp47): Segment[]` (implemented via `fetchTranscriptForAsset`)
+- `getStoryboard(playbackId, opts)` (optional debug helper via `getStoryboardUrl`)
+
 ---
 
 ## 5) Inputs
 
-### 5.1 Source input: Whisper segments
-Each segment contains:
+### 5.1 Source input: Transcript segments (via primitives)
+Segments MUST be derived from `fetchTranscriptForAsset` output (Mux primitives). Each segment contains:
 - `id: string`
 - `start: number` (seconds, float)
 - `end: number` (seconds, float)
@@ -191,7 +196,12 @@ Any future change requires bumping the version and keeping backwards traceabilit
 
 ## 9) Core Functional Requirements
 
-### R1. Sentence reconstruction (do not treat Whisper segments as cues)
+### R0. Primitives-Only Mux reads (hard requirement)
+- All transcript/caption reads MUST use `@mux/ai/primitives` (no direct Mux REST calls).
+- Use `fetchTranscriptForAsset(assetId, bcp47)` as the canonical input source.
+- Exceptions are only allowed if a primitive is missing; document the exception explicitly.
+
+### R1. Sentence reconstruction (do not treat transcript segments as cues)
 - Rebuild higher-level text units from segments
 - Merge adjacent segments if:
   - gap ≤ 300ms AND
@@ -404,21 +414,29 @@ Goal: produce valid, constraint-respecting WebVTT without AI.
   - Enforce minDuration by borrowing into available gaps or merging where safe
 - Metadata tag the output as fallback-produced (see Versioning section)
 
+### 12.3 Debug outputs (mandatory on validation failure)
+On any validation failure, persist:
+- Original transcript VTT (from `fetchTranscriptForAsset`)
+- AI output VTT
+- Validator report (cue index, rule, measured vs limit)
+- Optional storyboard URL via `getStoryboardUrl(playbackId, opts)`
+
 ---
 
 ## 13) Integration with Workflow DevKit
 
 ### 13.1 Workflow steps
-1. Fetch Whisper segments + metadata
-2. Parse BCP-47 and detect `LanguageClass`
-3. Select profile by `LanguageClass`
-4. Build AI input payload (include versions)
-5. Call GPT post-processor (pass #1)
-6. Validate output
-7. If invalid: retry once with errors (pass #2), validate
-8. If still invalid: fallback formatter, validate
-9. If valid: attach WebVTT to Mux asset
-10. Emit success/failure events + metrics
+1. Acquire transcript via primitives: `fetchTranscriptForAsset(assetId, bcp47)`
+2. Normalize transcript into `Segment[]` (MuxDataAdapter)
+3. Parse BCP-47 and detect `LanguageClass`
+4. Select profile by `LanguageClass`
+5. Build AI input payload (include versions)
+6. Call GPT post-processor (pass #1)
+7. Validate output
+8. If invalid: retry once with errors (pass #2), validate
+9. If still invalid: fallback formatter, validate
+10. If valid: attach WebVTT to Mux asset
+11. Emit success/failure events + metrics
 
 ### 13.2 Required properties
 Each step MUST be:
@@ -560,6 +578,7 @@ Operationally:
 - Bidi isolates:
   - default off; enable only behind a versioned flag if needed for renderer compatibility
 - All configuration MUST be centralized (profiles, versions, limits) and not scattered in code
+- Optional: use `chunkVTTCues` (primitives) for downstream metrics, inspection, or QA chunking (not for CPS/CPL enforcement)
 
 ---
 
@@ -569,6 +588,8 @@ Operationally:
 - Word-level highlighting
 - Translation
 - Real-time subtitle streaming
+
+Future extensions MUST continue to use primitives-backed data access (transcripts/storyboards/thumbnails) rather than custom fetchers.
 
 ---
 
@@ -581,3 +602,20 @@ This spec treats "AI subtitles" as an engineering system:
 - Versioning guarantees reproducibility
 
 Implement it exactly, and the subtitles stop being a demo feature and start being a platform capability.
+---
+
+## 22) Implementation Tasks Status
+
+- [completed] Build language/script classification (BCP-47 parsing + LTR/RTL/CJK mapping).
+- [completed] Define and version language profiles (v1) with CPS/CPL/line/duration constraints.
+- [completed] Implement normalization + grapheme-aware character counting utilities.
+- [completed] Implement WebVTT parsing/serialization helpers and timestamp formatting.
+- [completed] Implement deterministic validator with machine-readable errors (v1).
+- [completed] Implement deterministic fallback formatter (v1).
+- [completed] Implement AI post-processor integration with one retry and structured validator errors.
+- [completed] Implement primitives-first MuxDataAdapter for transcript/storyboard access.
+- [completed] Implement Workflow DevKit pipeline for post-processing and Mux track attachment.
+- [completed] Implement upload path for WebVTT storage and Mux text track creation.
+- [completed] Add golden fixtures + property tests + integration-style retry tests.
+- [completed] Add versioned metadata, hashing, and audit fields for reproducibility.
+- [completed] Add logging hooks + debug artifact persistence for validation failures.
