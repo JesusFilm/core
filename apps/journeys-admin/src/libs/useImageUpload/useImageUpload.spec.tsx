@@ -1,6 +1,5 @@
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useDropzone, ErrorCode } from 'react-dropzone'
-import fetch, { Response } from 'node-fetch'
 import { useImageUpload } from './useImageUpload'
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
@@ -9,20 +8,10 @@ jest.mock('react-dropzone', () => ({
   useDropzone: jest.fn()
 }))
 
-jest.mock('node-fetch', () => {
-  const originalModule = jest.requireActual('node-fetch')
-  return {
-    __esModule: true,
-    ...originalModule,
-    default: jest.fn()
-  }
-})
-
 jest.mock('../useCloudflareUploadByFileMutation', () => ({
   useCloudflareUploadByFileMutation: jest.fn()
 }))
 
-const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 const mockUseDropzone = useDropzone as jest.MockedFunction<typeof useDropzone>
 const mockUseCloudflareUploadByFileMutation = useCloudflareUploadByFileMutation as jest.MockedFunction<typeof useCloudflareUploadByFileMutation>
 
@@ -31,6 +20,7 @@ describe('useImageUpload', () => {
   const onUploadComplete = jest.fn()
   const onUploadStart = jest.fn()
   const onUploadError = jest.fn()
+  const originalFetch = global.fetch
 
   beforeEach(() => {
     originalEnv = process.env
@@ -39,6 +29,7 @@ describe('useImageUpload', () => {
       NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: 'cloudflare-key'
     }
     jest.clearAllMocks()
+    global.fetch = jest.fn()
     mockUseDropzone.mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn(),
@@ -54,7 +45,10 @@ describe('useImageUpload', () => {
 
   afterEach(() => {
     process.env = originalEnv
+    global.fetch = originalFetch
   })
+
+  const getMockFetch = (): jest.Mock => global.fetch as jest.Mock
 
   it('should initialize with default state', () => {
     const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
@@ -74,13 +68,13 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
 
-    mockFetch.mockResolvedValueOnce({
+    getMockFetch().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         success: false,
         errors: [{ code: 5000, message: 'Upload failed' }]
       })
-    } as unknown as Response)
+    })
 
     const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
 
@@ -113,13 +107,13 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
 
-    mockFetch.mockResolvedValueOnce({
+    getMockFetch().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         success: true,
         result: { id: 'image-id' }
       })
-    } as unknown as Response)
+    })
 
     renderHook(() => useImageUpload({ onUploadComplete, onUploadStart }))
 
@@ -132,7 +126,7 @@ describe('useImageUpload', () => {
 
     expect(onUploadStart).toHaveBeenCalled()
     expect(createCloudflareUploadByFile).toHaveBeenCalled()
-    expect(mockFetch).toHaveBeenCalledWith('https://upload.url', expect.any(Object))
+    expect(getMockFetch()).toHaveBeenCalledWith('https://upload.url', expect.any(Object))
     expect(onUploadComplete).toHaveBeenCalledWith(
       'https://imagedelivery.net/cloudflare-key/image-id/public'
     )
@@ -164,13 +158,13 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
 
-    mockFetch.mockResolvedValueOnce({
+    getMockFetch().mockResolvedValueOnce({
       ok: true,
       json: async () => ({
         success: false,
         errors: [{ code: 5000, message: 'Upload failed' }]
       })
-    } as unknown as Response)
+    })
 
     renderHook(() => useImageUpload({ onUploadComplete, onUploadError }))
 
@@ -194,7 +188,7 @@ describe('useImageUpload', () => {
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
 
-    mockFetch.mockRejectedValueOnce(new Error('Network error'))
+    getMockFetch().mockRejectedValueOnce(new Error('Network error'))
 
     renderHook(() => useImageUpload({ onUploadComplete, onUploadError }))
 

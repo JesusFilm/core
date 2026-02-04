@@ -1,6 +1,4 @@
-import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
-import fetch from 'node-fetch'
 import { useState } from 'react'
 import {
   Accept,
@@ -61,7 +59,7 @@ export function useImageUpload({
   noKeyboard = false,
   multiple = false
 }: UseImageUploadOptions): UseImageUploadReturn {
-  const { t } = useTranslation('apps-journeys-admin')
+  useTranslation('apps-journeys-admin')
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
@@ -100,7 +98,7 @@ export function useImageUpload({
         const response = await (
           await fetch(uploadUrl, {
             method: 'POST',
-            body: formData as unknown as FormDataType
+            body: formData
           })
         ).json()
 
