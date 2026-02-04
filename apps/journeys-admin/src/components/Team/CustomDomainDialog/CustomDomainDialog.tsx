@@ -51,8 +51,11 @@ export function CustomDomainDialog({
   const customDomain = data?.customDomains[0]
   const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
     if (currentUser?.__typename === 'AuthenticatedUser') {
-      return activeTeam?.userTeams?.find(({ user: { email } }) => {
-        return email === currentUser?.email
+      return activeTeam?.userTeams?.find(({ user }) => {
+        return (
+          user.__typename === 'AuthenticatedUser' &&
+          user.email === currentUser?.email
+        )
       })?.role
     }
     return undefined

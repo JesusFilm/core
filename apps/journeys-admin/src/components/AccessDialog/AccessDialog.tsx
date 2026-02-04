@@ -106,8 +106,12 @@ export function AccessDialog({
   }, [data?.journey?.userJourneys, user])
 
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
-    return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
-      return user?.__typename === 'AuthenticatedUser' && email === user.email
+    return data?.journey?.team?.userTeams.find(({ user: teamUser }) => {
+      return (
+        user?.__typename === 'AuthenticatedUser' &&
+        teamUser.__typename === 'AuthenticatedUser' &&
+        teamUser.email === user.email
+      )
     })
   }, [data?.journey?.team?.userTeams, user])
 

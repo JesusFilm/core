@@ -198,7 +198,9 @@ function JourneyVisitorsPage({
     () =>
       !!journey?.team &&
       !!userTeamsData?.userTeams?.some(
-        (userTeam) => userTeam.user.email === user.email
+        (userTeam) =>
+          userTeam.user.__typename === 'AuthenticatedUser' &&
+          userTeam.user.email === user.email
       ),
     [journey?.team, userTeamsData?.userTeams, user.email]
   )

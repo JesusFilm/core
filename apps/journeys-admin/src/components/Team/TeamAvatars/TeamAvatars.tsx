@@ -49,9 +49,11 @@ export function TeamAvatars({
             }
           }}
         >
-          {take(userTeams, 5).map(({ user }) => (
-            <Avatar key={user.id} apiUser={user} />
-          ))}
+          {take(userTeams, 5).map(({ user }) =>
+            user.__typename === 'AuthenticatedUser' ? (
+              <Avatar key={user.id} apiUser={user} />
+            ) : null
+          )}
         </AvatarGroup>
         {onClick != null && (
           <MuiAvatar

@@ -165,7 +165,9 @@ export function DefaultMenu({
       return undefined
 
     const userTeam = activeTeam.userTeams.find(
-      (userTeam) => userTeam.user.email === currentUserEmail
+      (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
+        userTeam.user.email === currentUserEmail
     )
 
     return userTeam?.role
