@@ -167,6 +167,24 @@
         "command": "pnpm exec ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
     },
+    "list-mux-videos": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/list-mux-videos.ts"
+      }
+    },
+    "setup-mux-test-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/setup-mux-test-data.ts"
+      }
+    },
+    "check-subtitle-status": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/check-subtitle-status.ts"
+      }
+    },
     "populate-crowdin-ids": {
       "executor": "nx:run-commands",
       "options": {
