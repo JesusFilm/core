@@ -13,7 +13,10 @@ jest.mock('../useCloudflareUploadByFileMutation', () => ({
 }))
 
 const mockUseDropzone = useDropzone as jest.MockedFunction<typeof useDropzone>
-const mockUseCloudflareUploadByFileMutation = useCloudflareUploadByFileMutation as jest.MockedFunction<typeof useCloudflareUploadByFileMutation>
+const mockUseCloudflareUploadByFileMutation =
+  useCloudflareUploadByFileMutation as jest.MockedFunction<
+    typeof useCloudflareUploadByFileMutation
+  >
 
 describe('useImageUpload', () => {
   let originalEnv: NodeJS.ProcessEnv
@@ -66,7 +69,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -105,7 +110,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -156,7 +163,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     getMockFetch().mockResolvedValueOnce({
       ok: true,
@@ -186,7 +195,9 @@ describe('useImageUpload', () => {
         }
       }
     })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([createCloudflareUploadByFile] as any)
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as any)
 
     getMockFetch().mockRejectedValueOnce(new Error('Network error'))
 
