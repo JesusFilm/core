@@ -19,6 +19,7 @@ import {
   DoneScreen,
   LanguageScreen,
   LinksScreen,
+  MediaScreen,
   SocialScreen,
   TextScreen
 } from './Screens'
@@ -52,6 +53,8 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
+    case 'media':
+      return <MediaScreen handleNext={handleNext} />
     case 'social':
       return (
         <SocialScreen

@@ -172,10 +172,12 @@ export function GoogleSheetsSyncDialog({
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
   const [getPickerToken] = useLazyQuery(GET_GOOGLE_PICKER_TOKEN)
-  const [loadSyncs, { data: syncsData, loading: syncsLoading }] = useLazyQuery<
-    GoogleSheetsSyncsQueryData,
-    GoogleSheetsSyncsQueryVariables
-  >(GET_GOOGLE_SHEETS_SYNCS)
+  const [
+    loadSyncs,
+    { data: syncsData, loading: syncsLoading, called: syncsCalled }
+  ] = useLazyQuery<GoogleSheetsSyncsQueryData, GoogleSheetsSyncsQueryVariables>(
+    GET_GOOGLE_SHEETS_SYNCS
+  )
   const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
   const [backfillSync] = useMutation(BACKFILL_GOOGLE_SHEETS_SYNC)
 
@@ -235,6 +237,8 @@ export function GoogleSheetsSyncDialog({
   // Auto-open "Add Google Sheets Sync" dialog if there are no syncs
   useEffect(() => {
     if (!open) return
+    // Wait until the query has actually been executed at least once
+    if (!syncsCalled) return
     if (syncsLoading) return
     // Skip if we're already handling integration creation return flow
     const integrationCreated = router.query.integrationCreated === 'true'
@@ -246,6 +250,7 @@ export function GoogleSheetsSyncDialog({
     }
   }, [
     open,
+    syncsCalled,
     syncsLoading,
     activeSyncs.length,
     historySyncs.length,
