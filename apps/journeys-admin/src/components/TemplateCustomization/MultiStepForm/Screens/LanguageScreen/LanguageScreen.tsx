@@ -21,6 +21,7 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -31,6 +32,7 @@ export function LanguageScreen({
   handleNext,
   handleScreenNavigation
 }: LanguageScreenProps): ReactElement {
+  const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
   const user = useUser()
   const router = useRouter()
@@ -234,7 +236,7 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={loading}
+                  disabled={templateCustomizationGuestFlow || loading}
                   ariaLabel={t('Next')}
                 />
               </Stack>
