@@ -3267,6 +3267,16 @@ type ZodFieldError @join__type(graph: API_MEDIA)  {
   path: [String!]!
 }
 
+type AuthenticatedUser @join__type(graph: API_USERS, key: "id")  {
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: String!
+  imageUrl: String
+  superAdmin: Boolean
+  emailVerified: Boolean!
+}
+
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
   message: String
 }
