@@ -21,13 +21,13 @@ export async function importLanguages(
 
   try {
     const where = lastLanguageImport
-      ? { 
-        updatedAt: { gte: lastLanguageImport }, 
-        hasVideos: true,
-       }
-      : { 
-        hasVideos: true, 
-      }
+      ? {
+          updatedAt: { gte: lastLanguageImport },
+          hasVideos: true
+        }
+      : {
+          hasVideos: true
+        }
 
     let skip = 0
     let hasMore = true
@@ -43,7 +43,7 @@ export async function importLanguages(
                   name: true
                 }
               }
-            },
+            }
           }
         },
         take: BATCH_SIZE,
@@ -59,12 +59,16 @@ export async function importLanguages(
       for (const language of languages) {
         try {
           // english name
-          const languageName = language.name.find((n) => n.languageId === '529')?.value ?? 'Unknown'
+          const languageName =
+            language.name.find((n) => n.languageId === '529')?.value ??
+            'Unknown'
 
-          const existing = await strapi.documents('api::language.language').findFirst({
-            locale: 'en',
-            filters: { remoteId: language.id }
-          })
+          const existing = await strapi
+            .documents('api::language.language')
+            .findFirst({
+              locale: 'en',
+              filters: { remoteId: language.id }
+            })
 
           const data: Input<'api::language.language'> = {
             remoteId: language.id,
@@ -77,23 +81,37 @@ export async function importLanguages(
           let languageStrapi
 
           if (existing) {
-            languageStrapi = await strapi.documents('api::language.language').update({
-              documentId: existing.documentId,
-              data
-            })
+            languageStrapi = await strapi
+              .documents('api::language.language')
+              .update({
+                documentId: existing.documentId,
+                data
+              })
           } else {
-            languageStrapi = await strapi.documents('api::language.language').create({
-              data
-            })
+            languageStrapi = await strapi
+              .documents('api::language.language')
+              .create({
+                data
+              })
           }
 
           if (language.name.length > 1 && languageStrapi != null) {
-            for (const { value, language: translationLanguage } of language.name) {
+            for (const {
+              value,
+              language: translationLanguage
+            } of language.name) {
               if (translationLanguage.id !== '529') {
                 try {
-                  const locale = await localeService.findByCode(translationLanguage.bcp47)
+                  const locale = await localeService.findByCode(
+                    translationLanguage.bcp47
+                  )
                   if (!locale) {
-                    const localeName = translationLanguage.name.find((n) => n.languageId === '529')?.value ?? translationLanguage.name.find((n) => n.primary)?.value ?? 'Unknown'
+                    const localeName =
+                      translationLanguage.name.find(
+                        (n) => n.languageId === '529'
+                      )?.value ??
+                      translationLanguage.name.find((n) => n.primary)?.value ??
+                      'Unknown'
                     await localeService.create({
                       id: translationLanguage.id,
                       code: translationLanguage.bcp47,
@@ -106,7 +124,9 @@ export async function importLanguages(
                     data: { name: value }
                   })
                 } catch (error) {
-                  strapi.log.error(`LanguageImport: Failed to create name ${translationLanguage.bcp47} for language ${language.id}: ${error}`)
+                  strapi.log.error(
+                    `LanguageImport: Failed to create name ${translationLanguage.bcp47} for language ${language.id}: ${error}`
+                  )
                 }
               }
             }
@@ -127,7 +147,9 @@ export async function importLanguages(
         hasMore = false
       }
 
-      strapi.log.info(`LanguageImport: ${imported} / ${languagesCount} imported`)
+      strapi.log.info(
+        `LanguageImport: ${imported} / ${languagesCount} imported`
+      )
     }
   } catch (error) {
     const errorMessage = `LanguageImport: Failed to query languages: ${

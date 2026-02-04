@@ -6,7 +6,7 @@ const mediaPrisma = new PrismaClient()
 
 export async function importVideos(
   strapi: Core.Strapi,
-  _lastMediaImport: Date | undefined
+  lastMediaImport: Date | undefined
 ): Promise<{ imported: number; errors: string[] }> {
   const localeService = strapi.plugins['i18n'].services.locales
   const locales = await localeService.find()
@@ -15,17 +15,17 @@ export async function importVideos(
   let imported = 0
 
   try {
+    const where = lastMediaImport ? { updatedAt: { gte: lastMediaImport } } : {}
+
     const videos = await mediaPrisma.video.findMany({
-      where: {
-        published: true
-      },
+      where,
       include: {
         title: true,
         snippet: true,
         description: true,
         imageAlt: true,
         studyQuestions: {
-          orderBy: { order: 'asc' },
+          orderBy: { order: 'asc' }
         }
       }
     })
@@ -33,6 +33,7 @@ export async function importVideos(
     strapi.log.info(`VideoImport: Importing ${videos.length} videos`)
 
     for (const video of videos) {
+      if (!video.published) continue
       try {
         const groupedByLanguage = new Map<
           string,
@@ -88,20 +89,22 @@ export async function importVideos(
           langData.studyQuestions.push({ value: question.value })
         }
 
-        let videoDocument = await strapi.documents('api::video.video').findFirst({
-          filters: {
-            remoteId: { $eq: video.id }
-          }
-        })
+        let videoDocument = await strapi
+          .documents('api::video.video')
+          .findFirst({
+            filters: {
+              remoteId: { $eq: video.id }
+            }
+          })
 
         const englishVideoData = groupedByLanguage.get('529')
         const charMap = {
-          'ä': 'a',
-          'ç': 'c',
-          'ğ': 'g',
-          'é': 'e',
-          'ú': 'u',
-          'ü': 'u',
+          ä: 'a',
+          ç: 'c',
+          ğ: 'g',
+          é: 'e',
+          ú: 'u',
+          ü: 'u'
         }
         const slug = video.slug.replace(/[äçğéúü]/g, (match) => charMap[match])
 
@@ -136,7 +139,8 @@ export async function importVideos(
             snippet: langData.snippet ?? englishVideoData.snippet,
             description: langData.description ?? englishVideoData.description,
             imageAlt: langData.imageAlt ?? englishVideoData.imageAlt,
-            studyQuestions: langData.studyQuestions ?? englishVideoData?.studyQuestions ?? [],
+            studyQuestions:
+              langData.studyQuestions ?? englishVideoData?.studyQuestions ?? [],
             slug
           }
 
@@ -160,15 +164,21 @@ export async function importVideos(
     strapi.log.info(`Adding children to ${videos.length} videos`)
 
     for (const video of videos) {
-      const videosMap = Object.fromEntries((await strapi.documents('api::video.video').findMany({
-        filters: {
-          remoteId: { $in: [...video.childIds, video.id] }
-        },
-        fields: ['remoteId', 'documentId']
-      })).map(({ documentId, remoteId }) => [remoteId, documentId]))
+      const videosMap = Object.fromEntries(
+        (
+          await strapi.documents('api::video.video').findMany({
+            filters: {
+              remoteId: { $in: [...video.childIds, video.id] }
+            },
+            fields: ['remoteId', 'documentId']
+          })
+        ).map(({ documentId, remoteId }) => [remoteId, documentId])
+      )
       const videoDocumentId = videosMap[video.id]
 
-      const children = video.childIds.map((childId) => videosMap[childId]).filter((documentId) => documentId != null)
+      const children = video.childIds
+        .map((childId) => videosMap[childId])
+        .filter((documentId) => documentId != null)
 
       await strapi.documents('api::video.video').update({
         documentId: videoDocumentId,

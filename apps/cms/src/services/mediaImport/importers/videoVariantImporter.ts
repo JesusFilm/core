@@ -8,42 +8,56 @@ const BATCH_SIZE = 1000
 
 export async function importVideoVariants(
   strapi: Core.Strapi,
-  _lastMediaImport: Date | undefined
+  lastMediaImport: Date | undefined
 ): Promise<{ imported: number; errors: string[] }> {
   const errors: string[] = []
   let imported = 0
 
-  const videoMap = Object.fromEntries((await strapi.documents('api::video.video').findMany({
-    fields: ['remoteId', 'documentId']
-  })).map(({ documentId, remoteId }) => [remoteId, documentId]))
+  const videoMap = Object.fromEntries(
+    (
+      await strapi.documents('api::video.video').findMany({
+        fields: ['remoteId', 'documentId']
+      })
+    ).map(({ documentId, remoteId }) => [remoteId, documentId])
+  )
 
-  const languageMap = Object.fromEntries((await strapi.documents('api::language.language').findMany({
-    fields: ['remoteId', 'documentId']
-  })).map(({ documentId, remoteId }) => [remoteId, documentId]))
+  const languageMap = Object.fromEntries(
+    (
+      await strapi.documents('api::language.language').findMany({
+        fields: ['remoteId', 'documentId']
+      })
+    ).map(({ documentId, remoteId }) => [remoteId, documentId])
+  )
 
-  const videoVariantsMap = Object.fromEntries((await strapi.documents('api::video-variant.video-variant').findMany({
-    fields: ['remoteId', 'documentId']
-  })).map(({ documentId, remoteId }) => [remoteId, documentId]))
+  const videoVariantsMap = Object.fromEntries(
+    (
+      await strapi.documents('api::video-variant.video-variant').findMany({
+        fields: ['remoteId', 'documentId']
+      })
+    ).map(({ documentId, remoteId }) => [remoteId, documentId])
+  )
 
-  const videoVariantsCount = await mediaPrisma.videoVariant.count({
-    where: {
-      video: {
-        published: true
-      }
-    }
-  })
-  strapi.log.info(`VideoVariantImport: Importing ${videoVariantsCount} video variants`)
+  const where = lastMediaImport ? { updatedAt: { gte: lastMediaImport } } : {}
+  const videoVariantsCount = await mediaPrisma.videoVariant.count({ where })
+  strapi.log.info(
+    `VideoVariantImport: Importing ${videoVariantsCount} video variants`
+  )
 
   try {
     let skip = 0
     let hasMore = true
     while (hasMore) {
       const variants = await mediaPrisma.videoVariant.findMany({
-        where: {
-          published: true
-        },
+        where,
         skip,
-        take: BATCH_SIZE
+        take: BATCH_SIZE,
+        include: {
+          video: {
+            select: {
+              published: true
+            }
+          }
+        }
       })
       if (variants.length === 0) {
         hasMore = false
@@ -51,6 +65,7 @@ export async function importVideoVariants(
       }
 
       for (const variant of variants) {
+        if (!variant.video.published) continue
         try {
           const data = {
             remoteId: variant.id,
@@ -90,7 +105,9 @@ export async function importVideoVariants(
         hasMore = false
       }
 
-      strapi.log.info(`VideoVariantImport: ${imported} / ${videoVariantsCount} imported`)
+      strapi.log.info(
+        `VideoVariantImport: ${imported} / ${videoVariantsCount} imported`
+      )
     }
   } catch (error) {
     const errorMessage = `VideoVariantImport: Failed to query video variants: ${
