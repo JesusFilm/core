@@ -30,18 +30,24 @@ describe('videoOrigin', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoOrigin.findMany.mockResolvedValue([
           {
             id: 'origin1',
             name: 'Origin A',
-            description: 'First origin'
+            description: 'First origin',
+            createdAt: new Date(),
+            updatedAt: new Date()
           },
           {
             id: 'origin2',
             name: 'Origin B',
-            description: 'Second origin'
+            description: 'Second origin',
+            createdAt: new Date(),
+            updatedAt: new Date()
           }
         ])
         const result = await authClient({
@@ -89,12 +95,16 @@ describe('videoOrigin', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoOrigin.create.mockResolvedValue({
           id: 'id',
           name: 'Test Origin',
-          description: 'A test origin.'
+          description: 'A test origin.',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: VIDEO_ORIGIN_CREATE_MUTATION,
@@ -139,12 +149,16 @@ describe('videoOrigin', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoOrigin.update.mockResolvedValue({
           id: 'id',
           name: 'Updated Origin',
-          description: 'Updated description.'
+          description: 'Updated description.',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: VIDEO_ORIGIN_UPDATE_MUTATION,
@@ -189,12 +203,16 @@ describe('videoOrigin', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoOrigin.delete.mockResolvedValue({
           id: 'id',
           name: 'Test Origin',
-          description: 'A test origin.'
+          description: 'A test origin.',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: VIDEO_ORIGIN_DELETE_MUTATION,
