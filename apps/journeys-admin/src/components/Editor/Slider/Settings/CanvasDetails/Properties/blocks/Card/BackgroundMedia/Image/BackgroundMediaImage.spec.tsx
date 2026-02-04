@@ -544,7 +544,7 @@ describe('BackgroundMediaImage', () => {
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
-    it('should render BlockCustomizationToggle when journey is a template', () => {
+    it('should render BlockCustomizationToggle when journey is a template and card has a cover image', () => {
       render(
         <MockedProvider mocks={[]}>
           <SnackbarProvider>
