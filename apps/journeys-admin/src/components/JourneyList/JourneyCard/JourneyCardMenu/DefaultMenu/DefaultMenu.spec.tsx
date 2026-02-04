@@ -71,7 +71,7 @@ const currentUserMock = {
   result: {
     data: {
       me: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'current-user-id',
         email: 'current@example.com',
         lastName: 'userLastName',
@@ -105,7 +105,7 @@ const baseTeamMock = {
                 lastName: 'userLastName',
                 firstName: 'userFirstName',
                 imageUrl: 'https://example.com/image.jpg',
-                __typename: 'User'
+                __typename: 'AuthenticatedUser'
               },
               __typename: 'UserTeam'
             }
@@ -559,7 +559,7 @@ describe('DefaultMenu', () => {
           id: 'userJourney1.id',
           role: UserJourneyRole.owner,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'current-user-id',
             email: 'current@example.com'
           }
@@ -623,7 +623,7 @@ describe('DefaultMenu', () => {
           id: 'userJourney1.id',
           role: UserJourneyRole.editor,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'current-user-id'
           }
         }
@@ -686,7 +686,7 @@ describe('DefaultMenu', () => {
           id: 'userJourney1.id',
           role: UserJourneyRole.editor,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'current-user-id'
           }
         }
@@ -751,7 +751,7 @@ describe('DefaultMenu', () => {
           id: 'userJourney1.id',
           role: UserJourneyRole.editor,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'current-user-id'
           }
         }
@@ -998,7 +998,7 @@ describe('DefaultMenu', () => {
           id: 'userJourney1.id',
           role: UserJourneyRole.editor,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'current-user-id'
           }
         }

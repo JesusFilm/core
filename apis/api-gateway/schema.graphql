@@ -552,7 +552,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
-  validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
+  validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -948,8 +948,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
-  user(id: ID!) : User @join__field(graph: API_USERS) 
-  userByEmail(email: String!) : User @join__field(graph: API_USERS) 
+  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -1837,7 +1837,7 @@ type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  
   id: ID!
   team: Team!
   type: IntegrationType!
-  user: User
+  user: AuthenticatedUser
   accountEmail: String
 }
 
@@ -1892,7 +1892,7 @@ type UserJourney @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph:
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
-  user: User
+  user: AuthenticatedUser
   """
   Date time of when the journey was first opened
   """
@@ -1976,7 +1976,7 @@ type JourneyNotification @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
 type UserTeam @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   journeyNotification(journeyId: ID!) : JourneyNotification
-  user: User!
+  user: AuthenticatedUser!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2181,7 +2181,7 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: 
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
@@ -2890,7 +2890,7 @@ type Playlist @join__type(graph: API_MEDIA)  {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  owner: User!
+  owner: AuthenticatedUser!
   items: [PlaylistItem!]!
 }
 
@@ -3257,6 +3257,10 @@ type ZodFieldError @join__type(graph: API_MEDIA)  {
   path: [String!]!
 }
 
+type AnonymousUser @join__type(graph: API_USERS)  {
+  id: ID!
+}
+
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
   message: String
 }
@@ -3336,6 +3340,8 @@ union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMemb
 union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = NotFoundError | QueryShortLinkSuccess
 
 union QueryYoutubeClosedCaptionLanguagesResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "QueryYoutubeClosedCaptionLanguagesSuccess")  = Error | ZodError | QueryYoutubeClosedCaptionLanguagesSuccess
+
+union User @join__type(graph: API_USERS)  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AnonymousUser")  = AuthenticatedUser | AnonymousUser
 
 enum ThemeMode @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3728,19 +3734,23 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum LanguageRole @join__type(graph: API_LANGUAGES)  {
+  publisher @join__enumValue(graph: API_LANGUAGES) 
+}
+
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
-}
-
-enum LanguageRole @join__type(graph: API_LANGUAGES)  {
-  publisher @join__enumValue(graph: API_LANGUAGES) 
 }
 
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
   ios @join__enumValue(graph: API_MEDIA) 
   android @join__enumValue(graph: API_MEDIA) 
   web @join__enumValue(graph: API_MEDIA) 
+}
+
+enum MediaRole @join__type(graph: API_MEDIA)  {
+  publisher @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
@@ -3752,10 +3762,6 @@ enum MaxResolutionTier @join__type(graph: API_MEDIA)  {
   fhd @join__enumValue(graph: API_MEDIA) 
   qhd @join__enumValue(graph: API_MEDIA) 
   uhd @join__enumValue(graph: API_MEDIA) 
-}
-
-enum MediaRole @join__type(graph: API_MEDIA)  {
-  publisher @join__enumValue(graph: API_MEDIA) 
 }
 
 enum SegmindModel @join__type(graph: API_MEDIA)  {

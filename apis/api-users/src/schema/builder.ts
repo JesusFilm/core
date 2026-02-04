@@ -47,11 +47,13 @@ export const builder = new SchemaBuilder<{
   }
   AuthScopes: {
     isAuthenticated: boolean
+    isAnonymous: boolean
     isSuperAdmin: boolean
     isValidInterop: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isAnonymous: Extract<Context, { type: 'authenticated' }>
     isSuperAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
@@ -68,25 +70,27 @@ export const builder = new SchemaBuilder<{
     authScopes: async (context: Context) => {
       switch (context.type) {
         case 'authenticated':
+          // eslint-disable-next-line no-case-declarations -- This is intentional
+          const user = await prisma.user.findUnique({
+            where: { userId: context.currentUser.id }
+          })
           return {
-            isAuthenticated: true,
-            isSuperAdmin:
-              (
-                await prisma.user.findUnique({
-                  where: { userId: context.currentUser.id }
-                })
-              )?.superAdmin ?? false,
+            isAuthenticated: user?.email != null,
+            isAnonymous: user?.email == null,
+            isSuperAdmin: user?.superAdmin ?? false,
             isValidInterop: false
           }
         case 'interop':
           return {
             isAuthenticated: false,
+            isAnonymous: false,
             isSuperAdmin: false,
             isValidInterop: true
           }
         default:
           return {
             isAuthenticated: false,
+            isAnonymous: false,
             isSuperAdmin: false,
             isValidInterop: false
           }
