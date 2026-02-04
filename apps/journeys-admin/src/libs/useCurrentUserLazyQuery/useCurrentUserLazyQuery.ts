@@ -11,10 +11,14 @@ import {
 } from '../../../__generated__/GetCurrentUser'
 
 export const GET_CURRENT_USER = gql`
-  query GetCurrentUser {
-    me {
+  query GetCurrentUser($input: MeInput) {
+    me(input: $input) {
       id
+      userId
       email
+      firstName
+      lastName
+      emailVerified
     }
   }
 `
@@ -29,5 +33,16 @@ export function useCurrentUserLazyQuery(): {
     return { loadUser, data: data.me }
   }
 
-  return { loadUser, data: { __typename: 'User', id: '', email: '' } }
+  return {
+    loadUser,
+    data: {
+      __typename: 'User',
+      id: '',
+      userId: '',
+      email: null,
+      firstName: '',
+      lastName: null,
+      emailVerified: false
+    }
+  }
 }

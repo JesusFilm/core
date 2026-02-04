@@ -14,7 +14,7 @@ export interface GetMe_me {
   id: string;
   firstName: string;
   lastName: string | null;
-  email: string;
+  email: string | null;
   imageUrl: string | null;
   superAdmin: boolean | null;
   emailVerified: boolean;

@@ -13,6 +13,11 @@ export default async function handler(
     await setAuthCookies(req, res, {})
     res.status(200).json({ success: true })
   } catch (e) {
-    res.status(500).json({ error: 'Unexpected error.' })
+    console.error('Login API error:', e)
+    const message =
+      process.env.NODE_ENV !== 'production' && e instanceof Error
+        ? e.message
+        : 'Unexpected error.'
+    res.status(500).json({ error: message })
   }
 }

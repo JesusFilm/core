@@ -3,11 +3,19 @@ import { auth } from '@core/yoga/firebaseClient'
 
 import { verifyUser } from './verifyUser'
 
+export type FindOrFetchUserOptions = {
+  /** When true, create a database user even for anonymous Firebase users (e.g. "Create Guest"). */
+  forceCreateForAnonymous?: boolean
+}
+
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  options: FindOrFetchUserOptions = {}
 ): Promise<User | null> {
+  const { forceCreateForAnonymous = false } = options
+
   const existingUser = await prisma.user.findUnique({
     ...query,
     where: {
@@ -17,7 +25,7 @@ export async function findOrFetchUser(
   if (existingUser != null && existingUser.emailVerified == null) {
     const user = await prisma.user.update({
       where: {
-        id: userId
+        userId
       },
       data: {
         emailVerified: false
@@ -29,12 +37,17 @@ export async function findOrFetchUser(
   if (existingUser != null && existingUser.emailVerified != null)
     return existingUser
 
-  const {
-    displayName,
-    email,
-    emailVerified,
-    photoURL: imageUrl
-  } = await auth.getUser(userId)
+  const firebaseUser = await auth.getUser(userId)
+
+  const isAnonymous =
+    firebaseUser.providerData == null || firebaseUser.providerData.length === 0
+
+  // Do not create a database user for anonymous Firebase users unless explicitly requested.
+  if (isAnonymous && !forceCreateForAnonymous) {
+    return null
+  }
+
+  const { displayName, email, emailVerified, photoURL: imageUrl } = firebaseUser
 
   // Extract firstName and lastName from displayName with better fallbacks
   let firstName = ''
@@ -60,36 +73,31 @@ export async function findOrFetchUser(
     firstName = 'Unknown User'
   }
 
-  const data = {
+  // Schema has email String?; use assertion so nullable email compiles with any Prisma client version
+  const createData = {
     userId,
     firstName,
     lastName,
-    email: email ?? '',
-    imageUrl,
+    email: email ?? null,
+    imageUrl: imageUrl ?? null,
     emailVerified
-  }
+  } as Prisma.UserUncheckedCreateInput
 
   let user: User | null = null
-  let retry = 0
   let userCreated = false
-  // this function can run in parallel as such it is possible for multiple
-  // calls to reach this point and try to create the same user
-  // due to the earlier firebase async call.
+  // This can run in parallel; multiple calls may try to create the same user.
   try {
     user = await prisma.user.create({
-      data
+      data: createData
     })
     userCreated = true
-  } catch (e) {
-    do {
-      user = await prisma.user.update({
-        where: {
-          id: userId
-        },
-        data
-      })
-      retry++
-    } while (user == null && retry < 3)
+  } catch (createErr) {
+    // Create failed - often unique constraint (concurrent request already created). Fetch existing.
+    user = await prisma.user.findUnique({
+      ...query,
+      where: { userId }
+    })
+    if (user == null) throw createErr
   }
   // after user create so it is only sent once
   if (email != null && userCreated && !emailVerified)

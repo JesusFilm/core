@@ -13,7 +13,11 @@ export const mockUseCurrentUserLazyQuery: MockedResponse<GetCurrentUser> = {
       me: {
         __typename: 'User',
         id: 'user.id',
-        email: 'test@email.com'
+        userId: 'firebase-uid-123',
+        email: 'test@email.com',
+        firstName: 'Test',
+        lastName: 'User',
+        emailVerified: true
       }
     }
   }

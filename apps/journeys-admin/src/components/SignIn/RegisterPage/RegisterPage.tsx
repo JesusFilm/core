@@ -6,20 +6,69 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { gql, useMutation } from '@apollo/client'
+import { getApp } from 'firebase/app'
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   getAuth,
+  linkWithCredential,
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import React, { ReactElement } from 'react'
+import { useUser } from 'next-firebase-auth'
+import React, { ReactElement, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
+
+const MERGE_GUEST = gql`
+  mutation MergeGuest($input: MergeGuestInput!) {
+    mergeGuest(input: $input) {
+      id
+      userId
+      email
+      firstName
+      lastName
+      emailVerified
+    }
+  }
+`
+
+function parseNameToFirstAndLast(name: string): {
+  firstName: string
+  lastName: string
+} {
+  const trimmed = name.trim()
+  if (trimmed === '') return { firstName: '', lastName: '' }
+  const parts = trimmed.split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return { firstName: '', lastName: '' }
+  if (parts.length === 1) return { firstName: parts[0], lastName: '' }
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(' ')
+  }
+}
+
+function getErrorMessage(err: unknown, prefix: string): string {
+  if (err == null) return `${prefix}: Unknown error`
+  const apolloErr = err as {
+    message?: string
+    graphQLErrors?: Array<{ message?: string }>
+    networkError?: { message?: string; result?: { error?: string } }
+  }
+  const gqlMessage = apolloErr.graphQLErrors?.[0]?.message
+  const networkMessage =
+    apolloErr.networkError?.result?.error ?? apolloErr.networkError?.message
+  const message =
+    gqlMessage ?? networkMessage ?? apolloErr.message ?? String(err)
+  return `${prefix}: ${message}`
+}
 
 export function RegisterPage({
   setActivePage,
@@ -27,7 +76,13 @@ export function RegisterPage({
 }: PageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const router = useRouter()
+  const user = useUser()
+  const [mergeGuest] = useMutation(MERGE_GUEST)
+  const { loadUser } = useCurrentUserLazyQuery()
+
+  const isAnonymous = user.firebaseUser?.isAnonymous ?? false
 
   useHandleNewAccountRedirect()
 
@@ -72,21 +127,95 @@ export function RegisterPage({
     await signInWithEmailAndPassword(auth, email, password)
   }
 
-  async function handleCreateAccount(
-    values: InferType<typeof validationSchema>,
-    { setFieldError }
+  async function mergeGuestAndSignIn(
+    email: string,
+    name: string,
+    password: string,
+    setFieldError: (field: string, message: string) => void,
+    setSubmitting: (isSubmitting: boolean) => void
   ): Promise<void> {
+    const auth = getAuth(getApp())
+    const firebaseUser = auth.currentUser
+    if (firebaseUser == null) {
+      setSubmitError(t('Not signed in. Please try again.'))
+      setSubmitting(false)
+      return
+    }
     try {
-      await createAccountAndSignIn(values.email, values.name, values.password)
-    } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
+      await updateProfile(firebaseUser, { displayName: name })
+    } catch (err) {
+      setSubmitError(getErrorMessage(err, t('Update profile')))
+      setSubmitting(false)
+      return
+    }
+    try {
+      const credential = EmailAuthProvider.credential(email, password)
+      await linkWithCredential(firebaseUser, credential)
+    } catch (err) {
+      const errCode = (err as { code?: string })?.code
+      if (errCode === 'auth/email-already-in-use') {
         setFieldError(
           'email',
           t('The email address is already used by another account')
         )
       } else {
+        setSubmitError(getErrorMessage(err, t('Link account')))
+      }
+      setSubmitting(false)
+      return
+    }
+    const { firstName, lastName } = parseNameToFirstAndLast(name)
+    try {
+      await mergeGuest({
+        variables: {
+          input: { firstName, lastName, email }
+        }
+      })
+    } catch (err) {
+      setSubmitError(getErrorMessage(err, t('Save account')))
+      setSubmitting(false)
+      return
+    }
+    try {
+      await loadUser()
+    } catch (err) {
+      setSubmitError(getErrorMessage(err, t('Reload user')))
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function handleCreateAccount(
+    values: InferType<typeof validationSchema>,
+    { setFieldError, setSubmitting }
+  ): Promise<void> {
+    setSubmitError(null)
+    try {
+      if (isAnonymous) {
+        await mergeGuestAndSignIn(
+          values.email,
+          values.name,
+          values.password,
+          setFieldError,
+          setSubmitting
+        )
+      } else {
+        await createAccountAndSignIn(values.email, values.name, values.password)
+      }
+    } catch (error) {
+      const errCode = (error as { code?: string })?.code
+      if (errCode === 'auth/email-already-in-use') {
+        setFieldError(
+          'email',
+          t('The email address is already used by another account')
+        )
+      } else {
+        setSubmitError(
+          error instanceof Error ? error.message : t('Something went wrong')
+        )
         console.error(error)
       }
+      setSubmitting(false)
     }
   }
   return (
@@ -110,6 +239,11 @@ export function RegisterPage({
               <Typography variant="h6" textAlign="left" sx={{ mb: 2 }}>
                 {t('Create account')}
               </Typography>
+              {submitError != null && (
+                <Typography variant="body2" color="error">
+                  {submitError}
+                </Typography>
+              )}
               <TextField
                 id="name"
                 autoComplete="name"

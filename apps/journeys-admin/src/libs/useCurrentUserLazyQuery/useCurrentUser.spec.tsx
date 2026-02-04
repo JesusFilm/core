@@ -19,8 +19,13 @@ describe('useCurrentUserLazyQuery', () => {
               result: {
                 data: {
                   me: {
+                    __typename: 'User',
                     id: 'user.id',
-                    email: 'test@email.com'
+                    userId: 'firebase-uid-123',
+                    email: 'test@email.com',
+                    firstName: 'Test',
+                    lastName: 'User',
+                    emailVerified: true
                   }
                 }
               }
@@ -38,8 +43,13 @@ describe('useCurrentUserLazyQuery', () => {
 
     await waitFor(() =>
       expect(result.current.data).toEqual({
+        __typename: 'User',
         id: 'user.id',
-        email: 'test@email.com'
+        userId: 'firebase-uid-123',
+        email: 'test@email.com',
+        firstName: 'Test',
+        lastName: 'User',
+        emailVerified: true
       })
     )
   })
@@ -56,8 +66,13 @@ describe('useCurrentUserLazyQuery', () => {
               result: {
                 data: {
                   me: {
+                    __typename: 'User',
                     id: 'user.id',
-                    email: 'test@email.com'
+                    userId: 'firebase-uid-123',
+                    email: 'test@email.com',
+                    firstName: 'Test',
+                    lastName: 'User',
+                    emailVerified: true
                   }
                 }
               }
@@ -72,7 +87,11 @@ describe('useCurrentUserLazyQuery', () => {
     expect(result.current.data).toEqual({
       __typename: 'User',
       id: '',
-      email: ''
+      userId: '',
+      email: null,
+      firstName: '',
+      lastName: null,
+      emailVerified: false
     })
   })
 })

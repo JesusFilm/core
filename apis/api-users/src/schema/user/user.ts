@@ -6,7 +6,11 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import { CreateVerificationRequestInput, MeInput } from './inputs'
+import {
+  CreateVerificationRequestInput,
+  MeInput,
+  MergeGuestInput
+} from './inputs'
 import { User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
@@ -57,11 +61,19 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (query, _parent, { input }, ctx) => {
-      return await findOrFetchUser(
-        query,
-        ctx.currentUser.id,
-        input?.redirect ?? undefined
-      )
+      try {
+        return await findOrFetchUser(
+          query,
+          ctx.currentUser.id,
+          input?.redirect ?? undefined,
+          { forceCreateForAnonymous: input?.createGuestIfAnonymous ?? false }
+        )
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        throw new GraphQLError(message, {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+      }
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({
@@ -92,6 +104,27 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
+  mergeGuest: t.withAuth({ isAuthenticated: true }).prismaField({
+    type: 'User',
+    nullable: false,
+    args: {
+      input: t.arg({ type: MergeGuestInput, required: true })
+    },
+    resolve: async (query, _parent, { input }, ctx) => {
+      const userId = ctx.currentUser.id
+      const updated = await prisma.user.update({
+        ...query,
+        where: { userId },
+        data: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email,
+          emailVerified: true
+        }
+      })
+      return updated
+    }
+  }),
   userImpersonate: t.withAuth({ isSuperAdmin: true }).field({
     type: 'String',
     args: {
@@ -148,6 +181,10 @@ builder.mutationFields((t) => ({
         }
       })
       if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      if (user.email == null)
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
         })
