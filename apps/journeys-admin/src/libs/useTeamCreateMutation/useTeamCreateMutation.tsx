@@ -21,11 +21,16 @@ export const TEAM_CREATE = gql`
       userTeams {
         id
         user {
-          id
-          firstName
-          lastName
-          imageUrl
-          email
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            imageUrl
+            email
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
         role
       }

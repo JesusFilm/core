@@ -1,3 +1,3 @@
 import './user'
 
-export { AuthenticatedUserRef } from './user'
+export { AnonymousUserRef, AuthenticatedUserRef, UserRef } from './user'

@@ -43,6 +43,7 @@ export const AuthenticatedUser = builder.prismaObject('User', {
 const AnonymousUserRef = builder.objectRef<AnonymousUserShape>('AnonymousUser')
 
 export const AnonymousUser = builder.objectType(AnonymousUserRef, {
+  shareable: true,
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false })
   })

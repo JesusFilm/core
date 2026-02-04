@@ -9,7 +9,7 @@ import { UserTeamFilterInput, UserTeamRole } from "./globalTypes";
 // GraphQL query operation: GetUserTeamsAndInvites
 // ====================================================
 
-export interface GetUserTeamsAndInvites_userTeams_user {
+export interface GetUserTeamsAndInvites_userTeams_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   email: string;
   firstName: string;
@@ -17,6 +17,13 @@ export interface GetUserTeamsAndInvites_userTeams_user {
   imageUrl: string | null;
   lastName: string | null;
 }
+
+export interface GetUserTeamsAndInvites_userTeams_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export type GetUserTeamsAndInvites_userTeams_user = GetUserTeamsAndInvites_userTeams_user_AuthenticatedUser | GetUserTeamsAndInvites_userTeams_user_AnonymousUser;
 
 export interface GetUserTeamsAndInvites_userTeams {
   __typename: "UserTeam";

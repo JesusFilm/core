@@ -46,11 +46,16 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
       userTeams {
         id
         user {
+          ... on AuthenticatedUser {
           id
-          firstName
-          lastName
-          imageUrl
-          email
+            firstName
+            lastName
+            imageUrl
+            email
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
         role
       }
