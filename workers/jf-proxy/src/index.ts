@@ -38,9 +38,13 @@ app.on(
 app.get('/.well-known/assetlinks.json', async (c) => {
   const packageName = c.env.ANDROID_PACKAGE_NAME
   const fingerprints = c.env.ANDROID_SHA256_CERT_FINGERPRINT
-  if (!packageName || !fingerprints) return new Response('Not Configured', { status: 500 })
+  if (!packageName || !fingerprints)
+    return new Response('Not Configured', { status: 500 })
 
-  const sha256List = fingerprints.split(',').map((f) => f.trim()).filter(Boolean)
+  const sha256List = fingerprints
+    .split(',')
+    .map((f) => f.trim())
+    .filter(Boolean)
   const assetlinks = [
     {
       relation: ['delegate_permission/common.handle_all_urls'],
