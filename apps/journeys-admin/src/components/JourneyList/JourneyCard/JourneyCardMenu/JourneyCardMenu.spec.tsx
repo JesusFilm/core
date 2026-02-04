@@ -43,7 +43,7 @@ const teamMock = {
                 lastName: 'User',
                 imageUrl: null,
                 email: 'test@example.com',
-                __typename: 'User'
+                __typename: 'AuthenticatedUser'
               },
               role: UserTeamRole.manager,
               __typename: 'UserTeam'
