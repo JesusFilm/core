@@ -1,11 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Image } from './Image'
@@ -24,7 +27,8 @@ describe('Image', () => {
     children: [],
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   it('should display Image Options', () => {
@@ -59,5 +63,42 @@ describe('Image', () => {
     await waitFor(() =>
       expect(getByTestId('ImageBlockHeader')).toBeInTheDocument()
     )
+  })
+
+  it('should not render BlockCustomizationToggle when journey is not a template', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock: block }}>
+            <Image {...block} alt={block.alt} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+  })
+
+  it('should render BlockCustomizationToggle when journey is a template', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <CommandProvider>
+              <EditorProvider initialState={{ selectedBlock: block }}>
+                <Image {...block} alt={block.alt} />
+              </EditorProvider>
+            </CommandProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
   })
 })

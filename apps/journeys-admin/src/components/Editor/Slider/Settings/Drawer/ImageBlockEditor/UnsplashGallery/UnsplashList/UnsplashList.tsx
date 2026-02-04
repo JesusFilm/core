@@ -52,7 +52,8 @@ export function UnsplashList({
       alt: item.alt_description,
       scale: 100,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     })
   }
 

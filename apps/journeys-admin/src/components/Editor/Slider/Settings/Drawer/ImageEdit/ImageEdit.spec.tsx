@@ -48,7 +48,8 @@ describe('ImageEdit', () => {
     blurhash: '',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   it('should disaply placeholder icon when no image set', () => {

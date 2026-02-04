@@ -64,7 +64,8 @@ describe('AIGallery', () => {
         src: 'https://imagedelivery.net/cloudflare-key/imageId/public',
         scale: 100,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       })
     })
   })

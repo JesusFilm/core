@@ -37,7 +37,8 @@ describe('VideoDetails', () => {
     children: [],
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
   const videoBlock: TreeBlock<VideoBlock> = {
     id: 'videoBlockId',
@@ -64,6 +65,7 @@ describe('VideoDetails', () => {
     objectFit: null,
     eventLabel: null,
     endEventLabel: null,
+    customizable: null,
     children: [imageBlock]
   }
 

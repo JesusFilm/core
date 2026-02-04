@@ -144,7 +144,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 describe('BackgroundMediaImage', () => {
@@ -196,7 +197,8 @@ describe('BackgroundMediaImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         cardBlockUpdate: {
           id: card.id,
@@ -358,7 +360,8 @@ describe('BackgroundMediaImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const coverImageBlockUpdateMock: MockedResponse<
