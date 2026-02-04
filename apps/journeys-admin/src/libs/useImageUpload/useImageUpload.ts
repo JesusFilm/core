@@ -27,7 +27,6 @@ export interface UseImageUploadOptions {
   noClick?: boolean
   noDrag?: boolean
   noKeyboard?: boolean
-  multiple?: boolean
 }
 
 export interface UseImageUploadReturn {
@@ -54,18 +53,20 @@ const DEFAULT_ACCEPT: Accept = {
   'image/heic': []
 }
 
-export function useImageUpload({
-  onUploadComplete,
-  onUploadStart,
-  onUploadError,
-  maxSize = DEFAULT_MAX_SIZE,
-  accept = DEFAULT_ACCEPT,
-  disabled = false,
-  noClick = true,
-  noDrag = false,
-  noKeyboard = false,
-  multiple = false
-}: UseImageUploadOptions): UseImageUploadReturn {
+export function useImageUpload(
+  useImageUploadOptions: UseImageUploadOptions
+): UseImageUploadReturn {
+  const {
+    onUploadComplete,
+    onUploadStart,
+    onUploadError,
+    maxSize = DEFAULT_MAX_SIZE,
+    accept = DEFAULT_ACCEPT,
+    disabled = false,
+    noClick = true,
+    noDrag = false,
+    noKeyboard = false
+  } = useImageUploadOptions
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
@@ -147,7 +148,7 @@ export function useImageUpload({
     noClick,
     noDrag,
     noKeyboard,
-    multiple
+    multiple: false
   }
 
   const {

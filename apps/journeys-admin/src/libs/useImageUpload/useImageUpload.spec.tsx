@@ -124,7 +124,9 @@ describe('useImageUpload', () => {
       })
     })
 
-    renderHook(() => useImageUpload({ onUploadComplete, onUploadStart }))
+    const { result } = renderHook(() =>
+      useImageUpload({ onUploadComplete, onUploadStart })
+    )
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
     const file = new File(['file'], 'test.png', { type: 'image/png' })
@@ -142,6 +144,8 @@ describe('useImageUpload', () => {
     expect(onUploadComplete).toHaveBeenCalledWith(
       'https://imagedelivery.net/cloudflare-key/image-id/public'
     )
+    expect(result.current.loading).toBe(false)
+    expect(result.current.success).toBe(true)
   })
 
   it('should handle rejected files', async () => {
