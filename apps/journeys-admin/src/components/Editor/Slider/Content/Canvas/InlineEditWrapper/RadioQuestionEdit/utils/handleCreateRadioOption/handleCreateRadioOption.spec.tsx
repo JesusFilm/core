@@ -4,7 +4,6 @@ import { JourneyFields } from '../../../../../../../../../../__generated__/Journ
 
 import { handleCreateRadioOption } from './handleCreateRadioOption'
 
-
 jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
