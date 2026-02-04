@@ -84,7 +84,7 @@ describe('getCustomizeFlowConfig', () => {
     })
   })
 
-  it('should include both text and links screens when journey has both capabilities', () => {
+  it('should include text, links, and media screens when journey has all three capabilities', () => {
     const journey = {
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
       journeyCustomizationFields: [
@@ -106,6 +106,11 @@ describe('getCustomizeFlowConfig', () => {
             customizable: true,
             parentStepId: null
           }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
         }
       ]
     } as unknown as Journey
@@ -116,10 +121,11 @@ describe('getCustomizeFlowConfig', () => {
       'language',
       'text',
       'links',
+      'media',
       'social',
       'done'
     ])
-    expect(result.totalSteps).toBe(5)
+    expect(result.totalSteps).toBe(6)
     expect(result.hasEditableText).toBe(true)
     expect(result.hasCustomizableLinks).toBe(true)
     expect(result.links).toHaveLength(1)

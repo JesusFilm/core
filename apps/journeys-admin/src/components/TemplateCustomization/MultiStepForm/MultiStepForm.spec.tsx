@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
-import { MessagePlatform } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 import { MultiStepForm } from './MultiStepForm'
@@ -42,6 +41,14 @@ jest.mock('./Screens', () => ({
     <div data-testid="links-screen">
       <h2>Links Screen</h2>
       <button onClick={handleNext} data-testid="links-next">
+        Next
+      </button>
+    </div>
+  ),
+  MediaScreen: ({ handleNext }: { handleNext: () => void }) => (
+    <div data-testid="media-screen">
+      <h2>Media Screen</h2>
+      <button onClick={handleNext} data-testid="media-next">
         Next
       </button>
     </div>
@@ -93,6 +100,11 @@ describe('MultiStepForm', () => {
             customizable: true,
             parentStepId: null
           }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
         }
       ]
     } as unknown as Journey
@@ -119,8 +131,13 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('links-next'))
 
-    // SocialScreen + DoneScreen
+    // MediaScreen
     expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
+    expect(screen.getByTestId('media-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('media-next'))
+
+    // SocialScreen + DoneScreen
+    expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
   })
