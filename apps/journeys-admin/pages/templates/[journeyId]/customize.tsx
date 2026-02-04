@@ -1,3 +1,4 @@
+import absoluteUrl from 'next-absolute-url'
 import { useRouter } from 'next/router'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -66,7 +67,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   const templateCustomizationGuestFlow =
     flags?.templateCustomizationGuestFlow ?? false
   if (user?.id == null && !templateCustomizationGuestFlow) {
-    const origin = process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL
+    const { origin } = absoluteUrl(req)
     const redirectUrl = new URL(
       resolvedUrl ?? req?.url ?? '/',
       origin
