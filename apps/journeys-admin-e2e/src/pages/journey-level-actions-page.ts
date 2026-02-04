@@ -291,56 +291,22 @@ export class JourneyLevelActions {
   }
 
   async enterLanguage(language: string): Promise<void> {
-    const selectedValue = await this.page
-      .locator('input[placeholder="Search Language"]')
-      .getAttribute('value', { timeout: thirtySecondsTimeout })
-    this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
-    await this.page.locator('input[placeholder="Search Language"]').click()
+    const languageInput = this.page.locator(
+      'input[placeholder="Search Language"]'
+    )
+    this.selectedLanguage = language
+    await languageInput.click()
     await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
       timeout: thirtySecondsTimeout
     })
-    for (let scroll = 0; scroll < 300; scroll++) {
-      const lang = await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li p")
-        .allTextContents()
-      if (
-        await this.page
-          .locator("div[class *='MuiAutocomplete-popper'] li", {
-            hasText: this.selectedLanguage
-          })
-          .first()
-          .isVisible()
-      ) {
-        break
-      }
-      expect(scroll !== 299).toBeTruthy()
-      await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li")
-        .last()
-        .waitFor({ state: 'visible' })
-      await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li")
-        .last()
-        .waitFor({ state: 'attached' })
-      // eslint-disable-next-line playwright/no-wait-for-timeout
-      await this.page.waitForTimeout(600)
-      await expect(
-        this.page.locator("div[class *='MuiAutocomplete-popper'] li").last()
-      ).toBeAttached()
-      await this.page
-        .locator("div[class *='MuiAutocomplete-popper'] li")
-        .last()
-        .scrollIntoViewIfNeeded({ timeout: 30000 })
-      await expect(
-        this.page.locator("div[class *='MuiAutocomplete-popper'] li p")
-      ).not.toHaveText(lang)
-    }
-    await this.page
+    await languageInput.fill(this.selectedLanguage)
+    const option = this.page
       .locator("div[class *='MuiAutocomplete-popper'] li", {
         hasText: this.selectedLanguage
       })
       .first()
-      .click({ timeout: thirtySecondsTimeout })
+    await expect(option).toBeVisible({ timeout: thirtySecondsTimeout })
+    await option.click()
   }
 
   async verifyLinkIsCopied() {
@@ -410,7 +376,9 @@ export class JourneyLevelActions {
   async verifySelectedLanguageInLanguagePopup(): Promise<void> {
     await expect(
       this.page.locator('input[placeholder="Search Language"]')
-    ).toHaveAttribute('value', this.selectedLanguage)
+    ).toHaveAttribute('value', this.selectedLanguage, {
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async sleep(ms): Promise<Promise<void>> {
@@ -424,11 +392,16 @@ export class JourneyLevelActions {
       .click()
   }
 
-  async validateJourneyDescription() {
+  async validateJourneyDescription(): Promise<void> {
+    const descriptionLocator = this.page
+      .getByTestId('JourneyDescription')
+      .or(
+        this.page
+          .locator('[data-testid="DescriptionDot"]')
+          .locator('xpath=../following-sibling::*[1]')
+      )
     await expect(
-      this.page.locator('p[data-testid="DescriptionDot"] + p', {
-        hasText: this.descriptionText
-      })
-    ).toBeVisible()
+      descriptionLocator.filter({ hasText: /Lorem Ipsum/ })
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
 }

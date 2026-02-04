@@ -346,6 +346,9 @@ export class JourneyPage {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Save' })
       .click({ delay: 3000 })
+    await expect(this.page.getByTestId('JourneyDetailsDialog')).toBeHidden({
+      timeout: thirtySecondsTimeout
+    })  
   }
 
   async backToHome() {
