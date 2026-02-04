@@ -89,7 +89,7 @@ const journey: Journey = {
   createdAt: '2021-11-19T12:34:56.647Z',
   updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
-  blocks: [],
+  blocks: [] as TreeBlock[],
   primaryImageBlock: null,
   creatorDescription: null,
   creatorImageBlock: null,

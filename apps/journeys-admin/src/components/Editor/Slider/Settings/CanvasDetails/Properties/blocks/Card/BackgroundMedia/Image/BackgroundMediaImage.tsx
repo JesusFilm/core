@@ -73,7 +73,7 @@ export function BackgroundMediaImage({
 }: BackgroundMediaImageProps): ReactElement {
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
-  )
+  ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
   const { add } = useCommand()
   const { journey } = useJourney()
   const {
