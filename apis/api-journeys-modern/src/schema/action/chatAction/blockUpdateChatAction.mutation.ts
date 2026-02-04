@@ -12,9 +12,6 @@ import { ChatActionInput } from './inputs'
 
 builder.mutationField('blockUpdateChatAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: ChatActionRef,
     args: {
       id: t.arg.id({ required: true }),

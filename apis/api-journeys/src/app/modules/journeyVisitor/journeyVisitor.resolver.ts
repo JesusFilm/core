@@ -2,8 +2,6 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import {
   Event,
   JourneyVisitor,
@@ -16,6 +14,8 @@ import {
   JourneyVisitorSort
 } from '../../__generated__/graphql'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAccessible } from '../../lib/CaslAuthModule'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
 
 import {

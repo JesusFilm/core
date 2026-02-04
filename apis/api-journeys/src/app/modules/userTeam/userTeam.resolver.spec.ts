@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { UserTeam, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamResolver } from './userTeam.resolver'

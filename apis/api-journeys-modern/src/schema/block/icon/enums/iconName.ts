@@ -20,7 +20,17 @@ const ICON_NAME_VALUES = [
   'SubscriptionsRounded',
   'ContactSupportRounded',
   'Launch',
-  'MailOutline'
+  'MailOutline',
+  'ArrowLeftContained2',
+  'ArrowRightContained2',
+  'MessageChat1',
+  'Home4',
+  'LinkAngled',
+  'Volume5',
+  'Note2',
+  'UserProfile2',
+  'UsersProfiles3',
+  'Phone'
 ] as const
 
 // Export the type for reuse

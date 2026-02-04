@@ -4,7 +4,6 @@ import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const JourneyCollectionAcl: AppAclFn = ({
   can,
-  cannot,
   user
 }: AppAclParameters) => {
   // jouorney collection as a team manager

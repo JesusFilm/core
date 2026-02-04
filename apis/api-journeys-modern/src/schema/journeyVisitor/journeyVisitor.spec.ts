@@ -181,7 +181,8 @@ describe('journeyVisitorExport', () => {
         blockId: true,
         label: true
       },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
@@ -258,7 +259,8 @@ describe('journeyVisitorExport', () => {
         blockId: true,
         label: true
       },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
@@ -309,7 +311,8 @@ describe('journeyVisitorExport', () => {
         blockId: true,
         label: true
       },
-      distinct: ['blockId', 'label']
+      distinct: ['blockId', 'label'],
+      orderBy: { createdAt: 'asc' }
     })
   })
 
@@ -373,7 +376,9 @@ describe('journeyVisitorExport', () => {
     )
   })
 
-  it('should handle multiple events for the same block with different labels', async () => {
+  it('should handle multiple events for the same block with different labels by keeping only one column per blockId', async () => {
+    // This test verifies the fix for duplicate columns: when a block has events with different labels,
+    // only one column should be created (using the first label encountered for that blockId)
     jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -431,9 +436,11 @@ describe('journeyVisitorExport', () => {
       }
     })
 
+    // Only one column for block1 should be created (using first label "Button Click")
+    // The event with the different label should go to the same column using the first label's key
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Button Click","Button Click New Label"\n"2024-01-01","Submit","Cancel"\n'
+      '"Date","Button Click"\n"2024-01-01","Submit"\n'
     )
   })
 

@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { QrCodeResolver } from './qrCode.resolver'

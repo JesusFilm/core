@@ -4,8 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { getPowerBiEmbed } from '@core/nest/powerBi/getPowerBiEmbed'
 import {
   Action,
   Block,
@@ -30,6 +28,8 @@ import {
   JourneysReportType
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { getPowerBiEmbed } from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
@@ -47,7 +47,7 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('@core/nest/powerBi/getPowerBiEmbed', () => ({
+jest.mock('../../lib/powerBi/getPowerBiEmbed', () => ({
   __esModule: true,
   getPowerBiEmbed: jest.fn()
 }))
@@ -849,6 +849,20 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('does not apply custom domain routing filter if skipRoutingFilter is true', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journeyId', IdType.databaseId, {
+          skipRoutingFilter: true
+        })
+      ).toEqual(journey)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: {
+          id: 'journeyId'
+        }
+      })
+    })
+
     it('throws error if not found', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(null)
       await expect(
@@ -1302,6 +1316,83 @@ describe('JourneyResolver', () => {
           title: `${journey.title} copy`,
           template: false,
           featuredAt: null,
+          team: {
+            connect: { id: 'teamId' }
+          },
+          userJourneys: {
+            create: {
+              userId: 'userId',
+              role: UserJourneyRole.owner
+            }
+          },
+          journeyTags: undefined
+        }
+      })
+    })
+
+    it('should duplicate archived journeys with correct copy suffix', async () => {
+      // Reset mocks from beforeEach
+      prismaService.journey.findUnique.mockReset()
+      prismaService.journey.findMany.mockReset()
+
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      const archivedJourney = {
+        ...journey,
+        title: 'test',
+        archivedAt: new Date('2021-11-19T12:34:56.647Z')
+      }
+      const archivedJourneyWithUserTeam = {
+        ...journeyWithUserTeam,
+        ...archivedJourney
+      }
+      const archivedJourneyWithUserTeamAndCustomizationFields = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        ...archivedJourneyWithUserTeam
+      }
+
+      prismaService.journey.findUnique
+        .mockResolvedValueOnce(
+          archivedJourneyWithUserTeamAndCustomizationFields
+        )
+        .mockResolvedValueOnce(archivedJourneyWithUserTeam)
+      prismaService.journey.findMany.mockResolvedValueOnce([archivedJourney])
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      prismaService.$transaction.mockImplementation(
+        async (callback) => await callback(prismaService)
+      )
+      blockService.getDuplicateChildren.mockResolvedValue([
+        duplicatedStep,
+        duplicatedButton,
+        duplicatedNextStep
+      ])
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith({
+        data: {
+          ...omit(archivedJourney, [
+            'parentBlockId',
+            'nextBlockId',
+            'hostId',
+            'primaryImageBlockId',
+            'creatorImageBlockId',
+            'creatorDescription',
+            'publishedAt',
+            'teamId',
+            'createdAt',
+            'strategySlug',
+            'logoImageBlockId',
+            'menuStepBlockId',
+            'templateSite'
+          ]),
+          id: 'duplicateJourneyId',
+          status: JourneyStatus.published,
+          publishedAt: new Date(),
+          slug: `${archivedJourney.title}-copy`,
+          title: `${archivedJourney.title} copy`,
+          template: false,
+          featuredAt: null,
+          archivedAt: null,
           team: {
             connect: { id: 'teamId' }
           },
@@ -2035,8 +2126,6 @@ describe('JourneyResolver', () => {
       const journeyWithTheme = {
         ...journeyWithUserTeamAndCustomizationFields,
         journeyTheme
-      } as typeof journeyWithUserTeamAndCustomizationFields & {
-        journeyTheme: typeof journeyTheme
       }
 
       mockUuidv4.mockReturnValueOnce('duplicateJourneyId')

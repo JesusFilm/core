@@ -77,6 +77,7 @@ export function VideoLibrary({
   const [activeTab, setActiveTab] = useState(
     uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
   )
+
   const router = useRouter()
 
   useEffect(() => {
@@ -103,7 +104,7 @@ export function VideoLibrary({
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
+    const route: 'video-library' | 'video-youtube' | 'video-upload' =
       TabParams[newValue]
     if (route != null) setRoute(route)
   }
@@ -122,6 +123,16 @@ export function VideoLibrary({
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {
+    if (selectedBlock?.source === 'mux') {
+      setActiveTab(UPLOAD_TAB)
+      setRoute(TabParams[UPLOAD_TAB])
+    } else if (selectedBlock?.source === 'internal') {
+      setActiveTab(LIBRARY_TAB)
+      setRoute(TabParams[LIBRARY_TAB])
+    } else if (selectedBlock?.source === 'youTube') {
+      setActiveTab(YOUTUBE_TAB)
+      setRoute(TabParams[YOUTUBE_TAB])
+    }
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 
 import { Service } from '../../../../__generated__/globalTypes'
 import { GET_TAGS } from '../../../libs/useTagsQuery'
@@ -424,5 +425,106 @@ describe('TagsFilter', () => {
       </MockedProvider>
     )
     expect(getByTestId('ChevronDownIcon')).toBeInTheDocument()
+  })
+
+  it('should filter options when input has leading/trailing spaces', async () => {
+    const handleChange = jest.fn()
+    const { getByRole, queryByRole } = render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TagsFilter
+          label="Topics"
+          tagNames={['Topics']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+
+    const input = getByRole('combobox', { name: 'Topics' })
+    await userEvent.type(input, '  Add    ')
+
+    await waitFor(() => {
+      expect(getByRole('option', { name: 'Addiction' })).toBeInTheDocument()
+      expect(queryByRole('option', { name: 'Anger' })).not.toBeInTheDocument()
+    })
+  })
+
+  it('should show all options when input contains only spaces', async () => {
+    const handleChange = jest.fn()
+    const { getByRole, getAllByRole } = render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TagsFilter
+          label="Topics"
+          tagNames={['Topics']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+
+    const input = getByRole('combobox', { name: 'Topics' })
+    await userEvent.type(input, '   ')
+    await waitFor(() => expect(getAllByRole('option')).toHaveLength(3))
+  })
+
+  it('should filter normally when input has spaces in the middle', async () => {
+    const handleChange = jest.fn()
+    const { getByRole, queryByText, getByText } = render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TagsFilter
+          label="Topics"
+          tagNames={['Topics']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+
+    const input = getByRole('combobox', { name: 'Topics' })
+    await userEvent.type(input, 'Add iction')
+
+    await waitFor(() => {
+      expect(getByText('No options')).toBeInTheDocument()
+      expect(queryByText('Acceptance')).not.toBeInTheDocument()
+      expect(queryByText('Addiction')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should filter options case insensitively', async () => {
+    const handleChange = jest.fn()
+    const { getByRole, queryByText, getByText } = render(
+      <MockedProvider mocks={[getTagsMock]}>
+        <TagsFilter
+          label="Topics"
+          tagNames={['Topics']}
+          onChange={handleChange}
+          selectedTagIds={[]}
+        />
+      </MockedProvider>
+    )
+
+    const input = getByRole('combobox', { name: 'Topics' })
+    await userEvent.type(input, 'ADDICTION')
+
+    await waitFor(() => {
+      expect(queryByText('Addiction')).toBeInTheDocument()
+      expect(queryByText('Acceptance')).not.toBeInTheDocument()
+    })
+
+    await userEvent.clear(input)
+    await userEvent.type(input, 'aDDictIOn')
+
+    await waitFor(() => {
+      expect(queryByText('Addiction')).toBeInTheDocument()
+      expect(queryByText('Acceptance')).not.toBeInTheDocument()
+    })
+
+    await userEvent.clear(input)
+    await userEvent.type(input, 'anger')
+
+    await waitFor(() => {
+      expect(queryByText('Addiction')).not.toBeInTheDocument()
+      expect(getByText('Anger')).toBeInTheDocument()
+    })
   })
 })

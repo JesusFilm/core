@@ -1,9 +1,8 @@
 import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserJourneyResolver } from './userJourney.resolver'

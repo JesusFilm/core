@@ -10,6 +10,8 @@ import { StrategyItem } from './StrategyItem'
 
 export function Items(): ReactElement {
   const { journey } = useJourney()
+  const isTemplate = journey?.template === true
+
   return (
     <Stack
       sx={{ display: { xs: 'none', md: 'flex' } }}
@@ -19,7 +21,7 @@ export function Items(): ReactElement {
       alignItems="center"
     >
       <Stack flexDirection="row" gap={2}>
-        <ResponsesItem variant="icon-button" />
+        {!isTemplate && <ResponsesItem variant="icon-button" />}
         <AnalyticsItem variant="icon-button" />
       </Stack>
       <StrategyItem variant="button" />

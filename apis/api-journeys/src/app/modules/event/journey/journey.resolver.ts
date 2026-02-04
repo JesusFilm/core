@@ -5,14 +5,13 @@ import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-
 import {
   JourneyViewEvent,
   JourneyViewEventCreateInput
 } from '../../../__generated__/graphql'
+import { CurrentUserAgent } from '../../../lib/decorators/CurrentUserAgent'
+import { CurrentUserId } from '../../../lib/decorators/CurrentUserId'
+import { GqlAuthGuard } from '../../../lib/GqlAuthGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { VisitorService } from '../../visitor/visitor.service'
 import { EventService, ONE_DAY } from '../event.service'

@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   CustomDomain,
   Journey,
@@ -17,6 +16,7 @@ import {
   CustomDomainUpdateInput
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { QrCodeService } from '../qrCode/qrCode.service'

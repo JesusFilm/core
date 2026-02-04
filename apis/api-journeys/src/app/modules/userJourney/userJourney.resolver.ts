@@ -11,10 +11,6 @@ import {
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
-import { CurrentUser } from '@core/nest/decorators/CurrentUser'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
 import {
   Journey,
   JourneyNotification,
@@ -25,6 +21,10 @@ import {
 
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
+import { CurrentUser } from '../../lib/decorators/CurrentUser'
+import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
+import { User } from '../../lib/firebaseClient'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserJourneyService } from './userJourney.service'

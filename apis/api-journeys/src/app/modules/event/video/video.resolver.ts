@@ -1,9 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { GqlAuthGuard } from '@core/nest/gqlAuthGuard/GqlAuthGuard'
-
 import {
   VideoBlockSource,
   VideoCollapseEvent,
@@ -21,6 +18,8 @@ import {
   VideoStartEvent,
   VideoStartEventCreateInput
 } from '../../../__generated__/graphql'
+import { CurrentUserId } from '../../../lib/decorators/CurrentUserId'
+import { GqlAuthGuard } from '../../../lib/GqlAuthGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { EventService } from '../event.service'
 

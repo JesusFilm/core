@@ -18,11 +18,6 @@
             "glob": "**/*.graphql",
             "input": "apis/api-journeys/src/app/",
             "output": "./assets"
-          },
-          {
-            "glob": "**/*.graphql",
-            "input": "libs/nest/common/src/lib/TranslationModule/",
-            "output": "./assets"
           }
         ],
         "compiler": "tsc",
