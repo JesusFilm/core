@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next'
 import { useState } from 'react'
 import {
   Accept,
@@ -59,7 +58,6 @@ export function useImageUpload({
   noKeyboard = false,
   multiple = false
 }: UseImageUploadOptions): UseImageUploadReturn {
-  useTranslation('apps-journeys-admin')
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
