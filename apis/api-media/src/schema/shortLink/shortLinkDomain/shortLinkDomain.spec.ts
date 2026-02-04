@@ -50,7 +50,9 @@ describe('shortLinkDomain', () => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',
       userId: 'userId',
-      roles: ['publisher']
+      roles: ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
   })
 
@@ -270,7 +272,9 @@ describe('shortLinkDomain', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
       })
 

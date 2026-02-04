@@ -1,11 +1,64 @@
 import { Hono } from 'hono'
 
+const CACHE_MAX_AGE = 86400 // 24 hours
+
 const app = new Hono<{
   Bindings: {
     RESOURCES_PROXY_DEST?: string
     WATCH_PROXY_DEST?: string
+    IOS_APP_ID?: string
+    ANDROID_PACKAGE_NAME?: string
+    ANDROID_SHA256_CERT_FINGERPRINT?: string
   }
 }>()
+
+app.on(
+  'GET',
+  ['/.well-known/apple-app-site-association', '/apple-app-site-association'],
+  async (c) => {
+    const iosAppId = c.env.IOS_APP_ID
+    if (!iosAppId) return new Response('Not Configured', { status: 500 })
+
+    const aasa = {
+      applinks: {
+        apps: [],
+        details: [{ appID: iosAppId, paths: ['*', '/'] }]
+      }
+    }
+    const body = JSON.stringify(aasa)
+    return new Response(body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, max-age=${CACHE_MAX_AGE}`
+      }
+    })
+  }
+)
+
+app.get('/.well-known/assetlinks.json', async (c) => {
+  const packageName = c.env.ANDROID_PACKAGE_NAME
+  const fingerprints = c.env.ANDROID_SHA256_CERT_FINGERPRINT
+  if (!packageName || !fingerprints) return new Response('Not Configured', { status: 500 })
+
+  const sha256List = fingerprints.split(',').map((f) => f.trim()).filter(Boolean)
+  const assetlinks = [
+    {
+      relation: ['delegate_permission/common.handle_all_urls'],
+      target: {
+        namespace: 'android_app',
+        package_name: packageName,
+        sha256_cert_fingerprints: sha256List
+      }
+    }
+  ]
+  const body = JSON.stringify(assetlinks)
+  return new Response(body, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': `public, max-age=${CACHE_MAX_AGE}`
+    }
+  })
+})
 
 app.get('*', async (c) => {
   const url = new URL(c.req.url)

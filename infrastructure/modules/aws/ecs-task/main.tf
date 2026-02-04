@@ -275,6 +275,7 @@ resource "aws_alb_target_group" "alb_target_group" {
     path                = var.service_config.alb_target_group.health_check_path
     port                = var.service_config.alb_target_group.health_check_port
     protocol            = var.service_config.alb_target_group.protocol
+    matcher             = var.service_config.alb_target_group.health_check_matcher
   }
 
   lifecycle {
