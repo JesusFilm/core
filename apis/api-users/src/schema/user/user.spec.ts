@@ -61,13 +61,18 @@ describe('api-users', () => {
     const ME_QUERY = graphql(`
       query Me {
         me {
-          id
-          firstName
-          lastName
-          email
-          imageUrl
-          superAdmin
-          emailVerified
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            email
+            imageUrl
+            superAdmin
+            emailVerified
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
       }
     `)

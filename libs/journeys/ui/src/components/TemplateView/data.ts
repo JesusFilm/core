@@ -73,7 +73,7 @@ export const defaultJourney: Journey = {
       openedAt: null,
       user: {
         id: '1',
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         firstName: 'Amin',
         lastName: 'One',
         imageUrl: 'https://bit.ly/3Gth4Yf'
@@ -86,7 +86,7 @@ export const defaultJourney: Journey = {
       openedAt: null,
       user: {
         id: '2',
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         firstName: 'Horace',
         lastName: 'Two',
         imageUrl: 'https://bit.ly/3rgHd6a'
@@ -99,7 +99,7 @@ export const defaultJourney: Journey = {
       openedAt: null,
       user: {
         id: '3',
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         firstName: 'Coral',
         lastName: 'Three',
         imageUrl: 'https://bit.ly/3nlwUwJ'

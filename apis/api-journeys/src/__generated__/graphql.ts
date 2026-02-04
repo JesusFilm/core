@@ -34,6 +34,11 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type AnonymousUser = {
+  __typename?: 'AnonymousUser';
+  id: Scalars['ID']['output'];
+};
+
 export type ArclightApiKey = {
   __typename?: 'ArclightApiKey';
   defaultPlatform: DefaultPlatform;
@@ -50,6 +55,19 @@ export type AudioPreview = {
   languageId: Scalars['ID']['output'];
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
+};
+
+export type AuthenticatedUser = {
+  __typename?: 'AuthenticatedUser';
+  email: Scalars['String']['output'];
+  emailVerified: Scalars['Boolean']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  languageUserRoles: Array<LanguageRole>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  mediaUserRoles: Array<MediaRole>;
+  superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type BaseError = {
@@ -994,7 +1012,7 @@ export type IntegrationGoogle = Integration & {
   id: Scalars['ID']['output'];
   team: Team;
   type: IntegrationType;
-  user?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1817,6 +1835,8 @@ export type Mutation = {
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
   fixVideoLanguages: Scalars['Boolean']['output'];
+  /** Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events. */
+  googleSheetsSyncBackfill: GoogleSheetsSync;
   googleSheetsSyncCreate: GoogleSheetsSync;
   googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
@@ -1940,7 +1960,7 @@ export type Mutation = {
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
-  validateEmail?: Maybe<User>;
+  validateEmail?: Maybe<AuthenticatedUser>;
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -2287,6 +2307,11 @@ export type MutationEnableMuxDownloadArgs = {
 
 export type MutationFixVideoLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncBackfillArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -3570,7 +3595,7 @@ export type Playlist = {
   note?: Maybe<Scalars['String']['output']>;
   noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
   noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
-  owner: User;
+  owner: AuthenticatedUser;
   sharedAt?: Maybe<Scalars['DateTime']['output']>;
   slug: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -3767,8 +3792,8 @@ export type Query = {
   teams: Array<Team>;
   templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
-  user?: Maybe<User>;
-  userByEmail?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
+  userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
@@ -5094,18 +5119,7 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
-export type User = {
-  __typename?: 'User';
-  email: Scalars['String']['output'];
-  emailVerified: Scalars['Boolean']['output'];
-  firstName: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  languageUserRoles: Array<LanguageRole>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  mediaUserRoles: Array<MediaRole>;
-  superAdmin?: Maybe<Scalars['Boolean']['output']>;
-};
+export type User = AnonymousUser | AuthenticatedUser;
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
 export type UserAgent = {
@@ -5138,7 +5152,7 @@ export type UserJourney = {
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
-  user?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
   userId: Scalars['ID']['output'];
 };
 
@@ -5162,7 +5176,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
+  user: AuthenticatedUser;
 };
 
 
