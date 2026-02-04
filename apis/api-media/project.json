@@ -115,6 +115,12 @@
         "command": "pnpm exec ts-node -r tsconfig-paths/register --project tsconfig.base.json apis/api-media/src/workers/muxSubtitles/worker.ts | pnpm exec pino-pretty --config .pino-prettyrc.js"
       }
     },
+    "ai-subtitle-post-processor-worker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r tsconfig-paths/register --project tsconfig.base.json apis/api-media/src/workers/aiSubtitlePostProcessor/worker.ts | pnpm exec pino-pretty --config .pino-prettyrc.js"
+      }
+    },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {

@@ -2,6 +2,7 @@ import Mux from '@mux/mux-node'
 
 import { prisma } from '@core/prisma/media/client'
 
+import { buildMuxVttUrl } from '../../lib/aiSubtitles'
 import { dynamicImport } from '../../lib/dynamicImport'
 import { logger } from '../lib/logger'
 
@@ -38,14 +39,6 @@ function getMuxClient(): Mux {
     tokenId: process.env.MUX_ACCESS_TOKEN_ID,
     tokenSecret: process.env.MUX_SECRET_KEY
   })
-}
-
-async function buildMuxVttUrl(
-  playbackId: string,
-  trackId: string
-): Promise<string> {
-  const { buildTranscriptUrl } = await dynamicImport('@mux/ai/primitives')
-  return await buildTranscriptUrl(playbackId, trackId, false)
 }
 
 export async function registerMuxSubtitleSteps(): Promise<void> {

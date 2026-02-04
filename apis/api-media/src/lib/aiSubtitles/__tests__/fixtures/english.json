@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "start": 0,
+    "end": 1.6,
+    "text": "Hello and welcome to the show."
+  },
+  {
+    "id": "2",
+    "start": 1.7,
+    "end": 3.2,
+    "text": "Today we explore subtitle processing."
+  }
+]
