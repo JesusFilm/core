@@ -16,6 +16,10 @@ describe('MediaScreen', () => {
     seoDescription: 'Initial SEO Description'
   }
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   const renderMediaScreen = (
     mocks: MockedResponse[] = []
   ): ReturnType<typeof render> => {
