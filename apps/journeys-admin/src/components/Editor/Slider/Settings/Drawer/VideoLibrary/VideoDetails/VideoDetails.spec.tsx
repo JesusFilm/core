@@ -314,7 +314,9 @@ describe('VideoDetails', () => {
       source: VideoBlockSource.internal,
       videoId: null,
       posterBlockId: null,
-      videoVariantLanguageId: null
+      videoVariantLanguageId: null,
+      startAt: null,
+      endAt: null
     })
   })
 })
