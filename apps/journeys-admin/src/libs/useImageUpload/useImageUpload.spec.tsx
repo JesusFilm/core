@@ -228,8 +228,8 @@ describe('useImageUpload', () => {
       })
     })
 
-    const { result } = renderHook(
-      () => useImageUpload({ onUploadComplete, onUploadError })
+    const { result } = renderHook(() =>
+      useImageUpload({ onUploadComplete, onUploadError })
     )
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
@@ -263,8 +263,8 @@ describe('useImageUpload', () => {
       })
     })
 
-    const { result } = renderHook(
-      () => useImageUpload({ onUploadComplete, onUploadError })
+    const { result } = renderHook(() =>
+      useImageUpload({ onUploadComplete, onUploadError })
     )
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
@@ -313,8 +313,8 @@ describe('useImageUpload', () => {
       createCloudflareUploadByFile
     ] as any)
 
-    const { result } = renderHook(
-      () => useImageUpload({ onUploadComplete, onUploadError })
+    const { result } = renderHook(() =>
+      useImageUpload({ onUploadComplete, onUploadError })
     )
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
@@ -341,8 +341,8 @@ describe('useImageUpload', () => {
       createCloudflareUploadByFile
     ] as any)
 
-    const { result } = renderHook(
-      () => useImageUpload({ onUploadComplete, onUploadError })
+    const { result } = renderHook(() =>
+      useImageUpload({ onUploadComplete, onUploadError })
     )
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
