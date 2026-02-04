@@ -86,6 +86,8 @@ model MuxSubtitleTrack {
   bcp47      String
   muxVideoId String
   muxVideo   MuxVideo               @relation(fields: [muxVideoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @default(now()) @updatedAt
 
   @@index(trackId(type: Hash))
 }
@@ -163,6 +165,8 @@ model Video {
   restrictDownloadPlatforms Platform[]           @default([])
   restrictViewPlatforms     Platform[]           @default([])
   publishedAt               DateTime?
+  createdAt                 DateTime             @default(now())
+  updatedAt                 DateTime             @default(now()) @updatedAt
 
   @@index(label)
   @@index(childIds)
@@ -171,13 +175,15 @@ model Video {
 }
 
 model VideoTitle {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   languageId String
   primary    Boolean
   crowdInId  String?
   videoId    String
-  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@unique([videoId, languageId])
   @@index(value(type: Hash))
@@ -211,6 +217,8 @@ model VideoVariantDownload {
   asset          CloudflareR2?               @relation(fields: [assetId], references: [id])
   videoVariantId String?
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
+  createdAt      DateTime                    @default(now())
+  updatedAt      DateTime                    @default(now()) @updatedAt
 
   @@unique([quality, videoVariantId])
   @@index(videoVariantId(type: Hash))
@@ -242,6 +250,8 @@ model VideoVariant {
   muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
   brightcoveId         String?
   playlistItems        PlaylistItem[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @default(now()) @updatedAt
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -255,13 +265,14 @@ model VideoEdition {
   video          Video           @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoVariants  VideoVariant[]
   videoSubtitles VideoSubtitle[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @default(now()) @updatedAt
 
   @@unique([name, videoId])
 }
 
 model VideoSubtitle {
   id String @id @default(uuid())
-
   videoId      String
   edition      String        @default("base")
   vttAssetId   String?       @unique
@@ -276,6 +287,8 @@ model VideoSubtitle {
   vttAsset     CloudflareR2? @relation("VttAsset", fields: [vttAssetId], references: [id])
   video        Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoEdition VideoEdition  @relation(fields: [edition, videoId], references: [name, videoId])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now()) @updatedAt
 
   @@unique([videoId, edition, languageId])
   @@index(languageId(type: Hash))
@@ -285,12 +298,14 @@ model VideoSubtitle {
 }
 
 model VideoSnippet {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   languageId String
   primary    Boolean
   videoId    String
-  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@unique([videoId, languageId])
   @@index(value(type: Hash))
@@ -299,13 +314,15 @@ model VideoSnippet {
 }
 
 model VideoDescription {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   languageId String
   primary    Boolean
   videoId    String
   crowdInId  String?
-  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@unique([videoId, languageId])
   @@index(value(type: Hash))
@@ -314,12 +331,14 @@ model VideoDescription {
 }
 
 model VideoImageAlt {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   languageId String
   primary    Boolean
   videoId    String
-  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@unique([videoId, languageId])
   @@index(value(type: Hash))
@@ -328,14 +347,16 @@ model VideoImageAlt {
 }
 
 model VideoStudyQuestion {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   languageId String
   order      Int
   primary    Boolean
   crowdInId  String?
   videoId    String
-  video      Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video      Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@unique([videoId, languageId, order])
   @@index(value(type: Hash))
@@ -347,6 +368,8 @@ model VideoStudyQuestion {
 model ImportTimes {
   modelName  String   @id
   lastImport DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model BibleCitation {
@@ -361,6 +384,8 @@ model BibleCitation {
   order        Int
   video        Video     @relation(fields: [videoId], references: [id])
   bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
 
   @@unique([videoId, bibleBookId, chapterStart, chapterEnd, verseStart, verseEnd])
   @@index([order])
@@ -375,6 +400,8 @@ model BibleBook {
   isNewTestament       Boolean
   order                Int
   bibleCitation        BibleCitation[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @default(now()) @updatedAt
 }
 
 model BibleBookName {
@@ -384,6 +411,8 @@ model BibleBookName {
   primary     Boolean
   bibleBookId String
   bibleBook   BibleBook @relation(fields: [bibleBookId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
 
   @@unique([bibleBookId, languageId])
   @@index(value(type: Hash))
@@ -392,10 +421,12 @@ model BibleBookName {
 }
 
 model Keyword {
-  id         String  @id @default(uuid())
+  id         String   @id @default(uuid())
   value      String
   languageId String
-  videos     Video[] @relation("VideoToKeyword")
+  videos     Video[]  @relation("VideoToKeyword")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 
   @@unique([value, languageId])
   @@index([value(type: Hash)])
@@ -461,10 +492,12 @@ model Tagging {
 }
 
 model Taxonomy {
-  id       String         @id @default(uuid())
-  category String
-  term     String         @unique
-  name     TaxonomyName[]
+  id        String         @id @default(uuid())
+  category  String
+  term      String         @unique
+  name      TaxonomyName[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @default(now()) @updatedAt
 }
 
 model TaxonomyName {
@@ -474,6 +507,8 @@ model TaxonomyName {
   languageId   String
   languageCode String
   taxonomy     Taxonomy @relation(fields: [term], references: [term])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
   @@unique([term, languageId])
   @@index([term])
@@ -486,9 +521,11 @@ enum MediaRole {
 }
 
 model UserMediaRole {
-  id     String      @id @default(uuid())
-  userId String      @unique
-  roles  MediaRole[]
+  id        String      @id @default(uuid())
+  userId    String      @unique
+  roles     MediaRole[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now()) @updatedAt
 }
 
 model ShortLinkDomain {
@@ -530,14 +567,18 @@ model ShortLink {
 
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
-  hostname String @id
+  hostname   String   @id
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model VideoOrigin {
-  id          String  @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String?
   videos      Video[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 }
 
 enum DefaultPlatform {
@@ -583,4 +624,6 @@ model ArclightApiKey {
   key             String          @unique
   desc            String?
   defaultPlatform DefaultPlatform
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @default(now()) @updatedAt
 }
