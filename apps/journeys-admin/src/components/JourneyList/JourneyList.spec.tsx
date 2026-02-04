@@ -278,7 +278,7 @@ describe('JourneyList', () => {
     const nameSort = screen.getByText('Name')
     await user.click(nameSort)
 
-    expect(localStorage.setItem).toHaveBeenCalledWith(
+    expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
       SortOrder.TITLE
     )
@@ -320,7 +320,7 @@ describe('JourneyList', () => {
     const lastModifySort = screen.getByText('Last Modified')
     await user.click(lastModifySort)
 
-    expect(localStorage.setItem).toHaveBeenCalledWith(
+    expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
       SortOrder.UPDATED_AT
     )
@@ -362,13 +362,46 @@ describe('JourneyList', () => {
     const dateCreatedSort = screen.getByText('Date Created')
     await user.click(dateCreatedSort)
 
-    expect(localStorage.setItem).toHaveBeenCalledWith(
+    expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
       SortOrder.CREATED_AT
     )
     expect(replaceMock).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({ sortBy: SortOrder.CREATED_AT })
+      }),
+      undefined,
+      { shallow: true }
+    )
+  })
+
+  it('should use sessionStorage sync sort order to URL when there is no URL', () => {
+    const replaceMock = jest.fn()
+    Storage.prototype.setItem = jest.fn()
+    Storage.prototype.getItem = jest.fn().mockReturnValue(SortOrder.TITLE)
+
+    mockedUseRouter.mockReturnValue({
+      query: { status: 'active', type: 'journeys' },
+      push: jest.fn(),
+      replace: replaceMock,
+      events: { on: jest.fn(), off: jest.fn() }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <JourneyList />
+      </MockedProvider>
+    )
+
+    expect(Storage.prototype.getItem).toHaveBeenCalledWith('journeyListSortBy')
+    expect(sessionStorage.setItem).toHaveBeenCalledWith(
+      'journeyListSortBy',
+      SortOrder.TITLE
+    )
+
+    expect(replaceMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({ sortBy: SortOrder.TITLE })
       }),
       undefined,
       { shallow: true }
