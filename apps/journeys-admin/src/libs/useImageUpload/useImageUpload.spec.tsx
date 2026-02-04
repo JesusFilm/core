@@ -1,7 +1,9 @@
-import { renderHook, act } from '@testing-library/react'
-import { useDropzone, ErrorCode } from 'react-dropzone'
-import { useImageUpload } from './useImageUpload'
+import { act, renderHook } from '@testing-library/react'
+import { ErrorCode, useDropzone } from 'react-dropzone'
+
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
+
+import { useImageUpload } from './useImageUpload'
 
 jest.mock('react-dropzone', () => ({
   ...jest.requireActual('react-dropzone'),
@@ -133,7 +135,10 @@ describe('useImageUpload', () => {
 
     expect(onUploadStart).toHaveBeenCalled()
     expect(createCloudflareUploadByFile).toHaveBeenCalled()
-    expect(getMockFetch()).toHaveBeenCalledWith('https://upload.url', expect.any(Object))
+    expect(getMockFetch()).toHaveBeenCalledWith(
+      'https://upload.url',
+      expect.any(Object)
+    )
     expect(onUploadComplete).toHaveBeenCalledWith(
       'https://imagedelivery.net/cloudflare-key/image-id/public'
     )
