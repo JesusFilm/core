@@ -36,7 +36,8 @@ const journeyBlockSelect = {
   nextBlockId: true,
   action: true,
   content: true,
-  deletedAt: true
+  deletedAt: true,
+  exportOrder: true
 } as const
 
 const visitorSheetLocks = new Map<string, Promise<void>>()
@@ -184,14 +185,24 @@ export async function appendEventToGoogleSheets({
     }
   }
 
-  const results = await Promise.allSettled(
-    syncs.map(async (sync) => {
-      const syncTimezone = sync.timezone ?? 'UTC'
+  // Process syncs sequentially to avoid hitting Google Sheets API rate limits
+  // (60 read requests per minute per user). Each sync makes multiple read calls,
+  // so parallel processing can easily exceed the limit.
+  const results: Array<PromiseSettledResult<void>> = []
+  for (let i = 0; i < syncs.length; i++) {
+    const sync = syncs[i]
+    const syncTimezone = sync.timezone ?? 'UTC'
 
-      const tabName =
-        sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
-      const lockKey = `${sync.spreadsheetId}:${tabName}:${visitorId}`
+    const tabName =
+      sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
+    const lockKey = `${sync.spreadsheetId}:${tabName}:${visitorId}`
 
+    // Add 1-second delay between syncs to avoid burst requests (except for first sync)
+    if (i > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+    }
+
+    try {
       await withVisitorSheetLock(lockKey, async () => {
         // Small debounce to coalesce rapid-fire events for same visitor into a single row update.
         // (Prevents read-before-append races that create duplicate rows.)
@@ -340,7 +351,29 @@ export async function appendEventToGoogleSheets({
             }
 
             if (newValue === '') return existingValue
-            return newValue
+
+            // Normalize: trim and strip leading apostrophe (sheet escaping)
+            const normalize = (val: string): string => {
+              const trimmed = val.trim()
+              return trimmed.startsWith("'") ? trimmed.slice(1) : trimmed
+            }
+
+            const normalizedNewValue = normalize(newValue)
+
+            // Short-circuit if newValue is empty or whitespace-only after normalization
+            if (normalizedNewValue === '') return existingValue
+            if (existingValue === '') return newValue
+
+            // Append non-unique values, joining with semicolon
+            const existingTokens = existingValue
+              .split(';')
+              .map((t) => normalize(t))
+              .filter((t) => t !== '')
+
+            if (existingTokens.includes(normalizedNewValue)) {
+              return existingValue // Value already exists, don't append
+            }
+            return `${existingValue}; ${newValue}`
           })
 
           await updateRangeValues({
@@ -362,8 +395,11 @@ export async function appendEventToGoogleSheets({
           valueInputOption: 'USER_ENTERED'
         })
       })
-    })
-  )
+      results.push({ status: 'fulfilled', value: undefined })
+    } catch (error) {
+      results.push({ status: 'rejected', reason: error })
+    }
+  }
 
   results.forEach((result, index) => {
     if (result.status === 'rejected') {
@@ -382,5 +418,40 @@ export async function appendEventToGoogleSheets({
     throw new Error(
       `All Google Sheets syncs failed: ${syncs.map((s) => s.spreadsheetId).join(', ')}`
     )
+  }
+
+  // Update exportOrder on blocks that don't have it set yet.
+  // This ensures new columns get a stable position for future syncs.
+  const blocksToUpdate = updatedColumns
+    .filter((col) => col.blockId != null && col.exportOrder == null)
+    .map((col) => {
+      const columnPosition = updatedColumns.findIndex(
+        (c) => c.blockId === col.blockId
+      )
+      return {
+        blockId: col.blockId!,
+        // exportOrder is 1-indexed relative to block columns (after base columns)
+        exportOrder: columnPosition - baseColumns.length + 1
+      }
+    })
+    .filter(({ exportOrder }) => exportOrder > 0)
+
+  if (blocksToUpdate.length > 0) {
+    try {
+      await Promise.all(
+        blocksToUpdate.map(({ blockId, exportOrder }) =>
+          prisma.block.update({
+            where: { id: blockId },
+            data: { exportOrder }
+          })
+        )
+      )
+    } catch (error) {
+      // Log but don't throw - exportOrder update is not critical for the sync itself
+      console.error(
+        'Failed to update exportOrder on blocks during live sync:',
+        error
+      )
+    }
   }
 }
