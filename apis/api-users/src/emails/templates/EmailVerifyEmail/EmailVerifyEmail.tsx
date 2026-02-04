@@ -3,7 +3,6 @@ import {
   Column,
   Head,
   Html,
-  Link,
   Preview,
   Row,
   Section,
@@ -44,7 +43,7 @@ export const EmailVerifyEmail = ({
   token,
   story = false
 }: VerifyEmailProps): ReactElement => {
-  const previewText = `Verify your email address on Next Steps`
+  const previewText = `Verify your email address with the Jesus Film Project`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -55,7 +54,7 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header />
+      <Header logo="JFPOne" />
       <EmailContainer>
         <BodyWrapper>
           <ActionCard recipient={recipient}>
@@ -63,8 +62,7 @@ export const EmailVerifyEmail = ({
               <Row>
                 <th>
                   <Text className="mt-0 mb-[24px] text-center text-[16px] leading-[28px] font-semibold">
-                    Verify your email address to start making interactive
-                    Journeys!
+                    Verify your email address to complete your account setup.
                   </Text>
                 </th>
               </Row>
@@ -77,18 +75,10 @@ export const EmailVerifyEmail = ({
                 </Column>
               </Row>
               <Row>
-                <Text className="mt-[24px] mb-[0px] text-center text-[14px] leading-[24px] font-[400]">
-                  If the link above does not work, enter the following code at
-                  the link below:
+                <Text className="mt-[24px] mb-[8px] text-center text-[14px] leading-[24px] font-[400]">
+                  Your verification code is{' '}
+                  <strong className="text-[#C52D3A]">{token}</strong>
                 </Text>
-                <Text className="my-0 text-center text-[14px] leading-[24px] font-[400]">
-                  {token}
-                </Text>
-                <Link href={inviteLink} style={{ textDecoration: 'none' }}>
-                  <Text className="mt-[24px] text-center text-[12px] leading-[16px] font-[400] text-[#C52D3A]">
-                    {inviteLink}
-                  </Text>
-                </Link>
               </Row>
             </Section>
           </ActionCard>

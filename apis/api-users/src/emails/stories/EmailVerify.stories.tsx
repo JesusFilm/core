@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { apiUsersConfig } from '../../lib/apiUsersConfig/apiUsersConfig'
-import { EmailVerifyEmail } from '../templates/EmailVerify'
+import { EmailVerifyEmail } from '../templates/EmailVerifyEmail'
 
 const EmailVerifyEmailDemo: Meta<typeof EmailVerifyEmail> = {
   ...apiUsersConfig,
@@ -20,7 +20,7 @@ const Template: StoryObj<typeof EmailVerifyEmail> = {
   )
 }
 
-export const Default = {
+export const JFPOne = {
   ...Template,
   args: {
     email: 'joeronimo@example.com',
