@@ -7,9 +7,9 @@ import { SnackbarProvider } from 'notistack'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { ThemeProvider } from '../ThemeProvider'
 
-import { JourneyList } from '.'
-
 import { SortOrder } from './JourneySort'
+
+import { JourneyList } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,
