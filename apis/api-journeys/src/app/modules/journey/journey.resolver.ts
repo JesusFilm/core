@@ -545,21 +545,21 @@ export class JourneyResolver {
       }
     }
 
-    const existingActiveDuplicateJourneys =
-      await this.prismaService.journey.findMany({
+    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
+      {
         where: {
           title: {
             contains: journey.title
           },
-          archivedAt: null,
           trashedAt: null,
           deletedAt: null,
           template: false,
           team: { id: teamId }
         }
-      })
+      }
+    )
     const duplicates = this.getJourneyDuplicateNumbers(
-      existingActiveDuplicateJourneys,
+      existingDuplicateJourneys,
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
@@ -615,6 +615,9 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
+                archivedAt: null,
+                trashedAt: null,
+                deletedAt: null,
                 template: duplicateAsTemplate,
                 fromTemplateId: journey.template
                   ? id

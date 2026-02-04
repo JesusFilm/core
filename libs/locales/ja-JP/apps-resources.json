@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "新しいデザインをお試しください。",
+  "Better search, languages, and collections.": "より良い検索、言語、コレクション。",
+  "Better search. Better language support. Better collections.": "より良い検索。より良い言語サポート。より良いコレクション。",
+  "New Design": "新しいデザイン",
   "close": "閉じる",
   "No Downloads Available": "ダウンロード不可",
   "Highest": "最高",
@@ -36,8 +40,6 @@
   "Language": "言語",
   "Subtitles are not available in {{language}}.": "字幕は {{language}}。",
   "Subtitles": "字幕",
-  "Available Languages": "使用可能言語",
-  "Other Languages": "その他の言語",
   "Show subtitles": "字幕を表示する",
   "Read more...": "続きを読む...",
   "Related questions": "関連する質問",
@@ -92,9 +94,5 @@
   "Short Film": "短編映画",
   "Behind The Scenes": "舞台裏",
   "Trailer": "予告編",
-  "Available in {{count}} languages._other": "{{count}} 。",
-  "Better search. Better language support. Better collections.": "より良い検索。より良い言語サポート。より良いコレクション。",
-  "Better search, languages, and collections.": "より良い検索、言語、コレクション。",
-  "Try the new design.": "新しいデザインをお試しください。",
-  "New Design": "新しいデザイン"
+  "Available in {{count}} languages._other": "{{count}} 。"
 }

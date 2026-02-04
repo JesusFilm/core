@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Probiere das neue Design aus.",
+  "Better search, languages, and collections.": "Bessere Suche, Sprachen und Sammlungen.",
+  "Better search. Better language support. Better collections.": "Bessere Suche. Bessere Sprachunterstützung. Bessere Sammlungen.",
+  "New Design": "Neues Design",
   "close": "schließen",
   "No Downloads Available": "Keine Downloads verfügbar",
   "Highest": "Höchste",
@@ -36,8 +40,6 @@
   "Language": "Sprache",
   "Subtitles are not available in {{language}}.": "Untertitel sind auf {{language}}nicht verfügbar.",
   "Subtitles": "Untertitel",
-  "Available Languages": "Verfügbare Sprachen",
-  "Other Languages": "Andere Sprachen",
   "Show subtitles": "Untertitel anzeigen",
   "Read more...": "Lies mehr...",
   "Related questions": "Verwandte Fragen",
@@ -65,7 +67,7 @@
   "Discussion Questions": "Diskussionsfragen",
   "Watch Full Film": "Vollständigen Film ansehen",
   "See All": "Alle sehen",
-  "Play": "Spielen",
+  "Play": "Abspielen",
   "Play Video": "Video abspielen",
   "{{ duration }} min": "{{ duration }} min",
   "Play with sound": "Mit Sound spielen",
@@ -91,11 +93,7 @@
   "Series": "Serie",
   "Short Film": "Kurzfilm",
   "Behind The Scenes": "Hinter den Kulissen",
-  "Trailer": "Anhänger",
+  "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Erhältlich in der Sprache {{count}} .",
-  "Available in {{count}} languages._other": "Verfügbar in {{count}} Sprachen.",
-  "Better search. Better language support. Better collections.": "Bessere Suche. Bessere Sprachunterstützung. Bessere Kollektionen.",
-  "Better search, languages, and collections.": "Bessere Suche, Sprachen und Kollektionen.",
-  "Try the new design.": "Testen Sie das neue Design.",
-  "New Design": "Neues Design"
+  "Available in {{count}} languages._other": "Verfügbar in {{count}} Sprachen."
 }

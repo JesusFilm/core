@@ -72,6 +72,8 @@ export function YouTubeDetails({
     onSelect({
       videoId: id,
       source: VideoBlockSource.youTube,
+      title: data?.snippet.title ?? undefined,
+      image: data?.snippet.thumbnails?.high?.url ?? undefined,
       startAt:
         activeVideoBlock?.videoId === id ? (activeVideoBlock?.startAt ?? 0) : 0,
       endAt:
@@ -93,7 +95,6 @@ export function YouTubeDetails({
       : new Date(time * 1000).toISOString().substring(11, 19)
 
   const videoDescription = data?.snippet.description ?? ''
-
   // Create visible player (only recreate when data or subtitleLanguageBcp47 changes)
   useEffect(() => {
     if (videoRef.current != null && data != null) {

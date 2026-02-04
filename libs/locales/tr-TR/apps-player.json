@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Oynatıcı",
+    "description": "Bir çalma listesini görüntülemek için /pl/[playlistId] adresine gidin"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | İsa Film Projesi"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Çalma Listesi",
+    "pageTitle": "{title} tarafından {name}",
+    "thisPlaylistIsEmpty": "Bu çalma listesi boş",
+    "defaultDescription": "Arkadaşınız sizi cesaretlendirmek için bu videoları paylaştı. İsa'da huzur bulmakla ilgili canlandırıcı hikayeler için oynat tuşuna basın.",
+    "description": "Arkadaşınız {name} bu videoları sizi teşvik etmek için paylaştı. İsa'da huzur bulmakla ilgili canlandırıcı hikayeler için oynat tuşuna basın."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Video mevcut değil"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Küçük resim yok"
+  },
+  "StudyQuestions": {
+    "title": "Çalışma Soruları"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Bu videoyu izlemek için lütfen JavaScript'i etkinleştirin ve <link>HTML5 video destekleyen</link> bir web tarayıcısına yükseltmeyi düşünün"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Arkadaşın <strong>{name}</strong> Bu videoları sizleri teşvik etmek amacıyla sizlerle paylaştık. Bu videoları izlemenin en iyi yolu uygulamamızı indirmektir.",
+    "downloadOnAppStore": "App Store'dan indirin",
+    "getItOnGooglePlay": "Google Play'den alın"
+  }
+}

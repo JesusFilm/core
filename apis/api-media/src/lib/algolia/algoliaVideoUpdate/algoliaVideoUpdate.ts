@@ -2,23 +2,18 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getAlgoliaClient } from '../algoliaClient'
+import { getAlgoliaClient, getAlgoliaConfig } from '../algoliaClient'
 import { getLanguages } from '../languages'
 
 export async function updateVideoInAlgolia(
   videoId: string,
   logger?: Logger
 ): Promise<void> {
-  const client = await getAlgoliaClient(logger)
-  const languages = await getLanguages(logger)
-  const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
-
-  if (client == null) {
-    logger?.warn('algolia client not found, skipping update')
-    return
-  }
-
   try {
+    const client = getAlgoliaClient()
+    const algoliaConfig = getAlgoliaConfig()
+    const languages = await getLanguages(logger)
+
     const video = await prisma.video.findUnique({
       where: { id: videoId },
       select: {
@@ -26,6 +21,7 @@ export async function updateVideoInAlgolia(
         label: true,
         primaryLanguageId: true,
         childIds: true,
+        published: true,
         title: {
           select: {
             value: true,
@@ -69,11 +65,12 @@ export async function updateVideoInAlgolia(
             }
           }
         },
+        availableLanguages: true,
         restrictDownloadPlatforms: true,
         restrictViewPlatforms: true,
         variants: {
           select: {
-            published: true,
+            id: true,
             hls: true,
             lengthInMilliseconds: true,
             downloadable: true,
@@ -178,11 +175,6 @@ export async function updateVideoInAlgolia(
         : null
     }
 
-    const published = video.variants[0]?.published ?? false
-
-    const restrictViewArclight =
-      video.restrictViewPlatforms.includes('arclight')
-
     const transformedVideo = {
       objectID: video.id,
       mediaComponentId: video.id,
@@ -195,7 +187,8 @@ export async function updateVideoInAlgolia(
       studyQuestions: Object.values(studyQuestionsByLanguage),
       keywords: video.keywords.map((keyword) => keyword.value),
       isDownloadable,
-      restrictViewArclight,
+      restrictViewPlatforms: video.restrictViewPlatforms,
+      hasAvailableLanguages: video.availableLanguages.length > 0,
       downloadSizes: isDownloadable
         ? {
             approximateSmallDownloadSizeInBytes:
@@ -212,11 +205,11 @@ export async function updateVideoInAlgolia(
       bibleCitations,
       containsCount: video.childIds?.length ?? 0,
       imageUrls,
-      published
+      published: video.published ?? false
     }
 
     const result = await client.saveObjects({
-      indexName: videosIndex,
+      indexName: algoliaConfig.videosIndex,
       objects: [transformedVideo],
       waitForTasks: true
     })
@@ -224,8 +217,55 @@ export async function updateVideoInAlgolia(
     logger?.info(
       `Successfully saved to Algolia. Tasks: ${result.map((r) => r.taskID).join(', ')}`
     )
-    logger?.info(`Record ${video.id} is now available in index ${videosIndex}`)
+    logger?.info(
+      `Record ${video.id} is now available in index ${algoliaConfig.videosIndex}`
+    )
   } catch (error) {
     logger?.error(error, `failed to update video ${videoId} in algolia`)
+  }
+}
+
+export async function updateVideoPublishedStatus(
+  videoId: string,
+  publishedStatus: boolean,
+  logger?: Logger
+): Promise<void> {
+  try {
+    const client = getAlgoliaClient()
+    const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
+
+    if (!videoVariantsIndex) {
+      logger?.warn(
+        'algolia client or index not found, skipping video published status update'
+      )
+      return
+    }
+
+    const allVariants = await prisma.videoVariant.findMany({
+      where: { videoId },
+      select: { id: true }
+    })
+
+    if (allVariants.length > 0) {
+      const variantUpdates = allVariants.map((variant) => ({
+        objectID: variant.id,
+        videoPublished: publishedStatus
+      }))
+
+      await client.partialUpdateObjects({
+        indexName: videoVariantsIndex,
+        objects: variantUpdates,
+        waitForTasks: true
+      })
+
+      logger?.info(
+        `Updated ${allVariants.length} video variants to set videoPublished=${publishedStatus} for video ${videoId}`
+      )
+    }
+  } catch (error) {
+    logger?.error(
+      error,
+      `failed to update video published status for video ${videoId}`
+    )
   }
 }

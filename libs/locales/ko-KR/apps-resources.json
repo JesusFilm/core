@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "새로운 디자인을 사용해 보세요.",
+  "Better search, languages, and collections.": "검색, 언어, 컬렉션이 개선되었습니다.",
+  "Better search. Better language support. Better collections.": "더 나은 검색. 더 나은 언어 지원. 더 나은 컬렉션.",
+  "New Design": "새로운 디자인",
   "close": "닫기",
   "No Downloads Available": "다운로드할 수 없음",
   "Highest": "최고",
@@ -36,8 +40,6 @@
   "Language": "언어",
   "Subtitles are not available in {{language}}.": "{{language}}에서는 자막을 사용할 수 없습니다.",
   "Subtitles": "자막",
-  "Available Languages": "사용 가능한 언어",
-  "Other Languages": "기타 언어",
   "Show subtitles": "자막 표시",
   "Read more...": "자세히 보기...",
   "Related questions": "관련 질문",
@@ -92,9 +94,5 @@
   "Short Film": "단편 영화",
   "Behind The Scenes": "비하인드 스토리",
   "Trailer": "트레일러",
-  "Available in {{count}} languages._other": "{{count}} 언어로 제공됩니다.",
-  "Better search. Better language support. Better collections.": "더 나은 검색. 더 나은 언어 지원. 더 나은 컬렉션.",
-  "Better search, languages, and collections.": "더 나은 검색, 언어, 그리고 컬렉션.",
-  "Try the new design.": "새로운 디자인을 시도해 보세요.",
-  "New Design": "새로운 디자인"
+  "Available in {{count}} languages._other": "{{count}} 언어로 제공됩니다."
 }

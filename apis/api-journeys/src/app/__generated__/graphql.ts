@@ -552,23 +552,6 @@ export class JourneyViewEventCreateInput {
     value?: Nullable<string>;
 }
 
-export class RadioQuestionSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    radioOptionBlockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-}
-
-export class SignUpSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    name: string;
-    email: string;
-}
-
 export class StepViewEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -589,14 +572,6 @@ export class StepPreviousEventCreateInput {
     previousStepId: string;
     label?: Nullable<string>;
     value?: Nullable<string>;
-}
-
-export class TextResponseSubmissionEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value: string;
 }
 
 export class VideoStartEventCreateInput {
@@ -1150,17 +1125,11 @@ export abstract class IMutation {
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
-    abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
-
-    abstract signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput): SignUpSubmissionEvent | Promise<SignUpSubmissionEvent>;
-
     abstract stepViewEventCreate(input: StepViewEventCreateInput): StepViewEvent | Promise<StepViewEvent>;
 
     abstract stepNextEventCreate(input: StepNextEventCreateInput): StepNextEvent | Promise<StepNextEvent>;
 
     abstract stepPreviousEventCreate(input: StepPreviousEventCreateInput): StepPreviousEvent | Promise<StepPreviousEvent>;
-
-    abstract textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput): TextResponseSubmissionEvent | Promise<TextResponseSubmissionEvent>;
 
     abstract videoStartEventCreate(input: VideoStartEventCreateInput): VideoStartEvent | Promise<VideoStartEvent>;
 
@@ -2058,6 +2027,10 @@ export class ShortLink {
 }
 
 export class User {
+    id: string;
+}
+
+export class AuthenticatedUser {
     id: string;
 }
 

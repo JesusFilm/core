@@ -94,6 +94,16 @@ describe('middleware', () => {
     })
   })
 
+  describe('static assets', () => {
+    it('should not rewrite requests for static assets (e.g. images)', async () => {
+      const req = createMockRequest('/watch/images/jesus-film-logo-full.svg', {
+        headers: { 'accept-language': 'fr-FR,fr;q=0.9,en;q=0.8' }
+      })
+      const result = await middleware(req)
+      expect(result).toEqual(NextResponse.next())
+    })
+  })
+
   describe('middleware configuration', () => {
     it('should handle watch root path with cookie', async () => {
       const req = createMockRequest('/watch', {

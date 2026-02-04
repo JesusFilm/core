@@ -112,7 +112,7 @@ describe('getEventLabelOption', () => {
       )
     )
     expect(result.type).toBe('custom1')
-    expect(result.label).toBe('Custom Event 1')
+    expect(result.label).toBe('Custom Tracking 1')
   })
 
   it('should return the option for custom2', () => {
@@ -123,7 +123,7 @@ describe('getEventLabelOption', () => {
       )
     )
     expect(result.type).toBe('custom2')
-    expect(result.label).toBe('Custom Event 2')
+    expect(result.label).toBe('Custom Tracking 2')
   })
 
   it('should return the option for custom3', () => {
@@ -134,7 +134,7 @@ describe('getEventLabelOption', () => {
       )
     )
     expect(result.type).toBe('custom3')
-    expect(result.label).toBe('Custom Event 3')
+    expect(result.label).toBe('Custom Tracking 3')
   })
 
   it('should return the first event label option (None) for empty string', () => {

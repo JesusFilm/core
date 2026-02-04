@@ -7,6 +7,7 @@ locals {
     "ALGOLIA_API_KEY",
     "ALGOLIA_INDEX_VIDEO_VARIANTS",
     "ALGOLIA_INDEX_VIDEOS",
+    "ALGOLIA_INDEX_LANGUAGES",
     "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_ACCOUNT_ID",
     "CLOUDFLARE_IMAGE_ACCOUNT",
@@ -31,6 +32,7 @@ locals {
     "MUX_UGC_SECRET_KEY",
     "NAT_ADDRESSES",
     "PG_DATABASE_URL_MEDIA",
+    "PG_DATABASE_URL_LANGUAGES",
     "REDIS_PORT",
     "REDIS_URL",
     "VERCEL_SHORT_LINKS_PROJECT_ID",
@@ -48,14 +50,14 @@ locals {
     host_port      = local.port
     cpu            = 1024
     memory         = 2048
-    desired_count  = 1
+    desired_count  = var.env == "stage" ? 1 : 1
     zone_id        = var.ecs_config.zone_id
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })
     auto_scaling = {
-      max_capacity = 3
-      min_capacity = 1
+      max_capacity = var.env == "stage" ? 1 : 3
+      min_capacity = var.env == "stage" ? 1 : 1
       cpu = {
         target_value = 75
       }

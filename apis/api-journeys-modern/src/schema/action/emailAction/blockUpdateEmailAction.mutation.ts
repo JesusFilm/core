@@ -17,9 +17,6 @@ const emailSchema = z.object({
 
 builder.mutationField('blockUpdateEmailAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: EmailActionRef,
     args: {
       id: t.arg.id({ required: true }),
