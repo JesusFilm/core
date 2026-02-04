@@ -1,3 +1,7 @@
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
+
 extend type AuthenticatedUser @key(fields: "id") {
   id: ID! @external
 }
