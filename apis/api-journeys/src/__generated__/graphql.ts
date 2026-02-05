@@ -52,6 +52,17 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
+export type AuthenticatedUser = {
+  __typename?: 'AuthenticatedUser';
+  email: Scalars['String']['output'];
+  emailVerified: Scalars['Boolean']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  superAdmin?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type BaseError = {
   message?: Maybe<Scalars['String']['output']>;
 };
@@ -1820,6 +1831,8 @@ export type Mutation = {
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
   fixVideoLanguages: Scalars['Boolean']['output'];
+  /** Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events. */
+  googleSheetsSyncBackfill: GoogleSheetsSync;
   googleSheetsSyncCreate: GoogleSheetsSync;
   googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
@@ -2290,6 +2303,11 @@ export type MutationEnableMuxDownloadArgs = {
 
 export type MutationFixVideoLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncBackfillArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
