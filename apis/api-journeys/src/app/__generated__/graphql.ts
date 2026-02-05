@@ -1814,7 +1814,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: AuthenticatedUser;
+    user: User;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -1932,6 +1932,11 @@ export class UserRole {
     roles?: Nullable<Role[]>;
 }
 
+export class AnonymousUser {
+    __typename?: 'AnonymousUser';
+    id: string;
+}
+
 export class UserTeamInvite {
     __typename?: 'UserTeamInvite';
     id: string;
@@ -2038,4 +2043,5 @@ export class ISchema {
     Mutation: IMutation;
 }
 
+export type User = AuthenticatedUser | AnonymousUser;
 type Nullable<T> = T | null;

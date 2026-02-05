@@ -1976,7 +1976,7 @@ type JourneyNotification @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
 type UserTeam @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   journeyNotification(journeyId: ID!) : JourneyNotification
-  user: User! @join__field(graph: API_JOURNEYS, type: "AuthenticatedUser!")  @join__field(graph: API_JOURNEYS_MODERN, type: "User!") 
+  user: User!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2199,6 +2199,10 @@ type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: AP
   roles: [Role!]
 }
 
+type AnonymousUser @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  id: ID!
+}
+
 type UserTeamInvite @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   teamId: ID!
@@ -2378,10 +2382,6 @@ type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
-}
-
-type AnonymousUser @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
-  id: ID!
 }
 
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3298,9 +3298,9 @@ interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
 
-union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
+union User @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  @join__unionMember(graph: API_JOURNEYS, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS, member: "AnonymousUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AnonymousUser")  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AnonymousUser")  = AuthenticatedUser | AnonymousUser
 
-union User @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AnonymousUser")  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AnonymousUser")  = AuthenticatedUser | AnonymousUser
+union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
 union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
 

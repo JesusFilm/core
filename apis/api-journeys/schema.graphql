@@ -2426,7 +2426,7 @@ type UserTeam
 {
   journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
-  user: AuthenticatedUser!
+  user: User!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2738,6 +2738,14 @@ enum Role {
   """
   publisher
 }
+
+type AnonymousUser
+  @shareable
+{
+  id: ID!
+}
+
+union User = AuthenticatedUser | AnonymousUser
 
 enum UserTeamRole {
   manager
