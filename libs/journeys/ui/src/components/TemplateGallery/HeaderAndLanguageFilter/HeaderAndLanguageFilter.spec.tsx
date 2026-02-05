@@ -3,12 +3,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { NextRouter, useRouter } from 'next/router'
 
+import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
 
 import '../../../../test/i18n'
-import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
