@@ -1,25 +1,28 @@
 import { getVideoDuration } from './getVideoDuration'
 
 describe('getVideoDuration', () => {
-  let mockVideo: any
+  let mockVideo: Pick<HTMLVideoElement, 'preload' | 'src'> & {
+    duration: number
+    onloadedmetadata: jest.Mock<void, []>
+    onerror: jest.Mock<void, []>
+  }
 
   beforeEach(() => {
     mockVideo = {
       preload: '',
       src: '',
       duration: 123,
-      onloadedmetadata: null as (() => void) | null,
-      onerror: null as (() => void) | null
+      onloadedmetadata: jest.fn(),
+      onerror: jest.fn()
     }
 
-    jest.spyOn(document, 'createElement').mockImplementation((tag: string) => {
-      if (tag === 'video') return mockVideo
-      return document.createElement(tag)
+    jest.spyOn(document, 'createElement').mockImplementation(() => {
+      return mockVideo as unknown as HTMLVideoElement
     })
 
-    global.URL.createObjectURL = jest.fn(() => 'blob:mock-url')
-    global.URL.revokeObjectURL = jest.fn()
-  })
+    jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
+    jest.spyOn(URL, 'revokeObjectURL').mockImplementation()
+    })
 
   afterEach(() => {
     jest.restoreAllMocks()
@@ -28,6 +31,7 @@ describe('getVideoDuration', () => {
   it('resolves with video duration when metadata loads', async () => {
     const file = new File(['dummy'], 'video.mp4', { type: 'video/mp4' })
     const promise = getVideoDuration(file)
+    console.log('mockVideo.onloadedmetadata', mockVideo.onloadedmetadata)
     mockVideo.onloadedmetadata()
 
     await expect(promise).resolves.toBe(123)

@@ -21,6 +21,11 @@ interface AddByFileProps {
   onChange: (id: string, shouldCloseDrawer?: boolean) => void
 }
 
+type customErrorCode =
+  | ErrorCode
+  | 'file-duration-too-short'
+  | 'general-upload-error'
+
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -39,11 +44,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
 
   const videoBlockId = selectedBlock?.id ?? null
   const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
-
-  type customErrorCode =
-    | ErrorCode
-    | 'file-duration-too-short'
-    | 'general-upload-error'
 
   const [errorType, setErrorType] = useState<customErrorCode | null>(null)
 
