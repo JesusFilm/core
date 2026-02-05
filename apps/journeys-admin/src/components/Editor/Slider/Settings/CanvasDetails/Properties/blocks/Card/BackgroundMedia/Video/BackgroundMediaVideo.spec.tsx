@@ -43,6 +43,7 @@ import {
   GetVideoVariables
 } from '../../../../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
@@ -165,6 +166,12 @@ const video: TreeBlock<VideoBlock> = {
   },
   posterBlockId: null,
   children: []
+}
+
+const cardWithVideoCover: TreeBlock<CardBlock> = {
+  ...card,
+  coverBlockId: video.id,
+  children: [video]
 }
 
 const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
@@ -679,6 +686,84 @@ describe('BackgroundMediaVideo', () => {
           { __ref: `CardBlock:${card.id}` }
         ])
       )
+    })
+  })
+
+  describe('BlockCustomizationToggle', () => {
+    it('should not render BlockCustomizationToggle when journey is not a template', () => {
+      render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider>
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={cardWithVideoCover} />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should render BlockCustomizationToggle when journey is a template and card has a cover video', () => {
+      render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider>
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={cardWithVideoCover} />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when journey is template but card has no cover video', () => {
+      render(
+        <MockedProvider mocks={[]}>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider>
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={card} />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
   })
 })
