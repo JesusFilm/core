@@ -66,7 +66,7 @@ describe('service', () => {
     )
   })
 
-  it('should send Jesus Film Project email if app type is JFPOne', async () => {
+  it('should send Jesus Film Project email if app type is JesusFilmOne', async () => {
     const job: Job<VerifyUserJob, unknown, string> = {
       name: 'verifyUser',
       data: {
@@ -74,7 +74,7 @@ describe('service', () => {
         email: 'test@example.com',
         token: '123456',
         redirect: undefined,
-        app: 'JFPOne'
+        app: 'JesusFilmOne'
       }
     } as unknown as Job<VerifyUserJob, unknown, string>
 

@@ -1,17 +1,17 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { apiUsersConfig } from '../../lib/apiUsersConfig/apiUsersConfig'
-import { EmailVerifyEmail } from '../templates/EmailVerifyEmail'
+import { EmailVerifyJesusFilmOne } from '../templates/EmailVerifyJesusFilmOne'
 
-const EmailVerifyEmailDemo: Meta<typeof EmailVerifyEmail> = {
+const EmailVerifyJesusFilmOneDemo: Meta<typeof EmailVerifyJesusFilmOne> = {
   ...apiUsersConfig,
-  component: EmailVerifyEmail,
-  title: 'Api-Users/Emails/EmailVerifyEmail'
+  component: EmailVerifyJesusFilmOne,
+  title: 'Api-Users/Emails/EmailVerifyJesusFilmOne'
 }
 
-const Template: StoryObj<typeof EmailVerifyEmail> = {
+const Template: StoryObj<typeof EmailVerifyJesusFilmOne> = {
   render: ({ ...args }) => (
-    <EmailVerifyEmail
+    <EmailVerifyJesusFilmOne
       recipient={args.recipient}
       token={args.token}
       inviteLink="https://admin.nextstep.is/"
@@ -20,7 +20,7 @@ const Template: StoryObj<typeof EmailVerifyEmail> = {
   )
 }
 
-export const JFPOne = {
+export const JesusFilmOne = {
   ...Template,
   args: {
     email: 'joeronimo@example.com',
@@ -35,4 +35,4 @@ export const JFPOne = {
   }
 }
 
-export default EmailVerifyEmailDemo
+export default EmailVerifyJesusFilmOneDemo

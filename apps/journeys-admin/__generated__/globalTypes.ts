@@ -8,7 +8,7 @@
 //==============================================================
 
 export enum App {
-  JFPOne = "JFPOne",
+  JesusFilmOne = "JesusFilmOne",
   NextSteps = "NextSteps",
 }
 

@@ -5,7 +5,7 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
 
-import { EmailVerifyEmail } from '../../../emails/templates/EmailVerifyEmail'
+import { EmailVerifyJesusFilmOne } from '../../../emails/templates/EmailVerifyJesusFilmOne'
 import { EmailVerifyNextSteps } from '../../../emails/templates/EmailVerifyNextSteps'
 import { AppType } from '../../../schema/user/enums/app'
 
@@ -51,19 +51,19 @@ export async function service(
   let html: string | undefined
 
   switch (job.data?.app ?? 'NextSteps') {
-    case 'JFPOne':
+    case 'JesusFilmOne':
       from = '"Jesus Film Project" <no-reply@jesusfilm.org>'
       subject = 'Verify your email address with the Jesus Film Project'
       url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}?token=${job.data.token}&email=${emailAlias ?? job.data.email}`
       html = await render(
-        EmailVerifyEmail({
+        EmailVerifyJesusFilmOne({
           token: job.data.token,
           recipient,
           inviteLink: url
         })
       )
       text = await render(
-        EmailVerifyEmail({
+        EmailVerifyJesusFilmOne({
           token: job.data.token,
           recipient,
           inviteLink: url
