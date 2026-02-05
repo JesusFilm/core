@@ -2199,6 +2199,16 @@ type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: AP
   roles: [Role!]
 }
 
+type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+  id: ID!
+  firstName: String! @join__field(graph: API_USERS) 
+  lastName: String @join__field(graph: API_USERS) 
+  email: String! @join__field(graph: API_USERS) 
+  imageUrl: String @join__field(graph: API_USERS) 
+  superAdmin: Boolean @join__field(graph: API_USERS) 
+  emailVerified: Boolean! @join__field(graph: API_USERS) 
+}
+
 type UserTeamInvite @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   teamId: ID!
@@ -3255,16 +3265,6 @@ type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__impleme
 type ZodFieldError @join__type(graph: API_MEDIA)  {
   message: String!
   path: [String!]!
-}
-
-type AuthenticatedUser @join__type(graph: API_USERS, key: "id")  {
-  id: ID!
-  firstName: String!
-  lastName: String
-  email: String!
-  imageUrl: String
-  superAdmin: Boolean
-  emailVerified: Boolean!
 }
 
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
