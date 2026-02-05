@@ -1,5 +1,5 @@
 import { subject } from '@casl/ability'
-import { UseGuards } from '@nestjs/common'
+import { Logger, UseGuards } from '@nestjs/common'
 import {
   Args,
   Mutation,
@@ -32,6 +32,8 @@ import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Team')
 export class TeamResolver {
+  private readonly logger = new Logger(TeamResolver.name)
+
   constructor(private readonly prismaService: PrismaService) {}
 
   @Query()
@@ -72,9 +74,13 @@ export class TeamResolver {
     @CurrentUserId() userId: string,
     @Args('input') data
   ): Promise<Team> {
-    return await this.prismaService.team.create({
+    // Debug: trace how far teamCreate gets (guards run before this)
+    this.logger.log(`[teamCreate] 1. resolver entered userId=${userId}`)
+    const team = await this.prismaService.team.create({
       data: { ...data, userTeams: { create: { userId, role: 'manager' } } }
     })
+    this.logger.log(`[teamCreate] 2. prisma create done teamId=${team.id}`)
+    return team
   }
 
   @Mutation()

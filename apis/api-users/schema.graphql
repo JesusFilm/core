@@ -15,7 +15,7 @@ type AuthenticatedUser
   lastName: String
   email: String!
   imageUrl: String
-  superAdmin: Boolean
+  superAdmin: Boolean!
   emailVerified: Boolean!
 }
 
