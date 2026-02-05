@@ -167,6 +167,7 @@ model Video {
   publishedAt               DateTime?
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @default(now()) @updatedAt
+  userMediaProfiles         UserMediaProfile[]
 
   @@index(label)
   @@index(childIds)
@@ -272,7 +273,7 @@ model VideoEdition {
 }
 
 model VideoSubtitle {
-  id String @id @default(uuid())
+  id           String        @id @default(uuid())
   videoId      String
   edition      String        @default("base")
   vttAssetId   String?       @unique
@@ -528,6 +529,16 @@ model UserMediaRole {
   updatedAt DateTime    @default(now()) @updatedAt
 }
 
+model UserMediaProfile {
+  id                    String   @id @default(uuid())
+  userId                String
+  userInterests         Video[]
+  notificationLanguages String[]
+  notificationCountries String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @default(now()) @updatedAt
+}
+
 model ShortLinkDomain {
   id         String      @id @default(uuid())
   /// the hostname including subdomain, domain, and TLD, but excluding port
@@ -567,9 +578,9 @@ model ShortLink {
 
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
-  hostname   String   @id
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  hostname  String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model VideoOrigin {
