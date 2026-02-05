@@ -1,0 +1,1 @@
+export { showBackgroundImageSection } from './showBackgroundImageSection'
