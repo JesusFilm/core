@@ -48,4 +48,15 @@ describe('MediaScreen', () => {
 
     expect(handleNext).toHaveBeenCalledTimes(1)
   })
+
+  it('should render section components with visible data-testids when screen is shown', () => {
+    renderMediaScreen()
+
+    expect(screen.getByTestId('LogoSection')).toBeInTheDocument()
+    expect(screen.getByTestId('CardsSection')).toBeInTheDocument()
+    expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
+    expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
+    expect(screen.getByTestId('BackgroundImageSection')).toBeInTheDocument()
+    expect(screen.getByTestId('BackgroundVideoSection')).toBeInTheDocument()
+  })
 })
