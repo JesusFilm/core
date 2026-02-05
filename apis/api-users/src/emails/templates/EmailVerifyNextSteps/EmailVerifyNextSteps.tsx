@@ -3,9 +3,11 @@ import {
   Column,
   Head,
   Html,
+  Link,
   Preview,
   Row,
-  Section
+  Section,
+  Text
 } from '@react-email/components'
 import { Tailwind } from '@react-email/tailwind'
 import { ReactElement, ReactNode } from 'react'
@@ -19,26 +21,30 @@ import {
   NextStepsFooter,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-import { User } from '@core/yoga/firebaseClient'
 
-import { env } from '../../../env'
-
-interface TeamRemovedEmailProps {
-  teamName?: string
-  recipient: Omit<User, 'id' | 'emailVerified'>
+interface VerifyEmailProps {
+  inviteLink: string
+  token: string
   story?: boolean
+  recipient: {
+    firstName: string
+    lastName: string
+    email: string
+    imageUrl?: string
+  }
 }
 
 interface WrapperProps {
   children: ReactElement
 }
 
-export const TeamRemovedEmail = ({
-  teamName,
+export const EmailVerifyNextSteps = ({
+  inviteLink,
   recipient,
+  token,
   story = false
-}: TeamRemovedEmailProps): ReactElement => {
-  const previewText = `You have been removed from: ${teamName}`
+}: VerifyEmailProps): ReactElement => {
+  const previewText = `Verify your email address on Next Steps`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
     return (
       <>
@@ -47,36 +53,51 @@ export const TeamRemovedEmail = ({
       </>
     )
   }
-
   const emailBody: ReactNode = (
     <>
-      <Header />
+      <Header logo="NextSteps" />
       <EmailContainer>
         <BodyWrapper>
-          <ActionCard
-            headerText="You were removed from:"
-            subHeaderText={`${teamName}`}
-            bodyText="If this is in error, please contact the team manager to be invited back."
-            recipient={recipient}
-          >
-            <Section align="center">
+          <ActionCard recipient={recipient}>
+            <Section align="center" className="px-[28px]">
+              <Row>
+                <th>
+                  <Text className="mt-0 mb-[24px] text-center text-[16px] leading-[28px] font-semibold">
+                    Verify your email address to start making interactive
+                    Journeys!
+                  </Text>
+                </th>
+              </Row>
               <Row className="px-[28px]">
                 <Column align="center">
                   <ActionButton
-                    url={`${env.JOURNEYS_ADMIN_URL}`}
-                    buttonText="View Your Teams"
+                    buttonText="Verify Email Address"
+                    url={inviteLink}
                   />
                 </Column>
+              </Row>
+              <Row>
+                <Text className="mt-[24px] mb-[0px] text-center text-[14px] leading-[24px] font-[400]">
+                  If the link above does not work, enter the following code at
+                  the link below:
+                </Text>
+                <Text className="my-0 text-center text-[14px] leading-[24px] font-[400]">
+                  {token}
+                </Text>
+                <Link href={inviteLink} style={{ textDecoration: 'none' }}>
+                  <Text className="mt-[24px] text-center text-[12px] leading-[16px] font-[400] text-[#C52D3A]">
+                    {inviteLink}
+                  </Text>
+                </Link>
               </Row>
             </Section>
           </ActionCard>
         </BodyWrapper>
         <NextStepsFooter />
-        <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
+        <UnsubscribeLink recipientEmail={recipient.email} />
       </EmailContainer>
     </>
   )
-
   return (
     <>
       {story
@@ -112,15 +133,16 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
   )
 }
 
-TeamRemovedEmail.PreviewProps = {
-  teamName: 'JFP Sol Team',
+EmailVerifyNextSteps.PreviewProps = {
+  token: '123456',
   recipient: {
     firstName: 'Joe',
-    lastName: 'Ro-Nimo',
-    email: 'jron@example.com',
+    lastName: 'Ron-Imo',
+    email: 'joe@example.com',
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
-} satisfies TeamRemovedEmailProps
+  },
+  inviteLink: 'https://admin.nextstep.is/users/verify'
+} satisfies VerifyEmailProps
 
-export default TeamRemovedEmail
+export default EmailVerifyNextSteps
