@@ -44,9 +44,11 @@ export function SocialImage({
           alt={journey?.primaryImageBlock.alt}
           placeholder="blur"
           blurDataURL={journey?.primaryImageBlock.blurhash}
-          layout="fill"
-          objectFit="cover"
+          fill
           priority
+          sx={{
+            objectFit: 'cover'
+          }}
         />
       ) : journey != null ? (
         <GridEmptyIcon fontSize="large" />

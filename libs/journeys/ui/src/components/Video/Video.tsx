@@ -343,8 +343,10 @@ export function Video({
           <NextImage
             src={videoImage}
             alt="video image"
-            layout="fill"
-            objectFit={videoFit}
+            fill
+            sx={{
+              objectFit: videoFit
+            }}
             unoptimized
             style={{
               transform:
@@ -361,8 +363,10 @@ export function Video({
           alt={posterBlock.alt}
           placeholder={blurBackground != null ? 'blur' : 'empty'}
           blurDataURL={blurBackground}
-          layout="fill"
-          objectFit="cover"
+          fill
+          sx={{
+            objectFit: 'cover'
+          }}
         />
       )}
     </Box>
