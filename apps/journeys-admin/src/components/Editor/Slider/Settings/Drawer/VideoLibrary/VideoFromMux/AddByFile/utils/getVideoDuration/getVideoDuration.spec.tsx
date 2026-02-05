@@ -22,7 +22,7 @@ describe('getVideoDuration', () => {
 
     jest.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
     jest.spyOn(URL, 'revokeObjectURL').mockImplementation()
-    })
+  })
 
   afterEach(() => {
     jest.restoreAllMocks()
