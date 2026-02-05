@@ -50,27 +50,28 @@ builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
-      const user = await prisma.user.findUnique({ where: { userId: id } })
+      let user = await prisma.user.findUnique({ where: { userId: id } })
 
-      // Handle cases where user doesn't exist
+      // Create user on first reference (e.g. after teamCreate before me was called)
       if (user == null) {
-        console.warn(`Federation: User not found for userId: ${id}`)
-        return null
+        user = await findOrFetchUser({}, id, undefined)
+        if (user == null) {
+          console.warn(`Federation: User not found for userId: ${id}`)
+          return null
+        }
       }
 
-      // Handle cases where firstName is null or empty (data integrity issue)
-      // This provides a fallback to prevent GraphQL federation errors
+      // Use userId (Firebase uid) as entity id so gateway re-resolution works
+      const entity = { ...user, id: user.userId }
+
       if (user.firstName == null || user.firstName.trim() === '') {
         console.warn(
           `Federation: User ${id} has null/empty firstName, using fallback`
         )
-        return {
-          ...user,
-          firstName: 'Unknown User'
-        }
+        return { ...entity, firstName: 'Unknown User' }
       }
 
-      return user
+      return entity
     } catch (error) {
       console.error(
         `Federation: Error resolving User entity for userId: ${id}`,

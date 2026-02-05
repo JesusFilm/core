@@ -474,10 +474,10 @@ describe('JourneyResolver', () => {
         })
       })
 
-      it('should throw error if profile not found', async () => {
+      it('should not throw when profile not found (e.g. new guest); uses default filter', async () => {
         prismaService.journeyProfile.findUnique.mockResolvedValue(null)
-        await expect(
-          resolver.adminJourneys(
+        expect(
+          await resolver.adminJourneys(
             'userId',
             accessibleJourneys,
             undefined,
@@ -485,7 +485,12 @@ describe('JourneyResolver', () => {
             undefined,
             true
           )
-        ).rejects.toThrow('journey profile not found')
+        ).toEqual([journey])
+        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+          where: {
+            AND: [accessibleJourneys, journeysSharedWithMe]
+          }
+        })
       })
     })
 
