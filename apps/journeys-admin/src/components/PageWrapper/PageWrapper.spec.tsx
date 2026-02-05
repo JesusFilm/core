@@ -128,4 +128,41 @@ describe('PageWrapper', () => {
       expect(getByText('Projects')).toBeInTheDocument()
     })
   })
+
+  describe('HelpScoutBeacon', () => {
+    beforeEach(() => {
+      window.Beacon = jest.fn()
+    })
+
+    afterEach(() => {
+      jest.resetAllMocks()
+    })
+
+    it('should render HelpScoutBeacon with fab variant when showAppHeader is true', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper showAppHeader={true} title="Page title" />
+        </MockedProvider>
+      )
+      expect(getByTestId('HelpScoutBeaconFab')).toBeInTheDocument()
+    })
+
+    it('should not render HelpScoutBeacon fab when showAppHeader is false', () => {
+      const { queryByTestId } = render(
+        <MockedProvider>
+          <PageWrapper showAppHeader={false} title="Page title" />
+        </MockedProvider>
+      )
+      expect(queryByTestId('HelpScoutBeaconFab')).not.toBeInTheDocument()
+    })
+
+    it('should render HelpScoutBeacon fab by default', () => {
+      const { getByTestId } = render(
+        <MockedProvider>
+          <PageWrapper title="Page title" />
+        </MockedProvider>
+      )
+      expect(getByTestId('HelpScoutBeaconFab')).toBeInTheDocument()
+    })
+  })
 })
