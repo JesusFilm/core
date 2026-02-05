@@ -3,8 +3,8 @@ import type { ReactNode } from 'react'
 import './globals.css'
 
 export const metadata = {
-  title: 'AI Media — Subtitles Workflow',
-  description: 'Mux AI subtitles workflow stages and development checklist.'
+  title: 'AI Media — Subtitles Coverage',
+  description: 'Subtitle coverage report across media collections.'
 }
 
 export default function RootLayout({
