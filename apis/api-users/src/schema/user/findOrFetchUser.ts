@@ -1,12 +1,21 @@
 import { Prisma, User, prisma } from '@core/prisma/users/client'
-import { auth } from '@core/yoga/firebaseClient'
 
 import { verifyUser } from './verifyUser'
+
+export interface CurrentUserFromCtx {
+  id: string
+  firstName: string
+  lastName?: string
+  email?: string | null
+  imageUrl?: string | null
+  emailVerified: boolean
+}
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  ctxCurrentUser?: CurrentUserFromCtx
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
@@ -14,6 +23,26 @@ export async function findOrFetchUser(
       userId
     }
   })
+
+  // if a user converts from a guest user to a registered user, we need to update the user and sent verification email
+  if (ctxCurrentUser?.email != null && existingUser?.email == null) {
+    const user = await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        email: ctxCurrentUser.email,
+        firstName: ctxCurrentUser.firstName,
+        lastName: ctxCurrentUser.lastName,
+        imageUrl: ctxCurrentUser.imageUrl,
+        emailVerified: false
+      }
+    })
+    if (user.email != null && !user.emailVerified)
+      void verifyUser(userId, user.email, redirect)
+    return user
+  }
+
   if (existingUser != null && existingUser.emailVerified == null) {
     const user = await prisma.user.update({
       where: {
@@ -29,44 +58,14 @@ export async function findOrFetchUser(
   if (existingUser != null && existingUser.emailVerified != null)
     return existingUser
 
-  const {
-    displayName,
-    email,
-    emailVerified,
-    photoURL: imageUrl
-  } = await auth.getUser(userId)
-
-  // Extract firstName and lastName from displayName with better fallbacks
-  let firstName = ''
-  let lastName = ''
-
-  if (displayName?.trim()) {
-    const nameParts = displayName
-      .trim()
-      .split(' ')
-      .filter((part) => part.length > 0)
-    if (nameParts.length === 1) {
-      // Single name - use as firstName
-      firstName = nameParts[0]
-    } else if (nameParts.length > 1) {
-      // Multiple parts - first parts as firstName, last part as lastName
-      firstName = nameParts.slice(0, -1).join(' ')
-      lastName = nameParts[nameParts.length - 1]
-    }
-  }
-
-  // Ensure firstName is never empty for database constraint
-  if (!firstName.trim()) {
-    firstName = 'Unknown User'
-  }
-
   const data = {
     userId,
-    firstName,
-    lastName,
-    email: email ?? '',
-    imageUrl,
-    emailVerified
+    firstName:
+      ctxCurrentUser?.firstName ?? ctxCurrentUser?.lastName ?? 'Unknown User',
+    lastName: ctxCurrentUser?.lastName != null ? ctxCurrentUser.lastName : null,
+    email: ctxCurrentUser?.email,
+    imageUrl: ctxCurrentUser?.imageUrl,
+    emailVerified: ctxCurrentUser?.emailVerified
   }
 
   let user: User | null = null
@@ -92,7 +91,11 @@ export async function findOrFetchUser(
     } while (user == null && retry < 3)
   }
   // after user create so it is only sent once
-  if (email != null && userCreated && !emailVerified)
-    await verifyUser(userId, email, redirect)
+  if (
+    ctxCurrentUser?.email != null &&
+    userCreated &&
+    !ctxCurrentUser?.emailVerified
+  )
+    await verifyUser(userId, ctxCurrentUser?.email, redirect)
   return user
 }

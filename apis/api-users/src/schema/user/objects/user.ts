@@ -19,7 +19,7 @@ export const User = builder.prismaObject('User', {
       }
     }),
     lastName: t.exposeString('lastName'),
-    email: t.exposeString('email', { nullable: false }),
+    email: t.exposeString('email', { nullable: true }),
     imageUrl: t.exposeString('imageUrl'),
     superAdmin: t.exposeBoolean('superAdmin'),
     emailVerified: t.exposeBoolean('emailVerified', { nullable: false })
