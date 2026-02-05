@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
@@ -22,6 +23,7 @@ export function UseThisTemplateButton({
   signedIn = false
 }: UseThisTemplateButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const { templateCustomizationGuestFlow } = useFlags()
 
   const router = useRouter()
   const { journey } = useJourney()
@@ -36,7 +38,8 @@ export function UseThisTemplateButton({
 
   const handleCheckSignIn = async (): Promise<void> => {
     // For menu-item variant, assume user is signed in
-    if (variant === 'menu-item' || signedIn) {
+    const canCustomize = templateCustomizationGuestFlow || signedIn
+    if (variant === 'menu-item' || canCustomize) {
       setLoading(true)
       await handleCustomizeNavigation()
     } else {
