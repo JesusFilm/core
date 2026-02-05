@@ -51,7 +51,6 @@ describe('processVideoUploads service', () => {
       id: 'mux-video-id',
       assetId: 'asset-id'
     } as any)
-
     ;(getVideo as jest.Mock).mockResolvedValue({
       status: 'ready',
       duration: 120,
@@ -109,7 +108,6 @@ describe('processVideoUploads service', () => {
       id: 'mux-video-id',
       assetId: 'asset-id'
     } as any)
-
     ;(getVideo as jest.Mock).mockResolvedValue({
       status: 'errored',
       playback_ids: []
@@ -122,7 +120,11 @@ describe('processVideoUploads service', () => {
       'Mux video processing errored'
     )
     expect(mockLogger.error).toHaveBeenCalledWith(
-      { videoId: 'video-id', muxVideoId: 'mux-video-id', finalStatus: 'errored' },
+      {
+        videoId: 'video-id',
+        muxVideoId: 'mux-video-id',
+        finalStatus: 'errored'
+      },
       'Video upload processing failed due to Mux error'
     )
     expect(prismaMock.muxVideo.update).not.toHaveBeenCalled()
