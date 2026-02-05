@@ -1,0 +1,50 @@
+:root {
+  color-scheme: light;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  background-color: #f5f6f8;
+  color: #131517;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 48px 24px 72px;
+}
+
+section {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 2.4rem;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-top: 0;
+}
+
+ol {
+  padding-left: 20px;
+}
+
+code {
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.stage {
+  border-left: 4px solid #4f46e5;
+  padding-left: 12px;
+  margin-bottom: 12px;
+}

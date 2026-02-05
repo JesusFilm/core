@@ -1,0 +1,72 @@
+{
+  "name": "ai-media",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ai-media",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["nx _build ai-media"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": ["CI=true nx _build ai-media --prod"]
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/ai-media"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "ai-media:_build",
+        "dev": true,
+        "port": 4900
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "ai-media:_build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "ai-media:_build:production",
+          "dev": false
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/ai-media/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/ai-media/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsc -b apps/ai-media/tsconfig.json"
+      }
+    }
+  },
+  "tags": []
+}
