@@ -530,13 +530,13 @@ model UserMediaRole {
 }
 
 model UserMediaProfile {
-  id                String   @id @default(uuid())
-  userId            String
-  userInterests     Video[]
-  languageInterests String[]
-  countryInterests  String[]
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @default(now()) @updatedAt
+  id                  String   @id @default(uuid())
+  userId              String
+  userInterests       Video[]
+  languageInterestIds String[]
+  countryInterestIds  String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
 }
 
 model ShortLinkDomain {
