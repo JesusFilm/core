@@ -29,15 +29,15 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
-const JOURNEY_PROFILE_CREATE = gql`
-  mutation JourneyProfileCreate {
-    journeyProfileCreate {
-      id
-      userId
-      acceptedTermsAt
-    }
-  }
-`
+// const JOURNEY_PROFILE_CREATE = gql`
+//   mutation JourneyProfileCreate {
+//     journeyProfileCreate {
+//       id
+//       userId
+//       acceptedTermsAt
+//     }
+//   }
+// `
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -61,6 +61,7 @@ export function LanguageScreen({
   const { query } = useTeam()
 
   useEffect(() => {
+    //TODO: delete this effect
     const firebaseUserId = user?.id ?? null
     const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
     console.log('[LanguageScreen] Firebase user id:', firebaseUserId)
@@ -133,9 +134,9 @@ export function LanguageScreen({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { loadUser } = useCurrentUserLazyQuery()
-  const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
-    JOURNEY_PROFILE_CREATE
-  )
+  // const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
+  //   JOURNEY_PROFILE_CREATE
+  // )
   const [teamCreate] = useTeamCreateMutation()
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
@@ -147,19 +148,36 @@ export function LanguageScreen({
     }
 
     const teamName = t('My Team')
-    const [meResult, profileResult, teamResult] = await Promise.all([
-      loadUser(),
-      journeyProfileCreate(),
-      teamCreate({
+
+    let meResult: Awaited<ReturnType<typeof loadUser>> | null = null
+    try {
+      meResult = await loadUser()
+    } catch (e) {
+      console.error('[createGuestUser] loadUser failed:', e)
+    }
+
+    // let profileResult: Awaited<ReturnType<typeof journeyProfileCreate>> | null =
+    //   null
+    // try {
+    //   profileResult = await journeyProfileCreate()
+    // } catch (e) {
+    //   console.error('[createGuestUser] journeyProfileCreate failed:', e)
+    // }
+
+    let teamResult: Awaited<ReturnType<typeof teamCreate>> | null = null
+    try {
+      teamResult = await teamCreate({
         variables: {
           input: { title: teamName, publicTitle: teamName }
         }
       })
-    ])
+    } catch (e) {
+      console.error('[createGuestUser] teamCreate failed:', e)
+    }
 
     if (
       meResult?.data?.me == null ||
-      profileResult?.data?.journeyProfileCreate == null ||
+      // profileResult?.data?.journeyProfileCreate == null ||
       teamResult?.data?.teamCreate == null
     ) {
       return null
