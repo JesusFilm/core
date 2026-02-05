@@ -49,8 +49,11 @@ export function TeamManageWrapper({
 
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
     if (currentUser?.__typename === 'AuthenticatedUser') {
-      return data?.userTeams?.find(({ user: { email } }) => {
-        return email === currentUser.email
+      return data?.userTeams?.find(({ user }) => {
+        return (
+          user.__typename === 'AuthenticatedUser' &&
+          user.email === currentUser.email
+        )
       })
     }
     return undefined

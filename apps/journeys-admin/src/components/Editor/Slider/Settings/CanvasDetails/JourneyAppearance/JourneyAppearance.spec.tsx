@@ -47,7 +47,7 @@ describe('JourneyAppearance', () => {
             request: { query: GET_CURRENT_USER },
             result: {
               data: {
-                me: { __typename: 'User', id: 'u1', email: 'u1@example.com' }
+                me: { __typename: 'AuthenticatedUser', id: 'u1', email: 'u1@example.com' }
               }
             }
           },
@@ -102,7 +102,7 @@ describe('JourneyAppearance', () => {
             request: { query: GET_CURRENT_USER },
             result: {
               data: {
-                me: { __typename: 'User', id: 'u1', email: 'u1@example.com' }
+                me: { __typename: 'AuthenticatedUser', id: 'u1', email: 'u1@example.com' }
               }
             }
           },
@@ -160,7 +160,7 @@ describe('JourneyAppearance', () => {
             request: { query: GET_CURRENT_USER },
             result: {
               data: {
-                me: { __typename: 'User', id: 'u1', email: 'u1@example.com' }
+                me: { __typename: 'AuthenticatedUser', id: 'u1', email: 'u1@example.com' }
               }
             }
           },

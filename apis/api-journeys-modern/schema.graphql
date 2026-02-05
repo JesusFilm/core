@@ -7,6 +7,12 @@ interface Action {
   parentBlock: Block!
 }
 
+type AnonymousUser
+  @shareable
+{
+  id: ID!
+}
+
 type AuthenticatedUser
   @key(fields: "id")
   @extends
@@ -2257,6 +2263,8 @@ enum TypographyVariant {
   overline
 }
 
+union User = AuthenticatedUser | AnonymousUser
+
 type UserAgent
   @shareable
 {
@@ -2316,7 +2324,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: AuthenticatedUser!
+  user: User!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 
