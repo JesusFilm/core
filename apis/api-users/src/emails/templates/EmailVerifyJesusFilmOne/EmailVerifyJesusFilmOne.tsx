@@ -37,7 +37,7 @@ interface WrapperProps {
   children: ReactElement
 }
 
-export const EmailVerifyEmail = ({
+export const EmailVerifyJesusFilmOne = ({
   inviteLink,
   recipient,
   token,
@@ -54,7 +54,7 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header logo="JFPOne" />
+      <Header logo="JesusFilmOne" />
       <EmailContainer>
         <BodyWrapper>
           <ActionCard recipient={recipient}>
@@ -123,7 +123,7 @@ const withBody = ({ children }: WrapperProps): ReactElement => {
   )
 }
 
-EmailVerifyEmail.PreviewProps = {
+EmailVerifyJesusFilmOne.PreviewProps = {
   token: '123456',
   recipient: {
     firstName: 'Joe',
@@ -135,4 +135,4 @@ EmailVerifyEmail.PreviewProps = {
   inviteLink: 'https://admin.nextstep.is/users/verify'
 } satisfies VerifyEmailProps
 
-export default EmailVerifyEmail
+export default EmailVerifyJesusFilmOne

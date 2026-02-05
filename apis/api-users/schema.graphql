@@ -3,7 +3,7 @@ extend schema
 
 enum App {
   NextSteps
-  JFPOne
+  JesusFilmOne
 }
 
 type AuthenticatedUser
