@@ -8,6 +8,7 @@ import { getLanguagesMock } from '../data'
 import { HeaderAndLanguageFilter } from '.'
 
 import '../../../../test/i18n'
+import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -17,6 +18,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+jest.mock('../../../libs/beaconHooks', () => ({
+  setBeaconPageViewed: jest.fn()
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -56,16 +61,11 @@ describe('HeaderAndLanguageFilter', () => {
     fireEvent.click(screen.getByRole('button', { name: 'French Français' }))
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
     fireEvent.click(screen.getByTestId('PresentationLayer'))
-    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(3))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'template-language' }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
+    fireEvent.click(
+      screen.getAllByRole('heading', { name: 'All Languages' })[0]
+    )
+    expect(setBeaconPageViewed).toHaveBeenCalledWith('template-language')
   })
 
   it('should show loading', () => {
