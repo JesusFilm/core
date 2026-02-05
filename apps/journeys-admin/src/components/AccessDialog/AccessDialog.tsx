@@ -100,7 +100,7 @@ export function AccessDialog({
     return data?.journey?.userJourneys?.find(
       (userJourney) =>
         userJourney.user?.__typename === 'AuthenticatedUser' &&
-        user.__typename === 'AuthenticatedUser' &&
+        user?.__typename === 'AuthenticatedUser' &&
         userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])

@@ -78,7 +78,7 @@ export function Host(): ReactElement {
       : data.userTeams.find(
           (userTeam) =>
             userTeam.user?.__typename === 'AuthenticatedUser' &&
-            user.__typename === 'AuthenticatedUser' &&
+            user?.__typename === 'AuthenticatedUser' &&
             userTeam.user.email === user.email
         ) != null
 
