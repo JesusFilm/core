@@ -96,7 +96,8 @@ describe('CardForm', () => {
           isCover: true,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -189,7 +190,8 @@ describe('CardForm', () => {
           __typename: 'ImageBlock',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         subtitle: {
           id: 'subtitleId',

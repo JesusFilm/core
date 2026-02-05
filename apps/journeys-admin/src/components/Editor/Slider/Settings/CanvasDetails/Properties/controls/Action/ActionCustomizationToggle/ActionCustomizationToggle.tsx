@@ -9,7 +9,7 @@ import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
-export function CustomizationToggle(): ReactElement {
+export function ActionCustomizationToggle(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
   const {

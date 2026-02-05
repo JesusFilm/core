@@ -33,6 +33,7 @@ import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockR
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
+import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 
 import { FocalPoint } from './FocalPoint'
 import { ZoomImage } from './ZoomImage/ZoomImage'
@@ -106,7 +107,8 @@ export function BackgroundMediaImage({
       parentOrder: null,
       scale: 100,
       focalTop: 50,
-      focalLeft: 50
+      focalLeft: 50,
+      customizable: null
     }
 
     add({
@@ -344,23 +346,27 @@ export function BackgroundMediaImage({
     }
   }
 
+  const imageCoverBlock =
+    coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+
   return (
     <Stack gap={4}>
       <ImageSource
-        selectedBlock={
-          coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
-        }
+        selectedBlock={imageCoverBlock}
         onChange={handleChange}
         onDelete={async () => deleteImageBlock()}
       />
       <FocalPoint
-        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
+        imageBlock={imageCoverBlock}
         updateImageBlock={updateImageBlock}
       />
       <ZoomImage
-        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
+        imageBlock={imageCoverBlock}
         updateImageBlock={updateImageBlock}
       />
+      {journey?.template && imageCoverBlock != null && (
+        <BlockCustomizationToggle block={imageCoverBlock} />
+      )}
     </Stack>
   )
 }

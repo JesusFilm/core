@@ -62,6 +62,7 @@ const block: TreeBlock<VideoFields> = {
     },
     variantLanguages: []
   },
+  customizable: null,
   children: [
     {
       id: 'posterBlockId',
@@ -76,6 +77,7 @@ const block: TreeBlock<VideoFields> = {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
   ]

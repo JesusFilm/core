@@ -31,7 +31,8 @@ const Template: StoryObj<typeof CustomImage> = {
             parentOrder: 0,
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }}
           onChange={noop}
         />
