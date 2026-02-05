@@ -23,7 +23,9 @@ export const GET_MY_MUX_VIDEO_QUERY = gql`
   }
 `
 
-const POLL_INTERVAL = 5000 // 5 seconds
+const INITIAL_POLL_INTERVAL = 2000 // 2 seconds
+const MAX_POLL_INTERVAL = 30000 // 30 seconds
+const MAX_RETRIES = 3
 const MAX_VIDEO_SIZE = 1073741824 // 1GB
 
 export type VideoUploadStatus =
@@ -36,11 +38,17 @@ export type VideoUploadStatus =
 interface UseVideoUploadOptions {
   onUploadComplete?: (videoId: string) => void
   onUploadError?: (error: string) => void
+  /** @default 2000 */
+  initialPollInterval?: number
+  /** @default 3 */
+  maxRetries?: number
 }
 
 export function useVideoUpload({
   onUploadComplete,
-  onUploadError
+  onUploadError,
+  initialPollInterval = INITIAL_POLL_INTERVAL,
+  maxRetries = MAX_RETRIES
 }: UseVideoUploadOptions = {}) {
   const [status, setStatus] = useState<VideoUploadStatus>('idle')
   const [progress, setProgress] = useState(0)
@@ -48,7 +56,8 @@ export function useVideoUpload({
   const [videoId, setVideoId] = useState<string | undefined>()
 
   const uploadInstanceRef = useRef<{ abort: () => void } | null>(null)
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const pollingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const retryCountRef = useRef(0)
 
   const [createMuxVideoUploadByFile] = useMutation(
     CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
@@ -59,10 +68,11 @@ export function useVideoUpload({
   })
 
   const clearPolling = useCallback(() => {
-    if (pollingIntervalRef.current != null) {
-      clearInterval(pollingIntervalRef.current)
-      pollingIntervalRef.current = null
+    if (pollingTimeoutRef.current != null) {
+      clearTimeout(pollingTimeoutRef.current)
+      pollingTimeoutRef.current = null
     }
+    retryCountRef.current = 0
   }, [])
 
   const cancelUpload = useCallback(() => {
@@ -78,7 +88,7 @@ export function useVideoUpload({
     (videoId: string) => {
       setStatus('processing')
 
-      const poll = async () => {
+      const poll = async (delay: number) => {
         try {
           const result = await getMyMuxVideo({
             variables: { id: videoId }
@@ -92,8 +102,27 @@ export function useVideoUpload({
             clearPolling()
             setStatus('completed')
             onUploadComplete?.(videoId)
+            return
           }
+
+          // Reset retries on successful query (even if not ready)
+          retryCountRef.current = 0
+
+          // Schedule next poll with exponential backoff
+          const nextDelay = Math.min(delay * 1.5, MAX_POLL_INTERVAL)
+          pollingTimeoutRef.current = setTimeout(() => {
+            void poll(nextDelay)
+          }, delay)
         } catch (err) {
+          // Retry on recoverable errors (e.g., network issues or 500s)
+          if (retryCountRef.current < maxRetries) {
+            retryCountRef.current++
+            pollingTimeoutRef.current = setTimeout(() => {
+              void poll(delay)
+            }, delay)
+            return
+          }
+
           clearPolling()
           setStatus('error')
           setError('Failed to check video status')
@@ -101,10 +130,16 @@ export function useVideoUpload({
         }
       }
 
-      void poll()
-      pollingIntervalRef.current = setInterval(poll, POLL_INTERVAL)
+      void poll(initialPollInterval)
     },
-    [clearPolling, getMyMuxVideo, onUploadComplete, onUploadError]
+    [
+      clearPolling,
+      getMyMuxVideo,
+      onUploadComplete,
+      onUploadError,
+      initialPollInterval,
+      maxRetries
+    ]
   )
 
   const handleUpload = useCallback(
@@ -177,8 +212,8 @@ export function useVideoUpload({
   useEffect(() => {
     return () => {
       uploadInstanceRef.current?.abort()
-      if (pollingIntervalRef.current != null) {
-        clearInterval(pollingIntervalRef.current)
+      if (pollingTimeoutRef.current != null) {
+        clearTimeout(pollingTimeoutRef.current)
       }
     }
   }, [])

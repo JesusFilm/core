@@ -243,7 +243,7 @@ describe('useVideoUpload', () => {
     expect(result.current.error).toBeUndefined()
   })
 
-  it('should poll until ready', async () => {
+  it('should poll with exponential backoff until ready', async () => {
     const onUploadComplete = jest.fn()
     const mockUpload = {
       on: jest.fn(),
@@ -251,20 +251,23 @@ describe('useVideoUpload', () => {
     }
     ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
 
-    const { result } = renderHook(() => useVideoUpload({ onUploadComplete }), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[
-            createMuxVideoUploadByFileMock,
-            getMyMuxVideoProcessingMock,
-            getMyMuxVideoMock
-          ]}
-          addTypename={false}
-        >
-          {children}
-        </MockedProvider>
-      )
-    })
+    const { result } = renderHook(
+      () => useVideoUpload({ onUploadComplete, initialPollInterval: 100 }),
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider
+            mocks={[
+              createMuxVideoUploadByFileMock,
+              getMyMuxVideoProcessingMock,
+              getMyMuxVideoMock
+            ]}
+            addTypename={false}
+          >
+            {children}
+          </MockedProvider>
+        )
+      }
+    )
 
     await act(async () => {
       await result.current.handleUpload(file)
@@ -283,12 +286,14 @@ describe('useVideoUpload', () => {
     await waitFor(() => expect(result.current.status).toBe('processing'))
 
     // Wait for the second poll to complete and status to change to completed
-    // We use a longer timeout since we are using real timers and the interval is 5s
+    // We use a shorter timeout since we reduced the interval to 100ms for faster testing.
+    // Note: The backoff timing here (100ms, 150ms, etc.) is reduced for test performance
+    // and does not match the real-world production intervals (2s, 3s, etc.).
     await waitFor(() => expect(result.current.status).toBe('completed'), {
-      timeout: 10000
+      timeout: 2000
     })
     expect(onUploadComplete).toHaveBeenCalledWith('videoId')
-  }, 15000)
+  })
 
   it('should handle polling error', async () => {
     const onUploadError = jest.fn()
@@ -306,23 +311,25 @@ describe('useVideoUpload', () => {
       error: new Error('Polling failed')
     }
 
-    const { result } = renderHook(() => useVideoUpload({ onUploadError }), {
-      wrapper: ({ children }) => (
-        <MockedProvider
-          mocks={[
-            createMuxVideoUploadByFileMock,
-            pollingErrorMock,
-            pollingErrorMock,
-            pollingErrorMock,
-            pollingErrorMock,
-            pollingErrorMock
-          ]}
-          addTypename={false}
-        >
-          {children}
-        </MockedProvider>
-      )
-    })
+    const { result } = renderHook(
+      () => useVideoUpload({ onUploadError, initialPollInterval: 100 }),
+      {
+        wrapper: ({ children }) => (
+          <MockedProvider
+            mocks={[
+              createMuxVideoUploadByFileMock,
+              pollingErrorMock,
+              pollingErrorMock,
+              pollingErrorMock,
+              pollingErrorMock
+            ]}
+            addTypename={false}
+          >
+            {children}
+          </MockedProvider>
+        )
+      }
+    )
 
     await act(async () => {
       await result.current.handleUpload(file)
@@ -337,12 +344,15 @@ describe('useVideoUpload', () => {
       successCallback()
     })
 
+    // Wait for all 3 retries to exhaust (3 retries * 100ms delay = ~300ms + buffer)
+    // Note: The backoff timing here is reduced for test performance and does not match 
+    // the real-world production intervals.
     await waitFor(() => expect(result.current.status).toBe('error'), {
-      timeout: 15000
+      timeout: 2000
     })
     expect(result.current.error).toBe('Failed to check video status')
     expect(onUploadError).toHaveBeenCalledWith('Failed to check video status')
-  }, 20000)
+  })
 
   it('should cleanup on unmount', async () => {
     const mockUpload = {
