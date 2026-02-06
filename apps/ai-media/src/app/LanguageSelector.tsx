@@ -1,7 +1,6 @@
 'use client'
 
-import type { ChangeEvent } from 'react'
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { languageSlugs } from '@core/prisma/languages/__generated__/languageSlugs'
@@ -37,7 +36,6 @@ export function LanguageSelector({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
   const [isLoading, setIsLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [loadedOptions, setLoadedOptions] =
@@ -57,13 +55,13 @@ export function LanguageSelector({
 
   useEffect(() => {
     if (typeof document === 'undefined') return
-    const loading = isLoading || isPending
+    const loading = isLoading
     if (loading) {
       document.documentElement.dataset.loading = 'true'
     } else {
       delete document.documentElement.dataset.loading
     }
-  }, [isLoading, isPending])
+  }, [isLoading])
 
   useEffect(() => {
     setIsLoading(false)
@@ -150,9 +148,9 @@ export function LanguageSelector({
     }
   }, [])
 
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const nextParams = new URLSearchParams(searchParams?.toString() ?? '')
-    const nextValue = event.target.value
+  const handleSelect = (nextValue: string) => {
+    const currentQuery = searchParams?.toString() ?? ''
+    const nextParams = new URLSearchParams(currentQuery)
 
     if (nextValue) {
       nextParams.set('languageId', nextValue)
@@ -161,10 +159,20 @@ export function LanguageSelector({
     }
 
     const queryString = nextParams.toString()
+    const nextUrl = queryString ? `${pathname}?${queryString}` : pathname
+    const currentUrl = currentQuery ? `${pathname}?${currentQuery}` : pathname
+
+    if (nextUrl === currentUrl) {
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(true)
-    startTransition(() => {
-      router.push(queryString ? `${pathname}?${queryString}` : pathname)
-    })
+    if (typeof window !== 'undefined') {
+      window.location.href = nextUrl
+      return
+    }
+    router.push(nextUrl)
   }
 
   return (
@@ -179,7 +187,7 @@ export function LanguageSelector({
         <span className="control-select-text">{selectedLabel}</span>
         <span className="control-chevron" aria-hidden="true" />
       </button>
-      {(isLoading || isPending) && (
+      {isLoading && (
         <span className="control-loading" aria-live="polite">
           Loading…
         </span>
@@ -218,9 +226,7 @@ export function LanguageSelector({
                 onClick={() => {
                   setIsOpen(false)
                   setSearchValue('')
-                  handleChange({
-                    target: { value: option.id }
-                  } as ChangeEvent<HTMLSelectElement>)
+                  handleSelect(option.id)
                 }}
               >
                 <span className="control-option-english">
