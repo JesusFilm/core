@@ -80,6 +80,7 @@
     "@mui/x-data-grid": "^8.5.2",
     "@mui/x-date-pickers": "^8.5.2",
     "@mui/x-tree-view": "^8.5.2",
+    "@mux/ai": "^0.6.0",
     "@mux/mux-node": "^11.0.0",
     "@mux/upchunk": "^3.4.0",
     "@nestjs/apollo": "^13.0.0",
