@@ -767,7 +767,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   teams: [Team!]! @join__field(graph: API_JOURNEYS) 
   team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
   userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
-  getUserRole: UserRole @join__field(graph: API_JOURNEYS) 
   userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
   userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
   userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
@@ -849,6 +848,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -2193,12 +2193,6 @@ type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: tr
   emailVerified: Boolean! @join__field(graph: API_USERS) 
 }
 
-type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
-  id: ID!
-  userId: ID!
-  roles: [Role!]
-}
-
 type AnonymousUser @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
   id: ID!
 }
@@ -2556,6 +2550,12 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
+}
+
+type UserRole @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID!
+  userId: ID!
+  roles: [Role!]
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -3634,14 +3634,6 @@ enum UserTeamRole @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   member @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum Role @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
 enum DeviceType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   console @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   mobile @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3732,6 +3724,10 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum Role @join__type(graph: API_JOURNEYS_MODERN)  {
+  publisher @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageRole @join__type(graph: API_LANGUAGES)  {

@@ -279,7 +279,6 @@ extend type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
   userTeamInvites(teamId: ID!): [UserTeamInvite!]!
@@ -2722,23 +2721,6 @@ extend type AuthenticatedUser
   id: ID! @external
 }
 
-type UserRole
-  @key(fields: "id")
-  @shareable
-{
-  id: ID!
-  userId: ID!
-  roles: [Role!]
-}
-
-enum Role {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher
-}
-
 type AnonymousUser
   @shareable
 {
@@ -3056,4 +3038,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserTeam | Video | VideoBlock | Visitor

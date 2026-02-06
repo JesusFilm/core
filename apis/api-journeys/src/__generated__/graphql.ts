@@ -4420,10 +4420,6 @@ export enum RedirectType {
 }
 
 export enum Role {
-  /**
-   * User can create templates and
-   * add them to template library
-   */
   Publisher = 'publisher'
 }
 
