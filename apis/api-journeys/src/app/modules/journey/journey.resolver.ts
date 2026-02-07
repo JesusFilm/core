@@ -131,56 +131,6 @@ export class JourneyResolver {
 
   @Query()
   @UseGuards(AppCaslGuard)
-  async adminJourneys(
-    @CurrentUserId() userId: string,
-    @CaslAccessible('Journey') accessibleJourneys: Prisma.JourneyWhereInput,
-    @Args('status') status?: JourneyStatus[],
-    @Args('template') template?: boolean,
-    @Args('teamId') teamId?: string,
-    @Args('useLastActiveTeamId') useLastActiveTeamId?: boolean
-  ): Promise<Journey[]> {
-    const filter: Prisma.JourneyWhereInput = {}
-    if (useLastActiveTeamId === true) {
-      const profile = await this.prismaService.journeyProfile.findUnique({
-        where: { userId }
-      })
-      if (profile == null)
-        throw new GraphQLError('journey profile not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      filter.teamId = profile.lastActiveTeamId ?? undefined
-    }
-    if (teamId != null) {
-      filter.teamId = teamId
-    } else if (template !== true && filter.teamId == null) {
-      // if not looking for templates then only return journeys where:
-      //   1. the user is an owner or editor
-      //   2. not a member of the team
-      filter.userJourneys = {
-        some: {
-          userId,
-          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
-        }
-      }
-      filter.team = {
-        userTeams: {
-          none: {
-            userId
-          }
-        }
-      }
-    }
-    if (template != null) filter.template = template
-    if (status != null) filter.status = { in: status }
-    return await this.prismaService.journey.findMany({
-      where: {
-        AND: [accessibleJourneys, filter]
-      }
-    })
-  }
-
-  @Query()
-  @UseGuards(AppCaslGuard)
   async adminJourney(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,

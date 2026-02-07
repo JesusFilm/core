@@ -10,7 +10,7 @@ import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
-import { object, string } from 'yup'
+import { object } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -29,7 +29,6 @@ import {
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
-import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 // const JOURNEY_PROFILE_CREATE = gql`
 //   mutation JourneyProfileCreate {
@@ -120,12 +119,9 @@ export function LanguageScreen({
         ...childJourneyLanguagesJourneyMap
       }
 
-  const validationSchema = object({
-    teamSelect: isSignedIn ? string().required() : string()
-  })
+  const validationSchema = object({})
 
   const initialValues = {
-    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? '',
     languageSelect: {
       id: journey?.language?.id,
       localName: journey?.language?.name.find((name) => name.primary)?.value,
@@ -280,7 +276,19 @@ export function LanguageScreen({
     }
 
     if (isSignedIn) {
-      const teamId = values.teamSelect as string
+      const teams = query?.data?.teams ?? []
+      const teamId =
+        query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
+      if (teamId == null) {
+        enqueueSnackbar(
+          t(
+            'No team available. Please create a team first.'
+          ),
+          { variant: 'error' }
+        )
+        setLoading(false)
+        return
+      }
       const success = await duplicateJourneyAndRedirect(journeyId, teamId)
       if (!success) {
         enqueueSnackbar(
@@ -410,21 +418,6 @@ export function LanguageScreen({
                   }))}
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
-                <Typography
-                  variant="h6"
-                  display={{ xs: 'none', sm: 'block' }}
-                  sx={{ mt: 4 }}
-                >
-                  {t('Select a team')}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  display={{ xs: 'block', sm: 'none' }}
-                  sx={{ mt: 4 }}
-                >
-                  {t('Select a team')}
-                </Typography>
-                {isSignedIn && <JourneyCustomizeTeamSelect />}
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}

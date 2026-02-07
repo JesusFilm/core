@@ -997,8 +997,6 @@ export abstract class IQuery {
 
     abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
 
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
-
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;

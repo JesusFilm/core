@@ -108,7 +108,10 @@ export async function initAndAuthApp({
         })
       : undefined
 
-  if (!(redirect?.destination.startsWith('/users/verify') ?? false))
+  if (
+    !(redirect?.destination.startsWith('/users/verify') ?? false) &&
+    user?.email != null
+  )
     await apolloClient.mutate<AcceptAllInvites>({
       mutation: ACCEPT_ALL_INVITES
     })
