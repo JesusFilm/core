@@ -2,6 +2,7 @@ import { Core } from '@strapi/types'
 import { Input } from '@strapi/types/dist/modules/documents/params/data'
 
 import { importLanguages } from './importers/languageImporter'
+import { importVideoEditions } from './importers/videoEditionImporter'
 import { importVideos } from './importers/videoImporter'
 import { importVideoVariants } from './importers/videoVariantImporter'
 
@@ -20,6 +21,12 @@ export async function runMediaImport(strapi: Core.Strapi): Promise<void> {
     importState
   )
   await importAndLogErrors(strapi, importVideos, 'VideoImport', importState)
+  await importAndLogErrors(
+    strapi,
+    importVideoEditions,
+    'VideoEditionImport',
+    importState
+  )
   await importAndLogErrors(
     strapi,
     importVideoVariants,

@@ -15,7 +15,7 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::video-variant.video-variant",
-      "mappedBy": "video_edition"
+      "mappedBy": "edition"
     },
     "video": {
       "type": "relation",

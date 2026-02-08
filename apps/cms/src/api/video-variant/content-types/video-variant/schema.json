@@ -40,7 +40,7 @@
       "component": "video-variant.download",
       "repeatable": true
     },
-    "video_edition": {
+    "edition": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::video-edition.video-edition",

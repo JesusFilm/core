@@ -107,7 +107,7 @@ export interface VideoVariantDownload extends Struct.ComponentSchema {
       ]
     > &
       Schema.Attribute.Required
-    size: Schema.Attribute.Integer & Schema.Attribute.Required
+    size: Schema.Attribute.BigInteger & Schema.Attribute.Required
     url: Schema.Attribute.String & Schema.Attribute.Required
     width: Schema.Attribute.Integer & Schema.Attribute.Required
   }

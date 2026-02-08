@@ -708,6 +708,10 @@ export interface ApiVideoVariantVideoVariant
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
     downloads: Schema.Attribute.Component<'video-variant.download', true>
+    edition: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::video-edition.video-edition'
+    >
     hls: Schema.Attribute.String
     language: Schema.Attribute.Relation<'manyToOne', 'api::language.language'>
     lengthInMilliseconds: Schema.Attribute.Integer
@@ -725,10 +729,6 @@ export interface ApiVideoVariantVideoVariant
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private
     video: Schema.Attribute.Relation<'manyToOne', 'api::video.video'>
-    video_edition: Schema.Attribute.Relation<
-      'manyToOne',
-      'api::video-edition.video-edition'
-    >
   }
 }
 
