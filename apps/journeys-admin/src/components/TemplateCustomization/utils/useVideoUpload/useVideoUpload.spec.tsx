@@ -1,8 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { UpChunk } from '@mux/upchunk'
-import { useDropzone } from 'react-dropzone'
-import { GraphQLError } from 'graphql'
 import {
   useVideoUpload,
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
@@ -191,10 +189,11 @@ describe('useVideoUpload', () => {
   })
 
   it('should handle file too large error', async () => {
+    const onUploadError = jest.fn()
     const largeFile = new File([''], 'large.mp4', { type: 'video/mp4' })
     Object.defineProperty(largeFile, 'size', { value: 2 * 1024 * 1024 * 1024 }) // 2GB
 
-    const { result } = renderHook(() => useVideoUpload(), {
+    const { result } = renderHook(() => useVideoUpload({ onUploadError }), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[]} addTypename={false}>
           {children}
@@ -206,7 +205,11 @@ describe('useVideoUpload', () => {
       await result.current.handleUpload(largeFile)
     })
 
+    expect(result.current.status).toBe('error')
     expect(result.current.error).toBe('File is too large. Max size is 1GB.')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'File is too large. Max size is 1GB.'
+    )
   })
 
   it('should cancel upload', async () => {
@@ -241,6 +244,7 @@ describe('useVideoUpload', () => {
     expect(result.current.status).toBe('idle')
     expect(result.current.progress).toBe(0)
     expect(result.current.error).toBeUndefined()
+    expect(result.current.videoId).toBeUndefined()
   })
 
   it('should poll with exponential backoff until ready', async () => {
@@ -345,7 +349,7 @@ describe('useVideoUpload', () => {
     })
 
     // Wait for all 3 retries to exhaust (3 retries * 100ms delay = ~300ms + buffer)
-    // Note: The backoff timing here is reduced for test performance and does not match 
+    // Note: The backoff timing here is reduced for test performance and does not match
     // the real-world production intervals.
     await waitFor(() => expect(result.current.status).toBe('error'), {
       timeout: 2000

@@ -82,6 +82,7 @@ export function useVideoUpload({
     setStatus('idle')
     setProgress(0)
     setError(undefined)
+    setVideoId(undefined)
   }, [clearPolling])
 
   const startPolling = useCallback(
@@ -145,7 +146,10 @@ export function useVideoUpload({
   const handleUpload = useCallback(
     async (file: File) => {
       if (file.size > MAX_VIDEO_SIZE) {
-        setError('File is too large. Max size is 1GB.')
+        const message = 'File is too large. Max size is 1GB.'
+        setStatus('error')
+        setError(message)
+        onUploadError?.(message)
         return
       }
 
