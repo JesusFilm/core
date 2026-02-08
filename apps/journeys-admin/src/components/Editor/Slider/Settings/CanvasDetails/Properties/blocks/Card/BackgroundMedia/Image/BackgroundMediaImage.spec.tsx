@@ -35,6 +35,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -146,6 +147,12 @@ const image: TreeBlock<ImageBlock> = {
   focalLeft: 50,
   focalTop: 50,
   customizable: null
+}
+
+const cardWithImageCover: TreeBlock<CardBlock> = {
+  ...card,
+  coverBlockId: image.id,
+  children: [image]
 }
 
 describe('BackgroundMediaImage', () => {
@@ -517,6 +524,66 @@ describe('BackgroundMediaImage', () => {
           { __ref: `CardBlock:${card.id}` }
         ])
       )
+    })
+  })
+
+  describe('BlockCustomizationToggle', () => {
+    it('should not render BlockCustomizationToggle when journey is not a template', () => {
+      render(
+        <MockedProvider mocks={[]}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={cardWithImageCover} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should render BlockCustomizationToggle when journey is a template and card has a cover image', () => {
+      render(
+        <MockedProvider mocks={[]}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { template: true } as unknown as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={cardWithImageCover} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when journey is template but card has no cover image', () => {
+      render(
+        <MockedProvider mocks={[]}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { template: true } as unknown as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <CommandProvider>
+                <BackgroundMediaImage cardBlock={card} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
   })
 })

@@ -28,6 +28,15 @@ import {
 import { IMAGE_BLOCK_UPDATE } from '../../blocks/Image/Options/ImageOptions'
 import { VIDEO_BLOCK_UPDATE } from '../../blocks/Video/Options/VideoOptions'
 
+export interface BlockCustomizationToggleProps {
+  /**
+   * Optional block to operate on. When not provided, the component uses the editor's selectedBlock
+   * (for standalone Video/Image properties). When provided, uses this block (e.g. card
+   * cover block in BackgroundMediaVideo / BackgroundMediaImage).
+   */
+  block?: TreeBlock<ImageBlock | VideoBlock>
+}
+
 /**
  * BlockCustomizationToggle - "Needs Customization" toggle for block-level customizable content.
  *
@@ -35,15 +44,17 @@ import { VIDEO_BLOCK_UPDATE } from '../../blocks/Video/Options/VideoOptions'
  * customizable on template journeys. When enabled, the block's content can be customized
  * per journey created from the template (e.g. ImageBlock, VideoBlock, and later LogoImageBlock).
  *
- * - Renders a Switch with "Needs Customization" label; state is driven by the selected block's
- *   `customizable` field.
+ * - Renders a Switch with "Needs Customization" label; state is driven by the block's
+ *   `customizable` field (from props or selectedBlock).
  * - Template gating is done at the call site: parents (Image/Video/Logo properties) should
  *   only render this component when `journey?.template` is true, same pattern as Action.tsx.
  * - Toggle changes are persisted via block update mutation and are undo/redoable via useCommand.
  *
  * @returns {ReactElement} The toggle UI (Stack with Switch and label)
  */
-export function BlockCustomizationToggle(): ReactElement {
+export function BlockCustomizationToggle({
+  block: blockProp
+}: BlockCustomizationToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock }
@@ -58,16 +69,17 @@ export function BlockCustomizationToggle(): ReactElement {
     VideoBlockUpdateVariables
   >(VIDEO_BLOCK_UPDATE)
 
-  const block: TreeBlock<ImageBlock | VideoBlock> | undefined =
-    selectedBlock?.__typename === 'ImageBlock' ||
+  const targetBlock: TreeBlock<ImageBlock | VideoBlock> | undefined =
+    blockProp ??
+    (selectedBlock?.__typename === 'ImageBlock' ||
     selectedBlock?.__typename === 'VideoBlock'
       ? (selectedBlock as TreeBlock<ImageBlock | VideoBlock>)
-      : undefined
+      : undefined)
 
-  const customizable = block?.customizable ?? false
+  const customizable = targetBlock?.customizable ?? false
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
-    if (block == null) return
+    if (targetBlock == null) return
     const newCustomizable = event.target.checked
     const undoCustomizable = customizable
 
@@ -77,22 +89,22 @@ export function BlockCustomizationToggle(): ReactElement {
         undo: { customizable: undoCustomizable }
       },
       execute({ customizable: value }) {
-        if (block.__typename === 'ImageBlock') {
+        if (targetBlock.__typename === 'ImageBlock') {
           const input: ImageBlockUpdateInput = { customizable: value }
           void imageBlockUpdate({
-            variables: { id: block.id, input },
+            variables: { id: targetBlock.id, input },
             optimisticResponse: {
-              imageBlockUpdate: { ...block, customizable: value }
+              imageBlockUpdate: { ...targetBlock, customizable: value }
             }
           })
           return
         }
-        if (block.__typename === 'VideoBlock') {
+        if (targetBlock.__typename === 'VideoBlock') {
           const input: VideoBlockUpdateInput = { customizable: value }
           void videoBlockUpdate({
-            variables: { id: block.id, input },
+            variables: { id: targetBlock.id, input },
             optimisticResponse: {
-              videoBlockUpdate: { ...block, customizable: value }
+              videoBlockUpdate: { ...targetBlock, customizable: value }
             }
           })
         }
@@ -111,7 +123,7 @@ export function BlockCustomizationToggle(): ReactElement {
       }}
     >
       <Switch
-        disabled={block == null}
+        disabled={targetBlock == null}
         checked={customizable}
         onChange={handleChange}
         inputProps={{ 'aria-label': t('Toggle customizable') }}

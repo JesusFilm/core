@@ -1,6 +1,18 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
+type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: String!
+  imageUrl: String
+  superAdmin: Boolean
+  emailVerified: Boolean!
+}
+
 input CreateVerificationRequestInput {
   redirect: String
 }
