@@ -54,24 +54,21 @@ builder.asEntity(AuthenticatedUser, {
 
       // Create user on first reference (e.g. after teamCreate before me was called)
       if (user == null) {
-        user = await findOrFetchUser({}, id, undefined)
-        if (user == null) {
-          console.warn(`Federation: User not found for userId: ${id}`)
-          return null
-        }
+        console.warn(`Federation: User not found for userId: ${id}`)
+        return null
       }
 
-      // Use userId (Firebase uid) as entity id so gateway re-resolution works
-      const entity = { ...user, id: user.userId }
+      // Handle cases where firstName is null or empty (data integrity issue)
+      // This provides a fallback to prevent GraphQL federation errors
 
       if (user.firstName == null || user.firstName.trim() === '') {
         console.warn(
           `Federation: User ${id} has null/empty firstName, using fallback`
         )
-        return { ...entity, firstName: 'Unknown User' }
+        return { ...user, firstName: 'Unknown User' }
       }
 
-      return entity
+      return user
     } catch (error) {
       console.error(
         `Federation: Error resolving User entity for userId: ${id}`,
