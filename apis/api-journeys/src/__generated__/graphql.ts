@@ -34,6 +34,11 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export enum App {
+  JesusFilmOne = 'JesusFilmOne',
+  NextSteps = 'NextSteps'
+}
+
 export type ArclightApiKey = {
   __typename?: 'ArclightApiKey';
   defaultPlatform: DefaultPlatform;
@@ -605,6 +610,7 @@ export type CreateGoogleSheetsSyncInput = {
 };
 
 export type CreateVerificationRequestInput = {
+  app?: InputMaybe<App>;
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1660,6 +1666,7 @@ export enum MaxResolutionTier {
 }
 
 export type MeInput = {
+  app?: InputMaybe<App>;
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2428,6 +2435,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  duplicateAsDraft?: InputMaybe<Scalars['Boolean']['input']>;
   forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
