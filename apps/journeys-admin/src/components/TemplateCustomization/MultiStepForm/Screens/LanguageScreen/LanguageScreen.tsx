@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -20,6 +20,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { JourneyProfileCreate } from '../../../../../../__generated__/JourneyProfileCreate'
+import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
@@ -31,16 +32,6 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
-
-// const JOURNEY_PROFILE_CREATE = gql`
-//   mutation JourneyProfileCreate {
-//     journeyProfileCreate {
-//       id
-//       userId
-//       acceptedTermsAt
-//     }
-//   }
-// `
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -62,14 +53,6 @@ export function LanguageScreen({
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
-
-  useEffect(() => {
-    //TODO: delete this effect
-    const firebaseUserId = user?.id ?? null
-    const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
-    console.log('[LanguageScreen] Firebase user id:', firebaseUserId)
-    console.log('[LanguageScreen] Is anonymous user:', isAnonymous)
-  }, [user?.id, user?.firebaseUser?.isAnonymous])
 
   const isParentTemplate = journey?.fromTemplateId == null
 
@@ -137,9 +120,6 @@ export function LanguageScreen({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const { loadUser } = useCurrentUserLazyQuery()
-  // const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
-  //   JOURNEY_PROFILE_CREATE
-  // )
   const [teamCreate] = useTeamCreateMutation()
   const [teamCreateGuest] = useTeamCreateMutationGuest()
 
@@ -147,98 +127,43 @@ export function LanguageScreen({
 
   async function createGuestUser(): Promise<{ teamId: string } | null> {
     try {
-      console.log('[createGuestUser] 1. start', {
-        isAnonymous: user?.firebaseUser?.isAnonymous ?? false
-      })
       const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
       if (!isAnonymous) {
-        console.log('[createGuestUser] 2. calling signInAnonymously')
         await signInAnonymously(getAuth(getApp()))
-        console.log('[createGuestUser] 3. signInAnonymously done')
-      } else {
-        console.log('[createGuestUser] 2. already anonymous, skip signInAnonymously')
       }
 
       const teamName = t('My Team')
-
-    let meResult: Awaited<ReturnType<typeof loadUser>> | null = null
-    try {
-      console.log('[createGuestUser] 4. calling loadUser')
-      meResult = await loadUser()
-      console.log('[createGuestUser] 5. loadUser done', {
-        hasMe: meResult?.data?.me != null,
-        __typename: meResult?.data?.me?.__typename
-      })
-    } catch (e) {
-      console.error('[createGuestUser] loadUser failed:', e)
-    }
-
-    // let profileResult: Awaited<ReturnType<typeof journeyProfileCreate>> | null =
-    //   null
-    // try {
-    //   profileResult = await journeyProfileCreate()
-    // } catch (e) {
-    //   console.error('[createGuestUser] journeyProfileCreate failed:', e)
-    // }
-
-    let teamResult: Awaited<ReturnType<typeof teamCreate>> | null = null
-    try {
-      console.log('[createGuestUser] 6. calling teamCreate', { teamName })
-      teamResult = await teamCreateGuest({
-        variables: {
-          input: { title: teamName, publicTitle: teamName }
-        }
-      })
-      console.log('[createGuestUser] 7. teamCreate done', {
-        teamId: teamResult?.data?.teamCreate?.id
-      })
-    } catch (e) {
-      const err = e as {
-        graphQLErrors?: Array<{ message: string; extensions?: unknown }>
-        networkError?: unknown
-        message?: string
-        cause?: unknown
-      }
-      console.error('[createGuestUser] teamCreate failed:', err?.message ?? e)
-      if (err?.graphQLErrors?.length) {
-        err.graphQLErrors.forEach((g, i) => {
-          console.error(
-            `[createGuestUser] graphQLErrors[${i}]:`,
-            g.message,
-            g.extensions
-          )
-        })
-      }
-      if (err?.networkError) {
-        console.error('[createGuestUser] networkError:', err.networkError)
-      }
-      if (err?.cause != null) {
-        console.error('[createGuestUser] cause:', err.cause)
-      }
-      return null
-    }
-
-    if (teamResult?.data?.teamCreate == null) {
-      console.log('[createGuestUser] 8. returning null (team missing)', {
-        hasMe: meResult?.data?.me != null,
-        hasTeam: false
-      })
-      return null
-    }
-
-    // Refetch me after teamCreate (user was created in resolveReference); optional for guest flow
-    if (meResult?.data?.me == null) {
+      let meResult: Awaited<ReturnType<typeof loadUser>> | null = null
       try {
-        await loadUser()
-      } catch {
-        // ignore
+        meResult = await loadUser()
+      } catch (e) {
+        console.error('[createGuestUser] loadUser failed:', e)
       }
-    }
 
-      // Guest flow success: we have a team (user exists in api-users via resolveReference)
-      console.log('[createGuestUser] 9. success', {
-        teamId: teamResult.data.teamCreate.id
-      })
+      let teamResult: Awaited<ReturnType<typeof teamCreate>> | null = null
+      try {
+        teamResult = await teamCreateGuest({
+          variables: {
+            input: { title: teamName, publicTitle: teamName }
+          }
+        })
+      } catch (e) {
+        console.error('[createGuestUser] teamCreate failed:', e)
+        return null
+      }
+
+      if (teamResult?.data?.teamCreate == null) {
+        return null
+      }
+
+      if (meResult?.data?.me == null) {
+        try {
+          await loadUser()
+        } catch {
+          // ignore
+        }
+      }
+
       return { teamId: teamResult.data.teamCreate.id }
     } catch (e) {
       console.error('[createGuestUser] unexpected error:', e)
@@ -248,10 +173,11 @@ export function LanguageScreen({
 
   async function duplicateJourneyAndRedirect(
     journeyId: string,
-    teamId: string
+    teamId: string,
+    status?: JourneyStatus
   ): Promise<boolean> {
     const { data } = await journeyDuplicate({
-      variables: { id: journeyId, teamId, forceNonTemplate: true }
+      variables: { id: journeyId, teamId, forceNonTemplate: true, status }
     })
     if (data?.journeyDuplicate == null) return false
 
@@ -297,6 +223,7 @@ export function LanguageScreen({
       setLoading(false)
       return
     } else {
+      // Creates a guest user and duplicates the journey for them
       try {
         const guestResult = await createGuestUser()
         if (guestResult == null) {
@@ -308,32 +235,22 @@ export function LanguageScreen({
           return
         }
 
-        try {
-          const success = await duplicateJourneyAndRedirect(
-            journeyId,
-            guestResult.teamId
-          )
-          if (!success) {
-            enqueueSnackbar(
-              t(
-                'Failed to duplicate journey to team, please refresh the page and try again'
-              ),
-              { variant: 'error' }
-            )
-          } else {
-            handleNext()
-          }
-        } catch (e) {
-          console.error('[LanguageScreen] duplicateJourneyAndRedirect error:', e)
+        const journeyDuplicateSuccess = await duplicateJourneyAndRedirect(
+          journeyId,
+          guestResult.teamId,
+          JourneyStatus.draft
+        )
+        if (!journeyDuplicateSuccess) {
           enqueueSnackbar(
             t(
               'Failed to duplicate journey to team, please refresh the page and try again'
             ),
             { variant: 'error' }
           )
+        } else {
+          handleNext()
         }
-      } catch (e) {
-        console.error('[LanguageScreen] createGuestUser error:', e)
+      } catch {
         enqueueSnackbar(
           t('Unable to continue as guest. Please try again or sign in.'),
           { variant: 'error' }
