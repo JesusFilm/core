@@ -2714,6 +2714,12 @@ type AnonymousUser
 
 union User = AuthenticatedUser | AnonymousUser
 
+extend type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
 enum UserTeamRole {
   manager
   member
@@ -3023,4 +3029,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

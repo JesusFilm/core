@@ -1,12 +1,14 @@
 import { Prisma, User, prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
+import { type AppType } from './enums/app'
 import { verifyUser } from './verifyUser'
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  app?: AppType | undefined
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
@@ -97,6 +99,6 @@ export async function findOrFetchUser(
   }
   // after user create so it is only sent once
   if (email != null && userCreated && !emailVerified)
-    await verifyUser(userId, email, redirect)
+    await verifyUser(userId, email, redirect, app)
   return user
 }

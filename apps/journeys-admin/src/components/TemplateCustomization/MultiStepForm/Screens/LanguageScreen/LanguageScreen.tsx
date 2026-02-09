@@ -16,6 +16,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { JourneyProfileCreate } from '../../../../../../__generated__/JourneyProfileCreate'
@@ -49,6 +50,7 @@ export function LanguageScreen({
   handleNext,
   handleScreenNavigation
 }: LanguageScreenProps): ReactElement {
+  const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
   const user = useUser()
   const router = useRouter()
@@ -421,7 +423,7 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={loading}
+                  disabled={templateCustomizationGuestFlow || loading}
                   ariaLabel={t('Next')}
                 />
               </Stack>
