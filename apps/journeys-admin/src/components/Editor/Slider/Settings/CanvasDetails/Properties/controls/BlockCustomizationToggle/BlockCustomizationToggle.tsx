@@ -90,7 +90,13 @@ export function BlockCustomizationToggle({
       },
       execute({ customizable: value }) {
         if (targetBlock.__typename === 'ImageBlock') {
-          const input: ImageBlockUpdateInput = { customizable: value }
+          const input: ImageBlockUpdateInput = {
+            customizable: value,
+            src: targetBlock.src,
+            width: targetBlock.width,
+            height: targetBlock.height,
+            blurhash: targetBlock.blurhash
+          }
           void imageBlockUpdate({
             variables: { id: targetBlock.id, input },
             optimisticResponse: {
