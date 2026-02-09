@@ -11,11 +11,7 @@ import {
   LogoSection,
   VideosSection
 } from './Sections'
-import {
-  showImagesSection,
-  showLogoSection,
-  showVideosSection
-} from './utils'
+import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 
 interface MediaScreenProps {
   handleNext: () => void
