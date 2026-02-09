@@ -413,7 +413,7 @@ describe('NewMultiselectButton', () => {
       const cache = new InMemoryCache()
       cache.writeQuery({
         query: gql`
-          query TestJourney {
+          query TestJourney1 {
             journey {
               id
               blocks {
@@ -491,7 +491,7 @@ describe('NewMultiselectButton', () => {
       const cache = new InMemoryCache()
       cache.writeQuery({
         query: gql`
-          query TestJourney {
+          query TestJourney2 {
             journey {
               id
               blocks {
