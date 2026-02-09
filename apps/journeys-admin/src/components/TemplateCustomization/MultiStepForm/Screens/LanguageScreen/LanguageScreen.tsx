@@ -167,15 +167,15 @@ export function LanguageScreen({
 
   async function duplicateJourneyAndRedirect(
     journeyId: string,
-    teamId: string,
-    duplicateAsDraft?: boolean
+    teamId: string
+    // duplicateAsDraft?: boolean
   ): Promise<boolean> {
     const { data } = await journeyDuplicate({
       variables: {
         id: journeyId,
         teamId,
-        forceNonTemplate: true,
-        duplicateAsDraft
+        forceNonTemplate: true
+        // duplicateAsDraft
       }
     })
     if (data?.journeyDuplicate == null) return false

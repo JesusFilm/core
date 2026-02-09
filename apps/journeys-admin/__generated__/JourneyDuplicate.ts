@@ -21,5 +21,4 @@ export interface JourneyDuplicateVariables {
   id: string;
   teamId: string;
   forceNonTemplate?: boolean | null;
-  duplicateAsDraft?: boolean | null;
 }

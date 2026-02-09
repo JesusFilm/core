@@ -31,6 +31,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
+import { SignUpButton } from '../SignUpButton'
 
 interface LinksScreenProps {
   handleNext: () => void
@@ -197,6 +198,7 @@ export function LinksScreen({
         width: '100%'
       }}
     >
+      <SignUpButton />
       <Stack alignItems="center" sx={{ pb: 1 }}>
         <Typography
           variant="h4"
