@@ -48,7 +48,7 @@ export const AuthenticatedUser = builder.prismaObject('User', {
         return user.firstName
       }
     }),
-    lastName: t.exposeString('lastName', { nullable: true }),
+    lastName: t.exposeString('lastName'),
     email: t.field({
       type: 'String',
       nullable: false,
