@@ -531,7 +531,7 @@ model UserMediaRole {
 
 model UserMediaProfile {
   id                  String   @id @default(uuid())
-  userId              String
+  userId              String   @unique
   userInterests       Video[]
   languageInterestIds String[]
   countryInterestIds  String[]

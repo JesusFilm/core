@@ -19,6 +19,9 @@ CREATE TABLE "_UserMediaProfileToVideo" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "UserMediaProfile_userId_key" ON "UserMediaProfile"("userId");
+
+-- CreateIndex
 CREATE INDEX "_UserMediaProfileToVideo_B_index" ON "_UserMediaProfileToVideo"("B");
 
 -- AddForeignKey
