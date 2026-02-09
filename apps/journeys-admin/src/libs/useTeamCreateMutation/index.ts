@@ -1,4 +1,1 @@
-export {
-  useTeamCreateMutation,
-  useTeamCreateMutationGuest
-} from './useTeamCreateMutation'
+export { useTeamCreateMutation } from './useTeamCreateMutation'
