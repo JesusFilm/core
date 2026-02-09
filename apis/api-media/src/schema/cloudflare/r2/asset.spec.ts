@@ -50,7 +50,9 @@ describe('cloudflare/r2/asset', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.cloudflareR2.create.mockResolvedValue({
           id: 'id',
@@ -162,7 +164,9 @@ describe('cloudflare/r2/asset', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.cloudflareR2.delete.mockResolvedValue({
           id: 'id',
