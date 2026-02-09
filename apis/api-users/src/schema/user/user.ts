@@ -60,12 +60,14 @@ builder.asEntity(AuthenticatedUser, {
 
       // Handle cases where firstName is null or empty (data integrity issue)
       // This provides a fallback to prevent GraphQL federation errors
-
       if (user.firstName == null || user.firstName.trim() === '') {
         console.warn(
           `Federation: User ${id} has null/empty firstName, using fallback`
         )
-        return { ...user, firstName: 'Unknown User' }
+        return {
+          ...user,
+          firstName: 'Unknown User'
+        }
       }
 
       return user
