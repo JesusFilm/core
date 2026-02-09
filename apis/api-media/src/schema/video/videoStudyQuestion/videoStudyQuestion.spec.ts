@@ -47,7 +47,9 @@ describe('videoStudyQuestion', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -56,7 +58,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.create.mockResolvedValue({
           id: 'id',
@@ -65,7 +69,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.update.mockResolvedValue({
           id: 'id',
@@ -74,7 +80,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: CREATE_VIDEO_STUDY_QUESTION_MUTATION,
@@ -137,12 +145,16 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.update.mockResolvedValue({
           id: 'id',
@@ -151,7 +163,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
@@ -194,7 +208,9 @@ describe('videoStudyQuestion', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue(null)
         const result = await authClient({
@@ -219,7 +235,9 @@ describe('videoStudyQuestion', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -228,7 +246,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.video.findUnique.mockResolvedValue(null)
         const result = await authClient({
@@ -263,7 +283,9 @@ describe('videoStudyQuestion', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -272,7 +294,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.delete.mockResolvedValue({
           id: 'id',
@@ -281,7 +305,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: DELETE_VIDEO_STUDY_QUESTION_MUTATION,
@@ -312,7 +338,9 @@ describe('videoStudyQuestion', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue(null)
         const result = await authClient({

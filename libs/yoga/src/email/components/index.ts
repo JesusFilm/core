@@ -9,6 +9,7 @@ import { EmailContainer } from './EmailContainer'
 import { EmailLogo } from './EmailLogo'
 import { Footer } from './Footer'
 import { Header } from './Header'
+import { NextStepsFooter } from './NextStepsFooter'
 import { UnsubscribeLink } from './UnsubscribeLink'
 
 export {
@@ -20,6 +21,7 @@ export {
   EmailLogo,
   Footer,
   Header,
+  NextStepsFooter,
   UnsubscribeLink,
   ActionButton,
   ActionJourneyView,

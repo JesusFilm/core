@@ -404,6 +404,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
+  """
+  googleSheetsSyncBackfill(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -1492,6 +1496,50 @@ type JourneyViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__
   language: Language
 }
 
+type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  """
+  ID of the journey that the radioQuestionBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  label of the selected radioOptionBlock
+  """
+  value: String
+}
+
+type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  """
+  ID of the journey that the block belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  null for signUpSubmissionEvent
+  """
+  label: String
+  """
+  name from the signUpBlock form
+  """
+  value: String
+  """
+  email from the signUpBlock form
+  """
+  email: String
+}
+
 type StepViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
   id: ID!
   """
@@ -1550,6 +1598,30 @@ type StepPreviousEvent implements Event @join__type(graph: API_JOURNEYS)  @join_
   stepName of the previous stepBlock
   """
   value: String
+}
+
+type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
+  id: ID!
+  """
+  ID of the journey that the TextResponseBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  response from the TextResponseBlock form
+  """
+  value: String
+  """
+  the id of the block this event originates from
+  """
+  blockId: String
 }
 
 type VideoStartEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
@@ -2127,6 +2199,16 @@ type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: AP
   roles: [Role!]
 }
 
+type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+  id: ID!
+  firstName: String! @join__field(graph: API_USERS) 
+  lastName: String @join__field(graph: API_USERS) 
+  email: String! @join__field(graph: API_USERS) 
+  imageUrl: String @join__field(graph: API_USERS) 
+  superAdmin: Boolean @join__field(graph: API_USERS) 
+  emailVerified: Boolean! @join__field(graph: API_USERS) 
+}
+
 type UserTeamInvite @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   teamId: ID!
@@ -2459,23 +2541,6 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   timeOnPage: Float
 }
 
-type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  label: String
-  value: String
-}
-
-type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  label: String
-  value: String
-  email: String
-}
-
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
@@ -2497,15 +2562,6 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
-}
-
-type TextResponseSubmissionEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  label: String
-  value: String
-  blockId: String
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -3801,6 +3857,11 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
   qhd @join__enumValue(graph: API_MEDIA) 
   uhd @join__enumValue(graph: API_MEDIA) 
   highest @join__enumValue(graph: API_MEDIA) 
+}
+
+enum App @join__type(graph: API_USERS)  {
+  NextSteps @join__enumValue(graph: API_USERS) 
+  JesusFilmOne @join__enumValue(graph: API_USERS) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
@@ -5404,9 +5465,11 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
   redirect: String
+  app: App
 }
 
 input MeInput @join__type(graph: API_USERS)  {
   redirect: String
+  app: App
 }
     

@@ -97,26 +97,23 @@ export async function addLanguageToVideo(
   videoId: string,
   languageId: string
 ): Promise<void> {
-  try {
-    await prisma.video.update({
-      where: {
-        id: videoId,
-        NOT: {
-          availableLanguages: {
-            has: languageId
-          }
-        }
-      },
-      data: {
-        availableLanguages: {
-          push: languageId
-        }
-      }
-    })
-  } catch {
-    // If update fails (e.g., language already exists), that's fine
-    // We just wanted to ensure it's in the array
-  }
+  // availableLanguages is nullable in the DB. If it's NULL, Prisma filters like
+  // "NOT { availableLanguages: { has: ... } }" can silently no-op due to SQL NULL
+  // semantics. Coalesce NULL -> [] in code, then set the updated array.
+  const video = await prisma.video.findUnique({
+    where: { id: videoId },
+    select: { availableLanguages: true }
+  })
+
+  if (video == null) return
+
+  const currentLanguages = video.availableLanguages ?? []
+  if (currentLanguages.includes(languageId)) return
+
+  await prisma.video.update({
+    where: { id: videoId },
+    data: { availableLanguages: { set: [...currentLanguages, languageId] } }
+  })
 }
 
 // Removes a language from a video's availableLanguages if no published variants use it

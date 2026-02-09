@@ -394,6 +394,29 @@ describe('sheets', () => {
       )
     })
 
+    it('should write values with USER_ENTERED when specified', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({})
+      } as Response)
+
+      await writeValues({
+        accessToken: mockAccessToken,
+        spreadsheetId: mockSpreadsheetId,
+        sheetTitle: 'Sheet1',
+        values: [['2026-01-27']],
+        append: false,
+        valueInputOption: 'USER_ENTERED'
+      })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        `https://sheets.googleapis.com/v4/spreadsheets/${mockSpreadsheetId}/values/Sheet1!A1?valueInputOption=USER_ENTERED`,
+        expect.objectContaining({
+          method: 'PUT'
+        })
+      )
+    })
+
     it('should append values when append is true', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
@@ -567,6 +590,28 @@ describe('sheets', () => {
               ['A2', 'B2']
             ]
           })
+        })
+      )
+    })
+
+    it('should update range values with USER_ENTERED when specified', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({})
+      } as Response)
+
+      await updateRangeValues({
+        accessToken: mockAccessToken,
+        spreadsheetId: mockSpreadsheetId,
+        range: 'Sheet1!B2',
+        values: [['2026-01-27']],
+        valueInputOption: 'USER_ENTERED'
+      })
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        `https://sheets.googleapis.com/v4/spreadsheets/${mockSpreadsheetId}/values/Sheet1!B2?valueInputOption=USER_ENTERED`,
+        expect.objectContaining({
+          method: 'PUT'
         })
       )
     })

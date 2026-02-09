@@ -52,6 +52,17 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
+export type AuthenticatedUser = {
+  __typename?: 'AuthenticatedUser';
+  email: Scalars['String']['output'];
+  emailVerified: Scalars['Boolean']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  superAdmin?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type BaseError = {
   message?: Maybe<Scalars['String']['output']>;
 };
@@ -391,6 +402,28 @@ export type ChatOpenEventCreateInput = {
   stepId?: InputMaybe<Scalars['ID']['input']>;
   /** messagePlatform of the link used for chat */
   value?: InputMaybe<MessagePlatform>;
+};
+
+export type CheckVideoInAlgoliaMismatch = {
+  __typename?: 'CheckVideoInAlgoliaMismatch';
+  actual?: Maybe<Scalars['String']['output']>;
+  expected?: Maybe<Scalars['String']['output']>;
+  field?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoInAlgoliaResult = {
+  __typename?: 'CheckVideoInAlgoliaResult';
+  error?: Maybe<Scalars['String']['output']>;
+  mismatches?: Maybe<Array<CheckVideoInAlgoliaMismatch>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+  recordUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoVariantsInAlgoliaResult = {
+  __typename?: 'CheckVideoVariantsInAlgoliaResult';
+  browseUrl?: Maybe<Scalars['String']['output']>;
+  missingVariants?: Maybe<Array<Scalars['String']['output']>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type CloudflareImage = {
@@ -1795,6 +1828,8 @@ export type Mutation = {
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
   fixVideoLanguages: Scalars['Boolean']['output'];
+  /** Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events. */
+  googleSheetsSyncBackfill: GoogleSheetsSync;
   googleSheetsSyncCreate: GoogleSheetsSync;
   googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
@@ -1900,6 +1935,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
+  updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2263,6 +2300,11 @@ export type MutationEnableMuxDownloadArgs = {
 
 export type MutationFixVideoLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncBackfillArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2743,6 +2785,16 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3645,6 +3697,8 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  checkVideoInAlgolia: CheckVideoInAlgoliaResult;
+  checkVideoVariantsInAlgolia: CheckVideoVariantsInAlgoliaResult;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -3812,6 +3866,16 @@ export type QueryBlockArgs = {
 
 export type QueryBlocksArgs = {
   where?: InputMaybe<BlocksFilter>;
+};
+
+
+export type QueryCheckVideoInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type QueryCheckVideoVariantsInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -4321,10 +4385,14 @@ export type RadioQuestionBlockCreateInput = {
 
 export type RadioQuestionSubmissionEvent = Event & {
   __typename?: 'RadioQuestionSubmissionEvent';
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  /** ID of the journey that the radioQuestionBlock belongs to */
   journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
+  /** label of the selected radioOptionBlock */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4449,11 +4517,16 @@ export type SignUpBlockUpdateInput = {
 
 export type SignUpSubmissionEvent = Event & {
   __typename?: 'SignUpSubmissionEvent';
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
+  /** email from the signUpBlock form */
   email?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  /** ID of the journey that the block belongs to */
   journeyId: Scalars['ID']['output'];
+  /** null for signUpSubmissionEvent */
   label?: Maybe<Scalars['String']['output']>;
+  /** name from the signUpBlock form */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4814,11 +4887,16 @@ export type TextResponseBlockUpdateInput = {
 
 export type TextResponseSubmissionEvent = Event & {
   __typename?: 'TextResponseSubmissionEvent';
+  /** the id of the block this event originates from */
   blockId?: Maybe<Scalars['String']['output']>;
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  /** ID of the journey that the TextResponseBlock belongs to */
   journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
+  /** response from the TextResponseBlock form */
   value?: Maybe<Scalars['String']['output']>;
 };
 

@@ -10,20 +10,55 @@ import { logger } from './lib/logger'
 const ONE_HOUR = 3600
 const ONE_DAY = 86_400
 
-function run({
-  service,
-  queueName,
-  repeat,
-  jobData
-}: {
+interface RunOptions {
   service: (job: Job, logger?: Logger) => Promise<void>
   queueName: string
   repeat?: string
   jobData?: Record<string, unknown>
-}): void {
-  // eslint-disable-next-line no-new
-  new Worker(queueName, job, {
-    connection
+  concurrency?: number
+}
+
+function run({
+  service,
+  queueName,
+  repeat,
+  jobData,
+  concurrency
+}: RunOptions): void {
+  if (
+    concurrency != null &&
+    !(Number.isFinite(concurrency) && concurrency > 0)
+  ) {
+    logger.warn(
+      { queue: queueName, concurrency },
+      'invalid concurrency; using default'
+    )
+  }
+
+  const workerOptions: ConstructorParameters<typeof Worker>[2] =
+    typeof concurrency === 'number' &&
+    Number.isFinite(concurrency) &&
+    concurrency > 0
+      ? { connection, concurrency }
+      : { connection }
+
+  const worker = new Worker(queueName, job, workerOptions)
+
+  const queueLogger = logger.child({ queue: queueName })
+
+  worker.on('failed', (job, err) => {
+    queueLogger.error(
+      {
+        jobId: job?.id,
+        jobName: job?.name,
+        error: err
+      },
+      'Job failed'
+    )
+  })
+
+  worker.on('error', (err) => {
+    queueLogger.error({ error: err }, 'Worker error')
   })
 
   async function job(job: Job): Promise<void> {
@@ -37,7 +72,7 @@ function run({
     childLogger.info(`finished job: ${job.name}`)
   }
 
-  logger.info({ queue: queueName }, 'waiting for jobs')
+  logger.info({ queue: queueName, concurrency }, 'waiting for jobs')
 
   if (repeat != null || jobData != null) {
     // Set up scheduled or one-off job
@@ -92,6 +127,14 @@ async function main(): Promise<void> {
         './e2eCleanup'
       )
     )
+    // Google Sheets sync worker - concurrency of 1 to prevent race conditions
+    run({
+      ...(await import(
+        /* webpackChunkName: 'googleSheetsSync' */
+        './googleSheetsSync'
+      )),
+      concurrency: 1
+    })
   }
 
   if (process.env.NODE_ENV !== 'production') {
