@@ -240,7 +240,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: imageBlockUpdateResult
@@ -279,7 +285,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: false }
+          input: {
+            customizable: false,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: imageBlockUpdateResult
@@ -447,7 +459,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: executeResult
@@ -460,7 +478,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: false }
+          input: {
+            customizable: false,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: undoResult
@@ -504,7 +528,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: executeResult
@@ -517,7 +547,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: false }
+          input: {
+            customizable: false,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: undoResult
@@ -530,7 +566,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: redoResult
@@ -707,7 +749,13 @@ describe('BlockCustomizationToggle', () => {
           query: IMAGE_BLOCK_UPDATE,
           variables: {
             id: imageBlock.id,
-            input: { customizable: true }
+            input: {
+              customizable: true,
+              src: imageBlock.src,
+              width: imageBlock.width,
+              height: imageBlock.height,
+              blurhash: imageBlock.blurhash
+            }
           }
         },
         result: imageBlockUpdateResult
@@ -795,7 +843,13 @@ describe('BlockCustomizationToggle', () => {
           query: IMAGE_BLOCK_UPDATE,
           variables: {
             id: imageBlock.id,
-            input: { customizable: true }
+            input: {
+              customizable: true,
+              src: imageBlock.src,
+              width: imageBlock.width,
+              height: imageBlock.height,
+              blurhash: imageBlock.blurhash
+            }
           }
         },
         result: imageBlockUpdateResult
@@ -848,7 +902,13 @@ describe('BlockCustomizationToggle', () => {
           query: IMAGE_BLOCK_UPDATE,
           variables: {
             id: imageBlock.id,
-            input: { customizable: true }
+            input: {
+              customizable: true,
+              src: imageBlock.src,
+              width: imageBlock.width,
+              height: imageBlock.height,
+              blurhash: imageBlock.blurhash
+            }
           }
         },
         result: imageBlockUpdateResult
