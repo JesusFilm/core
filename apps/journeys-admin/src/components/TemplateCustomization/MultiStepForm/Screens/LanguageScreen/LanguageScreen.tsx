@@ -217,24 +217,25 @@ export function LanguageScreen({
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
                 {isSignedIn && (
-                  <Typography
-                    variant="h6"
-                    display={{ xs: 'none', sm: 'block' }}
-                    sx={{ mt: 4 }}
-                  >
-                    {t('Select a team')}
-                  </Typography>
+                  <>
+                    <Typography
+                      variant="h6"
+                      display={{ xs: 'none', sm: 'block' }}
+                      sx={{ mt: 4 }}
+                    >
+                      {t('Select a team')}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      display={{ xs: 'block', sm: 'none' }}
+                      sx={{ mt: 4 }}
+                    >
+                      {t('Select a team')}
+                    </Typography>
+                    <JourneyCustomizeTeamSelect />
+                  </>
                 )}
-                {isSignedIn && (
-                  <Typography
-                    variant="body2"
-                    display={{ xs: 'block', sm: 'none' }}
-                    sx={{ mt: 4 }}
-                  >
-                    {t('Select a team')}
-                  </Typography>
-                )}
-                {isSignedIn && <JourneyCustomizeTeamSelect />}
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
