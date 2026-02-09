@@ -33,10 +33,8 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const showLogo = showLogoSection()
   const showImages = showImagesSection(selectedCardBlockId)
   const showVideos = showVideosSection(selectedCardBlockId)
-  const showBackgroundImage =
-    showBackgroundImageSection(selectedCardBlockId)
-  const showBackgroundVideo =
-    showBackgroundVideoSection(selectedCardBlockId)
+  const showBackgroundImage = showBackgroundImageSection(selectedCardBlockId)
+  const showBackgroundVideo = showBackgroundVideoSection(selectedCardBlockId)
 
   return (
     <Stack alignItems="center" sx={{ width: '100%' }}>
