@@ -59,8 +59,8 @@ describe('api-users', () => {
 
   describe('me', () => {
     const ME_QUERY = graphql(`
-      query Me {
-        me {
+      query Me($input: MeInput) {
+        me(input: $input) {
           id
           firstName
           lastName
@@ -83,7 +83,34 @@ describe('api-users', () => {
       const data = await authClient({
         document: ME_QUERY
       })
-      expect(findOrFetchUser).toHaveBeenCalledWith({}, 'testUserId', undefined)
+      expect(findOrFetchUser).toHaveBeenCalledWith(
+        {},
+        'testUserId',
+        undefined,
+        'NextSteps'
+      )
+      expect(data).toHaveProperty(
+        'data.me',
+        omit(user, ['createdAt', 'userId'])
+      )
+    })
+
+    it('should query me on a per app basis', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(user)
+      const data = await authClient({
+        document: ME_QUERY,
+        variables: {
+          input: {
+            app: 'JesusFilmOne'
+          }
+        }
+      })
+      expect(findOrFetchUser).toHaveBeenCalledWith(
+        {},
+        'testUserId',
+        undefined,
+        'JesusFilmOne'
+      )
       expect(data).toHaveProperty(
         'data.me',
         omit(user, ['createdAt', 'userId'])
@@ -226,8 +253,10 @@ describe('api-users', () => {
 
   describe('createVerificationRequest', () => {
     const CREATE_VERIFICATION_REQUEST_MUTATION = graphql(`
-      mutation CreateVerificationRequest {
-        createVerificationRequest
+      mutation CreateVerificationRequest(
+        $input: CreateVerificationRequestInput
+      ) {
+        createVerificationRequest(input: $input)
       }
     `)
 
@@ -245,7 +274,27 @@ describe('api-users', () => {
       expect(verifyUser).toHaveBeenCalledWith(
         'testUserId',
         'test@example.com',
-        undefined
+        undefined,
+        'NextSteps'
+      )
+      expect(data).toHaveProperty('data.createVerificationRequest', true)
+    })
+
+    it('should create verification request on a per app basis', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(user)
+      const data = await authClient({
+        document: CREATE_VERIFICATION_REQUEST_MUTATION,
+        variables: {
+          input: {
+            app: 'JesusFilmOne'
+          }
+        }
+      })
+      expect(verifyUser).toHaveBeenCalledWith(
+        'testUserId',
+        'test@example.com',
+        undefined,
+        'JesusFilmOne'
       )
       expect(data).toHaveProperty('data.createVerificationRequest', true)
     })

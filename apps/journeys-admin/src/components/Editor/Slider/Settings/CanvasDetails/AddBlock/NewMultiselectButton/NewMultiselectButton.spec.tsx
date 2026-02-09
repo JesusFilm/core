@@ -32,6 +32,18 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+const TEST_JOURNEY_QUERY = gql`
+  query TestJourney {
+    journey {
+      id
+      blocks {
+        id
+        __typename
+      }
+    }
+  }
+`
+
 const multiselectBlockCreateMock: MockedResponse = {
   request: {
     query: MULTISELECT_BLOCK_CREATE,
@@ -412,17 +424,7 @@ describe('NewMultiselectButton', () => {
 
       const cache = new InMemoryCache()
       cache.writeQuery({
-        query: gql`
-          query TestJourney {
-            journey {
-              id
-              blocks {
-                id
-                __typename
-              }
-            }
-          }
-        `,
+        query: TEST_JOURNEY_QUERY,
         data: {
           journey: {
             __typename: 'Journey',
@@ -490,17 +492,7 @@ describe('NewMultiselectButton', () => {
 
       const cache = new InMemoryCache()
       cache.writeQuery({
-        query: gql`
-          query TestJourney {
-            journey {
-              id
-              blocks {
-                id
-                __typename
-              }
-            }
-          }
-        `,
+        query: TEST_JOURNEY_QUERY,
         data: {
           journey: {
             __typename: 'Journey',
