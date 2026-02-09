@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum App {
+  JesusFilmOne = "JesusFilmOne",
+  NextSteps = "NextSteps",
+}
+
 export enum BlockEventLabel {
   custom1 = "custom1",
   custom2 = "custom2",
@@ -469,6 +474,7 @@ export interface ChatOpenEventCreateInput {
 
 export interface CreateVerificationRequestInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface CustomDomainCreateInput {
@@ -664,13 +670,6 @@ export interface JourneyUpdateInput {
   socialNodeY?: number | null;
 }
 
-export interface JourneyVisitorExportSelect {
-  name?: boolean | null;
-  email?: boolean | null;
-  phone?: boolean | null;
-  createdAt?: boolean | null;
-}
-
 export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
@@ -731,6 +730,7 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface MultiselectBlockCreateInput {

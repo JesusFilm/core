@@ -52,6 +52,17 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
+export type AuthenticatedUser = {
+  __typename?: 'AuthenticatedUser';
+  email: Scalars['String']['output'];
+  emailVerified: Scalars['Boolean']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  superAdmin?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type BaseError = {
   message?: Maybe<Scalars['String']['output']>;
 };
