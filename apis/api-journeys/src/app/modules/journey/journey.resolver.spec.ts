@@ -1269,7 +1269,14 @@ describe('JourneyResolver', () => {
     })
 
     it('duplicates your journey', async () => {
-      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      await resolver.journeyDuplicate(
+        ability,
+        'journeyId',
+        'userId',
+        'teamId',
+        undefined,
+        JourneyStatus.draft
+      )
       expect(plausibleQueue.add).toHaveBeenCalledWith(
         'create-journey-site',
         {
@@ -1310,8 +1317,11 @@ describe('JourneyResolver', () => {
             'templateSite'
           ]),
           id: 'duplicateJourneyId',
-          status: JourneyStatus.published,
-          publishedAt: new Date(),
+          status: JourneyStatus.draft,
+          publishedAt: null,
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
