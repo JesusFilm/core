@@ -4,9 +4,12 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import { BlockCustomizationToggle } from '../../CanvasDetails/Properties/controls/BlockCustomizationToggle'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
@@ -33,6 +36,7 @@ export function ImageSource({
   loading,
   error
 }: ImageSourceProps): ReactElement {
+  const { journey } = useJourney()
   const router = useRouter()
   const [open, setOpen] = useState<boolean | undefined>()
 
@@ -76,6 +80,11 @@ export function ImageSource({
           <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
         </CardActionArea>
       </Card>
+      {journey?.template && selectedBlock != null && (
+        <BlockCustomizationToggle
+          block={selectedBlock as TreeBlock<ImageBlock>}
+        />
+      )}
       {open != null && (
         <ImageLibrary
           open={open}
