@@ -3,12 +3,15 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import {
   showLogoSection,
   showImagesSection,
   showVideosSection,
   showBackgroundImageSection,
-  showBackgroundVideoSection
+  showBackgroundVideoSection,
+  getFirstCardWithImages
 } from './utils'
 import {
   BackgroundImageSection,
@@ -27,11 +30,12 @@ interface MediaScreenProps {
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
-    null
+  const { journey } = useJourney()
+  const [selectedCardBlockId] = useState<string | null>(
+    getFirstCardWithImages(journey)
   )
   const showLogo = showLogoSection()
-  const showImages = showImagesSection(selectedCardBlockId)
+  const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(selectedCardBlockId)
   const showBackgroundImage =
     showBackgroundImageSection(selectedCardBlockId)
@@ -48,8 +52,10 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         {t('Media')}
       </Typography>
       {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {<CardsSection onChange={setSelectedCardBlockId} />}
-      {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
+      {<CardsSection onChange={() => {}} />}
+      {showImages && (
+        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+      )}
       {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
       {showBackgroundImage && (
         <BackgroundImageSection cardBlockId={selectedCardBlockId} />

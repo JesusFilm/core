@@ -1,11 +1,22 @@
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { getCardImageBlocks } from '../getJourneyMedia'
+
 /**
  * Shows the images section on the media screen.
- * When implementing, check if the selected card has customizable image blocks.
+ * Checks if the selected card has customizable image blocks.
  *
- * @param cardBlockId - the id of the selected card block
+ * @param journey - The journey object containing blocks
+ * @param cardBlockId - The id of the selected card block
  * @returns true if the images section should be shown, false otherwise
  */
-export function showImagesSection(cardBlockId: string | null): boolean {
-  // TODO: implement when building Images section – pass journey and check blocks for cardBlockId
-  return true
+export function showImagesSection(
+  journey: Journey | undefined,
+  cardBlockId: string | null
+): boolean {
+  if (!journey || !cardBlockId) {
+    return false
+  }
+
+  const imageBlocks = getCardImageBlocks(journey, cardBlockId)
+  return imageBlocks.length > 0
 }
