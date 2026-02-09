@@ -6,16 +6,12 @@ import { ReactElement, useState } from 'react'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import {
-  BackgroundImageSection,
-  BackgroundVideoSection,
   CardsSection,
   ImagesSection,
   LogoSection,
   VideosSection
 } from './Sections'
 import {
-  showBackgroundImageSection,
-  showBackgroundVideoSection,
   showImagesSection,
   showLogoSection,
   showVideosSection
@@ -33,10 +29,6 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const showLogo = showLogoSection()
   const showImages = showImagesSection(selectedCardBlockId)
   const showVideos = showVideosSection(selectedCardBlockId)
-  const showBackgroundImage =
-    showBackgroundImageSection(selectedCardBlockId)
-  const showBackgroundVideo =
-    showBackgroundVideoSection(selectedCardBlockId)
 
   return (
     <Stack alignItems="center" sx={{ width: '100%' }}>
@@ -51,12 +43,6 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       {<CardsSection onChange={setSelectedCardBlockId} />}
       {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
       {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
-      {showBackgroundImage && (
-        <BackgroundImageSection cardBlockId={selectedCardBlockId} />
-      )}
-      {showBackgroundVideo && (
-        <BackgroundVideoSection cardBlockId={selectedCardBlockId} />
-      )}
       <CustomizeFlowNextButton
         label={t('Next')}
         onClick={handleNext}

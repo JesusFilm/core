@@ -1,1 +1,0 @@
-export { BackgroundImageSection } from './BackgroundImageSection'

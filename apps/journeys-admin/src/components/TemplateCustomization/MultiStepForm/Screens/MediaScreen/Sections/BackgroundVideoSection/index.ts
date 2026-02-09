@@ -1,1 +1,0 @@
-export { BackgroundVideoSection } from './BackgroundVideoSection'
