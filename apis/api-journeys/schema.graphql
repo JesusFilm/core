@@ -460,7 +460,7 @@ type Mutation {
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, status: JourneyStatus): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""

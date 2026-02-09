@@ -1275,7 +1275,7 @@ describe('JourneyResolver', () => {
         'userId',
         'teamId',
         undefined,
-        JourneyStatus.draft
+        true
       )
       expect(plausibleQueue.add).toHaveBeenCalledWith(
         'create-journey-site',
