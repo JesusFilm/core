@@ -2188,16 +2188,6 @@ type AnonymousUser @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOUR
   id: ID!
 }
 
-type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
-  id: ID!
-  firstName: String! @join__field(graph: API_USERS) 
-  lastName: String @join__field(graph: API_USERS) 
-  email: String! @join__field(graph: API_USERS) 
-  imageUrl: String @join__field(graph: API_USERS) 
-  superAdmin: Boolean @join__field(graph: API_USERS) 
-  emailVerified: Boolean! @join__field(graph: API_USERS) 
-}
-
 type UserTeamInvite @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   teamId: ID!

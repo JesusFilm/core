@@ -30,7 +30,6 @@ import {
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
-
 // const JOURNEY_PROFILE_CREATE = gql`
 //   mutation JourneyProfileCreate {
 //     journeyProfileCreate {
@@ -152,84 +151,86 @@ export function LanguageScreen({
         await signInAnonymously(getAuth(getApp()))
         console.log('[createGuestUser] 3. signInAnonymously done')
       } else {
-        console.log('[createGuestUser] 2. already anonymous, skip signInAnonymously')
+        console.log(
+          '[createGuestUser] 2. already anonymous, skip signInAnonymously'
+        )
       }
 
       const teamName = t('My Team')
 
-    let meResult: Awaited<ReturnType<typeof loadUser>> | null = null
-    try {
-      console.log('[createGuestUser] 4. calling loadUser')
-      meResult = await loadUser()
-      console.log('[createGuestUser] 5. loadUser done', {
-        hasMe: meResult?.data?.me != null,
-        __typename: meResult?.data?.me?.__typename
-      })
-    } catch (e) {
-      console.error('[createGuestUser] loadUser failed:', e)
-    }
-
-    // let profileResult: Awaited<ReturnType<typeof journeyProfileCreate>> | null =
-    //   null
-    // try {
-    //   profileResult = await journeyProfileCreate()
-    // } catch (e) {
-    //   console.error('[createGuestUser] journeyProfileCreate failed:', e)
-    // }
-
-    let teamResult: Awaited<ReturnType<typeof teamCreate>> | null = null
-    try {
-      console.log('[createGuestUser] 6. calling teamCreate', { teamName })
-      teamResult = await teamCreateGuest({
-        variables: {
-          input: { title: teamName, publicTitle: teamName }
-        }
-      })
-      console.log('[createGuestUser] 7. teamCreate done', {
-        teamId: teamResult?.data?.teamCreate?.id
-      })
-    } catch (e) {
-      const err = e as {
-        graphQLErrors?: Array<{ message: string; extensions?: unknown }>
-        networkError?: unknown
-        message?: string
-        cause?: unknown
-      }
-      console.error('[createGuestUser] teamCreate failed:', err?.message ?? e)
-      if (err?.graphQLErrors?.length) {
-        err.graphQLErrors.forEach((g, i) => {
-          console.error(
-            `[createGuestUser] graphQLErrors[${i}]:`,
-            g.message,
-            g.extensions
-          )
-        })
-      }
-      if (err?.networkError) {
-        console.error('[createGuestUser] networkError:', err.networkError)
-      }
-      if (err?.cause != null) {
-        console.error('[createGuestUser] cause:', err.cause)
-      }
-      return null
-    }
-
-    if (teamResult?.data?.teamCreate == null) {
-      console.log('[createGuestUser] 8. returning null (team missing)', {
-        hasMe: meResult?.data?.me != null,
-        hasTeam: false
-      })
-      return null
-    }
-
-    // Refetch me after teamCreate (user was created in resolveReference); optional for guest flow
-    if (meResult?.data?.me == null) {
+      let meResult: Awaited<ReturnType<typeof loadUser>> | null = null
       try {
-        await loadUser()
-      } catch {
-        // ignore
+        console.log('[createGuestUser] 4. calling loadUser')
+        meResult = await loadUser()
+        console.log('[createGuestUser] 5. loadUser done', {
+          hasMe: meResult?.data?.me != null,
+          __typename: meResult?.data?.me?.__typename
+        })
+      } catch (e) {
+        console.error('[createGuestUser] loadUser failed:', e)
       }
-    }
+
+      // let profileResult: Awaited<ReturnType<typeof journeyProfileCreate>> | null =
+      //   null
+      // try {
+      //   profileResult = await journeyProfileCreate()
+      // } catch (e) {
+      //   console.error('[createGuestUser] journeyProfileCreate failed:', e)
+      // }
+
+      let teamResult: Awaited<ReturnType<typeof teamCreate>> | null = null
+      try {
+        console.log('[createGuestUser] 6. calling teamCreate', { teamName })
+        teamResult = await teamCreateGuest({
+          variables: {
+            input: { title: teamName, publicTitle: teamName }
+          }
+        })
+        console.log('[createGuestUser] 7. teamCreate done', {
+          teamId: teamResult?.data?.teamCreate?.id
+        })
+      } catch (e) {
+        const err = e as {
+          graphQLErrors?: Array<{ message: string; extensions?: unknown }>
+          networkError?: unknown
+          message?: string
+          cause?: unknown
+        }
+        console.error('[createGuestUser] teamCreate failed:', err?.message ?? e)
+        if (err?.graphQLErrors?.length) {
+          err.graphQLErrors.forEach((g, i) => {
+            console.error(
+              `[createGuestUser] graphQLErrors[${i}]:`,
+              g.message,
+              g.extensions
+            )
+          })
+        }
+        if (err?.networkError) {
+          console.error('[createGuestUser] networkError:', err.networkError)
+        }
+        if (err?.cause != null) {
+          console.error('[createGuestUser] cause:', err.cause)
+        }
+        return null
+      }
+
+      if (teamResult?.data?.teamCreate == null) {
+        console.log('[createGuestUser] 8. returning null (team missing)', {
+          hasMe: meResult?.data?.me != null,
+          hasTeam: false
+        })
+        return null
+      }
+
+      // Refetch me after teamCreate (user was created in resolveReference); optional for guest flow
+      if (meResult?.data?.me == null) {
+        try {
+          await loadUser()
+        } catch {
+          // ignore
+        }
+      }
 
       // Guest flow success: we have a team (user exists in api-users via resolveReference)
       console.log('[createGuestUser] 9. success', {
@@ -282,12 +283,9 @@ export function LanguageScreen({
       const teamId =
         query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
       if (teamId == null) {
-        enqueueSnackbar(
-          t(
-            'No team available. Please create a team first.'
-          ),
-          { variant: 'error' }
-        )
+        enqueueSnackbar(t('No team available. Please create a team first.'), {
+          variant: 'error'
+        })
         setLoading(false)
         return
       }
@@ -332,7 +330,10 @@ export function LanguageScreen({
             handleNext()
           }
         } catch (e) {
-          console.error('[LanguageScreen] duplicateJourneyAndRedirect error:', e)
+          console.error(
+            '[LanguageScreen] duplicateJourneyAndRedirect error:',
+            e
+          )
           enqueueSnackbar(
             t(
               'Failed to duplicate journey to team, please refresh the page and try again'

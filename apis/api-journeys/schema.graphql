@@ -230,7 +230,6 @@ extend type Query {
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
-
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
@@ -2714,12 +2713,6 @@ type AnonymousUser
 
 union User = AuthenticatedUser | AnonymousUser
 
-extend type AuthenticatedUser
-  @key(fields: "id")
-{
-  id: ID! @external
-}
-
 enum UserTeamRole {
   manager
   member
@@ -3029,4 +3022,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserTeam | Video | VideoBlock | Visitor

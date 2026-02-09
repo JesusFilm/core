@@ -7,18 +7,6 @@ type AnonymousUser
   id: ID!
 }
 
-type AuthenticatedUser
-  @key(fields: "id")
-{
-  id: ID!
-  firstName: String!
-  lastName: String
-  email: String!
-  imageUrl: String
-  superAdmin: Boolean
-  emailVerified: Boolean!
-}
-
 enum App {
   NextSteps
   JesusFilmOne
