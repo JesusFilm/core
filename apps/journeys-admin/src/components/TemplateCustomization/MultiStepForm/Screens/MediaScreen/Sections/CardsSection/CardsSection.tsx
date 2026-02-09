@@ -10,7 +10,9 @@ interface CardsSectionProps {
 /**
  * TODO: update this jsdoc after you implement this component
  */
-export function CardsSection({ onChange: _onChange }: CardsSectionProps): ReactElement {
+export function CardsSection({
+  onChange: _onChange
+}: CardsSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (

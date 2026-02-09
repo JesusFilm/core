@@ -10,7 +10,9 @@ interface VideosSectionProps {
 /**
  * TODO: update this jsdoc after you implement this component
  */
-export function VideosSection({ cardBlockId: _cardBlockId }: VideosSectionProps): ReactElement {
+export function VideosSection({
+  cardBlockId: _cardBlockId
+}: VideosSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
