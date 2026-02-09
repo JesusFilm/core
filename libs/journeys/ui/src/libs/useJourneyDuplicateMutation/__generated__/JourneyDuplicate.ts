@@ -3,8 +3,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus } from '../../../../__generated__/globalTypes';
-
 // ====================================================
 // GraphQL mutation operation: JourneyDuplicate
 // ====================================================
@@ -23,5 +21,5 @@ export interface JourneyDuplicateVariables {
   id: string;
   teamId: string;
   forceNonTemplate?: boolean | null;
-  status?: JourneyStatus | null;
+  duplicateAsDraft?: boolean | null;
 }

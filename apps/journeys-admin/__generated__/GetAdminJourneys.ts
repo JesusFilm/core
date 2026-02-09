@@ -103,12 +103,6 @@ export interface GetAdminJourneys_journeys {
 }
 
 export interface GetAdminJourneys {
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   journeys: GetAdminJourneys_journeys[];
 }
 
