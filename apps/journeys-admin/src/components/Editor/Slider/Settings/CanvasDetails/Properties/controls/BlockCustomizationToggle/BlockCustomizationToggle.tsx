@@ -118,9 +118,6 @@ export function BlockCustomizationToggle({
       alignItems="center"
       width="100%"
       gap={1}
-      sx={{
-        mt: 2
-      }}
     >
       <Switch
         disabled={targetBlock == null}
