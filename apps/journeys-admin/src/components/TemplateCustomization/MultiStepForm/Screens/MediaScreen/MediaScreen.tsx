@@ -3,13 +3,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import {
-  showLogoSection,
-  showImagesSection,
-  showVideosSection,
-  showBackgroundImageSection,
-  showBackgroundVideoSection
-} from './utils'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+
 import {
   BackgroundImageSection,
   BackgroundVideoSection,
@@ -18,8 +13,13 @@ import {
   LogoSection,
   VideosSection
 } from './Sections'
-
-import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import {
+  showBackgroundImageSection,
+  showBackgroundVideoSection,
+  showImagesSection,
+  showLogoSection,
+  showVideosSection
+} from './utils'
 
 interface MediaScreenProps {
   handleNext: () => void
