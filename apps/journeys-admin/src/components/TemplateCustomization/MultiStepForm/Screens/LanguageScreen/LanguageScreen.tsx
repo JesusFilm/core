@@ -235,8 +235,8 @@ export function LanguageScreen({
         }
         const journeyDuplicateSuccess = await duplicateJourneyAndRedirect(
           journeyId,
-          guestResult.teamId,
-          true
+          guestResult.teamId
+          // true
         )
         if (!journeyDuplicateSuccess) {
           enqueueSnackbar(

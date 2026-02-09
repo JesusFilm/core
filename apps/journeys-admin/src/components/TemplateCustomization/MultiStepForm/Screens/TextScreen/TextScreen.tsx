@@ -11,6 +11,7 @@ import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationFi
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { SignUpButton } from '../SignUpButton'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -202,6 +203,7 @@ export function TextScreen({
         width: '100%'
       }}
     >
+      <SignUpButton />
       <Stack alignItems="center" sx={{ pb: 4 }}>
         <Typography
           variant="h4"
