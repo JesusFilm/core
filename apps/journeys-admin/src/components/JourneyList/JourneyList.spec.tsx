@@ -248,18 +248,11 @@ describe('JourneyList', () => {
     expect(screen.getByText('Date Created')).toBeInTheDocument()
   })
 
-  it('should display "title" in URL when sorting by name is selected', async () => {
+  it('should display "title" in session storage when sorting by name is selected', async () => {
     const user = userEvent.setup()
-    const pushMock = jest.fn()
     Storage.prototype.setItem = jest.fn()
-    Storage.prototype.getItem = jest.fn()
 
-    mockedUseRouter.mockReturnValue({
-      query: { status: 'active', type: 'journeys' },
-      push: pushMock,
-      replace: jest.fn(),
-      events: { on: jest.fn(), off: jest.fn() }
-    } as unknown as NextRouter)
+    sessionStorage.clear()
 
     render(
       <MockedProvider>
@@ -274,37 +267,22 @@ describe('JourneyList', () => {
       'journeyListSortBy',
       SortOrder.TITLE
     )
-    expect(pushMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.objectContaining({ sortBy: SortOrder.TITLE })
-      }),
-      undefined,
-      { shallow: true }
-    )
   })
 
-  it('should display "updated at" in URL when sorting by last modified is selected', async () => {
+  it('should display "updated at" in session storage when sorting by name is selected', async () => {
     const user = userEvent.setup()
-    const replaceMock = jest.fn()
     Storage.prototype.setItem = jest.fn()
-    Storage.prototype.getItem = jest.fn()
 
-    mockedUseRouter.mockReturnValue({
-      query: {
-        status: 'active',
-        type: 'journeys',
-        sortBy: SortOrder.UPDATED_AT
-      },
-      push: jest.fn(),
-      replace: replaceMock,
-      events: { on: jest.fn(), off: jest.fn() }
-    } as unknown as NextRouter)
+    sessionStorage.clear()
 
     render(
       <MockedProvider>
         <JourneyList />
       </MockedProvider>
     )
+
+    await user.click(screen.getByRole('button', { name: 'Sort By' }))
+    await user.click(screen.getByText('Name'))
 
     await user.click(screen.getByRole('button', { name: 'Sort By' }))
     await user.click(screen.getByText('Last Modified'))
@@ -313,31 +291,13 @@ describe('JourneyList', () => {
       'journeyListSortBy',
       SortOrder.UPDATED_AT
     )
-    expect(replaceMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.objectContaining({ sortBy: SortOrder.UPDATED_AT })
-      }),
-      undefined,
-      { shallow: true }
-    )
   })
 
-  it('should display "created at" in URL when sorting by date created is selected', async () => {
+  it('should display "created at" in session storage when sorting by name is selected', async () => {
     const user = userEvent.setup()
-    const replaceMock = jest.fn()
     Storage.prototype.setItem = jest.fn()
-    Storage.prototype.getItem = jest.fn()
 
-    mockedUseRouter.mockReturnValue({
-      query: {
-        status: 'active',
-        type: 'journeys',
-        sortBy: SortOrder.CREATED_AT
-      },
-      push: jest.fn(),
-      replace: replaceMock,
-      events: { on: jest.fn(), off: jest.fn() }
-    } as unknown as NextRouter)
+    sessionStorage.clear()
 
     render(
       <MockedProvider>
@@ -346,51 +306,14 @@ describe('JourneyList', () => {
     )
 
     await user.click(screen.getByRole('button', { name: 'Sort By' }))
+    await user.click(screen.getByText('Name'))
+
+    await user.click(screen.getByRole('button', { name: 'Sort By' }))
     await user.click(screen.getByText('Date Created'))
 
     expect(sessionStorage.setItem).toHaveBeenCalledWith(
       'journeyListSortBy',
       SortOrder.CREATED_AT
-    )
-    expect(replaceMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.objectContaining({ sortBy: SortOrder.CREATED_AT })
-      }),
-      undefined,
-      { shallow: true }
-    )
-  })
-
-  it('should use sessionStorage sync sort order to URL when there is no URL', () => {
-    const replaceMock = jest.fn()
-    Storage.prototype.setItem = jest.fn()
-    Storage.prototype.getItem = jest.fn().mockReturnValue(SortOrder.TITLE)
-
-    mockedUseRouter.mockReturnValue({
-      query: { status: 'active', type: 'journeys' },
-      push: jest.fn(),
-      replace: replaceMock,
-      events: { on: jest.fn(), off: jest.fn() }
-    } as unknown as NextRouter)
-
-    render(
-      <MockedProvider>
-        <JourneyList />
-      </MockedProvider>
-    )
-
-    expect(Storage.prototype.getItem).toHaveBeenCalledWith('journeyListSortBy')
-    expect(sessionStorage.setItem).toHaveBeenCalledWith(
-      'journeyListSortBy',
-      SortOrder.TITLE
-    )
-
-    expect(replaceMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        query: expect.objectContaining({ sortBy: SortOrder.TITLE })
-      }),
-      undefined,
-      { shallow: true }
     )
   })
 })

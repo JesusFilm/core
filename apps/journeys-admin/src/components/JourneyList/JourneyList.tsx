@@ -42,33 +42,20 @@ export function JourneyList({
   })
   const { navbar, sidePanel } = usePageWrapperStyles()
 
-  // <WIP
-
   useEffect(() => {
-    const sortByFromQuery = router.query.sortBy
-    const sortByFromStorage = sessionStorage.getItem('journeyListSortBy')
-    const sortOrder = (sortByFromQuery ?? sortByFromStorage) as SortOrder
-    const isValidSort = Object.values(SortOrder).includes(sortOrder)
+    const sortByFromStorage = sessionStorage.getItem(
+      'journeyListSortBy'
+    ) as SortOrder | null
+    const isValidSort =
+      sortByFromStorage != null &&
+      Object.values(SortOrder).includes(sortByFromStorage)
     if (!isValidSort) return
 
-    setSortOrder(sortOrder)
-    sessionStorage.setItem('journeyListSortBy', sortOrder)
-
-    void router.replace(
-      { query: { ...router.query, sortBy: sortOrder } },
-      undefined,
-      { shallow: true }
-    )
-  }, [router.query.sortBy])
-
-  // WIP>
+    setSortOrder(sortByFromStorage)
+  }, [])
 
   function handleSetSortOrder(order: SortOrder) {
     setSortOrder(order)
-    void router.push({ query: { ...router.query, sortBy: order } }, undefined, {
-      shallow: true
-    })
-
     sessionStorage.setItem('journeyListSortBy', order)
   }
 
