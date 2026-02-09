@@ -378,9 +378,6 @@ export function BackgroundMediaVideo({
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 
   return (
-    <VideoBlockEditor
-      selectedBlock={videoCoverBlock}
-      onChange={handleChange}
-    />
+    <VideoBlockEditor selectedBlock={videoCoverBlock} onChange={handleChange} />
   )
 }

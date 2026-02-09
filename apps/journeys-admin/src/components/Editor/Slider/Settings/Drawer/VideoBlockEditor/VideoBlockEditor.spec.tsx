@@ -8,9 +8,9 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
-import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
 import { GetVideoVariantLanguages_video } from '../../../../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'

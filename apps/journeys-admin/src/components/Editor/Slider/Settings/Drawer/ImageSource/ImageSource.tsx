@@ -4,13 +4,13 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
-import { BlockCustomizationToggle } from '../../CanvasDetails/Properties/controls/BlockCustomizationToggle'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
+import { BlockCustomizationToggle } from '../../CanvasDetails/Properties/controls/BlockCustomizationToggle'
 import { ImageBlockHeader } from '../ImageBlockHeader'
 
 const ImageLibrary = dynamic(

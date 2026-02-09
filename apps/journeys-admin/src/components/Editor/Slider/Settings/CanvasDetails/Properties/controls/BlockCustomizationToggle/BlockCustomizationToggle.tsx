@@ -113,12 +113,7 @@ export function BlockCustomizationToggle({
   }
 
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      width="100%"
-      gap={1}
-    >
+    <Stack direction="row" alignItems="center" width="100%" gap={1}>
       <Switch
         disabled={targetBlock == null}
         checked={customizable}
