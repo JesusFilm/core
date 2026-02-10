@@ -484,6 +484,9 @@ export function UploadVideoVariantProvider({
 
           while (attempt < maxRetries) {
             try {
+              lastProgressUploaded = uploadedBytes
+              lastProgressTime = Date.now()
+
               return await axios.put(uploadUrl, chunk, {
                 headers: {
                   'Content-Type': file.type
