@@ -275,6 +275,7 @@ resource "aws_alb_target_group" "alb_target_group" {
     path                = var.service_config.alb_target_group.health_check_path
     port                = var.service_config.alb_target_group.health_check_port
     protocol            = var.service_config.alb_target_group.protocol
+    matcher             = var.service_config.alb_target_group.health_check_matcher
   }
 
   lifecycle {
@@ -304,12 +305,13 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name                   = "${local.service_config_name_env}-service"
-  cluster                = var.ecs_config.cluster.id
-  task_definition        = aws_ecs_task_definition.ecs_task_definition.arn
-  launch_type            = "FARGATE"
-  desired_count          = var.service_config.desired_count
-  enable_execute_command = true
+  name                              = "${local.service_config_name_env}-service"
+  cluster                           = var.ecs_config.cluster.id
+  task_definition                   = aws_ecs_task_definition.ecs_task_definition.arn
+  launch_type                       = "FARGATE"
+  desired_count                     = var.service_config.desired_count
+  enable_execute_command            = true
+  health_check_grace_period_seconds = var.service_config.health_check_grace_period_seconds
 
   network_configuration {
     subnets          = var.ecs_config.subnets
