@@ -10,14 +10,15 @@ locals {
     "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
-    name           = "api-gateway"
-    is_public      = true
-    container_port = local.port
-    host_port      = local.port
-    cpu            = 1024
-    memory         = 4096
-    desired_count  = var.env == "stage" ? 1 : 2
-    zone_id        = var.ecs_config.zone_id
+    name                              = "api-gateway"
+    is_public                         = true
+    container_port                    = local.port
+    host_port                         = local.port
+    cpu                               = 1024
+    memory                            = 4096
+    desired_count                     = var.env == "stage" ? 1 : 2
+    zone_id                           = var.ecs_config.zone_id
+    health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port                             = local.port
       health_check_interval            = 5
