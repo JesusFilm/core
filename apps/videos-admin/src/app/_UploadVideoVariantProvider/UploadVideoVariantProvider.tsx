@@ -375,7 +375,19 @@ export function UploadVideoVariantProvider({
     videoSlug?: string,
     onComplete?: () => void
   ) => {
+    const uploadTraceId = uuidv4()
+    const logContext = {
+      uploadTraceId,
+      videoId,
+      languageId,
+      edition,
+      fileName: file.name,
+      fileSize: file.size
+    }
+
     try {
+
+      console.info('Starting video upload', logContext)
       dispatch({
         type: 'START_UPLOAD',
         videoId,
@@ -391,6 +403,10 @@ export function UploadVideoVariantProvider({
       const videoVariantId = `${languageId}_${videoId}`
       const extension = getExtension(file.name)
       const fileName = `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`
+      console.info('Preparing R2 multipart upload', {
+        ...logContext,
+        r2FileName: fileName
+      })
       const r2Response = await prepareR2Multipart({
         variables: {
           input: {
@@ -410,17 +426,32 @@ export function UploadVideoVariantProvider({
         multipartData?.publicUrl == null ||
         multipartData?.parts == null
       ) {
+        console.error('Failed to prepare R2 multipart upload', {
+          ...logContext,
+          r2FileName: fileName
+        })
         const errorMessage = 'Failed to prepare R2 multipart upload'
         dispatch({ type: 'SET_ERROR', error: errorMessage })
         enqueueSnackbar(errorMessage, { variant: 'error' })
         return
       }
+      console.info('R2 multipart upload prepared', {
+        ...logContext,
+        r2FileName: multipartData.fileName,
+        r2UploadId: multipartData.uploadId,
+        partCount: multipartData.parts.length
+      })
 
       const partSize =
         multipartData.partSize ?? calculateMultipartPartSize(file.size)
       const parts = multipartData.parts
 
       if (parts.length === 0) {
+        console.error('R2 multipart upload has no parts', {
+          ...logContext,
+          r2FileName: multipartData.fileName,
+          r2UploadId: multipartData.uploadId
+        })
         const errorMessage = 'Failed to prepare R2 multipart upload'
         dispatch({ type: 'SET_ERROR', error: errorMessage })
         enqueueSnackbar(errorMessage, { variant: 'error' })
@@ -428,6 +459,7 @@ export function UploadVideoVariantProvider({
       }
 
       const abortController = new AbortController()
+
       const keepAliveInterval = setInterval(() => {
         void refreshToken().catch(() => undefined)
       }, 45000)
@@ -443,6 +475,84 @@ export function UploadVideoVariantProvider({
           (first, second) => first.partNumber - second.partNumber
         )
 
+        const uploadPartWithRetry = async (
+          uploadUrl: string,
+          chunk: Blob,
+          partNumber: number
+        ) => {
+          const maxRetries = 3
+          let attempt = 0
+
+          while (attempt < maxRetries) {
+            try {
+              return await axios.put(uploadUrl, chunk, {
+                headers: {
+                  'Content-Type': file.type
+                },
+                signal: abortController.signal as unknown as AbortSignal,
+                onUploadProgress: (progressEvent) => {
+                  const loaded = progressEvent.loaded ?? 0
+                  const totalUploaded = uploadedBytes + loaded
+                  const percentCompleted = Math.round(
+                    (totalUploaded * 100) / totalSize
+                  )
+
+                  const now = Date.now()
+                  const deltaBytes = totalUploaded - lastProgressUploaded
+                  const deltaTimeMs = now - lastProgressTime
+                  const speedBps =
+                    deltaTimeMs > 0 ? (deltaBytes * 1000) / deltaTimeMs : null
+                  const etaSeconds =
+                    speedBps != null && speedBps > 0
+                      ? Math.max(0, (totalSize - totalUploaded) / speedBps)
+                      : null
+
+                  dispatch({
+                    type: 'SET_PROGRESS',
+                    progress: percentCompleted,
+                    uploadedBytes: totalUploaded,
+                    uploadSpeedBps: speedBps,
+                    etaSeconds
+                  })
+
+                  lastProgressUploaded = totalUploaded
+                  lastProgressTime = now
+                }
+              })
+            } catch (error) {
+              attempt += 1
+              if (attempt >= maxRetries) {
+                const errorMessage =
+                  error instanceof Error ? error.message : 'Unknown error'
+                console.error('R2 part upload failed', {
+                  ...logContext,
+                  r2FileName: multipartData.fileName,
+                  r2UploadId: multipartData.uploadId,
+                  partNumber,
+                  attempts: attempt,
+                  errorMessage
+                })
+                throw new Error(
+                  `Failed to upload part ${partNumber} after ${maxRetries} attempts: ${errorMessage}`
+                )
+              }
+              console.warn('Retrying R2 part upload', {
+                ...logContext,
+                r2FileName: multipartData.fileName,
+                r2UploadId: multipartData.uploadId,
+                partNumber,
+                attempt,
+                maxRetries
+              })
+              await new Promise((resolve) =>
+                setTimeout(resolve, 500 * attempt)
+              )
+            }
+          }
+
+          throw new Error(`Failed to upload part ${partNumber}`)
+        }
+
         for (const part of sortedParts) {
           const start = (part.partNumber - 1) * partSize
           if (start >= file.size) break
@@ -454,40 +564,11 @@ export function UploadVideoVariantProvider({
             throw new Error(`Missing upload URL for part ${part.partNumber}`)
           }
 
-          const uploadResult = await axios.put(part.uploadUrl, chunk, {
-            headers: {
-              'Content-Type': file.type
-            },
-            signal: abortController.signal as unknown as AbortSignal,
-            onUploadProgress: (progressEvent) => {
-              const loaded = progressEvent.loaded ?? 0
-              const totalUploaded = uploadedBytes + loaded
-              const percentCompleted = Math.round(
-                (totalUploaded * 100) / totalSize
-              )
-
-              const now = Date.now()
-              const deltaBytes = totalUploaded - lastProgressUploaded
-              const deltaTimeMs = now - lastProgressTime
-              const speedBps =
-                deltaTimeMs > 0 ? (deltaBytes * 1000) / deltaTimeMs : null
-              const etaSeconds =
-                speedBps != null && speedBps > 0
-                  ? Math.max(0, (totalSize - totalUploaded) / speedBps)
-                  : null
-
-              dispatch({
-                type: 'SET_PROGRESS',
-                progress: percentCompleted,
-                uploadedBytes: totalUploaded,
-                uploadSpeedBps: speedBps,
-                etaSeconds
-              })
-
-              lastProgressUploaded = totalUploaded
-              lastProgressTime = now
-            }
-          })
+          const uploadResult = await uploadPartWithRetry(
+            part.uploadUrl,
+            chunk,
+            part.partNumber
+          )
 
           const headers = uploadResult.headers as Record<
             string,
@@ -532,9 +613,19 @@ export function UploadVideoVariantProvider({
       }
 
       if (uploadedParts.length === 0) {
+        console.error('No parts uploaded to R2', {
+          ...logContext,
+          r2FileName: multipartData.fileName,
+          r2UploadId: multipartData.uploadId
+        })
         throw new Error('No parts uploaded to R2')
       }
 
+      console.info('Completing R2 multipart upload', {
+        ...logContext,
+        r2FileName: multipartData.fileName,
+        r2UploadId: multipartData.uploadId
+      })
       await completeR2Multipart({
         variables: {
           input: {
@@ -544,6 +635,11 @@ export function UploadVideoVariantProvider({
             parts: uploadedParts
           }
         }
+      })
+      console.info('R2 multipart upload completed', {
+        ...logContext,
+        r2FileName: multipartData.fileName,
+        r2UploadId: multipartData.uploadId
       })
 
       const muxResponse = await createMuxVideo({
@@ -556,6 +652,10 @@ export function UploadVideoVariantProvider({
       })
 
       if (muxResponse.data?.createMuxVideoUploadByUrl?.id == null) {
+        console.error('Failed to create Mux video', {
+          ...logContext,
+          r2FileName: multipartData.fileName
+        })
         const errorMessage = 'Failed to create Mux video'
         dispatch({ type: 'SET_ERROR', error: errorMessage })
         enqueueSnackbar(errorMessage, { variant: 'error' })
@@ -564,6 +664,10 @@ export function UploadVideoVariantProvider({
 
       dispatch({
         type: 'START_PROCESSING',
+        muxVideoId: muxResponse.data.createMuxVideoUploadByUrl.id
+      })
+      console.info('Mux video created, polling for readiness', {
+        ...logContext,
         muxVideoId: muxResponse.data.createMuxVideoUploadByUrl.id
       })
 
@@ -583,6 +687,11 @@ export function UploadVideoVariantProvider({
         errorMessage = 'Failed to upload video'
       }
 
+      console.error('Video upload failed', {
+        ...logContext,
+        errorMessage,
+        errorName: error instanceof Error ? error.name : undefined
+      })
       dispatch({ type: 'SET_ERROR', error: errorMessage })
       enqueueSnackbar(errorMessage, { variant: 'error' })
     }
