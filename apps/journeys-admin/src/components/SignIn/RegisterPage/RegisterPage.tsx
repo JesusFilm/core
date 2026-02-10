@@ -8,7 +8,9 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   getAuth,
+  linkWithCredential,
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth'
@@ -72,12 +74,38 @@ export function RegisterPage({
     await signInWithEmailAndPassword(auth, email, password)
   }
 
+  async function convertAnonymousAccountToPermanent(
+    email: string,
+    name: string,
+    password: string
+  ): Promise<void> {
+    const auth = getAuth()
+    const currentUser = auth.currentUser
+    if (currentUser == null || !currentUser.isAnonymous) return
+
+    const credential = EmailAuthProvider.credential(email, password)
+    const userCredential = await linkWithCredential(currentUser, credential)
+    await updateProfile(userCredential.user, { displayName: name })
+    await signInWithEmailAndPassword(auth, email, password)
+  }
+
   async function handleCreateAccount(
     values: InferType<typeof validationSchema>,
     { setFieldError }
   ): Promise<void> {
     try {
-      await createAccountAndSignIn(values.email, values.name, values.password)
+      const auth = getAuth()
+      const currentUser = auth.currentUser
+
+      if (currentUser?.isAnonymous === true) {
+        await convertAnonymousAccountToPermanent(
+          values.email,
+          values.name,
+          values.password
+        )
+      } else {
+        await createAccountAndSignIn(values.email, values.name, values.password)
+      }
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(
