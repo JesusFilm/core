@@ -236,7 +236,7 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={templateCustomizationGuestFlow || loading}
+                  // disabled={templateCustomizationGuestFlow || loading}
                   ariaLabel={t('Next')}
                 />
               </Stack>

@@ -98,7 +98,7 @@ describe('TemplateCardPreview', () => {
       { id: '3', children: [{ __typename: 'CardBlock' }] }
     ] as Array<TreeBlock<StepBlock>>
 
-    const { getByTestId, getByRole } = render(
+    const { getByRole } = render(
       <ThemeProvider theme={createTheme()}>
         <TemplateCardPreview steps={steps} variant="media" />
       </ThemeProvider>

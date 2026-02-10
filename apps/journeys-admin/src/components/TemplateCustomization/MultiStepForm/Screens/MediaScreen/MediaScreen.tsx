@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -49,6 +49,12 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
     customizableSteps[0]
   )
+
+  useEffect(() => {
+    if (customizableSteps.length > 0 && selectedStep == null) {
+      setSelectedStep(customizableSteps[0])
+    }
+  }, [customizableSteps, selectedStep])
 
   function handleStepClick(step: TreeBlock<StepBlock>): void {
     setSelectedStep(step)
