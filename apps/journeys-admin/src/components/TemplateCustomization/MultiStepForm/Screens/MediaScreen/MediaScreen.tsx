@@ -38,7 +38,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     setSelectedStep(step)
   }
   return (
-    <Stack alignItems="center" sx={{ width: 'inherit' }}>
+    <Stack alignItems="center" sx={{ width: '100%' }}>
       <Typography
         variant="h4"
         gutterBottom
