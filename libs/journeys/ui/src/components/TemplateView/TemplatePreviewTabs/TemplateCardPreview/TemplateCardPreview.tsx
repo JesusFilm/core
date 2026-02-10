@@ -35,6 +35,18 @@ interface TemplateCardPreviewProps {
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 const StyledSwiper = styled(Swiper)(() => ({}))
 
+/**
+ * Horizontal carousel of template step cards with optional navigation and "more cards" slide.
+ * Renders either a preview (first 7 steps + CTA) or full customizable media list with selection state.
+ *
+ * @param props - Component props
+ * @param props.steps - Journey step blocks to display as cards
+ * @param props.authUser - Authenticated user for CTA sign-in state
+ * @param props.variant - 'preview' | 'media'; controls layout and behaviour
+ * @param props.onClick - Handler when a card is clicked
+ * @param props.selectedStep - Selected step (media variant)
+ * @returns Carousel UI or skeleton placeholder when steps are loading
+ */
 export function TemplateCardPreview({
   steps,
   authUser,

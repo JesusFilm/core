@@ -32,6 +32,13 @@ export interface TemplateCardPreviewItemProps {
   selectedStep?: TreeBlock<StepBlock> | null
 }
 
+/**
+ * Renders a single template step as a preview card inside a FramePortal.
+ * Applies variant-based sizing, optional selection scale, and theme/RTL from the journey.
+ * Invokes onClick when the card is clicked.
+ *
+ * @returns A clickable card box containing the step content in a scaled frame.
+ */
 export function TemplateCardPreviewItem({
   step,
   variant,
