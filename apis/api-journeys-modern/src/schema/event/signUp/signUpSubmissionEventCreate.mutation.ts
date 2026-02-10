@@ -14,9 +14,6 @@ import { SignUpSubmissionEventRef } from './signUpSubmissionEvent'
 
 builder.mutationField('signUpSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     nullable: false,
     type: SignUpSubmissionEventRef,
     args: {

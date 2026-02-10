@@ -85,6 +85,13 @@ describe('ButtonEdit', () => {
   const mockJourneyWithCustomization: Journey = {
     id: 'journeyId',
     template: false,
+    language: {
+      __typename: 'Language',
+      id: '1',
+      bcp47: 'en',
+      iso3: 'eng',
+      name: []
+    },
     journeyCustomizationFields: [
       {
         id: 'field1',
@@ -110,6 +117,13 @@ describe('ButtonEdit', () => {
   const mockTemplateJourney: Journey = {
     id: 'templateId',
     template: true,
+    language: {
+      __typename: 'Language',
+      id: '1',
+      bcp47: 'en',
+      iso3: 'eng',
+      name: []
+    },
     journeyCustomizationFields: []
   } as unknown as Journey
 

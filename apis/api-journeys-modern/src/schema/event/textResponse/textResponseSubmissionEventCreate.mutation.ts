@@ -14,9 +14,6 @@ import { TextResponseSubmissionEventRef } from './textResponseSubmissionEvent'
 
 builder.mutationField('textResponseSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     nullable: false,
     type: TextResponseSubmissionEventRef,
     args: {

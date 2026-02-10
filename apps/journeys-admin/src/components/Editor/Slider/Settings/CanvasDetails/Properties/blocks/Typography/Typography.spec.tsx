@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render } from '@testing-library/react'
+import { render, within } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider/EditorProvider'
@@ -99,6 +99,37 @@ describe('Typography properties', () => {
     expect(getByRole('button', { name: 'Color #C52D3A' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Text Alignment Center' })
+    ).toBeInTheDocument()
+  })
+
+  it('shows corresponding icon to center align setting', () => {
+    const block: TreeBlock<TypographyBlock> = {
+      id: 'typography1.id',
+      __typename: 'TypographyBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      align: TypographyAlign.center,
+      color: null,
+      content: 'Typography',
+      variant: TypographyVariant.h2,
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: '#C52D3A'
+      },
+      children: []
+    }
+    const { getByRole, getByTestId } = render(
+      <MockedProvider>
+        <Typography {...block} />
+      </MockedProvider>
+    )
+
+    const alignmentButton = getByRole('button', {
+      name: 'Text Alignment Center'
+    })
+    expect(alignmentButton).toBeInTheDocument()
+    expect(
+      within(alignmentButton).getByTestId('AlignCenterIcon')
     ).toBeInTheDocument()
   })
 

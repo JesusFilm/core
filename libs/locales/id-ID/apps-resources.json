@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Cobalah desain baru.",
+  "Better search, languages, and collections.": "Pencarian, bahasa, dan koleksi yang lebih baik.",
+  "Better search. Better language support. Better collections.": "Pencarian yang lebih baik. Dukungan bahasa yang lebih baik. Koleksi yang lebih baik.",
+  "New Design": "Desain Baru",
   "close": "tutup",
   "No Downloads Available": "Tidak Ada Unduhan yang Tersedia",
   "Highest": "Tertinggi",
@@ -36,8 +40,6 @@
   "Language": "Bahasa",
   "Subtitles are not available in {{language}}.": "Teks tidak tersedia di {{language}}.",
   "Subtitles": "Teks",
-  "Available Languages": "Bahasa yang Tersedia",
-  "Other Languages": "Bahasa Lain",
   "Show subtitles": "Menampilkan subtitle",
   "Read more...": "Baca selengkapnya...",
   "Related questions": "Pertanyaan terkait",
@@ -65,7 +67,7 @@
   "Discussion Questions": "Pertanyaan Diskusi",
   "Watch Full Film": "Tonton Film Lengkap",
   "See All": "Lihat Semua",
-  "Play": "Bermain",
+  "Play": "Putar",
   "Play Video": "Putar Video",
   "{{ duration }} min": "{{ duration }} min",
   "Play with sound": "Bermain dengan suara",
@@ -92,9 +94,5 @@
   "Short Film": "Film Pendek",
   "Behind The Scenes": "Di Balik Layar",
   "Trailer": "Trailer",
-  "Available in {{count}} languages._other": "Tersedia dalam berbagai bahasa {{count}} .",
-  "Better search. Better language support. Better collections.": "Pencarian lebih baik. Dukungan bahasa lebih baik. Koleksi lebih baik.",
-  "Better search, languages, and collections.": "Pencarian, bahasa, dan koleksi yang lebih baik.",
-  "Try the new design.": "Coba desain baru.",
-  "New Design": "Desain Baru"
+  "Available in {{count}} languages._other": "Tersedia dalam berbagai bahasa {{count}} ."
 }

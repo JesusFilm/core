@@ -15,6 +15,11 @@ export const JourneysQueryOptions = builder.inputType('JourneysQueryOptions', {
       required: false,
       description:
         'limit results to journeys in a journey collection (currently only available when using hostname option)'
+    }),
+    skipRoutingFilter: t.boolean({
+      required: false,
+      description:
+        'skip custom domain routing filter (for admin template customization)'
     })
   })
 })

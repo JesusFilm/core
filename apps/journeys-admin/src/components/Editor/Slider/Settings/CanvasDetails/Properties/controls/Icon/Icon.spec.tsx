@@ -174,7 +174,7 @@ describe('Icon', () => {
         iconBlockUpdate: {
           id: 'iconBlock.id',
           parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
+          name: IconName.ChevronLeftRounded,
           color: null,
           size: null
         }
@@ -189,7 +189,7 @@ describe('Icon', () => {
               query: ICON_BLOCK_NAME_UPDATE,
               variables: {
                 id: icon.id,
-                name: IconName.BeenhereRounded
+                name: IconName.ChevronLeftRounded
               }
             },
             result
@@ -202,7 +202,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Been Here' }))
+    fireEvent.click(getByRole('option', { name: 'Chevron Left' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -212,7 +212,7 @@ describe('Icon', () => {
         iconBlockUpdate: {
           id: 'iconBlock.id',
           parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
+          name: IconName.ChevronLeftRounded,
           color: null,
           size: null
         }
@@ -224,7 +224,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          name: IconName.BeenhereRounded
+          name: IconName.ChevronLeftRounded
         }
       },
       result: result1
@@ -263,7 +263,7 @@ describe('Icon', () => {
     )
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Chevron Left' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -276,7 +276,7 @@ describe('Icon', () => {
         iconBlockUpdate: {
           id: 'iconBlock.id',
           parentBlockId: 'buttonBlockId',
-          name: IconName.BeenhereRounded,
+          name: IconName.ChevronLeftRounded,
           color: null,
           size: null
         }
@@ -288,7 +288,7 @@ describe('Icon', () => {
         query: ICON_BLOCK_NAME_UPDATE,
         variables: {
           id: icon.id,
-          name: IconName.BeenhereRounded
+          name: IconName.ChevronLeftRounded
         }
       },
       result: result1,
@@ -329,7 +329,7 @@ describe('Icon', () => {
     )
 
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Been Here' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Chevron Left' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -337,5 +337,58 @@ describe('Icon', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
+  })
+
+  it('should display deprecated icon value when selected but not show it in dropdown options', () => {
+    const deprecatedIcon: TreeBlock<IconFields> = {
+      id: 'deprecatedIconBlock.id',
+      parentBlockId: 'buttonBlockId',
+      parentOrder: null,
+      __typename: 'IconBlock',
+      iconName: IconName.LiveTvRounded,
+      iconSize: null,
+      iconColor: null,
+      children: []
+    }
+
+    const selectedBlockWithDeprecatedIcon: TreeBlock<ButtonBlock> = {
+      __typename: 'ButtonBlock',
+      id: 'buttonId',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      label: 'test button',
+      buttonVariant: null,
+      buttonColor: null,
+      size: null,
+      startIconId: null,
+      endIconId: null,
+      submitEnabled: null,
+      action: null,
+      children: [deprecatedIcon],
+      settings: null,
+      eventLabel: null
+    }
+
+    render(
+      <MockedProvider>
+        <EditorProvider
+          initialState={{ selectedBlock: selectedBlockWithDeprecatedIcon }}
+        >
+          <Icon id={deprecatedIcon.id} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const selectElement = screen.getByRole('combobox', { name: 'icon-name' })
+
+    // The deprecated icon should be visible in the select display value
+    expect(selectElement).toHaveTextContent('Live Tv')
+
+    fireEvent.mouseDown(selectElement)
+
+    // The deprecated icon should NOT appear as a visible option in the dropdown menu
+    expect(
+      screen.queryByRole('option', { name: 'Live Tv' })
+    ).not.toBeInTheDocument()
   })
 })

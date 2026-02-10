@@ -52,6 +52,29 @@ describe('JourneyListContent', () => {
     } as any)
   })
 
+  it('should render "Learn more" as an external link that opens in a new tab', async () => {
+    renderJourneyListContent({
+      mocks: [noTemplatesMock],
+      contentType: 'templates',
+      status: 'active'
+    })
+
+    const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
+    expect(learnMoreLink).toHaveAttribute(
+      'href',
+      'https://support.nextstep.is/'
+    )
+    expect(learnMoreLink).toHaveAttribute('target', '_blank')
+    expect(learnMoreLink).toHaveAttribute(
+      'rel',
+      expect.stringContaining('noopener')
+    )
+    expect(learnMoreLink).toHaveAttribute(
+      'rel',
+      expect.stringContaining('noreferrer')
+    )
+  })
+
   describe('Active Journeys', () => {
     it('should render journeys list', async () => {
       const { getByText } = renderJourneyListContent({
@@ -130,7 +153,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('This feature is coming soon.')).toBeInTheDocument()
+        expect(getByText('Make your first template.')).toBeInTheDocument()
       )
     })
 
@@ -462,9 +485,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() => {
         expect(
-          getByText(
-            'Full template functionality will be available in a future update.'
-          )
+          getByText('Templates let your team reuse and share projects.')
         ).toBeInTheDocument()
       })
     })

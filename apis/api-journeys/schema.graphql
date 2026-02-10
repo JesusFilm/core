@@ -444,12 +444,9 @@ type Mutation {
   period of the previous JourneyViewEvent
   """
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
-  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
-  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent!
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent!
-  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent!
   videoPlayEventCreate(input: VideoPlayEventCreateInput!): VideoPlayEvent!
   videoPauseEventCreate(input: VideoPauseEventCreateInput!): VideoPauseEvent!
@@ -750,6 +747,16 @@ enum IconName {
   ContactSupportRounded
   Launch
   MailOutline
+  ArrowLeftContained2
+  ArrowRightContained2
+  MessageChat1
+  Home4
+  LinkAngled
+  Volume5
+  Note2
+  UserProfile2
+  UsersProfiles3
+  Phone
 }
 
 enum IconColor {
@@ -1582,24 +1589,6 @@ type JourneyViewEvent implements Event
   language: Language
 }
 
-input RadioQuestionSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  radioOptionBlockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the selected radioOption block"""
-  value: String
-}
-
 type RadioQuestionSubmissionEvent implements Event
   @shareable
 {
@@ -1616,23 +1605,6 @@ type RadioQuestionSubmissionEvent implements Event
 
   """label of the selected radioOptionBlock"""
   value: String
-}
-
-input SignUpSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """name from the signUpBlock form"""
-  name: String!
-
-  """email from the signUpBlock form"""
-  email: String!
 }
 
 type SignUpSubmissionEvent implements Event
@@ -1761,29 +1733,12 @@ type StepPreviousEvent implements Event
   value: String
 }
 
-input TextResponseSubmissionEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """response from the TextResponseBlock form"""
-  value: String!
-}
-
 type TextResponseSubmissionEvent implements Event
   @shareable
 {
   id: ID!
 
-  """ID of the journey that the buttonBlock belongs to"""
+  """ID of the journey that the TextResponseBlock belongs to"""
   journeyId: ID!
 
   """time event was created"""
@@ -2251,6 +2206,9 @@ input JourneysQueryOptions {
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+
+  """skip custom domain routing filter (for admin template customization)"""
+  skipRoutingFilter: Boolean
 }
 
 enum JourneysReportType {
@@ -2730,6 +2688,12 @@ input TeamUpdateInput {
   publicTitle: String
 }
 
+type Translation {
+  value: String!
+  language: Language!
+  primary: Boolean!
+}
+
 type UserInvite
   @key(fields: "id")
   @shareable
@@ -2773,6 +2737,12 @@ enum Role {
   add them to template library
   """
   publisher
+}
+
+extend type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID! @external
 }
 
 enum UserTeamRole {
@@ -3058,12 +3028,6 @@ input VisitorUpdateInput {
   phone: String
 }
 
-type Translation {
-  value: String!
-  language: Language!
-  primary: Boolean!
-}
-
 enum link__Purpose {
   """
   `SECURITY` features provide metadata necessary to securely resolve fields.
@@ -3090,4 +3054,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

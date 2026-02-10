@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Player",
+    "description": "Navigiere zu /pl/[playlistId], um eine Wiedergabeliste anzusehen"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Jesus Film Projekt"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Playliste",
+    "pageTitle": "{title} von {name}",
+    "thisPlaylistIsEmpty": "Diese Wiedergabeliste ist leer",
+    "defaultDescription": "Dein Freund hat diese Videos als Ermutigung für dich geteilt. Drücke auf \"Play\" für ermutigende Geschichten darüber, wie man in Jesus Frieden findet.",
+    "description": "Dein Freund {name} hat diese Videos als Ermutigung für dich geteilt. Drücke auf \"Play\" für ermutigende Geschichten darüber, wie man in Jesus Frieden findet."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Kein Video verfügbar"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Kein Vorschaubild"
+  },
+  "StudyQuestions": {
+    "title": "Fragen zur Studie"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Um dieses Video zu sehen, aktiviere bitte JavaScript und erwäge ein Upgrade auf einen Webbrowser, der <link>HTML5-Video unterstützt</link>."
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Dein Freund <strong>{name}</strong> hat diese Videos mit dir geteilt, um dich zu ermutigen. Am besten lädst du dir unsere App herunter, um diese Videos anzusehen.",
+    "downloadOnAppStore": "Im App Store herunterladen",
+    "getItOnGooglePlay": "Hol es dir auf Google Play"
+  }
+}

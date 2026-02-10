@@ -26,6 +26,19 @@ export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
   }
 `
 
+export function getAlignIcon(align?: TypographyAlign | null): ReactElement {
+  switch (align) {
+    case TypographyAlign.left:
+      return <AlignLeftIcon />
+    case TypographyAlign.center:
+      return <AlignCenterIcon />
+    case TypographyAlign.right:
+      return <AlignRightIcon />
+    default:
+      return <AlignLeftIcon />
+  }
+}
+
 export function Align(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(

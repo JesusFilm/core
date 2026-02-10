@@ -4,9 +4,18 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { updateVideoVariantInAlgolia } from './algoliaVideoVariantUpdate'
 
+const deleteObjectSpy = jest.fn()
+const saveObjectsSpy = jest.fn()
+
 // Mock the algolia client helper
 jest.mock('../algoliaClient', () => ({
-  getAlgoliaClient: jest.fn()
+  getAlgoliaClient: jest.fn(),
+  getAlgoliaConfig: () => ({
+    appId: 'test-app-id',
+    apiKey: 'test-api-key',
+    videosIndex: 'test-videos',
+    videoVariantsIndex: 'test-video-variants'
+  })
 }))
 
 // Mock the languages helper
@@ -15,16 +24,6 @@ jest.mock('../languages', () => ({
 }))
 
 describe('algoliaVideoVariantUpdate', () => {
-  const deleteObjectSpy = jest.fn().mockResolvedValue({})
-  const saveObjectsSpy = jest
-    .fn()
-    .mockResolvedValue([{ taskID: 'test-task-123' }])
-
-  const mockAlgoliaClient = {
-    deleteObject: deleteObjectSpy,
-    saveObjects: saveObjectsSpy
-  }
-
   const mockLanguages = {
     '529': {
       english: 'English',
@@ -45,19 +44,22 @@ describe('algoliaVideoVariantUpdate', () => {
   } as any
 
   // Get the mocked functions
-  const { getAlgoliaClient } = require('../algoliaClient')
   const { getLanguages } = require('../languages')
+  const { getAlgoliaClient } = require('../algoliaClient')
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'test-video-variants'
     process.env.CLOUDFLARE_IMAGE_ACCOUNT = 'test-account'
 
     // Reset the spy mock return values
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
     deleteObjectSpy.mockResolvedValue({})
 
-    getAlgoliaClient.mockResolvedValue(mockAlgoliaClient)
+    getAlgoliaClient.mockReturnValue({
+      deleteObject: deleteObjectSpy,
+      saveObjects: saveObjectsSpy
+    })
+
     getLanguages.mockResolvedValue(mockLanguages)
   })
 
@@ -65,85 +67,17 @@ describe('algoliaVideoVariantUpdate', () => {
     jest.resetAllMocks()
   })
 
-  it('should skip update when algolia client is null', async () => {
-    getAlgoliaClient.mockResolvedValueOnce(null)
-
-    await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
-
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      'algolia client not found, skipping update'
-    )
-    expect(saveObjectsSpy).not.toHaveBeenCalled()
-  })
-
-  it('should warn when video variant is not found and delete from algolia', async () => {
-    prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
-
-    await updateVideoVariantInAlgolia('non-existent-variant', mockLogger)
-
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      'video variant non-existent-variant not found'
-    )
-    expect(deleteObjectSpy).toHaveBeenCalledWith({
-      indexName: 'test-video-variants',
-      objectID: 'non-existent-variant'
+  it('should not continue when algolia client creation fails', async () => {
+    getAlgoliaClient.mockImplementationOnce(() => {
+      throw new Error('Algolia client failed')
     })
-    expect(saveObjectsSpy).not.toHaveBeenCalled()
-  })
-
-  it('should skip update when video variant is not published', async () => {
-    prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
-      id: 'test-variant-id',
-      videoId: 'test-video-id',
-      published: false,
-      languageId: '529',
-      edition: 'base',
-      slug: 'test-slug',
-      duration: 120,
-      hls: null,
-      dash: null,
-      share: null,
-      downloadable: false,
-      lengthInMilliseconds: 120000,
-      video: null
-    } as any)
 
     await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
 
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      'video variant test-variant-id is not published, skipping update'
+    expect(mockLogger.error).toHaveBeenCalledWith(
+      expect.any(Error),
+      'failed to update video variant test-variant-id in algolia'
     )
-    expect(saveObjectsSpy).not.toHaveBeenCalled()
-  })
-
-  it('should delete from algolia when video is restricted from watch platform', async () => {
-    prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
-      id: 'test-variant-id',
-      videoId: 'test-video-id',
-      published: true,
-      languageId: '529',
-      edition: 'base',
-      slug: 'test-slug',
-      duration: 120,
-      hls: null,
-      dash: null,
-      share: null,
-      downloadable: false,
-      lengthInMilliseconds: 120000,
-      video: {
-        restrictViewPlatforms: ['watch', 'other-platform']
-      }
-    } as any)
-
-    await updateVideoVariantInAlgolia('test-variant-id', mockLogger)
-
-    expect(mockLogger.warn).toHaveBeenCalledWith(
-      'video variant test-variant-id is restricted from view on watch, skipping update and removing from algolia'
-    )
-    expect(deleteObjectSpy).toHaveBeenCalledWith({
-      indexName: 'test-video-variants',
-      objectID: 'test-variant-id'
-    })
     expect(saveObjectsSpy).not.toHaveBeenCalled()
   })
 
@@ -159,6 +93,7 @@ describe('algoliaVideoVariantUpdate', () => {
       video: {
         label: 'segment',
         childIds: ['child1', 'child2'],
+        published: true,
         restrictViewPlatforms: [],
         title: [
           { value: 'Test Video Title', languageId: '529' },
@@ -197,8 +132,11 @@ describe('algoliaVideoVariantUpdate', () => {
           subtitles: ['529', '21754'],
           slug: 'test-slug',
           label: 'segment',
+          published: true,
+          restrictViewPlatforms: [],
+          videoPublished: true,
           image:
-            'https://imagedelivery.net/test-account/banner-image-id/f=jpg,w=1280,h=600,q=95',
+            'https://imagedelivery.net/test-account/banner-image-id/f=jpg,w=1280,h=600,q=95?v=1',
           imageAlt: 'Test alt text',
           childrenCount: 2,
           manualRanking: 0
@@ -227,6 +165,8 @@ describe('algoliaVideoVariantUpdate', () => {
       video: {
         label: 'segment',
         childIds: [],
+        published: true,
+        videoPublished: true,
         restrictViewPlatforms: [],
         title: [{ value: 'Test Video Title ZH', languageId: '21754' }],
         description: [],
@@ -246,7 +186,10 @@ describe('algoliaVideoVariantUpdate', () => {
           languageId: '21754',
           languageEnglishName: 'Chinese, Simplified',
           languagePrimaryName: '简体中文',
-          manualRanking: 1
+          manualRanking: 1,
+          published: true,
+          restrictViewPlatforms: [],
+          videoPublished: true
         })
       ],
       waitForTasks: true
@@ -265,6 +208,8 @@ describe('algoliaVideoVariantUpdate', () => {
       video: {
         label: 'segment',
         childIds: [],
+        published: true,
+        videoPublished: true,
         restrictViewPlatforms: [],
         title: [{ value: 'Test Video Title', languageId: '529' }],
         description: [],

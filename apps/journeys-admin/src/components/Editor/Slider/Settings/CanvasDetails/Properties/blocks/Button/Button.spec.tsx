@@ -103,7 +103,7 @@ describe('Button attributes', () => {
           __typename: 'IconBlock',
           parentBlockId: 'button',
           parentOrder: 0,
-          iconName: IconName.ChatBubbleOutlineRounded,
+          iconName: IconName.ChevronLeftRounded,
           iconColor: IconColor.secondary,
           iconSize: IconSize.lg,
           children: []
@@ -137,7 +137,7 @@ describe('Button attributes', () => {
     ).toBeInTheDocument()
     expect(getByRole('button', { name: 'Variant Text' })).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Leading Icon Chat Bubble' })
+      getByRole('button', { name: 'Leading Icon Chevron Left' })
     ).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Trailing Icon Chevron Right' })

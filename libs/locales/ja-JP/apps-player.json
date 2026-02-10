@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "プレイヤー",
+    "description": "pl/[playlistId]に移動してプレイリストを見る"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | ジーザス・フィルム・プロジェクト"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "プレイリスト",
+    "pageTitle": "{title} by {name}",
+    "thisPlaylistIsEmpty": "このプレイリストは空です",
+    "defaultDescription": "あなたの友人は、あなたへの励ましとしてこれらのビデオを共有しました。再生ボタンを押して、イエスのうちに平安を見出すことについての元気の出るストーリーをお楽しみください。",
+    "description": "あなたの友人 {name} 、あなたへの励ましとしてこれらのビデオを共有しました。再生ボタンを押して、イエスのうちに平安を見出すことについての高揚するストーリーをお楽しみください。"
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "ビデオなし"
+  },
+  "PlaylistList": {
+    "noThumbnail": "サムネイルなし"
+  },
+  "StudyQuestions": {
+    "title": "学習上の質問"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "このビデオをご覧になるには、JavaScriptを有効にし、<link>HTML5ビデオをサポート</link>するウェブブラウザへのアップグレードをご検討ください。"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "あなたの友人 <strong>{name}</strong>は、あなたへの励ましとして、これらのビデオを共有しました。これらのビデオを見る最良の方法は、私たちのアプリをダウンロードすることです。",
+    "downloadOnAppStore": "App Storeでダウンロード",
+    "getItOnGooglePlay": "グーグルプレイで入手"
+  }
+}
