@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
+import { ComponentProps, MouseEvent, ReactElement, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
@@ -50,6 +50,7 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
+  setIsDialogOpen?: (isDialogOpen: boolean) => void
 }
 
 /**
@@ -68,7 +69,8 @@ export function ShareItem({
   journey,
   handleCloseMenu,
   handleKeepMounted,
-  buttonVariant = 'icon'
+  buttonVariant = 'icon',
+  setIsDialogOpen
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -92,6 +94,10 @@ export function ShareItem({
               'https://your.nextstep.is')
         }/${journey?.slug}`
       : undefined
+
+  useEffect(() => {
+    setIsDialogOpen?.(Boolean(anchorEl))
+  }, [anchorEl, setIsDialogOpen])
 
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(journeyUrl ?? '')

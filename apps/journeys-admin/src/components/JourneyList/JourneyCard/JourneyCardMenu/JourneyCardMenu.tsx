@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
@@ -77,6 +77,7 @@ export interface JourneyCardMenuProps {
   journey?: Journey
   hovered?: boolean
   onMenuClose?: () => void
+  setIsDialogOpen?: (isDialogOpen: boolean) => void
 }
 
 /**
@@ -106,7 +107,8 @@ export function JourneyCardMenu({
   refetch,
   journey,
   hovered,
-  onMenuClose
+  onMenuClose,
+  setIsDialogOpen
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
@@ -251,6 +253,7 @@ export function JourneyCardMenu({
                 setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
                 template={template}
                 refetch={refetch}
+                setIsDialogOpen={setIsDialogOpen}
               />
             )}
       </Menu>

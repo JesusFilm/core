@@ -71,6 +71,7 @@ interface DefaultMenuProps {
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  setIsDialogOpen?: (isDialogOpen: boolean) => void
 }
 
 /**
@@ -109,7 +110,8 @@ export function DefaultMenu({
   setOpenTranslateDialog,
   handleKeepMounted,
   template,
-  refetch
+  refetch,
+  setIsDialogOpen
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -218,6 +220,7 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
+        setIsDialogOpen={setIsDialogOpen}
       />
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
