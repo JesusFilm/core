@@ -1,10 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
 import { UpChunk } from '@mux/upchunk'
+import { act, renderHook, waitFor } from '@testing-library/react'
+
 import {
-  useVideoUpload,
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
-  GET_MY_MUX_VIDEO_QUERY
+  GET_MY_MUX_VIDEO_QUERY,
+  useVideoUpload
 } from './useVideoUpload'
 
 jest.mock('@mux/upchunk', () => ({
