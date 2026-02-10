@@ -5,12 +5,10 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-import { BlockCustomizationToggle } from '../../controls/BlockCustomizationToggle'
 
 const ImageOptions = dynamic(
   async () =>
@@ -24,7 +22,6 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { id } = block
   const { dispatch } = useEditor()
-  const { journey } = useJourney()
 
   useEffect(() => {
     dispatch({
@@ -41,10 +38,7 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
         name={t('Image Source')}
         value={block?.alt ?? ''}
       >
-        <>
-          <ImageOptions />
-          {journey?.template && <BlockCustomizationToggle />}
-        </>
+        <ImageOptions />
       </Accordion>
     </Box>
   )

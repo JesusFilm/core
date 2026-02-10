@@ -13,7 +13,6 @@ import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../..
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
-import { BlockCustomizationToggle } from '../../controls/BlockCustomizationToggle'
 import { EventLabel } from '../../controls/EventLabel'
 import { getEventLabelOption } from '../../controls/EventLabel/utils/getEventLabelOption'
 
@@ -76,10 +75,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
             : (block.title ?? '')
         }
       >
-        <>
-          <VideoOptions />
-          {journey?.template && <BlockCustomizationToggle />}
-        </>
+        <VideoOptions />
       </Accordion>
     </Box>
   )

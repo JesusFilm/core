@@ -33,7 +33,6 @@ import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockR
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
-import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 
 import { FocalPoint } from './FocalPoint'
 import { ZoomImage } from './ZoomImage/ZoomImage'
@@ -364,9 +363,6 @@ export function BackgroundMediaImage({
         imageBlock={imageCoverBlock}
         updateImageBlock={updateImageBlock}
       />
-      {journey?.template && imageCoverBlock != null && (
-        <BlockCustomizationToggle block={imageCoverBlock} />
-      )}
     </Stack>
   )
 }
