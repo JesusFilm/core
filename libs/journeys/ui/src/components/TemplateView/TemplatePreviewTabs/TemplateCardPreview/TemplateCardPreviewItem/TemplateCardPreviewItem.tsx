@@ -18,11 +18,10 @@ import { BlockRenderer } from '../../../../BlockRenderer'
 import { CardWrapper } from '../../../../CardWrapper'
 import { FramePortal } from '../../../../FramePortal'
 import { VideoWrapper } from '../../../../VideoWrapper'
-
 import {
   SELECTED_SCALE,
-  VARIANT_CONFIGS,
-  type TemplateCardPreviewVariant
+  type TemplateCardPreviewVariant,
+  VARIANT_CONFIGS
 } from '../templateCardPreviewConfig'
 
 export interface TemplateCardPreviewItemProps {
@@ -60,10 +59,16 @@ export function TemplateCardPreviewItem({
       sx={{
         ...cardSx,
         width: isSelected
-          ? { xs: cardWidth.xs * SELECTED_SCALE, sm: cardWidth.sm * SELECTED_SCALE }
+          ? {
+              xs: cardWidth.xs * SELECTED_SCALE,
+              sm: cardWidth.sm * SELECTED_SCALE
+            }
           : cardWidth,
         height: isSelected
-          ? { xs: cardHeight.xs * SELECTED_SCALE, sm: cardHeight.sm * SELECTED_SCALE }
+          ? {
+              xs: cardHeight.xs * SELECTED_SCALE,
+              sm: cardHeight.sm * SELECTED_SCALE
+            }
           : cardHeight,
         borderRadius: framePortal.borderRadius
       }}

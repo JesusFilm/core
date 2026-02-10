@@ -65,28 +65,27 @@ describe('getCustomizableMediaSteps', () => {
 
   it('should return steps that contain direct children and nested descendants with id in customizableMediaIds', () => {
     const steps: TreeBlock<StepBlock>[] = [
-        {
-          id: 'step1',
-          __typename: 'StepBlock',
-          children: [
-            {
-              id: 'card1',
-              __typename: 'CardBlock',
-              children: [
-                { id: 'nested-media', __typename: 'CardBlock', children: [] }
-              ]
-            }
-          ]
-        } as unknown as TreeBlock<StepBlock>,
-        {
-          id: 'step2',
-          __typename: 'StepBlock',
-          children: [{ id: 'card2', __typename: 'CardBlock', children: [] }]
-        } as unknown as TreeBlock<StepBlock>
-      ]
+      {
+        id: 'step1',
+        __typename: 'StepBlock',
+        children: [
+          {
+            id: 'card1',
+            __typename: 'CardBlock',
+            children: [
+              { id: 'nested-media', __typename: 'CardBlock', children: [] }
+            ]
+          }
+        ]
+      } as unknown as TreeBlock<StepBlock>,
+      {
+        id: 'step2',
+        __typename: 'StepBlock',
+        children: [{ id: 'card2', __typename: 'CardBlock', children: [] }]
+      } as unknown as TreeBlock<StepBlock>
+    ]
     const result = getCustomizableMediaSteps(steps, ['nested-media', 'card2'])
     expect(result).toEqual(steps)
-    
   })
 
   it('excludes steps that have no matching descendant', () => {

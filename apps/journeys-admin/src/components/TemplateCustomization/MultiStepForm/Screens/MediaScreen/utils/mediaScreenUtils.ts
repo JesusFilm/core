@@ -1,5 +1,5 @@
-import { TreeBlock } from "@core/journeys/ui/block/TreeBlock"
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from "@core/journeys/ui/useJourneyQuery/__generated__/GetJourney"
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 /**
  * Returns whether the given block or any of its descendants has an id in the provided list.

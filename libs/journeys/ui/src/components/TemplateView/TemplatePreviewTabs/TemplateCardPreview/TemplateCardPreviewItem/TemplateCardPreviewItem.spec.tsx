@@ -1,5 +1,6 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { fireEvent, render } from '@testing-library/react'
+import { ReactElement } from 'react'
 
 import {
   ThemeMode,
@@ -8,21 +9,14 @@ import {
 import { TreeBlock } from '../../../../../libs/block'
 import { JourneyProvider } from '../../../../../libs/JourneyProvider'
 import { journey } from '../../../../../libs/JourneyProvider/JourneyProvider.mock'
-import {
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { TemplateCardPreviewItem } from './TemplateCardPreviewItem'
-import { ReactElement } from 'react'
 
-function renderWithProviders(
-  children: ReactElement,
-) {
+function renderWithProviders(children: ReactElement) {
   return render(
     <ThemeProvider theme={createTheme()}>
-      <JourneyProvider value={{ journey: journey }}>
-        {children}
-      </JourneyProvider>
+      <JourneyProvider value={{ journey: journey }}>{children}</JourneyProvider>
     </ThemeProvider>
   )
 }
@@ -53,12 +47,14 @@ describe('TemplateCardPreviewItem', () => {
       }
     ]
   } as TreeBlock<StepBlock>
+
   it('should render preview variant', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem step={step} variant="preview" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
+
   it('should render media variant', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem step={step} variant="media" />

@@ -62,7 +62,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     width: { xs: 300, sm: 300 },
     height: { xs: 523, sm: 523 },
     transform: { xs: 'scale(0.4)', sm: 'scale(0.4)' },
-    borderRadius: 12,
+    borderRadius: 12
   },
   swiperProps: {
     allowTouchMove: true
@@ -70,7 +70,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   cardSx: {
     position: 'relative',
     backgroundColor: 'background.default',
-    borderRadius: 3,
+    borderRadius: 3
   },
   slideSx: {
     height: 209,
@@ -78,7 +78,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   swiperSx: {
     overflow: 'hidden',
@@ -89,8 +89,10 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   }
 }
 
-export const VARIANT_CONFIGS: Record<TemplateCardPreviewVariant, VariantConfig> =
-  {
-    preview: PREVIEW_VARIANT_CONFIG,
-    media: MEDIA_VARIANT_CONFIG
-  }
+export const VARIANT_CONFIGS: Record<
+  TemplateCardPreviewVariant,
+  VariantConfig
+> = {
+  preview: PREVIEW_VARIANT_CONFIG,
+  media: MEDIA_VARIANT_CONFIG
+}

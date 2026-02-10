@@ -107,7 +107,7 @@ describe('TemplateCardPreview', () => {
     expect(getByRole('button', { name: /next-button/ })).toBeInTheDocument()
   })
 
-  it(('should not render navigation buttons when variant is preview'), async () => {
+  it('should not render navigation buttons when variant is preview', async () => {
     const steps = [
       { id: '1', children: [{ __typename: 'CardBlock' }] },
       { id: '2', children: [{ __typename: 'CardBlock' }] },
@@ -119,7 +119,11 @@ describe('TemplateCardPreview', () => {
         <TemplateCardPreview steps={steps} variant="preview" />
       </ThemeProvider>
     )
-    expect(queryByRole('button', { name: /prev-button/ })).not.toBeInTheDocument()
-    expect(queryByRole('button', { name: /next-button/ })).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: /prev-button/ })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: /next-button/ })
+    ).not.toBeInTheDocument()
   })
 })

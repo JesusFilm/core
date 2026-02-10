@@ -17,12 +17,12 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../li
 import { NavButton } from '../../../ContentCarousel/NavButton'
 import { TemplateActionButton } from '../../TemplateViewHeader/TemplateActionButton/TemplateActionButton'
 
-import { TemplateCardPreviewItem } from './TemplateCardPreviewItem/TemplateCardPreviewItem'
 import {
   SELECTED_SCALE,
-  VARIANT_CONFIGS,
-  type TemplateCardPreviewVariant
+  type TemplateCardPreviewVariant,
+  VARIANT_CONFIGS
 } from './templateCardPreviewConfig'
+import { TemplateCardPreviewItem } from './TemplateCardPreviewItem/TemplateCardPreviewItem'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
