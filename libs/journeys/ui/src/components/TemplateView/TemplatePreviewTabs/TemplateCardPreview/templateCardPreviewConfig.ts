@@ -1,5 +1,5 @@
 import type { SxProps, Theme } from '@mui/material/styles'
-import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules';
+import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
 export type TemplateCardPreviewVariant = 'preview' | 'media'
@@ -56,7 +56,7 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
     mousewheel: { forceToAxis: true },
     freeMode: true,
     watchOverflow: true,
-    slidesPerView: "auto",
+    slidesPerView: 'auto',
     spaceBetween: 12,
     observer: true,
     observeParents: true
@@ -80,7 +80,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     mousewheel: { forceToAxis: true },
     freeMode: true,
     watchOverflow: true,
-    slidesPerView: "auto",
+    slidesPerView: 'auto',
     spaceBetween: 12,
     observer: true,
     observeParents: true,
