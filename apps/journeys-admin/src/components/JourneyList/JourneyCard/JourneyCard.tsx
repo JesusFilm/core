@@ -349,6 +349,7 @@ export function JourneyCard({
               />
             )}
             <Box
+              data-testid="JourneyCardOverlayBox"
               aria-hidden
               sx={{
                 position: 'absolute',
