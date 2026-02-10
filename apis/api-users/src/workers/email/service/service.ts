@@ -5,18 +5,22 @@ import { Logger } from 'pino'
 import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
 
-import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
+import { EmailVerifyJesusFilmOne } from '../../../emails/templates/EmailVerifyJesusFilmOne'
+import { EmailVerifyNextSteps } from '../../../emails/templates/EmailVerifyNextSteps'
+import { AppType } from '../../../schema/user/enums/app'
 
 export interface VerifyUserJob {
   userId: string
   email: string
   token: string
   redirect: string | undefined
+  app?: AppType
 }
 
 export async function service(
   job: Job<VerifyUserJob>,
-  logger?: Logger
+  logger?: Logger,
+  app?: AppType
 ): Promise<void> {
   let emailAlias: string | undefined
   if (job.data.email.includes('+'))
@@ -26,10 +30,6 @@ export async function service(
   if (job.data.redirect != null && job.data.redirect !== '') {
     redirectParam = `&redirect=${encodeURIComponent(job.data.redirect)}`
   }
-
-  const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${
-    job.data.token
-  }&email=${emailAlias ?? job.data.email}${redirectParam}`
 
   const user = await prisma.user.findUnique({
     where: { userId: job.data.userId }
@@ -43,31 +43,63 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
-  const html = await render(
-    EmailVerifyEmail({
-      token: job.data.token,
-      recipient,
-      inviteLink: url
-    })
-  )
 
-  const text = await render(
-    EmailVerifyEmail({
-      token: job.data.token,
-      recipient,
-      inviteLink: url
-    }),
-    {
-      plainText: true
-    }
-  )
+  let from: string | undefined
+  let subject: string | undefined
+  let url: string | undefined
+  let text: string | undefined
+  let html: string | undefined
+
+  switch (job.data?.app ?? 'NextSteps') {
+    case 'JesusFilmOne':
+      from = '"Jesus Film Project" <no-reply@jesusfilm.org>'
+      subject = 'Verify your email address with the Jesus Film Project'
+      url = `${process.env.JESUS_FILM_PROJECT_VERIFY_URL ?? ''}?token=${job.data.token}&email=${emailAlias ?? job.data.email}`
+      html = await render(
+        EmailVerifyJesusFilmOne({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        })
+      )
+      text = await render(
+        EmailVerifyJesusFilmOne({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        }),
+        { plainText: true }
+      )
+      break
+    case 'NextSteps':
+      from = '"Next Steps Support" <support@nextstep.is>'
+      subject = 'Verify your email address on Next Steps'
+      url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/users/verify?token=${job.data.token}&email=${emailAlias ?? job.data.email}${redirectParam}`
+      html = await render(
+        EmailVerifyNextSteps({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        })
+      )
+      text = await render(
+        EmailVerifyNextSteps({
+          token: job.data.token,
+          recipient,
+          inviteLink: url
+        }),
+        { plainText: true }
+      )
+      break
+  }
 
   await sendEmail(
     {
       to: job.data.email,
-      subject: 'Verify your email address on Next Steps',
+      subject,
       text,
-      html
+      html,
+      from
     },
     logger
   )

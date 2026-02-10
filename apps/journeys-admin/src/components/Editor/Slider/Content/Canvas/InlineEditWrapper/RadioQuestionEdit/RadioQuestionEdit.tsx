@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import { ReactElement } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
@@ -9,13 +8,14 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 
-import { BlockFields_RadioOptionBlock as RadioOptionBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   RadioOptionBlockCreate,
   RadioOptionBlockCreateVariables
 } from '../../../../../../../../__generated__/RadioOptionBlockCreate'
 import { RadioQuestionFields } from '../../../../../../../../__generated__/RadioQuestionFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
+
+import { handleCreateRadioOption } from './utils/handleCreateRadioOption'
 
 export const RADIO_OPTION_BLOCK_CREATE = gql`
   ${BLOCK_FIELDS}
@@ -32,6 +32,20 @@ interface RadioQuestionEditProps extends TreeBlock<RadioQuestionFields> {
   wrappers?: WrappersProps
 }
 
+/**
+ * Editor component for radio question blocks that allows adding new radio options.
+ *
+ * This component wraps the RadioQuestion component with editor functionality,
+ * including the ability to create new radio option blocks. It enforces a maximum
+ * of 12 options per radio question and provides an addOption handler when the
+ * limit hasn't been reached.
+ *
+ * @param {RadioQuestionEditProps} props - The component props
+ * @param {string} props.id - The unique identifier of the radio question block
+ * @param {WrappersProps} [props.wrappers] - Optional wrapper props for block rendering
+ * @param {RadioQuestionFields} props - Additional props from TreeBlock<RadioQuestionFields>
+ * @returns {ReactElement} The rendered RadioQuestion component with editor capabilities
+ */
 export function RadioQuestionEdit({
   id,
   wrappers,
@@ -48,69 +62,25 @@ export function RadioQuestionEdit({
     dispatch
   } = useEditor()
 
-  function handleCreateOption(): void {
-    if (journey == null) return
-
-    const radioOptionBlock: RadioOptionBlock = {
-      id: uuidv4(),
-      label: '',
-      parentBlockId: id,
-      parentOrder: selectedBlock?.children?.length ?? 0,
-      action: null,
-      pollOptionImageBlockId: null,
-      eventLabel: null,
-      __typename: 'RadioOptionBlock'
-    }
-
-    addBlock({
-      block: radioOptionBlock,
-      execute() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlockId: radioOptionBlock.id
-        })
-        void radioOptionBlockCreate({
-          variables: {
-            input: {
-              id: radioOptionBlock.id,
-              journeyId: journey.id,
-              parentBlockId: radioOptionBlock.parentBlockId ?? id,
-              label: radioOptionBlock.label
-            }
-          },
-          optimisticResponse: {
-            radioOptionBlockCreate: radioOptionBlock
-          },
-          update(cache, { data }) {
-            if (data?.radioOptionBlockCreate != null) {
-              cache.modify({
-                id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                fields: {
-                  blocks(existingBlockRefs = []) {
-                    const newBlockRef = cache.writeFragment({
-                      data: data.radioOptionBlockCreate,
-                      fragment: gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                    })
-                    return [...existingBlockRefs, newBlockRef]
-                  }
-                }
-              })
-            }
-          }
-        })
-      }
-    })
-  }
+  const maxOptions = props.children.length >= 12
 
   return (
     <RadioQuestion
       {...props}
       id={id}
-      addOption={props.children.length < 12 ? handleCreateOption : undefined}
+      addOption={
+        !maxOptions
+          ? () =>
+              handleCreateRadioOption({
+                dispatch,
+                addBlock,
+                radioOptionBlockCreate,
+                parentBlockId: id,
+                journey,
+                siblingCount: props.children.length
+              })
+          : undefined
+      }
       wrappers={wrappers}
     />
   )

@@ -28,7 +28,9 @@ describe('videoSubtitle', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoSubtitle.create.mockResolvedValue({
           id: 'id',
@@ -41,7 +43,9 @@ describe('videoSubtitle', () => {
           vttAssetId: null,
           vttVersion: 1,
           srtAssetId: null,
-          srtVersion: 1
+          srtVersion: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: CREATE_VIDEO_SUBTITLE_MUTATION,
@@ -94,7 +98,9 @@ describe('videoSubtitle', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoSubtitle.delete.mockResolvedValue({
           id: 'id',
@@ -107,7 +113,9 @@ describe('videoSubtitle', () => {
           vttAssetId: null,
           vttVersion: 1,
           srtAssetId: null,
-          srtVersion: 1
+          srtVersion: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: DELETE_VIDEO_SUBTITLE_MUTATION,
@@ -147,7 +155,9 @@ describe('videoSubtitle', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoSubtitle.update.mockResolvedValue({
           id: 'id',
@@ -160,7 +170,9 @@ describe('videoSubtitle', () => {
           vttAssetId: null,
           vttVersion: 1,
           srtAssetId: null,
-          srtVersion: 1
+          srtVersion: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: UPDATE_VIDEO_SUBTITLE_MUTATION,

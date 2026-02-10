@@ -4,6 +4,14 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+
+import {
+  CardsSection,
+  ImagesSection,
+  LogoSection,
+  VideosSection
+} from './Sections'
+import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 import { transformer } from '@core/journeys/ui/transformer'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
@@ -16,8 +24,15 @@ import { getCustomizableMediaSteps } from './utils/mediaScreenUtils'
 interface MediaScreenProps {
   handleNext: () => void
 }
+
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
+    null
+  )
+  const showLogo = showLogoSection()
+  const showImages = showImagesSection(selectedCardBlockId)
+  const showVideos = showVideosSection(selectedCardBlockId)
   const { journey } = useJourney()
   const steps =
     journey != null
@@ -54,6 +69,10 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           selectedStep={selectedStep}
         />
       </Box>
+      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
+      {<CardsSection onChange={setSelectedCardBlockId} />}
+      {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
+      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
       <CustomizeFlowNextButton
         label={t('Next')}
         onClick={handleNext}

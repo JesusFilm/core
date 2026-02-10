@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client'
+import { InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
@@ -31,6 +31,18 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+const TEST_JOURNEY_QUERY = gql`
+  query TestJourney {
+    journey {
+      id
+      blocks {
+        id
+        __typename
+      }
+    }
+  }
+`
 
 const multiselectBlockCreateMock: MockedResponse = {
   request: {
@@ -261,42 +273,54 @@ const multiselectWithButtonRestoreMock: MockedResponse = {
   },
   result: jest.fn(() => ({
     data: {
-      multiselect: {
-        id: 'multiselect.id',
-        parentOrder: 0,
-        parentBlockId: 'card.id',
-        __typename: 'MultiselectBlock'
-      },
-      option1: {
-        id: 'option1.id',
-        parentOrder: 0,
-        parentBlockId: 'multiselect.id',
-        __typename: 'MultiselectOptionBlock'
-      },
-      option2: {
-        id: 'option2.id',
-        parentOrder: 1,
-        parentBlockId: 'multiselect.id',
-        __typename: 'MultiselectOptionBlock'
-      },
-      button: {
-        id: 'button.id',
-        parentOrder: 3,
-        parentBlockId: 'card.id',
-        __typename: 'ButtonBlock'
-      },
-      startIcon: {
-        id: 'startIcon.id',
-        parentOrder: null,
-        parentBlockId: 'button.id',
-        __typename: 'IconBlock'
-      },
-      endIcon: {
-        id: 'endIcon.id',
-        parentOrder: null,
-        parentBlockId: 'button.id',
-        __typename: 'IconBlock'
-      }
+      multiselect: [
+        {
+          id: 'multiselect.id',
+          parentOrder: 0,
+          parentBlockId: 'card.id',
+          __typename: 'MultiselectBlock'
+        }
+      ],
+      option1: [
+        {
+          id: 'option1.id',
+          parentOrder: 0,
+          parentBlockId: 'multiselect.id',
+          __typename: 'MultiselectOptionBlock'
+        }
+      ],
+      option2: [
+        {
+          id: 'option2.id',
+          parentOrder: 1,
+          parentBlockId: 'multiselect.id',
+          __typename: 'MultiselectOptionBlock'
+        }
+      ],
+      button: [
+        {
+          id: 'button.id',
+          parentOrder: 3,
+          parentBlockId: 'card.id',
+          __typename: 'ButtonBlock'
+        }
+      ],
+      startIcon: [
+        {
+          id: 'startIcon.id',
+          parentOrder: null,
+          parentBlockId: 'button.id',
+          __typename: 'IconBlock'
+        }
+      ],
+      endIcon: [
+        {
+          id: 'endIcon.id',
+          parentOrder: null,
+          parentBlockId: 'button.id',
+          __typename: 'IconBlock'
+        }
+      ]
     }
   }))
 }
@@ -348,10 +372,7 @@ describe('NewMultiselectButton', () => {
       const cache = new InMemoryCache()
       cache.restore({
         'Journey:journey.id': {
-          blocks: [
-            { __ref: 'StepBlock:step.id' },
-            { __ref: 'CardBlock:card.id' }
-          ],
+          blocks: [],
           id: 'journey.id',
           __typename: 'Journey'
         }
@@ -376,10 +397,12 @@ describe('NewMultiselectButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Multiselect' }))
 
+      await waitFor(() =>
+        expect(multiselectWithButtonCreateMock.result).toHaveBeenCalled()
+      )
+
       await waitFor(() => {
         expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-          { __ref: 'StepBlock:step.id' },
-          { __ref: 'CardBlock:card.id' },
           { __ref: 'MultiselectBlock:multiselect.id' },
           { __ref: 'MultiselectOptionBlock:option1.id' },
           { __ref: 'MultiselectOptionBlock:option2.id' },
@@ -399,12 +422,24 @@ describe('NewMultiselectButton', () => {
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
 
+      const cache = new InMemoryCache()
+      cache.writeQuery({
+        query: TEST_JOURNEY_QUERY,
+        data: {
+          journey: {
+            __typename: 'Journey',
+            id: 'journey.id',
+            blocks: []
+          }
+        }
+      })
       const { getByRole } = render(
         <MockedProvider
           mocks={[
             multiselectWithButtonCreateMock,
             multiselectWithButtonDeleteMock
           ]}
+          cache={cache}
         >
           <JourneyProvider
             value={{
@@ -426,11 +461,24 @@ describe('NewMultiselectButton', () => {
       await waitFor(() =>
         expect(multiselectWithButtonCreateMock.result).toHaveBeenCalled()
       )
+      await waitFor(() => {
+        expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
+          { __ref: 'MultiselectBlock:multiselect.id' },
+          { __ref: 'MultiselectOptionBlock:option1.id' },
+          { __ref: 'MultiselectOptionBlock:option2.id' },
+          { __ref: 'ButtonBlock:button.id' },
+          { __ref: 'IconBlock:startIcon.id' },
+          { __ref: 'IconBlock:endIcon.id' }
+        ])
+      })
 
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() =>
         expect(multiselectWithButtonDeleteMock.result).toHaveBeenCalled()
       )
+      await waitFor(() => {
+        expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
+      })
     })
 
     it('should redo multiselect with button creation', async () => {
@@ -442,6 +490,18 @@ describe('NewMultiselectButton', () => {
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
 
+      const cache = new InMemoryCache()
+      cache.writeQuery({
+        query: TEST_JOURNEY_QUERY,
+        data: {
+          journey: {
+            __typename: 'Journey',
+            id: 'journey.id',
+            blocks: []
+          }
+        }
+      })
+
       const { getByRole } = render(
         <MockedProvider
           mocks={[
@@ -449,6 +509,7 @@ describe('NewMultiselectButton', () => {
             multiselectWithButtonDeleteMock,
             multiselectWithButtonRestoreMock
           ]}
+          cache={cache}
         >
           <JourneyProvider
             value={{
@@ -476,11 +537,22 @@ describe('NewMultiselectButton', () => {
       await waitFor(() =>
         expect(multiselectWithButtonDeleteMock.result).toHaveBeenCalled()
       )
+      expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
 
       fireEvent.click(getByRole('button', { name: 'Redo' }))
       await waitFor(() =>
         expect(multiselectWithButtonRestoreMock.result).toHaveBeenCalled()
       )
+      await waitFor(() => {
+        expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
+          { __ref: 'MultiselectBlock:multiselect.id' },
+          { __ref: 'MultiselectOptionBlock:option1.id' },
+          { __ref: 'MultiselectOptionBlock:option2.id' },
+          { __ref: 'ButtonBlock:button.id' },
+          { __ref: 'IconBlock:startIcon.id' },
+          { __ref: 'IconBlock:endIcon.id' }
+        ])
+      })
     })
   })
 

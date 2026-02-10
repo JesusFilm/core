@@ -2034,6 +2034,10 @@ export class User {
     id: string;
 }
 
+export class AuthenticatedUser {
+    id: string;
+}
+
 export type DateTime = String;
 export type Json = any;
 

@@ -1,18 +1,27 @@
+import nodemailer from 'nodemailer'
+
 import { sendEmail } from './email'
 
-const sendEmailMock = jest.fn().mockReturnValue({})
+jest.mock('nodemailer', () => {
+  const originalModule = jest.requireActual('nodemailer')
+  return {
+    ...originalModule,
+    default: jest.fn()
+  }
+})
 
-jest.mock('nodemailer', () => ({
-  createTransport: jest.fn().mockImplementation(() => ({
-    sendMail: sendEmailMock
-  }))
-}))
+const mockNodeMailer = nodemailer as jest.Mocked<typeof nodemailer>
+
+const sendEmailMock = jest.fn().mockReturnValue({})
 
 describe('email', () => {
   const OLD_ENV = process.env
 
   beforeEach(() => {
-    process.env = { ...OLD_ENV } // make a copy
+    process.env = { ...OLD_ENV } // make a copy,
+    mockNodeMailer.createTransport = jest.fn().mockReturnValue({
+      sendMail: sendEmailMock
+    })
   })
 
   afterEach(() => {
@@ -27,11 +36,36 @@ describe('email', () => {
     html: 'Test Html'
   }
 
-  it('should send email', async () => {
+  it('should send email with default Next Steps support email', async () => {
     process.env.SMTP_URL = 'smtp://example.com'
     process.env.NODE_ENV = 'production'
 
     await sendEmail(email)
+    expect(mockNodeMailer.createTransport).toHaveBeenCalledWith(
+      'smtp://example.com',
+      { from: '"Next Steps Support" <support@nextstep.is>' }
+    )
+
+    expect(sendEmailMock).toHaveBeenCalledWith({
+      to: email.to,
+      subject: email.subject,
+      text: email.text,
+      html: email.html
+    })
+  })
+
+  it('should send email with custom from', async () => {
+    process.env.SMTP_URL = 'smtp://example.com'
+    process.env.NODE_ENV = 'production'
+
+    await sendEmail({
+      ...email,
+      from: '"Jesus Film App" <support@jesusfilmapp.com>'
+    })
+    expect(mockNodeMailer.createTransport).toHaveBeenCalledWith(
+      'smtp://example.com',
+      { from: '"Jesus Film App" <support@jesusfilmapp.com>' }
+    )
 
     expect(sendEmailMock).toHaveBeenCalledWith({
       to: email.to,

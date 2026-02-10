@@ -240,7 +240,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: imageBlockUpdateResult
@@ -279,7 +285,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: false }
+          input: {
+            customizable: false,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: imageBlockUpdateResult
@@ -447,7 +459,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: executeResult
@@ -460,7 +478,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: false }
+          input: {
+            customizable: false,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: undoResult
@@ -504,7 +528,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: executeResult
@@ -517,7 +547,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: false }
+          input: {
+            customizable: false,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: undoResult
@@ -530,7 +566,13 @@ describe('BlockCustomizationToggle', () => {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id: imageBlock.id,
-          input: { customizable: true }
+          input: {
+            customizable: true,
+            src: imageBlock.src,
+            width: 1920,
+            height: 1080,
+            blurhash: ''
+          }
         }
       },
       result: redoResult
@@ -686,5 +728,213 @@ describe('BlockCustomizationToggle', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoResult).toHaveBeenCalled())
+  })
+
+  describe('BlockCustomizationToggleProps', () => {
+    it('uses ImageBlock from block prop when selectedBlock is not ImageBlock', async () => {
+      const buttonBlock = {
+        id: 'button-1',
+        __typename: 'ButtonBlock',
+        label: 'Button',
+        action: null
+      } as unknown as TreeBlock<ButtonBlock>
+      const imageBlockUpdateResult = jest.fn(() => ({
+        data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
+      }))
+      const imageBlockUpdateMock: MockedResponse<
+        ImageBlockUpdate,
+        ImageBlockUpdateVariables
+      > = {
+        request: {
+          query: IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: imageBlock.id,
+            input: {
+              customizable: true,
+              src: imageBlock.src,
+              width: imageBlock.width,
+              height: imageBlock.height,
+              blurhash: imageBlock.blurhash
+            }
+          }
+        },
+        result: imageBlockUpdateResult
+      }
+
+      render(
+        <MockedProvider mocks={[imageBlockUpdateMock]}>
+          <CommandProvider>
+            <EditorProvider initialState={{ selectedBlock: buttonBlock }}>
+              <BlockCustomizationToggle block={imageBlock} />
+            </EditorProvider>
+          </CommandProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      const toggle = screen.getByRole('checkbox', {
+        name: 'Toggle customizable'
+      })
+      expect(toggle).not.toBeChecked()
+      expect(toggle).not.toBeDisabled()
+
+      fireEvent.click(toggle)
+      await waitFor(() => {
+        expect(imageBlockUpdateResult).toHaveBeenCalled()
+      })
+    })
+
+    it('uses VideoBlock from block prop when selectedBlock is not VideoBlock', async () => {
+      const buttonBlock = {
+        id: 'button-1',
+        __typename: 'ButtonBlock',
+        label: 'Button',
+        action: null
+      } as unknown as TreeBlock<ButtonBlock>
+      const videoBlockUpdateResult = jest.fn(() => ({
+        data: { videoBlockUpdate: { ...videoBlock, customizable: true } }
+      }))
+      const videoBlockUpdateMock: MockedResponse<
+        VideoBlockUpdate,
+        VideoBlockUpdateVariables
+      > = {
+        request: {
+          query: VIDEO_BLOCK_UPDATE,
+          variables: {
+            id: videoBlock.id,
+            input: { customizable: true }
+          }
+        },
+        result: videoBlockUpdateResult
+      }
+
+      render(
+        <MockedProvider mocks={[videoBlockUpdateMock]}>
+          <CommandProvider>
+            <EditorProvider initialState={{ selectedBlock: buttonBlock }}>
+              <BlockCustomizationToggle block={videoBlock} />
+            </EditorProvider>
+          </CommandProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      const toggle = screen.getByRole('checkbox', {
+        name: 'Toggle customizable'
+      })
+      expect(toggle).not.toBeChecked()
+      expect(toggle).not.toBeDisabled()
+
+      fireEvent.click(toggle)
+      await waitFor(() => {
+        expect(videoBlockUpdateResult).toHaveBeenCalled()
+      })
+    })
+
+    it('block prop overrides selectedBlock when both are provided', async () => {
+      const imageBlockUpdateResult = jest.fn(() => ({
+        data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
+      }))
+      const imageBlockUpdateMock: MockedResponse<
+        ImageBlockUpdate,
+        ImageBlockUpdateVariables
+      > = {
+        request: {
+          query: IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: imageBlock.id,
+            input: {
+              customizable: true,
+              src: imageBlock.src,
+              width: imageBlock.width,
+              height: imageBlock.height,
+              blurhash: imageBlock.blurhash
+            }
+          }
+        },
+        result: imageBlockUpdateResult
+      }
+      const videoBlockUpdateResult = jest.fn()
+      const videoBlockUpdateMock: MockedResponse<
+        VideoBlockUpdate,
+        VideoBlockUpdateVariables
+      > = {
+        request: {
+          query: VIDEO_BLOCK_UPDATE,
+          variables: {
+            id: videoBlock.id,
+            input: { customizable: true }
+          }
+        },
+        result: videoBlockUpdateResult
+      }
+
+      render(
+        <MockedProvider mocks={[imageBlockUpdateMock, videoBlockUpdateMock]}>
+          <CommandProvider>
+            <EditorProvider initialState={{ selectedBlock: videoBlock }}>
+              <BlockCustomizationToggle block={imageBlock} />
+            </EditorProvider>
+          </CommandProvider>
+        </MockedProvider>
+      )
+
+      const toggle = screen.getByRole('checkbox', {
+        name: 'Toggle customizable'
+      })
+      fireEvent.click(toggle)
+
+      await waitFor(() => {
+        expect(imageBlockUpdateResult).toHaveBeenCalled()
+      })
+      expect(videoBlockUpdateResult).not.toHaveBeenCalled()
+    })
+
+    it('uses selectedBlock when block prop is undefined', async () => {
+      const imageBlockUpdateResult = jest.fn(() => ({
+        data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
+      }))
+      const imageBlockUpdateMock: MockedResponse<
+        ImageBlockUpdate,
+        ImageBlockUpdateVariables
+      > = {
+        request: {
+          query: IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: imageBlock.id,
+            input: {
+              customizable: true,
+              src: imageBlock.src,
+              width: imageBlock.width,
+              height: imageBlock.height,
+              blurhash: imageBlock.blurhash
+            }
+          }
+        },
+        result: imageBlockUpdateResult
+      }
+
+      render(
+        <MockedProvider mocks={[imageBlockUpdateMock]}>
+          <CommandProvider>
+            <EditorProvider initialState={{ selectedBlock: imageBlock }}>
+              <BlockCustomizationToggle block={undefined} />
+            </EditorProvider>
+          </CommandProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      const toggle = screen.getByRole('checkbox', {
+        name: 'Toggle customizable'
+      })
+      expect(toggle).not.toBeChecked()
+      expect(toggle).not.toBeDisabled()
+
+      fireEvent.click(toggle)
+      await waitFor(() => {
+        expect(imageBlockUpdateResult).toHaveBeenCalled()
+      })
+    })
   })
 })
