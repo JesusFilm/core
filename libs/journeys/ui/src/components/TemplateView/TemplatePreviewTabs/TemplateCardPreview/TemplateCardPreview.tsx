@@ -24,8 +24,6 @@ import {
   type TemplateCardPreviewVariant
 } from './templateCardPreviewConfig'
 
-export type { TemplateCardPreviewVariant }
-
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   authUser?: User
