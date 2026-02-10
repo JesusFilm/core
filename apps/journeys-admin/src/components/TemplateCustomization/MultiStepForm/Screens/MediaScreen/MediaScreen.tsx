@@ -30,10 +30,10 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
     null
   )
+  const { journey } = useJourney()
   const showLogo = showLogoSection()
   const showImages = showImagesSection(selectedCardBlockId)
   const showVideos = showVideosSection(selectedCardBlockId)
-  const { journey } = useJourney()
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
