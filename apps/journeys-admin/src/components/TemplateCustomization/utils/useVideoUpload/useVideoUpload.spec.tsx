@@ -188,6 +188,35 @@ describe('useVideoUpload', () => {
     expect(onUploadError).toHaveBeenCalledWith('Upload failed')
   })
 
+  it('should handle GraphQL errors from createMuxVideoUploadByFile', async () => {
+    const onUploadError = jest.fn()
+    const graphqlErrorMock: MockedResponse = {
+      request: {
+        query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
+        variables: { name: 'video.mp4' }
+      },
+      result: {
+        errors: [{ message: 'GraphQL Error: Unauthorized' }]
+      }
+    }
+
+    const { result } = renderHook(() => useVideoUpload({ onUploadError }), {
+      wrapper: ({ children }) => (
+        <MockedProvider mocks={[graphqlErrorMock]} addTypename={false}>
+          {children}
+        </MockedProvider>
+      )
+    })
+
+    await act(async () => {
+      await result.current.handleUpload(file)
+    })
+
+    expect(result.current.status).toBe('error')
+    expect(result.current.error).toBe('GraphQL Error: Unauthorized')
+    expect(onUploadError).toHaveBeenCalledWith('GraphQL Error: Unauthorized')
+  })
+
   it('should handle file too large error', async () => {
     const onUploadError = jest.fn()
     const largeFile = new File([''], 'large.mp4', { type: 'video/mp4' })

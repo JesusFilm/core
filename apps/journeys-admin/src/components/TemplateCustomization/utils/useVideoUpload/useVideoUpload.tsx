@@ -158,9 +158,13 @@ export function useVideoUpload({
       setError(undefined)
 
       try {
-        const { data } = await createMuxVideoUploadByFile({
+        const { data, errors } = await createMuxVideoUploadByFile({
           variables: { name: file.name }
         })
+        if (errors != null && errors.length > 0) {
+          const message = errors[0]?.message ?? 'Upload failed'
+          throw new Error(message)
+        }
 
         const uploadUrl = data?.createMuxVideoUploadByFile?.uploadUrl
         const videoId = data?.createMuxVideoUploadByFile?.id
