@@ -442,7 +442,9 @@ describe('cloudflareImage', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'testUserId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'notUser'

@@ -72,7 +72,8 @@ async function getLanguageSlug(
     return `${videoSlug}/${data.language.slug}`
   } catch (error) {
     logger?.error(
-      `Failed to get language slug for language ${languageId}: ${error as Error}`
+      { error, languageId, videoSlug },
+      'Failed to get language slug for variant'
     )
     throw new Error(`Failed to create slug for variant: ${error as Error}`)
   } finally {
@@ -82,7 +83,7 @@ async function getLanguageSlug(
   }
 }
 
-interface ProcessVideoUploadJobData {
+export interface ProcessVideoUploadJobData {
   videoId: string
   edition: string
   languageId: string
@@ -141,7 +142,15 @@ export async function service(
         logger
       })
     }
-    if (finalStatus !== 'ready') {
+    if (finalStatus === 'errored') {
+      logger?.error(
+        { videoId, muxVideoId, finalStatus },
+        'Video upload processing failed due to Mux error'
+      )
+      return
+    }
+
+    if (finalStatus === 'timeout') {
       logger?.warn(
         { videoId, muxVideoId, finalStatus },
         'Video upload processing failed due to timeout'
@@ -149,7 +158,8 @@ export async function service(
     }
   } catch (error) {
     logger?.error(
-      `Video upload processing failed for video ${videoId} and mux video ${muxVideoId}: ${error as Error}`
+      { error, videoId, muxVideoId },
+      'Video upload processing failed'
     )
     throw error
   }
@@ -160,6 +170,7 @@ async function waitForMuxVideoCompletion(
   logger?: Logger
 ): Promise<
   | { finalStatus: 'ready'; playbackId: string }
+  | { finalStatus: 'errored'; playbackId: null }
   | { finalStatus: 'timeout'; playbackId: null }
 > {
   const maxAttempts = 480 // 120 minutes (480 * 15 seconds)
@@ -178,6 +189,18 @@ async function waitForMuxVideoCompletion(
   while (attempts < maxAttempts) {
     try {
       const muxVideoAsset = await getVideo(muxVideo.assetId, false)
+
+      if (muxVideoAsset.status === 'errored') {
+        logger?.error(
+          {
+            muxVideoId: muxVideo.id,
+            assetId: muxVideo.assetId,
+            status: muxVideoAsset.status
+          },
+          'Mux video processing errored'
+        )
+        return { finalStatus: 'errored', playbackId: null }
+      }
 
       const playbackId = muxVideoAsset?.playback_ids?.[0].id
       if (playbackId != null && muxVideoAsset.status === 'ready') {
@@ -235,6 +258,7 @@ async function waitForMuxVideoCompletion(
         logger?.info(
           {
             muxVideoId: muxVideo.id,
+            assetId: muxVideo.assetId,
             status: muxVideoAsset.status,
             attempts: attempts + 1,
             elapsedMinutes
@@ -247,7 +271,13 @@ async function waitForMuxVideoCompletion(
       await new Promise((resolve) => setTimeout(resolve, intervalMs))
     } catch (error) {
       logger?.error(
-        `Error checking Mux video status for mux video ${muxVideo.id} and asset ${muxVideo.assetId} on attempt ${attempts + 1}: ${error as Error}`
+        {
+          error,
+          muxVideoId: muxVideo.id,
+          assetId: muxVideo.assetId,
+          attempt: attempts + 1
+        },
+        'Error checking Mux video status'
       )
       attempts++
       await new Promise((resolve) => setTimeout(resolve, intervalMs))
@@ -362,7 +392,8 @@ async function createVideoVariant({
     }
   } catch (error) {
     logger?.error(
-      `Failed to create video variant for video ${videoId} and mux video ${muxVideoId}: ${error as Error}`
+      { error, videoId, muxVideoId, variantId, languageId, edition },
+      'Failed to create video variant'
     )
     throw error
   }
