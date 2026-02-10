@@ -386,7 +386,6 @@ export function UploadVideoVariantProvider({
     }
 
     try {
-
       console.info('Starting video upload', logContext)
       dispatch({
         type: 'START_UPLOAD',
@@ -544,9 +543,7 @@ export function UploadVideoVariantProvider({
                 attempt,
                 maxRetries
               })
-              await new Promise((resolve) =>
-                setTimeout(resolve, 500 * attempt)
-              )
+              await new Promise((resolve) => setTimeout(resolve, 500 * attempt))
             }
           }
 
