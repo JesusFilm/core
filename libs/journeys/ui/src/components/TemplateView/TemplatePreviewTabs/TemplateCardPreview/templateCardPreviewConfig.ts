@@ -1,5 +1,6 @@
 import type { SxProps, Theme } from '@mui/material/styles'
-import type { SwiperOptions } from 'swiper/types'
+import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules';
+import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
 export type TemplateCardPreviewVariant = 'preview' | 'media'
 
@@ -21,6 +22,7 @@ export interface VariantConfig {
   cardSx: SxProps<Theme>
   slideSx: SxProps<Theme>
   swiperSx: SxProps<Theme>
+  modules?: SwiperModule[]
 }
 
 export const SELECTED_SCALE = 1.07
@@ -49,7 +51,17 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   swiperSx: {
     overflow: 'visible',
     zIndex: 2
-  }
+  },
+  swiperProps: {
+    mousewheel: { forceToAxis: true },
+    freeMode: true,
+    watchOverflow: true,
+    slidesPerView: "auto",
+    spaceBetween: 12,
+    observer: true,
+    observeParents: true
+  },
+  modules: [Mousewheel, FreeMode, A11y]
 }
 
 const MEDIA_VARIANT_CONFIG: VariantConfig = {
@@ -65,6 +77,13 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: 12
   },
   swiperProps: {
+    mousewheel: { forceToAxis: true },
+    freeMode: true,
+    watchOverflow: true,
+    slidesPerView: "auto",
+    spaceBetween: 12,
+    observer: true,
+    observeParents: true,
     allowTouchMove: true
   },
   cardSx: {
@@ -86,7 +105,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     '& .swiper-wrapper': {
       alignItems: 'center'
     }
-  }
+  },
+  modules: [Mousewheel, FreeMode, A11y, Navigation]
 }
 
 export const VARIANT_CONFIGS: Record<

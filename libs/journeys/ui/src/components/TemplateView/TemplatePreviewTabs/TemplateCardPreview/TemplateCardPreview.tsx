@@ -70,7 +70,8 @@ export function TemplateCardPreview({
     showNavigation,
     swiperProps,
     slideSx,
-    swiperSx
+    swiperSx,
+    modules
   } = config
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
@@ -98,14 +99,7 @@ export function TemplateCardPreview({
 
   const swiperContent = (
     <StyledSwiper
-      modules={[Mousewheel, FreeMode, A11y, Navigation]}
-      mousewheel={{ forceToAxis: true }}
-      freeMode
-      watchOverflow
-      slidesPerView="auto"
-      spaceBetween={12}
-      observer
-      observeParents
+      modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={showNavigation ? setSwiper : undefined}
       {...swiperProps}
