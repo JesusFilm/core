@@ -1,6 +1,3 @@
 export { showLogoSection } from './showLogoSection'
 export { showImagesSection } from './showImagesSection'
 export { showVideosSection } from './showVideosSection'
-export { showBackgroundImageSection } from './showBackgroundImageSection'
-export { showBackgroundVideoSection } from './showBackgroundVideoSection'
-export { getCardImageBlocks, getFirstCardWithImages } from './getJourneyMedia'

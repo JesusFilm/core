@@ -3,26 +3,15 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import {
-  showLogoSection,
-  showImagesSection,
-  showVideosSection,
-  showBackgroundImageSection,
-  showBackgroundVideoSection,
-  getFirstCardWithImages
-} from './utils'
-import {
-  BackgroundImageSection,
-  BackgroundVideoSection,
   CardsSection,
   ImagesSection,
   LogoSection,
   VideosSection
 } from './Sections'
-
-import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 
 interface MediaScreenProps {
   handleNext: () => void
@@ -30,17 +19,12 @@ interface MediaScreenProps {
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
-  const [selectedCardBlockId] = useState<string | null>(
-    getFirstCardWithImages(journey)
+  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
+    null
   )
   const showLogo = showLogoSection()
-  const showImages = showImagesSection(journey, selectedCardBlockId)
+  const showImages = showImagesSection(selectedCardBlockId)
   const showVideos = showVideosSection(selectedCardBlockId)
-  const showBackgroundImage =
-    showBackgroundImageSection(selectedCardBlockId)
-  const showBackgroundVideo =
-    showBackgroundVideoSection(selectedCardBlockId)
 
   return (
     <Stack alignItems="center" sx={{ width: '100%' }}>
@@ -52,17 +36,9 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         {t('Media')}
       </Typography>
       {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {<CardsSection onChange={() => {}} />}
-      {showImages && (
-        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
-      )}
+      {<CardsSection onChange={setSelectedCardBlockId} />}
+      {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
       {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
-      {showBackgroundImage && (
-        <BackgroundImageSection cardBlockId={selectedCardBlockId} />
-      )}
-      {showBackgroundVideo && (
-        <BackgroundVideoSection cardBlockId={selectedCardBlockId} />
-      )}
       <CustomizeFlowNextButton
         label={t('Next')}
         onClick={handleNext}

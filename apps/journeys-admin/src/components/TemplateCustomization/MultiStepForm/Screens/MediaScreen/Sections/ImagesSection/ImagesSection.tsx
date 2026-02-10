@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { getCardImageBlocks } from '../../utils/getJourneyMedia'
 
 interface ImagesSectionProps {

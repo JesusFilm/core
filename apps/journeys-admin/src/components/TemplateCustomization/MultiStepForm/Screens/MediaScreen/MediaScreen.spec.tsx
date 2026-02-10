@@ -56,7 +56,5 @@ describe('MediaScreen', () => {
     expect(screen.getByTestId('CardsSection')).toBeInTheDocument()
     expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
     expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
-    expect(screen.getByTestId('BackgroundImageSection')).toBeInTheDocument()
-    expect(screen.getByTestId('BackgroundVideoSection')).toBeInTheDocument()
   })
 })
