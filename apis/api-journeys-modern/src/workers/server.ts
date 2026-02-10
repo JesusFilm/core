@@ -74,18 +74,14 @@ function run({
 
   logger.info({ queue: queueName, concurrency }, 'waiting for jobs')
 
-  if (repeat != null || jobData != null) {
-    // Set up scheduled or one-off job
+  if (repeat != null) {
     const queue = new Queue(queueName, { connection })
     void queue.add(`${queueName}-job`, jobData ?? {}, {
       removeOnComplete: { age: ONE_HOUR },
       removeOnFail: { age: ONE_DAY },
-      repeat: repeat != null ? { pattern: repeat } : undefined
+      repeat: { pattern: repeat }
     })
-    logger.info(
-      { queue: queueName, repeat },
-      repeat != null ? 'scheduled recurring job' : 'scheduled one-off job'
-    )
+    logger.info({ queue: queueName, repeat }, 'scheduled recurring job')
   }
 }
 
