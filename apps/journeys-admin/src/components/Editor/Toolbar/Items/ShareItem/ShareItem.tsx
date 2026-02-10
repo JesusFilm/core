@@ -6,7 +6,13 @@ import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ComponentProps, MouseEvent, ReactElement, useEffect, useState } from 'react'
+import {
+  ComponentProps,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useState
+} from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
