@@ -101,10 +101,6 @@ export function ShareItem({
         }/${journey?.slug}`
       : undefined
 
-  useEffect(() => {
-    setIsDialogOpen?.(Boolean(anchorEl))
-  }, [anchorEl, setIsDialogOpen])
-
   const handleCopyClick = async (): Promise<void> => {
     await navigator.clipboard.writeText(journeyUrl ?? '')
     enqueueSnackbar('Link copied', {
@@ -115,6 +111,7 @@ export function ShareItem({
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
+    setIsDialogOpen?.(true)
     handleKeepMounted?.()
     handleCloseMenu?.()
   }
@@ -140,6 +137,7 @@ export function ShareItem({
         open={Boolean(anchorEl)}
         onClose={() => {
           setAnchorEl(null)
+          setIsDialogOpen?.(false)
         }}
         dialogTitle={{ title: t('Share'), closeButton: true }}
         sx={{ minWidth: 350 }}
