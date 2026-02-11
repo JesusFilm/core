@@ -1,5 +1,5 @@
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { getJourneyMedia } from '../../../../../utils/getJourneyMedia/getJourneyMedia'
+import { getCustomizableImageBlocks } from '../getCustomizableImageBlocks'
 
 /**
  * Shows the images section on the media screen.
@@ -13,16 +13,5 @@ export function showImagesSection(
   journey: Journey | undefined,
   cardBlockId: string | null
 ): boolean {
-  if (!journey || !cardBlockId) {
-    return false
-  }
-
-  const journeyMedia = getJourneyMedia(journey)
-  const imageBlocks = journeyMedia.filter(
-    (block) =>
-      block.__typename === 'ImageBlock' &&
-      block.parentBlockId === cardBlockId &&
-      block.customizable === true
-  )
-  return imageBlocks.length > 0
+  return getCustomizableImageBlocks(journey, cardBlockId).length > 0
 }

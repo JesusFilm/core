@@ -4,12 +4,15 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { GetJourney_journey as Journey, GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
+import {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_ImageBlock as ImageBlock
+} from '../../../../../../../../__generated__/GetJourney'
 import {
   ImageBlockUpdate,
   ImageBlockUpdateVariables
 } from '../../../../../../../../__generated__/ImageBlockUpdate'
-import { getJourneyMedia } from '../../../../../utils/getJourneyMedia/getJourneyMedia'
+import { getCustomizableImageBlocks } from '../../utils/getCustomizableImageBlocks'
 
 import { ImageSectionItem } from './ImageSectionItem'
 
@@ -48,13 +51,7 @@ export function ImagesSection({
     ImageBlockUpdateVariables
   >(IMAGE_BLOCK_UPDATE)
 
-  const journeyMedia = getJourneyMedia(journey ?? undefined)
-  const imageBlocks = journeyMedia.filter(
-    (block): block is ImageBlock =>
-      block.__typename === 'ImageBlock' &&
-      block.parentBlockId === cardBlockId &&
-      block.customizable === true
-  )
+  const imageBlocks = getCustomizableImageBlocks(journey, cardBlockId)
 
   async function handleUploadComplete(
     blockId: string,

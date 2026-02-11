@@ -102,9 +102,15 @@ describe('ImagesSection', () => {
         <ImagesSection journey={multipleImagesJourney} cardBlockId="card1.id" />
       </MockedProvider>
     )
-    expect(screen.getAllByRole('button', { name: 'Edit image' })).toHaveLength(2)
-    expect(screen.getByTestId('ImagesSection-file-input-image1.id')).toBeInTheDocument()
-    expect(screen.getByTestId('ImagesSection-file-input-image2.id')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Edit image' })).toHaveLength(
+      2
+    )
+    expect(
+      screen.getByTestId('ImagesSection-file-input-image1.id')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('ImagesSection-file-input-image2.id')
+    ).toBeInTheDocument()
   })
 
   it('should call imageBlockUpdate mutation when handleUploadComplete is triggered', async () => {
