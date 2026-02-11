@@ -30,30 +30,6 @@ interface MediaScreenProps {
   handleNext: () => void
 }
 
-/**
- * getFirstCardWithImages is a temporary implementation until the "CardCarousel" PR is merged
- * that will enable using "selected card" to find images instead
- */
-function getFirstCardWithImages(journey: Journey | undefined): string | null {
-  if (journey?.blocks == null) return null
-
-  const cardBlocks = journey.blocks.filter(
-    (block): block is CardBlock => block.__typename === 'CardBlock'
-  )
-
-  for (const card of cardBlocks) {
-    const hasImages = journey.blocks.some(
-      (block) =>
-        block.__typename === 'ImageBlock' &&
-        block.parentBlockId === card.id &&
-        block.customizable === true
-    )
-    if (hasImages) return card.id
-  }
-
-  return null
-}
-
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()

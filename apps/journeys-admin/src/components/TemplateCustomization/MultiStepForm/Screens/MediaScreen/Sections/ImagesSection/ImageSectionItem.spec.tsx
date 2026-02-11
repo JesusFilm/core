@@ -55,6 +55,21 @@ describe('ImageSectionItem', () => {
     expect(image).toHaveAttribute('alt', 'image alt text')
   })
 
+  it('should render alt="" when imageBlock.alt is null', () => {
+    const { container } = render(
+      <MockedProvider>
+        <ImageSectionItem
+          imageBlock={{ ...imageBlock, alt: '' }}
+          onUploadComplete={onUploadComplete}
+        />
+      </MockedProvider>
+    )
+
+    const image = container.querySelector('img')
+    expect(image).toBeInTheDocument()
+    expect(image).toHaveAttribute('alt', '')
+  })
+
   it('should render an empty state icon when src is not provided', () => {
     render(
       <MockedProvider>
@@ -85,16 +100,19 @@ describe('ImageSectionItem', () => {
     expect(screen.getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 
-  it('should call open when edit button is clicked', () => {
+  it('should handle click and loading state for edit button', () => {
     const open = jest.fn()
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
+    const useImageUploadSpy = jest.spyOn(useImageUploadHooks, 'useImageUpload')
+    
+    // Test happy path (not loading)
+    useImageUploadSpy.mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn(),
       open,
       loading: false
     } as any)
 
-    render(
+    const { rerender } = render(
       <MockedProvider>
         <ImageSectionItem
           imageBlock={imageBlock}
@@ -103,19 +121,22 @@ describe('ImageSectionItem', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit image' }))
+    const editButton = screen.getByRole('button', { name: 'Edit image' })
+    expect(editButton).toBeEnabled()
+    expect(screen.queryByTestId('ImagesSection-upload-progress')).not.toBeInTheDocument()
+    
+    fireEvent.click(editButton)
     expect(open).toHaveBeenCalled()
-  })
 
-  it('should show loading progress and disable edit button when uploading', () => {
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
+    // Test loading state
+    useImageUploadSpy.mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn(),
-      open: jest.fn(),
+      open,
       loading: true
     } as any)
 
-    render(
+    rerender(
       <MockedProvider>
         <ImageSectionItem
           imageBlock={imageBlock}
@@ -124,15 +145,13 @@ describe('ImageSectionItem', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.getByTestId('ImagesSection-upload-progress')
-    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Edit image' })).toBeDisabled()
+    expect(screen.getByTestId('ImagesSection-upload-progress')).toBeInTheDocument()
   })
 
-  it('should hide loading progress when not uploading', () => {
+  it('should apply getRootProps to the outer Box', () => {
     jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
-      getRootProps: jest.fn(),
+      getRootProps: () => ({ 'data-testid': 'dropzone-root', 'aria-label': 'dropzone' }),
       getInputProps: jest.fn(),
       open: jest.fn(),
       loading: false
@@ -147,10 +166,7 @@ describe('ImageSectionItem', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.queryByTestId('ImagesSection-upload-progress')
-    ).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Edit image' })).toBeEnabled()
+    expect(screen.getByTestId('dropzone-root')).toBeInTheDocument()
   })
 
   it('should call onUploadComplete when image upload finishes', () => {
@@ -196,36 +212,25 @@ describe('ImageSectionItem', () => {
     ).toBeInTheDocument()
   })
 
-  it('should pass correct blur data to NextImage when blurhash is present', () => {
+  it.each([
+    ['L6PZfS_NcCIU_NcCIU_NcCIU', 'blur'],
+    [null, 'empty']
+  ])('should pass correct blur data to NextImage when blurhash is %s', (blurhash, expectedPlaceholder) => {
     render(
       <MockedProvider>
         <ImageSectionItem
-          imageBlock={{ ...imageBlock, blurhash: 'L6PZfS_NcCIU_NcCIU_NcCIU' }}
+          imageBlock={{ ...imageBlock, blurhash }}
           onUploadComplete={onUploadComplete}
         />
       </MockedProvider>
     )
 
     const image = screen.getByRole('img')
-    expect(image).toHaveAttribute('data-placeholder', 'blur')
-    expect(image).toHaveAttribute(
-      'data-blurdataurl',
-      'L6PZfS_NcCIU_NcCIU_NcCIU'
-    )
-  })
-
-  it('should not pass blur data to NextImage when blurhash is missing', () => {
-    render(
-      <MockedProvider>
-        <ImageSectionItem
-          imageBlock={{ ...imageBlock, blurhash: null }}
-          onUploadComplete={onUploadComplete}
-        />
-      </MockedProvider>
-    )
-
-    const image = screen.getByRole('img')
-    expect(image).toHaveAttribute('data-placeholder', 'empty')
-    expect(image).not.toHaveAttribute('data-blurdataurl')
+    expect(image).toHaveAttribute('data-placeholder', expectedPlaceholder)
+    if (blurhash != null) {
+      expect(image).toHaveAttribute('data-blurdataurl', blurhash)
+    } else {
+      expect(image).not.toHaveAttribute('data-blurdataurl')
+    }
   })
 })

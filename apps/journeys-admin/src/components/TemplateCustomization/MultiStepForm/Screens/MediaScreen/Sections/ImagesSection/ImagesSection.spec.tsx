@@ -31,33 +31,71 @@ describe('ImagesSection', () => {
     blocks: [imageBlock]
   } as unknown as Journey
 
-  it('should render the section title', () => {
+  it('should render the section title and display empty message when no blocks found', () => {
     render(
       <MockedProvider>
         <ImagesSection journey={null} cardBlockId={null} />
       </MockedProvider>
     )
     expect(screen.getByText('Image')).toBeInTheDocument()
+    expect(
+      screen.getByText('No customizable images found for this card.')
+    ).toBeInTheDocument()
   })
 
-  it('should display a message when no customizable image blocks are found', () => {
+  it('should display empty message when cardBlockId is null with a non-null journey', () => {
     render(
       <MockedProvider>
-        <ImagesSection journey={null} cardBlockId={null} />
+        <ImagesSection journey={journey} cardBlockId={null} />
       </MockedProvider>
     )
     expect(
       screen.getByText('No customizable images found for this card.')
-    )
+    ).toBeInTheDocument()
   })
 
-  it('should render a list of ImageSectionItem components for each matching image block', () => {
+  it('should display empty message when journey has blocks but none match the filter', () => {
+    const nonMatchingJourney = {
+      ...journey,
+      blocks: [
+        {
+          ...imageBlock,
+          id: 'otherImage.id',
+          parentBlockId: 'otherCard.id'
+        }
+      ]
+    } as unknown as Journey
+
     render(
       <MockedProvider>
-        <ImagesSection journey={journey} cardBlockId="card1.id" />
+        <ImagesSection journey={nonMatchingJourney} cardBlockId="card1.id" />
       </MockedProvider>
     )
-    expect(screen.getByRole('button', { name: 'Edit image' })).toBeInTheDocument()
+    expect(
+      screen.getByText('No customizable images found for this card.')
+    ).toBeInTheDocument()
+  })
+
+  it('should render multiple ImageSectionItem components for the same card', () => {
+    const multipleImagesJourney = {
+      ...journey,
+      blocks: [
+        imageBlock,
+        {
+          ...imageBlock,
+          id: 'image2.id'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <ImagesSection journey={multipleImagesJourney} cardBlockId="card1.id" />
+      </MockedProvider>
+    )
+    expect(screen.getAllByRole('button', { name: 'Edit image' })).toHaveLength(2)
+    expect(screen.getByTestId('ImagesSection-file-input-image1.id')).toBeInTheDocument()
+    expect(screen.getByTestId('ImagesSection-file-input-image2.id')).toBeInTheDocument()
   })
 
   it('should call imageBlockUpdate mutation when handleUploadComplete is triggered', async () => {
@@ -77,6 +115,11 @@ describe('ImagesSection', () => {
           src: 'https://imagedelivery.net//cloudflare.id/public',
           alt: 'image',
           blurhash: '',
+          width: 100,
+          height: 100,
+          scale: 100,
+          focalTop: 50,
+          focalLeft: 50,
           __typename: 'ImageBlock'
         }
       }

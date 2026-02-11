@@ -19,6 +19,11 @@ export const IMAGE_BLOCK_UPDATE = gql`
       src
       alt
       blurhash
+      width
+      height
+      scale
+      focalTop
+      focalLeft
     }
   }
 `
