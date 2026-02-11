@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, MuxSubtitleTrack, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, Playlist, PlaylistItem, ArclightApiKey } from ".prisma/api-media-client/index.js";
+import type { Prisma, CloudflareImage, MuxVideo, MuxSubtitleTrack, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, UserMediaProfile, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, Playlist, PlaylistItem, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -116,8 +116,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parents" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parents" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parents" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "origin" | "userMediaProfiles";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parents" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions" | "userMediaProfiles";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -193,6 +193,11 @@ export default interface PrismaTypes {
                 Shape: VideoOrigin | null;
                 Name: "VideoOrigin";
                 Nullable: true;
+            };
+            userMediaProfiles: {
+                Shape: UserMediaProfile[];
+                Name: "UserMediaProfile";
+                Nullable: false;
             };
         };
     };
@@ -663,6 +668,26 @@ export default interface PrismaTypes {
         RelationName: never;
         ListRelations: never;
         Relations: {};
+    };
+    UserMediaProfile: {
+        Name: "UserMediaProfile";
+        Shape: UserMediaProfile;
+        Include: Prisma.UserMediaProfileInclude;
+        Select: Prisma.UserMediaProfileSelect;
+        OrderBy: Prisma.UserMediaProfileOrderByWithRelationInput;
+        WhereUnique: Prisma.UserMediaProfileWhereUniqueInput;
+        Where: Prisma.UserMediaProfileWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "userInterests";
+        ListRelations: "userInterests";
+        Relations: {
+            userInterests: {
+                Shape: Video[];
+                Name: "Video";
+                Nullable: false;
+            };
+        };
     };
     ShortLinkDomain: {
         Name: "ShortLinkDomain";
