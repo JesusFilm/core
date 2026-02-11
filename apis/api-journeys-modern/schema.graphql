@@ -7,6 +7,13 @@ interface Action {
   parentBlock: Block!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
 interface Block {
   id: ID!
   journeyId: ID!

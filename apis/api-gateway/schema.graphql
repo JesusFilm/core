@@ -2199,8 +2199,9 @@ type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: AP
   roles: [Role!]
 }
 
-type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
+  languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
   email: String! @join__field(graph: API_USERS) 
@@ -3738,13 +3739,13 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum LanguageRole @join__type(graph: API_LANGUAGES)  {
+  publisher @join__enumValue(graph: API_LANGUAGES) 
+}
+
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
-}
-
-enum LanguageRole @join__type(graph: API_LANGUAGES)  {
-  publisher @join__enumValue(graph: API_LANGUAGES) 
 }
 
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
