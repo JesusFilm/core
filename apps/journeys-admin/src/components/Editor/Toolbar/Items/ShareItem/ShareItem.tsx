@@ -10,7 +10,6 @@ import {
   ComponentProps,
   MouseEvent,
   ReactElement,
-  useEffect,
   useState
 } from 'react'
 
