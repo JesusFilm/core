@@ -219,7 +219,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: null
-      })
+      }, false)
     )
   })
 
@@ -254,7 +254,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: null
-      })
+      }, false)
     })
 
     expect(
@@ -290,7 +290,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 11,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: null
-      })
+      }, false)
     )
   })
 
@@ -320,7 +320,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: null
-      })
+      }, false)
     )
   })
 
@@ -348,7 +348,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fit,
         subtitleLanguageId: null
-      })
+      }, false)
     })
   })
 
@@ -445,7 +445,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: null
-      })
+      }, false)
     })
     expect(
       getByText('Start time has to be at least 3 seconds less than end time')
@@ -541,7 +541,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: 'lang-en'
-      })
+      }, false)
     })
   })
 
@@ -590,7 +590,7 @@ describe('VideoBlockEditorSettings', () => {
         startAt: 0,
         objectFit: ObjectFit.fill,
         subtitleLanguageId: 'lang-en'
-      })
+      }, false)
     })
   })
 
@@ -837,7 +837,7 @@ describe('VideoBlockEditorSettings', () => {
           objectFit: ObjectFit.fill,
           showGeneratedSubtitles: true,
           subtitleLanguageId: '529'
-        })
+        }, false)
       })
     })
 
@@ -922,7 +922,7 @@ describe('VideoBlockEditorSettings', () => {
           objectFit: ObjectFit.fill,
           showGeneratedSubtitles: false,
           subtitleLanguageId: null
-        })
+        }, false)
       })
     })
 
@@ -1079,7 +1079,7 @@ describe('VideoBlockEditorSettings', () => {
           startAt: 5,
           objectFit: ObjectFit.fill,
           subtitleLanguageId: null
-        })
+        }, false)
       })
     })
   })
@@ -1172,7 +1172,7 @@ describe('VideoBlockEditorSettings', () => {
           startAt: 0,
           objectFit: ObjectFit.zoomed,
           subtitleLanguageId: null
-        })
+        }, false)
       })
     })
 
