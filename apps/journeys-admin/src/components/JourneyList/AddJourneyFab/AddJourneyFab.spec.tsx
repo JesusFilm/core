@@ -14,7 +14,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('AddJourneyFab', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
-  // Cannot test mobile in unit test until we can useMediaQuery
+  // Cannot test mobile in unit test until we can useMediaQuery because sx uses CSS media queries, which JSDOM does not evaluate
   it.skip('should open side panel drawer on fab click', async () => {
     const { getByRole, getByTestId } = render(
       <MockedProvider>
