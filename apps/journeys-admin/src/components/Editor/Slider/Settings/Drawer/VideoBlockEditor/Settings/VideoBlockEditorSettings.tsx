@@ -56,7 +56,7 @@ interface Values extends FormikValues {
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   posterBlock: ImageBlock | null
-  onChange: (input: VideoBlockUpdateInput) => Promise<void>
+  onChange: (input: VideoBlockUpdateInput, shouldFocus?: boolean) => Promise<void>
 }
 
 export function VideoBlockEditorSettings({
@@ -132,7 +132,7 @@ export function VideoBlockEditorSettings({
             ...values,
             startAt: convertedStartAt,
             endAt: convertedEndAt
-          })
+          }, false)
         }
         return errors
       },
