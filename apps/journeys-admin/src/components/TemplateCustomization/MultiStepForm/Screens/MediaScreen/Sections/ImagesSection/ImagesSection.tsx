@@ -1,55 +1,96 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { getCardImageBlocks } from '../../utils/getJourneyMedia'
+import { GetJourney_journey as Journey, GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
+import {
+  ImageBlockUpdate,
+  ImageBlockUpdateVariables
+} from '../../../../../../../../__generated__/ImageBlockUpdate'
+import { getJourneyMedia } from '../../../../../utils/getJourneyMedia/getJourneyMedia'
+
+import { ImageSectionItem } from './ImageSectionItem'
+
+export const IMAGE_BLOCK_UPDATE = gql`
+  mutation ImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
+    imageBlockUpdate(id: $id, input: $input) {
+      id
+      src
+      alt
+      blurhash
+    }
+  }
+`
 
 interface ImagesSectionProps {
-  journey?: Journey
+  journey?: Journey | null
   cardBlockId: string | null
 }
 
 /**
  * Displays customizable image blocks from the selected card block.
- * Shows a list of images that belong to the specified card.
+ * Shows image previews in a grid with floating edit buttons that trigger file upload.
  */
 export function ImagesSection({
   journey,
   cardBlockId
 }: ImagesSectionProps): ReactElement {
-  const imageBlocks = getCardImageBlocks(journey, cardBlockId)
+  const [imageBlockUpdate] = useMutation<
+    ImageBlockUpdate,
+    ImageBlockUpdateVariables
+  >(IMAGE_BLOCK_UPDATE)
+
+  const journeyMedia = getJourneyMedia(journey ?? undefined)
+  const imageBlocks = journeyMedia.filter(
+    (block): block is ImageBlock =>
+      block.__typename === 'ImageBlock' &&
+      block.parentBlockId === cardBlockId &&
+      block.customizable === true
+  )
+
+  async function handleUploadComplete(
+    blockId: string,
+    src: string
+  ): Promise<void> {
+    await imageBlockUpdate({
+      variables: {
+        id: blockId,
+        input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
+      }
+    })
+  }
 
   return (
-    <Box data-testid="ImagesSection">
-      <Typography variant="h6" gutterBottom>
-        Images
+    <Box data-testid="ImagesSection" sx={{ width: '100%' }}>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{ color: 'text.secondary', ml: 20 }}
+      >
+        Image
       </Typography>
       {imageBlocks.length === 0 ? (
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" color="text.secondary" align="center">
           No customizable images found for this card.
         </Typography>
       ) : (
-        <Stack spacing={2}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 2,
+            width: '100%'
+          }}
+        >
           {imageBlocks.map((imageBlock) => (
-            <Box key={imageBlock.id}>
-              <Typography variant="body2" fontWeight="medium">
-                Image ID: {imageBlock.id}
-              </Typography>
-              {imageBlock.alt && (
-                <Typography variant="body2" color="text.secondary">
-                  Alt: {imageBlock.alt}
-                </Typography>
-              )}
-              {imageBlock.src && (
-                <Typography variant="body2" color="text.secondary">
-                  Source: {imageBlock.src}
-                </Typography>
-              )}
-            </Box>
+            <ImageSectionItem
+              key={imageBlock.id}
+              imageBlock={imageBlock}
+              onUploadComplete={handleUploadComplete}
+            />
           ))}
-        </Stack>
+        </Box>
       )}
     </Box>
   )
