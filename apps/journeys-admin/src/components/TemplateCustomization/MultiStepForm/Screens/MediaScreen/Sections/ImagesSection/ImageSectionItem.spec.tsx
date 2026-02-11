@@ -1,7 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
+
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
+// eslint-disable-next-line import/no-namespace
 import * as useImageUploadHooks from '../../../../../../../libs/useImageUpload'
+
 import { ImageSectionItem } from './ImageSectionItem'
 
 jest.mock('next-i18next', () => ({
@@ -179,7 +182,7 @@ describe('ImageSectionItem', () => {
   })
 
   it('should call onUploadComplete when image upload finishes', () => {
-    let onUploadCompleteCallback: (url: string) => void = () => {}
+    let onUploadCompleteCallback: (url: string) => void = jest.fn()
     jest.spyOn(useImageUploadHooks, 'useImageUpload').mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {

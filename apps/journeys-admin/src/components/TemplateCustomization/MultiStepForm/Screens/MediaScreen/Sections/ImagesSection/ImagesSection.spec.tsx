@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey
 } from '../../../../../../../../__generated__/GetJourney'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 

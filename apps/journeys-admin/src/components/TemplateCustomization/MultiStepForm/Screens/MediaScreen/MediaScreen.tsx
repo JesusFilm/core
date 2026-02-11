@@ -10,6 +10,10 @@ import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePrev
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../__generated__/GetJourney'
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
@@ -19,10 +23,6 @@ import {
   LogoSection,
   VideosSection
 } from './Sections'
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_CardBlock as CardBlock
-} from '../../../../../../__generated__/GetJourney'
 import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 import { getCardBlockIdFromStep, getCustomizableMediaSteps } from './utils/mediaScreenUtils'
 

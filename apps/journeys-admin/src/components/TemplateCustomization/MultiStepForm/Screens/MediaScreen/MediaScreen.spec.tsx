@@ -5,11 +5,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import {
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_CardBlock as CardBlock,
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
+
 import { MediaScreen } from './MediaScreen'
 
 describe('MediaScreen', () => {

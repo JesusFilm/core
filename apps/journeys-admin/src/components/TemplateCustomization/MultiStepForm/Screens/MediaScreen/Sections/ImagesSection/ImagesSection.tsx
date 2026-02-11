@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_blocks_ImageBlock as ImageBlock
+  GetJourney_journey_blocks_ImageBlock as ImageBlock,
+  GetJourney_journey as Journey
 } from '../../../../../../../../__generated__/GetJourney'
 import {
   ImageBlockUpdate,
