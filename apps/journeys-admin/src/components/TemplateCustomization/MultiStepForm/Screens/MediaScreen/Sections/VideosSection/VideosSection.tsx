@@ -6,13 +6,15 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { getCustomizableCardVideoBlock } from '../../utils'
+import { VideoPreviewPlayer } from './VideoPreviewPlayer'
 
 interface VideosSectionProps {
   cardBlockId: string | null
 }
 
 /**
- * TODO: update this jsdoc after you implement this component
+ * Renders the Video section for the Media step: heading and the card's
+ * customizable video preview (YouTube, Mux, or internal).
  */
 export function VideosSection({
   cardBlockId
@@ -22,11 +24,9 @@ export function VideosSection({
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
 
   return (
-    <Box data-testid="VideosSection">
+    <Box data-testid="VideosSection" width="100%">
       <Typography variant="h6">{t('Video')}</Typography>
-      {videoBlock != null && (
-        <Typography variant="body2">{videoBlock.id}</Typography>
-      )}
+      {videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />}
     </Box>
   )
 }
