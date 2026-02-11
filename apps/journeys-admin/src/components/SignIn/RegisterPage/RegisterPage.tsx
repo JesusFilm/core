@@ -24,7 +24,7 @@ import { InferType, object, string } from 'yup'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
-const UPDATE_ME = gql`
+export const UPDATE_ME = gql`
   mutation UpdateMe($input: UpdateMeInput!) {
     updateMe(input: $input) {
       id
