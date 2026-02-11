@@ -57,7 +57,15 @@ export function MainPanelHeader({
           }}
         >
           {backHrefHistory ? (
-            <Box onClick={() => router.back()} sx={{ ml: 0, pl: 0, display: 'flex', marginLeft: { xs: 6, sm: 8, md: 10 } }}>
+            <Box
+              onClick={() => router.back()}
+              sx={{
+                ml: 0,
+                pl: 0,
+                display: 'flex',
+                marginLeft: { xs: 6, sm: 8, md: 10 }
+              }}
+            >
               <IconButton
                 data-testid="backHref-history-button"
                 size="small"

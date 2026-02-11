@@ -119,57 +119,16 @@ function TemplateDetailsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = withUserTokenSSR()(async ({
-  user,
-  locale,
-  resolvedUrl,
-  params
-}) => {
-  const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
-    user,
-    locale,
-    resolvedUrl
-  })
+export const getServerSideProps: GetServerSideProps = withUserTokenSSR()(
+  async ({ user, locale, resolvedUrl, params }) => {
+    const { redirect, apolloClient, translations, flags } =
+      await initAndAuthApp({
+        user,
+        locale,
+        resolvedUrl
+      })
 
-  if (params?.journeyId == null) {
-    return {
-      redirect: {
-        destination: '/templates',
-        permanent: false
-      }
-    }
-  }
-
-  if (redirect != null) return { redirect }
-
-  try {
-    // TemplateDetailsPage
-    const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
-      query: GET_JOURNEY,
-      variables: {
-        id: params.journeyId.toString(),
-        idType: IdType.databaseId
-      }
-    })
-    const tagIds = data.journey.tags.map((tag) => tag.id)
-    // src/components/TemplateView/TemplateView.tsx useJourneysQuery
-    await apolloClient.query<GetJourneys, GetJourneysVariables>({
-      query: GET_JOURNEYS,
-      variables: {
-        where: {
-          template: true,
-          orderByRecent: true,
-          tagIds,
-          teamId: 'jfp-team'
-        }
-      }
-    })
-    // src/components/TemplateView/TemplateTags/TemplateTags.tsx useTagsQuery
-    await apolloClient.query<GetTags>({
-      query: GET_TAGS
-    })
-  } catch (error) {
-    if (error.message === 'journey not found') {
+    if (params?.journeyId == null) {
       return {
         redirect: {
           destination: '/templates',
@@ -177,16 +136,58 @@ export const getServerSideProps: GetServerSideProps = withUserTokenSSR()(async (
         }
       }
     }
-    throw error
-  }
 
-  return {
-    props: {
-      ...translations,
-      flags,
-      initialApolloState: apolloClient.cache.extract()
+    if (redirect != null) return { redirect }
+
+    try {
+      // TemplateDetailsPage
+      const { data } = await apolloClient.query<
+        GetJourney,
+        GetJourneyVariables
+      >({
+        query: GET_JOURNEY,
+        variables: {
+          id: params.journeyId.toString(),
+          idType: IdType.databaseId
+        }
+      })
+      const tagIds = data.journey.tags.map((tag) => tag.id)
+      // src/components/TemplateView/TemplateView.tsx useJourneysQuery
+      await apolloClient.query<GetJourneys, GetJourneysVariables>({
+        query: GET_JOURNEYS,
+        variables: {
+          where: {
+            template: true,
+            orderByRecent: true,
+            tagIds,
+            teamId: 'jfp-team'
+          }
+        }
+      })
+      // src/components/TemplateView/TemplateTags/TemplateTags.tsx useTagsQuery
+      await apolloClient.query<GetTags>({
+        query: GET_TAGS
+      })
+    } catch (error) {
+      if (error.message === 'journey not found') {
+        return {
+          redirect: {
+            destination: '/templates',
+            permanent: false
+          }
+        }
+      }
+      throw error
+    }
+
+    return {
+      props: {
+        ...translations,
+        flags,
+        initialApolloState: apolloClient.cache.extract()
+      }
     }
   }
-})
+)
 
 export default withUser()(TemplateDetailsPage)
