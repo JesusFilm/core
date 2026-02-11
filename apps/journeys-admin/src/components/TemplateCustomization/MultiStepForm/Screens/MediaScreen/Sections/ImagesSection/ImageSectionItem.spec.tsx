@@ -115,7 +115,7 @@ describe('ImageSectionItem', () => {
   it('should handle click and loading state for edit button', () => {
     const open = jest.fn()
     const useImageUploadSpy = jest.spyOn(useImageUploadHooks, 'useImageUpload')
-    
+
     // Test happy path (not loading)
     useImageUploadSpy.mockReturnValue({
       getRootProps: jest.fn(),
@@ -135,8 +135,10 @@ describe('ImageSectionItem', () => {
 
     const editButton = screen.getByRole('button', { name: 'Edit image' })
     expect(editButton).toBeEnabled()
-    expect(screen.queryByTestId('ImagesSection-upload-progress')).not.toBeInTheDocument()
-    
+    expect(
+      screen.queryByTestId('ImagesSection-upload-progress')
+    ).not.toBeInTheDocument()
+
     fireEvent.click(editButton)
     expect(open).toHaveBeenCalled()
 
@@ -158,12 +160,17 @@ describe('ImageSectionItem', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Edit image' })).toBeDisabled()
-    expect(screen.getByTestId('ImagesSection-upload-progress')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('ImagesSection-upload-progress')
+    ).toBeInTheDocument()
   })
 
   it('should apply getRootProps to the outer Box', () => {
     jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
-      getRootProps: () => ({ 'data-testid': 'dropzone-root', 'aria-label': 'dropzone' }),
+      getRootProps: () => ({
+        'data-testid': 'dropzone-root',
+        'aria-label': 'dropzone'
+      }),
       getInputProps: jest.fn(),
       open: jest.fn(),
       loading: false
@@ -183,15 +190,17 @@ describe('ImageSectionItem', () => {
 
   it('should call onUploadComplete when image upload finishes', () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockImplementation((options) => {
-      onUploadCompleteCallback = options.onUploadComplete
-      return {
-        getRootProps: jest.fn(),
-        getInputProps: jest.fn(),
-        open: jest.fn(),
-        loading: false
-      } as any
-    })
+    jest
+      .spyOn(useImageUploadHooks, 'useImageUpload')
+      .mockImplementation((options) => {
+        onUploadCompleteCallback = options.onUploadComplete
+        return {
+          getRootProps: jest.fn(),
+          getInputProps: jest.fn(),
+          open: jest.fn(),
+          loading: false
+        } as any
+      })
 
     render(
       <MockedProvider>
@@ -227,20 +236,23 @@ describe('ImageSectionItem', () => {
   it.each([
     ['L6PZfS_NcCIU_NcCIU_NcCIU', 'blur'],
     ['', 'empty']
-  ])('should pass correct blur data to NextImage when blurhash is %s', (blurhash, expectedPlaceholder) => {
-    render(
-      <MockedProvider>
-        <ImageSectionItem
-          imageBlock={{ ...imageBlock, blurhash }}
-          onUploadComplete={onUploadComplete}
-        />
-      </MockedProvider>
-    )
+  ])(
+    'should pass correct blur data to NextImage when blurhash is %s',
+    (blurhash, expectedPlaceholder) => {
+      render(
+        <MockedProvider>
+          <ImageSectionItem
+            imageBlock={{ ...imageBlock, blurhash }}
+            onUploadComplete={onUploadComplete}
+          />
+        </MockedProvider>
+      )
 
-    const image = screen.getByRole('img')
-    expect(image).toHaveAttribute('data-placeholder', expectedPlaceholder)
-    if (blurhash !== '') {
-      expect(image).toHaveAttribute('data-blurdataurl', blurhash)
+      const image = screen.getByRole('img')
+      expect(image).toHaveAttribute('data-placeholder', expectedPlaceholder)
+      if (blurhash !== '') {
+        expect(image).toHaveAttribute('data-blurdataurl', blurhash)
+      }
     }
-  })
+  )
 })

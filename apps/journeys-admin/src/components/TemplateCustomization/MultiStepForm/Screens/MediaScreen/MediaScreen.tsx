@@ -24,7 +24,10 @@ import {
   VideosSection
 } from './Sections'
 import { showImagesSection, showLogoSection, showVideosSection } from './utils'
-import { getCardBlockIdFromStep, getCustomizableMediaSteps } from './utils/mediaScreenUtils'
+import {
+  getCardBlockIdFromStep,
+  getCustomizableMediaSteps
+} from './utils/mediaScreenUtils'
 
 interface MediaScreenProps {
   handleNext: () => void
