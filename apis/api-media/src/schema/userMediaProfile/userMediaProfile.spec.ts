@@ -80,10 +80,10 @@ describe('userMediaProfile', () => {
         'data.userMediaProfile.userId',
         'testUserId'
       )
-      expect(result).toHaveProperty(
-        'data.userMediaProfile.countryInterests',
-        ['US', 'GB']
-      )
+      expect(result).toHaveProperty('data.userMediaProfile.countryInterests', [
+        'US',
+        'GB'
+      ])
     })
 
     it('returns null when profile does not exist', async () => {
@@ -101,10 +101,17 @@ describe('userMediaProfile', () => {
         document: USER_MEDIA_PROFILE_QUERY
       })
 
-      expect((result as { data?: { userMediaProfile?: null } }).data?.userMediaProfile).toBeNull()
+      expect(
+        (result as { data?: { userMediaProfile?: null } }).data
+          ?.userMediaProfile
+      ).toBeNull()
       expect(result).toHaveProperty('errors')
-      expect(Array.isArray((result as { errors?: unknown[] }).errors)).toBe(true)
-      expect((result as { errors?: { message?: string }[] }).errors?.[0]).toMatchObject({
+      expect(Array.isArray((result as { errors?: unknown[] }).errors)).toBe(
+        true
+      )
+      expect(
+        (result as { errors?: { message?: string }[] }).errors?.[0]
+      ).toMatchObject({
         message: expect.stringContaining('Not authorized')
       })
     })
@@ -205,9 +212,9 @@ describe('userMediaProfile', () => {
 
       expect((result as { data?: unknown }).data).toBeNull()
       expect(result).toHaveProperty('errors')
-      expect((result as { errors?: { message?: string }[] }).errors?.[0].message).toContain(
-        'Not authorized'
-      )
+      expect(
+        (result as { errors?: { message?: string }[] }).errors?.[0].message
+      ).toContain('Not authorized')
     })
   })
 
@@ -288,9 +295,9 @@ describe('userMediaProfile', () => {
 
       expect((result as { data?: unknown }).data).toBeNull()
       expect(result).toHaveProperty('errors')
-      expect((result as { errors?: { message?: string }[] }).errors?.[0].message).toContain(
-        'Not authorized'
-      )
+      expect(
+        (result as { errors?: { message?: string }[] }).errors?.[0].message
+      ).toContain('Not authorized')
     })
   })
 })
