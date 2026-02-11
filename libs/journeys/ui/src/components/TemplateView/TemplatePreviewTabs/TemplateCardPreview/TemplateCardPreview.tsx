@@ -37,11 +37,11 @@ const StyledSwiper = styled(Swiper)(() => ({}))
 
 /**
  * Horizontal carousel of template step cards with optional navigation and "more cards" slide.
- * 
+ *
  * TemplateCardPreview has two variants:
- * 
+ *
  * 'preview': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
- * 
+ *
  * 'media': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
  *
  * @param props - Component props
