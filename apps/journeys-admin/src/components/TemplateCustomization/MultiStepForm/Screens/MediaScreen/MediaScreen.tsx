@@ -20,10 +20,10 @@ import {
   VideosSection
 } from './Sections'
 import {
+  getCardBlockIdFromStep,
   showImagesSection,
   showLogoSection,
-  showVideosSection,
-  getCardBlockIdFromStep
+  showVideosSection
 } from './utils'
 import { getCustomizableMediaSteps } from './utils/mediaScreenUtils'
 
