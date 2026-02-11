@@ -220,7 +220,7 @@
   "Hosts": "Hosts",
   "Create New": "Create New",
   "Select a Host": "Select a Host",
-  "Only team members can edit this": "Only team members can edit this",
+  "Only team members can edit it": "Only team members can edit it",
   "Only members from {{ teamName }} can edit this": "Only members from {{ teamName }} can edit this",
   "Journey Appearance": "Journey Appearance",
   "Logo": "Logo",
