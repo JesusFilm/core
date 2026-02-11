@@ -214,7 +214,7 @@ describe('ImageSectionItem', () => {
 
   it.each([
     ['L6PZfS_NcCIU_NcCIU_NcCIU', 'blur'],
-    [null, 'empty']
+    ['', 'empty']
   ])('should pass correct blur data to NextImage when blurhash is %s', (blurhash, expectedPlaceholder) => {
     render(
       <MockedProvider>
@@ -227,7 +227,7 @@ describe('ImageSectionItem', () => {
 
     const image = screen.getByRole('img')
     expect(image).toHaveAttribute('data-placeholder', expectedPlaceholder)
-    if (blurhash != null) {
+    if (blurhash !== '') {
       expect(image).toHaveAttribute('data-blurdataurl', blurhash)
     } else {
       expect(image).not.toHaveAttribute('data-blurdataurl')
