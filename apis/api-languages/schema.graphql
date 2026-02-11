@@ -13,6 +13,14 @@ type AudioPreview
   codec: String!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  languageUserRoles: [LanguageRole!]!
+}
+
 type Continent {
   id: ID!
   name(languageId: ID, primary: Boolean): [ContinentName!]!
