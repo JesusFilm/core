@@ -16,13 +16,15 @@ export interface MainPanelHeaderProps {
   backHref?: string
   children?: ReactNode
   backHrefHistory?: boolean
+  showAppHeader?: boolean
 }
 
 export function MainPanelHeader({
   title,
   backHref,
   children,
-  backHrefHistory = false
+  backHrefHistory = false,
+  showAppHeader = true
 }: MainPanelHeaderProps): ReactElement {
   const { toolbar } = usePageWrapperStyles()
   const router = useRouter()
@@ -33,7 +35,7 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: toolbar.height, md: 0 },
+          top: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
           width: 'inherit'
         }}
         data-testid="MainPanelHeader"

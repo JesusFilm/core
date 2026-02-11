@@ -107,7 +107,7 @@ export function PageWrapper({
               backgroundColor: backgroundColor ?? 'background.default',
               ...(background != null && { background }),
               width: '100%',
-              pt: { xs: toolbar.height, md: 0 },
+              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
@@ -134,6 +134,7 @@ export function PageWrapper({
                   title={title}
                   backHref={backHref}
                   backHrefHistory={backHrefHistory}
+                  showAppHeader={showAppHeader}
                 >
                   {mainHeaderChildren}
                 </MainPanelHeader>
