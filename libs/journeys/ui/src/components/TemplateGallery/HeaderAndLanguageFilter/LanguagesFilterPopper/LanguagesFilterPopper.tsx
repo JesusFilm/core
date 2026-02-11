@@ -60,7 +60,6 @@ export function LanguagesFilterPopper({
           <Box
             data-testid="PresentationLayer"
             onClick={() => {
-              handleSubmit()
               setOpen(!open)
             }}
             sx={{
