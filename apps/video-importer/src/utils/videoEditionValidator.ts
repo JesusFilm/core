@@ -50,7 +50,9 @@ export async function validateVideoAndEdition(
     )
 
     const editions = response.video.videoEditions || []
-    const edition = editions.find((e) => e.name === editionName)
+    const edition = editions.find(
+      (e) => e.name.toLowerCase() === editionName.toLowerCase()
+    )
 
     if (!edition) {
       console.log(`   Edition not found: ${editionName}`)

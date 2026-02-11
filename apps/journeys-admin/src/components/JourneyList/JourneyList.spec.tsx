@@ -171,7 +171,7 @@ describe('JourneyList', () => {
 
     const handler = onMock.mock.calls[0][1] as (url: string) => void
 
-    handler('/')
+    handler('/publisher')
     expect(mockedUseAdminJourneysQuery().refetch).toHaveBeenCalledTimes(1)
   })
 
@@ -199,7 +199,7 @@ describe('JourneyList', () => {
 
     const handler = onMock.mock.calls[0][1] as (url: string) => void
 
-    handler('/publisher')
+    handler('/')
     expect(mockedUseAdminJourneysQuery().refetch).toHaveBeenCalledTimes(1)
   })
 
