@@ -797,7 +797,6 @@ describe('JourneyListContent', () => {
         expect(getByText('Templates Deleted')).toBeInTheDocument()
       )
     })
-
   })
 
   describe('Refresh Query Param', () => {
