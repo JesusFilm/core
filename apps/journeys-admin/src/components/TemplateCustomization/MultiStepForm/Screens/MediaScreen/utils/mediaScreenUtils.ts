@@ -1,5 +1,8 @@
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey_blocks_StepBlock as StepBlock
+} from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 /**
  * Returns whether the given block or any of its descendants has an id in the provided list.
@@ -11,6 +14,19 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 function hasMatchingDescendant(block: TreeBlock, ids: string[]): boolean {
   if (ids.includes(block.id)) return true
   return block.children.some((child) => hasMatchingDescendant(child, ids))
+}
+
+/**
+ * Returns the id of the CardBlock of the step.
+ *
+ * @param step - Step block
+ * @returns The card block id
+ */
+export function getCardBlockIdFromStep(step: TreeBlock<StepBlock>): string {
+  const cardBlock = step.children.find(
+    (child) => child.__typename === 'CardBlock'
+  ) as TreeBlock<CardBlock>
+  return cardBlock.id
 }
 
 /**

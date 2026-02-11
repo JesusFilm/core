@@ -19,7 +19,12 @@ import {
   LogoSection,
   VideosSection
 } from './Sections'
-import { showImagesSection, showLogoSection, showVideosSection } from './utils'
+import {
+  showImagesSection,
+  showLogoSection,
+  showVideosSection,
+  getCardBlockIdFromStep
+} from './utils'
 import { getCustomizableMediaSteps } from './utils/mediaScreenUtils'
 
 interface MediaScreenProps {
@@ -28,13 +33,7 @@ interface MediaScreenProps {
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
-    null
-  )
   const { journey } = useJourney()
-  const showLogo = showLogoSection()
-  const showImages = showImagesSection(selectedCardBlockId)
-  const showVideos = showVideosSection(journey, selectedCardBlockId)
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -49,15 +48,24 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
     customizableSteps[0]
   )
+  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string>(
+    getCardBlockIdFromStep(customizableSteps[0])
+  )
+
+  const showLogo = showLogoSection()
+  const showImages = showImagesSection(selectedCardBlockId)
+  const showVideos = showVideosSection(journey, selectedCardBlockId)
 
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
       setSelectedStep(customizableSteps[0])
+      setSelectedCardBlockId(getCardBlockIdFromStep(customizableSteps[0]))
     }
   }, [customizableSteps, selectedStep])
 
   function handleStepClick(step: TreeBlock<StepBlock>): void {
     setSelectedStep(step)
+    setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
     <Stack alignItems="center" sx={{ width: '100%' }}>
@@ -77,7 +85,8 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         />
       </Box>
       {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {<CardsSection onChange={setSelectedCardBlockId} />}
+      {/* CardsSection replaced by TemplateCardPreview carousel above */}
+      {/* {<CardsSection onChange={setSelectedCardBlockId} />} */}
       {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
       {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
       <CustomizeFlowNextButton

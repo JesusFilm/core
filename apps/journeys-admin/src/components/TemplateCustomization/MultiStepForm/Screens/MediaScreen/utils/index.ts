@@ -4,4 +4,7 @@ export {
   showVideosSection,
   getCustomizableCardVideoBlock
 } from './showVideosSection'
-export { getCustomizableMediaSteps } from './mediaScreenUtils'
+export {
+  getCustomizableMediaSteps,
+  getCardBlockIdFromStep
+} from './mediaScreenUtils'
