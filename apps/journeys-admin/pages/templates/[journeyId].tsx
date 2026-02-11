@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -119,7 +119,7 @@ function TemplateDetailsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
+export const getServerSideProps: GetServerSideProps = withUserTokenSSR()(async ({
   user,
   locale,
   resolvedUrl,

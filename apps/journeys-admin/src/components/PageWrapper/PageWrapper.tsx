@@ -88,8 +88,13 @@ export function PageWrapper({
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <Box
             sx={{
-              minWidth: navbar.width,
-              backgroundColor: backgroundColor ?? 'background.default'
+              minWidth: showNavBar ? navbar.width : 0,
+              width: showNavBar ? navbar.width : 0,
+              maxWidth: showNavBar ? navbar.width : 0,
+              backgroundColor: backgroundColor ?? 'background.default',
+              p: 0,
+              m: 0,
+              overflow: 'hidden'
             }}
           >
             {showNavBar && (
@@ -142,7 +147,7 @@ export function PageWrapper({
               sx={{
                 width: {
                   xs: 'inherit',
-                  md: `calc(100vw - ${navbar.width})`
+                  md: '100vw'
                 },
                 height: '100%'
               }}
@@ -163,8 +168,8 @@ export function PageWrapper({
                     xs: 'inherit',
                     md:
                       sidePanelChildren != null || customSidePanel != null
-                        ? `calc(100vw - ${navbar.width} - ${sidePanel.width})`
-                        : `calc(100vw - ${navbar.width})`
+                        ? `calc(100vw - ${sidePanel.width})`
+                        : '100vw'
                   },
                   height: showMainHeader
                     ? `calc(100% - ${toolbar.height})`

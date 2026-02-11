@@ -26,7 +26,7 @@ export function MainPanelHeader({
   backHrefHistory = false,
   showAppHeader = true
 }: MainPanelHeaderProps): ReactElement {
-  const { toolbar } = usePageWrapperStyles()
+  const { toolbar, navbar } = usePageWrapperStyles()
   const router = useRouter()
 
   return (
@@ -35,20 +35,46 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
-          width: 'inherit'
+          top: { xs: 0, md: 0 },
+          width: '100vw',
+          left: 0,
+          right: 0,
+          marginLeft: 0,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
         data-testid="MainPanelHeader"
       >
-        <Toolbar variant={toolbar.variant}>
+        <Toolbar
+          variant={toolbar.variant}
+          sx={{
+            pt: 0,
+            pb: 0,
+            px: 0,
+            minHeight: 'auto',
+            pl: 0,
+            pr: 0
+          }}
+        >
           {backHrefHistory ? (
-            <Box onClick={() => router.back()}>
+            <Box onClick={() => router.back()} sx={{ ml: 0, pl: 0, display: 'flex', marginLeft: { xs: 6, sm: 8, md: 10 } }}>
               <IconButton
                 data-testid="backHref-history-button"
-                edge="start"
                 size="small"
                 color="inherit"
-                sx={{ mr: 2 }}
+                sx={{
+                  mr: 2,
+                  ml: 0,
+                  pl: '0 !important',
+                  pr: '0 !important',
+                  minWidth: 'auto',
+                  '&.MuiIconButton-root': {
+                    paddingLeft: '0 !important',
+                    paddingRight: '0 !important',
+                    marginLeft: 0,
+                    padding: '4px'
+                  }
+                }}
               >
                 <ChevronLeftIcon />
               </IconButton>
@@ -58,10 +84,21 @@ export function MainPanelHeader({
               <IconButton
                 component={NextLink}
                 href={backHref}
-                edge="start"
                 size="small"
                 color="inherit"
-                sx={{ mr: 2 }}
+                sx={{
+                  mr: 2,
+                  ml: { xs: 6, sm: 8, md: 10 },
+                  pl: '0 !important',
+                  pr: '0 !important',
+                  minWidth: 'auto',
+                  '&.MuiIconButton-root': {
+                    paddingLeft: '0 !important',
+                    paddingRight: '0 !important',
+                    marginLeft: 0,
+                    padding: '4px'
+                  }
+                }}
               >
                 <ChevronLeftIcon />
               </IconButton>
