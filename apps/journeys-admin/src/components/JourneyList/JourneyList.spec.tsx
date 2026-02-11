@@ -317,7 +317,7 @@ describe('JourneyList', () => {
   })
 
   it('should restore sort order from session storage when returning to the page', async () => {
-    // resets setItem mock, for sessionStorage
+    // resets setItem mock, so that sessionStorage can be set before render
     Storage.prototype.setItem = originalSetItem
     sessionStorage.setItem('journeyListSortBy', SortOrder.TITLE)
     render(

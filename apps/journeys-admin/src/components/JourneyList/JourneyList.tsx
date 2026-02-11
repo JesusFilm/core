@@ -46,7 +46,6 @@ export function JourneyList({
     const sortByFromStorage = sessionStorage.getItem(
       'journeyListSortBy'
     ) as SortOrder | null
-    // console.log(sortByFromStorage)
     const isValidSort =
       sortByFromStorage != null &&
       Object.values(SortOrder).includes(sortByFromStorage)
