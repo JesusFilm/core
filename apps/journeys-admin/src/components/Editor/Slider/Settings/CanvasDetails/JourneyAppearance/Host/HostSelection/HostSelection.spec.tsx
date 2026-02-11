@@ -189,7 +189,7 @@ describe('HostSelection', () => {
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
-      expect(getByText('Only team members can edit this')).toBeInTheDocument()
+      expect(getByText('Only team members can edit it')).toBeInTheDocument()
     })
   })
 
