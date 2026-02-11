@@ -22,6 +22,7 @@ import {
 const MIN_MULTIPART_PART_SIZE = 5 * 1024 * 1024 // 5 MiB
 const DEFAULT_MULTIPART_PART_SIZE = 64 * 1024 * 1024 // 64 MiB
 const MAX_MULTIPART_PARTS = 10000
+const MULTIPART_PRESIGN_EXPIRES_IN_SECONDS = 4 * 60 * 60
 
 function pickPartSize(
   contentLength: number,
@@ -114,7 +115,8 @@ export async function getMultipartPartUrl(
       Key: fileName,
       UploadId: uploadId,
       PartNumber: partNumber
-    })
+    }),
+    { expiresIn: MULTIPART_PRESIGN_EXPIRES_IN_SECONDS }
   )
 }
 
