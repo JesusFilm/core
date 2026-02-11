@@ -3,6 +3,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import {
@@ -19,12 +21,13 @@ interface MediaScreenProps {
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
     null
   )
   const showLogo = showLogoSection()
   const showImages = showImagesSection(selectedCardBlockId)
-  const showVideos = showVideosSection(selectedCardBlockId)
+  const showVideos = showVideosSection(journey, selectedCardBlockId)
 
   return (
     <Stack alignItems="center" sx={{ width: '100%' }}>
