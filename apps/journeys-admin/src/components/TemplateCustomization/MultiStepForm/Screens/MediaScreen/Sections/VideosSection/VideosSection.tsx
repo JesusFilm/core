@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { getCustomizableCardVideoBlock } from '../../utils'
+
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
 
 interface VideosSectionProps {
