@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -19,6 +20,7 @@ export function ImageSectionItem({
   imageBlock,
   onUploadComplete
 }: ImageSectionItemProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const { getRootProps, getInputProps, open, loading } = useImageUpload({
     onUploadComplete: (url) => onUploadComplete(imageBlock.id, url)
   })
@@ -81,7 +83,7 @@ export function ImageSectionItem({
             bgcolor: 'background.paper'
           }
         }}
-        aria-label="Edit image"
+        aria-label={t('Edit image')}
       >
         <Edit2Icon data-testid="Edit2Icon" sx={{ fontSize: 16 }} />
       </IconButton>

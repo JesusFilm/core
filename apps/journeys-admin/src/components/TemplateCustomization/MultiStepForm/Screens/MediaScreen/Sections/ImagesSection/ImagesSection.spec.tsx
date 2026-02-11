@@ -9,6 +9,15 @@ import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../../../../../../../libs/useC
 
 import { IMAGE_BLOCK_UPDATE, ImagesSection } from './ImagesSection'
 
+jest.mock('next-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 describe('ImagesSection', () => {
   const imageBlock: ImageBlock = {
     id: 'image1.id',

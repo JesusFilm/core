@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { GetJourney_journey as Journey, GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -41,6 +42,7 @@ export function ImagesSection({
   journey,
   cardBlockId
 }: ImagesSectionProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [imageBlockUpdate] = useMutation<
     ImageBlockUpdate,
     ImageBlockUpdateVariables
@@ -73,11 +75,11 @@ export function ImagesSection({
         gutterBottom
         sx={{ color: 'text.secondary', ml: 20 }}
       >
-        Image
+        {t('Image')}
       </Typography>
       {imageBlocks.length === 0 ? (
         <Typography variant="body2" color="text.secondary" align="center">
-          No customizable images found for this card.
+          {t('No customizable images found for this card.')}
         </Typography>
       ) : (
         <Box

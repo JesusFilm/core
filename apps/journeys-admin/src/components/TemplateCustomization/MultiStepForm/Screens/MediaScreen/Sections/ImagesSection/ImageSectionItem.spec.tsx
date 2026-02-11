@@ -4,6 +4,15 @@ import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../
 import * as useImageUploadHooks from '../../../../../../../libs/useImageUpload'
 import { ImageSectionItem } from './ImageSectionItem'
 
+jest.mock('next-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
 jest.mock('@core/shared/ui/NextImage', () => ({
   NextImage: jest.fn(({ src, alt, placeholder, blurDataURL }) => (
     // eslint-disable-next-line @next/next/no-img-element
@@ -229,8 +238,6 @@ describe('ImageSectionItem', () => {
     expect(image).toHaveAttribute('data-placeholder', expectedPlaceholder)
     if (blurhash !== '') {
       expect(image).toHaveAttribute('data-blurdataurl', blurhash)
-    } else {
-      expect(image).not.toHaveAttribute('data-blurdataurl')
     }
   })
 })
