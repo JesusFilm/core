@@ -65,7 +65,7 @@ export function HostSelection({
             <AlertCircleIcon />
             <Typography variant="subtitle2">
               {data?.userTeams.length === 0
-                ? t('Only team members can edit this')
+                ? t('Only team members can edit it')
                 : t('Only members from {{ teamName }} can edit this', {
                     teamName: journey.team.title
                   })}
