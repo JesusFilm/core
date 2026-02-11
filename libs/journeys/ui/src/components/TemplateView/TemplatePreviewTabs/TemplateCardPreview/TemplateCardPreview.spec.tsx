@@ -90,4 +90,40 @@ describe('TemplateCardPreview', () => {
       expect(getAllByTestId('TemplateCardSkeleton')).toHaveLength(7)
     )
   })
+
+  it('should render navigation buttons when variant is media', async () => {
+    const steps = [
+      { id: '1', children: [{ __typename: 'CardBlock' }] },
+      { id: '2', children: [{ __typename: 'CardBlock' }] },
+      { id: '3', children: [{ __typename: 'CardBlock' }] }
+    ] as Array<TreeBlock<StepBlock>>
+
+    const { getByRole } = render(
+      <ThemeProvider theme={createTheme()}>
+        <TemplateCardPreview steps={steps} variant="media" />
+      </ThemeProvider>
+    )
+    expect(getByRole('button', { name: /prev-button/ })).toBeInTheDocument()
+    expect(getByRole('button', { name: /next-button/ })).toBeInTheDocument()
+  })
+
+  it('should not render navigation buttons when variant is preview', async () => {
+    const steps = [
+      { id: '1', children: [{ __typename: 'CardBlock' }] },
+      { id: '2', children: [{ __typename: 'CardBlock' }] },
+      { id: '3', children: [{ __typename: 'CardBlock' }] }
+    ] as Array<TreeBlock<StepBlock>>
+
+    const { queryByRole } = render(
+      <ThemeProvider theme={createTheme()}>
+        <TemplateCardPreview steps={steps} variant="preview" />
+      </ThemeProvider>
+    )
+    expect(
+      queryByRole('button', { name: /prev-button/ })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('button', { name: /next-button/ })
+    ).not.toBeInTheDocument()
+  })
 })

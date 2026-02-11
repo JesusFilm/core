@@ -1,1 +1,4 @@
-export { showVideosSection } from './showVideosSection'
+export {
+  showVideosSection,
+  getCustomizableCardVideoBlock
+} from './showVideosSection'
