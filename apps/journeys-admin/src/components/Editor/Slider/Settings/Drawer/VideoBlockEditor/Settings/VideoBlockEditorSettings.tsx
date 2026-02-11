@@ -56,7 +56,10 @@ interface Values extends FormikValues {
 interface VideoBlockEditorSettingsProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   posterBlock: ImageBlock | null
-  onChange: (input: VideoBlockUpdateInput, shouldFocus?: boolean) => Promise<void>
+  onChange: (
+    input: VideoBlockUpdateInput,
+    shouldFocus?: boolean
+  ) => Promise<void>
 }
 
 export function VideoBlockEditorSettings({
@@ -128,11 +131,14 @@ export function VideoBlockEditorSettings({
             preventDuplicate: true
           })
         } else {
-          await onChange({
-            ...values,
-            startAt: convertedStartAt,
-            endAt: convertedEndAt
-          }, false)
+          await onChange(
+            {
+              ...values,
+              startAt: convertedStartAt,
+              endAt: convertedEndAt
+            },
+            false
+          )
         }
         return errors
       },
