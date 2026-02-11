@@ -408,4 +408,111 @@ describe('api-users', () => {
       expect(data).toHaveProperty('data.validateEmail', null)
     })
   })
+
+  describe('updateMe', () => {
+    const UPDATE_ME_MUTATION = graphql(`
+      mutation UpdateMe($input: UpdateMeInput!) {
+        updateMe(input: $input) {
+          id
+          firstName
+          lastName
+          email
+          emailVerified
+        }
+      }
+    `)
+
+    const authClient = getClient({
+      headers: {
+        authorization: '1234'
+      }
+    })
+
+    it('should update firstName, lastName, and email', async () => {
+      const existingUser = {
+        ...user,
+        email: null,
+        firstName: '',
+        lastName: null
+      } as unknown as typeof user
+      const updatedUser = {
+        ...existingUser,
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com'
+      }
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(existingUser)
+        .mockResolvedValueOnce(existingUser)
+      prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+
+      const data = (await authClient({
+        document: UPDATE_ME_MUTATION,
+        variables: {
+          // @ts-expect-error UpdateMeInput not in shared gql schema - input typed as never
+          input: {
+            firstName: 'Jane',
+            lastName: 'Doe',
+            email: 'jane@example.com'
+          }
+        }
+      })) as { data?: { updateMe?: Record<string, unknown> }; errors?: unknown }
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { userId: 'testUserId' },
+        data: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+          email: 'jane@example.com'
+        }
+      })
+      expect(data.data?.updateMe).toMatchObject({
+        id: updatedUser.id,
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        emailVerified: updatedUser.emailVerified
+      })
+    })
+
+    it('should return null when caller is not anonymous (has email)', async () => {
+      prismaMock.user.findUnique.mockResolvedValueOnce(user)
+
+      const data = (await authClient({
+        document: UPDATE_ME_MUTATION,
+        variables: {
+          // @ts-expect-error UpdateMeInput not in shared gql schema
+          input: {
+            firstName: 'Other',
+            lastName: 'Name',
+            email: 'other@example.com'
+          }
+        }
+      })) as { data?: { updateMe?: null }; errors?: unknown }
+
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+      expect(data.data?.updateMe).toBeNull()
+    })
+
+    it('should throw when user not found', async () => {
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce({ ...user, email: null })
+        .mockResolvedValueOnce(null)
+
+      const data = (await authClient({
+        document: UPDATE_ME_MUTATION,
+        variables: {
+          // @ts-expect-error UpdateMeInput not in shared gql schema
+          input: {
+            firstName: 'Jane',
+            lastName: null,
+            email: 'jane@example.com'
+          }
+        }
+      })) as { data?: { updateMe?: null }; errors?: unknown[] }
+
+      expect(data.errors).toBeDefined()
+      expect(data.data?.updateMe).toBeNull()
+    })
+  })
 })

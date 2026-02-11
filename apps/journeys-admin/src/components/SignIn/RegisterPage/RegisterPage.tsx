@@ -6,6 +6,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { gql, useMutation } from '@apollo/client'
 import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -23,6 +24,17 @@ import { InferType, object, string } from 'yup'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
+const UPDATE_ME = gql`
+  mutation UpdateMe($input: UpdateMeInput!) {
+    updateMe(input: $input) {
+      id
+      firstName
+      lastName
+      email
+    }
+  }
+`
+
 export function RegisterPage({
   setActivePage,
   userEmail
@@ -30,6 +42,7 @@ export function RegisterPage({
   const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
   const router = useRouter()
+  const [updateMe] = useMutation(UPDATE_ME)
 
   useHandleNewAccountRedirect()
 
@@ -82,6 +95,21 @@ export function RegisterPage({
     const auth = getAuth()
     const currentUser = auth.currentUser
     if (currentUser == null || !currentUser.isAnonymous) return
+
+    const nameParts = name.trim().split(/\s+/).filter(Boolean)
+    const firstName = nameParts[0] ?? name.trim()
+    const lastName =
+      nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined
+
+    await updateMe({
+      variables: {
+        input: {
+          firstName,
+          lastName,
+          email: email.trim().toLowerCase()
+        }
+      }
+    })
 
     const credential = EmailAuthProvider.credential(email, password)
     const userCredential = await linkWithCredential(currentUser, credential)
