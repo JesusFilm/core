@@ -45,6 +45,32 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   addOption?: () => void
 }
 
+/**
+ * RadioQuestion component that renders a radio question with selectable options.
+ *
+ * This component displays radio options in either a grid or list layout based on the
+ * `gridView` property. It handles user interactions, tracks selections, and creates
+ * submission events for analytics. The component supports both default/embed variants
+ * (which track events) and admin variants (which don't).
+ *
+ * Features:
+ * - Renders radio options as either GridVariant or ListVariant
+ * - Tracks user selections and prevents multiple selections
+ * - Creates submission events for analytics (Plausible and GTM)
+ * - Clears selection when navigating away from the block
+ * - Supports custom wrappers for editor mode
+ * - Provides addOption callback for editor functionality
+ *
+ * @param {RadioQuestionProps} props - The component props
+ * @param {string} props.id - The unique identifier of the radio question block (aliased as blockId)
+ * @param {boolean | null} props.gridView - Whether to display options in a grid layout (true) or list layout (false/null)
+ * @param {TreeBlock[]} props.children - Array of child blocks (radio options)
+ * @param {() => string} [props.uuid] - Optional UUID generator function
+ * @param {WrappersProps} [props.wrappers] - Optional wrapper props for block rendering
+ * @param {() => void} [props.addOption] - Optional callback to add a new radio option, omit if the maximum number of options has been reached or pass undefined if the maximum number of options has been reached
+ * @returns {ReactElement} The rendered radio question component (GridVariant or ListVariant)
+ */
+
 export function RadioQuestion({
   id: blockId,
   gridView,

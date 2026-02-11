@@ -79,7 +79,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue({
@@ -125,7 +127,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue({
@@ -178,7 +182,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue({
@@ -224,7 +230,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue({
@@ -265,7 +273,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue(null)
@@ -285,7 +295,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue({
@@ -342,7 +354,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.videoVariant.findMany.mockResolvedValue([
@@ -371,7 +385,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.videoVariant.findMany.mockResolvedValue([
@@ -402,7 +418,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.videoVariant.findMany.mockResolvedValue([
@@ -450,7 +468,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue({
@@ -470,7 +490,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.video.findUnique.mockResolvedValue(null)
@@ -509,7 +531,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.videoVariant.findMany.mockResolvedValue([
@@ -537,7 +561,9 @@ describe('videoAlgolia', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         prismaMock.videoVariant.findMany.mockResolvedValue([])

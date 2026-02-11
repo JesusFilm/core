@@ -32,7 +32,9 @@ describe('videoVariantDownload', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoVariantDownload.create.mockResolvedValue({
           id: 'id',
@@ -44,7 +46,9 @@ describe('videoVariantDownload', () => {
           bitrate: 1024,
           url: 'url',
           assetId: null,
-          version: 1
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_CREATE_MUTATION,
@@ -110,7 +114,9 @@ describe('videoVariantDownload', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoVariantDownload.update.mockResolvedValue({
           id: 'id',
@@ -122,7 +128,9 @@ describe('videoVariantDownload', () => {
           bitrate: 1024,
           url: 'url',
           assetId: null,
-          version: 1
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_UPDATE_MUTATION,
@@ -186,7 +194,9 @@ describe('videoVariantDownload', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoVariantDownload.delete.mockResolvedValue({
           id: 'id',
@@ -198,7 +208,9 @@ describe('videoVariantDownload', () => {
           bitrate: 1024,
           url: 'url',
           assetId: null,
-          version: 1
+          version: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_DELETE_MUTATION,
