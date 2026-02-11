@@ -35,7 +35,6 @@ import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockR
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
 import { VideoBlockEditor } from '../../../../../../Drawer/VideoBlockEditor'
-import { BlockCustomizationToggle } from '../../../../controls/BlockCustomizationToggle'
 
 export const COVER_VIDEO_BLOCK_CREATE = gql`
   ${VIDEO_FIELDS}
@@ -379,14 +378,6 @@ export function BackgroundMediaVideo({
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
 
   return (
-    <>
-      <VideoBlockEditor
-        selectedBlock={videoCoverBlock}
-        onChange={handleChange}
-      />
-      {journey?.template && videoCoverBlock != null && (
-        <BlockCustomizationToggle block={videoCoverBlock} />
-      )}
-    </>
+    <VideoBlockEditor selectedBlock={videoCoverBlock} onChange={handleChange} />
   )
 }

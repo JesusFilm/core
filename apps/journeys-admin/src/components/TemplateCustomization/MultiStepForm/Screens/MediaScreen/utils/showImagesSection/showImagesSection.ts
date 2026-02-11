@@ -1,5 +1,5 @@
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
-import { getJourneyMedia } from '../../../utils/getJourneyMedia/getJourneyMedia'
+import { getJourneyMedia } from '../../../../../utils/getJourneyMedia/getJourneyMedia'
 
 /**
  * Shows the images section on the media screen.
