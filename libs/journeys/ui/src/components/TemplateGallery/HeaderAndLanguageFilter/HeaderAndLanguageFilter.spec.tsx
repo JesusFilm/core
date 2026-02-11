@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { NextRouter, useRouter } from 'next/router'
 
+import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
@@ -17,6 +18,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+}))
+
+jest.mock('../../../libs/beaconHooks', () => ({
+  setBeaconPageViewed: jest.fn()
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -56,16 +61,11 @@ describe('HeaderAndLanguageFilter', () => {
     fireEvent.click(screen.getByRole('button', { name: 'French Français' }))
     await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
     fireEvent.click(screen.getByTestId('PresentationLayer'))
-    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(3))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'template-language' }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
+    await waitFor(() => expect(onChange).toHaveBeenCalledTimes(2))
+    fireEvent.click(
+      screen.getAllByRole('heading', { name: 'All Languages' })[0]
+    )
+    expect(setBeaconPageViewed).toHaveBeenCalledWith('template-language')
   })
 
   it('should show loading', () => {
