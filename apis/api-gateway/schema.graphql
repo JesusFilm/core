@@ -2202,9 +2202,10 @@ type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: AP
   roles: [Role!]
 }
 
-type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
+  mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 
   lastName: String @join__field(graph: API_USERS) 
   email: String! @join__field(graph: API_USERS) 
@@ -3780,6 +3781,10 @@ enum DefaultPlatform @join__type(graph: API_MEDIA)  {
   web @join__enumValue(graph: API_MEDIA) 
 }
 
+enum MediaRole @join__type(graph: API_MEDIA)  {
+  publisher @join__enumValue(graph: API_MEDIA) 
+}
+
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
   hd @join__enumValue(graph: API_MEDIA) 
   banner @join__enumValue(graph: API_MEDIA) 
@@ -3789,10 +3794,6 @@ enum MaxResolutionTier @join__type(graph: API_MEDIA)  {
   fhd @join__enumValue(graph: API_MEDIA) 
   qhd @join__enumValue(graph: API_MEDIA) 
   uhd @join__enumValue(graph: API_MEDIA) 
-}
-
-enum MediaRole @join__type(graph: API_MEDIA)  {
-  publisher @join__enumValue(graph: API_MEDIA) 
 }
 
 enum SegmindModel @join__type(graph: API_MEDIA)  {
