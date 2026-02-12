@@ -1,10 +1,9 @@
-import { gql, useMutation } from '@apollo/client'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Form, Formik, FormikValues } from 'formik'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
+import { Form, Formik, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -19,15 +18,10 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { JourneyProfileCreate } from '../../../../../../__generated__/JourneyProfileCreate'
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
-import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
-import {
-  useTeamCreateMutation,
-  useTeamCreateMutationGuest
-} from '../../../../../libs/useTeamCreateMutation'
+import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
@@ -343,7 +337,9 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={loading}
+                  disabled={
+                    (templateCustomizationGuestFlow && !isSignedIn) || loading
+                  }
                   ariaLabel={t('Next')}
                 />
               </Stack>
