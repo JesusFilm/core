@@ -7,7 +7,6 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import type { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-
 import { getVideoPoster } from '../../../utils/videoSectionUtils'
 
 import 'video.js/dist/video-js.css'

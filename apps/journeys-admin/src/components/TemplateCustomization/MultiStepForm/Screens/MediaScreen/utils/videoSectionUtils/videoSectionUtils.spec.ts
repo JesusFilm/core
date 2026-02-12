@@ -11,9 +11,7 @@ import {
   showVideosSection
 } from './videoSectionUtils'
 
-function createBaseVideoBlock(
-  overrides: Partial<VideoBlock> = {}
-): VideoBlock {
+function createBaseVideoBlock(overrides: Partial<VideoBlock> = {}): VideoBlock {
   return {
     __typename: 'VideoBlock',
     id: 'video-block-1',

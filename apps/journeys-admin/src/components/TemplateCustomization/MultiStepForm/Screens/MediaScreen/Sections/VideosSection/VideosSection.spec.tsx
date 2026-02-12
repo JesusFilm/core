@@ -308,10 +308,12 @@ describe('VideosSection', () => {
   describe('upload flow integration', () => {
     it('calls videoBlockUpdate with expected variables and shows success snackbar when onUploadComplete succeeds', async () => {
       let capturedOnUploadComplete: ((videoId: string) => void) | undefined
-      mockUseVideoUpload.mockImplementation((options: { onUploadComplete?: (videoId: string) => void }) => {
-        capturedOnUploadComplete = options?.onUploadComplete
-        return defaultUseVideoUploadReturn()
-      })
+      mockUseVideoUpload.mockImplementation(
+        (options: { onUploadComplete?: (videoId: string) => void }) => {
+          capturedOnUploadComplete = options?.onUploadComplete
+          return defaultUseVideoUploadReturn()
+        }
+      )
 
       renderVideosSection({
         journey: journeyWithMatchingVideoBlock,
@@ -355,7 +357,9 @@ describe('VideosSection', () => {
       })
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Upload file' })).toBeEnabled()
+        expect(
+          screen.getByRole('button', { name: 'Upload file' })
+        ).toBeEnabled()
       })
     })
 
@@ -363,10 +367,12 @@ describe('VideosSection', () => {
       mockVideoBlockUpdate.mockRejectedValueOnce(new Error('Mutation failed'))
 
       let capturedOnUploadComplete: ((videoId: string) => void) | undefined
-      mockUseVideoUpload.mockImplementation((options: { onUploadComplete?: (videoId: string) => void }) => {
-        capturedOnUploadComplete = options?.onUploadComplete
-        return defaultUseVideoUploadReturn()
-      })
+      mockUseVideoUpload.mockImplementation(
+        (options: { onUploadComplete?: (videoId: string) => void }) => {
+          capturedOnUploadComplete = options?.onUploadComplete
+          return defaultUseVideoUploadReturn()
+        }
+      )
 
       renderVideosSection({
         journey: journeyWithMatchingVideoBlock,
@@ -385,16 +391,20 @@ describe('VideosSection', () => {
       })
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Upload file' })).toBeEnabled()
+        expect(
+          screen.getByRole('button', { name: 'Upload file' })
+        ).toBeEnabled()
       })
     })
 
     it('shows error snackbar when onUploadError is called by useVideoUpload', () => {
       let capturedOnUploadError: (() => void) | undefined
-      mockUseVideoUpload.mockImplementation((options: { onUploadError?: () => void }) => {
-        capturedOnUploadError = options?.onUploadError
-        return defaultUseVideoUploadReturn()
-      })
+      mockUseVideoUpload.mockImplementation(
+        (options: { onUploadError?: () => void }) => {
+          capturedOnUploadError = options?.onUploadError
+          return defaultUseVideoUploadReturn()
+        }
+      )
 
       renderVideosSection({
         journey: journeyWithMatchingVideoBlock,
