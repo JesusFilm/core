@@ -57,6 +57,7 @@ export function StepBlockNodeMenu({
             if (isIOSTouchScreen()) handleClick(e)
           }}
           onClick={(e) => {
+            e.stopPropagation()
             handleClick(e)
           }}
           sx={{
