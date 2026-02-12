@@ -64,7 +64,44 @@ describe('findOrFetchUser', () => {
     expect(verifyUser).toHaveBeenCalledWith(
       'userId',
       'amin@email.com',
+      undefined,
       undefined
+    )
+  })
+
+  it('should allow verification email to be sent on a per app basis', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValueOnce(user)
+    const data = await findOrFetchUser({}, 'userId', undefined, 'JesusFilmOne')
+    expect(data).toEqual(user)
+    expect(prismaMock.user.create).toHaveBeenCalledWith({
+      data: {
+        email: 'amin@email.com',
+        emailVerified: false,
+        firstName: 'Amin',
+        imageUrl: 'https://bit.ly/3Gth4',
+        lastName: 'One',
+        userId: 'userId'
+      }
+    })
+    expect(verifyUser).toHaveBeenCalledWith(
+      'userId',
+      'amin@email.com',
+      undefined,
+      'JesusFilmOne'
+    )
+  })
+
+  it('should pass app type when provided', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValueOnce(user)
+    const data = await findOrFetchUser({}, 'userId', undefined, 'NextSteps')
+    expect(data).toEqual(user)
+    expect(verifyUser).toHaveBeenCalledWith(
+      'userId',
+      'amin@email.com',
+      undefined,
+      'NextSteps'
     )
   })
 })

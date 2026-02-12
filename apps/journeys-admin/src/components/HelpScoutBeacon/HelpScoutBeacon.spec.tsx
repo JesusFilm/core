@@ -64,6 +64,9 @@ describe('HelpScoutBeacon', () => {
       'open',
       expect.any(Function)
     )
+    expect(screen.getByTestId('HelpCircleContainedIcon')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Help' }))
+    expect(window.Beacon).toHaveBeenCalledWith('toggle')
   })
 
   it('should open beacon', () => {
