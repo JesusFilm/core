@@ -519,7 +519,7 @@ describe('JourneyFlow', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show analytics panel for global templates', async () => {
+  it('should not show analytics panel for global templates', async () => {
     const result = jest
       .fn()
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
@@ -558,8 +558,8 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
-    ).toBeInTheDocument()
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
   })
 
   it('should show analytics panel for journeys', async () => {
