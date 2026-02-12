@@ -62,19 +62,18 @@ builder.mutationField('userMediaProfileCreate', (t) =>
       input: t.arg({ type: UserMediaProfileCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
+      const userInterestIds = input?.userInterestIds ?? []
       const data = {
         userId: user.id,
         languageInterestIds: input?.languageInterestIds ?? [],
         countryInterestIds: input?.countryInterestIds ?? [],
         userInterests: {
-          connect: input?.userInterestIds?.map((id) => ({ id })) ?? []
+          connect: userInterestIds.map((id: string) => ({ id }))
         }
       }
-      return await prisma.userMediaProfile.upsert({
+      return await prisma.userMediaProfile.create({
         ...query,
-        where: { userId: user.id },
-        create: data,
-        update: data
+        data
       })
     }
   })
@@ -96,9 +95,9 @@ builder.mutationField('userMediaProfileUpdate', (t) =>
       if (input?.countryInterestIds)
         data.countryInterestIds = input.countryInterestIds
 
-      if (input?.userInterestIds)
+      if (input?.userInterestIds != null)
         data.userInterests = {
-          connect: input.userInterestIds.map((id) => ({ id }))
+          set: input.userInterestIds.map((id) => ({ id }))
         }
 
       return await prisma.userMediaProfile.update({

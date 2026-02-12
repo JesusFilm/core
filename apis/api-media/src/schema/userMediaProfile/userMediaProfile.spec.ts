@@ -118,7 +118,7 @@ describe('userMediaProfile', () => {
   })
 
   describe('userMediaProfileCreate mutation', () => {
-    it('upserts profile with provided input', async () => {
+    it('creates profile with provided input', async () => {
       const createdProfile: PrismaUserMediaProfile = {
         id: 'new-profile-id',
         userId: 'testUserId',
@@ -128,7 +128,7 @@ describe('userMediaProfile', () => {
         updatedAt: new Date()
       }
 
-      prismaMock.userMediaProfile.upsert.mockResolvedValue(createdProfile)
+      prismaMock.userMediaProfile.create.mockResolvedValue(createdProfile)
 
       const result = await authClient({
         document: USER_MEDIA_PROFILE_CREATE_MUTATION,
@@ -141,16 +141,9 @@ describe('userMediaProfile', () => {
         } as never
       })
 
-      expect(prismaMock.userMediaProfile.upsert).toHaveBeenCalledWith(
+      expect(prismaMock.userMediaProfile.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { userId: 'testUserId' },
-          create: {
-            userId: 'testUserId',
-            languageInterestIds: ['529'],
-            countryInterestIds: ['US'],
-            userInterests: { connect: [{ id: 'video-id-1' }] }
-          },
-          update: {
+          data: {
             userId: 'testUserId',
             languageInterestIds: ['529'],
             countryInterestIds: ['US'],
@@ -168,7 +161,7 @@ describe('userMediaProfile', () => {
       )
     })
 
-    it('upserts profile with empty input defaults', async () => {
+    it('creates profile with empty input defaults', async () => {
       const createdProfile: PrismaUserMediaProfile = {
         id: 'new-profile-id',
         userId: 'testUserId',
@@ -178,23 +171,16 @@ describe('userMediaProfile', () => {
         updatedAt: new Date()
       }
 
-      prismaMock.userMediaProfile.upsert.mockResolvedValue(createdProfile)
+      prismaMock.userMediaProfile.create.mockResolvedValue(createdProfile)
 
       await authClient({
         document: USER_MEDIA_PROFILE_CREATE_MUTATION,
         variables: { input: {} } as never
       })
 
-      expect(prismaMock.userMediaProfile.upsert).toHaveBeenCalledWith(
+      expect(prismaMock.userMediaProfile.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { userId: 'testUserId' },
-          create: {
-            userId: 'testUserId',
-            languageInterestIds: [],
-            countryInterestIds: [],
-            userInterests: { connect: [] }
-          },
-          update: {
+          data: {
             userId: 'testUserId',
             languageInterestIds: [],
             countryInterestIds: [],
@@ -249,7 +235,7 @@ describe('userMediaProfile', () => {
             languageInterestIds: ['529', '987'],
             countryInterestIds: ['CA'],
             userInterests: {
-              connect: [{ id: 'video-id-1' }, { id: 'video-id-2' }]
+              set: [{ id: 'video-id-1' }, { id: 'video-id-2' }]
             }
           }
         })
@@ -257,6 +243,35 @@ describe('userMediaProfile', () => {
       expect(result).toHaveProperty(
         'data.userMediaProfileUpdate.countryInterests',
         ['CA']
+      )
+    })
+
+    it('clears user interests when empty array is provided', async () => {
+      const updatedProfile: PrismaUserMediaProfile = {
+        id: 'profile-id',
+        userId: 'testUserId',
+        languageInterestIds: [],
+        countryInterestIds: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      prismaMock.userMediaProfile.update.mockResolvedValue(updatedProfile)
+
+      await authClient({
+        document: USER_MEDIA_PROFILE_UPDATE_MUTATION,
+        variables: {
+          input: { userInterestIds: [] }
+        } as never
+      })
+
+      expect(prismaMock.userMediaProfile.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { userId: 'testUserId' },
+          data: {
+            userInterests: { set: [] }
+          }
+        })
       )
     })
 
