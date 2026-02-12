@@ -38,11 +38,6 @@ type Mutation {
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
   validateEmail(email: String!, token: String!): AuthenticatedUser
-
-  """
-  Updates the current user's firstName, lastName, and email. Only callable by anonymous users.
-  """
-  updateMe(input: UpdateMeInput!): AuthenticatedUser
 }
 
 type Query {
