@@ -10,6 +10,10 @@ import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePrev
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../__generated__/GetJourney'
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
@@ -19,13 +23,11 @@ import {
   LogoSection,
   VideosSection
 } from './Sections'
+import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 import {
   getCardBlockIdFromStep,
-  showImagesSection,
-  showLogoSection,
-  showVideosSection
-} from './utils'
-import { getCustomizableMediaSteps } from './utils/mediaScreenUtils'
+  getCustomizableMediaSteps
+} from './utils/mediaScreenUtils'
 
 interface MediaScreenProps {
   handleNext: () => void
@@ -48,15 +50,15 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
     customizableSteps[0]
   )
-  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string>(
+  const [loading, setLoading] = useState(false)
+
+  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
     getCardBlockIdFromStep(customizableSteps[0])
   )
 
   const showLogo = showLogoSection()
-  const showImages = showImagesSection(selectedCardBlockId)
+  const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
-
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
@@ -87,9 +89,10 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         />
       </Box>
       {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {/* CardsSection replaced by TemplateCardPreview carousel above */}
-      {/* {<CardsSection onChange={setSelectedCardBlockId} />} */}
-      {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
+      {<CardsSection onChange={setSelectedCardBlockId} />}
+      {showImages && (
+        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+      )}
       {showVideos && (
         <VideosSection
           cardBlockId={selectedCardBlockId}

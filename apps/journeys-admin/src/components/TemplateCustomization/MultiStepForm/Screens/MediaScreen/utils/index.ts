@@ -9,3 +9,4 @@ export {
   getCustomizableMediaSteps,
   getCardBlockIdFromStep
 } from './mediaScreenUtils'
+export { getCustomizableImageBlocks } from './getCustomizableImageBlocks'

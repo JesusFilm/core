@@ -20,13 +20,15 @@ function hasMatchingDescendant(block: TreeBlock, ids: string[]): boolean {
  * Returns the id of the CardBlock of the step.
  *
  * @param step - Step block
- * @returns The card block id
+ * @returns The card block id or null if not found
  */
-export function getCardBlockIdFromStep(step: TreeBlock<StepBlock>): string {
-  const cardBlock = step.children.find(
+export function getCardBlockIdFromStep(
+  step: TreeBlock<StepBlock> | undefined
+): string | null {
+  const cardBlock = step?.children.find(
     (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock>
-  return cardBlock.id
+  ) as TreeBlock<CardBlock> | undefined
+  return cardBlock?.id ?? null
 }
 
 /**
