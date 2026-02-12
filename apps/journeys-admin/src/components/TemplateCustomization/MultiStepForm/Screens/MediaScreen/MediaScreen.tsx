@@ -10,6 +10,10 @@ import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePrev
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
+import {
+  GetJourney_journey_blocks_CardBlock as CardBlock,
+  GetJourney_journey as Journey
+} from '../../../../../../__generated__/GetJourney'
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
@@ -20,7 +24,10 @@ import {
   VideosSection
 } from './Sections'
 import { showImagesSection, showLogoSection, showVideosSection } from './utils'
-import { getCustomizableMediaSteps } from './utils/mediaScreenUtils'
+import {
+  getCardBlockIdFromStep,
+  getCustomizableMediaSteps
+} from './utils/mediaScreenUtils'
 
 interface MediaScreenProps {
   handleNext: () => void
@@ -28,13 +35,8 @@ interface MediaScreenProps {
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
-    null
-  )
   const { journey } = useJourney()
-  const showLogo = showLogoSection()
-  const showImages = showImagesSection(selectedCardBlockId)
-  const showVideos = showVideosSection(selectedCardBlockId)
+
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -50,6 +52,14 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     customizableSteps[0]
   )
 
+  const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
+    getCardBlockIdFromStep(customizableSteps[0])
+  )
+
+  const showLogo = showLogoSection()
+  const showImages = showImagesSection(journey, selectedCardBlockId)
+  const showVideos = showVideosSection(selectedCardBlockId)
+
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
       setSelectedStep(customizableSteps[0])
@@ -58,6 +68,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
 
   function handleStepClick(step: TreeBlock<StepBlock>): void {
     setSelectedStep(step)
+    setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
     <Stack alignItems="center" sx={{ width: '100%' }}>
@@ -78,7 +89,9 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       </Box>
       {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
       {<CardsSection onChange={setSelectedCardBlockId} />}
-      {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
+      {showImages && (
+        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+      )}
       {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
       <CustomizeFlowNextButton
         label={t('Next')}
