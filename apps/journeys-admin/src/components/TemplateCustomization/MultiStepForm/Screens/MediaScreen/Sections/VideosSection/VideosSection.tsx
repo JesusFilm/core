@@ -45,6 +45,8 @@ export function VideosSection({
     [enqueueSnackbar, closeSnackbar]
   )
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
+  const videoBlockDisplayTitle =
+    videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
 
   const [updating, setUpdating] = useState(false)
   const [videoBlockUpdate] = useMutation(VIDEO_BLOCK_UPDATE)
@@ -163,8 +165,8 @@ export function VideosSection({
       )}
       {videoBlock != null &&
         !loading &&
-        getVideoBlockDisplayTitle(videoBlock) !== '' &&
-        videoTitle(getVideoBlockDisplayTitle(videoBlock))}
+        videoBlockDisplayTitle !== '' &&
+        videoTitle(videoBlockDisplayTitle)}
       {uploadButton()}
     </Box>
   )

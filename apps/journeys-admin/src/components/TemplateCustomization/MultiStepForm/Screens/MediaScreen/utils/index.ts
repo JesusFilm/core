@@ -2,9 +2,9 @@ export { showLogoSection } from './showLogoSection'
 export { showImagesSection } from './showImagesSection'
 export {
   showVideosSection,
-  getCustomizableCardVideoBlock
-} from './showVideosSection'
-export { getVideoBlockDisplayTitle } from './getVideoBlockDisplayTitle'
+  getCustomizableCardVideoBlock,
+  getVideoBlockDisplayTitle
+} from './videoSectionUtils'
 export {
   getCustomizableMediaSteps,
   getCardBlockIdFromStep
