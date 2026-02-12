@@ -7,13 +7,14 @@ import { ReactElement, useMemo, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { transformer } from '@core/journeys/ui/transformer'
 import { AccountCheckDialog } from '@core/journeys/ui/TemplateView/AccountCheckDialog'
+import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+
 interface GuestPreviewScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
 }
