@@ -11,47 +11,95 @@ import { VideoBlockSource } from '../../../../../../../../__generated__/globalTy
 import { getVideoPoster } from '../../utils/videoSectionUtils'
 
 import 'video.js/dist/video-js.css'
+import 'videojs-mux'
+import 'videojs-youtube'
 
 interface VideoPreviewPlayerProps {
   videoBlock: VideoBlock
 }
 
+interface VideoSource {
+  src: string
+  type: string
+}
+
+/**
+ * Returns the video.js source descriptor for a given video block, or null
+ * when the block has no playable source.
+ */
+function getVideoSource(videoBlock: VideoBlock): VideoSource | null {
+  const { source, mediaVideo, videoId } = videoBlock
+
+  if (source === VideoBlockSource.youTube && videoId != null) {
+    return {
+      src: `https://www.youtube.com/watch?v=${videoId}`,
+      type: 'video/youtube'
+    }
+  }
+
+  if (
+    source === VideoBlockSource.mux &&
+    mediaVideo?.__typename === 'MuxVideo' &&
+    mediaVideo.playbackId != null
+  ) {
+    return {
+      src: `https://stream.mux.com/${mediaVideo.playbackId}.m3u8`,
+      type: 'application/x-mpegURL'
+    }
+  }
+
+  if (
+    (source === VideoBlockSource.internal ||
+      source === VideoBlockSource.cloudflare) &&
+    mediaVideo?.__typename === 'Video' &&
+    mediaVideo.variant?.hls != null
+  ) {
+    return {
+      src: mediaVideo.variant.hls,
+      type: 'application/x-mpegURL'
+    }
+  }
+
+  return null
+}
+
 /**
  * Renders only the video player for a journey VideoBlock.
- * Supports YouTube, Mux, and internal (Video) sources with the same Box + video.js structure.
+ * Supports YouTube, Mux, and internal (Video) sources via video.js.
  * No Select button, description, title, or duration overlay — video only.
  *
  * @remarks
- * Not yet wired into VideosSection; use when implementing the Media step video preview.
+ * The video element is created imperatively inside a container ref so that
+ * video.js DOM mutations (wrapper divs, iframe replacement for YouTube) never
+ * conflict with React's virtual DOM reconciliation.
  */
 export function VideoPreviewPlayer({
   videoBlock
 }: VideoPreviewPlayerProps): ReactElement {
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<VideoJsPlayer | null>(null)
 
-  const source = videoBlock.source
-  const mediaVideo = videoBlock.mediaVideo
-
-  const isMux =
-    source === VideoBlockSource.mux &&
-    mediaVideo?.__typename === 'MuxVideo' &&
-    mediaVideo.playbackId != null
-  const isYouTube =
-    source === VideoBlockSource.youTube && videoBlock.videoId != null
-  const isInternal =
-    (source === VideoBlockSource.internal ||
-      source === VideoBlockSource.cloudflare) &&
-    mediaVideo?.__typename === 'Video'
+  const videoSource = getVideoSource(videoBlock)
+  const videoSrc = videoSource?.src
+  const videoType = videoSource?.type
+  const poster = getVideoPoster(videoBlock)
 
   useEffect(() => {
-    if (videoRef.current == null) return
+    const container = containerRef.current
+    if (container == null || videoSrc == null || videoType == null) return
 
-    playerRef.current = videojs(videoRef.current, {
+    const videoEl = document.createElement('video')
+    videoEl.classList.add('video-js', 'vjs-big-play-centered')
+    videoEl.setAttribute('playsinline', '')
+
+    container.appendChild(videoEl)
+
+    playerRef.current = videojs(videoEl, {
       ...defaultVideoJsOptions,
       fluid: true,
       controls: true,
-      poster: getVideoPoster(videoBlock)
+      poster,
+      sources: [{ src: videoSrc, type: videoType }]
     }) as VideoJsPlayer
 
     return () => {
@@ -60,17 +108,10 @@ export function VideoPreviewPlayer({
         playerRef.current = null
       }
     }
-  }, [
-    isMux,
-    isYouTube,
-    isInternal,
-    mediaVideo,
-    videoBlock.videoId,
-    videoBlock.image
-  ])
+  }, [videoSrc, videoType, poster])
 
   // Unsupported source: render nothing (caller can hide section or show message)
-  if (!isMux && !isYouTube && !isInternal) {
+  if (videoSource == null) {
     return <Box data-testid="VideoPreviewPlayer-unsupported" />
   }
 
@@ -89,31 +130,7 @@ export function VideoPreviewPlayer({
         }
       }}
     >
-      <video
-        ref={videoRef}
-        className="video-js vjs-big-play-centered"
-        playsInline
-      >
-        {isYouTube && videoBlock.videoId != null && (
-          <source
-            src={`https://www.youtube.com/watch?v=${videoBlock.videoId}`}
-            type="video/youtube"
-          />
-        )}
-        {isMux &&
-          mediaVideo?.__typename === 'MuxVideo' &&
-          mediaVideo.playbackId != null && (
-            <source
-              src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
-              type="application/x-mpegURL"
-            />
-          )}
-        {isInternal &&
-          mediaVideo?.__typename === 'Video' &&
-          mediaVideo.variant?.hls != null && (
-            <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
-          )}
-      </video>
+      <Box ref={containerRef} />
     </Box>
   )
 }

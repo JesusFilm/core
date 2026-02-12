@@ -15,6 +15,9 @@ jest.mock('video.js', () =>
   }))
 )
 
+jest.mock('videojs-mux', () => ({}))
+jest.mock('videojs-youtube', () => ({}))
+
 jest.mock('../../utils/videoSectionUtils', () => ({
   getVideoPoster: jest.fn()
 }))
@@ -73,7 +76,7 @@ describe('VideoPreviewPlayer', () => {
     }
   })
 
-  it('renders YouTube source with correct src and type', () => {
+  it('initializes video.js with YouTube source', () => {
     const videoBlock = createBaseVideoBlock({
       source: VideoBlockSource.youTube,
       videoId: 'dQw4w9WgXcQ'
@@ -81,13 +84,20 @@ describe('VideoPreviewPlayer', () => {
 
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
-    const source = document.querySelector(
-      'source[src="https://www.youtube.com/watch?v=dQw4w9WgXcQ"][type="video/youtube"]'
+    expect(mockVideojs).toHaveBeenCalledWith(
+      expect.any(HTMLVideoElement),
+      expect.objectContaining({
+        sources: [
+          {
+            src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            type: 'video/youtube'
+          }
+        ]
+      })
     )
-    expect(source).toBeInTheDocument()
   })
 
-  it('renders Mux source with correct src and type', () => {
+  it('initializes video.js with Mux source', () => {
     const videoBlock = createBaseVideoBlock({
       source: VideoBlockSource.mux,
       mediaVideo: {
@@ -100,13 +110,20 @@ describe('VideoPreviewPlayer', () => {
 
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
-    const source = document.querySelector(
-      'source[src="https://stream.mux.com/mux-playback-456.m3u8"][type="application/x-mpegURL"]'
+    expect(mockVideojs).toHaveBeenCalledWith(
+      expect.any(HTMLVideoElement),
+      expect.objectContaining({
+        sources: [
+          {
+            src: 'https://stream.mux.com/mux-playback-456.m3u8',
+            type: 'application/x-mpegURL'
+          }
+        ]
+      })
     )
-    expect(source).toBeInTheDocument()
   })
 
-  it('renders internal/Cloudflare source with HLS URL and type', () => {
+  it('initializes video.js with internal/Cloudflare HLS source', () => {
     const hlsUrl =
       'https://customer-xxx.cloudflarestream.com/abc123/manifest/video.m3u8'
     const videoBlock = createBaseVideoBlock({
@@ -127,10 +144,17 @@ describe('VideoPreviewPlayer', () => {
 
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
-    const source = document.querySelector(
-      `source[src="${hlsUrl}"][type="application/x-mpegURL"]`
+    expect(mockVideojs).toHaveBeenCalledWith(
+      expect.any(HTMLVideoElement),
+      expect.objectContaining({
+        sources: [
+          {
+            src: hlsUrl,
+            type: 'application/x-mpegURL'
+          }
+        ]
+      })
     )
-    expect(source).toBeInTheDocument()
   })
 
   it('renders VideoPreviewPlayer-unsupported when no source type matches', () => {
@@ -145,6 +169,7 @@ describe('VideoPreviewPlayer', () => {
     expect(
       screen.getByTestId('VideoPreviewPlayer-unsupported')
     ).toBeInTheDocument()
+    expect(mockVideojs).not.toHaveBeenCalled()
   })
 
   it('renders VideoPreviewPlayer-unsupported when source is internal but mediaVideo is not Video', () => {
@@ -163,6 +188,7 @@ describe('VideoPreviewPlayer', () => {
     expect(
       screen.getByTestId('VideoPreviewPlayer-unsupported')
     ).toBeInTheDocument()
+    expect(mockVideojs).not.toHaveBeenCalled()
   })
 
   it('calls getVideoPoster with videoBlock and passes result as poster to videojs', () => {
@@ -262,5 +288,19 @@ describe('VideoPreviewPlayer', () => {
     expect(
       screen.getByRole('region', { name: 'Video preview' })
     ).toBeInTheDocument()
+  })
+
+  it('creates video element imperatively in the container', () => {
+    const videoBlock = createBaseVideoBlock({
+      source: VideoBlockSource.youTube,
+      videoId: 'abc123'
+    })
+
+    render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
+
+    const videoEl = container.querySelector('video')
+    expect(videoEl).toBeInTheDocument()
+    expect(videoEl).toHaveClass('video-js', 'vjs-big-play-centered')
+    expect(videoEl?.getAttribute('playsinline')).toBe('')
   })
 })
