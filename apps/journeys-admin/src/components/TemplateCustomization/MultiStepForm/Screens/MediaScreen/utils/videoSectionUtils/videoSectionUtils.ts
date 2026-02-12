@@ -3,7 +3,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
-import { getJourneyMedia } from '../../../../../utils/getJourneyMedia/getJourneyMedia'
+import { getJourneyMedia } from '../../../../../utils/getJourneyMedia'
 
 /**
  * Returns the first customizable video block that belongs to the given card.
