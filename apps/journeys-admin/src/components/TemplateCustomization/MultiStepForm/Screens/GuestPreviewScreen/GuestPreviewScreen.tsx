@@ -46,16 +46,14 @@ export function GuestPreviewScreen({
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
     const baseUrl = `${domain}/templates/${journey?.id ?? ''}/customize`
-    const url = baseUrl.includes('createNew')
-      ? `${baseUrl}&screen=social`
-      : `${baseUrl}?createNew=true&screen=social`
+    const url = `${baseUrl}?createNew=true&screen=social`
 
     void router.push(
       {
         pathname: '/users/sign-in',
         query: {
           redirect: url,
-          login: login ?? false
+          login
         }
       },
       undefined,
