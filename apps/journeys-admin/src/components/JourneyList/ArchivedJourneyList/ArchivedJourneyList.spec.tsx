@@ -281,7 +281,9 @@ describe('ArchivedJourneyList', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Unarchive' }))
 
       await waitFor(() =>
-        expect(screen.getByText('No journeys have been restored')).toBeInTheDocument()
+        expect(
+          screen.getByText('No journeys have been restored')
+        ).toBeInTheDocument()
       )
     })
 
@@ -427,7 +429,9 @@ describe('ArchivedJourneyList', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Trash' }))
 
       await waitFor(() =>
-        expect(screen.getByText('No journeys have been trashed')).toBeInTheDocument()
+        expect(
+          screen.getByText('No journeys have been trashed')
+        ).toBeInTheDocument()
       )
     })
 
