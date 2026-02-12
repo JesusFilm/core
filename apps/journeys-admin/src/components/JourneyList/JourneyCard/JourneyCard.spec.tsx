@@ -32,7 +32,6 @@ const mockUseNavigationState = useNavigationState as jest.MockedFunction<
   typeof useNavigationState
 >
 
-
 describe('JourneyCard', () => {
   beforeAll(() => {
     jest.useFakeTimers()
@@ -240,14 +239,18 @@ describe('JourneyCard', () => {
 
     fireEvent.mouseLeave(card)
     expect(overlay).toHaveStyle({ opacity: '0' })
-  
+
     fireEvent.click(screen.getByTestId('JourneyCardMenuButton'))
 
     await waitFor(() => {
-      expect(screen.getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Edit Details' })
+      ).toBeInTheDocument()
     })
 
-    const editDetailsMenuItem = screen.getByRole('menuitem', { name: 'Edit Details' })
+    const editDetailsMenuItem = screen.getByRole('menuitem', {
+      name: 'Edit Details'
+    })
     fireEvent.click(editDetailsMenuItem)
 
     await waitFor(() => {
