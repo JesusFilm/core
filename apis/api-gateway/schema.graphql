@@ -512,8 +512,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   delete an existing short link
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
-  userMediaProfileCreate(input: UserMediaProfileCreateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
-  userMediaProfileUpdate(input: UserMediaProfileCreateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
+  userMediaProfileUpdate(input: UserMediaProfileUpdateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
   videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
@@ -3122,13 +3121,13 @@ type UserMediaProfile @join__type(graph: API_MEDIA)  {
   """
   userId: ID!
   """
-  A string array of wess code language IDs related to IDs in api-languages
+  Language IDs array related to IDs in api-languages
   """
   languageInterests: [Language!]
   """
-  A string array
+  Country IDs array
   """
-  countryInterests: [String!]
+  countryInterests: [ID!]
   """
   IDs of video collections the user is interested in
   """
@@ -5311,10 +5310,10 @@ input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
   sharedAt: DateTime
 }
 
-input UserMediaProfileCreateInput @join__type(graph: API_MEDIA)  {
-  languageInterestIds: [String!]
-  countryInterestIds: [String!]
-  userInterestIds: [String!]
+input UserMediaProfileUpdateInput @join__type(graph: API_MEDIA)  {
+  languageInterestIds: [ID!]
+  countryInterestIds: [ID!]
+  userInterestIds: [ID!]
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {

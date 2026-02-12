@@ -348,8 +348,7 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
-  userMediaProfileCreate(input: UserMediaProfileCreateInput!): UserMediaProfile!
-  userMediaProfileUpdate(input: UserMediaProfileCreateInput!): UserMediaProfile!
+  userMediaProfileUpdate(input: UserMediaProfileUpdateInput!): UserMediaProfile!
   videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
   videoSubtitleDelete(id: ID!): VideoSubtitle!
@@ -1074,22 +1073,20 @@ type UserMediaProfile {
   """The Firebase user ID"""
   userId: ID!
 
-  """
-  A string array of wess code language IDs related to IDs in api-languages
-  """
+  """Language IDs array related to IDs in api-languages"""
   languageInterests: [Language!]
 
-  """A string array"""
-  countryInterests: [String!]
+  """Country IDs array"""
+  countryInterests: [ID!]
 
   """IDs of video collections the user is interested in"""
   userInterests: [Video!]
 }
 
-input UserMediaProfileCreateInput {
-  languageInterestIds: [String!]
-  countryInterestIds: [String!]
-  userInterestIds: [String!]
+input UserMediaProfileUpdateInput {
+  languageInterestIds: [ID!]
+  countryInterestIds: [ID!]
+  userInterestIds: [ID!]
 }
 
 type Video

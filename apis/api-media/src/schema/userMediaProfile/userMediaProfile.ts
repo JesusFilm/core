@@ -8,7 +8,7 @@ import {
 import { builder } from '../builder'
 import { Language } from '../language'
 
-import { UserMediaProfileCreateInput } from './inputs/userMediaProfileCreate'
+import { UserMediaProfileUpdateInput } from './inputs/userMediaProfileUpdate'
 
 export const UserMediaProfile = builder.prismaObject('UserMediaProfile', {
   fields: (t) => ({
@@ -23,17 +23,16 @@ export const UserMediaProfile = builder.prismaObject('UserMediaProfile', {
     languageInterests: t.field({
       type: [Language],
       nullable: true,
-      description:
-        'A string array of wess code language IDs related to IDs in api-languages',
+      description: 'Language IDs array related to IDs in api-languages',
       resolve: async (parent: PrismaUserMediaProfile) => {
         return await prismaLanguages.language.findMany({
           where: { id: { in: parent.languageInterestIds } }
         })
       }
     }),
-    countryInterests: t.exposeStringList('countryInterestIds', {
+    countryInterests: t.exposeIDList('countryInterestIds', {
       nullable: true,
-      description: 'A string array'
+      description: 'Country IDs array'
     }),
     userInterests: t.relation('userInterests', {
       nullable: true,
@@ -46,35 +45,20 @@ builder.queryField('userMediaProfile', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'UserMediaProfile',
     resolve: async (query, _parent, _args, { user }) => {
-      return await prisma.userMediaProfile.findUnique({
+      const userMediaProfile = await prisma.userMediaProfile.findUnique({
         ...query,
         where: { userId: user.id }
       })
-    }
-  })
-)
 
-builder.mutationField('userMediaProfileCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'UserMediaProfile',
-    nullable: false,
-    args: {
-      input: t.arg({ type: UserMediaProfileCreateInput, required: true })
-    },
-    resolve: async (query, _parent, { input }, { user }) => {
-      const userInterestIds = input?.userInterestIds ?? []
-      const data = {
-        userId: user.id,
-        languageInterestIds: input?.languageInterestIds ?? [],
-        countryInterestIds: input?.countryInterestIds ?? [],
-        userInterests: {
-          connect: userInterestIds.map((id: string) => ({ id }))
-        }
-      }
-      return await prisma.userMediaProfile.create({
-        ...query,
-        data
-      })
+      if (userMediaProfile == null)
+        return await prisma.userMediaProfile.create({
+          ...query,
+          data: {
+            userId: user.id
+          }
+        })
+
+      return userMediaProfile
     }
   })
 )
@@ -84,26 +68,36 @@ builder.mutationField('userMediaProfileUpdate', (t) =>
     type: 'UserMediaProfile',
     nullable: false,
     args: {
-      input: t.arg({ type: UserMediaProfileCreateInput, required: true })
+      input: t.arg({ type: UserMediaProfileUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
-      const data: Prisma.UserMediaProfileUpdateInput = {}
+      const dataUpdate: Prisma.UserMediaProfileUpdateInput = {}
+      const dataCreate: Prisma.UserMediaProfileCreateInput = { userId: user.id }
 
-      if (input?.languageInterestIds)
-        data.languageInterestIds = input.languageInterestIds
+      if (input?.languageInterestIds) {
+        dataUpdate.languageInterestIds = input.languageInterestIds
+        dataCreate.languageInterestIds = input.languageInterestIds
+      }
 
-      if (input?.countryInterestIds)
-        data.countryInterestIds = input.countryInterestIds
+      if (input?.countryInterestIds) {
+        dataUpdate.countryInterestIds = input.countryInterestIds
+        dataCreate.countryInterestIds = input.countryInterestIds
+      }
 
-      if (input?.userInterestIds != null)
-        data.userInterests = {
+      if (input?.userInterestIds != null) {
+        dataUpdate.userInterests = {
           set: input.userInterestIds.map((id) => ({ id }))
         }
+        dataCreate.userInterests = {
+          connect: input.userInterestIds.map((id) => ({ id }))
+        }
+      }
 
-      return await prisma.userMediaProfile.update({
+      return await prisma.userMediaProfile.upsert({
         ...query,
         where: { userId: user.id },
-        data
+        update: dataUpdate,
+        create: dataCreate
       })
     }
   })
