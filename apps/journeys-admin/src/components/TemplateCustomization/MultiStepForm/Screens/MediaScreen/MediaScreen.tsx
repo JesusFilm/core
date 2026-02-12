@@ -56,6 +56,8 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const showImages = showImagesSection(selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
 
+  const [loading, setLoading] = useState(false)
+
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
       setSelectedStep(customizableSteps[0])
@@ -88,11 +90,17 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       {/* CardsSection replaced by TemplateCardPreview carousel above */}
       {/* {<CardsSection onChange={setSelectedCardBlockId} />} */}
       {showImages && <ImagesSection cardBlockId={selectedCardBlockId} />}
-      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+      {showVideos && (
+        <VideosSection
+          cardBlockId={selectedCardBlockId}
+          onLoading={setLoading}
+        />
+      )}
       <CustomizeFlowNextButton
         label={t('Next')}
         onClick={handleNext}
         ariaLabel={t('Next')}
+        disabled={loading}
       />
     </Stack>
   )

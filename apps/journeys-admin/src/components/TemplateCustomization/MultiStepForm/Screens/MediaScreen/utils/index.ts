@@ -4,6 +4,7 @@ export {
   showVideosSection,
   getCustomizableCardVideoBlock
 } from './showVideosSection'
+export { getVideoBlockDisplayTitle } from './getVideoBlockDisplayTitle'
 export {
   getCustomizableMediaSteps,
   getCardBlockIdFromStep
