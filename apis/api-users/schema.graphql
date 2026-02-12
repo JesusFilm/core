@@ -1,5 +1,11 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
+
+type AnonymousUser
+  @shareable
+{
+  id: ID!
+}
 
 enum App {
   NextSteps
