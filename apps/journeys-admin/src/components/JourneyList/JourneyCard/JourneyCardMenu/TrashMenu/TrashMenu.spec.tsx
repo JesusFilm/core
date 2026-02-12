@@ -26,6 +26,7 @@ describe('TrashMenu', () => {
 
   it('should call correct functions on Restore click', () => {
     const setOpenRestoreDialog = jest.fn()
+    const setIsDialogOpen = jest.fn()
     const handleCloseMenu = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
@@ -34,17 +35,20 @@ describe('TrashMenu', () => {
             setOpenRestoreDialog={setOpenRestoreDialog}
             setOpenDeleteDialog={noop}
             handleCloseMenu={handleCloseMenu}
+            setIsDialogOpen={setIsDialogOpen}
           />
         </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Restore' }))
     expect(setOpenRestoreDialog).toHaveBeenCalled()
+    expect(setIsDialogOpen).toHaveBeenCalledWith(true)
     expect(handleCloseMenu).toHaveBeenCalled()
   })
 
   it('should call correct functions on Delete Forever click', () => {
     const setOpenDeleteDialog = jest.fn()
+    const setIsDialogOpen = jest.fn()
     const handleCloseMenu = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
@@ -53,12 +57,14 @@ describe('TrashMenu', () => {
             setOpenRestoreDialog={noop}
             setOpenDeleteDialog={setOpenDeleteDialog}
             handleCloseMenu={handleCloseMenu}
+            setIsDialogOpen={setIsDialogOpen}
           />
         </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Delete Forever' }))
     expect(setOpenDeleteDialog).toHaveBeenCalled()
+    expect(setIsDialogOpen).toHaveBeenCalledWith(true)
     expect(handleCloseMenu).toHaveBeenCalled()
   })
 })

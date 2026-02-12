@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
@@ -234,6 +234,7 @@ export function JourneyCardMenu({
               <TrashMenuItemsComponent
                 setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
                 setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
+                setIsDialogOpen={setIsDialogOpen}
                 handleCloseMenu={handleCloseMenu}
               />
             )
@@ -261,14 +262,20 @@ export function JourneyCardMenu({
         <AccessDialog
           journeyId={id}
           open={openAccessDialog}
-          onClose={() => setOpenAccessDialog(false)}
+          onClose={() => {
+            setOpenAccessDialog(false)
+            setIsDialogOpen?.(false)
+          }}
         />
       )}
       {openTrashDialog != null && (
         <TrashJourneyDialog
           id={id}
           open={openTrashDialog}
-          handleClose={() => setOpenTrashDialog(false)}
+          handleClose={() => {
+            setOpenTrashDialog(false)
+            setIsDialogOpen?.(false)
+          }}
           refetch={refetch}
           fromTemplateId={journey?.fromTemplateId}
         />
@@ -278,7 +285,10 @@ export function JourneyCardMenu({
           id={id}
           open={openRestoreDialog}
           published={published}
-          handleClose={() => setOpenRestoreDialog(false)}
+          handleClose={() => {
+            setOpenRestoreDialog(false)
+            setIsDialogOpen?.(false)
+          }}
           refetch={refetch}
           fromTemplateId={journey?.fromTemplateId}
         />
@@ -287,21 +297,30 @@ export function JourneyCardMenu({
         <DeleteJourneyDialog
           id={id}
           open={openDeleteDialog}
-          handleClose={() => setOpenDeleteDialog(false)}
+          handleClose={() => {
+            setOpenDeleteDialog(false)
+            setIsDialogOpen?.(false)
+          }}
           refetch={refetch}
         />
       )}
       {openDetailsDialog != null && (
         <JourneyDetailsDialog
           open={openDetailsDialog}
-          onClose={() => setOpenDetailsDialog(false)}
+          onClose={() => {
+            setOpenDetailsDialog(false)
+            setIsDialogOpen?.(false)
+          }}
           journey={journey}
         />
       )}
       {openTranslateDialog != null && (
         <TranslateJourneyDialog
           open={openTranslateDialog}
-          onClose={() => setOpenTranslateDialog(false)}
+          onClose={() => {
+            setOpenTranslateDialog(false)
+            setIsDialogOpen?.(false)
+          }}
           journey={journey}
         />
       )}

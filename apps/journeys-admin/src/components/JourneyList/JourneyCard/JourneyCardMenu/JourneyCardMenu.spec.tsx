@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -16,6 +16,7 @@ import { ThemeProvider } from '../../../ThemeProvider'
 import { JOURNEY_ARCHIVE } from './DefaultMenu/ArchiveJourney/ArchiveJourney'
 
 import { JourneyCardMenu } from '.'
+import { GetAdminJourneys_journeys } from '../../../../../__generated__/GetAdminJourneys'
 
 // Simple team mock to ensure Archive/Trash menu items appear
 const teamMock = {
@@ -75,6 +76,18 @@ const archiveMock = {
     }
   }
 }
+
+const mockJourney = {
+  id: 'journeyId',
+  title: 'Test Journey',
+  description: 'Test Description',
+  language: {
+    id: '529',
+    name: [
+      { value: 'English', primary: true },
+    ]
+  }
+} as unknown as GetAdminJourneys_journeys
 
 describe('JourneyCardMenu', () => {
   it('should open default menu on click', async () => {
@@ -299,5 +312,161 @@ describe('JourneyCardMenu', () => {
     await waitFor(() =>
       expect(queryByText('Create Translated Copy')).not.toBeInTheDocument()
     )
+  })
+
+  it('should call setIsDialogOpen when opening and closing edit details dialog', async () => {
+    const setIsDialogOpen = jest.fn()
+
+      const { getByRole, findByRole } = render(
+        <MockedProvider mocks={[teamMock]}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <ThemeProvider>
+                <JourneyCardMenu
+                  id="journeyId"
+                  status={JourneyStatus.published}
+                  slug="published-journey"
+                  published
+                  journey={mockJourney}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+              </ThemeProvider>
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    fireEvent.click(getByRole('button'))
+    const editDetailsMenuItem = await findByRole('menuitem', { name: 'Edit Details' })
+    fireEvent.click(editDetailsMenuItem)
+
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(true)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(1)
+
+    const cancelButton = getByRole('button', { name: 'Cancel' })
+    fireEvent.click(cancelButton)
+    
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(false)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(2)
+  })
+  
+  it('should call setIsDialogOpen when opening and closing access dialog', async () => {
+    const setIsDialogOpen = jest.fn()
+
+      const { getByRole, findByRole } = render(
+        <MockedProvider mocks={[teamMock]}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <ThemeProvider>
+                <JourneyCardMenu
+                  id="journeyId"
+                  status={JourneyStatus.published}
+                  slug="published-journey"
+                  published
+                  journey={mockJourney}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+              </ThemeProvider>
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    fireEvent.click(getByRole('button'))
+    const accessMenuItem = await findByRole('menuitem', { name: 'Access' })
+    fireEvent.click(accessMenuItem)
+
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(true)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(1)
+
+    const closeButton = screen.getByTestId('dialog-close-button')
+    fireEvent.click(closeButton)
+    
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(false)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(2)
+  })
+
+  it('should call setIsDialogOpen when opening and closing translate dialog', async () => {
+    const setIsDialogOpen = jest.fn()
+
+      const { getByRole, findByRole } = render(
+        <MockedProvider mocks={[teamMock]}>
+          <SnackbarProvider>
+            <TeamProvider>
+              <ThemeProvider>
+                <JourneyCardMenu
+                  id="journeyId"
+                  status={JourneyStatus.published}
+                  slug="published-journey"
+                  published
+                  journey={mockJourney}
+                  setIsDialogOpen={setIsDialogOpen}
+                />
+              </ThemeProvider>
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+    fireEvent.click(getByRole('button'))
+    const translateMenuItem = await findByRole('menuitem', { name: 'Translate' })
+    fireEvent.click(translateMenuItem)
+
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(true)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(1)
+
+    const cancelButton = getByRole('button', { name: 'Cancel' })
+    fireEvent.click(cancelButton)
+    
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(false)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(2)
+  })
+
+  it('should call setIsDialogOpen when opening and closing trash dialog', async () => {
+    const setIsDialogOpen = jest.fn()
+
+    const { getByRole, findByRole } = render(
+      <MockedProvider mocks={[teamMock]}>
+        <SnackbarProvider>
+          <TeamProvider>
+            <ThemeProvider>
+              <JourneyCardMenu
+                id="journeyId"
+                status={JourneyStatus.published}
+                slug="published-journey"
+                published
+                journey={mockJourney}
+                setIsDialogOpen={setIsDialogOpen}
+              />
+            </ThemeProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button'))
+    const trashMenuItem = await findByRole('menuitem', { name: 'Trash' })
+    fireEvent.click(trashMenuItem)
+
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(true)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(1)
+  
+    const closeButton = screen.getByTestId('dialog-close-button')
+    fireEvent.click(closeButton)
+    
+    await waitFor(() =>
+      expect(setIsDialogOpen).toHaveBeenCalledWith(false)
+    )
+    expect(setIsDialogOpen).toHaveBeenCalledTimes(2)
   })
 })
