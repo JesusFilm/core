@@ -87,7 +87,7 @@ describe('userMediaProfile', () => {
       }
 
       prismaMock.userMediaProfile.findUnique.mockResolvedValue(null)
-      prismaMock.userMediaProfile.create.mockResolvedValue(createdProfile)
+      prismaMock.userMediaProfile.upsert.mockResolvedValue(createdProfile)
 
       const result = await authClient({
         document: USER_MEDIA_PROFILE_QUERY
@@ -98,9 +98,11 @@ describe('userMediaProfile', () => {
           where: { userId: 'testUserId' }
         })
       )
-      expect(prismaMock.userMediaProfile.create).toHaveBeenCalledWith(
+      expect(prismaMock.userMediaProfile.upsert).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: {
+          where: { userId: 'testUserId' },
+          update: {},
+          create: {
             userId: 'testUserId'
           }
         })

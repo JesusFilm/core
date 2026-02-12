@@ -1,4 +1,3 @@
-import { prisma as prismaLanguages } from '@core/prisma/languages/client'
 import {
   type Prisma,
   UserMediaProfile as PrismaUserMediaProfile,
@@ -24,11 +23,8 @@ export const UserMediaProfile = builder.prismaObject('UserMediaProfile', {
       type: [Language],
       nullable: true,
       description: 'Language IDs array related to IDs in api-languages',
-      resolve: async (parent: PrismaUserMediaProfile) => {
-        return await prismaLanguages.language.findMany({
-          where: { id: { in: parent.languageInterestIds } }
-        })
-      }
+      resolve: (parent: PrismaUserMediaProfile) =>
+        parent.languageInterestIds.map((id) => ({ id }))
     }),
     countryInterests: t.exposeIDList('countryInterestIds', {
       nullable: true,
@@ -51,11 +47,11 @@ builder.queryField('userMediaProfile', (t) =>
       })
 
       if (userMediaProfile == null)
-        return await prisma.userMediaProfile.create({
+        return await prisma.userMediaProfile.upsert({
           ...query,
-          data: {
-            userId: user.id
-          }
+          where: { userId: user.id },
+          update: {},
+          create: { userId: user.id }
         })
 
       return userMediaProfile
