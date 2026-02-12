@@ -10,7 +10,7 @@ export function InfoIcon(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Box sx={{ mx: 2, mr: 10 }}>
+    <Box sx={{ ml: 2, mr: 15 }}>
       <Item
         variant="icon-button"
         icon={<InformationCircleContainedIcon />}
