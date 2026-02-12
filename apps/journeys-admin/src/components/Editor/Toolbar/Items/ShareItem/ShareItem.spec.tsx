@@ -437,8 +437,8 @@ describe('ShareItem', () => {
     expect(shareIcon).not.toBeInTheDocument()
   })
 
-  it('should call setIsDialogOpen when opening and closing dialog', async () => {
-    const setIsDialogOpen = jest.fn()
+  it('should call setHasOpenDialog when opening and closing dialog', async () => {
+    const setHasOpenDialog = jest.fn()
 
     render(
       <SnackbarProvider>
@@ -449,7 +449,7 @@ describe('ShareItem', () => {
             <ShareItem
               variant="button"
               journey={defaultJourney}
-              setIsDialogOpen={setIsDialogOpen}
+              setHasOpenDialog={setHasOpenDialog}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -461,15 +461,15 @@ describe('ShareItem', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
 
-    expect(setIsDialogOpen).toHaveBeenCalledWith(true)
-    expect(setIsDialogOpen).toHaveBeenCalledTimes(1)
+    expect(setHasOpenDialog).toHaveBeenCalledWith(true)
+    expect(setHasOpenDialog).toHaveBeenCalledTimes(1)
 
     const closeButton = screen.getByTestId('dialog-close-button')
     fireEvent.click(closeButton)
 
     await waitFor(() => {
-      expect(setIsDialogOpen).toHaveBeenCalledWith(false)
+      expect(setHasOpenDialog).toHaveBeenCalledWith(false)
     })
-    expect(setIsDialogOpen).toHaveBeenCalledTimes(2)
+    expect(setHasOpenDialog).toHaveBeenCalledTimes(2)
   })
 })

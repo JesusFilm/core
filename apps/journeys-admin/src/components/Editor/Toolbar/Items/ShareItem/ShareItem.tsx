@@ -50,7 +50,7 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
-  setIsDialogOpen?: (isDialogOpen: boolean) => void
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -70,7 +70,7 @@ export function ShareItem({
   handleCloseMenu,
   handleKeepMounted,
   buttonVariant = 'icon',
-  setIsDialogOpen
+  setHasOpenDialog
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -105,7 +105,7 @@ export function ShareItem({
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
-    setIsDialogOpen?.(true)
+    setHasOpenDialog?.(true)
     handleKeepMounted?.()
     handleCloseMenu?.()
   }
@@ -131,7 +131,7 @@ export function ShareItem({
         open={Boolean(anchorEl)}
         onClose={() => {
           setAnchorEl(null)
-          setIsDialogOpen?.(false)
+          setHasOpenDialog?.(false)
         }}
         dialogTitle={{ title: t('Share'), closeButton: true }}
         sx={{ minWidth: 350 }}

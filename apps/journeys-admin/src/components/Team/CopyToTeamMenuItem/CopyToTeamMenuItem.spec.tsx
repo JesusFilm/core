@@ -886,8 +886,8 @@ describe('CopyToTeamMenuItem', () => {
     expect(getByText('Journey Copied')).toBeInTheDocument()
   })
 
-  it('should call setIsDialogOpen when opening and closing copy to team dialog', async () => {
-    const setIsDialogOpen = jest.fn()
+  it('should call setHasOpenDialog when opening and closing copy to team dialog', async () => {
+    const setHasOpenDialog = jest.fn()
 
     const { getByRole } = render(
       <SnackbarProvider>
@@ -902,7 +902,7 @@ describe('CopyToTeamMenuItem', () => {
             <CopyToTeamMenuItem
               id="journeyId"
               handleCloseMenu={handleCloseMenu}
-              setIsDialogOpen={setIsDialogOpen}
+              setHasOpenDialog={setHasOpenDialog}
             />
           </TeamProvider>
         </MockedProvider>
@@ -911,13 +911,13 @@ describe('CopyToTeamMenuItem', () => {
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Copy to ...' }))
 
-    expect(setIsDialogOpen).toHaveBeenCalledWith(true)
-    expect(setIsDialogOpen).toHaveBeenCalledTimes(1)
+    expect(setHasOpenDialog).toHaveBeenCalledWith(true)
+    expect(setHasOpenDialog).toHaveBeenCalledTimes(1)
 
     const cancelButton = getByRole('button', { name: 'Cancel' })
     fireEvent.click(cancelButton)
 
-    expect(setIsDialogOpen).toHaveBeenCalledWith(false)
-    expect(setIsDialogOpen).toHaveBeenCalledTimes(2)
+    expect(setHasOpenDialog).toHaveBeenCalledWith(false)
+    expect(setHasOpenDialog).toHaveBeenCalledTimes(2)
   })
 })

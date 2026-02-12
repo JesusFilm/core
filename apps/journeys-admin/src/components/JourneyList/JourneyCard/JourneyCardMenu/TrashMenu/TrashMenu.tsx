@@ -10,14 +10,14 @@ interface TrashMenuProps {
   setOpenRestoreDialog: () => void
   setOpenDeleteDialog: () => void
   handleCloseMenu: () => void
-  setIsDialogOpen?: (isDialogOpen: boolean) => void
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 export function TrashMenu({
   setOpenRestoreDialog,
   setOpenDeleteDialog,
   handleCloseMenu,
-  setIsDialogOpen
+  setHasOpenDialog
 }: TrashMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -27,7 +27,7 @@ export function TrashMenu({
         icon={<CheckContainedIcon color="secondary" />}
         onClick={() => {
           setOpenRestoreDialog()
-          setIsDialogOpen?.(true)
+          setHasOpenDialog?.(true)
           handleCloseMenu()
         }}
         testId="Restore"
@@ -38,7 +38,7 @@ export function TrashMenu({
         icon={<FileShredIcon color="secondary" />}
         onClick={() => {
           setOpenDeleteDialog()
-          setIsDialogOpen?.(true)
+          setHasOpenDialog?.(true)
           handleCloseMenu()
         }}
         testId="Delete"

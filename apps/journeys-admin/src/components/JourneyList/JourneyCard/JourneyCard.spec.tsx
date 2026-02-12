@@ -34,11 +34,11 @@ const mockUseNavigationState = useNavigationState as jest.MockedFunction<
 
 jest.mock('./JourneyCardMenu', () => ({
   JourneyCardMenu: ({
-    setIsDialogOpen
+    setHasOpenDialog
   }: {
-    setIsDialogOpen: (isDialogOpen: boolean) => void
+    setHasOpenDialog: (hasOpenDialog: boolean) => void
   }) => (
-    <button data-testid="open-dialog" onClick={() => setIsDialogOpen(true)} />
+    <button data-testid="open-dialog" onClick={() => setHasOpenDialog(true)} />
   )
 }))
 

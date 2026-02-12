@@ -71,7 +71,7 @@ interface DefaultMenuProps {
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
-  setIsDialogOpen?: (isDialogOpen: boolean) => void
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -111,7 +111,7 @@ export function DefaultMenu({
   handleKeepMounted,
   template,
   refetch,
-  setIsDialogOpen
+  setHasOpenDialog
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -187,7 +187,7 @@ export function DefaultMenu({
         icon={<Edit2Icon color="secondary" />}
         onClick={() => {
           setOpenDetailsDialog()
-          setIsDialogOpen?.(true)
+          setHasOpenDialog?.(true)
           handleCloseMenu()
         }}
       />
@@ -198,7 +198,7 @@ export function DefaultMenu({
           icon={<UsersProfiles2Icon color="secondary" />}
           onClick={() => {
             setOpenAccessDialog()
-            setIsDialogOpen?.(true)
+            setHasOpenDialog?.(true)
             handleCloseMenu()
           }}
         />
@@ -222,7 +222,7 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
-        setIsDialogOpen={setIsDialogOpen}
+        setHasOpenDialog={setHasOpenDialog}
       />
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
@@ -237,7 +237,7 @@ export function DefaultMenu({
             icon={<TranslateIcon color="secondary" />}
             onClick={() => {
               setOpenTranslateDialog()
-              setIsDialogOpen?.(true)
+              setHasOpenDialog?.(true)
               handleCloseMenu()
             }}
           />
@@ -273,7 +273,7 @@ export function DefaultMenu({
           handleCloseMenu={handleCloseMenu}
           handleKeepMounted={handleKeepMounted}
           journey={journey}
-          setIsDialogOpen={setIsDialogOpen}
+          setHasOpenDialog={setHasOpenDialog}
         />
       )}
       {activeTeam != null && (
@@ -291,7 +291,7 @@ export function DefaultMenu({
             icon={<Trash2Icon color="secondary" />}
             onClick={() => {
               setOpenTrashDialog()
-              setIsDialogOpen?.(true)
+              setHasOpenDialog?.(true)
               handleCloseMenu()
             }}
             disabled={cantManageJourney}

@@ -77,7 +77,7 @@ export interface JourneyCardMenuProps {
   journey?: Journey
   hovered?: boolean
   onMenuClose?: () => void
-  setIsDialogOpen?: (isDialogOpen: boolean) => void
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -108,7 +108,7 @@ export function JourneyCardMenu({
   journey,
   hovered,
   onMenuClose,
-  setIsDialogOpen
+  setHasOpenDialog
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
@@ -234,7 +234,7 @@ export function JourneyCardMenu({
               <TrashMenuItemsComponent
                 setOpenRestoreDialog={() => setOpenRestoreDialog(true)}
                 setOpenDeleteDialog={() => setOpenDeleteDialog(true)}
-                setIsDialogOpen={setIsDialogOpen}
+                setHasOpenDialog={setHasOpenDialog}
                 handleCloseMenu={handleCloseMenu}
               />
             )
@@ -254,7 +254,7 @@ export function JourneyCardMenu({
                 setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
                 template={template}
                 refetch={refetch}
-                setIsDialogOpen={setIsDialogOpen}
+                setHasOpenDialog={setHasOpenDialog}
               />
             )}
       </Menu>
@@ -264,7 +264,7 @@ export function JourneyCardMenu({
           open={openAccessDialog}
           onClose={() => {
             setOpenAccessDialog(false)
-            setIsDialogOpen?.(false)
+            setHasOpenDialog?.(false)
           }}
         />
       )}
@@ -274,7 +274,7 @@ export function JourneyCardMenu({
           open={openTrashDialog}
           handleClose={() => {
             setOpenTrashDialog(false)
-            setIsDialogOpen?.(false)
+            setHasOpenDialog?.(false)
           }}
           refetch={refetch}
           fromTemplateId={journey?.fromTemplateId}
@@ -287,7 +287,7 @@ export function JourneyCardMenu({
           published={published}
           handleClose={() => {
             setOpenRestoreDialog(false)
-            setIsDialogOpen?.(false)
+            setHasOpenDialog?.(false)
           }}
           refetch={refetch}
           fromTemplateId={journey?.fromTemplateId}
@@ -299,7 +299,7 @@ export function JourneyCardMenu({
           open={openDeleteDialog}
           handleClose={() => {
             setOpenDeleteDialog(false)
-            setIsDialogOpen?.(false)
+            setHasOpenDialog?.(false)
           }}
           refetch={refetch}
         />
@@ -309,7 +309,7 @@ export function JourneyCardMenu({
           open={openDetailsDialog}
           onClose={() => {
             setOpenDetailsDialog(false)
-            setIsDialogOpen?.(false)
+            setHasOpenDialog?.(false)
           }}
           journey={journey}
         />
@@ -319,7 +319,7 @@ export function JourneyCardMenu({
           open={openTranslateDialog}
           onClose={() => {
             setOpenTranslateDialog(false)
-            setIsDialogOpen?.(false)
+            setHasOpenDialog?.(false)
           }}
           journey={journey}
         />

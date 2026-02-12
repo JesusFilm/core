@@ -22,17 +22,17 @@ export function ContentHeader({
     dispatch: dispatchPlayer
   } = usePlayer()
   const visible = isPersistent || !play || active || loading
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [hasOpenDialog, setHasOpenDialog] = useState(false)
   const [previousPlayState, setPreviousPlayState] = useState<boolean>(false)
 
   const handleOpenDialog = (): void => {
     setPreviousPlayState(play)
-    setIsDialogOpen(true)
+    setHasOpenDialog(true)
     dispatchPlayer({ type: 'SetPlay', play: false })
   }
 
   const handleCloseDialog = (): void => {
-    setIsDialogOpen(false)
+    setHasOpenDialog(false)
     dispatchPlayer({ type: 'SetPlay', play: previousPlayState })
   }
 
@@ -73,7 +73,7 @@ export function ContentHeader({
         >
           <Globe className="h-5 w-5 drop-shadow-xs" />
         </Button>
-        <DialogLangSwitch open={isDialogOpen} handleClose={handleCloseDialog} />
+        <DialogLangSwitch open={hasOpenDialog} handleClose={handleCloseDialog} />
       </>
     </div>
   )

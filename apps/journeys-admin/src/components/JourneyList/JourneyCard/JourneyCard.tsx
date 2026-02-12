@@ -75,7 +75,7 @@ export function JourneyCard({
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [hasOpenDialog, setHasOpenDialog] = useState(false)
 
   const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'
@@ -90,7 +90,7 @@ export function JourneyCard({
   }, [duplicatedJourneyId, journey])
 
   const verifyHovered = (hovered: boolean) => {
-    if (!isDialogOpen) {
+    if (!hasOpenDialog) {
       setIsCardHovered(hovered)
     }
   }
@@ -142,7 +142,7 @@ export function JourneyCard({
             hovered={isCardHovered}
             onMenuClose={() => verifyHovered(false)}
             template={journey.template ?? false}
-            setIsDialogOpen={setIsDialogOpen}
+            setHasOpenDialog={setHasOpenDialog}
           />
         </Box>
         <CardActionArea
