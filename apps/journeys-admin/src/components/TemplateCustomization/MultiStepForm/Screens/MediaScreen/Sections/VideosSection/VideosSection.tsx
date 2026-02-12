@@ -137,7 +137,6 @@ export function VideosSection({
 
   return (
     <Box data-testid="VideosSection" width="100%">
-      {/* <Typography variant="h6">{t('Video')}</Typography> */}
       <Typography
         variant="subtitle2"
         gutterBottom
