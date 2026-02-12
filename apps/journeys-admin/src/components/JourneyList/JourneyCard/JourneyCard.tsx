@@ -95,6 +95,11 @@ export function JourneyCard({
     }
   }
 
+  useEffect(() => {
+    console.log('isCardHovered', isCardHovered)
+    console.log('hasOpenDialog', hasOpenDialog)
+  }, [hasOpenDialog, isCardHovered])
+
   return (
     <Card
       ref={

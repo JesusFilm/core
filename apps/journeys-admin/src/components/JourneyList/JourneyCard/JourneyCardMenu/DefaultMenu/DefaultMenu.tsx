@@ -187,8 +187,8 @@ export function DefaultMenu({
         icon={<Edit2Icon color="secondary" />}
         onClick={() => {
           setOpenDetailsDialog()
-          setHasOpenDialog?.(true)
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
       />
       <Divider />
@@ -198,8 +198,8 @@ export function DefaultMenu({
           icon={<UsersProfiles2Icon color="secondary" />}
           onClick={() => {
             setOpenAccessDialog()
-            setHasOpenDialog?.(true)
             handleCloseMenu()
+            setHasOpenDialog?.(true)
           }}
         />
       )}
@@ -237,8 +237,8 @@ export function DefaultMenu({
             icon={<TranslateIcon color="secondary" />}
             onClick={() => {
               setOpenTranslateDialog()
-              setHasOpenDialog?.(true)
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
           />
           <Divider />
@@ -291,8 +291,8 @@ export function DefaultMenu({
             icon={<Trash2Icon color="secondary" />}
             onClick={() => {
               setOpenTrashDialog()
-              setHasOpenDialog?.(true)
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
             disabled={cantManageJourney}
           />

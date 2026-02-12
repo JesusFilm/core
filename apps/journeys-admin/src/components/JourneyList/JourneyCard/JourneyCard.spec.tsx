@@ -32,15 +32,6 @@ const mockUseNavigationState = useNavigationState as jest.MockedFunction<
   typeof useNavigationState
 >
 
-jest.mock('./JourneyCardMenu', () => ({
-  JourneyCardMenu: ({
-    setHasOpenDialog
-  }: {
-    setHasOpenDialog: (hasOpenDialog: boolean) => void
-  }) => (
-    <button data-testid="open-dialog" onClick={() => setHasOpenDialog(true)} />
-  )
-}))
 
 describe('JourneyCard', () => {
   beforeAll(() => {
@@ -249,8 +240,15 @@ describe('JourneyCard', () => {
 
     fireEvent.mouseLeave(card)
     expect(overlay).toHaveStyle({ opacity: '0' })
+  
+    fireEvent.click(screen.getByTestId('JourneyCardMenuButton'))
 
-    fireEvent.click(screen.getByTestId('open-dialog'))
+    await waitFor(() => {
+      expect(screen.getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
+    })
+
+    const editDetailsMenuItem = screen.getByRole('menuitem', { name: 'Edit Details' })
+    fireEvent.click(editDetailsMenuItem)
 
     await waitFor(() => {
       fireEvent.mouseLeave(card)

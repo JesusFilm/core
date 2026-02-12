@@ -105,9 +105,9 @@ export function ShareItem({
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
-    setHasOpenDialog?.(true)
     handleKeepMounted?.()
     handleCloseMenu?.()
+    setHasOpenDialog?.(true)
   }
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {

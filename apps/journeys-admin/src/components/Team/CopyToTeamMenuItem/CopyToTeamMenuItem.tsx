@@ -205,8 +205,8 @@ export function CopyToTeamMenuItem({
         icon={<CopyToIcon color="secondary" />}
         onClick={() => {
           handleKeepMounted?.()
-          setHasOpenDialog?.(true)
           handleCloseMenu()
+          setHasOpenDialog?.(true)
           setDuplicateTeamDialogOpen(true)
         }}
         testId="Copy"

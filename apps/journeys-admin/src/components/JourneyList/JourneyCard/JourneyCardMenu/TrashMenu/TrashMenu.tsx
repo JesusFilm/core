@@ -27,8 +27,8 @@ export function TrashMenu({
         icon={<CheckContainedIcon color="secondary" />}
         onClick={() => {
           setOpenRestoreDialog()
-          setHasOpenDialog?.(true)
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
         testId="Restore"
       />
@@ -38,8 +38,8 @@ export function TrashMenu({
         icon={<FileShredIcon color="secondary" />}
         onClick={() => {
           setOpenDeleteDialog()
-          setHasOpenDialog?.(true)
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
         testId="Delete"
       />

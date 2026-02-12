@@ -889,7 +889,7 @@ describe('CopyToTeamMenuItem', () => {
   it('should call setHasOpenDialog when opening and closing copy to team dialog', async () => {
     const setHasOpenDialog = jest.fn()
 
-    const { getByRole } = render(
+    render(
       <SnackbarProvider>
         <MockedProvider
           mocks={[
@@ -914,7 +914,7 @@ describe('CopyToTeamMenuItem', () => {
     expect(setHasOpenDialog).toHaveBeenCalledWith(true)
     expect(setHasOpenDialog).toHaveBeenCalledTimes(1)
 
-    const cancelButton = getByRole('button', { name: 'Cancel' })
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
     fireEvent.click(cancelButton)
 
     expect(setHasOpenDialog).toHaveBeenCalledWith(false)
