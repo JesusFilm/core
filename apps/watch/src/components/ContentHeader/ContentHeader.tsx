@@ -73,7 +73,10 @@ export function ContentHeader({
         >
           <Globe className="h-5 w-5 drop-shadow-xs" />
         </Button>
-        <DialogLangSwitch open={hasOpenDialog} handleClose={handleCloseDialog} />
+        <DialogLangSwitch
+          open={hasOpenDialog}
+          handleClose={handleCloseDialog}
+        />
       </>
     </div>
   )
