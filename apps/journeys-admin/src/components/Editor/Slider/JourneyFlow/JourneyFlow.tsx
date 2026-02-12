@@ -76,7 +76,6 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 import 'reactflow/dist/style.css'
 import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
-import { display } from '@mui/system'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
