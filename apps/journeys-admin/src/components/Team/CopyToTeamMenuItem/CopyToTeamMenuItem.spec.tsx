@@ -891,7 +891,13 @@ describe('CopyToTeamMenuItem', () => {
 
     const { getByRole } = render(
       <SnackbarProvider>
-        <MockedProvider mocks={[updateLastActiveTeamIdMock, mockLanguage, getLastActiveTeamIdAndTeamsMock]}>
+        <MockedProvider
+          mocks={[
+            updateLastActiveTeamIdMock,
+            mockLanguage,
+            getLastActiveTeamIdAndTeamsMock
+          ]}
+        >
           <TeamProvider>
             <CopyToTeamMenuItem
               id="journeyId"
