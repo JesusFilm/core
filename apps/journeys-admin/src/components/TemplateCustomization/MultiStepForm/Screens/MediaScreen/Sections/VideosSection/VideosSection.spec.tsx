@@ -1,14 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
 import type {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../../../../../../__generated__/GetJourney'
 import {
+  IdType,
   JourneyStatus,
   ThemeMode,
   ThemeName,
@@ -26,11 +28,20 @@ jest.mock('../../../../../utils/useVideoUpload/useVideoUpload', () => ({
   useVideoUpload: (...args: unknown[]) => mockUseVideoUpload(...args)
 }))
 
+const mockShowSnackbar = jest.fn()
+jest.mock(
+  '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar',
+  () => ({
+    createShowSnackbar: () => mockShowSnackbar
+  })
+)
+
+const mockVideoBlockUpdate = jest.fn()
 jest.mock('@apollo/client', () => {
   const actual = jest.requireActual('@apollo/client')
   return {
     ...actual,
-    useMutation: () => [jest.fn().mockResolvedValue({}), { loading: false }]
+    useMutation: () => [mockVideoBlockUpdate, { loading: false }]
   }
 })
 
@@ -162,6 +173,8 @@ function defaultUseVideoUploadReturn() {
 
 describe('VideosSection', () => {
   beforeEach(() => {
+    jest.clearAllMocks()
+    mockVideoBlockUpdate.mockResolvedValue({})
     mockUseVideoUpload.mockImplementation(() => defaultUseVideoUploadReturn())
   })
 
@@ -277,5 +290,124 @@ describe('VideosSection', () => {
         cardBlockId
       })
     }).not.toThrow()
+  })
+
+  it('shows loading spinner and disables button when status is processing', () => {
+    mockUseVideoUpload.mockReturnValueOnce({
+      ...defaultUseVideoUploadReturn(),
+      status: 'processing'
+    })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Upload file' })).toBeDisabled()
+  })
+
+  describe('upload flow integration', () => {
+    it('calls videoBlockUpdate with expected variables and shows success snackbar when onUploadComplete succeeds', async () => {
+      let capturedOnUploadComplete: ((videoId: string) => void) | undefined
+      mockUseVideoUpload.mockImplementation((options: { onUploadComplete?: (videoId: string) => void }) => {
+        capturedOnUploadComplete = options?.onUploadComplete
+        return defaultUseVideoUploadReturn()
+      })
+
+      renderVideosSection({
+        journey: journeyWithMatchingVideoBlock,
+        cardBlockId
+      })
+
+      expect(capturedOnUploadComplete).toBeDefined()
+      act(() => {
+        capturedOnUploadComplete!('new-video-id')
+      })
+
+      await waitFor(() => {
+        expect(mockVideoBlockUpdate).toHaveBeenCalledTimes(1)
+      })
+
+      expect(mockVideoBlockUpdate).toHaveBeenCalledWith({
+        variables: {
+          id: 'video-block-1',
+          input: {
+            videoId: 'new-video-id',
+            source: VideoBlockSource.mux
+          }
+        },
+        refetchQueries: [
+          {
+            query: GET_JOURNEY,
+            variables: {
+              id: 'journey-1',
+              idType: IdType.databaseId,
+              options: { skipRoutingFilter: true }
+            }
+          }
+        ]
+      })
+
+      await waitFor(() => {
+        expect(mockShowSnackbar).toHaveBeenCalledWith(
+          'File uploaded successfully',
+          'success'
+        )
+      })
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Upload file' })).toBeEnabled()
+      })
+    })
+
+    it('shows error snackbar and clears loading when videoBlockUpdate rejects', async () => {
+      mockVideoBlockUpdate.mockRejectedValueOnce(new Error('Mutation failed'))
+
+      let capturedOnUploadComplete: ((videoId: string) => void) | undefined
+      mockUseVideoUpload.mockImplementation((options: { onUploadComplete?: (videoId: string) => void }) => {
+        capturedOnUploadComplete = options?.onUploadComplete
+        return defaultUseVideoUploadReturn()
+      })
+
+      renderVideosSection({
+        journey: journeyWithMatchingVideoBlock,
+        cardBlockId
+      })
+
+      act(() => {
+        capturedOnUploadComplete!('new-video-id')
+      })
+
+      await waitFor(() => {
+        expect(mockShowSnackbar).toHaveBeenCalledWith(
+          'Upload failed. Please try again',
+          'error'
+        )
+      })
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: 'Upload file' })).toBeEnabled()
+      })
+    })
+
+    it('shows error snackbar when onUploadError is called by useVideoUpload', () => {
+      let capturedOnUploadError: (() => void) | undefined
+      mockUseVideoUpload.mockImplementation((options: { onUploadError?: () => void }) => {
+        capturedOnUploadError = options?.onUploadError
+        return defaultUseVideoUploadReturn()
+      })
+
+      renderVideosSection({
+        journey: journeyWithMatchingVideoBlock,
+        cardBlockId
+      })
+
+      expect(capturedOnUploadError).toBeDefined()
+      capturedOnUploadError!()
+
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        'error'
+      )
+    })
   })
 })

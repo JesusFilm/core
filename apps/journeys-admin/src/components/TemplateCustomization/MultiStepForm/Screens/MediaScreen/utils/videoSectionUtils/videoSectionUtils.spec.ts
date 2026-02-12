@@ -7,8 +7,42 @@ import { VideoBlockSource } from '../../../../../../../../__generated__/globalTy
 import {
   getCustomizableCardVideoBlock,
   getVideoBlockDisplayTitle,
+  getVideoPoster,
   showVideosSection
 } from './videoSectionUtils'
+
+function createBaseVideoBlock(
+  overrides: Partial<VideoBlock> = {}
+): VideoBlock {
+  return {
+    __typename: 'VideoBlock',
+    id: 'video-block-1',
+    parentBlockId: null,
+    parentOrder: 0,
+    muted: null,
+    autoplay: null,
+    startAt: null,
+    endAt: null,
+    posterBlockId: null,
+    fullsize: null,
+    videoId: null,
+    videoVariantLanguageId: null,
+    source: VideoBlockSource.internal,
+    title: null,
+    description: null,
+    image: null,
+    duration: null,
+    objectFit: null,
+    showGeneratedSubtitles: null,
+    subtitleLanguage: null,
+    mediaVideo: null,
+    action: null,
+    eventLabel: null,
+    endEventLabel: null,
+    customizable: null,
+    ...overrides
+  } as VideoBlock
+}
 
 describe('videoSectionUtils', () => {
   describe('getCustomizableCardVideoBlock', () => {
@@ -194,6 +228,186 @@ describe('videoSectionUtils', () => {
       } as unknown as VideoBlock
 
       expect(getVideoBlockDisplayTitle(block)).toBe('')
+    })
+  })
+
+  describe('getVideoPoster', () => {
+    it('returns Mux thumbnail URL when source is mux and playbackId is present', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.mux,
+        mediaVideo: {
+          __typename: 'MuxVideo',
+          id: 'mux-id',
+          assetId: 'asset-id',
+          playbackId: 'playback-123'
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBe(
+        'https://image.mux.com/playback-123/thumbnail.png?time=1'
+      )
+    })
+
+    it('returns undefined when source is mux but playbackId is null', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.mux,
+        mediaVideo: {
+          __typename: 'MuxVideo',
+          id: 'mux-id',
+          assetId: 'asset-id',
+          playbackId: null
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns undefined when source is mux but mediaVideo is null', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.mux,
+        mediaVideo: null
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns undefined when source is mux but mediaVideo is not MuxVideo', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.mux,
+        mediaVideo: {
+          __typename: 'YouTube',
+          id: 'yt-id'
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns image when source is YouTube and image is present', () => {
+      const imageUrl = 'https://i.ytimg.com/vi/abc123/mqdefault.jpg'
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.youTube,
+        videoId: 'abc123',
+        image: imageUrl
+      })
+
+      expect(getVideoPoster(videoBlock)).toBe(imageUrl)
+    })
+
+    it('returns undefined when source is YouTube but image is null', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.youTube,
+        videoId: 'abc123',
+        image: null
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns mobileCinematicHigh when source is internal and Video has images', () => {
+      const posterUrl =
+        'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.internal,
+        mediaVideo: {
+          __typename: 'Video',
+          id: 'video-id',
+          title: [],
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh: posterUrl
+            }
+          ],
+          variant: null,
+          variantLanguages: []
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBe(posterUrl)
+    })
+
+    it('returns mobileCinematicHigh when source is cloudflare and Video has images', () => {
+      const posterUrl =
+        'https://imagedelivery.net/cf/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg'
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.cloudflare,
+        mediaVideo: {
+          __typename: 'Video',
+          id: 'video-id',
+          title: [],
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh: posterUrl
+            }
+          ],
+          variant: null,
+          variantLanguages: []
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBe(posterUrl)
+    })
+
+    it('returns undefined when source is internal but images array is empty', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.internal,
+        mediaVideo: {
+          __typename: 'Video',
+          id: 'video-id',
+          title: [],
+          images: [],
+          variant: null,
+          variantLanguages: []
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns undefined when source is internal but images[0].mobileCinematicHigh is null', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.internal,
+        mediaVideo: {
+          __typename: 'Video',
+          id: 'video-id',
+          title: [],
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh: null
+            }
+          ],
+          variant: null,
+          variantLanguages: []
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns undefined when source is internal but mediaVideo is not Video typename', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.internal,
+        mediaVideo: {
+          __typename: 'MuxVideo',
+          id: 'mux-id',
+          assetId: null,
+          playbackId: null
+        }
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
+    })
+
+    it('returns undefined when source is internal but mediaVideo is null', () => {
+      const videoBlock = createBaseVideoBlock({
+        source: VideoBlockSource.internal,
+        mediaVideo: null
+      })
+
+      expect(getVideoPoster(videoBlock)).toBeUndefined()
     })
   })
 })
