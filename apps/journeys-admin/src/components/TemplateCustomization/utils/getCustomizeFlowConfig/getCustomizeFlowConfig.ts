@@ -9,6 +9,7 @@ export type CustomizationScreen =
   | 'links'
   | 'social'
   | 'done'
+  | 'guestPreview'
 
 export interface CustomizeFlowConfig {
   screens: CustomizationScreen[]

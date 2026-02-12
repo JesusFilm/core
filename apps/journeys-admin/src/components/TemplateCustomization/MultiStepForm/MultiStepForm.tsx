@@ -17,6 +17,7 @@ import {
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
   SocialScreen,
@@ -61,6 +62,8 @@ function renderScreen(
       )
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+    case 'guestPreview':
+      return <GuestPreviewScreen />
     default:
       return <></>
   }
