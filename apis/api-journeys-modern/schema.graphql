@@ -704,7 +704,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: User
+  user: AuthenticatedUser
 }
 
 input IntegrationGoogleCreateInput {
@@ -2297,7 +2297,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: User
+  user: AuthenticatedUser
   journeyNotification: JourneyNotification
 }
 

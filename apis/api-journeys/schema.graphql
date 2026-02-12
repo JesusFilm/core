@@ -2106,7 +2106,7 @@ type IntegrationGoogle implements Integration
   id: ID!
   team: Team!
   type: IntegrationType!
-  user: User
+  user: AuthenticatedUser
   accountEmail: String
 }
 
@@ -2302,7 +2302,7 @@ type UserJourney
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
-  user: User
+  user: AuthenticatedUser
 
   """Date time of when the journey was first opened"""
   openedAt: DateTime
@@ -2716,7 +2716,7 @@ enum UserJourneyRole {
   owner
 }
 
-extend type User
+extend type AuthenticatedUser
   @key(fields: "id")
 {
   id: ID! @external
@@ -2739,7 +2739,7 @@ enum Role {
   publisher
 }
 
-extend type AuthenticatedUser
+extend type User
   @key(fields: "id")
 {
   id: ID! @external
