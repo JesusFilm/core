@@ -38,7 +38,8 @@ export function UseThisTemplateButton({
 
   const handleCheckSignIn = async (): Promise<void> => {
     // For menu-item variant, assume user is signed in
-    if (variant === 'menu-item' || signedIn) {
+    const canCustomize = templateCustomizationGuestFlow || signedIn
+    if (variant === 'menu-item' || canCustomize) {
       setLoading(true)
       await handleCustomizeNavigation()
     } else {

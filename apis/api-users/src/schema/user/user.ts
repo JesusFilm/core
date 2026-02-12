@@ -50,9 +50,9 @@ builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
-      let user = await prisma.user.findUnique({ where: { userId: id } })
+      const user = await prisma.user.findUnique({ where: { userId: id } })
 
-      // Create user on first reference (e.g. after teamCreate before me was called)
+      // Handle cases where user doesn't exist
       if (user == null) {
         console.warn(`Federation: User not found for userId: ${id}`)
         return null

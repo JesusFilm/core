@@ -144,9 +144,11 @@ export class JourneyResolver {
       const profile = await this.prismaService.journeyProfile.findUnique({
         where: { userId }
       })
-      // No profile (e.g. new guest) → no last active team; continue without throwing
       if (profile != null)
-        filter.teamId = profile.lastActiveTeamId ?? undefined
+        throw new GraphQLError('journey profile not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      filter.teamId = profile.lastActiveTeamId ?? undefined
     }
     if (teamId != null) {
       filter.teamId = teamId
