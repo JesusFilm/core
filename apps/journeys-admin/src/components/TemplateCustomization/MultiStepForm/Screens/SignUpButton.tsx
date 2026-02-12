@@ -2,21 +2,19 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
 import Button from '@mui/material/Button'
 
 export function SignUpButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { journey } = useJourney()
+  const journeyId = router.query.journeyId as string | undefined
 
   function handleClick(): void {
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
     const redirectUrl =
-      journey?.id != null
-        ? `${domain}/templates/${journey.id}/customize`
+      journeyId != null
+        ? `${domain}/templates/${journeyId}/customize`
         : `${domain}/`
 
     void router.push(
