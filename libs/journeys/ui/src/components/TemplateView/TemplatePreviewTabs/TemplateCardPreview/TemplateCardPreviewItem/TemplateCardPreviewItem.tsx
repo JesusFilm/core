@@ -74,7 +74,7 @@ export function TemplateCardPreviewItem({
           ? `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
              0px 3px 3px 0px rgba(0, 0, 0, 0.12),
              0px 3px 4px 0px rgba(0, 0, 0, 0.14)`
-          : 'none',
+          : 'none'
       }}
       onClick={() => onClick?.(step)}
       data-testid="TemplateCardPreviewItem"
@@ -82,8 +82,8 @@ export function TemplateCardPreviewItem({
       <Box
         sx={{
           transform: framePortal.transform,
-          transformOrigin: 'top left', 
-          borderRadius: framePortal.borderRadius, 
+          transformOrigin: 'top left',
+          borderRadius: framePortal.borderRadius
         }}
       >
         <Box
@@ -91,20 +91,20 @@ export function TemplateCardPreviewItem({
             position: 'absolute',
             display: 'block',
             width: isSelected
-            ? {
-                xs: framePortal.width.xs * SELECTED_SCALE,
-                sm: framePortal.width.sm * SELECTED_SCALE
-              }
-            : framePortal.width,
-          height: isSelected
-            ? {
-                xs: framePortal.height.xs * SELECTED_SCALE,
-                sm: framePortal.height.sm * SELECTED_SCALE
-              }
-            : framePortal.height,
+              ? {
+                  xs: framePortal.width.xs * SELECTED_SCALE,
+                  sm: framePortal.width.sm * SELECTED_SCALE
+                }
+              : framePortal.width,
+            height: isSelected
+              ? {
+                  xs: framePortal.height.xs * SELECTED_SCALE,
+                  sm: framePortal.height.sm * SELECTED_SCALE
+                }
+              : framePortal.height,
             zIndex: 2,
             cursor: 'grab',
-            borderRadius: framePortal.borderRadius,
+            borderRadius: framePortal.borderRadius
           }}
         />
         <FramePortal
@@ -121,7 +121,7 @@ export function TemplateCardPreviewItem({
                   sm: framePortal.height.sm * SELECTED_SCALE
                 }
               : framePortal.height,
-            borderRadius: framePortal.borderRadius,
+            borderRadius: framePortal.borderRadius
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
@@ -134,7 +134,7 @@ export function TemplateCardPreviewItem({
             <Box
               sx={{
                 height: '100%',
-                borderRadius: framePortal.borderRadius,
+                borderRadius: framePortal.borderRadius
               }}
             >
               <BlockRenderer

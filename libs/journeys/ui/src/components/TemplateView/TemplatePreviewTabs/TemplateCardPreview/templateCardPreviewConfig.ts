@@ -95,7 +95,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '12px',
+    borderRadius: '12px'
   },
   swiperSx: {
     overflow: 'hidden',
