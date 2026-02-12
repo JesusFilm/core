@@ -177,7 +177,9 @@ describe('VideosSection', () => {
 
   it('renders upload button with Upload file text', () => {
     renderVideosSection()
-    expect(screen.getByRole('button', { name: 'Upload file' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Upload file' })
+    ).toBeInTheDocument()
   })
 
   it('does not render VideoPreviewPlayer when cardBlockId is null', () => {

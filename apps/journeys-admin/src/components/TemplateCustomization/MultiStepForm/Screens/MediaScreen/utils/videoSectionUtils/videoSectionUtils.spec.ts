@@ -33,7 +33,9 @@ describe('videoSectionUtils', () => {
         blocks: [videoBlock]
       } as unknown as Journey
 
-      expect(getCustomizableCardVideoBlock(journey, 'card-1')).toEqual(videoBlock)
+      expect(getCustomizableCardVideoBlock(journey, 'card-1')).toEqual(
+        videoBlock
+      )
     })
   })
 

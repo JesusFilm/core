@@ -14,9 +14,9 @@ import {
   IdType,
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
-import { useVideoUpload } from '../../../../../utils/useVideoUpload/useVideoUpload'
 import { VIDEO_BLOCK_UPDATE } from '../../../../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
 import { createShowSnackbar } from '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar'
+import { useVideoUpload } from '../../../../../utils/useVideoUpload/useVideoUpload'
 import {
   getCustomizableCardVideoBlock,
   getVideoBlockDisplayTitle
@@ -89,8 +89,7 @@ export function VideosSection({
     }
   })
 
-  const loading =
-    status === 'uploading' || status === 'processing' || updating
+  const loading = status === 'uploading' || status === 'processing' || updating
 
   useEffect(() => {
     onLoading?.(loading)
