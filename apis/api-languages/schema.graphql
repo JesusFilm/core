@@ -132,10 +132,4 @@ type Query {
   countries(term: String, ids: [ID!]): [Country!]!
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  languageUserRoles: [LanguageRole!]!
-}
+union User = AuthenticatedUser

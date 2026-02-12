@@ -19,9 +19,6 @@ type UserJourney @key(fields: "id") @shareable {
   """
   openedAt: DateTime
 }
-extend type User @key(fields: "id") {
-  id: ID! @external
-}
 
 enum IdType {
   databaseId

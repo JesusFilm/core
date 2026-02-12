@@ -1056,13 +1056,7 @@ type UnsplashUserLinks {
   self: String!
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  mediaUserRoles: [MediaRole!]!
-}
+union User = AuthenticatedUser
 
 type Video
   @key(fields: "id primaryLanguageId")

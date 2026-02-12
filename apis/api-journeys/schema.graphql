@@ -2694,6 +2694,14 @@ type Translation {
   primary: Boolean!
 }
 
+extend type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+union User = AuthenticatedUser
+
 type UserInvite
   @key(fields: "id")
   @shareable
@@ -2716,12 +2724,6 @@ enum UserJourneyRole {
   owner
 }
 
-extend type User
-  @key(fields: "id")
-{
-  id: ID! @external
-}
-
 type UserRole
   @key(fields: "id")
   @shareable
@@ -2737,12 +2739,6 @@ enum Role {
   add them to template library
   """
   publisher
-}
-
-extend type AuthenticatedUser
-  @key(fields: "id")
-{
-  id: ID! @external
 }
 
 enum UserTeamRole {
@@ -3054,4 +3050,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

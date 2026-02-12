@@ -2026,10 +2026,6 @@ export class ShortLink {
     id: string;
 }
 
-export class User {
-    id: string;
-}
-
 export class AuthenticatedUser {
     id: string;
 }
@@ -2042,4 +2038,5 @@ export class ISchema {
     Mutation: IMutation;
 }
 
+export type User = AuthenticatedUser;
 type Nullable<T> = T | null;

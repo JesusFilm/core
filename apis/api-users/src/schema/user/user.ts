@@ -11,41 +11,6 @@ import { AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
-builder.asEntity(User, {
-  key: builder.selection<{ id: string }>('id'),
-  resolveReference: async ({ id }) => {
-    try {
-      const user = await prisma.user.findUnique({ where: { userId: id } })
-
-      // Handle cases where user doesn't exist
-      if (user == null) {
-        console.warn(`Federation: User not found for userId: ${id}`)
-        return null
-      }
-
-      // Handle cases where firstName is null or empty (data integrity issue)
-      // This provides a fallback to prevent GraphQL federation errors
-      if (user.firstName == null || user.firstName.trim() === '') {
-        console.warn(
-          `Federation: User ${id} has null/empty firstName, using fallback`
-        )
-        return {
-          ...user,
-          firstName: 'Unknown User'
-        }
-      }
-
-      return user
-    } catch (error) {
-      console.error(
-        `Federation: Error resolving User entity for userId: ${id}`,
-        error
-      )
-      return null
-    }
-  }
-})
-
 builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {

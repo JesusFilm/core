@@ -46,9 +46,7 @@ type Query {
   userByEmail(email: String!): User
 }
 
-type User
-  @key(fields: "id")
-{
+type User {
   id: ID!
   firstName: String!
   lastName: String

@@ -2257,12 +2257,7 @@ enum TypographyVariant {
   overline
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-}
+union User = AuthenticatedUser
 
 type UserAgent
   @shareable
