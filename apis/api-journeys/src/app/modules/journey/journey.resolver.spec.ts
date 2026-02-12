@@ -476,7 +476,7 @@ describe('JourneyResolver', () => {
 
       it('should throw error if profile not found', async () => {
         prismaService.journeyProfile.findUnique.mockResolvedValue(null)
-        expect(
+        await expect(
           resolver.adminJourneys(
             'userId',
             accessibleJourneys,

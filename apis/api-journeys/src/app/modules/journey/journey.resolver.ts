@@ -144,7 +144,7 @@ export class JourneyResolver {
       const profile = await this.prismaService.journeyProfile.findUnique({
         where: { userId }
       })
-      if (profile != null)
+      if (profile == null)
         throw new GraphQLError('journey profile not found', {
           extensions: { code: 'NOT_FOUND' }
         })
