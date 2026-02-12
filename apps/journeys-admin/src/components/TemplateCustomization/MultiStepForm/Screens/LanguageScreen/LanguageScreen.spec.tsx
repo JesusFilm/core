@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 import {
@@ -11,22 +10,24 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetChildJourneysFromTemplateId'
+import { GetCurrentUser } from '../../../../../../__generated__/GetCurrentUser'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GetParentJourneysFromTemplateId,
   GetParentJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetParentJourneysFromTemplateId'
-import { GetCurrentUser } from '../../../../../../__generated__/GetCurrentUser'
 import {
   JourneyDuplicate,
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
 import { TeamCreate } from '../../../../../../__generated__/TeamCreate'
+import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import {
   mockChildJourneys,
@@ -37,7 +38,6 @@ import {
   mockParentJourneys,
   mockParentVariables
 } from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
-import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { TEAM_CREATE } from '../../../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { LanguageScreen } from './LanguageScreen'
