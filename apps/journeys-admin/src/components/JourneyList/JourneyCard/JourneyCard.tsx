@@ -89,7 +89,7 @@ export function JourneyCard({
     }
   }, [duplicatedJourneyId, journey])
 
-  const verifyHovered = (hovered: boolean) => {
+  const updateHoveredState = (hovered: boolean) => {
     if (!hasOpenDialog) {
       setIsCardHovered(hovered)
     }
@@ -119,8 +119,8 @@ export function JourneyCard({
         boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
-      onMouseEnter={() => verifyHovered(true)}
-      onMouseLeave={() => verifyHovered(false)}
+      onMouseEnter={() => updateHoveredState(true)}
+      onMouseLeave={() => updateHoveredState(false)}
     >
       <>
         <Box
@@ -140,7 +140,7 @@ export function JourneyCard({
             refetch={refetch}
             journey={journey}
             hovered={isCardHovered}
-            onMenuClose={() => verifyHovered(false)}
+            onMenuClose={() => updateHoveredState(false)}
             template={journey.template ?? false}
             setHasOpenDialog={setHasOpenDialog}
           />
