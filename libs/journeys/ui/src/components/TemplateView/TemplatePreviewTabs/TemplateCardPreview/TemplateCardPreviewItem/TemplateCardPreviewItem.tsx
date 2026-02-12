@@ -70,7 +70,11 @@ export function TemplateCardPreviewItem({
               sm: cardHeight.sm * SELECTED_SCALE
             }
           : cardHeight,
-        borderRadius: framePortal.borderRadius
+        boxShadow: isSelected
+          ? `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
+             0px 3px 3px 0px rgba(0, 0, 0, 0.12),
+             0px 3px 4px 0px rgba(0, 0, 0, 0.14)`
+          : 'none',
       }}
       onClick={() => onClick?.(step)}
       data-testid="TemplateCardPreviewItem"
@@ -78,17 +82,29 @@ export function TemplateCardPreviewItem({
       <Box
         sx={{
           transform: framePortal.transform,
-          transformOrigin: 'top left'
+          transformOrigin: 'top left', 
+          borderRadius: framePortal.borderRadius, 
         }}
       >
         <Box
           sx={{
             position: 'absolute',
             display: 'block',
-            width: framePortal.width,
-            height: framePortal.height,
+            width: isSelected
+            ? {
+                xs: framePortal.width.xs * SELECTED_SCALE,
+                sm: framePortal.width.sm * SELECTED_SCALE
+              }
+            : framePortal.width,
+          height: isSelected
+            ? {
+                xs: framePortal.height.xs * SELECTED_SCALE,
+                sm: framePortal.height.sm * SELECTED_SCALE
+              }
+            : framePortal.height,
             zIndex: 2,
-            cursor: 'grab'
+            cursor: 'grab',
+            borderRadius: framePortal.borderRadius,
           }}
         />
         <FramePortal
@@ -105,7 +121,7 @@ export function TemplateCardPreviewItem({
                   sm: framePortal.height.sm * SELECTED_SCALE
                 }
               : framePortal.height,
-            borderRadius: framePortal.borderRadius
+            borderRadius: framePortal.borderRadius,
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >
@@ -118,7 +134,7 @@ export function TemplateCardPreviewItem({
             <Box
               sx={{
                 height: '100%',
-                borderRadius: 4
+                borderRadius: framePortal.borderRadius,
               }}
             >
               <BlockRenderer
