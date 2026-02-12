@@ -63,7 +63,13 @@ export class TeamsPage {
   }
 
   async clickThreeDotOfTeams() {
-    await this.page.getByTestId('MainPanelHeader').locator('button').click()
+    const moreButton = this.page
+      .getByTestId('MainPanelHeader')
+      .locator('button')
+      .filter({ has: this.page.locator('[data-testid="MoreIcon"]') })
+    await expect(moreButton).toHaveCount(1)
+    await expect(moreButton).toBeVisible()
+    await moreButton.click()
   }
 
   async clickThreeDotOptions(options) {
@@ -100,8 +106,18 @@ export class TeamsPage {
     await this.page.locator('button[data-testid="dialog-close-button"]').click()
   }
 
+  /** Team selector dropdown in header - scoped to avoid strict mode (multiple listboxes on page). */
+  private getTeamSelectDropdown() {
+    return this.page
+      .getByTestId('TeamSelect')
+      .locator('div[aria-haspopup="listbox"]')
+  }
+
   async clickTeamSelectionDropDown() {
-    await this.page.locator('div[aria-haspopup="listbox"]').click()
+    const dropdown = this.getTeamSelectDropdown()
+    await expect(dropdown).toHaveCount(1)
+    await expect(dropdown).toBeVisible()
+    await dropdown.click()
   }
 
   async selectLastTeam() {
@@ -122,9 +138,7 @@ export class TeamsPage {
   }
 
   async verifyTeamNameUpdatedInTeamSelectDropdown() {
-    await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.teamName
-    )
+    await expect(this.getTeamSelectDropdown()).toHaveText(this.teamName)
   }
 
   async clickCreateJourneyBtn() {
@@ -153,10 +167,9 @@ export class TeamsPage {
   }
 
   async verifyRenamedTeamNameUpdatedInTeamSelectDropdown() {
-    await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.renameTeamName,
-      { timeout: 60000 }
-    )
+    await expect(this.getTeamSelectDropdown()).toHaveText(this.renameTeamName, {
+      timeout: 60000
+    })
   }
 
   async enterTeamMember() {
@@ -218,10 +231,18 @@ export class TeamsPage {
   }
 
   async clickAddIntegrationButton() {
-    await this.page.getByTestId('Add-IntegrationsButton').click()
+    const addButton = this.page.getByTestId('Add-IntegrationsButton')
+    await expect(addButton).toBeVisible({ timeout: 15000 })
+    await addButton.click()
   }
+
   async clickGrowthSpaceIntegration() {
-    await this.page.getByTestId('growthSpaces-IntegrationsButton').click()
+    await this.page.waitForURL(/\/integrations\/new/, { timeout: 20000 })
+    const growthSpaceLink = this.page
+      .getByRole('link', { name: /Growth Spaces/i })
+      .or(this.page.getByTestId('growthSpaces-IntegrationsButton'))
+    await expect(growthSpaceLink.first()).toBeVisible({ timeout: 25000 })
+    await growthSpaceLink.first().click()
   }
   async enterAccessId(accessId: string) {
     await this.page

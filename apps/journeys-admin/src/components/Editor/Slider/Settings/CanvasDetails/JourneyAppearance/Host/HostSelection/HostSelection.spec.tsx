@@ -161,7 +161,9 @@ describe('HostSelection', () => {
     )
 
     expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
-    expect(getByText('Only My team members can edit this')).toBeInTheDocument()
+    expect(
+      getByText('Only members from My team can edit this')
+    ).toBeInTheDocument()
   })
 
   it('should disable editing hosts if no users have access in team', async () => {
@@ -187,9 +189,7 @@ describe('HostSelection', () => {
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).toBeDisabled()
-      expect(
-        getByText('Cannot edit hosts for this old journey')
-      ).toBeInTheDocument()
+      expect(getByText('Only team members can edit it')).toBeInTheDocument()
     })
   })
 
