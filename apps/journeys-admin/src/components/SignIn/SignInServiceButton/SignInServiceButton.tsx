@@ -9,13 +9,18 @@ import {
   linkWithPopup,
   signInWithPopup
 } from 'firebase/auth'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
-import { UPDATE_ME } from '../RegisterPage/RegisterPage'
+import {
+  JOURNEY_PUBLISH,
+  UPDATE_ME
+} from '../RegisterPage/RegisterPage'
+import { getJourneyIdFromRedirect } from '../utils'
 
 interface SignInServiceButtonProps {
   service: 'google.com' | 'facebook.com' | 'oidc.okta'
@@ -25,7 +30,9 @@ export function SignInServiceButton({
   service
 }: SignInServiceButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const [updateMe] = useMutation(UPDATE_ME)
+  const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
 
   async function linkAnonymousUserWithProvider(
     currentUser: User,
@@ -50,6 +57,13 @@ export function SignInServiceButton({
         }
       }
     })
+
+    const journeyId = getJourneyIdFromRedirect(
+      router.query.redirect as string | undefined
+    )
+    if (journeyId != null) {
+      await journeyPublish({ variables: { id: journeyId } })
+    }
   }
 
   async function handleSignIn(): Promise<void> {

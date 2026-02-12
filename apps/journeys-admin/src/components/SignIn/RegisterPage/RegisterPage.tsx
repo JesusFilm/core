@@ -23,6 +23,7 @@ import { InferType, object, string } from 'yup'
 
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
+import { getJourneyIdFromRedirect } from '../utils'
 
 export const UPDATE_ME = gql`
   mutation UpdateMe($input: UpdateMeInput!) {
@@ -35,6 +36,14 @@ export const UPDATE_ME = gql`
   }
 `
 
+export const JOURNEY_PUBLISH = gql`
+  mutation JourneyPublish($id: ID!) {
+    journeyPublish(id: $id) {
+      id
+    }
+  }
+`
+
 export function RegisterPage({
   setActivePage,
   userEmail
@@ -43,6 +52,7 @@ export function RegisterPage({
   const [showPassword, setShowPassword] = React.useState(false)
   const router = useRouter()
   const [updateMe] = useMutation(UPDATE_ME)
+  const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
 
   useHandleNewAccountRedirect()
 
@@ -114,6 +124,14 @@ export function RegisterPage({
     const credential = EmailAuthProvider.credential(email, password)
     const userCredential = await linkWithCredential(currentUser, credential)
     await updateProfile(userCredential.user, { displayName: name })
+
+    const journeyId = getJourneyIdFromRedirect(
+      router.query.redirect as string | undefined
+    )
+    if (journeyId != null) {
+      await journeyPublish({ variables: { id: journeyId } })
+    }
+
     await signInWithEmailAndPassword(auth, email, password)
   }
 
