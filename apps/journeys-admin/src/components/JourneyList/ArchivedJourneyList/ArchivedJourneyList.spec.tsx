@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
@@ -106,7 +106,7 @@ describe('ArchivedJourneyList', () => {
   })
 
   it('should render journeys in descending updatedAt date by default', async () => {
-    const { getAllByLabelText } = render(
+    render(
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
@@ -117,11 +117,11 @@ describe('ArchivedJourneyList', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+      expect(screen.getAllByLabelText('journey-card')[0].textContent).toContain(
         '11 months ago'
       )
     )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+    expect(screen.getAllByLabelText('journey-card')[1].textContent).toContain(
       '1 year ago'
     )
   })
@@ -131,7 +131,7 @@ describe('ArchivedJourneyList', () => {
       ...defaultJourney,
       title: 'a lower case title'
     }
-    const { getAllByLabelText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -159,11 +159,11 @@ describe('ArchivedJourneyList', () => {
     )
 
     await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+      expect(screen.getAllByLabelText('journey-card')[0].textContent).toContain(
         'a lower case titleEnglish•11 months ago00'
       )
     )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+    expect(screen.getAllByLabelText('journey-card')[1].textContent).toContain(
       'An Old Journey HeadingEnglish•1 year ago00'
     )
   })
@@ -196,7 +196,7 @@ describe('ArchivedJourneyList', () => {
     }
 
     it('should display the unarchive all dialog', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -207,12 +207,12 @@ describe('ArchivedJourneyList', () => {
       )
 
       await waitFor(() =>
-        expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+        expect(screen.getByText('Unarchive Journeys')).toBeInTheDocument()
       )
     })
 
     it('should unarchive all journeys', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider
           mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
@@ -227,14 +227,14 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Unarchive'))
+      fireEvent.click(screen.getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -254,14 +254,14 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Unarchive'))
-      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+      fireEvent.click(screen.getByText('Unarchive'))
+      await waitFor(() => expect(screen.getByText('error')).toBeInTheDocument())
     })
 
     it('should show "No journeys have been restored" when no journeys to restore', async () => {
-      const { getByText, getByRole } = render(
+      render(
         <MockedProvider mocks={[noJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -275,18 +275,18 @@ describe('ArchivedJourneyList', () => {
       )
 
       await waitFor(() =>
-        expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+        expect(screen.getByText('Unarchive Journeys')).toBeInTheDocument()
       )
 
-      fireEvent.click(getByRole('button', { name: 'Unarchive' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Unarchive' }))
 
       await waitFor(() =>
-        expect(getByText('No journeys have been restored')).toBeInTheDocument()
+        expect(screen.getByText('No journeys have been restored')).toBeInTheDocument()
       )
     })
 
     it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider
           mocks={[archivedJourneysMock, archiveJourneysMock, noJourneysMock]}
         >
@@ -301,9 +301,9 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Unarchive'))
+      fireEvent.click(screen.getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => {
         expect(refetchTemplateStats).toHaveBeenCalledWith([
@@ -342,7 +342,7 @@ describe('ArchivedJourneyList', () => {
     }
 
     it('should display the trash all dialog', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider mocks={[archivedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -353,12 +353,12 @@ describe('ArchivedJourneyList', () => {
       )
 
       await waitFor(() =>
-        expect(getByText('Trash Journeys')).toBeInTheDocument()
+        expect(screen.getByText('Trash Journeys')).toBeInTheDocument()
       )
     })
 
     it('should trash all journeys', async () => {
-      const { getByText, getByRole } = render(
+      render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -373,14 +373,14 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText, getByRole } = render(
+      render(
         <MockedProvider
           mocks={[
             archivedJourneysMock,
@@ -400,14 +400,14 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByRole('button', { name: 'Trash' }))
-      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+      fireEvent.click(screen.getByRole('button', { name: 'Trash' }))
+      await waitFor(() => expect(screen.getByText('error')).toBeInTheDocument())
     })
 
     it('should show "No journeys have been trashed" when no journeys to trash', async () => {
-      const { getByText, getByRole } = render(
+      render(
         <MockedProvider mocks={[noJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -421,18 +421,18 @@ describe('ArchivedJourneyList', () => {
       )
 
       await waitFor(() =>
-        expect(getByText('Trash Journeys')).toBeInTheDocument()
+        expect(screen.getByText('Trash Journeys')).toBeInTheDocument()
       )
 
-      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Trash' }))
 
       await waitFor(() =>
-        expect(getByText('No journeys have been trashed')).toBeInTheDocument()
+        expect(screen.getByText('No journeys have been trashed')).toBeInTheDocument()
       )
     })
 
     it('should call refetchTemplateStats when trashing journeys with fromTemplateId', async () => {
-      const { getByText, getByRole } = render(
+      render(
         <MockedProvider
           mocks={[archivedJourneysMock, trashJourneysMock, noJourneysMock]}
         >
@@ -447,9 +447,9 @@ describe('ArchivedJourneyList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByRole('button', { name: 'Trash' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
       await waitFor(() => {
         expect(refetchTemplateStats).toHaveBeenCalledWith([

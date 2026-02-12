@@ -41,7 +41,7 @@ export function ArchivedTemplateList({
 }: Omit<JourneyListProps, 'user'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { data, refetch } = useAdminJourneysQuery({
+  const { data, loading, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
     template: true,
     teamId: 'jfp-team'
@@ -86,12 +86,25 @@ export function ArchivedTemplateList({
   const [openTrashDialog, setOpenTrashDialog] = useState<boolean | undefined>()
 
   async function handleRestoreSubmit(): Promise<void> {
+    // Prevent submission if data is still loading
+    if (loading) {
+      return
+    }
+
     const journeyIds = data?.journeys?.map((journey) => journey.id)
-    if (!journeyIds?.length) {
+    
+    // Check if we have an empty list (data loaded but no journeys)
+    if (journeyIds != null && journeyIds.length === 0) {
       enqueueSnackbar(t('No templates have been restored'), { variant: 'info' })
       handleClose()
       return
     }
+
+    // journeyIds should not be undefined at this point, but handle it defensively
+    if (journeyIds == null) {
+      return
+    }
+
     try {
       await restore({ variables: { ids: journeyIds } })
     } catch (error) {
@@ -106,12 +119,25 @@ export function ArchivedTemplateList({
   }
 
   async function handleTrashSubmit(): Promise<void> {
+    // Prevent submission if data is still loading
+    if (loading) {
+      return
+    }
+
     const journeyIds = data?.journeys?.map((journey) => journey.id)
-    if (!journeyIds?.length) {
+    
+    // Check if we have an empty list (data loaded but no journeys)
+    if (journeyIds != null && journeyIds.length === 0) {
       enqueueSnackbar(t('No templates have been trashed'), { variant: 'info' })
       handleClose()
       return
     }
+
+    // journeyIds should not be undefined at this point, but handle it defensively
+    if (journeyIds == null) {
+      return
+    }
+
     try {
       await trash({ variables: { ids: journeyIds } })
     } catch (error) {

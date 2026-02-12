@@ -155,7 +155,7 @@ export function JourneyListContent({
     return baseParams
   }
 
-  const { data, refetch } = useAdminJourneysQuery(getQueryParams())
+  const { data, loading, refetch } = useAdminJourneysQuery(getQueryParams())
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   // Determine mutations based on status
@@ -277,17 +277,22 @@ export function JourneyListContent({
   >()
 
   const getOwnerFilteredIds = (): string[] | undefined => {
+    // Return undefined if data is still loading to distinguish from empty list
+    if (loading || data?.journeys == null) {
+      return undefined
+    }
+
     const isTemplate = contentType === 'templates'
     const isTeamContext = getQueryParams().useLastActiveTeamId
 
     // Templates and team journeys: send all IDs, backend handles permissions
     if (isTemplate || !user?.id || isTeamContext) {
-      return data?.journeys?.map((journey) => journey.id)
+      return data.journeys.map((journey) => journey.id)
     }
 
     // Personal journeys: only include journeys where user is owner
-    return data?.journeys
-      ?.filter(
+    return data.journeys
+      .filter(
         (journey) =>
           journey.userJourneys?.find(
             (userJourney) => userJourney.user?.id === (user?.id ?? '')
@@ -297,8 +302,33 @@ export function JourneyListContent({
   }
 
   async function handlePrimarySubmit(): Promise<void> {
+    // Prevent submission if data is still loading
+    if (loading) {
+      return
+    }
+
     try {
       const journeyIds = getOwnerFilteredIds()
+      
+      // Check if we have an empty list (data loaded but no journeys)
+      if (journeyIds != null && journeyIds.length === 0) {
+        const isTemplate = contentType === 'templates'
+        const message = isTemplate
+          ? t('No templates have been selected.')
+          : t('No journeys have been selected.')
+        enqueueSnackbar(message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        handleClose()
+        return
+      }
+
+      // journeyIds should not be undefined at this point, but handle it defensively
+      if (journeyIds == null) {
+        return
+      }
+
       await primaryMutation({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -312,8 +342,33 @@ export function JourneyListContent({
   }
 
   async function handleSecondarySubmit(): Promise<void> {
+    // Prevent submission if data is still loading
+    if (loading) {
+      return
+    }
+
     try {
       const journeyIds = getOwnerFilteredIds()
+      
+      // Check if we have an empty list (data loaded but no journeys)
+      if (journeyIds != null && journeyIds.length === 0) {
+        const isTemplate = contentType === 'templates'
+        const message = isTemplate
+          ? t('No templates have been selected.')
+          : t('No journeys have been selected.')
+        enqueueSnackbar(message, {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        handleClose()
+        return
+      }
+
+      // journeyIds should not be undefined at this point, but handle it defensively
+      if (journeyIds == null) {
+        return
+      }
+
       await secondaryMutation({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {

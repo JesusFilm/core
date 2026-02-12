@@ -35,8 +35,8 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: 0,
-          width: '1052px',
+          top: { xs: 0, md: 0 },
+          width: '100%',
           left: 0,
           right: 0,
           marginLeft: 0,
@@ -57,9 +57,9 @@ export function MainPanelHeader({
             <Box
               onClick={() => router.back()}
               sx={{
+                ml: { xs: 6, sm: 8, md: 10 },
                 pl: 0,
-                display: 'flex',
-                ml: { xs: 6, sm: 8, md: 10 }
+                display: 'flex'
               }}
             >
               <IconButton
@@ -69,14 +69,9 @@ export function MainPanelHeader({
                 sx={{
                   mr: 2,
                   ml: 0,
-                  pl: '0 !important',
-                  pr: '0 !important',
+                  px: 0,
                   minWidth: 'auto',
-                  '&.MuiIconButton-root': {
-                    px: '0 !important',
-                    marginLeft: 0,
-                    py: 1
-                  }
+                  py: 1
                 }}
               >
                 <ChevronLeftIcon />
@@ -92,15 +87,9 @@ export function MainPanelHeader({
                 sx={{
                   mr: 2,
                   ml: { xs: 6, sm: 8, md: 10 },
-                  pl: '0 !important',
-                  pr: '0 !important',
+                  px: 0,
                   minWidth: 'auto',
-                  '&.MuiIconButton-root': {
-                    paddingLeft: '0 !important',
-                    paddingRight: '0 !important',
-                    marginLeft: 0,
-                    padding: '4px'
-                  }
+                  py: 1
                 }}
               >
                 <ChevronLeftIcon />

@@ -13,10 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import {
-  extractTemplateIdsFromJourneys,
-  useTemplateFamilyStatsAggregateLazyQuery
-} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
@@ -51,14 +48,9 @@ export function TrashedTemplateList({
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Templates Restored'), {
+        enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
-        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
-        if (templateIds.length > 0) {
-          void refetchTemplateStats(templateIds)
-        }
-
         void refetch()
       }
     }
@@ -66,7 +58,7 @@ export function TrashedTemplateList({
   const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Templates Deleted'), {
+        enqueueSnackbar(t('Journeys Deleted'), {
           variant: 'success'
         })
         void refetch()
@@ -88,7 +80,11 @@ export function TrashedTemplateList({
       return
     }
     try {
-      await restoreTrashed({ variables: { ids: journeyIds } })
+      await restoreTrashed({
+        variables: {
+          ids: data?.journeys?.map((journey) => journey.id)
+        }
+      })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -108,7 +104,11 @@ export function TrashedTemplateList({
       return
     }
     try {
-      await deleteTrashed({ variables: { ids: journeyIds } })
+      await deleteTrashed({
+        variables: {
+          ids: data?.journeys?.map((journey) => journey.id)
+        }
+      })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {

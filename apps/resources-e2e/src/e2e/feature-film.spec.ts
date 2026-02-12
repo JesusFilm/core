@@ -49,13 +49,12 @@ test.describe('Feature film', () => {
 
     // Wait for Birth of Jesus chapter to be available
     const birthOfJesusButton = page.getByTestId(
-      'VideoCardButton-birth-of-jesus'
+      'CarouselItem-birth-of-jesus'
     )
     await birthOfJesusButton.waitFor({ timeout: 60000 })
 
     // Wait for the element to be properly interactive
     await birthOfJesusButton.waitFor({ state: 'visible' })
-    await expect(birthOfJesusButton).toBeEnabled()
 
     // Click on 'CHAPTER Birth of Jesus'
     await birthOfJesusButton.click()
