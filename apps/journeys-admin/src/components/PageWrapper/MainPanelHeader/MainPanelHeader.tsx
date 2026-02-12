@@ -35,7 +35,7 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: 0, md: 0 },
+          top: 0,
           width: '1052px',
           left: 0,
           right: 0,
@@ -48,23 +48,18 @@ export function MainPanelHeader({
         <Toolbar
           variant={toolbar.variant}
           sx={{
-            pt: 0,
-            pb: 0,
-            px: 0,
+            p: 0,
             minHeight: 'auto',
-            height: '48px',
-            pl: 0,
-            pr: 0
+            height: '48px'
           }}
         >
           {backHrefHistory ? (
             <Box
               onClick={() => router.back()}
               sx={{
-                ml: 0,
                 pl: 0,
                 display: 'flex',
-                marginLeft: { xs: 6, sm: 8, md: 10 }
+                ml: { xs: 6, sm: 8, md: 10 }
               }}
             >
               <IconButton
@@ -78,10 +73,9 @@ export function MainPanelHeader({
                   pr: '0 !important',
                   minWidth: 'auto',
                   '&.MuiIconButton-root': {
-                    paddingLeft: '0 !important',
-                    paddingRight: '0 !important',
+                    px: '0 !important',
                     marginLeft: 0,
-                    padding: '4px'
+                    py: 1
                   }
                 }}
               >
