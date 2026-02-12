@@ -19,7 +19,7 @@ jest.mock('../../utils/videoSectionUtils', () => ({
   getVideoPoster: jest.fn()
 }))
 
-const mockVideojs = jest.requireMock('video.js') as jest.Mock
+const mockVideojs = jest.requireMock('video.js')
 const mockGetVideoPoster = getVideoPoster as jest.MockedFunction<
   typeof getVideoPoster
 >
@@ -107,7 +107,8 @@ describe('VideoPreviewPlayer', () => {
   })
 
   it('renders internal/Cloudflare source with HLS URL and type', () => {
-    const hlsUrl = 'https://customer-xxx.cloudflarestream.com/abc123/manifest/video.m3u8'
+    const hlsUrl =
+      'https://customer-xxx.cloudflarestream.com/abc123/manifest/video.m3u8'
     const videoBlock = createBaseVideoBlock({
       source: VideoBlockSource.internal,
       mediaVideo: {
@@ -141,7 +142,9 @@ describe('VideoPreviewPlayer', () => {
 
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
-    expect(screen.getByTestId('VideoPreviewPlayer-unsupported')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('VideoPreviewPlayer-unsupported')
+    ).toBeInTheDocument()
   })
 
   it('renders VideoPreviewPlayer-unsupported when source is internal but mediaVideo is not Video', () => {
@@ -157,7 +160,9 @@ describe('VideoPreviewPlayer', () => {
 
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
-    expect(screen.getByTestId('VideoPreviewPlayer-unsupported')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('VideoPreviewPlayer-unsupported')
+    ).toBeInTheDocument()
   })
 
   it('calls getVideoPoster with videoBlock and passes result as poster to videojs', () => {
@@ -216,10 +221,9 @@ describe('VideoPreviewPlayer', () => {
       videoId: 'abc123'
     })
 
-    const { unmount } = render(
-      <VideoPreviewPlayer videoBlock={videoBlock} />,
-      { container }
-    )
+    const { unmount } = render(<VideoPreviewPlayer videoBlock={videoBlock} />, {
+      container
+    })
 
     unmount()
 
@@ -238,10 +242,9 @@ describe('VideoPreviewPlayer', () => {
       videoId: 'abc123'
     })
 
-    const { unmount } = render(
-      <VideoPreviewPlayer videoBlock={videoBlock} />,
-      { container }
-    )
+    const { unmount } = render(<VideoPreviewPlayer videoBlock={videoBlock} />, {
+      container
+    })
 
     unmount()
 
