@@ -1,11 +1,11 @@
 import { render, screen } from '@testing-library/react'
 
-import type { GetJourney_journey_blocks_VideoBlock } from '../../../../../../../../../__generated__/GetJourney'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import type { GetJourney_journey_blocks_VideoBlock } from '../../../../../../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
 
-import { getVideoPoster } from '../../../utils/videoSectionUtils'
+import { getVideoPoster } from '../../utils/videoSectionUtils'
 
 const mockVideojsDispose = jest.fn()
 jest.mock('video.js', () =>
@@ -15,7 +15,7 @@ jest.mock('video.js', () =>
   }))
 )
 
-jest.mock('../../../utils/videoSectionUtils', () => ({
+jest.mock('../../utils/videoSectionUtils', () => ({
   getVideoPoster: jest.fn()
 }))
 
