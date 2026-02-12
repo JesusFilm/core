@@ -124,58 +124,40 @@ export function LanguageScreen({
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
-  async function createGuestUser(): Promise<{ teamId: string } | null> {
-    try {
-      const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
-      if (!isAnonymous) {
-        await signInAnonymously(getAuth(getApp()))
-      }
-      const teamName = t('My Team')
-      let meResult: Awaited<ReturnType<typeof loadUser>> | null = null
-      try {
-        meResult = await loadUser()
-      } catch (e) {
-        console.error('[createGuestUser] loadUser failed:', e)
-      }
-      let teamResult: Awaited<ReturnType<typeof teamCreate>> | null = null
-      try {
-        teamResult = await teamCreateGuest({
-          variables: {
-            input: { title: teamName, publicTitle: teamName }
-          }
-        })
-      } catch (e) {
-        console.error('[createGuestUser] teamCreate failed:', e)
-        return null
-      }
-      if (teamResult?.data?.teamCreate == null) {
-        return null
-      }
-      if (meResult?.data?.me == null) {
-        try {
-          await loadUser()
-        } catch {
-          // ignore
-        }
-      }
-      return { teamId: teamResult.data.teamCreate.id }
-    } catch (e) {
-      console.error('[createGuestUser] unexpected error:', e)
-      return null
+  async function createGuestUser(): Promise<{ teamId: string }> {
+    const teamName = t('My Team')
+    const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
+    if (!isAnonymous) {
+      await signInAnonymously(getAuth(getApp()))
     }
+
+    const [, teamResult] = await Promise.all([
+      loadUser().catch(() => null),
+      teamCreate({
+        variables: {
+          input: { title: teamName, publicTitle: teamName }
+        }
+      })
+    ])
+
+    if (teamResult?.data?.teamCreate == null) {
+      throw new Error('Guest team creation returned no team')
+    }
+
+    return { teamId: teamResult.data.teamCreate.id }
   }
 
   async function duplicateJourneyAndRedirect(
     journeyId: string,
-    teamId: string
-    // duplicateAsDraft?: boolean
+    teamId: string,
+    duplicateAsDraft?: boolean
   ): Promise<boolean> {
     const { data } = await journeyDuplicate({
       variables: {
         id: journeyId,
         teamId,
-        forceNonTemplate: true
-        // duplicateAsDraft
+        forceNonTemplate: true,
+        duplicateAsDraft
       }
     })
     if (data?.journeyDuplicate == null) return false
@@ -207,7 +189,17 @@ export function LanguageScreen({
     }
 
     if (isSignedIn) {
-      const teamId = values.teamSelect as string
+      // Duplicates journey for a signed in user
+      const teams = query?.data?.teams ?? []
+      const teamId =
+        query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
+      if (teamId == null) {
+        enqueueSnackbar(t('No team available. Please create a team first.'), {
+          variant: 'error'
+        })
+        setLoading(false)
+        return
+      }
       const success = await duplicateJourneyAndRedirect(journeyId, teamId)
       if (!success) {
         enqueueSnackbar(
@@ -233,10 +225,11 @@ export function LanguageScreen({
           setLoading(false)
           return
         }
+
         const journeyDuplicateSuccess = await duplicateJourneyAndRedirect(
           journeyId,
-          guestResult.teamId
-          // true
+          guestResult.teamId,
+          true
         )
         if (!journeyDuplicateSuccess) {
           enqueueSnackbar(
