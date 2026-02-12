@@ -63,7 +63,7 @@ function renderScreen(
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
     case 'guestPreview':
-      return <GuestPreviewScreen />
+      return <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
     default:
       return <></>
   }

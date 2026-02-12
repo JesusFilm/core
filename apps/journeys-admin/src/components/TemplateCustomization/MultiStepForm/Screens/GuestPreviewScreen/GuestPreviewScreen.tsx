@@ -1,20 +1,26 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { AccountCheckDialog } from '@core/journeys/ui/TemplateView/AccountCheckDialog'
 import { transformer } from '@core/journeys/ui/transformer'
+import { AccountCheckDialog } from '@core/journeys/ui/TemplateView/AccountCheckDialog'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+interface GuestPreviewScreenProps {
+  handleScreenNavigation?: (screen: CustomizationScreen) => void
+}
 
-export function GuestPreviewScreen(): ReactElement {
+export function GuestPreviewScreen({
+  handleScreenNavigation
+}: GuestPreviewScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
