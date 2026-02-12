@@ -76,6 +76,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 import 'reactflow/dist/style.css'
 import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
+import { display } from '@mui/system'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -574,8 +575,6 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
-  const isLocalTemplate =
-    journey?.team?.id !== 'jfp-team' && journey?.template === true
   return (
     <Box
       sx={{
@@ -625,7 +624,8 @@ export function JourneyFlow(): ReactElement {
               )}
             </Panel>
             {/* Hide analytics overlay switch for local templates */}
-            {!isLocalTemplate &&
+            {journey != null &&
+              journey?.template !== true &&
               /* Only show analytics panel when editorAnalytics feature flag is enabled */
               editorAnalytics && (
                 <Panel position="top-left">
