@@ -6,11 +6,7 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import {
-  CreateVerificationRequestInput,
-  MeInput,
-  UpdateMeInput
-} from './inputs'
+import { CreateVerificationRequestInput, MeInput } from './inputs'
 import { AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
@@ -54,9 +50,9 @@ builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
-      let user = await prisma.user.findUnique({ where: { userId: id } })
+      const user = await prisma.user.findUnique({ where: { userId: id } })
 
-      // Create user on first reference (e.g. after teamCreate before me was called)
+      // Handle cases where user doesn't exist
       if (user == null) {
         console.warn(`Federation: User not found for userId: ${id}`)
         return null

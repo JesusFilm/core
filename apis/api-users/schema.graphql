@@ -1,11 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
-
-type AnonymousUser
-  @shareable
-{
-  id: ID!
-}
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
 enum App {
   NextSteps
@@ -37,7 +31,7 @@ input MeInput {
 type Mutation {
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
-  validateEmail(email: String!, token: String!): AuthenticatedUser
+  validateEmail(email: String!, token: String!): User
 }
 
 type Query {
@@ -46,10 +40,14 @@ type Query {
   userByEmail(email: String!): User
 }
 
-input UpdateMeInput {
+type User
+  @key(fields: "id")
+{
+  id: ID!
   firstName: String!
   lastName: String
   email: String!
+  imageUrl: String
+  superAdmin: Boolean
+  emailVerified: Boolean!
 }
-
-union User = AuthenticatedUser | AnonymousUser
