@@ -35,7 +35,7 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: 0, md: 0 },
+          top: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
           width: '100%',
           left: 0,
           right: 0,
