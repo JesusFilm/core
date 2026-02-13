@@ -2323,7 +2323,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  user: AuthenticatedUser!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 

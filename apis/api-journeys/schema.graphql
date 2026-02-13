@@ -2426,7 +2426,7 @@ type UserTeam
 {
   journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
-  user: User!
+  user: AuthenticatedUser!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2739,12 +2739,6 @@ enum Role {
   publisher
 }
 
-extend type User
-  @key(fields: "id")
-{
-  id: ID! @external
-}
-
 enum UserTeamRole {
   manager
   member
@@ -3054,4 +3048,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

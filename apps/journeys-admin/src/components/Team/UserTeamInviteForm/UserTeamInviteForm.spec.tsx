@@ -92,7 +92,7 @@ describe('UserTeamInviteForm', () => {
             __typename: 'UserTeam',
             role: UserTeamRole.manager,
             user: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               email: 'siyangguccigang@example.com',
               firstName: 'Siyang',
               id: 'userId',
