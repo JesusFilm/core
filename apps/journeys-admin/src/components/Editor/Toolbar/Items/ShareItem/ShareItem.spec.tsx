@@ -436,4 +436,40 @@ describe('ShareItem', () => {
     const shareIcon = shareButton.querySelector('svg')
     expect(shareIcon).not.toBeInTheDocument()
   })
+
+  it('should call setHasOpenDialog when opening and closing dialog', async () => {
+    const setHasOpenDialog = jest.fn()
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[journeyForSharingMock]}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem
+              variant="button"
+              journey={defaultJourney}
+              setHasOpenDialog={setHasOpenDialog}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
+    })
+
+    expect(setHasOpenDialog).toHaveBeenCalledWith(true)
+    expect(setHasOpenDialog).toHaveBeenCalledTimes(1)
+
+    const closeButton = screen.getByTestId('dialog-close-button')
+    fireEvent.click(closeButton)
+
+    await waitFor(() => {
+      expect(setHasOpenDialog).toHaveBeenCalledWith(false)
+    })
+    expect(setHasOpenDialog).toHaveBeenCalledTimes(2)
+  })
 })
