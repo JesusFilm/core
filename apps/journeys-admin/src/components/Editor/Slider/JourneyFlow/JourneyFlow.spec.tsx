@@ -40,6 +40,8 @@ import {
 
 import { JourneyFlow } from '.'
 
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+
 const defaultJourney = {
   ...coreDefaultJourney,
   socialNodeX: DEFAULT_SOCIAL_NODE_X,
@@ -116,16 +118,28 @@ describe('JourneyFlow', () => {
   const steps = transformer(blocks) as Array<TreeBlock<StepBlock>>
   mockTransformSteps.mockReturnValue({ nodes, edges })
 
-  it('should render graph', async () => {
+  it('should render graph in a template', async () => {
     const result = jest
       .fn()
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const nonTemplateJourney: Journey = {
+      ...defaultJourney,
+      team: {
+        ...defaultJourney.team,
+        __typename: 'Team' as const,
+        id: 'other-team-id',
+        title: defaultJourney.team?.title ?? 'Other Team',
+        publicTitle: defaultJourney.team?.publicTitle ?? null
+      },
+      template: false
+    }
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ editorAnalytics: true }}>
-            <JourneyProvider value={{ journey: defaultJourney }}>
+            <JourneyProvider value={{ journey: nonTemplateJourney }}>
               <EditorProvider
                 initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
               >
@@ -152,6 +166,99 @@ describe('JourneyFlow', () => {
     expect(
       screen.getByRole('checkbox', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
+  })
+
+  it('should render graph in a local template', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const localTemplateJourney: Journey = {
+      ...defaultJourney,
+      template: true
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: localTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialPreviewNode')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add Step' })).not.toBeDisabled()
+    await waitFor(() =>
+      expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
+    )
+    expect(
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render graph in a global template', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const globalTemplateJourney: Journey = {
+      ...defaultJourney,
+      team: {
+        ...defaultJourney.team,
+        __typename: 'Team' as const,
+        id: 'jfp-team',
+        title: defaultJourney.team?.title ?? 'Other Team',
+        publicTitle: defaultJourney.team?.publicTitle ?? null
+      },
+      template: false
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: globalTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialPreviewNode')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add Step' })).not.toBeDisabled()
+    await waitFor(() =>
+      expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
+    )
+    expect(
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
   })
 
   it('should update step positions if any step does not have a position', async () => {
