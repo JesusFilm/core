@@ -35,8 +35,8 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
-          width: '100%',
+          top: 0,
+          width: '1052px',
           left: 0,
           right: 0,
           marginLeft: 0,
@@ -57,9 +57,10 @@ export function MainPanelHeader({
             <Box
               onClick={() => router.back()}
               sx={{
-                ml: { xs: 6, sm: 8, md: 10 },
+                ml: 0,
                 pl: 0,
-                display: 'flex'
+                display: 'flex',
+                marginLeft: { xs: 6, sm: 8, md: 10 }
               }}
             >
               <IconButton
@@ -69,9 +70,13 @@ export function MainPanelHeader({
                 sx={{
                   mr: 2,
                   ml: 0,
-                  px: 0,
                   minWidth: 'auto',
-                  py: 1
+                  '&.MuiIconButton-root': {
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    marginLeft: 0,
+                    padding: '4px'
+                  }
                 }}
               >
                 <ChevronLeftIcon />
@@ -82,14 +87,19 @@ export function MainPanelHeader({
               <IconButton
                 component={NextLink}
                 href={backHref}
+                edge="start"
                 size="small"
                 color="inherit"
                 sx={{
                   mr: 2,
                   ml: { xs: 6, sm: 8, md: 10 },
-                  px: 0,
                   minWidth: 'auto',
-                  py: 1
+                  '&.MuiIconButton-root': {
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    marginLeft: 0,
+                    padding: '4px'
+                  }
                 }}
               >
                 <ChevronLeftIcon />
@@ -107,7 +117,10 @@ export function MainPanelHeader({
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
       <Toolbar
         variant={toolbar.variant}
-        sx={{ display: { md: 'none' }, height: '48px' }}
+        sx={{
+          display: { md: 'none' },
+          height: '48px'
+        }}
       />
     </>
   )

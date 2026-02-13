@@ -88,7 +88,9 @@ export function PageWrapper({
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <Box
             sx={{
+              minWidth: showNavBar ? navbar.width : 0,
               width: showNavBar ? navbar.width : 0,
+              maxWidth: showNavBar ? navbar.width : 0,
               backgroundColor: backgroundColor ?? 'background.default',
               p: 0,
               m: 0,

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
@@ -91,7 +91,7 @@ describe('TrashedTemplateList', () => {
   })
 
   it('should render templates in descending updatedAt date by default', async () => {
-    const { getAllByLabelText } = render(
+    render(
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
           <SnackbarProvider>
@@ -101,11 +101,11 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+      expect(screen.getAllByLabelText('journey-card')[0].textContent).toContain(
         '11 months ago'
       )
     )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+    expect(screen.getAllByLabelText('journey-card')[1].textContent).toContain(
       '1 year ago'
     )
   })
@@ -120,7 +120,7 @@ describe('TrashedTemplateList', () => {
       ...oldTemplate,
       trashedAt: '2021-12-07T03:22:41.135Z'
     }
-    const { getAllByLabelText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -148,17 +148,17 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+      expect(screen.getAllByLabelText('journey-card')[0].textContent).toContain(
         'a lower case title'
       )
     )
-    expect(getAllByLabelText('journey-card')[1].textContent).toContain(
+    expect(screen.getAllByLabelText('journey-card')[1].textContent).toContain(
       'An Old Template'
     )
   })
 
   it('should exclude templates older than 40 days', async () => {
-    const { getAllByLabelText } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -189,11 +189,11 @@ describe('TrashedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByLabelText('journey-card')[0].textContent).toContain(
+      expect(screen.getAllByLabelText('journey-card')[0].textContent).toContain(
         'Default Template Heading'
       )
     )
-    expect(getAllByLabelText('journey-card')[1]).toBeUndefined()
+    expect(screen.getAllByLabelText('journey-card')[1]).toBeUndefined()
   })
 
   it('should display no trashed templates message', async () => {
@@ -259,7 +259,7 @@ describe('TrashedTemplateList', () => {
     }
 
     it('should display the restore all dialog', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider mocks={[trashedJourneysMock]}>
           <ThemeProvider>
             <SnackbarProvider>
@@ -269,12 +269,12 @@ describe('TrashedTemplateList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Restore Templates')).toBeInTheDocument()
+        expect(screen.getByText('Restore Templates')).toBeInTheDocument()
       )
     })
 
     it('should restore all journeys', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider
           mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
         >
@@ -286,14 +286,14 @@ describe('TrashedTemplateList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Template Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
+      fireEvent.click(screen.getByText('Restore'))
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
 
     it('should show error', async () => {
-      const { getByText } = render(
+      render(
         <MockedProvider
           mocks={[
             trashedJourneysMock,
@@ -310,10 +310,10 @@ describe('TrashedTemplateList', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(getByText('Default Template Heading')).toBeInTheDocument()
+        expect(screen.getByText('Default Template Heading')).toBeInTheDocument()
       )
-      fireEvent.click(getByText('Restore'))
-      await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+      fireEvent.click(screen.getByText('Restore'))
+      await waitFor(() => expect(screen.getByText('error')).toBeInTheDocument())
     })
 
     it('should show "No templates have been restored" when no templates to restore', async () => {

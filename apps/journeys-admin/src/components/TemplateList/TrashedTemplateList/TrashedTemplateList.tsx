@@ -73,12 +73,6 @@ export function TrashedTemplateList({
   >()
 
   async function handleRestoreSubmit(): Promise<void> {
-    const journeyIds = data?.journeys?.map((journey) => journey.id)
-    if (!journeyIds?.length) {
-      enqueueSnackbar(t('No templates have been restored'), { variant: 'info' })
-      handleClose()
-      return
-    }
     try {
       await restoreTrashed({
         variables: {
@@ -97,12 +91,6 @@ export function TrashedTemplateList({
   }
 
   async function handleDeleteSubmit(): Promise<void> {
-    const journeyIds = data?.journeys?.map((journey) => journey.id)
-    if (!journeyIds?.length) {
-      enqueueSnackbar(t('No templates have been deleted'), { variant: 'info' })
-      handleClose()
-      return
-    }
     try {
       await deleteTrashed({
         variables: {
