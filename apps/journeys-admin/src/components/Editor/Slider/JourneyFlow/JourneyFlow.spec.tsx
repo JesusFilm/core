@@ -201,23 +201,23 @@ describe('JourneyFlow', () => {
       optimisticResponse: {
         stepBlockPositionUpdate: [
           { __typename: 'StepBlock', id: 'step0.id', x: 0, y: -8 },
-          { __typename: 'StepBlock', id: 'step1.id', x: 600, y: -8 },
-          { __typename: 'StepBlock', id: 'step2.id', x: 1200, y: -8 },
-          { __typename: 'StepBlock', id: 'step3.id', x: 1800, y: -8 },
-          { __typename: 'StepBlock', id: 'step4.id', x: 2400, y: -8 },
-          { __typename: 'StepBlock', id: 'step5.id', x: 2500, y: -8 },
-          { __typename: 'StepBlock', id: 'step6.id', x: 3600, y: -8 }
+          { __typename: 'StepBlock', id: 'step1.id', x: 0, y: 172 },
+          { __typename: 'StepBlock', id: 'step2.id', x: 0, y: 352 },
+          { __typename: 'StepBlock', id: 'step3.id', x: 0, y: 586 },
+          { __typename: 'StepBlock', id: 'step4.id', x: 0, y: 793 },
+          { __typename: 'StepBlock', id: 'step5.id', x: 0, y: 946 },
+          { __typename: 'StepBlock', id: 'step6.id', x: 0, y: 1126 }
         ]
       },
       variables: {
         input: [
           { id: 'step0.id', x: 0, y: -8 },
-          { id: 'step1.id', x: 600, y: -8 },
-          { id: 'step2.id', x: 1200, y: -8 },
-          { id: 'step3.id', x: 1800, y: -8 },
-          { id: 'step4.id', x: 2400, y: -8 },
-          { id: 'step5.id', x: 2500, y: -8 },
-          { id: 'step6.id', x: 3600, y: -8 }
+          { id: 'step1.id', x: 0, y: 172 },
+          { id: 'step2.id', x: 0, y: 352 },
+          { id: 'step3.id', x: 0, y: 586 },
+          { id: 'step4.id', x: 0, y: 793 },
+          { id: 'step5.id', x: 0, y: 946 },
+          { id: 'step6.id', x: 0, y: 1126 }
         ]
       }
     })
@@ -265,23 +265,23 @@ describe('JourneyFlow', () => {
       optimisticResponse: {
         stepBlockPositionUpdate: [
           { __typename: 'StepBlock', id: 'step0.id', x: 0, y: -8 },
-          { __typename: 'StepBlock', id: 'step1.id', x: 600, y: -8 },
-          { __typename: 'StepBlock', id: 'step2.id', x: 1200, y: -8 },
-          { __typename: 'StepBlock', id: 'step3.id', x: 1800, y: -8 },
-          { __typename: 'StepBlock', id: 'step4.id', x: 2400, y: -8 },
-          { __typename: 'StepBlock', id: 'step5.id', x: 2500, y: -8 },
-          { __typename: 'StepBlock', id: 'step6.id', x: 3600, y: -8 }
+          { __typename: 'StepBlock', id: 'step5.id', x: 0, y: 172 },
+          { __typename: 'StepBlock', id: 'step6.id', x: 0, y: 352 },
+          { __typename: 'StepBlock', id: 'step1.id', x: 400, y: -8 },
+          { __typename: 'StepBlock', id: 'step2.id', x: 800, y: -8 },
+          { __typename: 'StepBlock', id: 'step3.id', x: 1200, y: -8 },
+          { __typename: 'StepBlock', id: 'step4.id', x: 1600, y: -8 }
         ]
       },
       variables: {
         input: [
           { id: 'step0.id', x: 0, y: -8 },
-          { id: 'step1.id', x: 600, y: -8 },
-          { id: 'step2.id', x: 1200, y: -8 },
-          { id: 'step3.id', x: 1800, y: -8 },
-          { id: 'step4.id', x: 2400, y: -8 },
-          { id: 'step5.id', x: 2500, y: -8 },
-          { id: 'step6.id', x: 3600, y: -8 }
+          { id: 'step5.id', x: 0, y: 172 },
+          { id: 'step6.id', x: 0, y: 352 },
+          { id: 'step1.id', x: 400, y: -8 },
+          { id: 'step2.id', x: 800, y: -8 },
+          { id: 'step3.id', x: 1200, y: -8 },
+          { id: 'step4.id', x: 1600, y: -8 }
         ]
       }
     }
