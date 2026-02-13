@@ -48,9 +48,7 @@ test.describe('Feature film', () => {
     })
 
     // Wait for Birth of Jesus chapter to be available
-    const birthOfJesusButton = page.getByTestId(
-      'CarouselItem-birth-of-jesus'
-    )
+    const birthOfJesusButton = page.getByTestId('CarouselItem-birth-of-jesus')
     await birthOfJesusButton.waitFor({ timeout: 60000 })
 
     // Wait for the element to be properly interactive

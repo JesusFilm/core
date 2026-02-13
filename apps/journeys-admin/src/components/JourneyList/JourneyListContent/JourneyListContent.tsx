@@ -309,7 +309,7 @@ export function JourneyListContent({
 
     try {
       const journeyIds = getOwnerFilteredIds()
-      
+
       // Check if we have an empty list (data loaded but no journeys)
       if (journeyIds != null && journeyIds.length === 0) {
         const isTemplate = contentType === 'templates'
@@ -349,7 +349,7 @@ export function JourneyListContent({
 
     try {
       const journeyIds = getOwnerFilteredIds()
-      
+
       // Check if we have an empty list (data loaded but no journeys)
       if (journeyIds != null && journeyIds.length === 0) {
         const isTemplate = contentType === 'templates'

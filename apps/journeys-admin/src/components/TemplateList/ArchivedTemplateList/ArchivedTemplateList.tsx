@@ -92,7 +92,7 @@ export function ArchivedTemplateList({
     }
 
     const journeyIds = data?.journeys?.map((journey) => journey.id)
-    
+
     // Check if we have an empty list (data loaded but no journeys)
     if (journeyIds != null && journeyIds.length === 0) {
       enqueueSnackbar(t('No templates have been restored'), { variant: 'info' })
@@ -125,7 +125,7 @@ export function ArchivedTemplateList({
     }
 
     const journeyIds = data?.journeys?.map((journey) => journey.id)
-    
+
     // Check if we have an empty list (data loaded but no journeys)
     if (journeyIds != null && journeyIds.length === 0) {
       enqueueSnackbar(t('No templates have been trashed'), { variant: 'info' })

@@ -191,4 +191,3 @@ export const getServerSideProps: GetServerSideProps = withUserTokenSSR()(
 )
 
 export default withUser()(TemplateDetailsPage)
-
