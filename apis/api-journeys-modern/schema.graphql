@@ -7,6 +7,12 @@ interface Action {
   parentBlock: Block!
 }
 
+type AnonymousUser
+  @shareable
+{
+  id: ID!
+}
+
 type AuthenticatedUser
   @key(fields: "id")
   @extends

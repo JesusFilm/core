@@ -2030,6 +2030,10 @@ export class AuthenticatedUser {
     id: string;
 }
 
+export class AnonymousUser {
+    id: string;
+}
+
 export type DateTime = String;
 export type Json = any;
 
@@ -2038,5 +2042,5 @@ export class ISchema {
     Mutation: IMutation;
 }
 
-export type User = AuthenticatedUser;
+export type User = AuthenticatedUser | AnonymousUser;
 type Nullable<T> = T | null;

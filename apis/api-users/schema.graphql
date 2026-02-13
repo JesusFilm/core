@@ -37,21 +37,24 @@ input MeInput {
 type Mutation {
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
-  validateEmail(email: String!, token: String!): User
+
+  """
+  Updates the current user's firstName, lastName, and email. Only callable by anonymous users.
+  """
+  updateMe(input: UpdateMeInput!): AuthenticatedUser
+  validateEmail(email: String!, token: String!): AuthenticatedUser
 }
 
 type Query {
-  me(input: MeInput): User
-  user(id: ID!): User
-  userByEmail(email: String!): User
+  me(input: MeInput): AuthenticatedUser
+  user(id: ID!): AuthenticatedUser
+  userByEmail(email: String!): AuthenticatedUser
 }
 
-type User {
-  id: ID!
+input UpdateMeInput {
   firstName: String!
   lastName: String
   email: String!
-  imageUrl: String
-  superAdmin: Boolean
-  emailVerified: Boolean!
 }
+
+union User = AuthenticatedUser

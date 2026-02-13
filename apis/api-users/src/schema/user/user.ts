@@ -6,7 +6,11 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import { CreateVerificationRequestInput, MeInput } from './inputs'
+import {
+  CreateVerificationRequestInput,
+  MeInput,
+  UpdateMeInput
+} from './inputs'
 import { AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
@@ -48,7 +52,7 @@ builder.asEntity(AuthenticatedUser, {
 
 builder.queryFields((t) => ({
   me: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       input: t.arg({
@@ -66,7 +70,7 @@ builder.queryFields((t) => ({
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       id: t.arg.id({ required: true })
@@ -78,7 +82,7 @@ builder.queryFields((t) => ({
       })
   }),
   userByEmail: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       email: t.arg.string({ required: true })
@@ -136,8 +140,37 @@ builder.mutationFields((t) => ({
       return true
     }
   }),
+  updateMe: t.withAuth({ isAnonymous: true }).field({
+    description:
+      "Updates the current user's firstName, lastName, and email. Only callable by anonymous users.",
+    type: AuthenticatedUser,
+    args: {
+      input: t.arg({ type: UpdateMeInput, required: true })
+    },
+    nullable: true,
+    resolve: async (_parent, { input }, ctx) => {
+      const existingUser = await prisma.user.findUnique({
+        where: { userId: ctx.currentUser.id }
+      })
+      if (existingUser == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+
+      return await prisma.user.update({
+        where: { userId: ctx.currentUser.id },
+        data: {
+          firstName: input.firstName.trim(),
+          email: input.email.trim().toLowerCase(),
+          ...(input.lastName != null && {
+            lastName: input.lastName.trim() || null
+          })
+        }
+      })
+    }
+  }),
   validateEmail: t.field({
-    type: User,
+    type: AuthenticatedUser,
     args: {
       email: t.arg.string({ required: true }),
       token: t.arg.string({ required: true })

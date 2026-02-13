@@ -552,7 +552,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
-  validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
+  """
+  Updates the current user's firstName, lastName, and email. Only callable by anonymous users.
+  """
+  updateMe(input: UpdateMeInput!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -947,9 +951,9 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
-  me(input: MeInput) : User @join__field(graph: API_USERS) 
-  user(id: ID!) : User @join__field(graph: API_USERS) 
-  userByEmail(email: String!) : User @join__field(graph: API_USERS) 
+  me(input: MeInput) : AuthenticatedUser @join__field(graph: API_USERS) 
+  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2172,15 +2176,6 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
-type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
-  id: ID!
-  journeyId: ID!
-  senderId: ID!
-  email: String!
-  acceptedAt: DateTime
-  removedAt: DateTime
-}
-
 type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
@@ -2191,6 +2186,15 @@ type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: tr
   imageUrl: String @join__field(graph: API_USERS) 
   superAdmin: Boolean @join__field(graph: API_USERS) 
   emailVerified: Boolean! @join__field(graph: API_USERS) 
+}
+
+type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID!
+  journeyId: ID!
+  senderId: ID!
+  email: String!
+  acceptedAt: DateTime
+  removedAt: DateTime
 }
 
 type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -2380,6 +2384,10 @@ type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
   pageInfo: PageInfo!
 }
 
+type AnonymousUser @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  id: ID!
+}
+
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   teamId: ID!
@@ -2552,17 +2560,6 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
-}
-
-type User @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
-  id: ID!
-  mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
-  firstName: String! @join__field(graph: API_USERS) 
-  lastName: String @join__field(graph: API_USERS) 
-  email: String! @join__field(graph: API_USERS) 
-  imageUrl: String @join__field(graph: API_USERS) 
-  superAdmin: Boolean @join__field(graph: API_USERS) 
-  emailVerified: Boolean! @join__field(graph: API_USERS) 
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -2901,7 +2898,7 @@ type Playlist @join__type(graph: API_MEDIA)  {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  owner: User!
+  owner: AuthenticatedUser!
   items: [PlaylistItem!]!
 }
 
@@ -3268,10 +3265,6 @@ type ZodFieldError @join__type(graph: API_MEDIA)  {
   path: [String!]!
 }
 
-type AnonymousUser @join__type(graph: API_USERS)  {
-  id: ID!
-}
-
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
   message: String
 }
@@ -3308,6 +3301,8 @@ interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
+
+union User @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  @join__unionMember(graph: API_JOURNEYS, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AuthenticatedUser")  @join__unionMember(graph: API_LANGUAGES, member: "AuthenticatedUser")  @join__unionMember(graph: API_MEDIA, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  = AuthenticatedUser
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
@@ -5476,5 +5471,11 @@ input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
 input MeInput @join__type(graph: API_USERS)  {
   redirect: String
   app: App
+}
+
+input UpdateMeInput @join__type(graph: API_USERS)  {
+  firstName: String!
+  lastName: String
+  email: String!
 }
     

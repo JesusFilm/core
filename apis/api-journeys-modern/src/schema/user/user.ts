@@ -14,6 +14,20 @@ AuthenticatedUserRef.implement({
   })
 })
 
+// AnonymousUser is not a federation entity (no @key in api-users), so we define it locally
+// to match the api-users schema for the User union
+// Marked as shareable since it's also defined in api-users
+export const AnonymousUserRef = builder.objectRef<{ id: string }>(
+  'AnonymousUser'
+)
+
+AnonymousUserRef.implement({
+  shareable: true,
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false })
+  })
+})
+
 // Define the User union type to match api-users schema
 export const UserRef = builder.unionType('User', {
   types: [AuthenticatedUserRef],
