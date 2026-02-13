@@ -131,11 +131,3 @@ type Query {
   country(id: ID!): Country
   countries(term: String, ids: [ID!]): [Country!]!
 }
-
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  languageUserRoles: [LanguageRole!]!
-}

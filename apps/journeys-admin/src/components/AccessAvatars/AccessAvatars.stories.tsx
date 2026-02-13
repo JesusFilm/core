@@ -36,7 +36,7 @@ const noImageUserJourneys: UserJourney[] = [
   {
     ...userJourney1,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '1',
       firstName: 'Amin',
       lastName: 'One',
@@ -46,7 +46,7 @@ const noImageUserJourneys: UserJourney[] = [
   {
     ...userJourney2,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '2',
       firstName: 'Horace',
       lastName: 'Two',
@@ -56,7 +56,7 @@ const noImageUserJourneys: UserJourney[] = [
   {
     ...userJourney3,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '3',
       firstName: 'Coral',
       lastName: 'Three',

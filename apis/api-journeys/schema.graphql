@@ -2106,7 +2106,7 @@ type IntegrationGoogle implements Integration
   id: ID!
   team: Team!
   type: IntegrationType!
-  user: User
+  user: AuthenticatedUser
   accountEmail: String
 }
 
@@ -2302,7 +2302,7 @@ type UserJourney
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
-  user: User
+  user: AuthenticatedUser
 
   """Date time of when the journey was first opened"""
   openedAt: DateTime
@@ -2426,7 +2426,7 @@ type UserTeam
 {
   journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
-  user: User!
+  user: AuthenticatedUser!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2716,7 +2716,7 @@ enum UserJourneyRole {
   owner
 }
 
-extend type User
+extend type AuthenticatedUser
   @key(fields: "id")
 {
   id: ID! @external
@@ -2737,12 +2737,6 @@ enum Role {
   add them to template library
   """
   publisher
-}
-
-extend type AuthenticatedUser
-  @key(fields: "id")
-{
-  id: ID! @external
 }
 
 enum UserTeamRole {
@@ -3054,4 +3048,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

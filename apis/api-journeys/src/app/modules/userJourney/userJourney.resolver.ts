@@ -242,7 +242,7 @@ export class UserJourneyResolver {
   async user(
     @Parent() userJourney: UserJourney
   ): Promise<{ __typename: string; id: string }> {
-    return { __typename: 'User', id: userJourney.userId }
+    return { __typename: 'AuthenticatedUser', id: userJourney.userId }
   }
 
   @ResolveField('journeyNotification')
