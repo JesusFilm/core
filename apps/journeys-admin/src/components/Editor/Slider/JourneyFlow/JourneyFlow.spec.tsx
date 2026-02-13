@@ -9,6 +9,7 @@ import { SnackbarProvider } from 'notistack'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   blocks,
   blocksWithStepBlockPosition,
@@ -39,8 +40,6 @@ import {
 } from './nodes/SocialPreviewNode/libs/positions'
 
 import { JourneyFlow } from '.'
-
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 const defaultJourney = {
   ...coreDefaultJourney,
