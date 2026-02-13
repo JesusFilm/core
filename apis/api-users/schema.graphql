@@ -37,11 +37,6 @@ input MeInput {
 type Mutation {
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
-
-  """
-  Updates the current user's firstName, lastName, and email. Only callable by anonymous users.
-  """
-  updateMe(input: UpdateMeInput!): AuthenticatedUser
   validateEmail(email: String!, token: String!): AuthenticatedUser
 }
 

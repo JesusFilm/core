@@ -552,10 +552,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
-  """
-  Updates the current user's firstName, lastName, and email. Only callable by anonymous users.
-  """
-  updateMe(input: UpdateMeInput!) : AuthenticatedUser @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
