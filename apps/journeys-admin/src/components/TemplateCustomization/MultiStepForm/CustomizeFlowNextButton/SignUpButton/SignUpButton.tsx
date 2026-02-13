@@ -2,7 +2,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import Button from '@mui/material/Button'
+import { CustomizeFlowNextButton } from '../CustomizeFlowNextButton'
 
 export function SignUpButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -28,13 +28,10 @@ export function SignUpButton(): ReactElement {
   }
 
   return (
-    <Button
-      variant="contained"
-      color="primary"
-      aria-label={t('Sign Up')}
+    <CustomizeFlowNextButton
+      label={t('Sign Up')}
+      ariaLabel={t('Sign Up')}
       onClick={handleClick}
-    >
-      {t('Sign Up')}
-    </Button>
+    />
   )
 }

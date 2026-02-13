@@ -8,14 +8,17 @@
 // ====================================================
 
 export interface JourneyPublish_journeyPublish {
-  __typename: 'Journey'
-  id: string
+  __typename: "Journey";
+  id: string;
 }
 
 export interface JourneyPublish {
-  journeyPublish: JourneyPublish_journeyPublish | null
+  /**
+   * Sets journey status to published
+   */
+  journeyPublish: JourneyPublish_journeyPublish | null;
 }
 
 export interface JourneyPublishVariables {
-  id: string
+  id: string;
 }

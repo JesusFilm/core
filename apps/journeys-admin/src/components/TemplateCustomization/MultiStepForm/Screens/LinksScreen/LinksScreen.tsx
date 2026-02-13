@@ -31,7 +31,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
-import { SignUpButton } from '../SignUpButton'
+import { SignUpButton } from '../../CustomizeFlowNextButton/SignUpButton/SignUpButton'
 
 interface LinksScreenProps {
   handleNext: () => void
