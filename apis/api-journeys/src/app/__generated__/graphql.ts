@@ -1705,7 +1705,7 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    user?: Nullable<User>;
+    user?: Nullable<AuthenticatedUser>;
     accountEmail?: Nullable<string>;
 }
 
@@ -1742,7 +1742,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
-    user?: Nullable<User>;
+    user?: Nullable<AuthenticatedUser>;
     openedAt?: Nullable<DateTime>;
 }
 
@@ -1814,7 +1814,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: User;
+    user: AuthenticatedUser;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;

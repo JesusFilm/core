@@ -258,7 +258,7 @@ describe('UserJourneyResolver', () => {
   describe('user', () => {
     it('returns user reference', async () => {
       expect(await resolver.user(userJourney)).toEqual({
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId'
       })
     })
