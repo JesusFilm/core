@@ -24,6 +24,66 @@ import {
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
 
+interface UploadButtonProps {
+  loading: boolean
+  open: () => void
+  getInputProps: () => Record<string, unknown>
+  label: string
+}
+
+function UploadButton({
+  loading,
+  open,
+  getInputProps,
+  label
+}: UploadButtonProps): ReactElement {
+  return (
+    <Box sx={{ mt: 4 }}>
+      <input {...getInputProps()} />
+      <Button
+        size="small"
+        color="secondary"
+        variant="outlined"
+        disabled={loading}
+        onClick={open}
+        sx={{
+          height: 32,
+          width: '100%',
+          borderRadius: 2
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          fontSize={14}
+          sx={{ color: 'secondary.main' }}
+        >
+          {label}
+        </Typography>
+      </Button>
+    </Box>
+  )
+}
+
+interface VideoTitleProps {
+  title: string
+}
+
+function VideoTitle({ title }: VideoTitleProps): ReactElement {
+  return (
+    <Typography
+      variant="body2"
+      sx={{
+        mt: 4,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }}
+    >
+      {title}
+    </Typography>
+  )
+}
+
 interface VideosSectionProps {
   cardBlockId: string | null
   onLoading?: (loading: boolean) => void
@@ -93,46 +153,6 @@ export function VideosSection({
     onLoading?.(loading)
   }, [loading, onLoading])
 
-  const uploadButton = (): ReactElement => (
-    <Box sx={{ mt: 4 }}>
-      <input {...getInputProps()} />
-      <Button
-        size="small"
-        color="secondary"
-        variant="outlined"
-        disabled={loading}
-        onClick={open}
-        sx={{
-          height: 32,
-          width: '100%',
-          borderRadius: 2
-        }}
-      >
-        <Typography
-          variant="subtitle2"
-          fontSize={14}
-          sx={{ color: 'secondary.main' }}
-        >
-          {t('Upload file')}
-        </Typography>
-      </Button>
-    </Box>
-  )
-
-  const videoTitle = (title: string): ReactElement => (
-    <Typography
-      variant="body2"
-      sx={{
-        mt: 4,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
-      }}
-    >
-      {title}
-    </Typography>
-  )
-
   return (
     <Box data-testid="VideosSection" width="100%">
       <Typography
@@ -161,9 +181,15 @@ export function VideosSection({
       )}
       {videoBlock != null &&
         !loading &&
-        videoBlockDisplayTitle !== '' &&
-        videoTitle(videoBlockDisplayTitle)}
-      {uploadButton()}
+        videoBlockDisplayTitle !== '' && (
+          <VideoTitle title={videoBlockDisplayTitle} />
+        )}
+      <UploadButton
+        loading={loading}
+        open={open}
+        getInputProps={getInputProps}
+        label={t('Upload file')}
+      />
     </Box>
   )
 }
