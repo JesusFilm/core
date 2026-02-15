@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { render, waitFor, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '../../../../libs/block/TreeBlock'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
@@ -24,11 +24,7 @@ jest.mock('swiper/react', () => {
       }, [onSwiper])
       return <div data-testid="Swiper">{children}</div>
     },
-    SwiperSlide: ({
-      children,
-      'data-testid': dataTestId,
-      className
-    }: any) => (
+    SwiperSlide: ({ children, 'data-testid': dataTestId, className }: any) => (
       <div
         data-testid={dataTestId ?? 'TemplateCardsSwiperSlide'}
         className={className}
@@ -156,15 +152,17 @@ describe('TemplateCardPreview', () => {
         { id: '2', children: [{ __typename: 'CardBlock' }] },
         { id: '3', children: [{ __typename: 'CardBlock' }] }
       ] as Array<TreeBlock<StepBlock>>
-      
+
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview steps={steps} variant="media" selectedStep={steps[1]} />
+          <TemplateCardPreview
+            steps={steps}
+            variant="media"
+            selectedStep={steps[1]}
+          />
         </ThemeProvider>
       )
-      await waitFor(() =>
-        expect(mockSlideTo).toHaveBeenCalledWith(1, 500)
-      )
+      await waitFor(() => expect(mockSlideTo).toHaveBeenCalledWith(1, 500))
     })
   })
 })
