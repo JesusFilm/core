@@ -52,37 +52,35 @@ export function VideosSection({
   const [videoBlockUpdate] = useMutation(VIDEO_BLOCK_UPDATE)
 
   const { open, getInputProps, status } = useVideoUpload({
-    onUploadComplete: (videoId) => {
+    onUploadComplete: async (videoId) => {
       if (videoBlock == null || journey?.id == null) return
       setUpdating(true)
-      videoBlockUpdate({
-        variables: {
-          id: videoBlock.id,
-          input: {
-            videoId,
-            source: VideoBlockSource.mux
-          }
-        },
-        refetchQueries: [
-          {
-            query: GET_JOURNEY,
-            variables: {
-              id: journey.id,
-              idType: IdType.databaseId,
-              options: { skipRoutingFilter: true }
+      try {
+        await videoBlockUpdate({
+          variables: {
+            id: videoBlock.id,
+            input: {
+              videoId,
+              source: VideoBlockSource.mux
             }
-          }
-        ]
-      })
-        .then(() => {
-          showSnackbar(t('File uploaded successfully'), 'success')
+          },
+          refetchQueries: [
+            {
+              query: GET_JOURNEY,
+              variables: {
+                id: journey.id,
+                idType: IdType.databaseId,
+                options: { skipRoutingFilter: true }
+              }
+            }
+          ]
         })
-        .catch(() => {
-          showSnackbar(t('Upload failed. Please try again'), 'error')
-        })
-        .finally(() => {
-          setUpdating(false)
-        })
+        showSnackbar(t('File uploaded successfully'), 'success')
+      } catch {
+        showSnackbar(t('Upload failed. Please try again'), 'error')
+      } finally {
+        setUpdating(false)
+      }
     },
     onUploadError: () => {
       showSnackbar(t('Upload failed. Please try again'), 'error')
