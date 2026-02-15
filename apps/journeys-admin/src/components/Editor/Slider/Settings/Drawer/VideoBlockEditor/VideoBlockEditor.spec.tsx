@@ -6,6 +6,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetVideoVariantLanguages_video } from '../../../../../../../__generated__/GetVideoVariantLanguages'
@@ -530,27 +531,59 @@ describe('VideoBlockEditor', () => {
         <ThemeProvider>
           <MockedProvider mocks={mocks}>
             <SnackbarProvider>
-              <JourneyProvider
-                value={{
-                  journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
-                }}
-              >
-                <CommandProvider>
-                  <EditorProvider>
-                    <VideoBlockEditor
-                      selectedBlock={videoInternal}
-                      onChange={jest.fn()}
-                    />
-                  </EditorProvider>
-                </CommandProvider>
-              </JourneyProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoInternal}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
             </SnackbarProvider>
           </MockedProvider>
         </ThemeProvider>
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when customizableMedia flag is false', () => {
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: false }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoInternal}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
   })
 })
