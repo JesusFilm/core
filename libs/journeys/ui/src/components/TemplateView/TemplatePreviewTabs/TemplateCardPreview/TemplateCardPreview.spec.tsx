@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { render, waitFor } from '@testing-library/react'
+import { render, waitFor, screen } from '@testing-library/react'
 
 import { TreeBlock } from '../../../../libs/block/TreeBlock'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
@@ -13,6 +13,32 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+const mockSlideTo = jest.fn()
+
+jest.mock('swiper/react', () => {
+  const React = require('react')
+  return {
+    Swiper: ({ children, onSwiper }: any) => {
+      React.useEffect(() => {
+        onSwiper?.({ slideTo: mockSlideTo })
+      }, [onSwiper])
+      return <div data-testid="Swiper">{children}</div>
+    },
+    SwiperSlide: ({
+      children,
+      'data-testid': dataTestId,
+      className
+    }: any) => (
+      <div
+        data-testid={dataTestId ?? 'TemplateCardsSwiperSlide'}
+        className={className}
+      >
+        {children}
+      </div>
+    )
+  }
+})
+
 describe('TemplateCardPreview', () => {
   it('renders correct number of cards', async () => {
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
@@ -22,13 +48,13 @@ describe('TemplateCardPreview', () => {
       { id: '3', children: [{ __typename: 'CardBlock' }] }
     ] as Array<TreeBlock<StepBlock>>
 
-    const { getAllByTestId } = render(
+    render(
       <ThemeProvider theme={createTheme()}>
         <TemplateCardPreview steps={steps} />
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
+      expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 
@@ -46,7 +72,7 @@ describe('TemplateCardPreview', () => {
       { id: '10', children: [{ __typename: 'CardBlock' }] }
     ] as Array<TreeBlock<StepBlock>>
 
-    const { getAllByTestId, getByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider theme={createTheme()}>
           <TemplateCardPreview steps={steps} />
@@ -54,10 +80,12 @@ describe('TemplateCardPreview', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(7)
+      expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(7)
     )
-    expect(getByTestId('UseTemplatesSlide')).toBeInTheDocument()
-    expect(getByTestId('UseThisTemplateButtonSkeleton')).toBeInTheDocument()
+    expect(screen.getByTestId('UseTemplatesSlide')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('UseThisTemplateButtonSkeleton')
+    ).toBeInTheDocument()
   })
 
   it('renders correct number of cards on small breakpoints', async () => {
@@ -68,26 +96,75 @@ describe('TemplateCardPreview', () => {
       { id: '3', children: [{ __typename: 'CardBlock' }] }
     ] as Array<TreeBlock<StepBlock>>
 
-    const { getAllByTestId } = render(
+    render(
       <ThemeProvider theme={createTheme()}>
         <TemplateCardPreview steps={steps} />
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
+      expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
     )
   })
 
   it('renders skeleton cards while loading', async () => {
     const steps = undefined
 
-    const { getAllByTestId } = render(
+    render(
       <ThemeProvider theme={createTheme()}>
         <TemplateCardPreview steps={steps} />
       </ThemeProvider>
     )
     await waitFor(() =>
-      expect(getAllByTestId('TemplateCardSkeleton')).toHaveLength(7)
+      expect(screen.getAllByTestId('TemplateCardSkeleton')).toHaveLength(7)
     )
+  })
+
+  describe('media variant', () => {
+    it('should render all steps and not show more cards slide', async () => {
+      const steps = [
+        { id: '1', children: [{ __typename: 'CardBlock' }] },
+        { id: '2', children: [{ __typename: 'CardBlock' }] },
+        { id: '3', children: [{ __typename: 'CardBlock' }] },
+        { id: '4', children: [{ __typename: 'CardBlock' }] },
+        { id: '5', children: [{ __typename: 'CardBlock' }] },
+        { id: '6', children: [{ __typename: 'CardBlock' }] },
+        { id: '7', children: [{ __typename: 'CardBlock' }] },
+        { id: '8', children: [{ __typename: 'CardBlock' }] },
+        { id: '9', children: [{ __typename: 'CardBlock' }] },
+        { id: '10', children: [{ __typename: 'CardBlock' }] }
+      ] as Array<TreeBlock<StepBlock>>
+
+      render(
+        <ThemeProvider theme={createTheme()}>
+          <TemplateCardPreview steps={steps} variant="media" />
+        </ThemeProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
+          10
+        )
+      )
+      expect(screen.queryByTestId('UseTemplatesSlide')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('UseThisTemplateButtonSkeleton')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should slide to selected step', async () => {
+      const steps = [
+        { id: '1', children: [{ __typename: 'CardBlock' }] },
+        { id: '2', children: [{ __typename: 'CardBlock' }] },
+        { id: '3', children: [{ __typename: 'CardBlock' }] }
+      ] as Array<TreeBlock<StepBlock>>
+      
+      render(
+        <ThemeProvider theme={createTheme()}>
+          <TemplateCardPreview steps={steps} variant="media" selectedStep={steps[1]} />
+        </ThemeProvider>
+      )
+      await waitFor(() =>
+        expect(mockSlideTo).toHaveBeenCalledWith(1, 500)
+      )
+    })
   })
 })
