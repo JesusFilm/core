@@ -21,6 +21,10 @@ export interface CustomizeFlowConfig {
   links: JourneyLink[]
 }
 
+export interface CustomizeFlowOptions {
+  customizableMedia?: boolean
+}
+
 /**
  * Calculates which customization screens should be shown based on the journey's capabilities.
  *
@@ -32,6 +36,7 @@ export interface CustomizeFlowConfig {
  *
  * @param journey - The journey object containing customization data
  * @param t - Translation function (optional, used for link detection)
+ * @param options - Optional flags (e.g. customizableMedia) to include or exclude screens
  * @returns Configuration object with screens array, total steps, capability flags, and links
  *
  * @example
@@ -47,8 +52,12 @@ export interface CustomizeFlowConfig {
  */
 export function getCustomizeFlowConfig(
   journey?: Journey,
-  t?: TFunction
+  t?: TFunction,
+  options: CustomizeFlowOptions = {}
 ): CustomizeFlowConfig {
+  // Default false: outage-safe; when flag is missing/undefined, hide media step (new feature off).
+  const { customizableMedia: customizableMediaFlag = false } = options 
+
   // Always include language, social, and done screens
   const baseScreens: CustomizationScreen[] = ['language', 'social', 'done']
 
@@ -66,7 +75,7 @@ export function getCustomizeFlowConfig(
   // Check for customizable links
   const hasCustomizableLinks = links.length > 0
 
-  // Check for media
+  // Check for media (journey content only; screen inclusion also gated by flag)
   const hasCustomizableMedia = getJourneyMedia(journey).length > 0
 
   // Build screens array based on capabilities
@@ -84,7 +93,7 @@ export function getCustomizeFlowConfig(
     screens.splice(socialIndex, 0, 'links')
   }
 
-  if (hasCustomizableMedia) {
+  if (hasCustomizableMedia && customizableMediaFlag) {
     // Insert media screen before social screen
     const socialIndex = screens.indexOf('social')
     screens.splice(socialIndex, 0, 'media')

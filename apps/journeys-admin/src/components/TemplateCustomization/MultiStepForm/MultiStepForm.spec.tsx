@@ -2,10 +2,15 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 import { MultiStepForm } from './MultiStepForm'
+
+jest.mock('@core/shared/ui/FlagsProvider', () => ({
+  useFlags: jest.fn(() => ({ customizableMedia: true }))
+}))
 
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({
@@ -75,6 +80,7 @@ jest.mock('./Screens', () => ({
 describe('MultiStepForm', () => {
   afterEach(() => {
     jest.clearAllMocks()
+    ;(useFlags as jest.Mock).mockReturnValue({ customizableMedia: true })
   })
 
   it('should render screens with journey that has all customization capabilities', async () => {
@@ -140,6 +146,59 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
+  })
+
+  it('should skip media screen when customizableMedia flag is false', async () => {
+    ;(useFlags as jest.Mock).mockReturnValue({ customizableMedia: false })
+
+    const journeyWithAllCapabilities = {
+      ...journey,
+      journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+      journeyCustomizationFields: [
+        {
+          id: '1',
+          key: 'firstName',
+          value: 'John',
+          __typename: 'JourneyCustomizationField'
+        }
+      ],
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://wa.me/123',
+            customizable: true,
+            parentStepId: null
+          }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    )
+
+    expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('language-next'))
+
+    expect(screen.getByTestId('text-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('text-next'))
+
+    expect(screen.getByTestId('links-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('links-next'))
+
+    expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
   })
 
   it('should hide edit manually button when on the language screen', () => {

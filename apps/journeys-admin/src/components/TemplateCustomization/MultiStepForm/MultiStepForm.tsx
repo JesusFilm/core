@@ -8,6 +8,7 @@ import { ReactElement, useMemo, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import {
   CustomizationScreen,
@@ -72,9 +73,13 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { customizableMedia } = useFlags()
 
   const { screens, totalSteps, hasEditableText, hasCustomizableLinks } =
-    useMemo(() => getCustomizeFlowConfig(journey, t), [])
+    useMemo(
+      () => getCustomizeFlowConfig(journey, t, { customizableMedia }),
+      [journey, t, customizableMedia]
+    )
 
   const [activeScreen, setActiveScreen] =
     useState<CustomizationScreen>('language')
