@@ -2,15 +2,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 import { MultiStepForm } from './MultiStepForm'
-
-jest.mock('@core/shared/ui/FlagsProvider', () => ({
-  useFlags: jest.fn(() => ({ customizableMedia: true }))
-}))
 
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({
@@ -77,10 +73,23 @@ jest.mock('./Screens', () => ({
   )
 }))
 
+function renderMultiStepForm(
+  journeyData: Journey,
+  options: { customizableMedia?: boolean } = {}
+): ReturnType<typeof render> {
+  const { customizableMedia = true } = options
+  return render(
+    <FlagsProvider flags={{ customizableMedia }}>
+      <JourneyProvider value={{ journey: journeyData }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    </FlagsProvider>
+  )
+}
+
 describe('MultiStepForm', () => {
   afterEach(() => {
     jest.clearAllMocks()
-    ;(useFlags as jest.Mock).mockReturnValue({ customizableMedia: true })
   })
 
   it('should render screens with journey that has all customization capabilities', async () => {
@@ -115,11 +124,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithAllCapabilities)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
@@ -149,8 +154,6 @@ describe('MultiStepForm', () => {
   })
 
   it('should skip media screen when customizableMedia flag is false', async () => {
-    ;(useFlags as jest.Mock).mockReturnValue({ customizableMedia: false })
-
     const journeyWithAllCapabilities = {
       ...journey,
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
@@ -182,11 +185,9 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithAllCapabilities, {
+      customizableMedia: false
+    })
 
     expect(screen.getByTestId('language-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('language-next'))
@@ -206,11 +207,7 @@ describe('MultiStepForm', () => {
       id: 'test-journey-id'
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journey)
 
     const editButton = screen.getByText('Edit Manually')
     expect(editButton).toHaveStyle('visibility: hidden')
@@ -221,11 +218,7 @@ describe('MultiStepForm', () => {
       id: 'test-journey-id'
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journey }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journey)
 
     const editButton = screen.getByText('Edit Manually')
     expect(editButton).toHaveStyle('visibility: hidden')
@@ -240,11 +233,7 @@ describe('MultiStepForm', () => {
       id: null
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journey)
     expect(screen.getByText('Edit Manually')).toHaveAttribute(
       'aria-disabled',
       'true'
@@ -260,11 +249,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithNoCapabilities)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
@@ -289,11 +274,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithNoCapabilities)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
     expect(
       screen.queryByTestId('progress-stepper-step-0')
@@ -319,11 +300,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithTextOnly }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithTextOnly)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
@@ -365,11 +342,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithLinksOnly }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithLinksOnly)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
