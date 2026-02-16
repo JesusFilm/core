@@ -1066,6 +1066,7 @@ type ImageBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(g
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 type MultiselectBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1319,6 +1320,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   objectFit: VideoBlockObjectFit
   subtitleLanguage: Language
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -3979,6 +3981,7 @@ input ImageBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph:
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3994,6 +3997,7 @@ input ImageBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph:
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input RadioOptionBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5006,6 +5010,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5032,6 +5037,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

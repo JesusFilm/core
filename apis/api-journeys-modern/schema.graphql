@@ -646,6 +646,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -672,6 +673,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -689,6 +691,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -2394,6 +2397,7 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
 }
 
 input VideoBlockCreateInput {
@@ -2423,6 +2427,7 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 enum VideoBlockObjectFit {
@@ -2463,6 +2468,7 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 type VideoCollapseEvent implements Event
