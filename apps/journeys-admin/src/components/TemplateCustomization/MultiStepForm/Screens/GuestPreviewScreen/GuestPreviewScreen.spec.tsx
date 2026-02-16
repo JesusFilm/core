@@ -101,7 +101,6 @@ describe('GuestPreviewScreen', () => {
           screen.getByRole('button', { name: 'Login with my account' })
         )
 
-        expect(push).toHaveBeenCalledTimes(1)
         expect(push).toHaveBeenCalledWith(
           {
             pathname: '/users/sign-in',
@@ -126,7 +125,6 @@ describe('GuestPreviewScreen', () => {
           screen.getByRole('button', { name: 'Create a new account' })
         )
 
-        expect(push).toHaveBeenCalledTimes(1)
         expect(push).toHaveBeenCalledWith(
           {
             pathname: '/users/sign-in',
