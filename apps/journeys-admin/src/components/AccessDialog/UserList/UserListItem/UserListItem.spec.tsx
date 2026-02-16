@@ -18,7 +18,7 @@ const owner: UserJourney = {
   id: 'userJourneyOwner.id',
   role: UserJourneyRole.owner,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'owner.id',
     firstName: 'ownerFirstName',
     lastName: 'ownerLastName',
@@ -33,7 +33,7 @@ const editor: UserJourney = {
   id: 'userJourneyEditor.id',
   role: UserJourneyRole.editor,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'editor.id',
     firstName: 'editorFirstName',
     lastName: 'editorLastName',
@@ -48,7 +48,7 @@ const editor2: UserJourney = {
   id: 'userJourneyEditor2.id',
   role: UserJourneyRole.editor,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'editor2.id',
     firstName: 'editorFirstName',
     lastName: 'editorLastName',
@@ -63,7 +63,7 @@ const userRequest: UserJourney = {
   id: 'userJourneyRequest.id',
   role: UserJourneyRole.inviteRequested,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'request.id',
     firstName: 'requestFirstName',
     lastName: 'requestLastName',

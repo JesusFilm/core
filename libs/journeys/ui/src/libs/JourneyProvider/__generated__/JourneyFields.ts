@@ -671,7 +671,7 @@ export interface JourneyFields_creatorImageBlock {
 }
 
 export interface JourneyFields_userJourneys_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
