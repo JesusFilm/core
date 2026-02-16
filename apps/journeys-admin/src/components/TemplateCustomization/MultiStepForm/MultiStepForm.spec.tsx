@@ -77,7 +77,7 @@ function renderMultiStepForm(
   journeyData: Journey,
   options: { customizableMedia?: boolean } = {}
 ): ReturnType<typeof render> {
-  const { customizableMedia = true } = options
+  const { customizableMedia = false } = options
   return render(
     <FlagsProvider flags={{ customizableMedia }}>
       <JourneyProvider value={{ journey: journeyData }}>
@@ -124,7 +124,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    renderMultiStepForm(journeyWithAllCapabilities)
+    renderMultiStepForm(journeyWithAllCapabilities, {customizableMedia: true})
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
