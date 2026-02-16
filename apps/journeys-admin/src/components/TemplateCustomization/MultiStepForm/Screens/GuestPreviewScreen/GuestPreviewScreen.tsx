@@ -43,9 +43,11 @@ export function GuestPreviewScreen({
   }
 
   function handleSignIn(login: boolean): void {
+    if (journey?.id == null) return
+
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
-    const baseUrl = `${domain}/templates/${journey?.id ?? ''}/customize`
+    const baseUrl = `${domain}/templates/${journey.id}/customize`
     const url = `${baseUrl}?createNew=true&screen=social`
 
     void router.push(
