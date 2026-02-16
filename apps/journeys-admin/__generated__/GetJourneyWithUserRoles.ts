@@ -10,7 +10,7 @@ import { UserJourneyRole } from "./globalTypes";
 // ====================================================
 
 export interface GetJourneyWithUserRoles_adminJourney_userJourneys_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   email: string;
 }

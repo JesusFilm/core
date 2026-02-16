@@ -13,13 +13,13 @@ type UserJourney @key(fields: "id") @shareable {
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
-  user: User
+  user: AuthenticatedUser
   """
   Date time of when the journey was first opened
   """
   openedAt: DateTime
 }
-extend type User @key(fields: "id") {
+extend type AuthenticatedUser @key(fields: "id") {
   id: ID! @external
 }
 
