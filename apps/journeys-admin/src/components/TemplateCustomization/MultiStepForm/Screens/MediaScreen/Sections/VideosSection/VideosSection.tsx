@@ -179,11 +179,9 @@ export function VideosSection({
       ) : (
         videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />
       )}
-      {videoBlock != null &&
-        !loading &&
-        videoBlockDisplayTitle !== '' && (
-          <VideoTitle title={videoBlockDisplayTitle} />
-        )}
+      {videoBlock != null && !loading && videoBlockDisplayTitle !== '' && (
+        <VideoTitle title={videoBlockDisplayTitle} />
+      )}
       <UploadButton
         loading={loading}
         open={open}
