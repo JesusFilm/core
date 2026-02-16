@@ -26,7 +26,10 @@ import {
   JourneyDuplicate,
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
-import { TeamCreate } from '../../../../../../__generated__/TeamCreate'
+import {
+  TeamCreate,
+  TeamCreateVariables
+} from '../../../../../../__generated__/TeamCreate'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import {
@@ -47,8 +50,11 @@ const defaultMockUser = {
   email: 'urim@thumim.example.io'
 }
 
-let mockUser: { id: string | null; email: string | null; firebaseUser?: { isAnonymous: boolean } } =
-  defaultMockUser
+let mockUser: {
+  id: string | null
+  email: string | null
+  firebaseUser?: { isAnonymous: boolean }
+} = defaultMockUser
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
@@ -127,6 +133,28 @@ const mockJourneyDuplicate: MockedResponse<
   }
 }
 
+const guestTeamIdFromCreate = 'guest-team-id'
+const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
+  request: {
+    query: TEAM_CREATE,
+    variables: {
+      input: { title: 'My Team', publicTitle: 'My Team' }
+    }
+  },
+  result: {
+    data: {
+      teamCreate: {
+        __typename: 'Team',
+        id: guestTeamIdFromCreate,
+        title: 'My Team',
+        publicTitle: 'My Team',
+        userTeams: [],
+        customDomains: []
+      }
+    }
+  }
+}
+
 describe('LanguageScreen', () => {
   const handleNext = jest.fn()
   const handleScreenNavigation = jest.fn()
@@ -150,7 +178,7 @@ describe('LanguageScreen', () => {
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
     const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
-      data: mockGetLastActiveTeamIdAndTeams.result?.data
+      ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
     render(
@@ -329,30 +357,9 @@ describe('LanguageScreen', () => {
       result: {
         data: {
           me: {
-            __typename: 'AnonymousUser',
-            id: 'anon-user-id'
-          }
-        }
-      }
-    }
-
-    const guestTeamId = 'guest-team-id'
-    const mockTeamCreate: MockedResponse<TeamCreate> = {
-      request: {
-        query: TEAM_CREATE,
-        variables: {
-          input: { title: 'My Team', publicTitle: 'My Team' }
-        }
-      },
-      result: {
-        data: {
-          teamCreate: {
-            __typename: 'Team',
-            id: guestTeamId,
-            title: 'My Team',
-            publicTitle: 'My Team',
-            userTeams: [],
-            customDomains: []
+            __typename: 'User',
+            id: 'anon-user-id',
+            email: ''
           }
         }
       }
@@ -366,7 +373,7 @@ describe('LanguageScreen', () => {
         query: JOURNEY_DUPLICATE,
         variables: {
           id: 'journeyId',
-          teamId: guestTeamId,
+          teamId: guestTeamIdFromCreate,
           forceNonTemplate: true,
           duplicateAsDraft: true
         }
@@ -383,10 +390,10 @@ describe('LanguageScreen', () => {
     }
 
     const mockTeamCreateResult = jest.fn(() => ({
-      data: mockTeamCreate.result?.data
+      ...mockTeamCreate.result
     }))
     const mockJourneyDuplicateForGuestResult = jest.fn(() => ({
-      data: mockJourneyDuplicateForGuest.result?.data
+      ...mockJourneyDuplicateForGuest.result
     }))
 
     render(
@@ -397,7 +404,10 @@ describe('LanguageScreen', () => {
           mockGetParentJourneysFromTemplateId,
           mockGetCurrentUser,
           { ...mockTeamCreate, result: mockTeamCreateResult },
-          { ...mockJourneyDuplicateForGuest, result: mockJourneyDuplicateForGuestResult }
+          {
+            ...mockJourneyDuplicateForGuest,
+            result: mockJourneyDuplicateForGuestResult
+          }
         ]}
       >
         <SnackbarProvider>
@@ -438,7 +448,7 @@ describe('LanguageScreen', () => {
     })
 
     const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
-      data: mockGetLastActiveTeamIdAndTeams.result?.data
+      ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
     const { getByText } = render(
