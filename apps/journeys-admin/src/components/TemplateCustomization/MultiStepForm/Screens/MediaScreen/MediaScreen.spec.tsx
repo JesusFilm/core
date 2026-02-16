@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
-import React from 'react'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -11,6 +11,7 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
+import { useVideoUpload } from '../../../utils/useVideoUpload/useVideoUpload'
 
 import { MediaScreen } from './MediaScreen'
 
@@ -56,6 +57,13 @@ const baseJourney = {
       focalLeft: null
     } as ImageBlock,
     {
+      id: 'video1.id',
+      __typename: 'VideoBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 1,
+      customizable: true
+    },
+    {
       id: 'step2.id',
       __typename: 'StepBlock',
       parentBlockId: null,
@@ -93,60 +101,28 @@ const baseJourney = {
   ]
 } as unknown as Journey
 
-const mockStep1 = {
-  id: 'step1.id',
-  __typename: 'StepBlock',
-  children: [{ id: 'card1.id', __typename: 'CardBlock' }]
-}
-const mockStep2 = {
-  id: 'step2.id',
-  __typename: 'StepBlock',
-  children: [{ id: 'card2.id', __typename: 'CardBlock' }]
-}
-const mockStep3 = {
-  id: 'step3.id',
-  __typename: 'StepBlock',
-  children: [{ id: 'card3.id', __typename: 'CardBlock' }]
-}
+jest.mock('../../../utils/useVideoUpload/useVideoUpload', () => ({
+  useVideoUpload: jest.fn()
+}))
 
-let mockVideosLoading = false
+const mockedUseVideoUpload = useVideoUpload as jest.MockedFunction<
+  typeof useVideoUpload
+>
 
-jest.mock('./Sections', () => {
-  const React = require('react')
-  const actual = jest.requireActual('./Sections')
-  return {
-    ...actual,
-    VideosSection: ({
-      onLoading
-    }: {
-      cardBlockId: string | null
-      onLoading?: (loading: boolean) => void
-    }) => {
-      React.useEffect(() => {
-        onLoading?.(mockVideosLoading)
-      }, [onLoading])
-      return React.createElement('div', { 'data-testid': 'VideosSection' })
-    }
-  }
-})
-
-jest.mock('./utils', () => {
-  const actual = jest.requireActual('./utils')
-  return {
-    ...actual,
-    showVideosSection: () => true,
-    getCustomizableMediaSteps: () => [mockStep1, mockStep2, mockStep3],
-    getCardBlockIdFromStep: (step: { children?: Array<{ id: string }> }) =>
-      step?.children?.[0]?.id ?? 'card1.id'
-  }
-})
+jest.mock('./Sections/VideosSection/VideoPreviewPlayer', () => ({
+  VideoPreviewPlayer: () => <div data-testid="VideoPreviewPlayer" />
+}))
 
 describe('MediaScreen', () => {
   const handleNext = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockVideosLoading = false
+    mockedUseVideoUpload.mockReturnValue({
+      open: jest.fn(),
+      getInputProps: jest.fn().mockReturnValue({}),
+      status: 'idle'
+    } as unknown as ReturnType<typeof useVideoUpload>)
   })
 
   const renderMediaScreen = (
@@ -155,9 +131,11 @@ describe('MediaScreen', () => {
   ): ReturnType<typeof render> => {
     return render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey: journeyData, variant: 'admin' }}>
-          <MediaScreen handleNext={handleNext} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: journeyData, variant: 'admin' }}>
+            <MediaScreen handleNext={handleNext} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
   }
@@ -249,7 +227,7 @@ describe('MediaScreen', () => {
           focalLeft: null
         } as ImageBlock,
         {
-          id: 'video1.id',
+          id: 'video2.id',
           __typename: 'VideoBlock',
           parentBlockId: 'card3.id',
           parentOrder: 1,
@@ -272,7 +250,11 @@ describe('MediaScreen', () => {
   })
 
   it('disables the Next button when VideosSection reports loading', () => {
-    mockVideosLoading = true
+    mockedUseVideoUpload.mockReturnValue({
+      open: jest.fn(),
+      getInputProps: jest.fn().mockReturnValue({}),
+      status: 'uploading'
+    } as unknown as ReturnType<typeof useVideoUpload>)
     renderMediaScreen()
 
     const nextButton = screen.getByTestId('CustomizeFlowNextButton')
@@ -282,7 +264,6 @@ describe('MediaScreen', () => {
   })
 
   it('enables the Next button when VideosSection is not loading', () => {
-    mockVideosLoading = false
     renderMediaScreen()
 
     const nextButton = screen.getByTestId('CustomizeFlowNextButton')
