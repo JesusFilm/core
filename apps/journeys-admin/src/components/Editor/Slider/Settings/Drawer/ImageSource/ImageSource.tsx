@@ -7,6 +7,7 @@ import { ReactElement, useState } from 'react'
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
@@ -36,6 +37,7 @@ export function ImageSource({
   loading,
   error
 }: ImageSourceProps): ReactElement {
+  const { customizableMedia } = useFlags()
   const { journey } = useJourney()
   const router = useRouter()
   const [open, setOpen] = useState<boolean | undefined>()
@@ -80,11 +82,13 @@ export function ImageSource({
           <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
         </CardActionArea>
       </Card>
-      {journey?.template && selectedBlock != null && (
-        <BlockCustomizationToggle
-          block={selectedBlock as TreeBlock<ImageBlock>}
-        />
-      )}
+      {(customizableMedia ?? false) &&
+        journey?.template &&
+        selectedBlock != null && (
+          <BlockCustomizationToggle
+            block={selectedBlock as TreeBlock<ImageBlock>}
+          />
+        )}
       {open != null && (
         <ImageLibrary
           open={open}
