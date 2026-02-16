@@ -1712,7 +1712,7 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    user?: Nullable<User>;
+    user?: Nullable<AuthenticatedUser>;
     accountEmail?: Nullable<string>;
 }
 
@@ -1749,7 +1749,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
-    user?: Nullable<User>;
+    user?: Nullable<AuthenticatedUser>;
     openedAt?: Nullable<DateTime>;
 }
 
@@ -2033,11 +2033,11 @@ export class ShortLink {
     id: string;
 }
 
-export class User {
+export class AuthenticatedUser {
     id: string;
 }
 
-export class AuthenticatedUser {
+export class User {
     id: string;
 }
 

@@ -16,7 +16,7 @@ describe('UserTeamInviteList', () => {
         id: 'userTeamId',
         role: UserTeamRole.manager,
         user: {
-          __typename: 'User',
+          __typename: 'AuthenticatedUser',
           email: 'miguelohara@example.com',
           firstName: 'Miguel',
           id: 'userId',
@@ -29,7 +29,7 @@ describe('UserTeamInviteList', () => {
         id: 'userTeamId2',
         role: UserTeamRole.member,
         user: {
-          __typename: 'User',
+          __typename: 'AuthenticatedUser',
           email: 'hobiebrown@example.com',
           firstName: 'Hobie',
           id: 'userId2',
@@ -65,7 +65,7 @@ describe('UserTeamInviteList', () => {
     id: 'userTeamId',
     role: UserTeamRole.manager,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       email: 'miguelohara@example.com',
       firstName: 'Miguel',
       id: 'userId',
@@ -79,7 +79,7 @@ describe('UserTeamInviteList', () => {
     id: 'userTeamId2',
     role: UserTeamRole.member,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       email: 'hobiebrown@example.com',
       firstName: 'Hobie',
       id: 'userId2',
