@@ -1,5 +1,5 @@
 import type { SxProps, Theme } from '@mui/material/styles'
-import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
 export type TemplateCardPreviewVariant = 'preview' | 'media'
@@ -8,7 +8,7 @@ interface FramePortalConfig {
   width: { xs: number; sm: number }
   height: { xs: number; sm: number }
   transform: { xs: string; sm: string }
-  borderRadius?: number
+  borderRadius?: number | string
 }
 
 export interface VariantConfig {
@@ -16,7 +16,6 @@ export interface VariantConfig {
   cardHeight: { xs: number; sm: number }
   swiperHeight: { xs: number; sm: number }
   showMoreCardsSlide: boolean
-  showNavigation: boolean
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
   cardSx: SxProps<Theme>
@@ -32,11 +31,11 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   cardHeight: { xs: 295, sm: 404 },
   swiperHeight: { xs: 295, sm: 404 },
   showMoreCardsSlide: true,
-  showNavigation: false,
   framePortal: {
     width: { xs: 485, sm: 445 },
     height: { xs: 738, sm: 673 },
-    transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' }
+    transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' },
+    borderRadius: 4
   },
   cardSx: {
     position: 'relative',
@@ -67,18 +66,16 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
 const MEDIA_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 120, sm: 120 },
   cardHeight: { xs: 209, sm: 209 },
-  swiperHeight: { xs: 209 * SELECTED_SCALE, sm: 209 * SELECTED_SCALE },
+  swiperHeight: { xs: 229 * SELECTED_SCALE, sm: 229 * SELECTED_SCALE },
   showMoreCardsSlide: false,
-  showNavigation: true,
   framePortal: {
     width: { xs: 300, sm: 300 },
     height: { xs: 523, sm: 523 },
     transform: { xs: 'scale(0.4)', sm: 'scale(0.4)' },
-    borderRadius: 12
+    borderRadius: '24px'
   },
   swiperProps: {
     mousewheel: { forceToAxis: true },
-    freeMode: true,
     watchOverflow: true,
     slidesPerView: 'auto',
     spaceBetween: 12,
@@ -89,7 +86,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   cardSx: {
     position: 'relative',
     backgroundColor: 'background.default',
-    borderRadius: 3
+    borderRadius: '12px'
   },
   slideSx: {
     height: 209,
@@ -97,7 +94,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderRadius: '12px'
   },
   swiperSx: {
     overflow: 'hidden',
@@ -106,7 +104,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
       alignItems: 'center'
     }
   },
-  modules: [Mousewheel, FreeMode, A11y, Navigation]
+  modules: [Mousewheel, A11y]
 }
 
 export const VARIANT_CONFIGS: Record<
