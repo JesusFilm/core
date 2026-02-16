@@ -6,15 +6,12 @@ import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
-import { A11y, FreeMode, Mousewheel, Navigation } from 'swiper/modules'
+import { ReactElement, useEffect, useState } from 'react'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
-import { NavigationOptions } from 'swiper/types/modules/navigation'
 
 import { TreeBlock } from '../../../../libs/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
-import { NavButton } from '../../../ContentCarousel/NavButton'
 import { TemplateActionButton } from '../../TemplateViewHeader/TemplateActionButton/TemplateActionButton'
 
 import {
@@ -36,7 +33,7 @@ const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 const StyledSwiper = styled(Swiper)(() => ({}))
 
 /**
- * Horizontal carousel of template step cards with optional navigation and "more cards" slide.
+ * Horizontal carousel of template step cards with optional "more cards" slide.
  *
  * TemplateCardPreview has two variants:
  *
@@ -62,9 +59,6 @@ export function TemplateCardPreview({
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
   const [swiper, setSwiper] = useState<SwiperClass>()
-  const [hovered, setHovered] = useState(false)
-  const nextRef = useRef<HTMLButtonElement>(null)
-  const prevRef = useRef<HTMLButtonElement>(null)
 
   const config = VARIANT_CONFIGS[variant]
   const {
@@ -72,7 +66,6 @@ export function TemplateCardPreview({
     cardHeight,
     swiperHeight,
     showMoreCardsSlide,
-    showNavigation,
     swiperProps,
     slideSx,
     swiperSx,
@@ -81,10 +74,12 @@ export function TemplateCardPreview({
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {
-      spaceBetween: 12
+      spaceBetween: 12,
+      slidesOffsetAfter: variant === 'media' ? 200 : 0
     },
     [breakpoints.values.sm]: {
-      spaceBetween: variant === 'preview' ? 28 : 12
+      spaceBetween: variant === 'preview' ? 28 : 12,
+      slidesOffsetAfter: variant === 'media' ? 400 : 0
     }
   }
 
@@ -92,25 +87,30 @@ export function TemplateCardPreview({
     variant === 'media' ? steps : take(steps, 7)
 
   useEffect(() => {
-    if (swiper != null && showNavigation) {
-      const navigation = swiper.params.navigation as NavigationOptions
-      navigation.nextEl = nextRef.current
-      navigation.prevEl = prevRef.current
-      swiper.navigation.destroy()
-      swiper.navigation.init()
-      swiper.navigation.update()
-    }
-  }, [swiper, showNavigation])
+    if (
+      variant !== 'media' ||
+      swiper == null ||
+      selectedStep == null ||
+      slidesToRender == null
+    )
+      return
+
+    swiper.slideTo(
+      slidesToRender.findIndex((step) => step.id === selectedStep.id),
+      500
+    )
+  }, [swiper, selectedStep])
 
   const swiperContent = (
     <StyledSwiper
       modules={modules}
       breakpoints={swiperBreakpoints}
-      onSwiper={showNavigation ? setSwiper : undefined}
+      onSwiper={setSwiper}
       {...swiperProps}
       sx={{
         ...swiperSx,
-        height: swiperHeight
+        height: swiperHeight,
+        overflow: 'visible'
       }}
     >
       {slidesToRender?.map((step) => {
@@ -237,30 +237,6 @@ export function TemplateCardPreview({
           />
         ))}
       </Stack>
-    )
-  }
-
-  if (showNavigation) {
-    return (
-      <Box
-        sx={{ position: 'relative' }}
-        onMouseOver={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {swiperContent}
-        <NavButton
-          variant="prev"
-          ref={prevRef}
-          hovered={hovered}
-          disabled={swiper?.isBeginning}
-        />
-        <NavButton
-          variant="next"
-          ref={nextRef}
-          hovered={hovered}
-          disabled={swiper?.isEnd}
-        />
-      </Box>
     )
   }
 

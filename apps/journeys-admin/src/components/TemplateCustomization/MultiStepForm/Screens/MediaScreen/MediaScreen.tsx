@@ -36,7 +36,6 @@ interface MediaScreenProps {
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -51,6 +50,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
     customizableSteps[0]
   )
+  const [loading, setLoading] = useState(false)
 
   const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
     getCardBlockIdFromStep(customizableSteps[0])
@@ -58,11 +58,12 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
 
   const showLogo = showLogoSection()
   const showImages = showImagesSection(journey, selectedCardBlockId)
-  const showVideos = showVideosSection(selectedCardBlockId)
+  const showVideos = showVideosSection(journey, selectedCardBlockId)
 
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
       setSelectedStep(customizableSteps[0])
+      setSelectedCardBlockId(getCardBlockIdFromStep(customizableSteps[0]))
     }
   }, [customizableSteps, selectedStep])
 
@@ -92,11 +93,17 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       {showImages && (
         <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
       )}
-      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+      {showVideos && (
+        <VideosSection
+          cardBlockId={selectedCardBlockId}
+          onLoading={setLoading}
+        />
+      )}
       <CustomizeFlowNextButton
         label={t('Next')}
         onClick={handleNext}
         ariaLabel={t('Next')}
+        disabled={loading}
       />
     </Stack>
   )

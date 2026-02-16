@@ -9,15 +9,18 @@ import {
   GetJourney_journey as Journey
 } from '../../../../../../../../__generated__/GetJourney'
 import {
-  ImageBlockUpdate,
-  ImageBlockUpdateVariables
-} from '../../../../../../../../__generated__/ImageBlockUpdate'
-import { getCustomizableImageBlocks } from '../../utils/getCustomizableImageBlocks'
+  MediaScreenImageBlockUpdate,
+  MediaScreenImageBlockUpdateVariables
+} from '../../../../../../../../__generated__/MediaScreenImageBlockUpdate'
+import { getCustomizableImageBlocks } from '../../utils'
 
 import { ImageSectionItem } from './ImageSectionItem'
 
 export const IMAGE_BLOCK_UPDATE = gql`
-  mutation ImageBlockUpdate($id: ID!, $input: ImageBlockUpdateInput!) {
+  mutation MediaScreenImageBlockUpdate(
+    $id: ID!
+    $input: ImageBlockUpdateInput!
+  ) {
     imageBlockUpdate(id: $id, input: $input) {
       id
       src
@@ -47,8 +50,8 @@ export function ImagesSection({
 }: ImagesSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [imageBlockUpdate] = useMutation<
-    ImageBlockUpdate,
-    ImageBlockUpdateVariables
+    MediaScreenImageBlockUpdate,
+    MediaScreenImageBlockUpdateVariables
   >(IMAGE_BLOCK_UPDATE)
 
   const imageBlocks = getCustomizableImageBlocks(journey, cardBlockId)

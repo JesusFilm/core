@@ -108,7 +108,8 @@ export function MultiStepForm(): ReactElement {
         borderRadius: { xs: '0px', sm: '16px' },
         mt: { xs: 0, sm: 6 },
         mb: { xs: 0, sm: 6 },
-        py: 10
+        py: 10,
+        overflow: 'hidden'
       }}
     >
       <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
