@@ -9,6 +9,7 @@ import { SnackbarProvider } from 'notistack'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   blocks,
   blocksWithStepBlockPosition,
@@ -121,11 +122,23 @@ describe('JourneyFlow', () => {
       .fn()
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
 
+    const nonTemplateJourney: Journey = {
+      ...defaultJourney,
+      team: {
+        ...defaultJourney.team,
+        __typename: 'Team' as const,
+        id: 'other-team-id',
+        title: defaultJourney.team?.title ?? 'Other Team',
+        publicTitle: defaultJourney.team?.publicTitle ?? null
+      },
+      template: false
+    }
+
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
         <SnackbarProvider>
           <FlagsProvider flags={{ editorAnalytics: true }}>
-            <JourneyProvider value={{ journey: defaultJourney }}>
+            <JourneyProvider value={{ journey: nonTemplateJourney }}>
               <EditorProvider
                 initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
               >
@@ -519,7 +532,7 @@ describe('JourneyFlow', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should show analytics panel for global templates', async () => {
+  it('should not show analytics panel for global templates', async () => {
     const result = jest
       .fn()
       .mockReturnValue(mockGetStepBlocksWithPosition.result)
@@ -558,8 +571,8 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
-    ).toBeInTheDocument()
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
   })
 
   it('should show analytics panel for journeys', async () => {

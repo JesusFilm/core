@@ -19,7 +19,7 @@ const userTeam: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Joe',
       lastName: 'Bloggs',
@@ -32,7 +32,7 @@ const userTeam: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Mike',
       lastName: 'The Guy',
@@ -45,7 +45,7 @@ const userTeam: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Bob',
       lastName: 'The Builder',
@@ -61,7 +61,7 @@ const userTeamOverflow: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Joe',
       lastName: 'Bloggs',
@@ -74,7 +74,7 @@ const userTeamOverflow: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Mike',
       lastName: 'The Guy',
@@ -87,7 +87,7 @@ const userTeamOverflow: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Bob',
       lastName: 'The Builder',
@@ -100,7 +100,7 @@ const userTeamOverflow: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Hello',
       lastName: 'Kitty',
@@ -113,7 +113,7 @@ const userTeamOverflow: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Serena',
       lastName: 'Williams',
@@ -126,7 +126,7 @@ const userTeamOverflow: UserTeams[] = [
     __typename: 'UserTeam',
     id: 'userTeamId1',
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       firstName: 'Jonathan',
       lastName: 'G',

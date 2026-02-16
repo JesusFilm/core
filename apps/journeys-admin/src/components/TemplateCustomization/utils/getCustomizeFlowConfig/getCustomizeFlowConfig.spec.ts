@@ -221,7 +221,12 @@ describe('getCustomizeFlowConfig', () => {
     const journey = {
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
       journeyCustomizationFields: [
-        { id: '1', key: 'firstName', value: 'John', __typename: 'JourneyCustomizationField' }
+        {
+          id: '1',
+          key: 'firstName',
+          value: 'John',
+          __typename: 'JourneyCustomizationField'
+        }
       ],
       blocks: [
         {

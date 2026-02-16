@@ -671,7 +671,7 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
 }
 
 export interface GetPublisherTemplate_publisherTemplate_userJourneys_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;

@@ -22,7 +22,7 @@ export interface GetAdminJourneys_journeys_language {
 }
 
 export interface GetAdminJourneys_journeys_userJourneys_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;

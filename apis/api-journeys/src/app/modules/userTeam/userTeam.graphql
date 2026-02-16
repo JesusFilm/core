@@ -1,4 +1,4 @@
-extend type User @key(fields: "id") {
+extend type AuthenticatedUser @key(fields: "id") {
   id: ID! @external
 }
 
@@ -13,7 +13,7 @@ enum UserTeamRole {
 
 type UserTeam @key(fields: "id") @shareable {
   id: ID!
-  user: User!
+  user: AuthenticatedUser!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
