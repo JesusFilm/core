@@ -23,7 +23,7 @@ export const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamId
                 __typename: 'UserTeam',
                 role: UserTeamRole.manager,
                 user: {
-                  __typename: 'User',
+                  __typename: 'AuthenticatedUser',
                   email: 'test@email.com',
                   firstName: 'User',
                   id: 'user.id',
@@ -63,7 +63,7 @@ export const getLastActiveTeamIdAndTeamsMockTeamMember: MockedResponse<GetLastAc
                 __typename: 'UserTeam',
                 role: UserTeamRole.member,
                 user: {
-                  __typename: 'User',
+                  __typename: 'AuthenticatedUser',
                   email: 'test@email.com',
                   firstName: 'User',
                   id: 'user.id',

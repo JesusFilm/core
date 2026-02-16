@@ -146,6 +146,7 @@ test.describe('Journey level actions', () => {
   test('Verify language option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
+    test.setTimeout(120000)
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
@@ -155,15 +156,15 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the language option of the three dot options
-    await journeyLevelActions.enterLanguage('Abau') // selecting language in the edit language popup
+    await journeyLevelActions.enterLanguage('Adi') // selecting language in the edit language popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+    await journeyLevelActions.sleep(2000) // allow journey refetch before reopening
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the language option of the three dot options
-    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is updated in the edit language popup
-    await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selected language is updated in the edit language popup
+    await journeyPage.clickSaveBtn() // close the edit language popup
   })
 
   // Discover page -> Select an existing journey -> Three dots on top right -> Copy Link

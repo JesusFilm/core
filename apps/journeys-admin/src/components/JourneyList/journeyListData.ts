@@ -20,7 +20,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.owner,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id1',
       firstName: 'Amin',
       lastName: 'One',
@@ -33,7 +33,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.editor,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id2',
       firstName: 'Horace',
       lastName: 'Two',
@@ -46,7 +46,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.editor,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id3',
       firstName: 'Coral',
       lastName: 'Three',
@@ -255,7 +255,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id4',
         firstName: 'Box',
         lastName: 'Four',
@@ -268,7 +268,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id5',
         firstName: 'John',
         lastName: 'Five',
@@ -281,7 +281,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id6',
         firstName: 'Jane',
         lastName: 'Six',
@@ -294,7 +294,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id7',
         firstName: 'Jannet',
         lastName: 'Seven',

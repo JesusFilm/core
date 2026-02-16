@@ -1,12 +1,37 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
+
+type AnonymousUser
+  @shareable
+{
+  id: ID!
+}
+
+enum App {
+  NextSteps
+  JesusFilmOne
+}
+
+type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID!
+  firstName: String!
+  lastName: String
+  email: String!
+  imageUrl: String
+  superAdmin: Boolean
+  emailVerified: Boolean!
+}
 
 input CreateVerificationRequestInput {
   redirect: String
+  app: App
 }
 
 input MeInput {
   redirect: String
+  app: App
 }
 
 type Mutation {

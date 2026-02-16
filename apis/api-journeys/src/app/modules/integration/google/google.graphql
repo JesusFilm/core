@@ -2,6 +2,6 @@ type IntegrationGoogle implements Integration @shareable {
   id: ID!
   team: Team!
   type: IntegrationType!
-  user: User
+  user: AuthenticatedUser
   accountEmail: String
 }

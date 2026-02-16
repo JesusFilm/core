@@ -7,6 +7,7 @@ locals {
     "ALGOLIA_API_KEY",
     "ALGOLIA_INDEX_VIDEO_VARIANTS",
     "ALGOLIA_INDEX_VIDEOS",
+    "ALGOLIA_INDEX_LANGUAGES",
     "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_ACCOUNT_ID",
     "CLOUDFLARE_IMAGE_ACCOUNT",
@@ -31,6 +32,7 @@ locals {
     "MUX_UGC_SECRET_KEY",
     "NAT_ADDRESSES",
     "PG_DATABASE_URL_MEDIA",
+    "PG_DATABASE_URL_LANGUAGES",
     "REDIS_PORT",
     "REDIS_URL",
     "VERCEL_SHORT_LINKS_PROJECT_ID",
@@ -42,14 +44,15 @@ locals {
     "WATCH_URL"
   ]
   service_config = {
-    name           = "api-media"
-    is_public      = false
-    container_port = local.port
-    host_port      = local.port
-    cpu            = 1024
-    memory         = 2048
-    desired_count  = var.env == "stage" ? 1 : 1
-    zone_id        = var.ecs_config.zone_id
+    name                              = "api-media"
+    is_public                         = false
+    container_port                    = local.port
+    host_port                         = local.port
+    cpu                               = 1024
+    memory                            = 2048
+    desired_count                     = var.env == "stage" ? 1 : 1
+    zone_id                           = var.ecs_config.zone_id
+    health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })
