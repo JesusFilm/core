@@ -77,7 +77,10 @@ export function MultiStepForm(): ReactElement {
 
   const { screens, totalSteps, hasEditableText, hasCustomizableLinks } =
     useMemo(
-      () => getCustomizeFlowConfig(journey, t, { customizableMedia }),
+      () =>
+        getCustomizeFlowConfig(journey, t, {
+          customizableMedia: customizableMedia ?? false
+        }),
       [journey, t, customizableMedia]
     )
 

@@ -52,7 +52,9 @@ export function VideoBlockEditor({
           onChange={onChange}
         />
       </Box>
-      {customizableMedia && journey?.template && selectedBlock != null && (
+      {(customizableMedia ?? false) &&
+        journey?.template &&
+        selectedBlock != null && (
         <BlockCustomizationToggle block={selectedBlock} />
       )}
       {videoBlock?.videoId != null && (

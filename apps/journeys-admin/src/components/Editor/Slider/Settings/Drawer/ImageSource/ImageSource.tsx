@@ -82,7 +82,9 @@ export function ImageSource({
           <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
         </CardActionArea>
       </Card>
-      {customizableMedia && journey?.template && selectedBlock != null && (
+      {(customizableMedia ?? false) &&
+        journey?.template &&
+        selectedBlock != null && (
         <BlockCustomizationToggle
           block={selectedBlock as TreeBlock<ImageBlock>}
         />
