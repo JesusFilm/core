@@ -124,7 +124,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    renderMultiStepForm(journeyWithAllCapabilities, {customizableMedia: true})
+    renderMultiStepForm(journeyWithAllCapabilities, { customizableMedia: true })
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen

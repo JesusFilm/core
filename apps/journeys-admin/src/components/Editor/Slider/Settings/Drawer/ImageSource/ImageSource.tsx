@@ -85,10 +85,10 @@ export function ImageSource({
       {(customizableMedia ?? false) &&
         journey?.template &&
         selectedBlock != null && (
-        <BlockCustomizationToggle
-          block={selectedBlock as TreeBlock<ImageBlock>}
-        />
-      )}
+          <BlockCustomizationToggle
+            block={selectedBlock as TreeBlock<ImageBlock>}
+          />
+        )}
       {open != null && (
         <ImageLibrary
           open={open}
