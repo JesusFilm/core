@@ -40,6 +40,17 @@ import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
 
+jest.mock('next-firebase-auth', () => ({
+  useUser: () => ({ id: 'test-user-id', email: 'test-user-email@example.com' })
+}))
+
+jest.mock('next/router', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    query: {}
+  })
+}))
+
 describe('LinksScreen', () => {
   const journey = {
     ...defaultJourney,
