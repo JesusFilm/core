@@ -60,9 +60,11 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
-    case 'done':
-      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+    // case 'done':
     case 'guestPreview':
+      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+    // case 'guestPreview':
+    case 'done':
       return (
         <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
       )

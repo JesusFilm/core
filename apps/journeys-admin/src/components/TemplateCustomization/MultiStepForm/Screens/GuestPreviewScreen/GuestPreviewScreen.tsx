@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -38,9 +38,7 @@ export function GuestPreviewScreen({
   const displayDesktop = { xs: 'none', sm: 'block' }
   const displayMobile = { xs: 'block', sm: 'none' }
 
-  function handleContinueToPreview(): void {
-    setOpenAccountDialog(true)
-  }
+  function handleContinueToPreview(): void {}
 
   function handleSignIn(login: boolean): void {
     if (journey?.id == null) return
@@ -71,7 +69,8 @@ export function GuestPreviewScreen({
       gap={6}
       sx={{
         px: { xs: 2, sm: 18 },
-        width: '100%'
+        width: '100%',
+        textAlign: 'center'
       }}
     >
       <Stack alignItems="center" sx={{ pb: 1 }}>
@@ -99,7 +98,6 @@ export function GuestPreviewScreen({
           variant="subtitle2"
           display={displayDesktop}
           color="text.secondary"
-          align="center"
           fontWeight={400}
         >
           {t(
@@ -110,23 +108,20 @@ export function GuestPreviewScreen({
           variant="body2"
           display={displayMobile}
           color="text.secondary"
-          align="center"
         >
           {t('Tap on a card to zoom it in')}
         </Typography>
       </Stack>
-      <Typography variant="subtitle2" align="center" color="text.secondary">
+      <Typography variant="subtitle2" color="text.secondary">
         &quot;{journey?.title ?? ''}&quot;
       </Typography>
       <CardsPreview steps={steps} />
-      <Box
+      <Card
+        variant="outlined"
         sx={{
           width: '100%',
           borderRadius: 2,
-          backgroundColor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          p: 3,
+          p: 4,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -136,7 +131,6 @@ export function GuestPreviewScreen({
         <Typography
           variant="body2"
           color="text.secondary"
-          align="center"
           sx={{ mx: 'auto', display: 'block' }}
         >
           {t(
@@ -147,22 +141,20 @@ export function GuestPreviewScreen({
           label={t('Continue with account')}
           onClick={handleContinueToPreview}
           ariaLabel={t('Continue with account')}
-          sx={{ width: '100%', backgroundColor: 'grey.900', mt: 0 }}
+          sx={{
+            width: { xs: '100%', sm: 'auto' },
+            backgroundColor: 'secondary.dark',
+            mt: 0
+          }}
         />
         <Typography
           variant="body2"
           color="text.secondary"
-          align="center"
-          sx={{ fontStyle: 'italic' }}
+          sx={{ fontStyle: 'italic', fontWeight: 700 }}
         >
           {t('100% FREE. No payment required.')}
         </Typography>
-      </Box>
-      <AccountCheckDialog
-        open={openAccountDialog}
-        onClose={() => setOpenAccountDialog(false)}
-        handleSignIn={handleSignIn}
-      />
+      </Card>
     </Stack>
   )
 }

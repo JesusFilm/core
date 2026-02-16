@@ -38,11 +38,18 @@ import { BLOCK_ACTION_PHONE_UPDATE } from '../../../../../libs/useBlockActionPho
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { JourneyLink } from '../../../utils/getJourneyLinks'
 
+import { useUser, User } from 'next-firebase-auth'
+
 import { LinksScreen } from './LinksScreen'
 
 jest.mock('next-firebase-auth', () => ({
-  useUser: () => ({ id: 'test-user-id', email: 'test-user-email@example.com' })
+  useUser: jest.fn(() => ({
+    id: 'test-user-id',
+    email: 'test-user-email@example.com'
+  }))
 }))
+
+const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
 
 jest.mock('next/router', () => ({
   useRouter: () => ({
@@ -155,6 +162,28 @@ describe('LinksScreen', () => {
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
+  })
+
+  it('calls handleScreenNavigation with guestPreview when user is not signed in and submits', async () => {
+    const handleScreenNavigation = jest.fn()
+    mockUseUser.mockReturnValueOnce({ id: null, email: null } as User)
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <LinksScreen
+              handleNext={jest.fn()}
+              handleScreenNavigation={handleScreenNavigation}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    await waitFor(() =>
+      expect(handleScreenNavigation).toHaveBeenCalledWith('guestPreview')
+    )
   })
 
   it('calls correct mutations for changed url, email', async () => {
