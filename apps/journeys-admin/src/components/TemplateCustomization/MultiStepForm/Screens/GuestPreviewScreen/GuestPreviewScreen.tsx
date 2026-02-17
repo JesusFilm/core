@@ -109,7 +109,18 @@ export function GuestPreviewScreen({
         <Typography
           variant="body2"
           color="text.secondary"
-          sx={{ mx: 'auto', display: 'block' }}
+          display={displayMobile}
+          fontFamily="Open Sans"
+        >
+          {t(
+            "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
+          )}
+        </Typography>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          display={displayDesktop}
+          fontFamily="Open Sans"
         >
           {t(
             "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
