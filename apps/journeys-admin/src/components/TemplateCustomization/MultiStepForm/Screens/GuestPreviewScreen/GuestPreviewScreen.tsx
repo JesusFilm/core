@@ -38,7 +38,9 @@ export function GuestPreviewScreen({
   const displayDesktop = { xs: 'none', sm: 'block' }
   const displayMobile = { xs: 'block', sm: 'none' }
 
-  function handleContinueToPreview(): void {}
+  function handleContinueToPreview(): void {
+    // TODO: Implement continue to preview
+  }
 
   function handleSignIn(login: boolean): void {
     if (journey?.id == null) return

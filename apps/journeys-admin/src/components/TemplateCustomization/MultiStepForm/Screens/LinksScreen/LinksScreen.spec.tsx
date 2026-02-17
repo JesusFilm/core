@@ -7,6 +7,7 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import { User, useUser } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -37,8 +38,6 @@ import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../libs/useBlockActionLink
 import { BLOCK_ACTION_PHONE_UPDATE } from '../../../../../libs/useBlockActionPhoneUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { JourneyLink } from '../../../utils/getJourneyLinks'
-
-import { useUser, User } from 'next-firebase-auth'
 
 import { LinksScreen } from './LinksScreen'
 
