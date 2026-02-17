@@ -69,16 +69,16 @@ function TemplateCardPreviewItem({
           sx={{
             position: 'absolute',
             display: 'block',
-            width: { xs: 485, sm: 445 },
-            height: { xs: 738, sm: 673 },
+            width: 1052,
+            height: 48,
             zIndex: 2,
             cursor: 'grab'
           }}
         />
         <FramePortal
           sx={{
-            width: { xs: 485, sm: 445 },
-            height: { xs: 738, sm: 673 }
+            width: 1052,
+            height: 48
           }}
           dir={rtl ? 'rtl' : 'ltr'}
         >

@@ -254,6 +254,28 @@ describe('ActiveTemplateList', () => {
       fireEvent.click(getByRole('button', { name: 'Archive' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
     })
+
+    it('should show "No templates have been archived" when no templates to archive', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveTemplateList event="archiveAllActive" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Archive Templates')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Archive' }))
+
+      await waitFor(() =>
+        expect(getByText('No templates have been archived')).toBeInTheDocument()
+      )
+    })
   })
 
   describe('Trash All', () => {
@@ -338,6 +360,28 @@ describe('ActiveTemplateList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should show "No templates have been trashed" when no templates to trash', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider mocks={[noTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <ActiveTemplateList event="trashAllActive" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Trash Templates')).toBeInTheDocument()
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+      await waitFor(() =>
+        expect(getByText('No templates have been trashed')).toBeInTheDocument()
+      )
     })
 
     it('should call refetchTemplateStats when trashing templates with fromTemplateId', async () => {

@@ -13,10 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
-import {
-  extractTemplateIdsFromJourneys,
-  useTemplateFamilyStatsAggregateLazyQuery
-} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
@@ -54,11 +51,6 @@ export function TrashedTemplateList({
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
-        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
-        if (templateIds.length > 0) {
-          void refetchTemplateStats(templateIds)
-        }
-
         void refetch()
       }
     }

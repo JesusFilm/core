@@ -16,15 +16,17 @@ export interface MainPanelHeaderProps {
   backHref?: string
   children?: ReactNode
   backHrefHistory?: boolean
+  showAppHeader?: boolean
 }
 
 export function MainPanelHeader({
   title,
   backHref,
   children,
-  backHrefHistory = false
+  backHrefHistory = false,
+  showAppHeader = true
 }: MainPanelHeaderProps): ReactElement {
-  const { toolbar } = usePageWrapperStyles()
+  const { toolbar, navbar } = usePageWrapperStyles()
   const router = useRouter()
 
   return (
@@ -33,20 +35,49 @@ export function MainPanelHeader({
         color="default"
         sx={{
           position: { xs: 'fixed', md: 'sticky' },
-          top: { xs: toolbar.height, md: 0 },
-          width: 'inherit'
+          top: 0,
+          width: '1052px',
+          left: 0,
+          right: 0,
+          marginLeft: 0,
+          borderBottom: '1px solid',
+          borderColor: 'divider'
         }}
         data-testid="MainPanelHeader"
       >
-        <Toolbar variant={toolbar.variant}>
+        <Toolbar
+          variant={toolbar.variant}
+          sx={{
+            p: 0,
+            minHeight: 'auto',
+            height: '48px'
+          }}
+        >
           {backHrefHistory ? (
-            <Box onClick={() => router.back()}>
+            <Box
+              onClick={() => router.back()}
+              sx={{
+                ml: 0,
+                pl: 0,
+                display: 'flex',
+                marginLeft: { xs: 6, sm: 8, md: 10 }
+              }}
+            >
               <IconButton
                 data-testid="backHref-history-button"
-                edge="start"
                 size="small"
                 color="inherit"
-                sx={{ mr: 2 }}
+                sx={{
+                  mr: 2,
+                  ml: 0,
+                  minWidth: 'auto',
+                  '&.MuiIconButton-root': {
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    marginLeft: 0,
+                    padding: '4px'
+                  }
+                }}
               >
                 <ChevronLeftIcon />
               </IconButton>
@@ -59,7 +90,17 @@ export function MainPanelHeader({
                 edge="start"
                 size="small"
                 color="inherit"
-                sx={{ mr: 2 }}
+                sx={{
+                  mr: 2,
+                  ml: { xs: 6, sm: 8, md: 10 },
+                  minWidth: 'auto',
+                  '&.MuiIconButton-root': {
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    marginLeft: 0,
+                    padding: '4px'
+                  }
+                }}
               >
                 <ChevronLeftIcon />
               </IconButton>
@@ -74,7 +115,13 @@ export function MainPanelHeader({
         </Toolbar>
       </AppBar>
       {/* Reserves space beneath MainHeader on mobile - allows us to export MainPanel */}
-      <Toolbar variant={toolbar.variant} sx={{ display: { md: 'none' } }} />
+      <Toolbar
+        variant={toolbar.variant}
+        sx={{
+          display: { md: 'none' },
+          height: '48px'
+        }}
+      />
     </>
   )
 }

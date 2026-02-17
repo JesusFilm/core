@@ -80,12 +80,14 @@ export function ActiveTemplateList({
   const [trashDialogOpen, setTrashDialogOpen] = useState<boolean | undefined>()
 
   async function handleArchiveSubmit(): Promise<void> {
+    const journeyIds = data?.journeys?.map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No templates have been archived'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      await archive({
-        variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
-        }
-      })
+      await archive({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -98,12 +100,14 @@ export function ActiveTemplateList({
   }
 
   async function handleTrashSubmit(): Promise<void> {
+    const journeyIds = data?.journeys?.map((journey) => journey.id)
+    if (!journeyIds?.length) {
+      enqueueSnackbar(t('No templates have been trashed'), { variant: 'info' })
+      handleClose()
+      return
+    }
     try {
-      await trash({
-        variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
-        }
-      })
+      await trash({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
