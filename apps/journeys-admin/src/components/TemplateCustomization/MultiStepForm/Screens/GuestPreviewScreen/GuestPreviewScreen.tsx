@@ -110,7 +110,6 @@ export function GuestPreviewScreen({
           variant="body2"
           color="text.secondary"
           display={displayMobile}
-          fontFamily="Open Sans"
         >
           {t(
             "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
@@ -120,7 +119,6 @@ export function GuestPreviewScreen({
           variant="body1"
           color="text.secondary"
           display={displayDesktop}
-          fontFamily="Open Sans"
         >
           {t(
             "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
