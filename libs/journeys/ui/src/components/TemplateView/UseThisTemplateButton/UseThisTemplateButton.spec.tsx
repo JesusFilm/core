@@ -50,9 +50,9 @@ describe('UseThisTemplateButton', () => {
   })
 
   describe.each([
-    ['context journey', undefined],
-    ['prop journey', journey]
-  ])('navigation (%s)', (_, customizableTemplateJourney) => {
+    ['when journey is accessed from the context', undefined],
+    ['when journey is accessed via prop drill', journey]
+  ])('%s', (_, customizableTemplateJourney) => {
     it('should render use this template button when variant is button', () => {
       mockUseRouter.mockReturnValue({
         prefetch,
@@ -95,7 +95,7 @@ describe('UseThisTemplateButton', () => {
       ).not.toBeInTheDocument()
     })
 
-    describe('signed in', () => {
+    describe('when signed in', () => {
       beforeEach(() => {
         mockUseRouter.mockReturnValue({
           prefetch,

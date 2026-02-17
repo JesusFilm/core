@@ -267,9 +267,9 @@ describe('CreateJourneyButton', () => {
   })
 
   describe.each([
-    ['context journey', undefined],
-    ['prop journey', journey]
-  ])('(%s)', (_, nonCustomizableTemplate) => {
+    ['when journey is accessed from the context', undefined],
+    ['when journey is accessed via prop drill', journey]
+  ])('%s', (_, nonCustomizableTemplate) => {
     it('should render create journey button when variant is button', () => {
       mockUseRouter.mockReturnValue({
         prefetch,
@@ -942,78 +942,78 @@ describe('CreateJourneyButton', () => {
         expect(push).toHaveBeenCalledWith('/?type=journeys&refresh=true')
       })
     })
-
-    describe.each([
-      ['context journey', undefined],
-      [
-        'prop journey',
-        {
-          ...journey,
-          team: {
-            id: 'jfp-team',
-            title: 'Team Name',
-            __typename: 'Team'
-          }
+  })
+  describe.each([
+    [
+      'when non-customizable global template journey is accessed from the context',
+      undefined
+    ],
+    [
+      'when non-customizable global template journey is accessed via prop drill',
+      {
+        ...journey,
+        team: {
+          id: 'jfp-team',
+          title: 'Team Name',
+          __typename: 'Team'
         }
-      ]
-    ])('navigation (%s)', (_, nonCustomizableTemplate) => {
-      it('should duplicate journey without translation and navigate to journey editor when global publish', async () => {
-        mockUseRouter.mockReturnValue({
-          query: { createNew: false },
-          push,
-          replace: jest.fn(),
-          pathname: '/publisher'
-        } as unknown as NextRouter)
+      }
+    ]
+  ])('%s', (_, nonCustomizableTemplate) => {
+    it('should duplicate journey without translation and navigate to journey editor when global publish', async () => {
+      mockUseRouter.mockReturnValue({
+        query: { createNew: false },
+        push,
+        replace: jest.fn(),
+        pathname: '/publisher'
+      } as unknown as NextRouter)
 
-        render(
-          <MockedProvider
-            mocks={[
-              {
-                request: {
-                  query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-                },
-                result: teamResult
+      render(
+        <MockedProvider
+          mocks={[
+            {
+              request: {
+                query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
               },
-              getLanguagesMock,
-              journeyDuplicateMock,
-              updateLastActiveTeamIdMock
-            ]}
-          >
-            <SnackbarProvider>
-              <TeamProvider>
-                <JourneyProvider value={{ journey }}>
-                  <CreateJourneyButton
-                    signedIn
-                    journeyData={nonCustomizableTemplate}
-                  />
-                </JourneyProvider>
-              </TeamProvider>
-            </SnackbarProvider>
-          </MockedProvider>
+              result: teamResult
+            },
+            getLanguagesMock,
+            journeyDuplicateMock,
+            updateLastActiveTeamIdMock
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <JourneyProvider value={{ journey }}>
+                <CreateJourneyButton
+                  signedIn
+                  journeyData={nonCustomizableTemplate}
+                />
+              </JourneyProvider>
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+      await waitFor(() =>
+        expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+      )
+
+      // Submit without translation
+      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+      // Confirm that journey copied snackbar is shown
+      await waitFor(() => {
+        expect(screen.getByText('Journey Copied')).toBeInTheDocument()
+      })
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith(
+          '/journeys/duplicatedJourneyId',
+          undefined,
+          { shallow: true }
         )
-
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Use This Template' })
-        )
-
-        await waitFor(() =>
-          expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
-        )
-
-        // Submit without translation
-        fireEvent.click(screen.getByRole('button', { name: 'Add' }))
-        // Confirm that journey copied snackbar is shown
-        await waitFor(() => {
-          expect(screen.getByText('Journey Copied')).toBeInTheDocument()
-        })
-
-        await waitFor(() => {
-          expect(push).toHaveBeenCalledWith(
-            '/journeys/duplicatedJourneyId',
-            undefined,
-            { shallow: true }
-          )
-        })
       })
     })
   })

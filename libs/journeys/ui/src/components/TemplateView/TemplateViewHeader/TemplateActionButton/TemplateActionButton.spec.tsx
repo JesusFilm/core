@@ -52,9 +52,9 @@ describe('TemplateActionButton', () => {
   })
 
   describe.each([
-    ['context journey', undefined],
-    ['prop journey', journey]
-  ])('(%s)', (_, templateJourney) => {
+    ['when journey is accessed from the context', undefined],
+    ['when journey is accessed via prop drill', journey]
+  ])('%s', (_, templateJourney) => {
     it('should render UseThisTemplateButton when journey is customizable and user is signed in', () => {
       mockIsJourneyCustomizable.mockReturnValue(true)
 
@@ -301,43 +301,42 @@ describe('TemplateActionButton', () => {
         expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
       })
     })
-
-    describe.each([
-      ['context journey', undefined],
-      ['prop journey', customizableTemplateJourney]
-    ])(
-      'for customizable template journey (%s)',
-      (_, customizableTemplateJourney) => {
-        it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {
-          mockIsJourneyCustomizable.mockReturnValue(true)
-
-          render(
-            <MockedProvider>
-              <SnackbarProvider>
-                <JourneyProvider value={{ journey }}>
-                  <TemplateActionButton
-                    variant="button"
-                    signedIn={true}
-                    journey={customizableTemplateJourney}
-                  />
-                </JourneyProvider>
-              </SnackbarProvider>
-            </MockedProvider>
-          )
-
-          fireEvent.click(
-            screen.getByRole('button', { name: 'Use This Template' })
-          )
-
-          await waitFor(() => {
-            expect(mockUseRouter().push).toHaveBeenCalledWith(
-              `/templates/${customizableTemplateJourney?.id ?? journey?.id ?? ''}/customize`,
-              undefined,
-              { shallow: true }
-            )
-          })
-        })
-      }
-    )
   })
+  describe.each([
+    ['when customizable template journey is accessed from the context', undefined],
+    ['when customizable template journey is accessed via prop drill', customizableTemplateJourney]
+  ])(
+    '%s',
+    (_, customizableTemplateJourney) => {
+      it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {
+        mockIsJourneyCustomizable.mockReturnValue(true)
+
+        render(
+          <MockedProvider>
+            <SnackbarProvider>
+              <JourneyProvider value={{ journey }}>
+                <TemplateActionButton
+                  variant="button"
+                  signedIn={true}
+                  journey={customizableTemplateJourney}
+                />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        )
+
+        fireEvent.click(
+          screen.getByRole('button', { name: 'Use This Template' })
+        )
+
+        await waitFor(() => {
+          expect(mockUseRouter().push).toHaveBeenCalledWith(
+            `/templates/${customizableTemplateJourney?.id ?? journey?.id ?? ''}/customize`,
+            undefined,
+            { shallow: true }
+          )
+        })
+      })
+    }
+  )
 })
