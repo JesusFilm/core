@@ -73,7 +73,7 @@ export function LogoSection(): ReactElement {
   })
 
   return (
-    <Box data-testid="LogoSection" sx={{ width: '100%' }}>
+    <Stack data-testid="LogoSection" sx={{ width: '100%' }}>
       <Typography
         variant="subtitle2"
         gutterBottom
@@ -81,105 +81,87 @@ export function LogoSection(): ReactElement {
       >
         {t('Logo')}
       </Typography>
-      <Box
-        sx={{
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: 16
-        }}
+
+      {/* Logo preview + upload controls side by side */}
+      <Stack
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+        gap={16}
       >
+        {/* Circular logo preview */}
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
+            position: 'relative',
+            width: 156,
+            height: 156,
+            minWidth: 156,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            bgcolor: 'background.default'
           }}
         >
-          <Box
+          {logoImageBlock?.src != null ? (
+            <NextImage
+              src={logoImageBlock.src}
+              alt={logoImageBlock.alt ?? ''}
+              layout="fill"
+              objectFit="cover"
+            />
+          ) : (
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              sx={{ width: '100%', height: '100%' }}
+            >
+              <GridEmptyIcon
+                sx={{ fontSize: 48, color: 'action.disabled' }}
+              />
+            </Stack>
+          )}
+          {loading && (
+            <CircularProgress
+              size={32}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                mt: -2,
+                ml: -2
+              }}
+              data-testid="LogoSection-upload-progress"
+            />
+          )}
+        </Box>
+
+        {/* Upload controls */}
+        <Stack spacing={0.5} alignItems="flex-start">
+          <input {...getInputProps()} data-testid="LogoSection-file-input" />
+          <Button
+            size="small"
+            color="secondary"
+            variant="outlined"
+            disabled={loading}
+            onClick={open}
             sx={{
-              position: 'relative',
-              width: 156,
-              height: 156,
-              minWidth: 156,
-              borderRadius: '50%',
-              overflow: 'hidden',
-              bgcolor: 'background.default'
+              height: 32,
+              width: '100%',
+              borderRadius: 2
             }}
           >
-            {logoImageBlock?.src != null ? (
-              <NextImage
-                src={logoImageBlock.src}
-                alt={logoImageBlock.alt ?? ''}
-                layout="fill"
-                objectFit="cover"
-              />
-            ) : (
-              <Box
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <GridEmptyIcon
-                  sx={{ fontSize: 48, color: 'action.disabled' }}
-                />
-              </Box>
-            )}
-            {loading && (
-              <CircularProgress
-                size={32}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  mt: -2,
-                  ml: -2
-                }}
-                data-testid="LogoSection-upload-progress"
-              />
-            )}
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <input {...getInputProps()} data-testid="LogoSection-file-input" />
-          <Stack spacing={0.5} alignItems="flex-start">
-            <Button
-              size="small"
-              color="secondary"
-              variant="outlined"
-              disabled={loading}
-              onClick={open}
-              sx={{
-                height: 32,
-                width: '100%',
-                borderRadius: 2
-              }}
+            <Typography
+              variant="subtitle2"
+              fontSize={14}
+              sx={{ color: 'secondary.main' }}
             >
-              <Typography
-                variant="subtitle2"
-                fontSize={14}
-                sx={{ color: 'secondary.main' }}
-              >
-                {t('Upload File')}
-              </Typography>
-            </Button>
-            <Typography variant="caption" color="text.secondary">
-              {t('Supports JPG, PNG, and GIF files.')}
+              {t('Upload File')}
             </Typography>
-          </Stack>
-        </Box>
-      </Box>
-    </Box>
+          </Button>
+          <Typography variant="caption" color="text.secondary">
+            {t('Supports JPG, PNG, and GIF files.')}
+          </Typography>
+        </Stack>
+      </Stack>
+    </Stack>
   )
 }
