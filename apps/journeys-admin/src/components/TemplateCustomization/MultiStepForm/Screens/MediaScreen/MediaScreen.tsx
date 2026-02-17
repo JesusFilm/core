@@ -80,6 +80,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       >
         {t('Media')}
       </Typography>
+      {<CardsSection onChange={setSelectedCardBlockId} />}
       <Box sx={{ width: '100%' }}>
         <TemplateCardPreview
           steps={customizableSteps}
@@ -88,8 +89,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           selectedStep={selectedStep}
         />
       </Box>
-      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {<CardsSection onChange={setSelectedCardBlockId} />}
+      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}      
       {showImages && (
         <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
       )}

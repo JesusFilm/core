@@ -6,5 +6,5 @@
  */
 export function showLogoSection(): boolean {
   // TODO: implement when building Logo section – pass journey and check journey.logoImageBlock?.customizable
-  return true
+  return false // Default false in Story 1, Story 3 adds proper check
 }
