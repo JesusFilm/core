@@ -105,14 +105,8 @@ export function TemplateCardPreview({
   } = config
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: {
-      spaceBetween: 12,
-      slidesOffsetAfter: variant === 'media' ? 200 : 0
-    },
-    [breakpoints.values.sm]: {
-      spaceBetween: variant === 'preview' ? 28 : 12,
-      slidesOffsetAfter: variant === 'media' ? 400 : 0
-    }
+    [breakpoints.values.xs]: VARIANT_CONFIGS[variant].breakpoints.xs,
+    [breakpoints.values.sm]: VARIANT_CONFIGS[variant].breakpoints.sm
   }
 
   const slidesToRender =

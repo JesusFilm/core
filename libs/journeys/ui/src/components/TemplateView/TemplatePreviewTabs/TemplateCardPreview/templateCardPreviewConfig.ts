@@ -11,6 +11,11 @@ interface FramePortalConfig {
   borderRadius?: number | string
 }
 
+type BreakpointSwiperOptions = Pick<
+  SwiperOptions,
+  'spaceBetween' | 'slidesOffsetAfter'
+>
+
 export interface VariantConfig {
   cardWidth: { xs: number; sm: number }
   cardHeight: { xs: number; sm: number }
@@ -18,6 +23,7 @@ export interface VariantConfig {
   showMoreCardsSlide: boolean
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
+  breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
   cardSx: SxProps<Theme>
   slideSx: SxProps<Theme>
   swiperSx: SxProps<Theme>
@@ -36,6 +42,10 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
     height: { xs: 738, sm: 673 },
     transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' },
     borderRadius: 4
+  },
+  breakpoints: {
+    xs: { spaceBetween: 12, slidesOffsetAfter: 0 },
+    sm: { spaceBetween: 28, slidesOffsetAfter: 0 }
   },
   cardSx: {
     position: 'relative',
@@ -73,6 +83,10 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     height: { xs: 523, sm: 523 },
     transform: { xs: 'scale(0.4)', sm: 'scale(0.4)' },
     borderRadius: '24px'
+  },
+  breakpoints: {
+    xs: { spaceBetween: 12, slidesOffsetAfter: 200 },
+    sm: { spaceBetween: 12, slidesOffsetAfter: 400 }
   },
   swiperProps: {
     mousewheel: { forceToAxis: true },
