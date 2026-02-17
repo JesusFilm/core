@@ -27,9 +27,9 @@ jest.mock('../../../../../../../libs/useImageUpload', () => {
     __esModule: true,
     ...actual,
     useImageUpload: jest.fn((...args: unknown[]) =>
-      (actual as { useImageUpload: (...args: unknown[]) => unknown }).useImageUpload(
-        ...args
-      )
+      (
+        actual as { useImageUpload: (...args: unknown[]) => unknown }
+      ).useImageUpload(...args)
     )
   }
 })
@@ -65,7 +65,9 @@ describe('LogoSection', () => {
     jest.restoreAllMocks()
     jest
       .mocked(useImageUpload)
-      .mockImplementation((...args) => useImageUploadModule.useImageUpload(...args))
+      .mockImplementation((...args) =>
+        useImageUploadModule.useImageUpload(...args)
+      )
   })
 
   function renderLogoSection(
@@ -165,17 +167,15 @@ describe('LogoSection', () => {
 
   it('calls imageBlockUpdate mutation and shows success snackbar on upload complete', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    jest
-      .mocked(useImageUpload)
-      .mockImplementation((options) => {
-        onUploadCompleteCallback = options.onUploadComplete
-        return {
-          getRootProps: jest.fn(),
-          getInputProps: jest.fn().mockReturnValue({}),
-          open: jest.fn(),
-          loading: false
-        } as any
-      })
+    jest.mocked(useImageUpload).mockImplementation((options) => {
+      onUploadCompleteCallback = options.onUploadComplete
+      return {
+        getRootProps: jest.fn(),
+        getInputProps: jest.fn().mockReturnValue({}),
+        open: jest.fn(),
+        loading: false
+      } as any
+    })
 
     const mutationResultSpy = jest.fn().mockReturnValue({
       data: {
@@ -221,17 +221,15 @@ describe('LogoSection', () => {
 
   it('shows error snackbar when mutation fails', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    jest
-      .mocked(useImageUpload)
-      .mockImplementation((options) => {
-        onUploadCompleteCallback = options.onUploadComplete
-        return {
-          getRootProps: jest.fn(),
-          getInputProps: jest.fn().mockReturnValue({}),
-          open: jest.fn(),
-          loading: false
-        } as any
-      })
+    jest.mocked(useImageUpload).mockImplementation((options) => {
+      onUploadCompleteCallback = options.onUploadComplete
+      return {
+        getRootProps: jest.fn(),
+        getInputProps: jest.fn().mockReturnValue({}),
+        open: jest.fn(),
+        loading: false
+      } as any
+    })
 
     const mutationMock: MockedResponse = {
       request: {
@@ -264,17 +262,15 @@ describe('LogoSection', () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
     const mutationSpy = jest.fn()
 
-    jest
-      .mocked(useImageUpload)
-      .mockImplementation((options) => {
-        onUploadCompleteCallback = options.onUploadComplete
-        return {
-          getRootProps: jest.fn(),
-          getInputProps: jest.fn().mockReturnValue({}),
-          open: jest.fn(),
-          loading: false
-        } as any
-      })
+    jest.mocked(useImageUpload).mockImplementation((options) => {
+      onUploadCompleteCallback = options.onUploadComplete
+      return {
+        getRootProps: jest.fn(),
+        getInputProps: jest.fn().mockReturnValue({}),
+        open: jest.fn(),
+        loading: false
+      } as any
+    })
 
     const journeyNoLogo = {
       ...baseJourneyMock,

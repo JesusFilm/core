@@ -109,9 +109,7 @@ export function LogoSection(): ReactElement {
               justifyContent="center"
               sx={{ width: '100%', height: '100%' }}
             >
-              <GridEmptyIcon
-                sx={{ fontSize: 48, color: 'action.disabled' }}
-              />
+              <GridEmptyIcon sx={{ fontSize: 48, color: 'action.disabled' }} />
             </Stack>
           )}
           {loading && (
