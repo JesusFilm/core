@@ -147,6 +147,9 @@ describe('MediaScreen', () => {
     expect(screen.getByText('Personalize and manage your media assets')).toBeInTheDocument()
     expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
     expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
+    expect(screen.getByText('Personalize and manage your media assets')).toBeInTheDocument()
+    expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
+    expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
       'Next'
     )
