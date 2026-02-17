@@ -37,23 +37,11 @@ input MeInput {
 type Mutation {
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
-  validateEmail(email: String!, token: String!): User
+  validateEmail(email: String!, token: String!): AuthenticatedUser
 }
 
 type Query {
-  me(input: MeInput): User
-  user(id: ID!): User
-  userByEmail(email: String!): User
-}
-
-type User
-  @key(fields: "id")
-{
-  id: ID!
-  firstName: String!
-  lastName: String
-  email: String!
-  imageUrl: String
-  superAdmin: Boolean
-  emailVerified: Boolean!
+  me(input: MeInput): AuthenticatedUser
+  user(id: ID!): AuthenticatedUser
+  userByEmail(email: String!): AuthenticatedUser
 }

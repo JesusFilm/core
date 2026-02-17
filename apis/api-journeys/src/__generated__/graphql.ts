@@ -3605,7 +3605,7 @@ export type Playlist = {
   note?: Maybe<Scalars['String']['output']>;
   noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
   noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
-  owner: User;
+  owner: AuthenticatedUser;
   sharedAt?: Maybe<Scalars['DateTime']['output']>;
   slug: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
