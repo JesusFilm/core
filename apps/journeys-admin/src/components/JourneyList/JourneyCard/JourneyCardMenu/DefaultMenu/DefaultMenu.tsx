@@ -27,7 +27,6 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '../../../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
@@ -266,7 +265,7 @@ export function DefaultMenu({
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}
-            journey={journey as unknown as JourneyFields}
+            journey={journey}
             refetchTemplateStats={refetchTemplateStats}
           />
           <Divider />

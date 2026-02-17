@@ -374,14 +374,12 @@ export class IconBlockCreateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockCreateInput {
@@ -1317,7 +1315,6 @@ export class IconBlock implements Block {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlock implements Block {
@@ -1821,7 +1818,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: User;
+    user: AuthenticatedUser;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -2034,10 +2031,6 @@ export class ShortLink {
 }
 
 export class AuthenticatedUser {
-    id: string;
-}
-
-export class User {
     id: string;
 }
 

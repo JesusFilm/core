@@ -77,7 +77,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney as unknown as JourneyFields}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -158,7 +159,8 @@ describe('CopyToTeamDialog', () => {
                   submitLabel="Copy"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -241,7 +243,8 @@ describe('CopyToTeamDialog', () => {
                   submitLabel="Copy"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -303,7 +306,8 @@ describe('CopyToTeamDialog', () => {
                     progress: 50,
                     message: 'Translating...'
                   }}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -337,7 +341,8 @@ describe('CopyToTeamDialog', () => {
                   submitLabel="Copy"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -385,7 +390,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -415,7 +421,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -445,7 +452,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -475,7 +483,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -505,7 +514,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -534,7 +544,8 @@ describe('CopyToTeamDialog', () => {
                   title="Copy To Journey"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -567,7 +578,8 @@ describe('CopyToTeamDialog', () => {
                   submitLabel="Copy"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -645,7 +657,8 @@ describe('CopyToTeamDialog', () => {
                   submitLabel="Copy"
                   onClose={handleCloseMenuMock}
                   submitAction={handleSubmitActionMock}
-                  journey={defaultJourney}
+                  journeyIsTemplate={defaultJourney?.template ?? false}
+                  journeyFromTemplateId={defaultJourney?.fromTemplateId}
                 />
               </TeamProvider>
             </JourneyProvider>
@@ -729,7 +742,8 @@ describe('CopyToTeamDialog', () => {
                       onClose={handleCloseMenuMock}
                       submitAction={handleSubmitActionMock}
                       submitLabel="Copy"
-                      journey={templateJourneyFromTemplate}
+                      journeyIsTemplate={templateJourneyFromTemplate?.template ?? false}
+                      journeyFromTemplateId={templateJourneyFromTemplate?.fromTemplateId}
                     />
                   </TeamProvider>
                 </JourneyProvider>
@@ -785,7 +799,8 @@ describe('CopyToTeamDialog', () => {
                     onClose={handleCloseMenuMock}
                     submitAction={handleSubmitActionMock}
                     submitLabel="Copy"
-                    journey={templateJourneyFromTemplate}
+                    journeyIsTemplate={templateJourneyFromTemplate?.template ?? false}
+                    journeyFromTemplateId={templateJourneyFromTemplate?.fromTemplateId}
                   />
                 </TeamProvider>
               </SnackbarProvider>

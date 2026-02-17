@@ -3,8 +3,7 @@ import { ReactElement } from 'react'
 
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
-import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { CreateJourneyButton } from '../../CreateJourneyButton'
+import { CreateJourneyButton, JourneyForTemplate } from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
 
 interface TemplateActionButtonProps {
@@ -12,7 +11,7 @@ interface TemplateActionButtonProps {
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
   handleCloseMenu?: () => void
-  journey?: JourneyFields
+  journey?: JourneyForTemplate
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
 
@@ -32,7 +31,7 @@ export function TemplateActionButton({
       <UseThisTemplateButton
         variant={variant}
         signedIn={signedIn}
-        journey={journeyData as unknown as JourneyFields}
+        journeyId={journeyData?.id}
       />
     )
   }
@@ -51,7 +50,7 @@ export function TemplateActionButton({
       variant={variant}
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
-      journey={journeyData as unknown as JourneyFields}
+      journeyData={journeyData}
       handleCloseMenu={handleCloseMenu}
       refetchTemplateStats={refetchTemplateStats}
     />

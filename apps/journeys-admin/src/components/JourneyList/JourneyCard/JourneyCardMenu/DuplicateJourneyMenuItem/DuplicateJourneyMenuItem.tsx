@@ -11,7 +11,6 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
-import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../../../MenuItem'
 
@@ -120,7 +119,8 @@ export function DuplicateJourneyMenuItem({
           setOpen(false)
         }}
         submitAction={handleDuplicateJourney}
-        journey={journey as unknown as JourneyFields}
+        journeyIsTemplate={journey?.template ?? false}
+        journeyFromTemplateId={journey?.fromTemplateId}
       />
     </>
   )

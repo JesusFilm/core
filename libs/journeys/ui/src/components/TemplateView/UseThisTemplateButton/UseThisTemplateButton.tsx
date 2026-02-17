@@ -17,26 +17,26 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 interface UseThisTemplateButtonProps {
   variant?: 'menu-item' | 'button'
   signedIn?: boolean
-  journey?: JourneyFields
+  journeyId?: string
 }
 
 export function UseThisTemplateButton({
   variant = 'button',
   signedIn = false,
-  journey
+  journeyId
 }: UseThisTemplateButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { templateCustomizationGuestFlow } = useFlags()
 
   const router = useRouter()
   const { journey: journeyFromContext } = useJourney()
-  const journeyData = journey ?? journeyFromContext
+  const journeyDataId = journeyId ?? journeyFromContext?.id
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
     void router.push(
-      `/templates/${journeyData?.id ?? ''}/customize`,
+      `/templates/${journeyDataId ?? ''}/customize`,
       undefined,
       {
         shallow: true
@@ -59,7 +59,7 @@ export function UseThisTemplateButton({
     // Use env var if outside journeys-admin project
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
-    const url = `${domain}/templates/${journeyData?.id ?? ''}`
+    const url = `${domain}/templates/${journeyDataId ?? ''}`
 
     void router.push(
       {
@@ -103,14 +103,14 @@ export function UseThisTemplateButton({
         onMouseEnter={() => {
           if (signedIn) {
             void router.prefetch(
-              `/templates/${journeyData?.id ?? ''}/customize`
+              `/templates/${journeyDataId ?? ''}/customize`
             )
           }
         }}
         onClick={handleCheckSignIn}
         variant="contained"
         sx={{ flex: 'none', minWidth: 180 }}
-        disabled={journeyData == null}
+        disabled={journeyDataId == null}
         data-testid="UseThisTemplateButton"
       >
         {loading ? (

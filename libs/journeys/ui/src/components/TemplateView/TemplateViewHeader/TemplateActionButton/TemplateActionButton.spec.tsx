@@ -5,8 +5,9 @@ import { SnackbarProvider } from 'notistack'
 
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
-import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journey } from '../../TemplateFooter/data'
+import { JourneyForTemplate } from '../../CreateJourneyButton'
+import { JourneyFields_journeyCustomizationFields as JourneyCustomizationField } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { TemplateActionButton } from './TemplateActionButton'
 
@@ -23,6 +24,14 @@ const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
   typeof isJourneyCustomizable
 >
+
+const customizableTemplateJourney: JourneyForTemplate = {
+  ...journey,
+  journeyCustomizationDescription: 'Customize this journey',
+  journeyCustomizationFields: [
+    { id: 'field1', __typename: 'JourneyCustomizationField' } as JourneyCustomizationField
+  ]
+}
 
 describe('TemplateActionButton', () => {
   const signedIn = true
@@ -41,7 +50,7 @@ describe('TemplateActionButton', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', journey as unknown as JourneyFields]
+    ['prop journey', journey]
   ])('(%s)', (_, templateJourney) => {
     it('should render UseThisTemplateButton when journey is customizable and user is signed in', () => {
       mockIsJourneyCustomizable.mockReturnValue(true)
@@ -291,19 +300,9 @@ describe('TemplateActionButton', () => {
     })
 
     describe.each([
-      ['context journey', undefined],
-      [
-        'prop journey',
-        {
-          ...journey,
-          journeyCustomizationDescription: 'Customize this journey',
-          journeyCustomizationFields: [
-            { id: 'field1', __typename: 'JourneyCustomizationField' }
-          ]
-        } as unknown as JourneyFields
-      ]
-    ])(
-      'for customizable template journey (%s)',
+      ['context journey', undefined], 
+      ['prop journey', customizableTemplateJourney]
+    ]) ('for customizable template journey (%s)',
       (_, customizableTemplateJourney) => {
         it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {
           mockIsJourneyCustomizable.mockReturnValue(true)

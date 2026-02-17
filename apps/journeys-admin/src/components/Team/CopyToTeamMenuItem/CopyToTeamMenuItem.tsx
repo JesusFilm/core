@@ -13,7 +13,6 @@ import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTea
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../MenuItem'
 
@@ -229,7 +228,8 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
-        journey={journeyData as unknown as JourneyFields}
+        journeyIsTemplate={journeyData?.template ?? false}
+        journeyFromTemplateId={journeyData?.fromTemplateId}
       />
     </>
   )

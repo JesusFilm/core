@@ -21,7 +21,7 @@ import {
   TeamProvider
 } from '../../TeamProvider'
 
-import { CreateJourneyButton } from './CreateJourneyButton'
+import { CreateJourneyButton, JourneyForTemplate } from './CreateJourneyButton'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -203,7 +203,7 @@ const journeyDuplicateMock = {
   }
 }
 
-const createJourneyButton = (journeyProps?: JourneyFields | undefined) => (
+const createJourneyButton = (journeyProps?: JourneyForTemplate | undefined) => (
   <MockedProvider
     mocks={[
       {
@@ -217,7 +217,7 @@ const createJourneyButton = (journeyProps?: JourneyFields | undefined) => (
   >
     <SnackbarProvider>
       <JourneyProvider value={{ journey }}>
-        <CreateJourneyButton journey={journeyProps} />
+        <CreateJourneyButton journeyData={journeyProps} />
       </JourneyProvider>
     </SnackbarProvider>
   </MockedProvider>
@@ -269,7 +269,7 @@ describe('CreateJourneyButton', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', journey as unknown as JourneyFields]
+    ['prop journey', journey]
   ])('(%s)', (_, nonCustomizableTemplate) => {
     it('should render create journey button when variant is button', () => {
       mockUseRouter.mockReturnValue({
@@ -291,7 +291,7 @@ describe('CreateJourneyButton', () => {
           <SnackbarProvider>
             <CreateJourneyButton
               variant="button"
-              journey={nonCustomizableTemplate}
+              journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -323,7 +323,7 @@ describe('CreateJourneyButton', () => {
           <SnackbarProvider>
             <CreateJourneyButton
               variant="menu-item"
-              journey={nonCustomizableTemplate}
+              journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -353,7 +353,7 @@ describe('CreateJourneyButton', () => {
           ]}
         >
           <SnackbarProvider>
-            <CreateJourneyButton signedIn journey={nonCustomizableTemplate} />
+            <CreateJourneyButton signedIn journeyData={nonCustomizableTemplate} />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -384,7 +384,7 @@ describe('CreateJourneyButton', () => {
             <CreateJourneyButton
               signedIn
               openTeamDialogOnSignIn={true}
-              journey={nonCustomizableTemplate}
+              journeyData={nonCustomizableTemplate}
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -414,7 +414,7 @@ describe('CreateJourneyButton', () => {
         >
           <SnackbarProvider>
             <JourneyProvider value={{ journey }}>
-              <CreateJourneyButton signedIn journey={nonCustomizableTemplate} />
+              <CreateJourneyButton signedIn journeyData={nonCustomizableTemplate} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -452,7 +452,7 @@ describe('CreateJourneyButton', () => {
               <JourneyProvider value={{ journey }}>
                 <CreateJourneyButton
                   signedIn
-                  journey={nonCustomizableTemplate}
+                  journeyData={nonCustomizableTemplate}
                 />
               </JourneyProvider>
             </TeamProvider>
@@ -779,7 +779,7 @@ describe('CreateJourneyButton', () => {
               <JourneyProvider value={{ journey }}>
                 <CreateJourneyButton
                   signedIn
-                  journey={nonCustomizableTemplate}
+                  journeyData={nonCustomizableTemplate}
                   refetchTemplateStats={refetchTemplateStats}
                 />
               </JourneyProvider>
@@ -912,7 +912,7 @@ describe('CreateJourneyButton', () => {
               <JourneyProvider value={{ journey }}>
                 <CreateJourneyButton
                   signedIn
-                  journey={nonCustomizableTemplate}
+                  journeyData={nonCustomizableTemplate}
                 />
               </JourneyProvider>
             </TeamProvider>
@@ -979,7 +979,7 @@ describe('CreateJourneyButton', () => {
                 <JourneyProvider value={{ journey }}>
                   <CreateJourneyButton
                     signedIn
-                    journey={nonCustomizableTemplate}
+                    journeyData={nonCustomizableTemplate}
                   />
                 </JourneyProvider>
               </TeamProvider>

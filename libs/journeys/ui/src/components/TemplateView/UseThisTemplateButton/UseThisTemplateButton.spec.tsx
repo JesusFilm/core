@@ -4,7 +4,6 @@ import { type NextRouter, useRouter } from 'next/router'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { journey as mockJourney } from '../../../libs/JourneyProvider/JourneyProvider.mock'
 
 import { UseThisTemplateButton } from './UseThisTemplateButton'
@@ -52,7 +51,7 @@ describe('UseThisTemplateButton', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', journey as unknown as JourneyFields]
+    ['prop journey', journey]
   ])('navigation (%s)', (_, customizableTemplateJourney) => {
     it('should render use this template button when variant is button', () => {
       mockUseRouter.mockReturnValue({
@@ -64,7 +63,7 @@ describe('UseThisTemplateButton', () => {
         <JourneyProvider value={{ journey }}>
           <UseThisTemplateButton
             variant="button"
-            journey={customizableTemplateJourney}
+            journeyId={customizableTemplateJourney?.id}
           />
         </JourneyProvider>
       )
@@ -85,7 +84,7 @@ describe('UseThisTemplateButton', () => {
         <JourneyProvider value={{ journey }}>
           <UseThisTemplateButton
             variant="menu-item"
-            journey={customizableTemplateJourney}
+            journeyId={customizableTemplateJourney?.id}
           />
         </JourneyProvider>
       )
@@ -111,7 +110,7 @@ describe('UseThisTemplateButton', () => {
           <JourneyProvider value={{ journey }}>
             <UseThisTemplateButton
               signedIn
-              journey={customizableTemplateJourney}
+              journeyId={customizableTemplateJourney?.id}
             />
           </JourneyProvider>
         )
@@ -135,7 +134,7 @@ describe('UseThisTemplateButton', () => {
           <JourneyProvider value={{ journey }}>
             <UseThisTemplateButton
               signedIn
-              journey={customizableTemplateJourney}
+              journeyId={customizableTemplateJourney?.id}
             />
           </JourneyProvider>
         )
@@ -164,7 +163,7 @@ describe('UseThisTemplateButton', () => {
           <JourneyProvider value={{ journey }}>
             <UseThisTemplateButton
               signedIn
-              journey={customizableTemplateJourney}
+              journeyId={customizableTemplateJourney?.id}
             />
           </JourneyProvider>
         )
@@ -202,7 +201,7 @@ describe('UseThisTemplateButton', () => {
       it('should prefetch sign in page on mount', async () => {
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -214,7 +213,7 @@ describe('UseThisTemplateButton', () => {
       it('should open account check dialog when button is clicked', async () => {
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -232,7 +231,7 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -264,7 +263,7 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -315,7 +314,7 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -347,7 +346,7 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -398,7 +397,7 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -430,7 +429,7 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journey={customizableTemplateJourney} />
+            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
           </JourneyProvider>
         )
 
@@ -482,7 +481,7 @@ describe('UseThisTemplateButton', () => {
     it('should have correct test id', async () => {
       render(
         <JourneyProvider value={{ journey }}>
-          <UseThisTemplateButton journey={customizableTemplateJourney} />
+          <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
         </JourneyProvider>
       )
 
