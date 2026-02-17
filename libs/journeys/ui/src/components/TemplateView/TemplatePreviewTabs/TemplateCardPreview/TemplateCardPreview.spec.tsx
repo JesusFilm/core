@@ -36,6 +36,10 @@ jest.mock('swiper/react', () => {
 })
 
 describe('TemplateCardPreview', () => {
+  beforeEach(() => {
+    mockSlideTo.mockClear()
+  })
+
   it('renders correct number of cards', async () => {
     ;(useMediaQuery as unknown as jest.Mock).mockReturnValue(false)
     const steps = [

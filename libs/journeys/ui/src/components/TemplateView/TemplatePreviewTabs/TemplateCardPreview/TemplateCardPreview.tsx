@@ -29,6 +29,35 @@ interface TemplateCardPreviewProps {
   selectedStep?: TreeBlock<StepBlock> | null
 }
 
+interface TemplateCardPreviewPlaceholderProps {
+  cardWidth: { xs: number; sm: number }
+  cardHeight: { xs: number; sm: number }
+}
+
+function TemplateCardPreviewPlaceholder({ cardWidth, cardHeight }: TemplateCardPreviewPlaceholderProps) {
+  return (
+    <Stack
+      data-testid="TemplateCardsPreviewPlaceholder"
+      direction="row"
+      sx={{ overflowY: 'visible' }}
+    >
+      {[0, 1, 2, 3, 4, 5, 6].map((value) => (
+        <Skeleton
+          variant="rounded"
+          key={value}
+          data-testid="TemplateCardSkeleton"
+          sx={{
+            minWidth: cardWidth,
+            mr: { xs: 3, sm: 7 },
+            height: cardHeight,
+            borderRadius: 2
+          }}
+        />
+      ))}
+    </Stack>
+  )
+}
+
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 const StyledSwiper = styled(Swiper)(() => ({}))
 
@@ -60,6 +89,17 @@ export function TemplateCardPreview({
   const { t } = useTranslation('libs-journeys-ui')
   const [swiper, setSwiper] = useState<SwiperClass>()
 
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      spaceBetween: 12,
+      slidesOffsetAfter: variant === 'media' ? 200 : 0
+    },
+    [breakpoints.values.sm]: {
+      spaceBetween: variant === 'preview' ? 28 : 12,
+      slidesOffsetAfter: variant === 'media' ? 400 : 0
+    }
+  }
+
   const config = VARIANT_CONFIGS[variant]
   const {
     cardWidth,
@@ -72,36 +112,32 @@ export function TemplateCardPreview({
     modules
   } = config
 
-  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: {
-      spaceBetween: 12,
-      slidesOffsetAfter: variant === 'media' ? 200 : 0
-    },
-    [breakpoints.values.sm]: {
-      spaceBetween: variant === 'preview' ? 28 : 12,
-      slidesOffsetAfter: variant === 'media' ? 400 : 0
-    }
+  if (steps == null) {
+    return (
+      <TemplateCardPreviewPlaceholder cardWidth={cardWidth} cardHeight={cardHeight} />
+    )
   }
 
-  const slidesToRender: Array<TreeBlock<StepBlock>> | undefined =
+  const slidesToRender: Array<TreeBlock<StepBlock>> =
     variant === 'media' ? steps : take(steps, 7)
 
   useEffect(() => {
     if (
       variant !== 'media' ||
       swiper == null ||
-      selectedStep == null ||
-      slidesToRender == null
+      selectedStep == null
     )
       return
 
-    swiper.slideTo(
-      slidesToRender.findIndex((step) => step.id === selectedStep.id),
-      500
+    const index = slidesToRender.findIndex(
+      (step) => step.id === selectedStep.id
     )
+    if (index < 0) return
+
+    swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
-  const swiperContent = (
+  return (
     <StyledSwiper
       modules={modules}
       breakpoints={swiperBreakpoints}
@@ -109,11 +145,10 @@ export function TemplateCardPreview({
       {...swiperProps}
       sx={{
         ...swiperSx,
-        height: swiperHeight,
-        overflow: 'visible'
+        height: swiperHeight
       }}
     >
-      {slidesToRender?.map((step) => {
+      {slidesToRender.map((step) => {
         const isSelected = selectedStep?.id === step.id
         const selectedSlideSx =
           variant === 'media' && isSelected
@@ -144,8 +179,7 @@ export function TemplateCardPreview({
         )
       })}
       {showMoreCardsSlide &&
-        steps != null &&
-        steps.length > (slidesToRender?.length ?? 0) && (
+        steps.length > slidesToRender.length && (
           <StyledSwiperSlide
             data-testid="UseTemplatesSlide"
             sx={{
@@ -173,7 +207,7 @@ export function TemplateCardPreview({
                 textAlign="center"
               >
                 {t('{{count}} more cards', {
-                  count: steps.length - (slidesToRender?.length ?? 0)
+                  count: steps.length - slidesToRender.length
                 })}
               </Typography>
               <Typography
@@ -215,30 +249,4 @@ export function TemplateCardPreview({
         )}
     </StyledSwiper>
   )
-
-  if (steps == null) {
-    return (
-      <Stack
-        data-testid="TemplateCardsPreviewPlaceholder"
-        direction="row"
-        sx={{ overflowY: 'visible' }}
-      >
-        {[0, 1, 2, 3, 4, 5, 6].map((value) => (
-          <Skeleton
-            variant="rounded"
-            key={value}
-            data-testid="TemplateCardSkeleton"
-            sx={{
-              minWidth: cardWidth,
-              mr: { xs: 3, sm: 7 },
-              height: cardHeight,
-              borderRadius: 2
-            }}
-          />
-        ))}
-      </Stack>
-    )
-  }
-
-  return swiperContent
 }
