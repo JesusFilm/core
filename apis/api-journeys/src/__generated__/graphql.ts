@@ -1970,7 +1970,7 @@ export type Mutation = {
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
-  validateEmail?: Maybe<User>;
+  validateEmail?: Maybe<AuthenticatedUser>;
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -3778,7 +3778,7 @@ export type Query = {
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
-  me?: Maybe<User>;
+  me?: Maybe<AuthenticatedUser>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
   playlist?: Maybe<QueryPlaylistResult>;
@@ -3802,8 +3802,8 @@ export type Query = {
   teams: Array<Team>;
   templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
-  user?: Maybe<User>;
-  userByEmail?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
+  userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
@@ -5127,18 +5127,6 @@ export type UnsplashUserLinks = {
   photos: Scalars['String']['output'];
   portfolio: Scalars['String']['output'];
   self: Scalars['String']['output'];
-};
-
-export type User = {
-  __typename?: 'User';
-  email: Scalars['String']['output'];
-  emailVerified: Scalars['Boolean']['output'];
-  firstName: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  mediaUserRoles: Array<MediaRole>;
-  superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
