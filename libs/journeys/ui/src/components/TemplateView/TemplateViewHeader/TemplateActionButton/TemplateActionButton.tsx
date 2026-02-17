@@ -3,7 +3,10 @@ import { ReactElement } from 'react'
 
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
-import { CreateJourneyButton, JourneyForTemplate } from '../../CreateJourneyButton'
+import {
+  CreateJourneyButton,
+  JourneyForTemplate
+} from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
 
 interface TemplateActionButtonProps {

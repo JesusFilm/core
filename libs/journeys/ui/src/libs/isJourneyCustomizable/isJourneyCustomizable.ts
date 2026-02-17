@@ -4,7 +4,10 @@ import { JourneyFields_blocks as Block } from '../JourneyProvider/__generated__/
 interface JourneyForCustomizableCheck {
   blocks?: unknown[] | null
   journeyCustomizationDescription?: string | null
-  journeyCustomizationFields?: Array<{ key: string; value?: string | null }> | null
+  journeyCustomizationFields?: Array<{
+    key: string
+    value?: string | null
+  }> | null
 }
 
 export function isJourneyCustomizable(

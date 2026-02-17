@@ -201,7 +201,9 @@ describe('UseThisTemplateButton', () => {
       it('should prefetch sign in page on mount', async () => {
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -213,7 +215,9 @@ describe('UseThisTemplateButton', () => {
       it('should open account check dialog when button is clicked', async () => {
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -231,7 +235,9 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -263,7 +269,9 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -314,7 +322,9 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -346,7 +356,9 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -397,7 +409,9 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 
@@ -429,7 +443,9 @@ describe('UseThisTemplateButton', () => {
         const journeyId = customizableTemplateJourney?.id ?? journey?.id ?? ''
         render(
           <JourneyProvider value={{ journey }}>
-            <UseThisTemplateButton journeyId={customizableTemplateJourney?.id} />
+            <UseThisTemplateButton
+              journeyId={customizableTemplateJourney?.id}
+            />
           </JourneyProvider>
         )
 

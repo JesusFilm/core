@@ -96,8 +96,7 @@ export function CopyToTeamDialog({
 
   const { pathname } = useRouter()
   const isTemplatesAdmin = pathname?.includes('/publisher') ?? false
-  const isOriginalTemplate =
-    journeyIsTemplate && journeyFromTemplateId == null
+  const isOriginalTemplate = journeyIsTemplate && journeyFromTemplateId == null
 
   // this is to prevent publishers from copying and translating non-original templates - which will break Languages screen of journey customization flow
   const disablePublisherCopyAndTranslate =

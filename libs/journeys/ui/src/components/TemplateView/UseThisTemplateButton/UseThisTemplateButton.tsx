@@ -35,13 +35,9 @@ export function UseThisTemplateButton({
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
-    void router.push(
-      `/templates/${journeyDataId ?? ''}/customize`,
-      undefined,
-      {
-        shallow: true
-      }
-    )
+    void router.push(`/templates/${journeyDataId ?? ''}/customize`, undefined, {
+      shallow: true
+    })
   }
 
   const handleCheckSignIn = async (): Promise<void> => {
@@ -102,9 +98,7 @@ export function UseThisTemplateButton({
       <Button
         onMouseEnter={() => {
           if (signedIn) {
-            void router.prefetch(
-              `/templates/${journeyDataId ?? ''}/customize`
-            )
+            void router.prefetch(`/templates/${journeyDataId ?? ''}/customize`)
           }
         }}
         onClick={handleCheckSignIn}

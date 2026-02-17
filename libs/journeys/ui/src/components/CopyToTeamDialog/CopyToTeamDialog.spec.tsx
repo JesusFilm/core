@@ -4,7 +4,6 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { defaultJourney } from '../TemplateView/data'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -12,6 +11,7 @@ import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '../TeamProvider'
+import { defaultJourney } from '../TemplateView/data'
 
 import { CopyToTeamDialog } from './CopyToTeamDialog'
 
@@ -742,8 +742,12 @@ describe('CopyToTeamDialog', () => {
                       onClose={handleCloseMenuMock}
                       submitAction={handleSubmitActionMock}
                       submitLabel="Copy"
-                      journeyIsTemplate={templateJourneyFromTemplate?.template ?? false}
-                      journeyFromTemplateId={templateJourneyFromTemplate?.fromTemplateId}
+                      journeyIsTemplate={
+                        templateJourneyFromTemplate?.template ?? false
+                      }
+                      journeyFromTemplateId={
+                        templateJourneyFromTemplate?.fromTemplateId
+                      }
                     />
                   </TeamProvider>
                 </JourneyProvider>
@@ -799,8 +803,12 @@ describe('CopyToTeamDialog', () => {
                     onClose={handleCloseMenuMock}
                     submitAction={handleSubmitActionMock}
                     submitLabel="Copy"
-                    journeyIsTemplate={templateJourneyFromTemplate?.template ?? false}
-                    journeyFromTemplateId={templateJourneyFromTemplate?.fromTemplateId}
+                    journeyIsTemplate={
+                      templateJourneyFromTemplate?.template ?? false
+                    }
+                    journeyFromTemplateId={
+                      templateJourneyFromTemplate?.fromTemplateId
+                    }
                   />
                 </TeamProvider>
               </SnackbarProvider>

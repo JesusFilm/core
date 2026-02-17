@@ -26,7 +26,10 @@ export interface JourneyForTemplate {
   }
   blocks?: unknown[] | null
   journeyCustomizationDescription?: string | null
-  journeyCustomizationFields?: Array<{ key: string; value?: string | null }> | null
+  journeyCustomizationFields?: Array<{
+    key: string
+    value?: string | null
+  }> | null
 }
 
 interface CreateJourneyButtonProps {
@@ -155,7 +158,9 @@ export function CreateJourneyButton({
         ).fromTemplateId
 
         const templateIdToRefetch =
-          journeyDataToUse.template === true ? journeyDataToUse.id : fromTemplateId
+          journeyDataToUse.template === true
+            ? journeyDataToUse.id
+            : fromTemplateId
 
         if (templateIdToRefetch != null && refetchTemplateStats != null) {
           void refetchTemplateStats([templateIdToRefetch])
@@ -194,8 +199,8 @@ export function CreateJourneyButton({
           journeyId: newJourneyId,
           name: journeyDataToUse.title,
           journeyLanguageName:
-            journeyDataToUse.language.name.find(({ primary }) => !primary)?.value ??
-            '',
+            journeyDataToUse.language.name.find(({ primary }) => !primary)
+              ?.value ?? '',
           textLanguageId: selectedLanguage.id,
           textLanguageName:
             selectedLanguage.nativeName ?? selectedLanguage.localName ?? ''

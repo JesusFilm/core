@@ -352,7 +352,10 @@ describe('CreateJourneyButton', () => {
           ]}
         >
           <SnackbarProvider>
-            <CreateJourneyButton signedIn journeyData={nonCustomizableTemplate} />
+            <CreateJourneyButton
+              signedIn
+              journeyData={nonCustomizableTemplate}
+            />
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -413,7 +416,10 @@ describe('CreateJourneyButton', () => {
         >
           <SnackbarProvider>
             <JourneyProvider value={{ journey }}>
-              <CreateJourneyButton signedIn journeyData={nonCustomizableTemplate} />
+              <CreateJourneyButton
+                signedIn
+                journeyData={nonCustomizableTemplate}
+              />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>

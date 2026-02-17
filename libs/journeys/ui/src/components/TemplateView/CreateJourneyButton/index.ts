@@ -1,1 +1,4 @@
-export { CreateJourneyButton, type JourneyForTemplate } from './CreateJourneyButton'
+export {
+  CreateJourneyButton,
+  type JourneyForTemplate
+} from './CreateJourneyButton'
