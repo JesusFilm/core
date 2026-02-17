@@ -53,6 +53,10 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
+    case 'guestPreview':
+      return (
+        <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
+      )
     case 'social':
       return (
         <SocialScreen
@@ -60,14 +64,9 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
-    // case 'done':
-    case 'guestPreview':
-      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
-    // case 'guestPreview':
     case 'done':
-      return (
-        <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
-      )
+      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+
     default:
       return <></>
   }
