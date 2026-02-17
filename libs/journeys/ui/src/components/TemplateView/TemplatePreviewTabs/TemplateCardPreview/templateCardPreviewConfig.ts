@@ -79,7 +79,10 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
 const MEDIA_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 120, sm: 120 },
   cardHeight: { xs: MEDIA_CARD_HEIGHT, sm: MEDIA_CARD_HEIGHT },
-  swiperHeight: { xs: MEDIA_CARD_HEIGHT * SELECTED_SCALE, sm: MEDIA_CARD_HEIGHT * SELECTED_SCALE },
+  swiperHeight: {
+    xs: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
+    sm: MEDIA_CARD_HEIGHT * SELECTED_SCALE
+  },
   showMoreCardsSlide: false,
   framePortal: {
     width: { xs: 300, sm: 300 },
