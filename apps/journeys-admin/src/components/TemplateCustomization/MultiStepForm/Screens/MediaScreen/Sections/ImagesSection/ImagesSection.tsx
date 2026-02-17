@@ -15,6 +15,7 @@ import {
 import { getCustomizableImageBlocks } from '../../utils'
 
 import { ImageSectionItem } from './ImageSectionItem'
+import Stack from '@mui/material/Stack'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   mutation MediaScreenImageBlockUpdate(
@@ -69,11 +70,11 @@ export function ImagesSection({
   }
 
   return (
-    <Box data-testid="ImagesSection" sx={{ width: '100%' }}>
+    <Stack data-testid="ImagesSection" gap={2} sx={{ width: '100%', alignSelf: 'flex-start' }}>
       <Typography
         variant="subtitle2"
         gutterBottom
-        sx={{ color: 'text.secondary', ml: 20 }}
+        sx={{ color: 'text.secondary' }}
       >
         {t('Image')}
       </Typography>
@@ -99,6 +100,6 @@ export function ImagesSection({
           ))}
         </Box>
       )}
-    </Box>
+    </Stack>
   )
 }
