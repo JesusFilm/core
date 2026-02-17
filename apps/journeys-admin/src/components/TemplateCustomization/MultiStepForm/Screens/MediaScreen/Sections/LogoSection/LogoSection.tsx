@@ -1,23 +1,178 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-interface LogoSectionProps {
-  cardBlockId: string | null
-}
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import { NextImage } from '@core/shared/ui/NextImage'
 
-/**
- * TODO: update this jsdoc after you implement this component
- */
-export function LogoSection({
-  cardBlockId: _cardBlockId
-}: LogoSectionProps): ReactElement {
+import {
+  MediaScreenImageBlockUpdate,
+  MediaScreenImageBlockUpdateVariables
+} from '../../../../../../../../__generated__/MediaScreenImageBlockUpdate'
+import { useImageUpload } from '../../../../../../../libs/useImageUpload'
+
+export const IMAGE_BLOCK_UPDATE = gql`
+  mutation MediaScreenImageBlockUpdate(
+    $id: ID!
+    $input: ImageBlockUpdateInput!
+  ) {
+    imageBlockUpdate(id: $id, input: $input) {
+      id
+      src
+      alt
+      blurhash
+      width
+      height
+      scale
+      focalTop
+      focalLeft
+    }
+  }
+`
+
+export function LogoSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const logoImageBlock = journey?.logoImageBlock
+
+  const [imageBlockUpdate] = useMutation<
+    MediaScreenImageBlockUpdate,
+    MediaScreenImageBlockUpdateVariables
+  >(IMAGE_BLOCK_UPDATE)
+
+  async function handleUploadComplete(src: string): Promise<void> {
+    if (logoImageBlock == null) return
+    try {
+      await imageBlockUpdate({
+        variables: {
+          id: logoImageBlock.id,
+          input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
+        }
+      })
+    } catch {
+      // mutation error handled by Apollo
+    }
+  }
+
+  const { getInputProps, open, loading } = useImageUpload({
+    onUploadComplete: handleUploadComplete
+  })
 
   return (
-    <Box data-testid="LogoSection">
-      <Typography variant="h6">{t('Logo')}</Typography>
+    <Box data-testid="LogoSection" sx={{ width: '100%' }}>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{ color: 'text.secondary'}}
+      >
+        {t('Logo')}
+      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: 16
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              width: 156,
+              height: 156,
+              minWidth: 156,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              bgcolor: 'background.default'
+            }}
+          >
+          {logoImageBlock?.src != null ? (
+            <NextImage
+              src={logoImageBlock.src}
+              alt={logoImageBlock.alt ?? ''}
+              layout="fill"
+              objectFit="cover"
+            />
+          ) : (
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <GridEmptyIcon sx={{ fontSize: 48, color: 'action.disabled' }} />
+            </Box>
+          )}
+          {loading && (
+            <CircularProgress
+              size={32}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                mt: -2,
+                ml: -2
+              }}
+              data-testid="LogoSection-upload-progress"
+            />
+          )}
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <input
+            {...getInputProps()}
+            data-testid="LogoSection-file-input"
+          />
+          <Stack spacing={0.5} alignItems="flex-start">
+            <Button
+              size="small"
+              color="secondary"
+              variant="outlined"
+              disabled={loading}
+              onClick={open}
+              sx={{
+                height: 32,
+                width: '100%',
+                borderRadius: 2
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                fontSize={14}
+                sx={{ color: 'secondary.main' }}
+              >
+                {t('Upload File')}
+              </Typography>
+            </Button>
+            <Typography variant="caption" color="text.secondary">
+              {t('Supports JPG, PNG, and GIF files.')}
+            </Typography>
+          </Stack>
+        </Box>
+      </Box>
     </Box>
   )
 }
