@@ -25,7 +25,6 @@ export function GuestPreviewScreen({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
-  const [openAccountDialog, setOpenAccountDialog] = useState(false)
 
   const steps = useMemo(
     () =>
