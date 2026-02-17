@@ -132,13 +132,17 @@ export function VideosSection({
         })
         enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
       } catch {
-        enqueueSnackbar(t('Upload failed. Please try again'), { variant: 'error' })
+        enqueueSnackbar(t('Upload failed. Please try again'), {
+          variant: 'error'
+        })
       } finally {
         setUpdating(false)
       }
     },
     onUploadError: () => {
-      enqueueSnackbar(t('Upload failed. Please try again'), { variant: 'error' })
+      enqueueSnackbar(t('Upload failed. Please try again'), {
+        variant: 'error'
+      })
     }
   })
 

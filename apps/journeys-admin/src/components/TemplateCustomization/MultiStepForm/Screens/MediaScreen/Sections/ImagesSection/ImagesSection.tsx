@@ -71,7 +71,9 @@ export function ImagesSection({
       })
       enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
     } catch {
-      enqueueSnackbar(t('Upload failed. Please try again'), { variant: 'error' })
+      enqueueSnackbar(t('Upload failed. Please try again'), {
+        variant: 'error'
+      })
     }
   }
 
