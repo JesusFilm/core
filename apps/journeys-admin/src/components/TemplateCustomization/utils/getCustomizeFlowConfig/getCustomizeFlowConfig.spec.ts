@@ -4,6 +4,11 @@ import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJ
 
 import { getCustomizeFlowConfig } from './getCustomizeFlowConfig'
 
+// Mock complex dependencies that the screens use
+jest.mock('next-firebase-auth', () => ({
+  useUser: () => ({ id: 'test-user-id', email: 'test@example.com' })
+}))
+
 const t = ((key: string) => key) as unknown as TFunction
 
 describe('getCustomizeFlowConfig', () => {

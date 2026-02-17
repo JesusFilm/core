@@ -10,7 +10,7 @@ import { MultiStepForm } from './MultiStepForm'
 
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({
-  useUser: () => ({ id: 'test-user-id' })
+  useUser: () => ({ id: 'test-user-id', email: 'test@example.com' })
 }))
 
 jest.mock('next/router', () => ({
@@ -44,6 +44,15 @@ jest.mock('./Screens', () => ({
       <button onClick={handleNext} data-testid="links-next">
         Next
       </button>
+    </div>
+  ),
+  GuestPreviewScreen: ({
+    handleScreenNavigation
+  }: {
+    handleScreenNavigation: (screen: string) => void
+  }) => (
+    <div data-testid="guest-preview-screen">
+      <h2>Guest Preview Screen</h2>
     </div>
   ),
   SocialScreen: ({ handleNext }: { handleNext: () => void }) => (
