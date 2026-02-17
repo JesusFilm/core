@@ -943,6 +943,7 @@ describe('CreateJourneyButton', () => {
       })
     })
   })
+
   describe.each([
     [
       'when non-customizable global template journey is accessed from the context',

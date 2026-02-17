@@ -302,41 +302,43 @@ describe('TemplateActionButton', () => {
       })
     })
   })
+
   describe.each([
-    ['when customizable template journey is accessed from the context', undefined],
-    ['when customizable template journey is accessed via prop drill', customizableTemplateJourney]
-  ])(
-    '%s',
-    (_, customizableTemplateJourney) => {
-      it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {
-        mockIsJourneyCustomizable.mockReturnValue(true)
+    [
+      'when customizable template journey is accessed from the context',
+      undefined
+    ],
+    [
+      'when customizable template journey is accessed via prop drill',
+      customizableTemplateJourney
+    ]
+  ])('%s', (_, customizableTemplateJourney) => {
+    it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {
+      mockIsJourneyCustomizable.mockReturnValue(true)
 
-        render(
-          <MockedProvider>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey }}>
-                <TemplateActionButton
-                  variant="button"
-                  signedIn={true}
-                  journey={customizableTemplateJourney}
-                />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </MockedProvider>
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey }}>
+              <TemplateActionButton
+                variant="button"
+                signedIn={true}
+                journey={customizableTemplateJourney}
+              />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+
+      await waitFor(() => {
+        expect(mockUseRouter().push).toHaveBeenCalledWith(
+          `/templates/${customizableTemplateJourney?.id ?? journey?.id ?? ''}/customize`,
+          undefined,
+          { shallow: true }
         )
-
-        fireEvent.click(
-          screen.getByRole('button', { name: 'Use This Template' })
-        )
-
-        await waitFor(() => {
-          expect(mockUseRouter().push).toHaveBeenCalledWith(
-            `/templates/${customizableTemplateJourney?.id ?? journey?.id ?? ''}/customize`,
-            undefined,
-            { shallow: true }
-          )
-        })
       })
-    }
-  )
+    })
+  })
 })
