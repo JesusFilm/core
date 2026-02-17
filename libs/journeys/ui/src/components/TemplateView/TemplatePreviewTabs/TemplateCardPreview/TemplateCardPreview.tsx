@@ -116,19 +116,10 @@ export function TemplateCardPreview({
   }
 
   const slidesToRender =
-    steps != null
-      ? variant === 'media'
-        ? steps
-        : take(steps, 7)
-      : []
+    steps != null ? (variant === 'media' ? steps : take(steps, 7)) : []
 
   useEffect(() => {
-    if (
-      variant !== 'media' ||
-      swiper == null ||
-      selectedStep == null
-    )
-      return
+    if (variant !== 'media' || swiper == null || selectedStep == null) return
 
     const index = slidesToRender.findIndex(
       (step) => step.id === selectedStep.id
