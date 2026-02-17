@@ -11,7 +11,7 @@ import {
 // eslint-disable-next-line import/no-namespace
 import * as useImageUploadHooks from '../../../../../../../libs/useImageUpload'
 
-import { IMAGE_BLOCK_UPDATE, LogoSection } from './LogoSection'
+import { LOGO_IMAGE_BLOCK_UPDATE, LogoSection } from './LogoSection'
 
 jest.mock('next-i18next', () => ({
   __esModule: true,
@@ -172,7 +172,7 @@ describe('LogoSection', () => {
 
     const mutationMock: MockedResponse = {
       request: {
-        query: IMAGE_BLOCK_UPDATE,
+        query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {
           id: 'logo-block-id',
           input: { src: 'https://example.com/new-logo.png', scale: 100, focalLeft: 50, focalTop: 50 }
@@ -227,7 +227,7 @@ describe('LogoSection', () => {
 
     const mutationMock: MockedResponse = {
       request: {
-        query: IMAGE_BLOCK_UPDATE,
+        query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {
           id: '',
           input: { src: 'https://example.com/new-logo.png', scale: 100, focalLeft: 50, focalTop: 50 }

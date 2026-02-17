@@ -12,13 +12,13 @@ import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
-  MediaScreenImageBlockUpdate,
-  MediaScreenImageBlockUpdateVariables
-} from '../../../../../../../../__generated__/MediaScreenImageBlockUpdate'
+  MediaScreenLogoImageBlockUpdate,
+  MediaScreenLogoImageBlockUpdateVariables
+} from '../../../../../../../../__generated__/MediaScreenLogoImageBlockUpdate'
 import { useImageUpload } from '../../../../../../../libs/useImageUpload'
 
-export const IMAGE_BLOCK_UPDATE = gql`
-  mutation MediaScreenImageBlockUpdate(
+export const LOGO_IMAGE_BLOCK_UPDATE = gql`
+  mutation MediaScreenLogoImageBlockUpdate(
     $id: ID!
     $input: ImageBlockUpdateInput!
   ) {
@@ -42,9 +42,9 @@ export function LogoSection(): ReactElement {
   const logoImageBlock = journey?.logoImageBlock
 
   const [imageBlockUpdate] = useMutation<
-    MediaScreenImageBlockUpdate,
-    MediaScreenImageBlockUpdateVariables
-  >(IMAGE_BLOCK_UPDATE)
+    MediaScreenLogoImageBlockUpdate,
+    MediaScreenLogoImageBlockUpdateVariables
+  >(LOGO_IMAGE_BLOCK_UPDATE)
 
   async function handleUploadComplete(src: string): Promise<void> {
     if (logoImageBlock == null) return
