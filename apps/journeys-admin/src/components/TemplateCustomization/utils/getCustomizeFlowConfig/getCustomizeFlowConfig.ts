@@ -1,4 +1,5 @@
 import { TFunction } from 'i18next'
+import { useUser } from 'next-firebase-auth'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { JourneyLink, getJourneyLinks } from '../getJourneyLinks'
@@ -60,6 +61,9 @@ export function getCustomizeFlowConfig(
       journey.journeyCustomizationFields.length > 0
   )
 
+  // Check to see if the user is not signed in
+  const isNotSignedIn = useUser()?.email ==  null
+
   // Check for customizable links
   const hasCustomizableLinks = links.length > 0
 
@@ -76,6 +80,12 @@ export function getCustomizeFlowConfig(
     // Insert links screen before social screen, but after text screen if it exists
     const socialIndex = screens.indexOf('social')
     screens.splice(socialIndex, 0, 'links')
+  }
+
+  if (isNotSignedIn) {
+    // Insert guest preview screen before social screen
+    const socialIndex = screens.indexOf('social')
+    screens.splice(socialIndex, 0, 'guestPreview')
   }
 
   return {

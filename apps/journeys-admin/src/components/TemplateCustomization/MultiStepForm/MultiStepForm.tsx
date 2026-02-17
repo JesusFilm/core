@@ -60,9 +60,11 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
-    case 'done':
-      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+    // case 'done':
     case 'guestPreview':
+      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+    // case 'guestPreview':
+    case 'done':
       return (
         <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
       )
@@ -94,6 +96,11 @@ export function MultiStepForm(): ReactElement {
   }
 
   const link = `/journeys/${journey?.id ?? ''}`
+
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? (screens.indexOf('guestPreview') - 1)
+      : screens.indexOf(activeScreen)
 
   return (
     <Container
@@ -132,7 +139,7 @@ export function MultiStepForm(): ReactElement {
         {(hasEditableText || hasCustomizableLinks) && (
           <Box sx={{ mt: { xs: 3, sm: 6 } }}>
             <ProgressStepper
-              activeStepNumber={screens.indexOf(activeScreen)}
+              activeStepNumber={activeStepForStepper}
               totalSteps={totalSteps}
             />
           </Box>
