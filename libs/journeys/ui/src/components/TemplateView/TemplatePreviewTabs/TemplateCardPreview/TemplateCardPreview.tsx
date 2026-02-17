@@ -92,17 +92,6 @@ export function TemplateCardPreview({
   const { t } = useTranslation('libs-journeys-ui')
   const [swiper, setSwiper] = useState<SwiperClass>()
 
-  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: {
-      spaceBetween: 12,
-      slidesOffsetAfter: variant === 'media' ? 200 : 0
-    },
-    [breakpoints.values.sm]: {
-      spaceBetween: variant === 'preview' ? 28 : 12,
-      slidesOffsetAfter: variant === 'media' ? 400 : 0
-    }
-  }
-
   const config = VARIANT_CONFIGS[variant]
   const {
     cardWidth,
@@ -115,20 +104,31 @@ export function TemplateCardPreview({
     modules
   } = config
 
-  if (steps == null) {
-    return (
-      <TemplateCardPreviewPlaceholder
-        cardWidth={cardWidth}
-        cardHeight={cardHeight}
-      />
-    )
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: {
+      spaceBetween: 12,
+      slidesOffsetAfter: variant === 'media' ? 200 : 0
+    },
+    [breakpoints.values.sm]: {
+      spaceBetween: variant === 'preview' ? 28 : 12,
+      slidesOffsetAfter: variant === 'media' ? 400 : 0
+    }
   }
 
-  const slidesToRender: Array<TreeBlock<StepBlock>> =
-    variant === 'media' ? steps : take(steps, 7)
+  const slidesToRender =
+    steps != null
+      ? variant === 'media'
+        ? steps
+        : take(steps, 7)
+      : []
 
   useEffect(() => {
-    if (variant !== 'media' || swiper == null || selectedStep == null) return
+    if (
+      variant !== 'media' ||
+      swiper == null ||
+      selectedStep == null
+    )
+      return
 
     const index = slidesToRender.findIndex(
       (step) => step.id === selectedStep.id
@@ -138,7 +138,7 @@ export function TemplateCardPreview({
     swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
-  return (
+  return steps != null ? (
     <StyledSwiper
       modules={modules}
       breakpoints={swiperBreakpoints}
@@ -248,5 +248,10 @@ export function TemplateCardPreview({
         </StyledSwiperSlide>
       )}
     </StyledSwiper>
+  ) : (
+    <TemplateCardPreviewPlaceholder
+      cardWidth={cardWidth}
+      cardHeight={cardHeight}
+    />
   )
 }
