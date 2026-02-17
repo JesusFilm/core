@@ -1,5 +1,6 @@
-import { TreeBlock } from '@core/journeys/ui/block'
 import { fireEvent, render, screen } from '@testing-library/react'
+
+import { TreeBlock } from '@core/journeys/ui/block'
 
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../../../../../__generated__/GetJourney'
 
@@ -9,7 +10,10 @@ jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-const createStepBlock = (id: string, parentOrder: number): TreeBlock<StepBlock> =>
+const createStepBlock = (
+  id: string,
+  parentOrder: number
+): TreeBlock<StepBlock> =>
   ({
     id,
     __typename: 'StepBlock',
@@ -41,7 +45,6 @@ describe('CardsSection', () => {
     )
     expect(screen.getByTestId('CardsSection')).toBeInTheDocument()
     expect(screen.getByText('Cards')).toBeInTheDocument()
-
   })
 
   it('should render step cards via TemplateCardPreview', () => {

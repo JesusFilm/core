@@ -157,7 +157,7 @@ describe('MediaScreen', () => {
 
     expect(handleNext).toHaveBeenCalledTimes(1)
   })
-  
+
   it('should hide ImagesSection when selected card has no customizable images', () => {
     const journeyWithMixedImages = {
       ...baseJourney,

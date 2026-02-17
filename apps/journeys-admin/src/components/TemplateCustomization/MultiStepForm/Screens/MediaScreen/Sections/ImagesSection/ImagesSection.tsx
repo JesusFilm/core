@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -15,7 +16,6 @@ import {
 import { getCustomizableImageBlocks } from '../../utils'
 
 import { ImageSectionItem } from './ImageSectionItem'
-import Stack from '@mui/material/Stack'
 
 export const IMAGE_BLOCK_UPDATE = gql`
   mutation MediaScreenImageBlockUpdate(
@@ -70,7 +70,11 @@ export function ImagesSection({
   }
 
   return (
-    <Stack data-testid="ImagesSection" gap={2} sx={{ width: '100%', alignSelf: 'flex-start' }}>
+    <Stack
+      data-testid="ImagesSection"
+      gap={2}
+      sx={{ width: '100%', alignSelf: 'flex-start' }}
+    >
       <Typography
         variant="subtitle2"
         gutterBottom

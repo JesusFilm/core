@@ -1,12 +1,12 @@
-import { TreeBlock } from '@core/journeys/ui/block'
-import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
+import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import Stack from '@mui/material/Stack'
 
 interface CardsSectionProps {
   customizableSteps: Array<TreeBlock<StepBlock>>
@@ -37,13 +37,13 @@ export function CardsSection({
       gap={4}
       data-testid="CardsSection"
       sx={{
-        width: '100%',
+        width: '100%'
       }}
     >
       <Typography variant="h6" sx={{ color: 'text.primary' }}>
         {t('Cards')}
       </Typography>
-      <Box sx={{ width: '100%', px: {xs: 0, sm: 5}}}>
+      <Box sx={{ width: '100%', px: { xs: 0, sm: 5 } }}>
         <TemplateCardPreview
           steps={customizableSteps}
           variant="media"

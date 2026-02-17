@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -23,7 +24,6 @@ import {
 } from '../../utils'
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
-import Stack from '@mui/material/Stack'
 
 interface UploadButtonProps {
   loading: boolean
@@ -39,7 +39,7 @@ function UploadButton({
   label
 }: UploadButtonProps): ReactElement {
   return (
-    <Box sx={{ py: 2}}>
+    <Box sx={{ py: 2 }}>
       <input {...getInputProps()} />
       <Button
         size="small"
@@ -53,10 +53,7 @@ function UploadButton({
           borderRadius: 2
         }}
       >
-        <Typography
-          variant="subtitle2"
-          sx={{ color: 'text.secondary' }}
-        >
+        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
           {label}
         </Typography>
       </Button>

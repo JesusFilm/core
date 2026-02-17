@@ -73,7 +73,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         sx={{
           width: '100%',
           px: { xs: 0, sm: 10 },
-          overflow: { xs: 'visible', sm: 'hidden' },
+          overflow: { xs: 'visible', sm: 'hidden' }
         }}
       >
         <Stack gap={3} alignItems="center">
