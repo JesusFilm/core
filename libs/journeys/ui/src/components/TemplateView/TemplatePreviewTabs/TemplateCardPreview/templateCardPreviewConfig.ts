@@ -91,8 +91,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '24px'
   },
   breakpoints: {
-    xs: { spaceBetween: 12, slidesOffsetAfter: 200 },
-    sm: { spaceBetween: 12, slidesOffsetAfter: 400 }
+    xs: { spaceBetween: 12, slidesOffsetAfter: 265 },
+    sm: { spaceBetween: 12, slidesOffsetAfter: 260 }
   },
   swiperProps: {
     mousewheel: { forceToAxis: true },
@@ -118,7 +118,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '12px'
   },
   swiperSx: {
-    overflow: 'hidden',
+    overflow: 'visible',
     zIndex: 2,
     '& .swiper-wrapper': {
       alignItems: 'center'
