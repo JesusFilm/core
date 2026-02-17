@@ -99,7 +99,7 @@ export function MultiStepForm(): ReactElement {
 
   const activeStepForStepper =
     activeScreen === 'guestPreview'
-      ? (screens.indexOf('guestPreview') - 1)
+      ? screens.indexOf('guestPreview') - 1
       : screens.indexOf(activeScreen)
 
   return (

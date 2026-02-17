@@ -62,7 +62,7 @@ export function getCustomizeFlowConfig(
   )
 
   // Check to see if the user is not signed in
-  const isNotSignedIn = useUser()?.email ==  null
+  const isNotSignedIn = useUser()?.email == null
 
   // Check for customizable links
   const hasCustomizableLinks = links.length > 0
