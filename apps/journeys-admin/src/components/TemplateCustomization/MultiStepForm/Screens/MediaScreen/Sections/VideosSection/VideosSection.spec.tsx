@@ -28,13 +28,11 @@ jest.mock('../../../../../utils/useVideoUpload/useVideoUpload', () => ({
   useVideoUpload: (...args: unknown[]) => mockUseVideoUpload(...args)
 }))
 
-const mockShowSnackbar = jest.fn()
-jest.mock(
-  '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar',
-  () => ({
-    createShowSnackbar: () => mockShowSnackbar
-  })
-)
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
 
 const mockVideoBlockUpdate = jest.fn()
 jest.mock('@apollo/client', () => {
@@ -350,9 +348,9 @@ describe('VideosSection', () => {
       })
 
       await waitFor(() => {
-        expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
           'File uploaded successfully',
-          'success'
+          { variant: 'success' }
         )
       })
 
@@ -384,9 +382,9 @@ describe('VideosSection', () => {
       })
 
       await waitFor(() => {
-        expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
           'Upload failed. Please try again',
-          'error'
+          { variant: 'error' }
         )
       })
 
@@ -414,9 +412,9 @@ describe('VideosSection', () => {
       expect(capturedOnUploadError).toBeDefined()
       capturedOnUploadError!()
 
-      expect(mockShowSnackbar).toHaveBeenCalledWith(
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
         'Upload failed. Please try again',
-        'error'
+        { variant: 'error' }
       )
     })
   })
