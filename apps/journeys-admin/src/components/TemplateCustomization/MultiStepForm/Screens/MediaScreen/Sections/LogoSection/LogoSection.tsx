@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
@@ -17,7 +17,6 @@ import {
   MediaScreenLogoImageBlockUpdateVariables
 } from '../../../../../../../../__generated__/MediaScreenLogoImageBlockUpdate'
 import { useImageUpload } from '../../../../../../../libs/useImageUpload'
-import { createShowSnackbar } from '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar'
 
 export const LOGO_IMAGE_BLOCK_UPDATE = gql`
   mutation MediaScreenLogoImageBlockUpdate(
@@ -41,11 +40,7 @@ export const LOGO_IMAGE_BLOCK_UPDATE = gql`
 export function LogoSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const showSnackbar = useMemo(
-    () => createShowSnackbar(enqueueSnackbar, closeSnackbar),
-    [enqueueSnackbar, closeSnackbar]
-  )
+  const { enqueueSnackbar } = useSnackbar()
   const logoImageBlock = journey?.logoImageBlock
 
   const [imageBlockUpdate] = useMutation<
@@ -62,9 +57,9 @@ export function LogoSection(): ReactElement {
           input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
         }
       })
-      showSnackbar(t('File uploaded successfully'), 'success')
+      enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
     } catch {
-      showSnackbar(t('Upload failed. Please try again'), 'error')
+      enqueueSnackbar(t('Upload failed. Please try again'), { variant: 'error' })
     }
   }
 
