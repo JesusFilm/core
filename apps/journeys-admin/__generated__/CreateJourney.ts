@@ -22,7 +22,7 @@ export interface CreateJourney_journeyCreate_language {
 }
 
 export interface CreateJourney_journeyCreate_userJourneys_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;

@@ -71,6 +71,7 @@ interface DefaultMenuProps {
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -109,7 +110,8 @@ export function DefaultMenu({
   setOpenTranslateDialog,
   handleKeepMounted,
   template,
-  refetch
+  refetch,
+  setHasOpenDialog
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -186,6 +188,7 @@ export function DefaultMenu({
         onClick={() => {
           setOpenDetailsDialog()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
       />
       <Divider />
@@ -196,6 +199,7 @@ export function DefaultMenu({
           onClick={() => {
             setOpenAccessDialog()
             handleCloseMenu()
+            setHasOpenDialog?.(true)
           }}
         />
       )}
@@ -218,6 +222,7 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
+        setHasOpenDialog={setHasOpenDialog}
       />
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
@@ -233,6 +238,7 @@ export function DefaultMenu({
             onClick={() => {
               setOpenTranslateDialog()
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
           />
           <Divider />
@@ -267,6 +273,7 @@ export function DefaultMenu({
           handleCloseMenu={handleCloseMenu}
           handleKeepMounted={handleKeepMounted}
           journey={journey}
+          setHasOpenDialog={setHasOpenDialog}
         />
       )}
       {activeTeam != null && (
@@ -285,6 +292,7 @@ export function DefaultMenu({
             onClick={() => {
               setOpenTrashDialog()
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
             disabled={cantManageJourney}
           />

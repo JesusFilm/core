@@ -26,7 +26,9 @@ describe('user', () => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'id',
       userId: 'userId',
-      roles: [MediaRole.publisher]
+      roles: [MediaRole.publisher],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
     const data = await authClient({
       document: VIDEO_ROLES
