@@ -2,6 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import {
@@ -49,6 +50,7 @@ export function ImagesSection({
   cardBlockId
 }: ImagesSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const [imageBlockUpdate] = useMutation<
     MediaScreenImageBlockUpdate,
     MediaScreenImageBlockUpdateVariables
@@ -60,12 +62,17 @@ export function ImagesSection({
     blockId: string,
     src: string
   ): Promise<void> {
-    await imageBlockUpdate({
-      variables: {
-        id: blockId,
-        input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
-      }
-    })
+    try {
+      await imageBlockUpdate({
+        variables: {
+          id: blockId,
+          input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
+        }
+      })
+      enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
+    } catch {
+      enqueueSnackbar(t('Upload failed. Please try again'), { variant: 'error' })
+    }
   }
 
   return (
