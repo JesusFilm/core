@@ -11,7 +11,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { SUPPORTED_LANGUAGE_IDS } from '../../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { JOURNEY_DUPLICATE } from '../../../libs/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
@@ -949,7 +948,7 @@ describe('CreateJourneyButton', () => {
             title: 'Team Name',
             __typename: 'Team'
           }
-        } as unknown as JourneyFields
+        }
       ]
     ])('navigation (%s)', (_, nonCustomizableTemplate) => {
       it('should duplicate journey without translation and navigate to journey editor when global publish', async () => {

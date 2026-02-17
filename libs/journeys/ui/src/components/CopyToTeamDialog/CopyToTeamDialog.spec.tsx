@@ -4,7 +4,7 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { defaultJourney } from '../TemplateView/data'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
@@ -40,7 +40,7 @@ describe('CopyToTeamDialog', () => {
 
   describe.each([
     ['context journey', undefined],
-    ['prop journey', { id: 'journeyId' } as unknown as JourneyFields]
+    ['prop journey', defaultJourney]
   ])('(%s)', (_, defaultJourney) => {
     it('should set initial team selection if only 1 team', async () => {
       const result = jest.fn(() => ({
@@ -689,10 +689,10 @@ describe('CopyToTeamDialog', () => {
       [
         'prop journey',
         {
-          id: 'journeyId',
+          ...defaultJourney,
           template: true,
           fromTemplateId: 'originalTemplateId' // Not original template
-        } as unknown as JourneyFields
+        }
       ]
     ])(
       '(%s) with template journey from template',
