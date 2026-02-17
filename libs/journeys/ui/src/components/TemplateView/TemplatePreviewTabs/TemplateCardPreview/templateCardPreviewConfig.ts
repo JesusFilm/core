@@ -17,9 +17,9 @@ type BreakpointSwiperOptions = Pick<
 >
 
 export interface VariantConfig {
-  cardWidth: { xs: number; sm: number } | number
-  cardHeight: { xs: number; sm: number } | number
-  swiperHeight: { xs: number; sm: number } | number
+  cardWidth: { xs: number; sm: number }
+  cardHeight: { xs: number; sm: number }
+  swiperHeight: { xs: number; sm: number }
   showMoreCardsSlide: boolean
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
@@ -77,9 +77,9 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
 }
 
 const MEDIA_VARIANT_CONFIG: VariantConfig = {
-  cardWidth: 120,
-  cardHeight: MEDIA_CARD_HEIGHT,
-  swiperHeight: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
+  cardWidth: { xs: 120, sm: 120 },
+  cardHeight: { xs: MEDIA_CARD_HEIGHT, sm: MEDIA_CARD_HEIGHT },
+  swiperHeight: { xs: MEDIA_CARD_HEIGHT * SELECTED_SCALE, sm: MEDIA_CARD_HEIGHT * SELECTED_SCALE },
   showMoreCardsSlide: false,
   framePortal: {
     width: { xs: 300, sm: 300 },
