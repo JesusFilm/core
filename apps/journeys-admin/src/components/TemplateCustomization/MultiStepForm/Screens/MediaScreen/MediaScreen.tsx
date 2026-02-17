@@ -89,7 +89,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           selectedStep={selectedStep}
         />
       </Box>
-      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}      
+      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
       {showImages && (
         <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
       )}
