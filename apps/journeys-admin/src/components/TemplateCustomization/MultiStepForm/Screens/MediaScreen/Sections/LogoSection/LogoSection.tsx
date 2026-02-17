@@ -5,7 +5,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
@@ -16,6 +17,7 @@ import {
   MediaScreenLogoImageBlockUpdateVariables
 } from '../../../../../../../../__generated__/MediaScreenLogoImageBlockUpdate'
 import { useImageUpload } from '../../../../../../../libs/useImageUpload'
+import { createShowSnackbar } from '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar'
 
 export const LOGO_IMAGE_BLOCK_UPDATE = gql`
   mutation MediaScreenLogoImageBlockUpdate(
@@ -39,6 +41,11 @@ export const LOGO_IMAGE_BLOCK_UPDATE = gql`
 export function LogoSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const showSnackbar = useMemo(
+    () => createShowSnackbar(enqueueSnackbar, closeSnackbar),
+    [enqueueSnackbar, closeSnackbar]
+  )
   const logoImageBlock = journey?.logoImageBlock
 
   const [imageBlockUpdate] = useMutation<
@@ -55,8 +62,9 @@ export function LogoSection(): ReactElement {
           input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
         }
       })
+      showSnackbar(t('File uploaded successfully'), 'success')
     } catch {
-      // mutation error handled by Apollo
+      showSnackbar(t('Upload failed. Please try again'), 'error')
     }
   }
 
@@ -69,7 +77,7 @@ export function LogoSection(): ReactElement {
       <Typography
         variant="subtitle2"
         gutterBottom
-        sx={{ color: 'text.secondary'}}
+        sx={{ color: 'text.secondary' }}
       >
         {t('Logo')}
       </Typography>
@@ -100,39 +108,41 @@ export function LogoSection(): ReactElement {
               bgcolor: 'background.default'
             }}
           >
-          {logoImageBlock?.src != null ? (
-            <NextImage
-              src={logoImageBlock.src}
-              alt={logoImageBlock.alt ?? ''}
-              layout="fill"
-              objectFit="cover"
-            />
-          ) : (
-            <Box
-              sx={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <GridEmptyIcon sx={{ fontSize: 48, color: 'action.disabled' }} />
-            </Box>
-          )}
-          {loading && (
-            <CircularProgress
-              size={32}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                mt: -2,
-                ml: -2
-              }}
-              data-testid="LogoSection-upload-progress"
-            />
-          )}
+            {logoImageBlock?.src != null ? (
+              <NextImage
+                src={logoImageBlock.src}
+                alt={logoImageBlock.alt ?? ''}
+                layout="fill"
+                objectFit="cover"
+              />
+            ) : (
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <GridEmptyIcon
+                  sx={{ fontSize: 48, color: 'action.disabled' }}
+                />
+              </Box>
+            )}
+            {loading && (
+              <CircularProgress
+                size={32}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  mt: -2,
+                  ml: -2
+                }}
+                data-testid="LogoSection-upload-progress"
+              />
+            )}
           </Box>
         </Box>
         <Box
@@ -142,10 +152,7 @@ export function LogoSection(): ReactElement {
             alignItems: 'center'
           }}
         >
-          <input
-            {...getInputProps()}
-            data-testid="LogoSection-file-input"
-          />
+          <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Stack spacing={0.5} alignItems="flex-start">
             <Button
               size="small"

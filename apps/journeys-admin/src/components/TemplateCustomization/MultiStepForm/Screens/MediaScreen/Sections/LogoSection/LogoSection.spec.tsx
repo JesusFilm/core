@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey as baseJourneyMock } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -8,29 +9,30 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_logoImageBlock as LogoImageBlock
 } from '../../../../../../../../__generated__/GetJourney'
-// eslint-disable-next-line import/no-namespace
-import * as useImageUploadHooks from '../../../../../../../libs/useImageUpload'
+import { useImageUpload } from '../../../../../../../libs/useImageUpload'
 
 import { LOGO_IMAGE_BLOCK_UPDATE, LogoSection } from './LogoSection'
 
-jest.mock('next-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({
-    t: (str: string) => str
-  })
-}))
+const useImageUploadModule = jest.requireActual<
+  typeof import('../../../../../../../libs/useImageUpload')
+>('../../../../../../../libs/useImageUpload')
 
 jest.mock('@core/shared/ui/NextImage', () => ({
-  NextImage: jest.fn(({ src, alt }) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} />
-  ))
+  NextImage: jest.fn(({ src, alt }) => <img src={src} alt={alt} />)
 }))
 
-jest.mock('../../../../../../../libs/useImageUpload', () => ({
-  __esModule: true,
-  ...jest.requireActual('../../../../../../../libs/useImageUpload')
-}))
+jest.mock('../../../../../../../libs/useImageUpload', () => {
+  const actual = jest.requireActual('../../../../../../../libs/useImageUpload')
+  return {
+    __esModule: true,
+    ...actual,
+    useImageUpload: jest.fn((...args: unknown[]) =>
+      (actual as { useImageUpload: (...args: unknown[]) => unknown }).useImageUpload(
+        ...args
+      )
+    )
+  }
+})
 
 const logoImageBlock: LogoImageBlock = {
   __typename: 'ImageBlock',
@@ -61,6 +63,9 @@ const journeyWithoutLogoSrc = {
 describe('LogoSection', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
+    jest
+      .mocked(useImageUpload)
+      .mockImplementation((...args) => useImageUploadModule.useImageUpload(...args))
   })
 
   function renderLogoSection(
@@ -69,9 +74,11 @@ describe('LogoSection', () => {
   ): ReturnType<typeof render> {
     return render(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <JourneyProvider value={{ journey: journeyData, variant: 'admin' }}>
-          <LogoSection />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: journeyData, variant: 'admin' }}>
+            <LogoSection />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
   }
@@ -120,7 +127,7 @@ describe('LogoSection', () => {
 
   it('calls open when Upload File button is clicked', () => {
     const open = jest.fn()
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
+    jest.mocked(useImageUpload).mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn().mockReturnValue({}),
       open,
@@ -134,7 +141,7 @@ describe('LogoSection', () => {
   })
 
   it('shows loading spinner and disables button during upload', () => {
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
+    jest.mocked(useImageUpload).mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn().mockReturnValue({}),
       open: jest.fn(),
@@ -156,10 +163,66 @@ describe('LogoSection', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('calls imageBlockUpdate mutation on upload complete', async () => {
+  it('calls imageBlockUpdate mutation and shows success snackbar on upload complete', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
     jest
-      .spyOn(useImageUploadHooks, 'useImageUpload')
+      .mocked(useImageUpload)
+      .mockImplementation((options) => {
+        onUploadCompleteCallback = options.onUploadComplete
+        return {
+          getRootProps: jest.fn(),
+          getInputProps: jest.fn().mockReturnValue({}),
+          open: jest.fn(),
+          loading: false
+        } as any
+      })
+
+    const mutationResultSpy = jest.fn().mockReturnValue({
+      data: {
+        imageBlockUpdate: {
+          id: 'logo-block-id',
+          src: 'https://example.com/new-logo.png',
+          alt: 'Logo',
+          blurhash: '',
+          width: 100,
+          height: 100,
+          scale: 100,
+          focalTop: 50,
+          focalLeft: 50
+        }
+      }
+    })
+
+    const mutationMock: MockedResponse = {
+      request: {
+        query: LOGO_IMAGE_BLOCK_UPDATE,
+        variables: {
+          id: 'logo-block-id',
+          input: {
+            src: 'https://example.com/new-logo.png',
+            scale: 100,
+            focalLeft: 50,
+            focalTop: 50
+          }
+        }
+      },
+      result: mutationResultSpy
+    }
+
+    renderLogoSection(journeyWithLogo, [mutationMock])
+
+    onUploadCompleteCallback('https://example.com/new-logo.png')
+
+    await waitFor(() => {
+      expect(mutationResultSpy).toHaveBeenCalled()
+    })
+    expect(screen.getByText('File uploaded successfully')).toBeInTheDocument()
+  })
+
+  it('shows error snackbar when mutation fails', async () => {
+    let onUploadCompleteCallback: (url: string) => void = jest.fn()
+    jest
+      .mocked(useImageUpload)
       .mockImplementation((options) => {
         onUploadCompleteCallback = options.onUploadComplete
         return {
@@ -175,24 +238,15 @@ describe('LogoSection', () => {
         query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {
           id: 'logo-block-id',
-          input: { src: 'https://example.com/new-logo.png', scale: 100, focalLeft: 50, focalTop: 50 }
-        }
-      },
-      result: {
-        data: {
-          imageBlockUpdate: {
-            id: 'logo-block-id',
+          input: {
             src: 'https://example.com/new-logo.png',
-            alt: 'Logo',
-            blurhash: '',
-            width: 100,
-            height: 100,
             scale: 100,
-            focalTop: 50,
-            focalLeft: 50
+            focalLeft: 50,
+            focalTop: 50
           }
         }
-      }
+      },
+      error: new Error('Network error')
     }
 
     renderLogoSection(journeyWithLogo, [mutationMock])
@@ -200,7 +254,9 @@ describe('LogoSection', () => {
     onUploadCompleteCallback('https://example.com/new-logo.png')
 
     await waitFor(() => {
-      expect(mutationMock.result).toBeDefined()
+      expect(
+        screen.getByText('Upload failed. Please try again')
+      ).toBeInTheDocument()
     })
   })
 
@@ -209,7 +265,7 @@ describe('LogoSection', () => {
     const mutationSpy = jest.fn()
 
     jest
-      .spyOn(useImageUploadHooks, 'useImageUpload')
+      .mocked(useImageUpload)
       .mockImplementation((options) => {
         onUploadCompleteCallback = options.onUploadComplete
         return {
@@ -230,7 +286,12 @@ describe('LogoSection', () => {
         query: LOGO_IMAGE_BLOCK_UPDATE,
         variables: {
           id: '',
-          input: { src: 'https://example.com/new-logo.png', scale: 100, focalLeft: 50, focalTop: 50 }
+          input: {
+            src: 'https://example.com/new-logo.png',
+            scale: 100,
+            focalLeft: 50,
+            focalTop: 50
+          }
         }
       },
       result: mutationSpy
