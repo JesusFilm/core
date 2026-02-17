@@ -191,7 +191,7 @@ describe('VideosSection', () => {
   it('renders upload button with Upload file text', () => {
     renderVideosSection()
     expect(
-      screen.getByRole('button', { name: 'Upload file' })
+      screen.getByRole('button', { name: 'Upload File' })
     ).toBeInTheDocument()
   })
 
@@ -256,7 +256,7 @@ describe('VideosSection', () => {
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.getByRole('button', { name: 'Upload file' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
   })
 
   it('calls onLoading with true when loading', () => {
@@ -302,7 +302,7 @@ describe('VideosSection', () => {
       cardBlockId
     })
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Upload file' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
   })
 
   describe('upload flow integration', () => {
@@ -358,7 +358,7 @@ describe('VideosSection', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Upload file' })
+          screen.getByRole('button', { name: 'Upload File' })
         ).toBeEnabled()
       })
     })
@@ -392,7 +392,7 @@ describe('VideosSection', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Upload file' })
+          screen.getByRole('button', { name: 'Upload File' })
         ).toBeEnabled()
       })
     })
