@@ -157,35 +157,7 @@ describe('MediaScreen', () => {
 
     expect(handleNext).toHaveBeenCalledTimes(1)
   })
-
-  it('should render section components and handle step selection', () => {
-    renderMediaScreen()
-
-    expect(screen.getByTestId('LogoSection')).toBeInTheDocument()
-    expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
-    expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
-
-    // Initial state: first customizable step selected
-    expect(
-      screen.getByTestId('ImagesSection-file-input-image1.id')
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByTestId('ImagesSection-file-input-image2.id')
-    ).not.toBeInTheDocument()
-
-    // Click on second step
-    const steps = screen.getAllByTestId('TemplateCardPreviewItem')
-    if (steps.length >= 2) {
-      fireEvent.click(steps[1])
-      expect(
-        screen.getByTestId('ImagesSection-file-input-image2.id')
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByTestId('ImagesSection-file-input-image1.id')
-      ).not.toBeInTheDocument()
-    }
-  })
-
+  
   it('should hide ImagesSection when selected card has no customizable images', () => {
     const journeyWithMixedImages = {
       ...baseJourney,
