@@ -17,9 +17,9 @@ type BreakpointSwiperOptions = Pick<
 >
 
 export interface VariantConfig {
-  cardWidth: { xs: number; sm: number }
-  cardHeight: { xs: number; sm: number }
-  swiperHeight: { xs: number; sm: number }
+  cardWidth: { xs: number; sm: number } | number
+  cardHeight: { xs: number; sm: number } | number
+  swiperHeight: { xs: number; sm: number } | number
   showMoreCardsSlide: boolean
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
@@ -31,11 +31,14 @@ export interface VariantConfig {
 }
 
 export const SELECTED_SCALE = 1.07
+const MEDIA_CARD_HEIGHT = 209
+const PREVIEW_CARD_HEIGHT_XS = 295
+const PREVIEW_CARD_HEIGHT_SM = 404
 
 const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 194, sm: 267 },
-  cardHeight: { xs: 295, sm: 404 },
-  swiperHeight: { xs: 295, sm: 404 },
+  cardHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
+  swiperHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
   showMoreCardsSlide: true,
   framePortal: {
     width: { xs: 485, sm: 445 },
@@ -74,9 +77,9 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
 }
 
 const MEDIA_VARIANT_CONFIG: VariantConfig = {
-  cardWidth: { xs: 120, sm: 120 },
-  cardHeight: { xs: 209, sm: 209 },
-  swiperHeight: { xs: 229 * SELECTED_SCALE, sm: 229 * SELECTED_SCALE },
+  cardWidth: 120,
+  cardHeight: MEDIA_CARD_HEIGHT,
+  swiperHeight: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
   showMoreCardsSlide: false,
   framePortal: {
     width: { xs: 300, sm: 300 },
