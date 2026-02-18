@@ -1,3 +1,4 @@
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
@@ -6,9 +7,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
-import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import VideoJsPlayer from '@core/journeys/ui/Video/utils/videoJsTypes'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+
 import type { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { getVideoPoster } from '../../utils/videoSectionUtils'
