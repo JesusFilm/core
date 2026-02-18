@@ -1,22 +1,15 @@
-import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
+import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
-import {
-  IdType,
-  VideoBlockSource
-} from '../../../../../../../../__generated__/globalTypes'
-import { VIDEO_BLOCK_UPDATE } from '../../../../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
-import { useVideoUpload } from '../../../../../utils/useVideoUpload/useVideoUpload'
+import { useTemplateVideoUpload } from '../../../../TemplateVideoUploadProvider'
 import {
   getCustomizableCardVideoBlock,
   getVideoBlockDisplayTitle
@@ -29,14 +22,21 @@ interface UploadButtonProps {
   open: () => void
   getInputProps: () => Record<string, unknown>
   label: string
+  defaultMessage: string
+  errorMessage?: string
 }
 
 function UploadButton({
   loading,
   open,
   getInputProps,
-  label
+  label,
+  defaultMessage,
+  errorMessage
 }: UploadButtonProps): ReactElement {
+  const displayMessage = errorMessage ?? defaultMessage
+  const isError = errorMessage != null
+
   return (
     <Box sx={{ py: 2 }}>
       <input {...getInputProps()} />
@@ -56,6 +56,15 @@ function UploadButton({
           {label}
         </Typography>
       </Button>
+      <Typography
+        variant="caption"
+        sx={{
+          color: isError ? 'error.main' : 'text.secondary',
+          mt: 0.5
+        }}
+      >
+        {displayMessage}
+      </Typography>
     </Box>
   )
 }
@@ -82,7 +91,6 @@ function VideoTitle({ title }: VideoTitleProps): ReactElement {
 
 interface VideosSectionProps {
   cardBlockId: string | null
-  onLoading?: (loading: boolean) => void
 }
 
 /**
@@ -90,64 +98,36 @@ interface VideosSectionProps {
  * customizable video preview (YouTube, Mux, or internal).
  */
 export function VideosSection({
-  cardBlockId,
-  onLoading
+  cardBlockId
 }: VideosSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { enqueueSnackbar } = useSnackbar()
+  const { startUpload, getUploadStatus } = useTemplateVideoUpload()
+
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
   const videoBlockDisplayTitle =
     videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
 
-  const [updating, setUpdating] = useState(false)
-  const [videoBlockUpdate] = useMutation(VIDEO_BLOCK_UPDATE)
+  const uploadStatus = videoBlock != null ? getUploadStatus(videoBlock.id) : null
+  const loading =
+    uploadStatus != null &&
+    (uploadStatus.status === 'uploading' ||
+      uploadStatus.status === 'processing' ||
+      uploadStatus.status === 'updating')
+  const errorMessage =
+    uploadStatus?.status === 'error' ? uploadStatus.error : undefined
 
-  const { open, getInputProps, status } = useVideoUpload({
-    onUploadComplete: async (videoId) => {
-      if (videoBlock == null || journey?.id == null) return
-      setUpdating(true)
-      try {
-        await videoBlockUpdate({
-          variables: {
-            id: videoBlock.id,
-            input: {
-              videoId,
-              source: VideoBlockSource.mux
-            }
-          },
-          refetchQueries: [
-            {
-              query: GET_JOURNEY,
-              variables: {
-                id: journey.id,
-                idType: IdType.databaseId,
-                options: { skipRoutingFilter: true }
-              }
-            }
-          ]
-        })
-        enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
-      } catch {
-        enqueueSnackbar(t('Upload failed. Please try again'), {
-          variant: 'error'
-        })
-      } finally {
-        setUpdating(false)
+  const { open, getInputProps } = useDropzone({
+    onDropAccepted: (files) => {
+      if (videoBlock != null && files[0] != null) {
+        startUpload(videoBlock.id, files[0])
       }
     },
-    onUploadError: () => {
-      enqueueSnackbar(t('Upload failed. Please try again'), {
-        variant: 'error'
-      })
-    }
+    noDrag: true,
+    multiple: false,
+    accept: { 'video/*': [] },
+    disabled: loading
   })
-
-  const loading = status === 'uploading' || status === 'processing' || updating
-
-  useEffect(() => {
-    onLoading?.(loading)
-  }, [loading, onLoading])
 
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
@@ -183,6 +163,8 @@ export function VideosSection({
         open={open}
         getInputProps={getInputProps}
         label={t('Upload File')}
+        defaultMessage={t('Max size is 1 GB')}
+        errorMessage={errorMessage}
       />
     </Stack>
   )

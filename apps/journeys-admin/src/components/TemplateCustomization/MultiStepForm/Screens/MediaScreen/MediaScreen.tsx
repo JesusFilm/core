@@ -10,6 +10,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
+import { useTemplateVideoUpload } from '../../TemplateVideoUploadProvider'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import {
@@ -31,6 +32,7 @@ interface MediaScreenProps {
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { hasActiveUploads } = useTemplateVideoUpload()
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -45,7 +47,6 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const [selectedStep, setSelectedStep] = useState<TreeBlock<StepBlock>>(
     customizableSteps[0]
   )
-  const [loading, setLoading] = useState(false)
 
   const [selectedCardBlockId, setSelectedCardBlockId] = useState<string | null>(
     getCardBlockIdFromStep(customizableSteps[0])
@@ -100,16 +101,13 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
         )}
         {showVideos && (
-          <VideosSection
-            cardBlockId={selectedCardBlockId}
-            onLoading={setLoading}
-          />
+          <VideosSection cardBlockId={selectedCardBlockId} />
         )}
         <CustomizeFlowNextButton
           label={t('Next')}
           onClick={handleNext}
           ariaLabel={t('Next')}
-          disabled={loading}
+          loading={hasActiveUploads}
         />
       </Stack>
     </Stack>

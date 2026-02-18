@@ -15,6 +15,7 @@ import {
 } from '../utils/getCustomizeFlowConfig'
 
 import { ProgressStepper } from './ProgressStepper'
+import { TemplateVideoUploadProvider } from './TemplateVideoUploadProvider'
 import {
   DoneScreen,
   LanguageScreen,
@@ -94,20 +95,21 @@ export function MultiStepForm(): ReactElement {
   const link = `/journeys/${journey?.id ?? ''}`
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        width: '100%',
-        minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
-        backgroundColor: 'background.paper',
-        borderRadius: { xs: '0px', sm: '16px' },
-        mt: { xs: 0, sm: 6 },
-        mb: { xs: 0, sm: 6 },
-        py: 10,
-        overflow: 'hidden'
-      }}
-    >
-      <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
+    <TemplateVideoUploadProvider>
+      <Container
+        maxWidth="sm"
+        sx={{
+          width: '100%',
+          minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
+          backgroundColor: 'background.paper',
+          borderRadius: { xs: '0px', sm: '16px' },
+          mt: { xs: 0, sm: 6 },
+          mb: { xs: 0, sm: 6 },
+          py: 10,
+          overflow: 'hidden'
+        }}
+      >
+        <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
@@ -149,5 +151,6 @@ export function MultiStepForm(): ReactElement {
         </Box>
       </Stack>
     </Container>
+    </TemplateVideoUploadProvider>
   )
 }
