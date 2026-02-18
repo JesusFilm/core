@@ -17,6 +17,7 @@ import {
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
   SocialScreen,
@@ -52,6 +53,10 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
+    case 'guestPreview':
+      return (
+        <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
+      )
     case 'social':
       return (
         <SocialScreen
@@ -61,6 +66,7 @@ function renderScreen(
       )
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+
     default:
       return <></>
   }
@@ -89,6 +95,11 @@ export function MultiStepForm(): ReactElement {
   }
 
   const link = `/journeys/${journey?.id ?? ''}`
+
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? screens.indexOf('guestPreview') - 1
+      : screens.indexOf(activeScreen)
 
   return (
     <Container
@@ -127,7 +138,7 @@ export function MultiStepForm(): ReactElement {
         {(hasEditableText || hasCustomizableLinks) && (
           <Box sx={{ mt: { xs: 3, sm: 6 } }}>
             <ProgressStepper
-              activeStepNumber={screens.indexOf(activeScreen)}
+              activeStepNumber={activeStepForStepper}
               totalSteps={totalSteps}
             />
           </Box>
