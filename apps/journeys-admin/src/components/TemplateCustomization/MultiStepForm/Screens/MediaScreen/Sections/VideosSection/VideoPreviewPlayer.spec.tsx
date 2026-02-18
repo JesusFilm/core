@@ -190,6 +190,27 @@ describe('VideoPreviewPlayer', () => {
     expect(mockVideojs).not.toHaveBeenCalled()
   })
 
+  it('renders skeleton placeholder when no playable source', () => {
+    const videoBlock = createBaseVideoBlock({
+      source: VideoBlockSource.youTube,
+      videoId: null,
+      mediaVideo: null
+    })
+
+    render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
+
+    expect(
+      screen.getByTestId('VideoPreviewPlayer-unsupported')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('VideoPreviewPlayer-skeleton-icon')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Upload a video to see a preview here')
+    ).toBeInTheDocument()
+    expect(mockVideojs).not.toHaveBeenCalled()
+  })
+
   it('calls getVideoPoster with videoBlock and passes result as poster to videojs', () => {
     const posterUrl = 'https://image.mux.com/playback-123/thumbnail.png?time=1'
     mockGetVideoPoster.mockReturnValue(posterUrl)

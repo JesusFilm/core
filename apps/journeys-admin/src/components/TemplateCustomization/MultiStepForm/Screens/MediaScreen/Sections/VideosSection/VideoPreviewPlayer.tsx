@@ -1,10 +1,14 @@
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
+import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import VideoJsPlayer from '@core/journeys/ui/Video/utils/videoJsTypes'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
-
 import type { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { getVideoPoster } from '../../utils/videoSectionUtils'
@@ -75,6 +79,7 @@ function getVideoSource(videoBlock: VideoBlock): VideoSource | null {
 export function VideoPreviewPlayer({
   videoBlock
 }: VideoPreviewPlayerProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const containerRef = useRef<HTMLDivElement>(null)
   const playerRef = useRef<VideoJsPlayer | null>(null)
 
@@ -109,9 +114,54 @@ export function VideoPreviewPlayer({
     }
   }, [videoSrc, videoType, poster])
 
-  // Unsupported source: render nothing (caller can hide section or show message)
+  // No playable source: show video skeleton placeholder with icon and helper text
   if (videoSource == null) {
-    return <Box data-testid="VideoPreviewPlayer-unsupported" />
+    return (
+      <Stack gap={1}>
+        <Box
+          role="region"
+          aria-label="Video preview placeholder"
+          data-testid="VideoPreviewPlayer-unsupported"
+          sx={{
+            borderRadius: 3,
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            sx={{ borderRadius: 3 }}
+            animation={false}
+          >
+            <div style={{ paddingTop: '56.25%' }} />
+          </Skeleton>
+          <Box
+            data-testid="VideoPreviewPlayer-skeleton-icon"
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            aria-hidden
+          >
+            <VideocamRounded
+              sx={{
+                fontSize: 64
+              }}
+            />
+          </Box>
+        </Box>
+        <Typography variant="caption" color="text.secondary">
+          {t('Upload a video to see a preview here')}
+        </Typography>
+      </Stack>
+    )
   }
 
   return (
