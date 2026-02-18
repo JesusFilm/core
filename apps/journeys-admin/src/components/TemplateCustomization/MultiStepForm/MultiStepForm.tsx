@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
@@ -75,6 +75,27 @@ export function MultiStepForm(): ReactElement {
 
   const [activeScreen, setActiveScreen] =
     useState<CustomizationScreen>('language')
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Because of how react renders the screens, the scroll position is not reset when the screen changes.
+  // This is a workaround to reset the scroll position when the screen changes.
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      const scrollContainer = document.querySelector<HTMLElement>(
+        '[data-testid="MainPanelBody"]'
+      )
+      if (scrollContainer != null) {
+        scrollContainer.scrollTop = 0
+      }
+
+      const appHeader = document.querySelector<HTMLElement>('#app-header')
+      if (appHeader != null) {
+        requestAnimationFrame(() => {
+          appHeader.scrollIntoView({ block: 'start', behavior: 'instant' })
+        })
+      }
+    })
+  }, [activeScreen])
 
   async function handleNext(): Promise<void> {
     if (activeScreen !== screens[screens.length - 1]) {
@@ -92,6 +113,7 @@ export function MultiStepForm(): ReactElement {
 
   return (
     <Container
+      ref={containerRef}
       maxWidth="sm"
       sx={{
         width: '100%',
@@ -134,6 +156,7 @@ export function MultiStepForm(): ReactElement {
         )}
 
         <Box
+          key={activeScreen}
           sx={{
             alignSelf: 'center',
             width: '100%',
