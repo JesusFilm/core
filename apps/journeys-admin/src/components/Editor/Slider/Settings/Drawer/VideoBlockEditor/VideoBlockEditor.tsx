@@ -13,6 +13,7 @@ import { VideoBlockUpdateInput } from '../../../../../../../__generated__/global
 import { BlockCustomizationToggle } from '../../CanvasDetails/Properties/controls/BlockCustomizationToggle'
 
 import { Source } from './Source'
+import Stack from '@mui/material/Stack'
 
 const VideoBlockEditorSettings = dynamic(
   async () =>
@@ -43,16 +44,20 @@ export function VideoBlockEditor({
 
   return (
     <>
-      <Box sx={{ p: 4, pt: 0 }} data-testid="VideoBlockEditor">
+      <Stack sx={{ p: 4, pt: 0 }} gap={4} data-testid="VideoBlockEditor">
         <Source
           key={selectedBlock?.videoId}
           selectedBlock={selectedBlock}
           onChange={onChange}
         />
-      </Box>
-      {journey?.template && selectedBlock != null && (
-        <BlockCustomizationToggle block={selectedBlock} />
-      )}
+        {journey?.template && (
+          <BlockCustomizationToggle
+            block={selectedBlock ?? undefined}
+            mediaTypeWhenEmpty="video"
+          />
+        )}
+      </Stack>
+
       {videoBlock?.videoId != null && (
         <Box pb={4}>
           <VideoBlockEditorSettings

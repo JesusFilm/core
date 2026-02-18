@@ -80,9 +80,14 @@ export function ImageSource({
           <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
         </CardActionArea>
       </Card>
-      {journey?.template && selectedBlock != null && (
+      {journey?.template && (
         <BlockCustomizationToggle
-          block={selectedBlock as TreeBlock<ImageBlock>}
+          block={
+            selectedBlock != null
+              ? (selectedBlock as TreeBlock<ImageBlock>)
+              : undefined
+          }
+          mediaTypeWhenEmpty="image"
         />
       )}
       {open != null && (

@@ -338,6 +338,8 @@
   "Navigate to:": "Navigate to:",
   "Toggle customizable": "Toggle customizable",
   "Needs Customization": "Needs Customization",
+  "Add an image to make this customizable": "Add an image to make this customizable",
+  "Add a video to make this customizable": "Add a video to make this customizable",
   "Invalid URL": "Invalid URL",
   "Start a chat with the provided URL.": "Start a chat with the provided URL.",
   "Paste chat URL here...": "Paste chat URL here...",
