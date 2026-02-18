@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { ReactElement } from 'react'
 
@@ -13,7 +14,6 @@ import { VideoBlockUpdateInput } from '../../../../../../../__generated__/global
 import { BlockCustomizationToggle } from '../../CanvasDetails/Properties/controls/BlockCustomizationToggle'
 
 import { Source } from './Source'
-import Stack from '@mui/material/Stack'
 
 const VideoBlockEditorSettings = dynamic(
   async () =>
@@ -38,7 +38,7 @@ export function VideoBlockEditor({
   const { journey } = useJourney()
   const posterBlock = selectedBlock?.children.find(
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
-  ) as ImageBlock | null
+  )
 
   const videoBlock = selectedBlock as VideoBlock
 
