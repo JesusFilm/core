@@ -93,7 +93,7 @@ describe('ImageSectionItem', () => {
     )
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument()
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('ImageRoundedIcon')).toBeInTheDocument()
   })
 
   it('should render the edit button', () => {
