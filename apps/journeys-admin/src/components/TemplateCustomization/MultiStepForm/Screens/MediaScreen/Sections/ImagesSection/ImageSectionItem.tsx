@@ -1,10 +1,10 @@
+import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import { NextImage } from '@core/shared/ui/NextImage'
 
