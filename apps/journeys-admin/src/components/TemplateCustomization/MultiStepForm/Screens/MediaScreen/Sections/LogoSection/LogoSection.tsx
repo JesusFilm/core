@@ -3,16 +3,10 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-interface LogoSectionProps {
-  cardBlockId: string | null
-}
-
 /**
  * TODO: update this jsdoc after you implement this component
  */
-export function LogoSection({
-  cardBlockId: _cardBlockId
-}: LogoSectionProps): ReactElement {
+export function LogoSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (

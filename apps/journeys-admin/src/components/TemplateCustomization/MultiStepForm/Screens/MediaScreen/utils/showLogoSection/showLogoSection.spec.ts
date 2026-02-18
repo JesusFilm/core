@@ -4,7 +4,7 @@
 import { showLogoSection } from './showLogoSection'
 
 describe('showLogoSection', () => {
-  it('returns true (skeleton – implement when building Logo section)', () => {
-    expect(showLogoSection()).toBe(true)
+  it('returns false (skeleton – implement when building Logo section)', () => {
+    expect(showLogoSection()).toBe(false)
   })
 })
