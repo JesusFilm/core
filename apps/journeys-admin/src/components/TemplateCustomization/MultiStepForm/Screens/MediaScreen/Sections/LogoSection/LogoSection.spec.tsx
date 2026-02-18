@@ -4,7 +4,7 @@ import { LogoSection } from './LogoSection'
 
 describe('LogoSection', () => {
   it('renders with LogoSection data-testid visible', () => {
-    render(<LogoSection cardBlockId={null} />)
+    render(<LogoSection />)
     expect(screen.getByTestId('LogoSection')).toBeInTheDocument()
   })
 })
