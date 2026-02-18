@@ -256,4 +256,69 @@ describe('isJourneyCustomizable', () => {
 
     expect(result).toBe(false)
   })
+
+  describe('hasCustomizableMedia', () => {
+    it('should return false when journey has only customizable media and customizableMedia option is not set', () => {
+      const journey = {
+        journeyCustomizationDescription: null,
+        journeyCustomizationFields: [],
+        blocks: [
+          {
+            __typename: 'ImageBlock',
+            id: 'img-1',
+            parentBlockId: null,
+            parentOrder: 0,
+            src: null,
+            alt: '',
+            width: 0,
+            height: 0,
+            blurhash: '',
+            scale: null,
+            focalTop: null,
+            focalLeft: null,
+            customizable: true
+          }
+        ]
+      } as unknown as Journey
+
+      expect(isJourneyCustomizable(journey)).toBe(false)
+      expect(isJourneyCustomizable(journey, false)).toBe(false)
+    })
+
+    it('should return true when journey has only customizable media and customizableMedia option is true', () => {
+      const journey = {
+        journeyCustomizationDescription: null,
+        journeyCustomizationFields: [],
+        blocks: [
+          {
+            __typename: 'ImageBlock',
+            id: 'img-1',
+            parentBlockId: null,
+            parentOrder: 0,
+            src: null,
+            alt: '',
+            width: 0,
+            height: 0,
+            blurhash: '',
+            scale: null,
+            focalTop: null,
+            focalLeft: null,
+            customizable: true
+          }
+        ]
+      } as unknown as Journey
+
+      expect(isJourneyCustomizable(journey, true)).toBe(true)
+    })
+
+    it('should return false when journey has no customization and customizableMedia option is true', () => {
+      const journey = {
+        journeyCustomizationDescription: null,
+        journeyCustomizationFields: [],
+        blocks: []
+      } as unknown as Journey
+
+      expect(isJourneyCustomizable(journey, true)).toBe(false)
+    })
+  })
 })
