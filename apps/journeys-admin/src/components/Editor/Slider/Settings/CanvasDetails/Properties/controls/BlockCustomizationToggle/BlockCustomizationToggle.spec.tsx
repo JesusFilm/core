@@ -3,10 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
-  BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
@@ -77,7 +75,8 @@ describe('BlockCustomizationToggle', () => {
     jest.clearAllMocks()
   })
 
-  it('renders toggle for ImageBlock and reflects checked state when customizable is true', () => {
+  describe('rendering', () => {
+    it('renders toggle for ImageBlock and reflects checked state when customizable is true', () => {
     const blockWithCustomizableTrue = {
       ...imageBlock,
       customizable: true
@@ -85,13 +84,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[]}>
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: blockWithCustomizableTrue
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={blockWithCustomizableTrue} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -106,9 +99,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: imageBlock }}>
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={imageBlock} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -125,13 +116,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[]}>
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: blockWithNullCustomizable
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={blockWithNullCustomizable} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -148,13 +133,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[]}>
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: blockWithCustomizableTrue
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={blockWithCustomizableTrue} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -169,9 +148,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={videoBlock} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -180,52 +157,59 @@ describe('BlockCustomizationToggle', () => {
     expect(toggle).not.toBeChecked()
   })
 
-  it('renders toggle when selectedBlock is not ImageBlock or VideoBlock - unchecked and disabled', () => {
-    const buttonBlock = {
-      id: 'button-1',
-      __typename: 'ButtonBlock',
-      label: 'Button',
-      action: null
-    } as unknown as TreeBlock<ButtonBlock>
+  it('renders toggle when block prop is undefined - unchecked and disabled', () => {
     render(
       <MockedProvider mocks={[]}>
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: buttonBlock
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={undefined} />
         </CommandProvider>
       </MockedProvider>
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
-    expect(toggle).toBeInTheDocument()
     expect(toggle).not.toBeChecked()
     expect(toggle).toBeDisabled()
   })
 
-  it('renders toggle when selectedBlock is null - unchecked and disabled', () => {
-    render(
-      <MockedProvider mocks={[]}>
-        <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: undefined }}>
-            <BlockCustomizationToggle />
-          </EditorProvider>
-        </CommandProvider>
-      </MockedProvider>
-    )
+    describe('helper text when disabled', () => {
+      it('shows image helper text when block is undefined and mediaTypeWhenEmpty is image', () => {
+        render(
+          <MockedProvider mocks={[]}>
+            <CommandProvider>
+              <BlockCustomizationToggle
+                block={undefined}
+                mediaTypeWhenEmpty="image"
+              />
+            </CommandProvider>
+          </MockedProvider>
+        )
 
-    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
-    expect(toggle).toBeInTheDocument()
-    expect(toggle).not.toBeChecked()
-    expect(toggle).toBeDisabled()
+        expect(
+          screen.getByText('Select an image to make this customizable')
+        ).toBeInTheDocument()
+      })
+
+      it('shows video helper text when block is undefined and mediaTypeWhenEmpty is video', () => {
+        render(
+          <MockedProvider mocks={[]}>
+            <CommandProvider>
+              <BlockCustomizationToggle
+                block={undefined}
+                mediaTypeWhenEmpty="video"
+              />
+            </CommandProvider>
+          </MockedProvider>
+        )
+
+        expect(
+          screen.getByText('Select a video to make this customizable')
+        ).toBeInTheDocument()
+      })
+    })
   })
 
+  describe('mutations', () => {
   it('ImageBlock: toggling on calls imageBlockUpdate with customizable true', async () => {
     const imageBlockUpdateResult = jest.fn(() => ({
       data: {
@@ -255,9 +239,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[imageBlockUpdateMock]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: imageBlock }}>
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={imageBlock} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -300,13 +282,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[imageBlockUpdateMock]}>
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: blockWithCustomizable
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={blockWithCustomizable} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -342,9 +318,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[videoBlockUpdateMock]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={videoBlock} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -381,13 +355,7 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[videoBlockUpdateMock]}>
         <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: blockWithCustomizable
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
+          <BlockCustomizationToggle block={blockWithCustomizable} />
         </CommandProvider>
       </MockedProvider>
     )
@@ -399,51 +367,9 @@ describe('BlockCustomizationToggle', () => {
       expect(videoBlockUpdateResult).toHaveBeenCalled()
     })
   })
-
-  it('clicking toggle when block is undefined does not call mutation', async () => {
-    const imageBlockUpdateResult = jest.fn()
-    const imageBlockUpdateMock: MockedResponse<
-      ImageBlockUpdate,
-      ImageBlockUpdateVariables
-    > = {
-      request: {
-        query: IMAGE_BLOCK_UPDATE,
-        variables: {
-          id: 'imageBlockId',
-          input: { customizable: true }
-        }
-      },
-      result: imageBlockUpdateResult
-    }
-    const buttonBlock = {
-      id: 'button-1',
-      __typename: 'ButtonBlock',
-      label: 'Button',
-      action: null
-    } as unknown as TreeBlock<ButtonBlock>
-
-    render(
-      <MockedProvider mocks={[imageBlockUpdateMock]}>
-        <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: buttonBlock
-            }}
-          >
-            <BlockCustomizationToggle />
-          </EditorProvider>
-        </CommandProvider>
-      </MockedProvider>
-    )
-
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
-    fireEvent.click(toggle)
-
-    await waitFor(() => {
-      expect(imageBlockUpdateResult).not.toHaveBeenCalled()
-    })
   })
 
+  describe('undo / redo', () => {
   it('undo after toggling ImageBlock customizable calls imageBlockUpdate with customizable false', async () => {
     const executeResult = jest.fn(() => ({
       data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
@@ -493,10 +419,8 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[executeMock, undoMock]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: imageBlock }}>
-            <BlockCustomizationToggle />
-            <CommandUndoItem variant="button" />
-          </EditorProvider>
+          <BlockCustomizationToggle block={imageBlock} />
+          <CommandUndoItem variant="button" />
         </CommandProvider>
       </MockedProvider>
     )
@@ -581,11 +505,9 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[executeMock, undoMock, redoMock]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: imageBlock }}>
-            <BlockCustomizationToggle />
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-          </EditorProvider>
+          <BlockCustomizationToggle block={imageBlock} />
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
         </CommandProvider>
       </MockedProvider>
     )
@@ -639,10 +561,8 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[executeMock, undoMock]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <BlockCustomizationToggle />
-            <CommandUndoItem variant="button" />
-          </EditorProvider>
+          <BlockCustomizationToggle block={videoBlock} />
+          <CommandUndoItem variant="button" />
         </CommandProvider>
       </MockedProvider>
     )
@@ -709,11 +629,9 @@ describe('BlockCustomizationToggle', () => {
     render(
       <MockedProvider mocks={[executeMock, undoMock, redoMock]}>
         <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <BlockCustomizationToggle />
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-          </EditorProvider>
+          <BlockCustomizationToggle block={videoBlock} />
+          <CommandUndoItem variant="button" />
+          <CommandRedoItem variant="button" />
         </CommandProvider>
       </MockedProvider>
     )
@@ -729,212 +647,5 @@ describe('BlockCustomizationToggle', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoResult).toHaveBeenCalled())
   })
-
-  describe('BlockCustomizationToggleProps', () => {
-    it('uses ImageBlock from block prop when selectedBlock is not ImageBlock', async () => {
-      const buttonBlock = {
-        id: 'button-1',
-        __typename: 'ButtonBlock',
-        label: 'Button',
-        action: null
-      } as unknown as TreeBlock<ButtonBlock>
-      const imageBlockUpdateResult = jest.fn(() => ({
-        data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
-      }))
-      const imageBlockUpdateMock: MockedResponse<
-        ImageBlockUpdate,
-        ImageBlockUpdateVariables
-      > = {
-        request: {
-          query: IMAGE_BLOCK_UPDATE,
-          variables: {
-            id: imageBlock.id,
-            input: {
-              customizable: true,
-              src: imageBlock.src,
-              width: imageBlock.width,
-              height: imageBlock.height,
-              blurhash: imageBlock.blurhash
-            }
-          }
-        },
-        result: imageBlockUpdateResult
-      }
-
-      render(
-        <MockedProvider mocks={[imageBlockUpdateMock]}>
-          <CommandProvider>
-            <EditorProvider initialState={{ selectedBlock: buttonBlock }}>
-              <BlockCustomizationToggle block={imageBlock} />
-            </EditorProvider>
-          </CommandProvider>
-        </MockedProvider>
-      )
-
-      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
-        name: 'Toggle customizable'
-      })
-      expect(toggle).not.toBeChecked()
-      expect(toggle).not.toBeDisabled()
-
-      fireEvent.click(toggle)
-      await waitFor(() => {
-        expect(imageBlockUpdateResult).toHaveBeenCalled()
-      })
-    })
-
-    it('uses VideoBlock from block prop when selectedBlock is not VideoBlock', async () => {
-      const buttonBlock = {
-        id: 'button-1',
-        __typename: 'ButtonBlock',
-        label: 'Button',
-        action: null
-      } as unknown as TreeBlock<ButtonBlock>
-      const videoBlockUpdateResult = jest.fn(() => ({
-        data: { videoBlockUpdate: { ...videoBlock, customizable: true } }
-      }))
-      const videoBlockUpdateMock: MockedResponse<
-        VideoBlockUpdate,
-        VideoBlockUpdateVariables
-      > = {
-        request: {
-          query: VIDEO_BLOCK_UPDATE,
-          variables: {
-            id: videoBlock.id,
-            input: { customizable: true }
-          }
-        },
-        result: videoBlockUpdateResult
-      }
-
-      render(
-        <MockedProvider mocks={[videoBlockUpdateMock]}>
-          <CommandProvider>
-            <EditorProvider initialState={{ selectedBlock: buttonBlock }}>
-              <BlockCustomizationToggle block={videoBlock} />
-            </EditorProvider>
-          </CommandProvider>
-        </MockedProvider>
-      )
-
-      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
-        name: 'Toggle customizable'
-      })
-      expect(toggle).not.toBeChecked()
-      expect(toggle).not.toBeDisabled()
-
-      fireEvent.click(toggle)
-      await waitFor(() => {
-        expect(videoBlockUpdateResult).toHaveBeenCalled()
-      })
-    })
-
-    it('block prop overrides selectedBlock when both are provided', async () => {
-      const imageBlockUpdateResult = jest.fn(() => ({
-        data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
-      }))
-      const imageBlockUpdateMock: MockedResponse<
-        ImageBlockUpdate,
-        ImageBlockUpdateVariables
-      > = {
-        request: {
-          query: IMAGE_BLOCK_UPDATE,
-          variables: {
-            id: imageBlock.id,
-            input: {
-              customizable: true,
-              src: imageBlock.src,
-              width: imageBlock.width,
-              height: imageBlock.height,
-              blurhash: imageBlock.blurhash
-            }
-          }
-        },
-        result: imageBlockUpdateResult
-      }
-      const videoBlockUpdateResult = jest.fn()
-      const videoBlockUpdateMock: MockedResponse<
-        VideoBlockUpdate,
-        VideoBlockUpdateVariables
-      > = {
-        request: {
-          query: VIDEO_BLOCK_UPDATE,
-          variables: {
-            id: videoBlock.id,
-            input: { customizable: true }
-          }
-        },
-        result: videoBlockUpdateResult
-      }
-
-      render(
-        <MockedProvider mocks={[imageBlockUpdateMock, videoBlockUpdateMock]}>
-          <CommandProvider>
-            <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-              <BlockCustomizationToggle block={imageBlock} />
-            </EditorProvider>
-          </CommandProvider>
-        </MockedProvider>
-      )
-
-      const toggle = screen.getByRole('checkbox', {
-        name: 'Toggle customizable'
-      })
-      fireEvent.click(toggle)
-
-      await waitFor(() => {
-        expect(imageBlockUpdateResult).toHaveBeenCalled()
-      })
-      expect(videoBlockUpdateResult).not.toHaveBeenCalled()
-    })
-
-    it('uses selectedBlock when block prop is undefined', async () => {
-      const imageBlockUpdateResult = jest.fn(() => ({
-        data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
-      }))
-      const imageBlockUpdateMock: MockedResponse<
-        ImageBlockUpdate,
-        ImageBlockUpdateVariables
-      > = {
-        request: {
-          query: IMAGE_BLOCK_UPDATE,
-          variables: {
-            id: imageBlock.id,
-            input: {
-              customizable: true,
-              src: imageBlock.src,
-              width: imageBlock.width,
-              height: imageBlock.height,
-              blurhash: imageBlock.blurhash
-            }
-          }
-        },
-        result: imageBlockUpdateResult
-      }
-
-      render(
-        <MockedProvider mocks={[imageBlockUpdateMock]}>
-          <CommandProvider>
-            <EditorProvider initialState={{ selectedBlock: imageBlock }}>
-              <BlockCustomizationToggle block={undefined} />
-            </EditorProvider>
-          </CommandProvider>
-        </MockedProvider>
-      )
-
-      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
-        name: 'Toggle customizable'
-      })
-      expect(toggle).not.toBeChecked()
-      expect(toggle).not.toBeDisabled()
-
-      fireEvent.click(toggle)
-      await waitFor(() => {
-        expect(imageBlockUpdateResult).toHaveBeenCalled()
-      })
-    })
   })
 })
