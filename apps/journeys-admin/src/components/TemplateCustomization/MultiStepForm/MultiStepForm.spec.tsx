@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -48,34 +48,44 @@ function setRouterQuery(
 
 // Mock the screen components to avoid complex dependencies
 jest.mock('./Screens', () => ({
-  LanguageScreen: ({ handleNext }: { handleNext: () => void }) => (
+  LanguageScreen: ({
+    handleNext
+  }: {
+    handleNext: (overrideJourneyId?: string) => void
+  }) => (
     <div data-testid="language-screen">
       <h2>Language Screen</h2>
-      <button onClick={handleNext} data-testid="language-next">
+      <button onClick={() => handleNext()} data-testid="language-next">
         Next
+      </button>
+      <button
+        onClick={() => handleNext('override-journey-id')}
+        data-testid="language-next-with-override"
+      >
+        Next with override
       </button>
     </div>
   ),
-  TextScreen: ({ handleNext }: { handleNext: () => void }) => (
+  TextScreen: ({ handleNext }: { handleNext: (overrideJourneyId?: string) => void }) => (
     <div data-testid="text-screen">
       <h2>Text Screen</h2>
-      <button onClick={handleNext} data-testid="text-next">
+      <button onClick={() => handleNext()} data-testid="text-next">
         Next
       </button>
     </div>
   ),
-  LinksScreen: ({ handleNext }: { handleNext: () => void }) => (
+  LinksScreen: ({ handleNext }: { handleNext: (overrideJourneyId?: string) => void }) => (
     <div data-testid="links-screen">
       <h2>Links Screen</h2>
-      <button onClick={handleNext} data-testid="links-next">
+      <button onClick={() => handleNext()} data-testid="links-next">
         Next
       </button>
     </div>
   ),
-  SocialScreen: ({ handleNext }: { handleNext: () => void }) => (
+  SocialScreen: ({ handleNext }: { handleNext: (overrideJourneyId?: string) => void }) => (
     <div data-testid="social-screen">
       <h2>Social Screen</h2>
-      <button onClick={handleNext} data-testid="social-next">
+      <button onClick={() => handleNext()} data-testid="social-next">
         Next
       </button>
     </div>
@@ -497,7 +507,7 @@ describe('MultiStepForm', () => {
 
   describe('navigation', () => {
     describe('when screen is missing or invalid', () => {
-      it('should redirect to first screen when opening customize without screen query', async () => {
+      it('should redirect to first screen when opening customize without screen query (no error snackbar)', async () => {
         const journeyWithAllCapabilities = {
           ...journey,
           journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
@@ -535,15 +545,17 @@ describe('MultiStepForm', () => {
           </SnackbarProvider>
         )
 
+        await waitFor(() => {
+          expect(mockReplace).toHaveBeenCalledTimes(1)
+          expect(mockReplace).toHaveBeenCalledWith(
+            `/templates/${journeyId}/customize?screen=language`
+          )
+        })
         expect(
-          await screen.findByText(
+          screen.queryByText(
             'Invalid customization step. You have been redirected to the first step.'
           )
-        ).toBeInTheDocument()
-        expect(mockReplace).toHaveBeenCalledTimes(1)
-        expect(mockReplace).toHaveBeenCalledWith(
-          `/templates/${journeyId}/customize?screen=language`
-        )
+        ).not.toBeInTheDocument()
       })
 
       it('should redirect to first screen when URL has invalid screen param', async () => {
@@ -800,6 +812,53 @@ describe('MultiStepForm', () => {
       expect(mockReplace).toHaveBeenCalledTimes(1)
       expect(mockReplace).toHaveBeenCalledWith(
         `/templates/${journeyId}/customize?screen=language`
+      )
+    })
+
+    it('should call router.replace with override journey id and next screen when handleNext(overrideJourneyId) is called', () => {
+      const journeyWithAllCapabilities = {
+        ...journey,
+        journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+        journeyCustomizationFields: [
+          {
+            id: '1',
+            key: 'firstName',
+            value: 'John',
+            __typename: 'JourneyCustomizationField'
+          }
+        ],
+        blocks: [
+          {
+            __typename: 'ButtonBlock',
+            id: '1',
+            label: 'Test Button',
+            action: {
+              __typename: 'LinkAction',
+              url: 'https://wa.me/123',
+              customizable: true,
+              parentStepId: null
+            }
+          }
+        ]
+      } as unknown as Journey
+
+      const journeyId = journeyWithAllCapabilities.id
+      setRouterQuery({ journeyId, screen: 'language' })
+
+      render(
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+            <MultiStepForm />
+          </JourneyProvider>
+        </SnackbarProvider>
+      )
+
+      expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('language-next-with-override'))
+
+      expect(mockReplace).toHaveBeenCalledTimes(1)
+      expect(mockReplace).toHaveBeenCalledWith(
+        '/templates/override-journey-id/customize?screen=text'
       )
     })
   })

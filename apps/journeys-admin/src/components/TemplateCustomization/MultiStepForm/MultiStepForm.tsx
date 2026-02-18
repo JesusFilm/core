@@ -38,7 +38,7 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
-  handleNext: () => void,
+  handleNext: (overrideJourneyId?: string) => void,
   handleScreenNavigation: (screen: CustomizationScreen) => void
 ): ReactElement {
   switch (screen) {
@@ -113,15 +113,17 @@ export function MultiStepForm(): ReactElement {
 
     const isMissingScreen = rawScreen == null || rawScreen === ''
     const isInvalidScreen =
-      rawScreen != null && !screens.includes(rawScreen as CustomizationScreen)
+      rawScreen != null && rawScreen !== '' && !screens.includes(rawScreen as CustomizationScreen)
 
     if (isMissingScreen || isInvalidScreen) {
-      enqueueSnackbar(
-        t(
-          'Invalid customization step. You have been redirected to the first step.'
-        ),
-        { variant: 'error', preventDuplicate: true }
-      )
+      if (isInvalidScreen) {
+        enqueueSnackbar(
+          t(
+            'Invalid customization step. You have been redirected to the first step.'
+          ),
+          { variant: 'error', preventDuplicate: true }
+        )
+      }
       void router.replace(
         buildCustomizeUrl(journeyId, screens[0], undefined, onTemplatesRedirect)
       )
@@ -167,12 +169,13 @@ export function MultiStepForm(): ReactElement {
     onTemplatesRedirect
   ])
 
-  async function handleNext(): Promise<void> {
+  async function handleNext(overrideJourneyId?: string): Promise<void> {
     const currentIndex = screens.indexOf(activeScreen)
     if (currentIndex < 0 || currentIndex >= screens.length - 1) return
+    const targetJourneyId = overrideJourneyId ?? journeyId
     void router.replace(
       buildCustomizeUrl(
-        journeyId,
+        targetJourneyId,
         screens[currentIndex + 1],
         undefined,
         onTemplatesRedirect

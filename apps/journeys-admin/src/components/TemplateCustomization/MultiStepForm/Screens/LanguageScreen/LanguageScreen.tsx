@@ -2,7 +2,6 @@ import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
-import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -24,7 +23,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
@@ -35,7 +34,6 @@ export function LanguageScreen({
   const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
   const user = useUser()
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -140,12 +138,7 @@ export function LanguageScreen({
 
         return
       }
-      await router.push(
-        `/templates/${duplicateData.journeyDuplicate.id}/customize`,
-        undefined,
-        { shallow: true }
-      )
-      handleNext()
+      handleNext(duplicateData.journeyDuplicate.id)
       setLoading(false)
     }
   }
