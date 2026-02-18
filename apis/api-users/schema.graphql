@@ -2,6 +2,7 @@ extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
 
 type AnonymousUser
+  @key(fields: "id")
   @shareable
 {
   id: ID!

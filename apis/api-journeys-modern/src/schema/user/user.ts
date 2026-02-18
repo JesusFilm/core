@@ -30,7 +30,7 @@ AnonymousUserRef.implement({
 
 // Define the User union type to match api-users schema
 export const UserRef = builder.unionType('User', {
-  types: [AuthenticatedUserRef],
+  types: [AuthenticatedUserRef, AnonymousUserRef],
   resolveType: (user) => {
     // In practice, UserTeam members are always authenticated users
     // but the union type allows for both possibilities

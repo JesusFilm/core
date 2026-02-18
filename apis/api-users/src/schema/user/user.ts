@@ -11,7 +11,7 @@ import {
   MeInput,
   UpdateMeInput
 } from './inputs'
-import { AuthenticatedUser, User } from './objects'
+import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
@@ -47,6 +47,15 @@ builder.asEntity(AuthenticatedUser, {
       )
       return null
     }
+  }
+})
+
+builder.asEntity(AnonymousUser, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) => {
+    return await prisma.user.findUnique({
+      where: { userId: id }
+    })
   }
 })
 
