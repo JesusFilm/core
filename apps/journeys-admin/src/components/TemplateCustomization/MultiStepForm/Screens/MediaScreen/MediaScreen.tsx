@@ -12,7 +12,12 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
-import { CardsSection, ImagesSection, VideosSection } from './Sections'
+import {
+  CardsSection,
+  ImagesSection,
+  LogoSection,
+  VideosSection
+} from './Sections'
 import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 import {
   getCardBlockIdFromStep,
@@ -46,6 +51,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     getCardBlockIdFromStep(customizableSteps[0])
   )
 
+  const showLogo = showLogoSection()
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
 
@@ -84,6 +90,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
             {t('Personalize and manage your media assets')}
           </Typography>
         </Stack>
+        {showLogo && <LogoSection />}
         <CardsSection
           customizableSteps={customizableSteps}
           selectedStep={selectedStep}
