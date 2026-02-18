@@ -125,7 +125,7 @@ export function BlockCustomizationToggle({
         : null
 
   return (
-    <Stack width="100%" gap={0.5} sx={{ mb: 2 }}>
+    <Stack width="100%">
       <Stack direction="row" alignItems="center" gap={1}>
         <Switch
           disabled={targetBlock == null}

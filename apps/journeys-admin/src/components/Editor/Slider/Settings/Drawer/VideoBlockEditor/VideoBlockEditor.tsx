@@ -38,7 +38,7 @@ export function VideoBlockEditor({
   const { journey } = useJourney()
   const posterBlock = selectedBlock?.children.find(
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
-  )
+  ) as ImageBlock | null
 
   const videoBlock = selectedBlock as VideoBlock
 
