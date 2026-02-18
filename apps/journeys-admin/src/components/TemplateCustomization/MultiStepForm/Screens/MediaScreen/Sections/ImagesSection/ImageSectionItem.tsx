@@ -1,3 +1,4 @@
+import ImageRoundedIcon from '@mui/icons-material/ImageRounded'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
@@ -5,7 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
@@ -60,7 +60,10 @@ export function ImageSectionItem({
             justifyContent: 'center'
           }}
         >
-          <GridEmptyIcon sx={{ fontSize: 48, color: 'action.disabled' }} />
+          <ImageRoundedIcon
+            data-testid="ImageRoundedIcon"
+            sx={{ fontSize: 48 }}
+          />
         </Box>
       )}
       <IconButton
