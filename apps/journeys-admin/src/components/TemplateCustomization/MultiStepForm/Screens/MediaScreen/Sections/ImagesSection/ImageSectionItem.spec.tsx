@@ -2,12 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/GetJourney'
-// eslint-disable-next-line import/no-namespace
-import * as useImageUploadHooks from '../../../../../../../libs/useImageUpload'
+import {
+  ImageUploadErrorCode,
+  useImageUpload
+} from '../../../../../../../libs/useImageUpload'
 
 import { ImageSectionItem } from './ImageSectionItem'
-import { SnackbarProvider } from 'notistack'
-import { ImageUploadErrorCode } from '../../../../../../../libs/useImageUpload'
 
 jest.mock('next-i18next', () => ({
   __esModule: true,
@@ -36,10 +36,24 @@ jest.mock('@core/shared/ui/NextImage', () => ({
   ))
 }))
 
-jest.mock('../../../../../../../libs/useImageUpload', () => ({
-  __esModule: true,
-  ...jest.requireActual('../../../../../../../libs/useImageUpload')
-}))
+jest.mock('../../../../../../../libs/useImageUpload')
+const mockUseImageUpload = jest.mocked(useImageUpload)
+
+const defaultMockReturn = {
+  getRootProps: jest.fn(),
+  getInputProps: jest.fn(),
+  open: jest.fn(),
+  isDragActive: false,
+  isDragAccept: false,
+  isDragReject: false,
+  loading: false,
+  success: undefined,
+  errorCode: undefined,
+  errorMessage: undefined,
+  acceptedFiles: [],
+  fileRejections: [],
+  resetState: jest.fn()
+} as ReturnType<typeof useImageUpload>
 
 describe('ImageSectionItem', () => {
   const imageBlock: ImageBlock = {
@@ -59,6 +73,11 @@ describe('ImageSectionItem', () => {
   }
 
   const onUploadComplete = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockUseImageUpload.mockReturnValue(defaultMockReturn)
+  })
 
   it('should render the image when src is provided', () => {
     render(
@@ -122,15 +141,12 @@ describe('ImageSectionItem', () => {
 
   it('should handle click and loading state for edit button', () => {
     const open = jest.fn()
-    const useImageUploadSpy = jest.spyOn(useImageUploadHooks, 'useImageUpload')
 
-    // Test happy path (not loading)
-    useImageUploadSpy.mockReturnValue({
-      getRootProps: jest.fn(),
-      getInputProps: jest.fn(),
+    mockUseImageUpload.mockReturnValue({
+      ...defaultMockReturn,
       open,
       loading: false
-    } as any)
+    })
 
     const { rerender } = render(
       <MockedProvider>
@@ -150,13 +166,11 @@ describe('ImageSectionItem', () => {
     fireEvent.click(editButton)
     expect(open).toHaveBeenCalled()
 
-    // Test loading state
-    useImageUploadSpy.mockReturnValue({
-      getRootProps: jest.fn(),
-      getInputProps: jest.fn(),
+    mockUseImageUpload.mockReturnValue({
+      ...defaultMockReturn,
       open,
       loading: true
-    } as any)
+    })
 
     rerender(
       <MockedProvider>
@@ -174,15 +188,14 @@ describe('ImageSectionItem', () => {
   })
 
   it('should apply getRootProps to the outer Box', () => {
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockReturnValue({
-      getRootProps: () => ({
-        'data-testid': 'dropzone-root',
-        'aria-label': 'dropzone'
-      }),
-      getInputProps: jest.fn(),
-      open: jest.fn(),
-      loading: false
-    } as any)
+    mockUseImageUpload.mockReturnValue({
+      ...defaultMockReturn,
+      getRootProps: () =>
+        ({
+          'data-testid': 'dropzone-root',
+          'aria-label': 'dropzone'
+        }) as any
+    })
 
     render(
       <MockedProvider>
@@ -198,17 +211,10 @@ describe('ImageSectionItem', () => {
 
   it('should call onUploadComplete when image upload finishes', () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    jest
-      .spyOn(useImageUploadHooks, 'useImageUpload')
-      .mockImplementation((options) => {
-        onUploadCompleteCallback = options.onUploadComplete
-        return {
-          getRootProps: jest.fn(),
-          getInputProps: jest.fn(),
-          open: jest.fn(),
-          loading: false
-        } as any
-      })
+    mockUseImageUpload.mockImplementation((options) => {
+      onUploadCompleteCallback = options.onUploadComplete
+      return defaultMockReturn
+    })
 
     render(
       <MockedProvider>
@@ -227,27 +233,22 @@ describe('ImageSectionItem', () => {
   })
 
   it('should show error snackbar when onUploadError is called', () => {
-    let onUploadErrorCallback: ((errorCode: ImageUploadErrorCode, errorMessage: string) => void) | undefined
-    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockImplementation((options) => {
+    let onUploadErrorCallback:
+      | ((errorCode: ImageUploadErrorCode, errorMessage: string) => void)
+      | undefined
+    mockUseImageUpload.mockImplementation((options) => {
       onUploadErrorCallback = options.onUploadError
-      return {
-        getRootProps: jest.fn(),
-        getInputProps: jest.fn(),
-        open: jest.fn(),
-        loading: false
-      } as any
+      return defaultMockReturn
     })
 
     render(
-      <SnackbarProvider>
       <MockedProvider>
         <ImageSectionItem
           imageBlock={imageBlock}
           onUploadComplete={onUploadComplete}
         />
       </MockedProvider>
-      </SnackbarProvider>
-    )  
+    )
 
     onUploadErrorCallback?.(5000, 'Something went wrong: (5000)')
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
