@@ -512,6 +512,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   delete an existing short link
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
+  userMediaProfileUpdate(input: UserMediaProfileUpdateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
   videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
@@ -929,6 +930,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     first: Int
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
   videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
@@ -3101,6 +3103,29 @@ type UnsplashUserLinks @join__type(graph: API_MEDIA)  {
   photos: String!
   portfolio: String!
   self: String!
+}
+
+type UserMediaProfile @join__type(graph: API_MEDIA)  {
+  """
+  The database UUID
+  """
+  id: ID!
+  """
+  The Firebase user ID
+  """
+  userId: ID!
+  """
+  Language IDs array related to IDs in api-languages
+  """
+  languageInterests: [Language!]
+  """
+  Country IDs array
+  """
+  countryInterests: [ID!]
+  """
+  IDs of video collections the user is interested in
+  """
+  userInterests: [Video!]
 }
 
 type VideoDescription @join__type(graph: API_MEDIA)  {
@@ -5281,6 +5306,12 @@ input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
   note: String
   noteSharedAt: DateTime
   sharedAt: DateTime
+}
+
+input UserMediaProfileUpdateInput @join__type(graph: API_MEDIA)  {
+  languageInterestIds: [ID!]
+  countryInterestIds: [ID!]
+  userInterestIds: [ID!]
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {
