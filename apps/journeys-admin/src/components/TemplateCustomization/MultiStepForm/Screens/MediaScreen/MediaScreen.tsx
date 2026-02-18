@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -56,7 +57,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     getCardBlockIdFromStep(customizableSteps[0])
   )
 
-  const showLogo = showLogoSection()
+  const showLogo = showLogoSection(journey)
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
 
@@ -80,6 +81,9 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       >
         {t('Media')}
       </Typography>
+      {showLogo && <LogoSection />}
+      {showLogo && <Divider sx={{ width: '90%', mt: 6, mb: 4 }} />}
+      <CardsSection onChange={setSelectedCardBlockId} />
       <Box sx={{ width: '100%' }}>
         <TemplateCardPreview
           steps={customizableSteps}
@@ -88,8 +92,6 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           selectedStep={selectedStep}
         />
       </Box>
-      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {<CardsSection onChange={setSelectedCardBlockId} />}
       {showImages && (
         <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
       )}

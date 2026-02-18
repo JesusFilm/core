@@ -20,6 +20,21 @@ const baseJourney = {
   id: 'test-journey-id',
   seoTitle: 'Initial SEO Title',
   seoDescription: 'Initial SEO Description',
+  logoImageBlock: {
+    __typename: 'ImageBlock',
+    id: 'logo.id',
+    parentBlockId: null,
+    parentOrder: null,
+    src: 'https://example.com/logo.png',
+    alt: 'logo',
+    width: 100,
+    height: 100,
+    blurhash: '',
+    scale: null,
+    focalTop: null,
+    focalLeft: null,
+    customizable: true
+  },
   blocks: [
     {
       id: 'step1.id',
@@ -247,6 +262,31 @@ describe('MediaScreen', () => {
       fireEvent.click(steps[2])
       expect(screen.queryByTestId('ImagesSection')).not.toBeInTheDocument()
     }
+  })
+
+  it('should hide LogoSection when logoImageBlock is not customizable', () => {
+    const journeyNoLogo = {
+      ...baseJourney,
+      logoImageBlock: {
+        ...baseJourney.logoImageBlock,
+        customizable: false
+      }
+    } as unknown as Journey
+
+    renderMediaScreen(journeyNoLogo)
+
+    expect(screen.queryByTestId('LogoSection')).not.toBeInTheDocument()
+  })
+
+  it('should hide LogoSection when logoImageBlock is null', () => {
+    const journeyNullLogo = {
+      ...baseJourney,
+      logoImageBlock: null
+    } as unknown as Journey
+
+    renderMediaScreen(journeyNullLogo)
+
+    expect(screen.queryByTestId('LogoSection')).not.toBeInTheDocument()
   })
 
   it('disables the Next button when VideosSection reports loading', () => {
