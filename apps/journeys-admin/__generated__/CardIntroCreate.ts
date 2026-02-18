@@ -414,6 +414,7 @@ export interface CardIntroCreate_video {
   action: CardIntroCreate_video_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardIntroCreate {

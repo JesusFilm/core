@@ -31,7 +31,8 @@ export const journeyImageBlockUpdateMock: MockedResponse<JourneyImageBlockUpdate
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
           scale: null,
           focalTop: null,
-          focalLeft: null
+          focalLeft: null,
+          customizable: null
         }
       }
     }))

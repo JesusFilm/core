@@ -50,7 +50,8 @@ const image: ImageBlock = {
   alt: 'poster',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()

@@ -1,0 +1,1 @@
+export { getCustomizableImageBlocks } from './getCustomizableImageBlocks'

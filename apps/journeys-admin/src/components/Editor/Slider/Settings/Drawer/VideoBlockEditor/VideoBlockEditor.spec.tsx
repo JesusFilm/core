@@ -1,12 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetVideoVariantLanguages_video } from '../../../../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
@@ -60,6 +64,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  customizable: null,
   children: []
 }
 
@@ -124,6 +129,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   posterBlockId: 'poster1.id',
+  customizable: null,
   children: []
 }
 
@@ -456,6 +462,7 @@ describe('VideoBlockEditor', () => {
           scale: null,
           focalTop: null,
           focalLeft: null,
+          customizable: null,
           children: []
         }
       ]
@@ -476,6 +483,53 @@ describe('VideoBlockEditor', () => {
 
     await waitFor(() => {
       expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    })
+  })
+
+  describe('BlockCustomizationToggle', () => {
+    it('should not render BlockCustomizationToggle when journey is not a template', () => {
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <VideoBlockEditor
+                selectedBlock={videoInternal}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should render BlockCustomizationToggle when journey is a template and selectedBlock is non-null', () => {
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <VideoBlockEditor
+                      selectedBlock={videoInternal}
+                      onChange={jest.fn()}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
     })
   })
 })

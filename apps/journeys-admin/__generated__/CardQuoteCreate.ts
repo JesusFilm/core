@@ -26,6 +26,7 @@ export interface CardQuoteCreate_image {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardQuoteCreate_subtitle_settings {

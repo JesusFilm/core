@@ -374,14 +374,12 @@ export class IconBlockCreateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockCreateInput {
@@ -1317,7 +1315,6 @@ export class IconBlock implements Block {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlock implements Block {

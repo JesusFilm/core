@@ -31,7 +31,8 @@ const image: ImageBlock = {
   blurhash: '',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const Template: StoryObj<

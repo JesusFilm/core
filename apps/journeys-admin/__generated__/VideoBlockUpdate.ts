@@ -190,6 +190,7 @@ export interface VideoBlockUpdate_videoBlockUpdate {
   action: VideoBlockUpdate_videoBlockUpdate_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface VideoBlockUpdate {
