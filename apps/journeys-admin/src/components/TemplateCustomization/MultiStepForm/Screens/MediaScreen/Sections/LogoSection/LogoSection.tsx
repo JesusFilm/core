@@ -70,63 +70,56 @@ export function LogoSection(): ReactElement {
   })
 
   return (
-    <Stack data-testid="LogoSection" sx={{ width: '100%' }}>
-      <Typography
-        variant="subtitle2"
-        gutterBottom
-        sx={{ color: 'text.secondary' }}
-      >
+    <Stack data-testid="LogoSection" gap={4} sx={{ width: '100%' }}>
+      <Typography variant="h6" sx={{ color: 'text.primary' }}>
         {t('Logo')}
       </Typography>
-
-      <Stack
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-        gap={16}
-      >
-        <Box
-          sx={{
-            position: 'relative',
-            width: 156,
-            height: 156,
-            minWidth: 156,
-            borderRadius: '50%',
-            overflow: 'hidden',
-            bgcolor: 'background.default'
-          }}
-        >
-          {logoImageBlock?.src != null ? (
-            <NextImage
-              src={logoImageBlock.src}
-              alt={logoImageBlock.alt ?? ''}
-              layout="fill"
-              objectFit="cover"
-            />
-          ) : (
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ width: '100%', height: '100%' }}
-            >
-              <GridEmptyIcon sx={{ fontSize: 48, color: 'action.disabled' }} />
-            </Stack>
-          )}
-          {loading && (
-            <CircularProgress
-              size={32}
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                mt: -2,
-                ml: -2
-              }}
-              data-testid="LogoSection-upload-progress"
-            />
-          )}
+      <Stack direction="row" alignItems="center" gap={7}>
+        <Box sx={{ pl: { xs: 0, sm: 10 }, pr: { xs: 0, sm: 6 } }}>
+          <Box
+            sx={{
+              position: 'relative',
+              width: { xs: 100, sm: 132 },
+              height: { xs: 100, sm: 132 },
+              minWidth: { xs: 100, sm: 132 },
+              borderRadius: '50%',
+              overflow: 'hidden',
+              bgcolor: 'background.default'
+            }}
+          >
+            {logoImageBlock?.src != null ? (
+              <NextImage
+                src={logoImageBlock.src}
+                alt={logoImageBlock.alt ?? ''}
+                layout="fill"
+                objectFit="cover"
+              />
+            ) : (
+              <Stack
+                alignItems="center"
+                justifyContent="center"
+                sx={{ width: '100%', height: '100%' }}
+              >
+                <GridEmptyIcon
+                  sx={{ fontSize: 48, color: 'action.disabled' }}
+                />
+              </Stack>
+            )}
+            {loading && (
+              <CircularProgress
+                size={32}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  mt: -2,
+                  ml: -2
+                }}
+                data-testid="LogoSection-upload-progress"
+              />
+            )}
+          </Box>
         </Box>
-
         <Stack spacing={0.5} alignItems="flex-start">
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button
@@ -137,14 +130,14 @@ export function LogoSection(): ReactElement {
             onClick={open}
             sx={{
               height: 32,
-              width: '100%',
+              width: { xs: 160, sm: 220 },
               borderRadius: 2
             }}
           >
             <Typography
               variant="subtitle2"
               fontSize={14}
-              sx={{ color: 'secondary.main' }}
+              sx={{ color: 'text.secondary' }}
             >
               {t('Upload File')}
             </Typography>
