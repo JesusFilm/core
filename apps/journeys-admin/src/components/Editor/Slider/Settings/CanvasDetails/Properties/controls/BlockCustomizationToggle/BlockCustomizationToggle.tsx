@@ -124,6 +124,8 @@ export function BlockCustomizationToggle({
         ? t('Select a video to make this customizable')
         : null
 
+  const showHelperText = helperTextWhenDisabled != null
+
   return (
     <Stack width="100%">
       <Stack direction="row" alignItems="center" gap={1}>
@@ -140,7 +142,7 @@ export function BlockCustomizationToggle({
           {t('Needs Customization')}
         </Typography>
       </Stack>
-      {helperTextWhenDisabled != null && (
+      {showHelperText && (
         <Typography variant="caption" color="text.secondary" sx={{ pl: 2 }}>
           {helperTextWhenDisabled}
         </Typography>
