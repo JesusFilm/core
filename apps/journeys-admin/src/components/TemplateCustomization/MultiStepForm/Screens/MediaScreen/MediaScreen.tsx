@@ -76,26 +76,28 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           overflow: { xs: 'visible', sm: 'hidden' }
         }}
       >
-        {t('Media')}
-      </Typography>
-      {<CardsSection onChange={setSelectedCardBlockId} />}
-      <Box sx={{ width: '100%' }}>
-        <TemplateCardPreview
-          steps={customizableSteps}
-          variant="media"
-          onClick={handleStepClick}
+        <Stack gap={3} alignItems="center">
+          <Typography variant="h4" color="text.primary">
+            {t('Media')}
+          </Typography>
+          <Typography variant="body1" color="text.">
+            {t('Personalize and manage your media assets')}
+          </Typography>
+        </Stack>
+        <CardsSection
+          customizableSteps={customizableSteps}
           selectedStep={selectedStep}
           handleStepClick={handleStepClick}
         />
-      </Box>
-      {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
-      {showImages && (
-        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
-      )}
-      {showVideos && (
-        <VideosSection
-          cardBlockId={selectedCardBlockId}
-          onLoading={setLoading}
+        {showImages && (
+          <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+        )}
+        {showVideos && (
+          <VideosSection
+            cardBlockId={selectedCardBlockId}
+            onLoading={setLoading}
+          />
+        )}
         <CustomizeFlowNextButton
           label={t('Next')}
           onClick={handleNext}
