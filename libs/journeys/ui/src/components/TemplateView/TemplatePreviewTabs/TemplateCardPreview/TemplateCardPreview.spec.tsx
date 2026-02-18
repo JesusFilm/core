@@ -14,13 +14,14 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 const mockSlideTo = jest.fn()
+const mockUpdate = jest.fn()
 
 jest.mock('swiper/react', () => {
   const React = require('react')
   return {
     Swiper: ({ children, onSwiper }: any) => {
       React.useEffect(() => {
-        onSwiper?.({ slideTo: mockSlideTo })
+        onSwiper?.({ slideTo: mockSlideTo, update: mockUpdate })
       }, [onSwiper])
       return <div data-testid="Swiper">{children}</div>
     },
