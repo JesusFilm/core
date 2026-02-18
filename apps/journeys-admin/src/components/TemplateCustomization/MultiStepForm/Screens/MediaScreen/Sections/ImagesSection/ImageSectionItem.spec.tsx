@@ -139,16 +139,14 @@ describe('ImageSectionItem', () => {
     expect(screen.getByTestId('Edit2Icon')).toBeInTheDocument()
   })
 
-  it('should handle click and loading state for edit button', () => {
+  it('should open file picker when edit button is clicked', () => {
     const open = jest.fn()
-
     mockUseImageUpload.mockReturnValue({
       ...defaultMockReturn,
-      open,
-      loading: false
+      open
     })
 
-    const { rerender } = render(
+    render(
       <MockedProvider>
         <ImageSectionItem
           imageBlock={imageBlock}
@@ -159,20 +157,17 @@ describe('ImageSectionItem', () => {
 
     const editButton = screen.getByRole('button', { name: 'Edit image' })
     expect(editButton).toBeEnabled()
-    expect(
-      screen.queryByTestId('ImagesSection-upload-progress')
-    ).not.toBeInTheDocument()
-
     fireEvent.click(editButton)
     expect(open).toHaveBeenCalled()
+  })
 
+  it('should disable edit button and show spinner when loading', () => {
     mockUseImageUpload.mockReturnValue({
       ...defaultMockReturn,
-      open,
       loading: true
     })
 
-    rerender(
+    render(
       <MockedProvider>
         <ImageSectionItem
           imageBlock={imageBlock}
