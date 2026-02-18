@@ -13,6 +13,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
@@ -31,6 +32,7 @@ export function LanguageScreen({
   handleNext,
   handleScreenNavigation
 }: LanguageScreenProps): ReactElement {
+  const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
   const user = useUser()
   const router = useRouter()
@@ -216,25 +218,32 @@ export function LanguageScreen({
                   }))}
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
-                <Typography
-                  variant="h6"
-                  display={{ xs: 'none', sm: 'block' }}
-                  sx={{ mt: 4 }}
-                >
-                  {t('Select a team')}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  display={{ xs: 'block', sm: 'none' }}
-                  sx={{ mt: 4 }}
-                >
-                  {t('Select a team')}
-                </Typography>
-                {isSignedIn && <JourneyCustomizeTeamSelect />}
+                {isSignedIn && (
+                  <>
+                    <Typography
+                      variant="h6"
+                      display={{ xs: 'none', sm: 'block' }}
+                      sx={{ mt: 4 }}
+                    >
+                      {t('Select a team')}
+                    </Typography>
+
+                    <Typography
+                      variant="body2"
+                      display={{ xs: 'block', sm: 'none' }}
+                      sx={{ mt: 4 }}
+                    >
+                      {t('Select a team')}
+                    </Typography>
+                    <JourneyCustomizeTeamSelect />
+                  </>
+                )}
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={loading}
+                  disabled={
+                    (templateCustomizationGuestFlow && !isSignedIn) || loading
+                  }
                   ariaLabel={t('Next')}
                 />
               </Stack>

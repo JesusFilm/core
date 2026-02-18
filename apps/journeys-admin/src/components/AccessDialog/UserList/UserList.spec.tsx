@@ -14,7 +14,7 @@ describe('UserList', () => {
     __typename: 'UserJourney',
     role: UserJourneyRole.editor,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user1.id',
       firstName: 'firstName1',
       lastName: 'lastName1',
@@ -29,7 +29,7 @@ describe('UserList', () => {
     __typename: 'UserJourney',
     role: UserJourneyRole.owner,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user2.id',
       firstName: 'firstName2',
       lastName: 'lastName2',

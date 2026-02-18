@@ -7,6 +7,13 @@ interface Action {
   parentBlock: Block!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
 interface Block {
   id: ID!
   journeyId: ID!
@@ -639,6 +646,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -665,6 +673,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -682,6 +691,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -697,7 +707,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: User
+  user: AuthenticatedUser
 }
 
 input IntegrationGoogleCreateInput {
@@ -2290,7 +2300,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: User
+  user: AuthenticatedUser
   journeyNotification: JourneyNotification
 }
 
@@ -2316,7 +2326,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  user: AuthenticatedUser!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 
@@ -2387,6 +2397,7 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
 }
 
 input VideoBlockCreateInput {
@@ -2416,6 +2427,7 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 enum VideoBlockObjectFit {
@@ -2456,6 +2468,7 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 type VideoCollapseEvent implements Event

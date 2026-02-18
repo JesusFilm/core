@@ -667,7 +667,7 @@ export interface GetJourney_journey_creatorImageBlock {
 }
 
 export interface GetJourney_journey_userJourneys_user {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
