@@ -5,6 +5,8 @@ import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journey as mockJourneyBase } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+
 import { VIDEO_BLOCK_UPDATE } from '../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
 
 import {
@@ -24,13 +26,7 @@ jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
-const mockJourney = {
-  __typename: 'Journey' as const,
-  id: 'journey-1',
-  slug: 'journey-1',
-  title: 'Journey',
-  blocks: []
-}
+const mockJourney = { ...mockJourneyBase, id: 'journey-1' }
 
 const createMuxVideoUploadByFileMock: MockedResponse = {
   request: {
