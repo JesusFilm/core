@@ -59,7 +59,9 @@ export function LogoSection(): ReactElement {
       })
       enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
     } catch {
-      enqueueSnackbar(t('Upload failed. Please try again'), { variant: 'error' })
+      enqueueSnackbar(t('Upload failed. Please try again'), {
+        variant: 'error'
+      })
     }
   }
 
@@ -77,14 +79,12 @@ export function LogoSection(): ReactElement {
         {t('Logo')}
       </Typography>
 
-      {/* Logo preview + upload controls side by side */}
       <Stack
         direction="row"
         justifyContent="center"
         alignItems="center"
         gap={16}
       >
-        {/* Circular logo preview */}
         <Box
           sx={{
             position: 'relative',
@@ -127,7 +127,6 @@ export function LogoSection(): ReactElement {
           )}
         </Box>
 
-        {/* Upload controls */}
         <Stack spacing={0.5} alignItems="flex-start">
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button

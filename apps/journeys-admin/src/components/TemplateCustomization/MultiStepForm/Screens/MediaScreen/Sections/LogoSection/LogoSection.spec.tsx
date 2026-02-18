@@ -17,6 +17,8 @@ const useImageUploadModule = jest.requireActual<
   typeof import('../../../../../../../libs/useImageUpload')
 >('../../../../../../../libs/useImageUpload')
 
+const mockedUseImageUpload = jest.mocked(useImageUpload)
+
 jest.mock('@core/shared/ui/NextImage', () => ({
   NextImage: jest.fn(({ src, alt }) => <img src={src} alt={alt} />)
 }))
@@ -63,11 +65,9 @@ const journeyWithoutLogoSrc = {
 describe('LogoSection', () => {
   beforeEach(() => {
     jest.restoreAllMocks()
-    jest
-      .mocked(useImageUpload)
-      .mockImplementation((...args) =>
-        useImageUploadModule.useImageUpload(...args)
-      )
+    mockedUseImageUpload.mockImplementation((...args) =>
+      useImageUploadModule.useImageUpload(...args)
+    )
   })
 
   function renderLogoSection(
@@ -129,7 +129,7 @@ describe('LogoSection', () => {
 
   it('calls open when Upload File button is clicked', () => {
     const open = jest.fn()
-    jest.mocked(useImageUpload).mockReturnValue({
+    mockedUseImageUpload.mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn().mockReturnValue({}),
       open,
@@ -143,7 +143,7 @@ describe('LogoSection', () => {
   })
 
   it('shows loading spinner and disables button during upload', () => {
-    jest.mocked(useImageUpload).mockReturnValue({
+    mockedUseImageUpload.mockReturnValue({
       getRootProps: jest.fn(),
       getInputProps: jest.fn().mockReturnValue({}),
       open: jest.fn(),
@@ -167,7 +167,7 @@ describe('LogoSection', () => {
 
   it('calls imageBlockUpdate mutation and shows success snackbar on upload complete', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    jest.mocked(useImageUpload).mockImplementation((options) => {
+    mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {
         getRootProps: jest.fn(),
@@ -221,7 +221,7 @@ describe('LogoSection', () => {
 
   it('shows error snackbar when mutation fails', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
-    jest.mocked(useImageUpload).mockImplementation((options) => {
+    mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {
         getRootProps: jest.fn(),
@@ -262,7 +262,7 @@ describe('LogoSection', () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
     const mutationSpy = jest.fn()
 
-    jest.mocked(useImageUpload).mockImplementation((options) => {
+    mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
       return {
         getRootProps: jest.fn(),
