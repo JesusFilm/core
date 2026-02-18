@@ -121,7 +121,7 @@ export function VideoPreviewPlayer({
         <Box
           role="region"
           aria-label="Video preview placeholder"
-          data-testid="VideoPreviewPlayer-unsupported"
+          data-testid="VideoPreviewPlayerPlaceholder"
           sx={{
             borderRadius: 3,
             position: 'relative',
@@ -134,10 +134,10 @@ export function VideoPreviewPlayer({
             sx={{ borderRadius: 3 }}
             animation={false}
           >
-            <div style={{ paddingTop: '56.25%' }} />
+            <Box sx={{ paddingTop: '57%' }} />
           </Skeleton>
           <Box
-            data-testid="VideoPreviewPlayer-skeleton-icon"
+            data-testid="VideoPreviewPlayerSkeletonIcon"
             sx={{
               position: 'absolute',
               top: 0,
