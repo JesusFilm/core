@@ -82,7 +82,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         {t('Media')}
       </Typography>
       {showLogo && <LogoSection />}
-      {showLogo && <Divider sx={{width: '100%', mt: 6, mb: 4 }} />}
+      {showLogo && <Divider sx={{ width: '100%', mt: 6, mb: 4 }} />}
       <CardsSection onChange={setSelectedCardBlockId} />
       <Box sx={{ width: '100%' }}>
         <TemplateCardPreview
