@@ -39,7 +39,12 @@ describe('customizationRoutes', () => {
 
     it('should call onTemplatesRedirect when journeyId is null', () => {
       const onTemplatesRedirect = jest.fn()
-      const result = buildCustomizeUrl(null, 'language', undefined, onTemplatesRedirect)
+      const result = buildCustomizeUrl(
+        null,
+        'language',
+        undefined,
+        onTemplatesRedirect
+      )
       expect(result).toBe('/templates')
       expect(onTemplatesRedirect).toHaveBeenCalledTimes(1)
     })
@@ -58,7 +63,12 @@ describe('customizationRoutes', () => {
 
     it('should not call onTemplatesRedirect when journeyId is provided', () => {
       const onTemplatesRedirect = jest.fn()
-      buildCustomizeUrl('journey-123', 'language', undefined, onTemplatesRedirect)
+      buildCustomizeUrl(
+        'journey-123',
+        'language',
+        undefined,
+        onTemplatesRedirect
+      )
       expect(onTemplatesRedirect).not.toHaveBeenCalled()
     })
 
