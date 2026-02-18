@@ -133,7 +133,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    const journeyId = journeyWithAllCapabilities.id as string
+    const journeyId = journeyWithAllCapabilities.id
     setRouterQuery({ journeyId })
 
     const { rerender } = render(
@@ -199,7 +199,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithNoCapabilities.id as string
+    const journeyId = journeyWithNoCapabilities.id
     setRouterQuery({ journeyId })
 
     const { rerender } = render(
@@ -248,7 +248,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithTextOnly.id as string
+    const journeyId = journeyWithTextOnly.id
     setRouterQuery({ journeyId })
 
     const { rerender } = render(
@@ -323,7 +323,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    const journeyId = journeyWithLinksOnly.id as string
+    const journeyId = journeyWithLinksOnly.id
     setRouterQuery({ journeyId })
 
     const { rerender } = render(
@@ -462,7 +462,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    setRouterQuery({ journeyId: journeyWithNoCapabilities.id as string })
+    setRouterQuery({ journeyId: journeyWithNoCapabilities.id })
 
     render(
       <SnackbarProvider>
@@ -511,7 +511,7 @@ describe('MultiStepForm', () => {
           ]
         } as unknown as Journey
 
-        const journeyId = journeyWithAllCapabilities.id as string
+        const journeyId = journeyWithAllCapabilities.id
         setRouterQuery({ journeyId }, { isReady: true })
 
         render(
@@ -560,7 +560,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    const journeyId = journeyWithAllCapabilities.id as string
+    const journeyId = journeyWithAllCapabilities.id
     setRouterQuery({ journeyId, screen: 'invalid' }, { isReady: true })
 
     render(
@@ -591,7 +591,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithNoCapabilities.id as string
+    const journeyId = journeyWithNoCapabilities.id
     setRouterQuery({ journeyId, screen: 'text' }, { isReady: true })
 
     render(
@@ -627,7 +627,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithNoCapabilities.id as string
+    const journeyId = journeyWithNoCapabilities.id
     setRouterQuery({ journeyId, screen: 'social' }, { isReady: true })
 
     render(
@@ -660,7 +660,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithNoCapabilities.id as string
+    const journeyId = journeyWithNoCapabilities.id
     setRouterQuery({ journeyId, screen: 'text' }, { isReady: true })
 
     render(
@@ -695,7 +695,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithNoCapabilities.id as string
+    const journeyId = journeyWithNoCapabilities.id
     setRouterQuery({ journeyId, screen: 'language' }, { isReady: true })
 
     render(
@@ -728,7 +728,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    const journeyId = journeyWithNoCapabilities.id as string
+    const journeyId = journeyWithNoCapabilities.id
     setRouterQuery({ journeyId, screen: 'social' }, { isReady: true })
 
     render(
@@ -770,7 +770,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    const journeyId = journeyWithAllCapabilities.id as string
+    const journeyId = journeyWithAllCapabilities.id
     setRouterQuery({ journeyId, screen: 'done' })
 
     render(

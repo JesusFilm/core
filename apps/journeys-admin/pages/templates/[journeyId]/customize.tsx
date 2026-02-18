@@ -39,7 +39,7 @@ function CustomizePage() {
         variant: 'error',
         preventDuplicate: true
       })
-      router.replace('/templates')
+      void router.replace('/templates')
     }
   }, [
     router.isReady,

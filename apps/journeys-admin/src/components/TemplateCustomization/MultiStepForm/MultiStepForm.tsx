@@ -2,23 +2,23 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { useUser } from 'next-firebase-auth'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit3 from '@core/shared/ui/icons/Edit3'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Edit3 from '@core/shared/ui/icons/Edit3'
 
 import {
+  CUSTOMIZE_SCREEN_QUERY_KEY,
   buildCustomizeUrl,
   getActiveScreenFromQuery,
   getFirstGuestAllowedScreen,
-  isScreenAllowedForGuest,
-  CUSTOMIZE_SCREEN_QUERY_KEY
+  isScreenAllowedForGuest
 } from '../utils/customizationRoutes'
 import {
   CustomizationScreen,
@@ -117,10 +117,12 @@ export function MultiStepForm(): ReactElement {
 
     if (isMissingScreen || isInvalidScreen) {
       enqueueSnackbar(
-        t('Invalid customization step. You have been redirected to the first step.'),
+        t(
+          'Invalid customization step. You have been redirected to the first step.'
+        ),
         { variant: 'error', preventDuplicate: true }
       )
-      router.replace(
+      void router.replace(
         buildCustomizeUrl(journeyId, screens[0], undefined, onTemplatesRedirect)
       )
     }
@@ -144,7 +146,7 @@ export function MultiStepForm(): ReactElement {
         t('This step is not available for guests. You have been redirected.'),
         { variant: 'error', preventDuplicate: true }
       )
-      router.replace(
+      void router.replace(
         buildCustomizeUrl(
           journeyId,
           getFirstGuestAllowedScreen(),
@@ -168,7 +170,7 @@ export function MultiStepForm(): ReactElement {
   async function handleNext(): Promise<void> {
     const currentIndex = screens.indexOf(activeScreen)
     if (currentIndex < 0 || currentIndex >= screens.length - 1) return
-    router.replace(
+    void router.replace(
       buildCustomizeUrl(
         journeyId,
         screens[currentIndex + 1],
@@ -181,7 +183,7 @@ export function MultiStepForm(): ReactElement {
   async function handleScreenNavigation(
     screen: CustomizationScreen
   ): Promise<void> {
-    router.replace(
+    void router.replace(
       buildCustomizeUrl(journeyId, screen, undefined, onTemplatesRedirect)
     )
   }
