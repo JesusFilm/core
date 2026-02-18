@@ -2186,7 +2186,7 @@ type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: tr
   emailVerified: Boolean! @join__field(graph: API_USERS) 
 }
 
-type AnonymousUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+type AnonymousUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
 }
 

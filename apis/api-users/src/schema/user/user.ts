@@ -7,7 +7,7 @@ import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
 import { CreateVerificationRequestInput, MeInput } from './inputs'
-import { AuthenticatedUser } from './objects'
+import { AnonymousUser, AuthenticatedUser } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
@@ -43,6 +43,15 @@ builder.asEntity(AuthenticatedUser, {
       )
       return null
     }
+  }
+})
+
+builder.asEntity(AnonymousUser, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) => {
+    return await prisma.user.findUnique({
+      where: { userId: id }
+    })
   }
 })
 
