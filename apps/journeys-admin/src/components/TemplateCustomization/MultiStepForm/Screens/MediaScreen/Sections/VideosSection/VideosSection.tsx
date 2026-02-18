@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -37,7 +38,7 @@ function UploadButton({
   label
 }: UploadButtonProps): ReactElement {
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box sx={{ py: 2 }}>
       <input {...getInputProps()} />
       <Button
         size="small"
@@ -51,11 +52,7 @@ function UploadButton({
           borderRadius: 2
         }}
       >
-        <Typography
-          variant="subtitle2"
-          fontSize={14}
-          sx={{ color: 'secondary.main' }}
-        >
+        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
           {label}
         </Typography>
       </Button>
@@ -70,9 +67,9 @@ interface VideoTitleProps {
 function VideoTitle({ title }: VideoTitleProps): ReactElement {
   return (
     <Typography
-      variant="body2"
+      variant="subtitle3"
+      color="text.secondary"
       sx={{
-        mt: 4,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
@@ -153,40 +150,40 @@ export function VideosSection({
   }, [loading, onLoading])
 
   return (
-    <Box data-testid="VideosSection" width="100%">
-      <Typography
-        variant="subtitle2"
-        gutterBottom
-        sx={{ color: 'text.secondary' }}
-      >
-        {t('Video')}
-      </Typography>
-      {loading ? (
-        <Box
-          sx={{
-            width: '100%',
-            aspectRatio: '16/9',
-            bgcolor: 'background.default',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 3
-          }}
-        >
-          <CircularProgress size={24} />
-        </Box>
-      ) : (
-        videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />
-      )}
-      {videoBlock != null && !loading && videoBlockDisplayTitle !== '' && (
-        <VideoTitle title={videoBlockDisplayTitle} />
-      )}
+    <Stack data-testid="VideosSection" gap={2} width="100%">
+      <Stack gap={2}>
+        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+          {t('Video')}
+        </Typography>
+        <Stack gap={1.5}>
+          {loading ? (
+            <Box
+              sx={{
+                width: '100%',
+                aspectRatio: '16/9',
+                bgcolor: 'background.default',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 3
+              }}
+            >
+              <CircularProgress size={24} />
+            </Box>
+          ) : (
+            videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />
+          )}
+          {videoBlock != null && !loading && videoBlockDisplayTitle !== '' && (
+            <VideoTitle title={videoBlockDisplayTitle} />
+          )}
+        </Stack>
+      </Stack>
       <UploadButton
         loading={loading}
         open={open}
         getInputProps={getInputProps}
-        label={t('Upload file')}
+        label={t('Upload File')}
       />
-    </Box>
+    </Stack>
   )
 }

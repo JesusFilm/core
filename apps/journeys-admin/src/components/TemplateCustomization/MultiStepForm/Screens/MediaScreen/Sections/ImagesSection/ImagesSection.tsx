@@ -1,5 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -78,11 +79,15 @@ export function ImagesSection({
   }
 
   return (
-    <Box data-testid="ImagesSection" sx={{ width: '100%' }}>
+    <Stack
+      data-testid="ImagesSection"
+      gap={2}
+      sx={{ width: '100%', alignSelf: 'flex-start' }}
+    >
       <Typography
         variant="subtitle2"
         gutterBottom
-        sx={{ color: 'text.secondary', ml: 20 }}
+        sx={{ color: 'text.secondary' }}
       >
         {t('Image')}
       </Typography>
@@ -108,6 +113,6 @@ export function ImagesSection({
           ))}
         </Box>
       )}
-    </Box>
+    </Stack>
   )
 }
