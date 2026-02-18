@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
@@ -16,7 +16,6 @@ import {
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_UPDATE } from '../../../../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
-import { createShowSnackbar } from '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar'
 import { useVideoUpload } from '../../../../../utils/useVideoUpload/useVideoUpload'
 import {
   getCustomizableCardVideoBlock,
@@ -96,11 +95,7 @@ export function VideosSection({
 }: VideosSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const showSnackbar = useMemo(
-    () => createShowSnackbar(enqueueSnackbar, closeSnackbar),
-    [enqueueSnackbar, closeSnackbar]
-  )
+  const { enqueueSnackbar } = useSnackbar()
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
   const videoBlockDisplayTitle =
     videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
@@ -132,15 +127,19 @@ export function VideosSection({
             }
           ]
         })
-        showSnackbar(t('File uploaded successfully'), 'success')
+        enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
       } catch {
-        showSnackbar(t('Upload failed. Please try again'), 'error')
+        enqueueSnackbar(t('Upload failed. Please try again'), {
+          variant: 'error'
+        })
       } finally {
         setUpdating(false)
       }
     },
     onUploadError: () => {
-      showSnackbar(t('Upload failed. Please try again'), 'error')
+      enqueueSnackbar(t('Upload failed. Please try again'), {
+        variant: 'error'
+      })
     }
   })
 
