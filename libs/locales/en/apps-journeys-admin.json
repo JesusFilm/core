@@ -1081,6 +1081,8 @@
   "User Data": "User Data",
   "Polls": "Polls",
   "{{ name }}'s Team": "{{ name }}'s Team",
+  "Something went wrong: ({{errorCode}})": "Something went wrong: ({{errorCode}})",
+  "No upload URL": "No upload URL",
   "GraphQL error: {{error}}": "GraphQL error: {{error}}",
   "Failed to retrieve contacts for export.": "Failed to retrieve contacts for export.",
   "Failed to retrieve data for export.": "Failed to retrieve data for export.",

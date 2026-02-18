@@ -166,7 +166,10 @@ describe('useImageUpload', () => {
       await onDrop?.([], [fileRejection] as any, {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith(ErrorCode.FileTooLarge, 'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file')
+    expect(onUploadError).toHaveBeenCalledWith(
+      ErrorCode.FileTooLarge,
+      'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+    )
   })
 
   it('should handle file invalid type error', async () => {
@@ -219,7 +222,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith(5000, 'Something went wrong: (5000)')
+    expect(onUploadError).toHaveBeenCalledWith(
+      5000,
+      'Something went wrong: (5000)'
+    )
     expect(result.current.errorCode).toBe(5000)
   })
 
@@ -254,7 +260,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith(10003, 'Something went wrong: (10003)')
+    expect(onUploadError).toHaveBeenCalledWith(
+      10003,
+      'Something went wrong: (10003)'
+    )
     expect(result.current.errorCode).toBe(10003)
     expect(result.current.loading).toBe(false)
   })
@@ -282,7 +291,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith('unknown-error', 'Something went wrong: (unknown-error)')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'unknown-error',
+      'Something went wrong: (unknown-error)'
+    )
   })
 
   it('should handle failed mutation', async () => {
@@ -304,7 +316,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith('unknown-error', 'Something went wrong: (unknown-error)')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'unknown-error',
+      'Something went wrong: (unknown-error)'
+    )
     expect(result.current.loading).toBe(false)
     expect(result.current.success).toBe(false)
   })
@@ -332,7 +347,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith('unknown-error', 'Something went wrong: (unknown-error)')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'unknown-error',
+      'Something went wrong: (unknown-error)'
+    )
     expect(result.current.loading).toBe(false)
     expect(result.current.success).toBe(false)
   })
