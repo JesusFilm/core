@@ -1,0 +1,7 @@
+extend type AuthenticatedUser @key(fields: "id") {
+  id: ID! @external
+}
+
+extend type AnonymousUser @key(fields: "id") {
+  id: ID!
+}

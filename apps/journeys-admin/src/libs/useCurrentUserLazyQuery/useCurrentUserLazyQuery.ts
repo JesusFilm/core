@@ -29,5 +29,8 @@ export function useCurrentUserLazyQuery(): {
     return { loadUser, data: data.me }
   }
 
-  return { loadUser, data: { __typename: 'User', id: '', email: '' } }
+  return {
+    loadUser,
+    data: { __typename: 'AuthenticatedUser', id: '', email: '' }
+  }
 }

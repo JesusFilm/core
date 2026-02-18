@@ -657,7 +657,7 @@ type Playlist {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  owner: User!
+  owner: AuthenticatedUser!
   items: [PlaylistItem!]!
 }
 
@@ -1056,14 +1056,6 @@ type UnsplashUserLinks {
   photos: String!
   portfolio: String!
   self: String!
-}
-
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  mediaUserRoles: [MediaRole!]!
 }
 
 type UserMediaProfile {
