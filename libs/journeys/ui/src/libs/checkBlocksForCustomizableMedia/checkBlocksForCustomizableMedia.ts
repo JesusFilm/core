@@ -14,8 +14,10 @@ export function checkBlocksForCustomizableMedia(
   if (logoImageBlock?.customizable === true) return true
 
   for (const block of blocks) {
-    if (block.__typename === 'ImageBlock' && block.customizable === true) return true
-    if (block.__typename === 'VideoBlock' && block.customizable === true) return true
+    if (block.__typename === 'ImageBlock' && block.customizable === true)
+      return true
+    if (block.__typename === 'VideoBlock' && block.customizable === true)
+      return true
   }
   return false
 }

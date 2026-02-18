@@ -73,8 +73,13 @@ export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
-  const { screens, totalSteps, hasEditableText, hasCustomizableLinks, hasCustomizableMedia } =
-    useMemo(() => getCustomizeFlowConfig(journey, t), [])
+  const {
+    screens,
+    totalSteps,
+    hasEditableText,
+    hasCustomizableLinks,
+    hasCustomizableMedia
+  } = useMemo(() => getCustomizeFlowConfig(journey, t), [])
 
   const [activeScreen, setActiveScreen] =
     useState<CustomizationScreen>('language')
