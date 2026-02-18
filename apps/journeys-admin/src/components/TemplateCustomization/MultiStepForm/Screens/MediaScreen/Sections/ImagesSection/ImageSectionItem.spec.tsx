@@ -6,6 +6,8 @@ import { GetJourney_journey_blocks_ImageBlock as ImageBlock } from '../../../../
 import * as useImageUploadHooks from '../../../../../../../libs/useImageUpload'
 
 import { ImageSectionItem } from './ImageSectionItem'
+import { SnackbarProvider } from 'notistack'
+import { ImageUploadErrorCode } from '../../../../../../../libs/useImageUpload'
 
 jest.mock('next-i18next', () => ({
   __esModule: true,
@@ -14,6 +16,12 @@ jest.mock('next-i18next', () => ({
       t: (str: string) => str
     }
   }
+}))
+
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
 jest.mock('@core/shared/ui/NextImage', () => ({
@@ -215,6 +223,36 @@ describe('ImageSectionItem', () => {
     expect(onUploadComplete).toHaveBeenCalledWith(
       imageBlock.id,
       'https://example.com/new-image.jpg'
+    )
+  })
+
+  it('should show error snackbar when onUploadError is called', () => {
+    let onUploadErrorCallback: ((errorCode: ImageUploadErrorCode, errorMessage: string) => void) | undefined
+    jest.spyOn(useImageUploadHooks, 'useImageUpload').mockImplementation((options) => {
+      onUploadErrorCallback = options.onUploadError
+      return {
+        getRootProps: jest.fn(),
+        getInputProps: jest.fn(),
+        open: jest.fn(),
+        loading: false
+      } as any
+    })
+
+    render(
+      <SnackbarProvider>
+      <MockedProvider>
+        <ImageSectionItem
+          imageBlock={imageBlock}
+          onUploadComplete={onUploadComplete}
+        />
+      </MockedProvider>
+      </SnackbarProvider>
+    )  
+
+    onUploadErrorCallback?.(5000, 'Something went wrong: (5000)')
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Something went wrong: (5000)',
+      { variant: 'error' }
     )
   })
 
