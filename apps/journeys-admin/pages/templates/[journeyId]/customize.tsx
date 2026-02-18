@@ -3,6 +3,8 @@ import absoluteUrl from 'next-absolute-url'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useSnackbar } from 'notistack'
+import { useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
@@ -19,14 +21,35 @@ import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const user = useUser()
-  const { data } = useJourneyQuery({
+  const { data, loading } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
     options: {
       skipRoutingFilter: true
     }
   })
+
+  useEffect(() => {
+    if (!router.isReady || loading) return
+    const journeyId = router.query.journeyId
+    if (journeyId != null && data?.journey == null) {
+      enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      router.replace('/templates')
+    }
+  }, [
+    router.isReady,
+    router.query.journeyId,
+    loading,
+    data?.journey,
+    router,
+    t,
+    enqueueSnackbar
+  ])
 
   return (
     <>
