@@ -6,23 +6,13 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey as Journey
-} from '../../../../../../__generated__/GetJourney'
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
-import {
-  CardsSection,
-  ImagesSection,
-  LogoSection,
-  VideosSection
-} from './Sections'
+import { CardsSection, ImagesSection, VideosSection } from './Sections'
 import { showImagesSection, showLogoSection, showVideosSection } from './utils'
 import {
   getCardBlockIdFromStep,
@@ -56,7 +46,6 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     getCardBlockIdFromStep(customizableSteps[0])
   )
 
-  const showLogo = showLogoSection()
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
 
@@ -72,11 +61,20 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
-    <Stack alignItems="center" sx={{ width: '100%' }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        display={{ xs: 'none', sm: 'block' }}
+    <Stack
+      alignItems="center"
+      sx={{
+        width: '100%',
+        px: { xs: 0, sm: 3.5 }
+      }}
+    >
+      <Stack
+        gap={4}
+        sx={{
+          width: '100%',
+          px: { xs: 0, sm: 10 },
+          overflow: { xs: 'visible', sm: 'hidden' }
+        }}
       >
         {t('Media')}
       </Typography>
@@ -87,6 +85,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           variant="media"
           onClick={handleStepClick}
           selectedStep={selectedStep}
+          handleStepClick={handleStepClick}
         />
       </Box>
       {showLogo && <LogoSection cardBlockId={selectedCardBlockId} />}
@@ -97,14 +96,13 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         <VideosSection
           cardBlockId={selectedCardBlockId}
           onLoading={setLoading}
+        <CustomizeFlowNextButton
+          label={t('Next')}
+          onClick={handleNext}
+          ariaLabel={t('Next')}
+          disabled={loading}
         />
-      )}
-      <CustomizeFlowNextButton
-        label={t('Next')}
-        onClick={handleNext}
-        ariaLabel={t('Next')}
-        disabled={loading}
-      />
+      </Stack>
     </Stack>
   )
 }

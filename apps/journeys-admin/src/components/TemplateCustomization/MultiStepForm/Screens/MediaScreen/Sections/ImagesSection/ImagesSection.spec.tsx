@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
@@ -18,7 +19,17 @@ jest.mock('next-i18next', () => ({
   }
 }))
 
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
+
 describe('ImagesSection', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   const imageBlock: ImageBlock = {
     id: 'image1.id',
     __typename: 'ImageBlock',
@@ -43,7 +54,9 @@ describe('ImagesSection', () => {
   it('should render the section title and display empty message when no blocks found', () => {
     render(
       <MockedProvider>
-        <ImagesSection journey={null} cardBlockId={null} />
+        <SnackbarProvider>
+          <ImagesSection journey={null} cardBlockId={null} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(screen.getByText('Image')).toBeInTheDocument()
@@ -55,7 +68,9 @@ describe('ImagesSection', () => {
   it('should display empty message when cardBlockId is null with a non-null journey', () => {
     render(
       <MockedProvider>
-        <ImagesSection journey={journey} cardBlockId={null} />
+        <SnackbarProvider>
+          <ImagesSection journey={journey} cardBlockId={null} />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(
@@ -77,7 +92,9 @@ describe('ImagesSection', () => {
 
     render(
       <MockedProvider>
-        <ImagesSection journey={nonMatchingJourney} cardBlockId="card1.id" />
+        <SnackbarProvider>
+          <ImagesSection journey={nonMatchingJourney} cardBlockId="card1.id" />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(
@@ -99,7 +116,12 @@ describe('ImagesSection', () => {
 
     render(
       <MockedProvider>
-        <ImagesSection journey={multipleImagesJourney} cardBlockId="card1.id" />
+        <SnackbarProvider>
+          <ImagesSection
+            journey={multipleImagesJourney}
+            cardBlockId="card1.id"
+          />
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(screen.getAllByRole('button', { name: 'Edit image' })).toHaveLength(
@@ -173,7 +195,9 @@ describe('ImagesSection', () => {
 
     render(
       <MockedProvider mocks={mocks}>
-        <ImagesSection journey={journey} cardBlockId="card1.id" />
+        <SnackbarProvider>
+          <ImagesSection journey={journey} cardBlockId="card1.id" />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -182,6 +206,75 @@ describe('ImagesSection', () => {
     fireEvent.change(input, { target: { files: [file] } })
 
     await waitFor(() => expect(updateResult).toHaveBeenCalled())
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'File uploaded successfully',
+        { variant: 'success' }
+      )
+    })
+  })
+
+  it('should show error snackbar when imageBlockUpdate mutation fails', async () => {
+    const cloudflareResult = jest.fn().mockReturnValue({
+      data: {
+        createCloudflareUploadByFile: {
+          uploadUrl: 'https://example.com/upload',
+          id: 'cloudflare.id',
+          __typename: 'CloudflareUploadByFile'
+        }
+      }
+    })
+
+    const mocks = [
+      {
+        request: {
+          query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE
+        },
+        result: cloudflareResult
+      },
+      {
+        request: {
+          query: IMAGE_BLOCK_UPDATE,
+          variables: {
+            id: 'image1.id',
+            input: {
+              src: 'https://imagedelivery.net//cloudflare.id/public',
+              scale: 100,
+              focalLeft: 50,
+              focalTop: 50
+            }
+          }
+        },
+        error: new Error('Mutation failed')
+      }
+    ]
+
+    global.fetch = jest.fn().mockResolvedValue({
+      json: jest.fn().mockResolvedValue({
+        success: true,
+        result: { id: 'cloudflare.id' }
+      })
+    })
+
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <ImagesSection journey={journey} cardBlockId="card1.id" />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const file = new File([''], 'test.jpg', { type: 'image/jpeg' })
+    const input = screen.getByTestId('ImagesSection-file-input-image1.id')
+    fireEvent.change(input, { target: { files: [file] } })
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        { variant: 'error' }
+      )
+    })
   })
 
   it('should filter blocks based on cardBlockId and customizable flag', () => {
@@ -202,7 +295,9 @@ describe('ImagesSection', () => {
 
     render(
       <MockedProvider>
-        <ImagesSection journey={filteredJourney} cardBlockId="card1.id" />
+        <SnackbarProvider>
+          <ImagesSection journey={filteredJourney} cardBlockId="card1.id" />
+        </SnackbarProvider>
       </MockedProvider>
     )
 
