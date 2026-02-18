@@ -36,7 +36,7 @@ export function useBlockCreateCommand(): {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlockId: block?.id,
-          activeSlide: ActiveSlide.Content
+          activeSlide: ActiveSlide.Drawer
         })
         void execute()
       },
@@ -45,7 +45,7 @@ export function useBlockCreateCommand(): {
           type: 'SetEditorFocusAction',
           selectedStep,
           selectedBlockId: previousBlock?.id,
-          activeSlide: ActiveSlide.Content
+          activeSlide: ActiveSlide.Drawer
         })
         void blockDelete(block, {
           optimisticResponse: { blockDelete: [] }
@@ -56,7 +56,7 @@ export function useBlockCreateCommand(): {
           type: 'SetEditorFocusAction',
           selectedStep,
           selectedBlockId: block?.id,
-          activeSlide: ActiveSlide.Content
+          activeSlide: ActiveSlide.Drawer
         })
         void blockRestore({
           variables: {

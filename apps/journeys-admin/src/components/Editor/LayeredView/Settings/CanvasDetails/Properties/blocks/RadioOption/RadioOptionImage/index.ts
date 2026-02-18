@@ -1,0 +1,1 @@
+export { RadioOptionImage } from './RadioOptionImage'

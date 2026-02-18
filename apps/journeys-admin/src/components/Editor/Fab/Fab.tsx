@@ -50,7 +50,8 @@ export function Fab({ variant }: FabProps): ReactElement {
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: mdUp ? ActiveSlide.Content : ActiveSlide.Drawer
+      activeSlide: ActiveSlide.Drawer
+      // activeSlide: mdUp ? ActiveSlide.Content : ActiveSlide.Drawer
     })
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',

@@ -3,7 +3,10 @@ import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
-import { ActiveSlide } from '@core/journeys/ui/EditorProvider/EditorProvider'
+import {
+  ActiveCanvasDetailsDrawer,
+  ActiveSlide
+} from '@core/journeys/ui/EditorProvider/EditorProvider'
 import BulbIcon from '@core/shared/ui/icons/Bulb'
 
 import { Item } from '../Item/Item'
@@ -29,8 +32,12 @@ export function StrategyItem({
       activeContent: ActiveContent.Goals
     })
     dispatch({
+      type: 'SetActiveCanvasDetailsDrawerAction',
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    })
+    dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: ActiveSlide.Drawer
     })
     closeMenu?.()
   }

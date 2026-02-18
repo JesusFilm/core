@@ -1,0 +1,1 @@
+export { CanvasFooter } from './CanvasFooter'

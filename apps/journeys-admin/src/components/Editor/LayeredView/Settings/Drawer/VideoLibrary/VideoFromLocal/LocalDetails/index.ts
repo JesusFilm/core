@@ -1,0 +1,1 @@
+export { LocalDetails } from './LocalDetails'
