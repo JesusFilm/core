@@ -120,6 +120,7 @@ export function TemplateCardPreview({
     )
     if (index < 0) return
 
+    swiper.update()
     swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
