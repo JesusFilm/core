@@ -15,7 +15,6 @@ import {
 } from '../utils/getCustomizeFlowConfig'
 
 import { ProgressStepper } from './ProgressStepper'
-import { TemplateVideoUploadProvider } from './TemplateVideoUploadProvider'
 import {
   DoneScreen,
   LanguageScreen,
@@ -24,6 +23,7 @@ import {
   SocialScreen,
   TextScreen
 } from './Screens'
+import { TemplateVideoUploadProvider } from './TemplateVideoUploadProvider'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
@@ -110,47 +110,47 @@ export function MultiStepForm(): ReactElement {
         }}
       >
         <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
-        <NextLink href={link} passHref legacyBehavior>
-          <Button
-            variant="text"
-            color="primary"
-            startIcon={<Edit3 />}
-            sx={{
-              alignSelf: 'flex-end',
-              mr: '4px',
-              fontWeight: 'bold',
-              visibility: activeScreen === 'language' ? 'hidden' : 'visible',
-              '& .MuiButton-startIcon': {
-                marginRight: 0.3,
-                marginTop: 1
-              }
-            }}
-            disabled={journey?.id == null}
-          >
-            {t('Edit Manually')}
-          </Button>
-        </NextLink>
-        {(hasEditableText || hasCustomizableLinks) && (
-          <Box sx={{ mt: { xs: 3, sm: 6 } }}>
-            <ProgressStepper
-              activeStepNumber={screens.indexOf(activeScreen)}
-              totalSteps={totalSteps}
-            />
-          </Box>
-        )}
+          <NextLink href={link} passHref legacyBehavior>
+            <Button
+              variant="text"
+              color="primary"
+              startIcon={<Edit3 />}
+              sx={{
+                alignSelf: 'flex-end',
+                mr: '4px',
+                fontWeight: 'bold',
+                visibility: activeScreen === 'language' ? 'hidden' : 'visible',
+                '& .MuiButton-startIcon': {
+                  marginRight: 0.3,
+                  marginTop: 1
+                }
+              }}
+              disabled={journey?.id == null}
+            >
+              {t('Edit Manually')}
+            </Button>
+          </NextLink>
+          {(hasEditableText || hasCustomizableLinks) && (
+            <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+              <ProgressStepper
+                activeStepNumber={screens.indexOf(activeScreen)}
+                totalSteps={totalSteps}
+              />
+            </Box>
+          )}
 
-        <Box
-          sx={{
-            alignSelf: 'center',
-            width: '100%',
-            px: '14px',
-            py: { xs: '10px', sm: '24px' }
-          }}
-        >
-          {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
-        </Box>
-      </Stack>
-    </Container>
+          <Box
+            sx={{
+              alignSelf: 'center',
+              width: '100%',
+              px: '14px',
+              py: { xs: '10px', sm: '24px' }
+            }}
+          >
+            {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
+          </Box>
+        </Stack>
+      </Container>
     </TemplateVideoUploadProvider>
   )
 }

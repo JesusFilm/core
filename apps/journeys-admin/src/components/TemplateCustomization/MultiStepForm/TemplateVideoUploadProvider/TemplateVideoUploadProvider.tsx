@@ -16,11 +16,16 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
-import { IdType, VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import {
+  IdType,
+  VideoBlockSource
+} from '../../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_UPDATE } from '../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
-  mutation TemplateVideoUploadCreateMuxVideoUploadByFileMutation($name: String!) {
+  mutation TemplateVideoUploadCreateMuxVideoUploadByFileMutation(
+    $name: String!
+  ) {
     createMuxVideoUploadByFile(name: $name) {
       uploadUrl
       id
@@ -102,9 +107,9 @@ export function TemplateVideoUploadProvider({
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
 
-  const [uploadTasks, setUploadTasks] = useState<Map<string, UploadTaskInternal>>(
-    new Map()
-  )
+  const [uploadTasks, setUploadTasks] = useState<
+    Map<string, UploadTaskInternal>
+  >(new Map())
   const uploadInstancesRef = useRef<Map<string, { abort: () => void }>>(
     new Map()
   )
@@ -142,16 +147,19 @@ export function TemplateVideoUploadProvider({
     []
   )
 
-  const removeTask = useCallback((videoBlockId: string) => {
-    clearPollingForBlock(videoBlockId)
-    uploadInstancesRef.current.delete(videoBlockId)
-    activeBlocksRef.current.delete(videoBlockId)
-    setUploadTasks((prev) => {
-      const next = new Map(prev)
-      next.delete(videoBlockId)
-      return next
-    })
-  }, [clearPollingForBlock])
+  const removeTask = useCallback(
+    (videoBlockId: string) => {
+      clearPollingForBlock(videoBlockId)
+      uploadInstancesRef.current.delete(videoBlockId)
+      activeBlocksRef.current.delete(videoBlockId)
+      setUploadTasks((prev) => {
+        const next = new Map(prev)
+        next.delete(videoBlockId)
+        return next
+      })
+    },
+    [clearPollingForBlock]
+  )
 
   /**
    * Final step after Mux reports readyToStream. Persists the new video to the
@@ -195,14 +203,7 @@ export function TemplateVideoUploadProvider({
         })
       }
     },
-    [
-      journey?.id,
-      videoBlockUpdate,
-      enqueueSnackbar,
-      t,
-      updateTask,
-      removeTask
-    ]
+    [journey?.id, videoBlockUpdate, enqueueSnackbar, t, updateTask, removeTask]
   )
 
   /**
@@ -365,13 +366,7 @@ export function TemplateVideoUploadProvider({
         })
       }
     },
-    [
-      createMuxVideoUploadByFile,
-      updateTask,
-      startPolling,
-      enqueueSnackbar,
-      t
-    ]
+    [createMuxVideoUploadByFile, updateTask, startPolling, enqueueSnackbar, t]
   )
 
   const getUploadStatus = useCallback(
