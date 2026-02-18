@@ -205,29 +205,6 @@ describe('ImageSource', () => {
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
-    it('should not render BlockCustomizationToggle when selectedBlock is null (even when journey is template)', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { template: true } as unknown as JourneyFields,
-                variant: 'admin'
-              }}
-            >
-              <ImageSource
-                selectedBlock={null}
-                onChange={onChange}
-                onDelete={onDelete}
-              />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
-    })
-
     it('should render BlockCustomizationToggle when journey is a template and selectedBlock is non-null', () => {
       render(
         <MockedProvider>

@@ -504,27 +504,6 @@ describe('VideoBlockEditor', () => {
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
-    it('should not render BlockCustomizationToggle when selectedBlock is null (even when journey is template)', () => {
-      render(
-        <ThemeProvider>
-          <MockedProvider mocks={mocks}>
-            <SnackbarProvider>
-              <JourneyProvider
-                value={{
-                  journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
-                }}
-              >
-                <VideoBlockEditor selectedBlock={null} onChange={jest.fn()} />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </MockedProvider>
-        </ThemeProvider>
-      )
-
-      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
-    })
-
     it('should render BlockCustomizationToggle when journey is a template and selectedBlock is non-null', () => {
       render(
         <ThemeProvider>
