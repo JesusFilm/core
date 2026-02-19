@@ -1,4 +1,12 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useCallback,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import type { UploadTaskInternal, VideoUploadState } from './types'
 
@@ -15,9 +23,7 @@ import type { UploadTaskInternal, VideoUploadState } from './types'
  */
 export function useUploadTaskMap(): {
   uploadTasks: Map<string, UploadTaskInternal>
-  setUploadTasks: React.Dispatch<
-    React.SetStateAction<Map<string, UploadTaskInternal>>
-  >
+  setUploadTasks: Dispatch<SetStateAction<Map<string, UploadTaskInternal>>>
   updateTask: (
     videoBlockId: string,
     updates: Partial<UploadTaskInternal>
@@ -25,8 +31,8 @@ export function useUploadTaskMap(): {
   removeTask: (videoBlockId: string) => void
   getUploadStatus: (videoBlockId: string) => VideoUploadState | null
   hasActiveUploads: boolean
-  uploadInstancesRef: React.MutableRefObject<Map<string, { abort: () => void }>>
-  activeBlocksRef: React.MutableRefObject<Set<string>>
+  uploadInstancesRef: RefObject<Map<string, { abort: () => void }>>
+  activeBlocksRef: RefObject<Set<string>>
 } {
   const [uploadTasks, setUploadTasks] = useState<
     Map<string, UploadTaskInternal>

@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
@@ -110,6 +110,14 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
 }
 
 describe('useMuxVideoProcessing', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('startPolling sets status to processing', async () => {
     const Wrapper = createWrapper([
       getMyMuxVideoReadyMock,
@@ -154,12 +162,11 @@ describe('useMuxVideoProcessing', () => {
       result.current.startPolling('video-block-1', 'mux-video-id')
     })
 
-    await waitFor(
-      () => {
-        expect(result.current.getUploadStatus('video-block-1')).toBeNull()
-      },
-      { timeout: 5000 }
-    )
+    await act(async () => {
+      await jest.runAllTimersAsync()
+    })
+
+    expect(result.current.getUploadStatus('video-block-1')).toBeNull()
   })
 
   it('retries on transient query errors up to MAX_RETRIES then marks error', async () => {
@@ -186,15 +193,14 @@ describe('useMuxVideoProcessing', () => {
       result.current.startPolling('video-block-1', 'mux-video-id')
     })
 
-    await waitFor(
-      () => {
-        const status = result.current.getUploadStatus('video-block-1')
-        expect(status?.status).toBe('error')
-        expect(status?.error).toBe('Failed to check video status')
-      },
-      { timeout: 15000 }
-    )
-  }, 20000)
+    await act(async () => {
+      await jest.runAllTimersAsync()
+    })
+
+    const status = result.current.getUploadStatus('video-block-1')
+    expect(status?.status).toBe('error')
+    expect(status?.error).toBe('Failed to check video status')
+  })
 
   it('clearPollingForBlock cancels pending timeout', async () => {
     const Wrapper = createWrapper([getMyMuxVideoProcessingMock])
@@ -220,7 +226,9 @@ describe('useMuxVideoProcessing', () => {
       status: 'processing'
     })
 
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(100)
+    })
 
     expect(result.current.getUploadStatus('video-block-1')).toMatchObject({
       status: 'processing'

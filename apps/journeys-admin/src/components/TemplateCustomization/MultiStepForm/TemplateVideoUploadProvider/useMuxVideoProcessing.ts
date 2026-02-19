@@ -1,7 +1,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { useCallback, useRef } from 'react'
+import { RefObject, useCallback, useRef } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
@@ -22,7 +22,7 @@ interface UseMuxVideoProcessingParams {
     updates: Partial<UploadTaskInternal>
   ) => void
   removeTask: (videoBlockId: string) => void
-  activeBlocksRef: React.MutableRefObject<Set<string>>
+  activeBlocksRef: RefObject<Set<string>>
 }
 
 /**
