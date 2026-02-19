@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { UpChunk } from '@mux/upchunk'
-import { act, render, renderHook, waitFor } from '@testing-library/react'
+import { act, render, renderHook } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
