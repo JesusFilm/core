@@ -398,11 +398,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithMediaOnly }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithMediaOnly, { customizableMedia: true })
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // Progress stepper should be visible (hasCustomizableMedia)
