@@ -1818,7 +1818,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: User;
+    user: AuthenticatedUser;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -2034,7 +2034,7 @@ export class AuthenticatedUser {
     id: string;
 }
 
-export class User {
+export class AnonymousUser {
     id: string;
 }
 
