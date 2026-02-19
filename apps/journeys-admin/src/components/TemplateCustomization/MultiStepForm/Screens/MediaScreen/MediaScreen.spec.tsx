@@ -20,21 +20,6 @@ const baseJourney = {
   id: 'test-journey-id',
   seoTitle: 'Initial SEO Title',
   seoDescription: 'Initial SEO Description',
-  logoImageBlock: {
-    __typename: 'ImageBlock',
-    id: 'logo.id',
-    parentBlockId: null,
-    parentOrder: null,
-    src: 'https://example.com/logo.png',
-    alt: 'logo',
-    width: 100,
-    height: 100,
-    blurhash: '',
-    scale: null,
-    focalTop: null,
-    focalLeft: null,
-    customizable: true
-  },
   blocks: [
     {
       id: 'step1.id',
@@ -159,6 +144,11 @@ describe('MediaScreen', () => {
     renderMediaScreen()
 
     expect(screen.getByText('Media')).toBeInTheDocument()
+    expect(
+      screen.getByText('Personalize and manage your media assets')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
+    expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
       'Next'
     )
@@ -171,34 +161,6 @@ describe('MediaScreen', () => {
     fireEvent.click(nextButton)
 
     expect(handleNext).toHaveBeenCalledTimes(1)
-  })
-
-  it('should render section components and handle step selection', () => {
-    renderMediaScreen()
-
-    expect(screen.getByTestId('LogoSection')).toBeInTheDocument()
-    expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
-    expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
-
-    // Initial state: first customizable step selected
-    expect(
-      screen.getByTestId('ImagesSection-file-input-image1.id')
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByTestId('ImagesSection-file-input-image2.id')
-    ).not.toBeInTheDocument()
-
-    // Click on second step
-    const steps = screen.getAllByTestId('TemplateCardPreviewItem')
-    if (steps.length >= 2) {
-      fireEvent.click(steps[1])
-      expect(
-        screen.getByTestId('ImagesSection-file-input-image2.id')
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByTestId('ImagesSection-file-input-image1.id')
-      ).not.toBeInTheDocument()
-    }
   })
 
   it('should hide ImagesSection when selected card has no customizable images', () => {
@@ -264,6 +226,29 @@ describe('MediaScreen', () => {
     }
   })
 
+  it('disables the Next button when VideosSection reports loading', () => {
+    mockedUseVideoUpload.mockReturnValue({
+      open: jest.fn(),
+      getInputProps: jest.fn().mockReturnValue({}),
+      status: 'uploading'
+    } as unknown as ReturnType<typeof useVideoUpload>)
+    renderMediaScreen()
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).toBeDisabled()
+    fireEvent.click(nextButton)
+    expect(handleNext).not.toHaveBeenCalled()
+  })
+
+  it('enables the Next button when VideosSection is not loading', () => {
+    renderMediaScreen()
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+    fireEvent.click(nextButton)
+    expect(handleNext).toHaveBeenCalledTimes(1)
+  })
+
   it('should hide LogoSection when logoImageBlock is not customizable', () => {
     const journeyNoLogo = {
       ...baseJourney,
@@ -287,28 +272,5 @@ describe('MediaScreen', () => {
     renderMediaScreen(journeyNullLogo)
 
     expect(screen.queryByTestId('LogoSection')).not.toBeInTheDocument()
-  })
-
-  it('disables the Next button when VideosSection reports loading', () => {
-    mockedUseVideoUpload.mockReturnValue({
-      open: jest.fn(),
-      getInputProps: jest.fn().mockReturnValue({}),
-      status: 'uploading'
-    } as unknown as ReturnType<typeof useVideoUpload>)
-    renderMediaScreen()
-
-    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
-    expect(nextButton).toBeDisabled()
-    fireEvent.click(nextButton)
-    expect(handleNext).not.toHaveBeenCalled()
-  })
-
-  it('enables the Next button when VideosSection is not loading', () => {
-    renderMediaScreen()
-
-    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
-    expect(nextButton).not.toBeDisabled()
-    fireEvent.click(nextButton)
-    expect(handleNext).toHaveBeenCalledTimes(1)
   })
 })

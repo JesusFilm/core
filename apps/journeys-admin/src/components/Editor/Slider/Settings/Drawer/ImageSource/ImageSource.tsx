@@ -8,6 +8,8 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
@@ -82,13 +84,16 @@ export function ImageSource({
           <ImageBlockHeader selectedBlock={selectedBlock} showAdd />
         </CardActionArea>
       </Card>
-      {(customizableMedia ?? false) &&
-        journey?.template &&
-        selectedBlock != null && (
-          <BlockCustomizationToggle
-            block={selectedBlock as TreeBlock<ImageBlock>}
-          />
-        )}
+      {journey?.template && (customizableMedia ?? false) && (
+        <BlockCustomizationToggle
+          block={
+            selectedBlock != null
+              ? (selectedBlock as TreeBlock<ImageBlock>)
+              : undefined
+          }
+          mediaTypeWhenEmpty="image"
+        />
+      )}
       {open != null && (
         <ImageLibrary
           open={open}

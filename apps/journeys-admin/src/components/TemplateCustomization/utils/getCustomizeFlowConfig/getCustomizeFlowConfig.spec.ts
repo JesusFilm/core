@@ -172,6 +172,7 @@ describe('getCustomizeFlowConfig', () => {
       'language',
       'text',
       'links',
+      'media',
       'social',
       'done'
     ])

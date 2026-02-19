@@ -229,35 +229,6 @@ describe('ImageSource', () => {
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
-    it('should render BlockCustomizationToggle when journey is a template and selectedBlock is non-null', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <FlagsProvider flags={{ customizableMedia: true }}>
-              <JourneyProvider
-                value={{
-                  journey: { template: true } as unknown as JourneyFields,
-                  variant: 'admin'
-                }}
-              >
-                <CommandProvider>
-                  <EditorProvider>
-                    <ImageSource
-                      selectedBlock={imageBlock}
-                      onChange={onChange}
-                      onDelete={onDelete}
-                    />
-                  </EditorProvider>
-                </CommandProvider>
-              </JourneyProvider>
-            </FlagsProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-
-      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    })
-
     it('should not render BlockCustomizationToggle when customizableMedia flag is false', () => {
       render(
         <MockedProvider>

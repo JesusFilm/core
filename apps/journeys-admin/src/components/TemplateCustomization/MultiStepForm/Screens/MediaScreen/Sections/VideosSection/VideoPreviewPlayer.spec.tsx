@@ -156,7 +156,7 @@ describe('VideoPreviewPlayer', () => {
     )
   })
 
-  it('renders VideoPreviewPlayer-unsupported when no source type matches', () => {
+  it('renders VideoPreviewPlayerPlaceholder when no source type matches', () => {
     const videoBlock = createBaseVideoBlock({
       source: VideoBlockSource.youTube,
       videoId: null,
@@ -166,12 +166,12 @@ describe('VideoPreviewPlayer', () => {
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
     expect(
-      screen.getByTestId('VideoPreviewPlayer-unsupported')
+      screen.getByTestId('VideoPreviewPlayerPlaceholder')
     ).toBeInTheDocument()
     expect(mockVideojs).not.toHaveBeenCalled()
   })
 
-  it('renders VideoPreviewPlayer-unsupported when source is internal but mediaVideo is not Video', () => {
+  it('renders VideoPreviewPlayerPlaceholder when source is internal but mediaVideo is not Video', () => {
     const videoBlock = createBaseVideoBlock({
       source: VideoBlockSource.internal,
       mediaVideo: {
@@ -185,7 +185,28 @@ describe('VideoPreviewPlayer', () => {
     render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
 
     expect(
-      screen.getByTestId('VideoPreviewPlayer-unsupported')
+      screen.getByTestId('VideoPreviewPlayerPlaceholder')
+    ).toBeInTheDocument()
+    expect(mockVideojs).not.toHaveBeenCalled()
+  })
+
+  it('renders skeleton placeholder when no playable source', () => {
+    const videoBlock = createBaseVideoBlock({
+      source: VideoBlockSource.youTube,
+      videoId: null,
+      mediaVideo: null
+    })
+
+    render(<VideoPreviewPlayer videoBlock={videoBlock} />, { container })
+
+    expect(
+      screen.getByTestId('VideoPreviewPlayerPlaceholder')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('VideoPreviewPlayerSkeletonIcon')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Upload a video to see a preview here')
     ).toBeInTheDocument()
     expect(mockVideojs).not.toHaveBeenCalled()
   })

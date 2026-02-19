@@ -28,13 +28,11 @@ jest.mock('../../../../../utils/useVideoUpload/useVideoUpload', () => ({
   useVideoUpload: (...args: unknown[]) => mockUseVideoUpload(...args)
 }))
 
-const mockShowSnackbar = jest.fn()
-jest.mock(
-  '../../../../../../MuxVideoUploadProvider/utils/showSnackbar/showSnackbar',
-  () => ({
-    createShowSnackbar: () => mockShowSnackbar
-  })
-)
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
 
 const mockVideoBlockUpdate = jest.fn()
 jest.mock('@apollo/client', () => {
@@ -191,7 +189,7 @@ describe('VideosSection', () => {
   it('renders upload button with Upload file text', () => {
     renderVideosSection()
     expect(
-      screen.getByRole('button', { name: 'Upload file' })
+      screen.getByRole('button', { name: 'Upload File' })
     ).toBeInTheDocument()
   })
 
@@ -256,7 +254,7 @@ describe('VideosSection', () => {
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.getByRole('button', { name: 'Upload file' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
   })
 
   it('calls onLoading with true when loading', () => {
@@ -302,7 +300,7 @@ describe('VideosSection', () => {
       cardBlockId
     })
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Upload file' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
   })
 
   describe('upload flow integration', () => {
@@ -350,15 +348,15 @@ describe('VideosSection', () => {
       })
 
       await waitFor(() => {
-        expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
           'File uploaded successfully',
-          'success'
+          { variant: 'success' }
         )
       })
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Upload file' })
+          screen.getByRole('button', { name: 'Upload File' })
         ).toBeEnabled()
       })
     })
@@ -384,15 +382,15 @@ describe('VideosSection', () => {
       })
 
       await waitFor(() => {
-        expect(mockShowSnackbar).toHaveBeenCalledWith(
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
           'Upload failed. Please try again',
-          'error'
+          { variant: 'error' }
         )
       })
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Upload file' })
+          screen.getByRole('button', { name: 'Upload File' })
         ).toBeEnabled()
       })
     })
@@ -414,9 +412,9 @@ describe('VideosSection', () => {
       expect(capturedOnUploadError).toBeDefined()
       capturedOnUploadError!()
 
-      expect(mockShowSnackbar).toHaveBeenCalledWith(
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
         'Upload failed. Please try again',
-        'error'
+        { variant: 'error' }
       )
     })
   })
