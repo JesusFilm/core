@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -11,6 +12,14 @@ import { MultiStepForm } from './MultiStepForm'
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({
   useUser: () => ({ id: 'test-user-id' })
+}))
+
+jest.mock('./TemplateVideoUploadProvider', () => ({
+  TemplateVideoUploadProvider: ({
+    children
+  }: {
+    children: React.ReactNode
+  }) => <>{children}</>
 }))
 
 jest.mock('next/router', () => ({

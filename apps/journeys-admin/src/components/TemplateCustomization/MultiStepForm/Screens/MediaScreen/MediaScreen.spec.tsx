@@ -11,9 +11,18 @@ import {
   GetJourney_journey as Journey,
   GetJourney_journey_blocks_StepBlock as StepBlock
 } from '../../../../../../__generated__/GetJourney'
-import { useVideoUpload } from '../../../utils/useVideoUpload/useVideoUpload'
 
 import { MediaScreen } from './MediaScreen'
+
+const mockHasActiveUploads = jest.fn()
+jest.mock('../../TemplateVideoUploadProvider', () => ({
+  ...jest.requireActual('../../TemplateVideoUploadProvider'),
+  useTemplateVideoUpload: () => ({
+    startUpload: jest.fn(),
+    getUploadStatus: jest.fn(),
+    hasActiveUploads: mockHasActiveUploads()
+  })
+}))
 
 const baseJourney = {
   ...journey,
@@ -101,14 +110,6 @@ const baseJourney = {
   ]
 } as unknown as Journey
 
-jest.mock('../../../utils/useVideoUpload/useVideoUpload', () => ({
-  useVideoUpload: jest.fn()
-}))
-
-const mockedUseVideoUpload = useVideoUpload as jest.MockedFunction<
-  typeof useVideoUpload
->
-
 jest.mock('./Sections/VideosSection/VideoPreviewPlayer', () => ({
   VideoPreviewPlayer: () => <div data-testid="VideoPreviewPlayer" />
 }))
@@ -118,11 +119,7 @@ describe('MediaScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockedUseVideoUpload.mockReturnValue({
-      open: jest.fn(),
-      getInputProps: jest.fn().mockReturnValue({}),
-      status: 'idle'
-    } as unknown as ReturnType<typeof useVideoUpload>)
+    mockHasActiveUploads.mockReturnValue(false)
   })
 
   const renderMediaScreen = (
@@ -226,12 +223,8 @@ describe('MediaScreen', () => {
     }
   })
 
-  it('disables the Next button when VideosSection reports loading', () => {
-    mockedUseVideoUpload.mockReturnValue({
-      open: jest.fn(),
-      getInputProps: jest.fn().mockReturnValue({}),
-      status: 'uploading'
-    } as unknown as ReturnType<typeof useVideoUpload>)
+  it('shows loading state and prevents click when hasActiveUploads is true', () => {
+    mockHasActiveUploads.mockReturnValue(true)
     renderMediaScreen()
 
     const nextButton = screen.getByTestId('CustomizeFlowNextButton')
@@ -240,7 +233,7 @@ describe('MediaScreen', () => {
     expect(handleNext).not.toHaveBeenCalled()
   })
 
-  it('enables the Next button when VideosSection is not loading', () => {
+  it('enables the Next button when hasActiveUploads is false', () => {
     renderMediaScreen()
 
     const nextButton = screen.getByTestId('CustomizeFlowNextButton')
