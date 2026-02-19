@@ -241,4 +241,29 @@ describe('MediaScreen', () => {
     fireEvent.click(nextButton)
     expect(handleNext).toHaveBeenCalledTimes(1)
   })
+
+  it('should hide LogoSection when logoImageBlock is not customizable', () => {
+    const journeyNoLogo = {
+      ...baseJourney,
+      logoImageBlock: {
+        ...baseJourney.logoImageBlock,
+        customizable: false
+      }
+    } as unknown as Journey
+
+    renderMediaScreen(journeyNoLogo)
+
+    expect(screen.queryByTestId('LogoSection')).not.toBeInTheDocument()
+  })
+
+  it('should hide LogoSection when logoImageBlock is null', () => {
+    const journeyNullLogo = {
+      ...baseJourney,
+      logoImageBlock: null
+    } as unknown as Journey
+
+    renderMediaScreen(journeyNullLogo)
+
+    expect(screen.queryByTestId('LogoSection')).not.toBeInTheDocument()
+  })
 })

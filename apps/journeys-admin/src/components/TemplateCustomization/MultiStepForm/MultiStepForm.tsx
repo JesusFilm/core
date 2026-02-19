@@ -7,6 +7,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
 
 import {
@@ -73,6 +74,7 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { customizableMedia } = useFlags()
 
   const {
     screens,
@@ -80,7 +82,13 @@ export function MultiStepForm(): ReactElement {
     hasEditableText,
     hasCustomizableLinks,
     hasCustomizableMedia
-  } = useMemo(() => getCustomizeFlowConfig(journey, t), [])
+  } = useMemo(
+    () =>
+      getCustomizeFlowConfig(journey, t, {
+        customizableMedia: customizableMedia ?? false
+      }),
+    [journey, t, customizableMedia]
+  )
 
   const [activeScreen, setActiveScreen] =
     useState<CustomizationScreen>('language')

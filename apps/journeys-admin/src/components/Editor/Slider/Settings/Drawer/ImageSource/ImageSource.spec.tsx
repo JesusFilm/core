@@ -8,6 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
@@ -205,7 +206,7 @@ describe('ImageSource', () => {
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
-    it('should render BlockCustomizationToggle when journey is a template and selectedBlock is non-null', () => {
+    it('should not render BlockCustomizationToggle when selectedBlock is null (even when journey is template)', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
@@ -215,21 +216,46 @@ describe('ImageSource', () => {
                 variant: 'admin'
               }}
             >
-              <CommandProvider>
-                <EditorProvider>
-                  <ImageSource
-                    selectedBlock={imageBlock}
-                    onChange={onChange}
-                    onDelete={onDelete}
-                  />
-                </EditorProvider>
-              </CommandProvider>
+              <ImageSource
+                selectedBlock={null}
+                onChange={onChange}
+                onDelete={onDelete}
+              />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
-      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when customizableMedia flag is false', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ customizableMedia: false }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={imageBlock}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
   })
 })

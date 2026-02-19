@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import {
   BlockFields_ImageBlock as ImageBlock,
@@ -35,6 +36,7 @@ export function VideoBlockEditor({
   selectedBlock,
   onChange
 }: VideoBlockEditorProps): ReactElement {
+  const { customizableMedia } = useFlags()
   const { journey } = useJourney()
   const posterBlock = selectedBlock?.children.find(
     (child) => child.id === (selectedBlock as VideoBlock).posterBlockId
@@ -50,7 +52,7 @@ export function VideoBlockEditor({
           selectedBlock={selectedBlock}
           onChange={onChange}
         />
-        {journey?.template && (
+        {journey?.template && (customizableMedia ?? false) && (
           <BlockCustomizationToggle
             block={selectedBlock ?? undefined}
             mediaTypeWhenEmpty="video"
