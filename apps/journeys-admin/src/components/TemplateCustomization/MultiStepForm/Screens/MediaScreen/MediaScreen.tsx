@@ -51,7 +51,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     getCardBlockIdFromStep(customizableSteps[0])
   )
 
-  const showLogo = showLogoSection()
+  const showLogo = showLogoSection(journey)
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
 
