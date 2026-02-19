@@ -54,6 +54,7 @@ const teamInviteJob: Job<TeamInviteJob, unknown, string> = {
     } as unknown as Team,
     email: 'abc@example.com',
     sender: {
+      id: 'senderId',
       firstName: 'Joe',
       lastName: 'Ron-Imo',
       imageUrl: undefined
@@ -83,11 +84,11 @@ const teamInviteAccepted: Job<TeamInviteAccepted, unknown, string> = {
       ]
     },
     sender: {
+      id: 'senderId',
       firstName: 'Joe',
       lastName: 'Ron-Imo',
       imageUrl: undefined
-    },
-    url: 'http://example.com/'
+    }
   }
 } as unknown as Job<TeamInviteAccepted, unknown, string>
 
@@ -228,12 +229,18 @@ describe('EmailConsumer', () => {
 
   describe('teamInviteEmail', () => {
     it('should send an email if user exists', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {
               user: {
                 id: 'userid',
+                firstName: 'Joe',
+                email: 'jsmith@exmaple.com'
+              },
+              userByEmail: {
+                id: 'userid',
+                firstName: 'Joe',
                 email: 'jsmith@exmaple.com'
               }
             }
@@ -250,11 +257,16 @@ describe('EmailConsumer', () => {
     })
 
     it('should send an email if user does not exist', async () => {
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {
-              user: undefined
+              user: {
+                id: 'userid',
+                firstName: 'Joe',
+                email: 'jsmith@exmaple.com'
+              },
+              userByEmail: undefined
             }
           } as unknown as ApolloQueryResult<unknown>)
       )
@@ -266,6 +278,62 @@ describe('EmailConsumer', () => {
         html: expect.any(String),
         text: expect.any(String)
       })
+    })
+
+    it('should use email prefix as firstName fallback when database has no firstName', async () => {
+      // Mock Apollo to return user without firstName (simulates email/password user)
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
+        async () =>
+          await Promise.resolve({
+            data: {
+              user: {
+                id: 'senderId',
+                firstName: null,
+                email: 'sender@example.com'
+              },
+              userByEmail: {
+                id: 'userid',
+                firstName: 'Joe',
+                email: 'jsmith@exmaple.com'
+              }
+            }
+          } as unknown as ApolloQueryResult<unknown>)
+      )
+
+      // Spy on TeamInviteEmail to verify it receives the correct sender data
+      const teamInviteEmailSpy = jest.spyOn(
+        require('../../../emails/templates/TeamInvite'),
+        'TeamInviteEmail'
+      )
+
+      // Create job with sender that has no firstName
+      const jobWithNoFirstName = {
+        ...teamInviteJob,
+        data: {
+          ...teamInviteJob.data,
+          sender: {
+            id: 'senderId',
+            firstName: null,
+            lastName: 'Ron-Imo',
+            email: 'sender@example.com',
+            imageUrl: undefined
+          }
+        }
+      } as unknown as Job<TeamInviteJob, unknown, string>
+
+      await service(jobWithNoFirstName)
+      expect(sendEmail).toHaveBeenCalled()
+
+      // Verify TeamInviteEmail was called with sender.firstName set to email prefix fallback
+      expect(teamInviteEmailSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sender: expect.objectContaining({
+            firstName: 'sender' // Fallback from 'sender@example.com'
+          })
+        })
+      )
+
+      teamInviteEmailSpy.mockRestore()
     })
 
     it('should not send email if user preference is false', async () => {
@@ -288,6 +356,7 @@ describe('EmailConsumer', () => {
             data: {
               user: {
                 id: 'userid',
+                firstName: 'Joe',
                 email: 'jsmith@exmaple.com'
               }
             }
@@ -310,12 +379,13 @@ describe('EmailConsumer', () => {
         accountNotifications: false
       })
 
-      jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+      jest.spyOn(ApolloClient.prototype, 'query').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {
               user: {
                 id: 'userid',
+                firstName: 'Joe',
                 email: 'jsmith@exmaple.com'
               }
             }

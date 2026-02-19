@@ -7,6 +7,7 @@ import {
   UserTeamRole,
   prisma
 } from '@core/prisma/journeys/client'
+import { prisma as usersPrisma } from '@core/prisma/users/client'
 import { graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 
@@ -65,7 +66,48 @@ const GET_USER_BY_EMAIL = graphql(`
   }
 `)
 
+/**
+ * Gets complete sender data by fetching information from database
+ * with graceful fallbacks for reliability
+ */
+async function getCompleteSenderData(jobSender: any): Promise<any> {
+  let completeSender = jobSender // fallback to job data
+  try {
+    if (jobSender.id != null) {
+      const user = await usersPrisma.user.findUnique({
+        where: { userId: jobSender.id },
+        select: {
+          firstName: true,
+          email: true,
+          imageUrl: true
+        }
+      })
+      if (user != null) {
+        completeSender = {
+          firstName: user.firstName,
+          email: user.email,
+          imageUrl: user.imageUrl
+        }
+      }
+    }
+  } catch (error) {
+    console.warn(
+      'Failed to fetch sender data from database, using fallback:',
+      error
+    )
+  }
+
+  // Ultimate fallback: Extract first name form email if empty e.g. john@gmail.com = john
+  if (!completeSender.firstName || completeSender.firstName.trim() === '') {
+    const emailLocalPart = completeSender.email?.split('@')[0] || 'User'
+    completeSender.firstName = emailLocalPart
+  }
+
+  return completeSender
+}
+
 export async function service(job: Job<ApiJourneysJob>): Promise<void> {
+  console.log('Process Email Job: ', job.name)
   switch (job.name) {
     case 'team-invite':
       await teamInviteEmail(job as Job<TeamInviteJob>)
@@ -154,12 +196,15 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     variables: { email: job.data.email }
   })
 
+  // Enrich sender data with database lookup and fallbacks
+  const completeSenderData = await getCompleteSenderData(job.data.sender)
+
   if (data.userByEmail == null) {
     const html = await render(
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: job.data.sender,
+        sender: completeSenderData,
         recipientEmail: job.data.email
       })
     )
@@ -167,7 +212,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: job.data.sender,
+        sender: completeSenderData,
         recipientEmail: job.data.email
       }),
       {
@@ -186,7 +231,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
         teamName: job.data.team.title,
         recipient: data.userByEmail,
         inviteLink: url,
-        sender: job.data.sender
+        sender: completeSenderData
       })
     )
 
@@ -195,7 +240,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
         teamName: job.data.team.title,
         recipient: data.userByEmail,
         inviteLink: url,
-        sender: job.data.sender
+        sender: completeSenderData
       }),
       {
         plainText: true
@@ -233,6 +278,9 @@ export async function teamInviteAcceptedEmail(
     throw new Error('Team Managers not found')
   }
 
+  // Enrich sender data with database lookup and fallbacks
+  const completeSenderData = await getCompleteSenderData(job.data.sender)
+
   for (const recipient of recipientEmails) {
     if (recipient.user == null) throw new Error('User not found')
 
@@ -253,7 +301,7 @@ export async function teamInviteAcceptedEmail(
       TeamInviteAcceptedEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: job.data.sender,
+        sender: completeSenderData,
         recipient: recipient.user
       })
     )
@@ -262,7 +310,7 @@ export async function teamInviteAcceptedEmail(
       TeamInviteAcceptedEmail({
         teamName: job.data.team.title,
         inviteLink: url,
-        sender: job.data.sender,
+        sender: completeSenderData,
         recipient: recipient.user
       }),
       {
@@ -273,7 +321,7 @@ export async function teamInviteAcceptedEmail(
     await sendEmail({
       to: recipient.user.email,
       subject: `${
-        job.data.sender.firstName ?? 'A new member'
+        completeSenderData.firstName ?? 'A new member'
       } has been added to your team`,
       text,
       html
