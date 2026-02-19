@@ -1,6 +1,8 @@
 import Skeleton from '@mui/material/Skeleton'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import { CreateJourneyButton } from '../../CreateJourneyButton'
@@ -22,8 +24,9 @@ export function TemplateActionButton({
   refetchTemplateStats
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
+  const { customizableMedia } = useFlags()
 
-  if (journey != null && isJourneyCustomizable(journey)) {
+  if (journey != null && isJourneyCustomizable(journey, customizableMedia)) {
     return <UseThisTemplateButton variant={variant} signedIn={signedIn} />
   }
 
