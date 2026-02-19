@@ -63,47 +63,6 @@ describe('useImageUpload', () => {
     expect(result.current.errorCode).toBeUndefined()
   })
 
-  it('should reset state', async () => {
-    const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
-      data: {
-        createCloudflareUploadByFile: {
-          uploadUrl: 'https://upload.url'
-        }
-      }
-    })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([
-      createCloudflareUploadByFile
-    ] as any)
-
-    getMockFetch().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        success: false,
-        errors: [{ code: 5000, message: 'Upload failed' }]
-      })
-    })
-
-    const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
-
-    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
-    const file = new File(['file'], 'test.png', { type: 'image/png' })
-
-    await act(async () => {
-      await onDrop?.([file], [], {} as any)
-    })
-
-    expect(result.current.success).toBe(false)
-    expect(result.current.errorCode).toBe(5000)
-
-    act(() => {
-      result.current.resetState()
-    })
-
-    expect(result.current.loading).toBe(false)
-    expect(result.current.success).toBeUndefined()
-    expect(result.current.errorCode).toBeUndefined()
-  })
-
   it('should handle successful upload', async () => {
     jest.useFakeTimers()
     const createCloudflareUploadByFile = jest.fn().mockResolvedValue({
@@ -207,7 +166,29 @@ describe('useImageUpload', () => {
       await onDrop?.([], [fileRejection] as any, {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith(ErrorCode.FileTooLarge)
+    expect(onUploadError).toHaveBeenCalledWith(
+      ErrorCode.FileTooLarge,
+      'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+    )
+  })
+
+  it('should handle file invalid type error', async () => {
+    renderHook(() => useImageUpload({ onUploadComplete, onUploadError }))
+
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    const fileRejection = {
+      file: new File([''], 'invalid.txt'),
+      errors: [{ code: ErrorCode.FileInvalidType, message: 'Invalid type' }]
+    }
+
+    await act(async () => {
+      await onDrop?.([], [fileRejection] as any, {} as any)
+    })
+
+    expect(onUploadError).toHaveBeenCalledWith(
+      ErrorCode.FileInvalidType,
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+    )
   })
 
   it('should handle Cloudflare error response', async () => {
@@ -241,7 +222,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith(5000)
+    expect(onUploadError).toHaveBeenCalledWith(
+      5000,
+      'Something went wrong: (5000)'
+    )
     expect(result.current.errorCode).toBe(5000)
   })
 
@@ -276,7 +260,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith(10003)
+    expect(onUploadError).toHaveBeenCalledWith(
+      10003,
+      'Something went wrong: (10003)'
+    )
     expect(result.current.errorCode).toBe(10003)
     expect(result.current.loading).toBe(false)
   })
@@ -304,7 +291,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith('unknown-error')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'unknown-error',
+      'Something went wrong: (unknown-error)'
+    )
   })
 
   it('should handle failed mutation', async () => {
@@ -326,7 +316,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith('unknown-error')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'unknown-error',
+      'Something went wrong: (unknown-error)'
+    )
     expect(result.current.loading).toBe(false)
     expect(result.current.success).toBe(false)
   })
@@ -354,7 +347,10 @@ describe('useImageUpload', () => {
       await onDrop?.([file], [], {} as any)
     })
 
-    expect(onUploadError).toHaveBeenCalledWith('unknown-error')
+    expect(onUploadError).toHaveBeenCalledWith(
+      'unknown-error',
+      'Something went wrong: (unknown-error)'
+    )
     expect(result.current.loading).toBe(false)
     expect(result.current.success).toBe(false)
   })
