@@ -4,7 +4,7 @@ import { JourneyFields as Journey } from '../JourneyProvider/__generated__/Journ
 
 export function isJourneyCustomizable(
   journey?: Journey,
-  customizableMedia?: boolean
+  customizableMedia: boolean = false
 ): boolean {
   const blocks = journey?.blocks ?? []
 
@@ -18,7 +18,7 @@ export function isJourneyCustomizable(
   )
 
   const hasCustomizableMedia =
-    Boolean(customizableMedia) &&
+    customizableMedia &&
     checkBlocksForCustomizableMedia(blocks, journey?.logoImageBlock)
 
   return hasEditableText || hasCustomizableLinks || hasCustomizableMedia

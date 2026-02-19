@@ -258,7 +258,7 @@ describe('isJourneyCustomizable', () => {
   })
 
   describe('hasCustomizableMedia', () => {
-    it('should return false when journey has only customizable media and customizableMedia option is not set', () => {
+    it('should return false when journey has only customizable media and customizableMedia option is not set(or false)', () => {
       const journey = {
         journeyCustomizationDescription: null,
         journeyCustomizationFields: [],
