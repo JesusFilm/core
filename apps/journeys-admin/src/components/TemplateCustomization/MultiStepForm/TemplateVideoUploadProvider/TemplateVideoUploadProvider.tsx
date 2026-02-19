@@ -11,11 +11,8 @@ import {
   useMemo
 } from 'react'
 
-import {
-  CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
-  GET_MY_MUX_VIDEO_QUERY
-} from './graphql'
-import type { TemplateVideoUploadContextType, VideoUploadState } from './types'
+import { CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION } from './graphql'
+import type { TemplateVideoUploadContextType } from './types'
 import { createInitialTask, MAX_VIDEO_SIZE } from './types'
 import { useMuxVideoProcessing } from './useMuxVideoProcessing'
 import { useUploadTaskMap } from './useUploadTaskMap'
@@ -44,7 +41,6 @@ export function TemplateVideoUploadProvider({
   const { enqueueSnackbar } = useSnackbar()
 
   const {
-    uploadTasks,
     setUploadTasks,
     updateTask,
     removeTask,
@@ -193,4 +189,7 @@ export function useTemplateVideoUpload(): TemplateVideoUploadContextType {
 }
 
 export type { VideoUploadState, VideoUploadStatus } from './types'
-export { CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION, GET_MY_MUX_VIDEO_QUERY } from './graphql'
+export {
+  CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
+  GET_MY_MUX_VIDEO_QUERY
+} from './graphql'

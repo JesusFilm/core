@@ -10,8 +10,8 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
-import { useTemplateVideoUpload } from '../../TemplateVideoUploadProvider'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { useTemplateVideoUpload } from '../../TemplateVideoUploadProvider'
 
 import {
   CardsSection,
@@ -100,9 +100,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         {showImages && (
           <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
         )}
-        {showVideos && (
-          <VideosSection cardBlockId={selectedCardBlockId} />
-        )}
+        {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
         <CustomizeFlowNextButton
           label={t('Next')}
           onClick={handleNext}

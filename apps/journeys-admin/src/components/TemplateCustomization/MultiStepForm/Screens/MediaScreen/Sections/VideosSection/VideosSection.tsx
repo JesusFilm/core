@@ -108,7 +108,8 @@ export function VideosSection({
   const videoBlockDisplayTitle =
     videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
 
-  const uploadStatus = videoBlock != null ? getUploadStatus(videoBlock.id) : null
+  const uploadStatus =
+    videoBlock != null ? getUploadStatus(videoBlock.id) : null
   const loading =
     uploadStatus != null &&
     (uploadStatus.status === 'uploading' ||

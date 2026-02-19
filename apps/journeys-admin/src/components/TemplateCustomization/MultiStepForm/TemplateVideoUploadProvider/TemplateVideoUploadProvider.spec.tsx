@@ -112,8 +112,12 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'customize' }}>
-            <TemplateVideoUploadProvider>{children}</TemplateVideoUploadProvider>
+          <JourneyProvider
+            value={{ journey: mockJourney, variant: 'customize' }}
+          >
+            <TemplateVideoUploadProvider>
+              {children}
+            </TemplateVideoUploadProvider>
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -232,17 +236,15 @@ describe('TemplateVideoUploadProvider', () => {
         result.current.startUpload('video-block-1', file)
       })
 
-      const createUploadCallCountBefore = (
-        UpChunk.createUpload as jest.Mock
-      ).mock.calls.length
+      const createUploadCallCountBefore = (UpChunk.createUpload as jest.Mock)
+        .mock.calls.length
 
       await act(async () => {
         result.current.startUpload('video-block-1', file)
       })
 
-      const createUploadCallCountAfter = (
-        UpChunk.createUpload as jest.Mock
-      ).mock.calls.length
+      const createUploadCallCountAfter = (UpChunk.createUpload as jest.Mock)
+        .mock.calls.length
 
       expect(createUploadCallCountAfter).toBe(createUploadCallCountBefore)
     })
