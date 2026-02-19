@@ -66,7 +66,11 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
-  TextScreen: ({ handleNext }: { handleNext: (overrideJourneyId?: string) => void }) => (
+  TextScreen: ({
+    handleNext
+  }: {
+    handleNext: (overrideJourneyId?: string) => void
+  }) => (
     <div data-testid="text-screen">
       <h2>Text Screen</h2>
       <button onClick={() => handleNext()} data-testid="text-next">
@@ -74,7 +78,11 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
-  LinksScreen: ({ handleNext }: { handleNext: (overrideJourneyId?: string) => void }) => (
+  LinksScreen: ({
+    handleNext
+  }: {
+    handleNext: (overrideJourneyId?: string) => void
+  }) => (
     <div data-testid="links-screen">
       <h2>Links Screen</h2>
       <button onClick={() => handleNext()} data-testid="links-next">
@@ -82,7 +90,11 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
-  SocialScreen: ({ handleNext }: { handleNext: (overrideJourneyId?: string) => void }) => (
+  SocialScreen: ({
+    handleNext
+  }: {
+    handleNext: (overrideJourneyId?: string) => void
+  }) => (
     <div data-testid="social-screen">
       <h2>Social Screen</h2>
       <button onClick={() => handleNext()} data-testid="social-next">

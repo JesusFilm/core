@@ -47,7 +47,8 @@ function TemplateIndexPage(): ReactElement {
   }, [user.id, query])
 
   useEffect(() => {
-    if (!router.isReady || router.query.error !== JOURNEY_NOT_FOUND_ERROR) return
+    if (!router.isReady || router.query.error !== JOURNEY_NOT_FOUND_ERROR)
+      return
     enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
       variant: 'error',
       preventDuplicate: true

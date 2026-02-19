@@ -113,7 +113,9 @@ export function MultiStepForm(): ReactElement {
 
     const isMissingScreen = rawScreen == null || rawScreen === ''
     const isInvalidScreen =
-      rawScreen != null && rawScreen !== '' && !screens.includes(rawScreen as CustomizationScreen)
+      rawScreen != null &&
+      rawScreen !== '' &&
+      !screens.includes(rawScreen as CustomizationScreen)
 
     if (isMissingScreen || isInvalidScreen) {
       if (isInvalidScreen) {
