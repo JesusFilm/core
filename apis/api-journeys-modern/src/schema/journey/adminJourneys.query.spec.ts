@@ -24,6 +24,7 @@ describe('adminJourneys', () => {
     imageUrl: null,
     roles: []
   }
+  const mockPublisherUser = { ...mockUser, roles: ['publisher'] }
 
   const authClient = getClient({
     headers: { authorization: 'token' },
@@ -127,18 +128,17 @@ describe('adminJourneys', () => {
     })
   })
 
-  it('should handle useLastActiveTeamId gracefully when profile not found', async () => {
+  it('should throw when useLastActiveTeamId is true and profile is not found', async () => {
     prismaMock.journeyProfile.findUnique.mockResolvedValue(null)
-    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
     const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { useLastActiveTeamId: true }
     })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
 
-    // Should not throw, should return journeys
-    expect(result.errors).toBeUndefined()
-    expect(result.data?.adminJourneys).toBeDefined()
+    expect(result.errors).toBeDefined()
+    expect(result.errors?.[0]?.message).toContain('journey profile not found')
+    expect(prismaMock.journey.findMany).not.toHaveBeenCalled()
   })
 
   it('should filter by lastActiveTeamId when profile exists', async () => {
@@ -204,6 +204,39 @@ describe('adminJourneys', () => {
         where: expect.objectContaining({
           AND: expect.arrayContaining([
             expect.objectContaining({ template: true })
+          ])
+        })
+      })
+    )
+  })
+
+  it('should allow publishers to read templates regardless of status', async () => {
+    mockGetUserFromPayload.mockReturnValue(mockPublisherUser)
+    prismaMock.userRole.findUnique.mockResolvedValue({
+      id: 'userRoleId',
+      userId: mockPublisherUser.id,
+      roles: ['publisher']
+    })
+    const publisherClient = getClient({
+      headers: { authorization: 'token' },
+      context: { currentUser: mockPublisherUser }
+    })
+
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = (await publisherClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { template: true }
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: expect.arrayContaining([
+            expect.objectContaining({
+              OR: expect.arrayContaining([expect.objectContaining({ template: true })])
+            })
           ])
         })
       })

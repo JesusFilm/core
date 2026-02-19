@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import {
   Prisma,
   JourneyStatus as PrismaJourneyStatus,
@@ -23,15 +25,21 @@ builder.queryField('adminJourneys', (t) =>
     },
     resolve: async (query, _parent, args, context) => {
       const userId = context.user.id
+      const currentUser = context.user as typeof context.user & {
+        roles?: string[]
+      }
+      const isPublisher = currentUser.roles?.includes('publisher') === true
       const filter: Prisma.JourneyWhereInput = {}
 
       if (args.useLastActiveTeamId === true) {
         const profile = await prisma.journeyProfile.findUnique({
           where: { userId }
         })
-        if (profile?.lastActiveTeamId != null) {
-          filter.teamId = profile.lastActiveTeamId
-        }
+        if (profile == null)
+          throw new GraphQLError('journey profile not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        filter.teamId = profile.lastActiveTeamId ?? undefined
       }
 
       if (args.teamId != null) {
@@ -107,7 +115,8 @@ builder.queryField('adminJourneys', (t) =>
           {
             template: true,
             status: PrismaJourneyStatus.published
-          }
+          },
+          ...(isPublisher ? [{ template: true }] : [])
         ]
       }
 
