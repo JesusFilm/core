@@ -30,6 +30,7 @@ builder.queryField('adminJourneys', (t) =>
       }
       const isPublisher = currentUser.roles?.includes('publisher') === true
       const filter: Prisma.JourneyWhereInput = {}
+      let lastActiveApplied = false
 
       if (args.useLastActiveTeamId === true) {
         const profile = await prisma.journeyProfile.findUnique({
@@ -39,12 +40,19 @@ builder.queryField('adminJourneys', (t) =>
           throw new GraphQLError('journey profile not found', {
             extensions: { code: 'NOT_FOUND' }
           })
-        filter.teamId = profile.lastActiveTeamId ?? undefined
+        lastActiveApplied = true
+        if (profile.lastActiveTeamId != null) {
+          filter.teamId = profile.lastActiveTeamId
+        }
       }
 
       if (args.teamId != null) {
         filter.teamId = args.teamId
-      } else if (args.template !== true && filter.teamId == null) {
+      } else if (
+        args.template !== true &&
+        filter.teamId == null &&
+        !lastActiveApplied
+      ) {
         // if not looking for templates then only return journeys where:
         //   1. the user is an owner or editor
         //   2. not a member of the team

@@ -170,6 +170,33 @@ describe('adminJourneys', () => {
     )
   })
 
+  it('should not apply personal journey fallback when useLastActiveTeamId is true and lastActiveTeamId is null', async () => {
+    prismaMock.journeyProfile.findUnique.mockResolvedValue({
+      id: 'profileId',
+      userId: 'userId',
+      lastActiveTeamId: null,
+      acceptedTermsAt: new Date(),
+      journeyFlowBackButtonClicked: null,
+      plausibleJourneyFlowViewed: null,
+      plausibleDashboardViewed: null
+    })
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = (await authClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { useLastActiveTeamId: true }
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    expect(prismaMock.journey.findMany).toHaveBeenCalled()
+
+    const lastFindManyCall = prismaMock.journey.findMany.mock.calls.at(-1)?.[0]
+    const andFilters = lastFindManyCall?.where?.AND
+    expect(Array.isArray(andFilters)).toBe(true)
+    if (!Array.isArray(andFilters)) return
+    expect(andFilters[1]).toEqual({})
+  })
+
   it('should filter by teamId', async () => {
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
