@@ -214,7 +214,9 @@ describe('ImagesSection', () => {
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
     await user.upload(input, file)
 
-    await waitFor(() => expect(updateResult).toHaveBeenCalled(), { timeout: 3000 })
+    await waitFor(() => expect(updateResult).toHaveBeenCalled(), {
+      timeout: 3000
+    })
 
     await waitFor(
       () => {
