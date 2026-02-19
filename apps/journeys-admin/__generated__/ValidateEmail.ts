@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface ValidateEmail_validateEmail {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   emailVerified: boolean;
 }

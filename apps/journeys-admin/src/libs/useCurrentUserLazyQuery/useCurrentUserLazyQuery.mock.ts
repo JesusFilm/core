@@ -11,7 +11,7 @@ export const mockUseCurrentUserLazyQuery: MockedResponse<GetCurrentUser> = {
   result: {
     data: {
       me: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user.id',
         email: 'test@email.com'
       }
