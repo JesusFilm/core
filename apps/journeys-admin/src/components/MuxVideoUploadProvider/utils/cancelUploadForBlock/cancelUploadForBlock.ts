@@ -2,7 +2,6 @@ import { Dispatch, RefObject, SetStateAction } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { clearPollingInterval } from '../clearPollingInterval'
 import type { PollingTask, UploadTask } from '../types'
 
 interface CancelUploadForBlockDependencies {
@@ -10,7 +9,7 @@ interface CancelUploadForBlockDependencies {
   setUploadTasks: Dispatch<SetStateAction<Map<string, UploadTask>>>
   setPollingTasks: Dispatch<SetStateAction<Map<string, PollingTask>>>
   uploadInstanceRefs: RefObject<Map<string, { abort: () => void }>>
-  pollingIntervalsRef: RefObject<Map<string, NodeJS.Timeout>>
+  stopPollingFnsRef: RefObject<Map<string, () => void>>
   hasShownStartNotification: RefObject<Set<string>>
 }
 
@@ -23,7 +22,7 @@ export function cancelUploadForBlock(
     setUploadTasks,
     setPollingTasks,
     uploadInstanceRefs,
-    pollingIntervalsRef,
+    stopPollingFnsRef,
     hasShownStartNotification
   } = dependencies
 
@@ -37,9 +36,13 @@ export function cancelUploadForBlock(
     uploadInstanceRefs.current.delete(block.id)
   }
 
-  // If task has a videoId, stop polling (polling may have started after upload completed)
+  // If task has a videoId, stop polling
   if (task.videoId != null) {
-    clearPollingInterval(task.videoId, pollingIntervalsRef)
+    const stopFn = stopPollingFnsRef.current.get(task.videoId)
+    if (stopFn != null) {
+      stopFn()
+    }
+    stopPollingFnsRef.current.delete(task.videoId)
     setPollingTasks((prev) => {
       const next = new Map(prev)
       next.delete(task.videoId!)
