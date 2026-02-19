@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -21,8 +22,12 @@ export function ImageSectionItem({
   onUploadComplete
 }: ImageSectionItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const { getRootProps, getInputProps, open, loading } = useImageUpload({
-    onUploadComplete: (url) => onUploadComplete(imageBlock.id, url)
+    onUploadComplete: (url) => onUploadComplete(imageBlock.id, url),
+    onUploadError: (_code, message) => {
+      enqueueSnackbar(message, { variant: 'error' })
+    }
   })
 
   return (
