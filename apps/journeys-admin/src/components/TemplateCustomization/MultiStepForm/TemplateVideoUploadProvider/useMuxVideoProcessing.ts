@@ -6,19 +6,21 @@ import { useCallback, useRef } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
-import { IdType, VideoBlockSource } from '../../../../../__generated__/globalTypes'
+import {
+  IdType,
+  VideoBlockSource
+} from '../../../../../__generated__/globalTypes'
 import { VIDEO_BLOCK_UPDATE } from '../../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video/Options/VideoOptions'
 
 import { GET_MY_MUX_VIDEO_QUERY } from './graphql'
-import {
-  INITIAL_POLL_INTERVAL,
-  MAX_POLL_INTERVAL,
-  MAX_RETRIES
-} from './types'
+import { INITIAL_POLL_INTERVAL, MAX_POLL_INTERVAL, MAX_RETRIES } from './types'
 import type { UploadTaskInternal } from './types'
 
 interface UseMuxVideoProcessingParams {
-  updateTask: (videoBlockId: string, updates: Partial<UploadTaskInternal>) => void
+  updateTask: (
+    videoBlockId: string,
+    updates: Partial<UploadTaskInternal>
+  ) => void
   removeTask: (videoBlockId: string) => void
   activeBlocksRef: React.MutableRefObject<Set<string>>
 }

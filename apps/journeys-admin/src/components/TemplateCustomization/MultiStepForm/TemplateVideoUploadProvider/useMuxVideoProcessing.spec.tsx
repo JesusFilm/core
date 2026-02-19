@@ -97,7 +97,9 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: mockJourney, variant: 'customize' }}>
+          <JourneyProvider
+            value={{ journey: mockJourney, variant: 'customize' }}
+          >
             {children}
           </JourneyProvider>
         </SnackbarProvider>
@@ -118,9 +120,8 @@ describe('useMuxVideoProcessing', () => {
     })
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) =>
-          new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
       )
     })
 
@@ -144,9 +145,8 @@ describe('useMuxVideoProcessing', () => {
     })
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) =>
-          new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
       )
     })
 
@@ -162,49 +162,39 @@ describe('useMuxVideoProcessing', () => {
     )
   })
 
-  it(
-    'retries on transient query errors up to MAX_RETRIES then marks error',
-    async () => {
-      const errorMock: MockedResponse = {
-        request: {
-          query: GET_MY_MUX_VIDEO_QUERY,
-          variables: { id: 'mux-video-id' }
-        },
-        error: new Error('Network error')
-      }
+  it('retries on transient query errors up to MAX_RETRIES then marks error', async () => {
+    const errorMock: MockedResponse = {
+      request: {
+        query: GET_MY_MUX_VIDEO_QUERY,
+        variables: { id: 'mux-video-id' }
+      },
+      error: new Error('Network error')
+    }
 
-      const Wrapper = createWrapper([
-        errorMock,
-        errorMock,
-        errorMock,
-        errorMock
-      ])
-      const { result } = renderHook(() => useMuxVideoProcessingWithTaskMap(), {
-        wrapper: Wrapper
-      })
+    const Wrapper = createWrapper([errorMock, errorMock, errorMock, errorMock])
+    const { result } = renderHook(() => useMuxVideoProcessingWithTaskMap(), {
+      wrapper: Wrapper
+    })
 
-      act(() => {
-        result.current.setUploadTasks(
-          (prev) =>
-            new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
-        )
-      })
-
-      act(() => {
-        result.current.startPolling('video-block-1', 'mux-video-id')
-      })
-
-      await waitFor(
-        () => {
-          const status = result.current.getUploadStatus('video-block-1')
-          expect(status?.status).toBe('error')
-          expect(status?.error).toBe('Failed to check video status')
-        },
-        { timeout: 15000 }
+    act(() => {
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
       )
-    },
-    20000
-  )
+    })
+
+    act(() => {
+      result.current.startPolling('video-block-1', 'mux-video-id')
+    })
+
+    await waitFor(
+      () => {
+        const status = result.current.getUploadStatus('video-block-1')
+        expect(status?.status).toBe('error')
+        expect(status?.error).toBe('Failed to check video status')
+      },
+      { timeout: 15000 }
+    )
+  }, 20000)
 
   it('clearPollingForBlock cancels pending timeout', async () => {
     const Wrapper = createWrapper([getMyMuxVideoProcessingMock])
@@ -213,9 +203,8 @@ describe('useMuxVideoProcessing', () => {
     })
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) =>
-          new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
       )
     })
 

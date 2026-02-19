@@ -16,8 +16,8 @@ describe('useUploadTaskMap', () => {
     const { result } = renderHook(() => useUploadTaskMap())
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) => new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
       )
     })
 
@@ -36,7 +36,10 @@ describe('useUploadTaskMap', () => {
     })
 
     act(() => {
-      result.current.updateTask('video-block-1', { status: 'processing', videoId: 'mux-1' })
+      result.current.updateTask('video-block-1', {
+        status: 'processing',
+        videoId: 'mux-1'
+      })
     })
 
     expect(result.current.getUploadStatus('video-block-1')).toMatchObject({
@@ -60,21 +63,27 @@ describe('useUploadTaskMap', () => {
     const { result } = renderHook(() => useUploadTaskMap())
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) => new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
       )
     })
 
     result.current.activeBlocksRef.current.add('video-block-1')
-    result.current.uploadInstancesRef.current.set('video-block-1', { abort: jest.fn() })
+    result.current.uploadInstancesRef.current.set('video-block-1', {
+      abort: jest.fn()
+    })
 
     act(() => {
       result.current.removeTask('video-block-1')
     })
 
     expect(result.current.getUploadStatus('video-block-1')).toBeNull()
-    expect(result.current.activeBlocksRef.current.has('video-block-1')).toBe(false)
-    expect(result.current.uploadInstancesRef.current.has('video-block-1')).toBe(false)
+    expect(result.current.activeBlocksRef.current.has('video-block-1')).toBe(
+      false
+    )
+    expect(result.current.uploadInstancesRef.current.has('video-block-1')).toBe(
+      false
+    )
   })
 
   it('getUploadStatus returns state without retryCount internal field', () => {
@@ -86,8 +95,8 @@ describe('useUploadTaskMap', () => {
     }
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) => new Map(prev).set('video-block-1', taskWithRetry)
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', taskWithRetry)
       )
     })
 
@@ -104,12 +113,11 @@ describe('useUploadTaskMap', () => {
     const { result } = renderHook(() => useUploadTaskMap())
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) =>
-          new Map(prev).set('video-block-1', {
-            ...createInitialTask('video-block-1'),
-            status: 'uploading'
-          })
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', {
+          ...createInitialTask('video-block-1'),
+          status: 'uploading'
+        })
       )
     })
 
@@ -132,13 +140,12 @@ describe('useUploadTaskMap', () => {
     const { result } = renderHook(() => useUploadTaskMap())
 
     act(() => {
-      result.current.setUploadTasks(
-        (prev) =>
-          new Map(prev).set('video-block-1', {
-            ...createInitialTask('video-block-1'),
-            status: 'error',
-            error: 'Failed'
-          })
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', {
+          ...createInitialTask('video-block-1'),
+          status: 'error',
+          error: 'Failed'
+        })
       )
     })
 

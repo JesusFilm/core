@@ -13,7 +13,7 @@ import {
 
 import { CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION } from './graphql'
 import type { TemplateVideoUploadContextType } from './types'
-import { createInitialTask, MAX_VIDEO_SIZE } from './types'
+import { MAX_VIDEO_SIZE, createInitialTask } from './types'
 import { useMuxVideoProcessing } from './useMuxVideoProcessing'
 import { useUploadTaskMap } from './useUploadTaskMap'
 

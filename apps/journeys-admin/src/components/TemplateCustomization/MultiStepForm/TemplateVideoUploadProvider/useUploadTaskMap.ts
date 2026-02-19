@@ -1,9 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 
-import type {
-  UploadTaskInternal,
-  VideoUploadState
-} from './types'
+import type { UploadTaskInternal, VideoUploadState } from './types'
 
 /**
  * Manages the Map of in-flight upload tasks and exposes CRUD operations.
@@ -18,18 +15,25 @@ import type {
  */
 export function useUploadTaskMap(): {
   uploadTasks: Map<string, UploadTaskInternal>
-  setUploadTasks: React.Dispatch<React.SetStateAction<Map<string, UploadTaskInternal>>>
-  updateTask: (videoBlockId: string, updates: Partial<UploadTaskInternal>) => void
+  setUploadTasks: React.Dispatch<
+    React.SetStateAction<Map<string, UploadTaskInternal>>
+  >
+  updateTask: (
+    videoBlockId: string,
+    updates: Partial<UploadTaskInternal>
+  ) => void
   removeTask: (videoBlockId: string) => void
   getUploadStatus: (videoBlockId: string) => VideoUploadState | null
   hasActiveUploads: boolean
   uploadInstancesRef: React.MutableRefObject<Map<string, { abort: () => void }>>
   activeBlocksRef: React.MutableRefObject<Set<string>>
 } {
-  const [uploadTasks, setUploadTasks] = useState<Map<string, UploadTaskInternal>>(
-    () => new Map()
+  const [uploadTasks, setUploadTasks] = useState<
+    Map<string, UploadTaskInternal>
+  >(() => new Map())
+  const uploadInstancesRef = useRef<Map<string, { abort: () => void }>>(
+    new Map()
   )
-  const uploadInstancesRef = useRef<Map<string, { abort: () => void }>>(new Map())
   const activeBlocksRef = useRef<Set<string>>(new Set())
 
   const updateTask = useCallback(
