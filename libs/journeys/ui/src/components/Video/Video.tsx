@@ -13,6 +13,7 @@ import {
 } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { isInstagramAndroidWebView } from '@core/shared/ui/deviceUtils'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import {
@@ -74,6 +75,11 @@ export function Video({
   const [player, setPlayer] = useState<VideoJsPlayer>()
   const [showPoster, setShowPoster] = useState(true)
   const [activeStep, setActiveStep] = useState(false)
+  const [inAppBrowser, setInAppBrowser] = useState(false)
+
+  useEffect(() => {
+    setInAppBrowser(isInstagramAndroidWebView())
+  }, [])
 
   const { blockHistory } = useBlocks()
   const { variant, journey } = useJourney()
@@ -220,7 +226,26 @@ export function Video({
           />
         )}
 
-      {videoId != null ? (
+      {videoId != null &&
+      inAppBrowser &&
+      source === VideoBlockSource.youTube ? (
+        <Box
+          data-testid="in-app-browser-youtube-fallback"
+          sx={{
+            width: '100%',
+            height: '100%',
+            position: 'relative'
+          }}
+        >
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?start=${effectiveStartAt}&end=${effectiveEndAt}&autoplay=0&playsinline=1`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            allowFullScreen
+            style={{ width: '100%', height: '100%', border: 'none' }}
+            title={title ?? 'YouTube video'}
+          />
+        </Box>
+      ) : videoId != null ? (
         <>
           <Box
             height={{
