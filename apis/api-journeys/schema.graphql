@@ -2698,6 +2698,18 @@ type Translation {
   primary: Boolean!
 }
 
+extend type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+extend type AnonymousUser
+  @key(fields: "id")
+{
+  id: ID!
+}
+
 type UserInvite
   @key(fields: "id")
   @shareable
@@ -2718,12 +2730,6 @@ enum UserJourneyRole {
   inviteRequested
   editor
   owner
-}
-
-extend type AuthenticatedUser
-  @key(fields: "id")
-{
-  id: ID! @external
 }
 
 type UserRole
@@ -3052,4 +3058,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AnonymousUser | AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
