@@ -60,6 +60,17 @@ export function isIOSTouchScreen(): boolean {
   )
 }
 
+export function isInstagramAndroidWebView(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const ua = navigator.userAgent
+  return /Android/i.test(ua) && /Instagram/i.test(ua)
+}
+
 // TODO: should only resort to user agent sniffing as a last resport
 export function isMobile(): boolean {
   if (
