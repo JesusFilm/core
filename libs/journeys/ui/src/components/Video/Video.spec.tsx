@@ -254,6 +254,23 @@ describe('Video', () => {
     // video image alt is set to video image
     expect(videoImage).toHaveAttribute('alt', 'video image')
   })
+
+  it('should render video image if source is YouTube and variant is customize', () => {
+    render(
+      <JourneyProvider value={{ variant: 'customize' }}>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.youTube,
+            image: 'https://i.ytimg.com/vi/id/hqdefault.jpg'
+          }}
+          posterBlockId={null}
+        />
+      </JourneyProvider>
+    )
+    const videoImage = screen.getByRole('img')
+    expect(videoImage).toHaveAttribute('alt', 'video image')
+  })
 })
 
 describe.skip('Admin Video', () => {
