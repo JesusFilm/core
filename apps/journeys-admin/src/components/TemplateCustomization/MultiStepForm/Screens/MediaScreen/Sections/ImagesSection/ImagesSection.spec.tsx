@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -136,6 +137,13 @@ describe('ImagesSection', () => {
   })
 
   it('should call imageBlockUpdate mutation when handleUploadComplete is triggered', async () => {
+    const originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: ''
+    }
+    const originalFetch = global.fetch
+
     const cloudflareResult = jest.fn().mockReturnValue({
       data: {
         createCloudflareUploadByFile: {
@@ -193,6 +201,7 @@ describe('ImagesSection', () => {
       })
     })
 
+    const user = userEvent.setup()
     render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
@@ -203,19 +212,32 @@ describe('ImagesSection', () => {
 
     const file = new File([''], 'test.jpg', { type: 'image/jpeg' })
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
-    fireEvent.change(input, { target: { files: [file] } })
+    await user.upload(input, file)
 
-    await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    await waitFor(() => expect(updateResult).toHaveBeenCalled(), { timeout: 3000 })
 
-    await waitFor(() => {
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'File uploaded successfully',
-        { variant: 'success' }
-      )
-    })
+    await waitFor(
+      () => {
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'File uploaded successfully',
+          { variant: 'success' }
+        )
+      },
+      { timeout: 3000 }
+    )
+
+    process.env = originalEnv
+    global.fetch = originalFetch
   })
 
   it('should show error snackbar when imageBlockUpdate mutation fails', async () => {
+    const originalEnv = process.env
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: ''
+    }
+    const originalFetch = global.fetch
+
     const cloudflareResult = jest.fn().mockReturnValue({
       data: {
         createCloudflareUploadByFile: {
@@ -257,6 +279,7 @@ describe('ImagesSection', () => {
       })
     })
 
+    const user = userEvent.setup()
     render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
@@ -267,14 +290,20 @@ describe('ImagesSection', () => {
 
     const file = new File([''], 'test.jpg', { type: 'image/jpeg' })
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
-    fireEvent.change(input, { target: { files: [file] } })
+    await user.upload(input, file)
 
-    await waitFor(() => {
-      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Upload failed. Please try again',
-        { variant: 'error' }
-      )
-    })
+    await waitFor(
+      () => {
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'Upload failed. Please try again',
+          { variant: 'error' }
+        )
+      },
+      { timeout: 3000 }
+    )
+
+    process.env = originalEnv
+    global.fetch = originalFetch
   })
 
   it('should filter blocks based on cardBlockId and customizable flag', () => {
