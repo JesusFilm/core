@@ -114,7 +114,9 @@ describe('adminJourneys', () => {
 
     const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY
-    })) as ExecutionResult<{ adminJourneys: Array<(typeof mockJourney) & { status: string }> }>
+    })) as ExecutionResult<{
+      adminJourneys: Array<typeof mockJourney & { status: string }>
+    }>
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(result.data?.adminJourneys[0]).toMatchObject({
@@ -132,7 +134,7 @@ describe('adminJourneys', () => {
     const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { useLastActiveTeamId: true }
-    })) as ExecutionResult<{ adminJourneys: typeof mockJourney[] }>
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
 
     // Should not throw, should return journeys
     expect(result.errors).toBeUndefined()
@@ -154,7 +156,7 @@ describe('adminJourneys', () => {
     const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { useLastActiveTeamId: true }
-    })) as ExecutionResult<{ adminJourneys: typeof mockJourney[] }>
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
@@ -174,7 +176,7 @@ describe('adminJourneys', () => {
     const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { teamId: 'teamId' }
-    })) as ExecutionResult<{ adminJourneys: typeof mockJourney[] }>
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
@@ -194,7 +196,7 @@ describe('adminJourneys', () => {
     const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { template: true }
-    })) as ExecutionResult<{ adminJourneys: typeof mockJourney[] }>
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
@@ -217,7 +219,7 @@ describe('adminJourneys', () => {
 
     const result = (await unauthClient({
       document: ADMIN_JOURNEYS_QUERY
-    })) as ExecutionResult<{ adminJourneys: typeof mockJourney[] }>
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
 
     expect(result.errors).toBeDefined()
     expect(result.errors?.[0]?.message).toContain('Not authorized')
