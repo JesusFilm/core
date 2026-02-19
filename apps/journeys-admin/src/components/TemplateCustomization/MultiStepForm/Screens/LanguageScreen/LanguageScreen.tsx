@@ -111,6 +111,7 @@ export function LanguageScreen({
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
   async function handleSubmit(values: FormikValues) {
+    // TODO: if not template, and language and team are the same as the current journey, then don't duplicate and just goto the next screen
     setLoading(true)
     if (journey == null) {
       setLoading(false)
