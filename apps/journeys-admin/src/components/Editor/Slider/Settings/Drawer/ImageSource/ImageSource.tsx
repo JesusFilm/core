@@ -8,8 +8,6 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
