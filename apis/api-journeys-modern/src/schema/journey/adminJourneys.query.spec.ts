@@ -1,0 +1,252 @@
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
+
+import { getClient } from '../../../test/client'
+import { prismaMock } from '../../../test/prismaMock'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
+
+jest.mock('@core/yoga/firebaseClient', () => ({
+  getUserFromPayload: jest.fn()
+}))
+
+const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
+  typeof getUserFromPayload
+>
+
+describe('adminJourneys', () => {
+  const mockUser = {
+    id: 'userId',
+    email: 'test@example.com',
+    emailVerified: true,
+    firstName: 'Test',
+    lastName: 'User',
+    imageUrl: null,
+    roles: []
+  }
+
+  const mockAnonymousUser = {
+    id: 'anonUserId',
+    email: null,
+    emailVerified: false,
+    firstName: '',
+    imageUrl: null,
+    roles: []
+  }
+
+  const authClient = getClient({
+    headers: { authorization: 'token' },
+    context: { currentUser: mockUser }
+  })
+
+  const ADMIN_JOURNEYS_QUERY = graphql(`
+    query AdminJourneys(
+      $status: [JourneyStatus!]
+      $template: Boolean
+      $teamId: ID
+      $useLastActiveTeamId: Boolean
+    ) {
+      adminJourneys(
+        status: $status
+        template: $template
+        teamId: $teamId
+        useLastActiveTeamId: $useLastActiveTeamId
+      ) {
+        id
+        title
+        status
+        template
+      }
+    }
+  `)
+
+  const mockJourney = {
+    id: 'journeyId',
+    title: 'Test Journey',
+    description: null,
+    slug: 'test-journey',
+    languageId: '529',
+    themeMode: 'dark',
+    themeName: 'base',
+    status: 'published',
+    template: false,
+    teamId: 'teamId',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    publishedAt: new Date(),
+    archivedAt: null,
+    trashedAt: null,
+    deletedAt: null,
+    featuredAt: null,
+    seoTitle: null,
+    seoDescription: null,
+    primaryImageBlockId: null,
+    creatorImageBlockId: null,
+    logoImageBlockId: null,
+    creatorDescription: null,
+    website: false,
+    showShareButton: null,
+    showLikeButton: null,
+    showDislikeButton: null,
+    displayTitle: null,
+    showHosts: null,
+    showChatButtons: null,
+    showReactionButtons: null,
+    showLogo: null,
+    showMenu: null,
+    showDisplayTitle: null,
+    showAssistant: null,
+    menuButtonIcon: null,
+    menuStepBlockId: null,
+    socialNodeX: null,
+    socialNodeY: null,
+    strategySlug: null,
+    plausibleToken: null,
+    templateSite: null,
+    fromTemplateId: null,
+    hostId: null,
+    journeyCustomizationDescription: null
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockGetUserFromPayload.mockReturnValue(mockUser)
+    prismaMock.userRole.findUnique.mockResolvedValue({
+      id: 'userRoleId',
+      userId: mockUser.id,
+      roles: []
+    })
+  })
+
+  it('should return journeys for authenticated user', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = await authClient({
+      document: ADMIN_JOURNEYS_QUERY
+    })
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    expect(result.data?.adminJourneys[0]).toMatchObject({
+      id: 'journeyId',
+      title: 'Test Journey',
+      status: 'published',
+      template: false
+    })
+  })
+
+  it('should return journeys for anonymous user', async () => {
+    mockGetUserFromPayload.mockReturnValue(mockAnonymousUser)
+    prismaMock.userRole.findUnique.mockResolvedValue({
+      id: 'userRoleId',
+      userId: mockAnonymousUser.id,
+      roles: []
+    })
+
+    const anonClient = getClient({
+      headers: { authorization: 'token' },
+      context: { currentUser: mockAnonymousUser }
+    })
+
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = await anonClient({
+      document: ADMIN_JOURNEYS_QUERY
+    })
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+  })
+
+  it('should handle useLastActiveTeamId gracefully when profile not found', async () => {
+    prismaMock.journeyProfile.findUnique.mockResolvedValue(null)
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = await authClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { useLastActiveTeamId: true }
+    })
+
+    // Should not throw, should return journeys
+    expect(result.errors).toBeUndefined()
+    expect(result.data?.adminJourneys).toBeDefined()
+  })
+
+  it('should filter by lastActiveTeamId when profile exists', async () => {
+    prismaMock.journeyProfile.findUnique.mockResolvedValue({
+      id: 'profileId',
+      userId: 'userId',
+      lastActiveTeamId: 'teamId',
+      acceptedTermsAt: new Date(),
+      onboardingComplete: false
+    })
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = await authClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { useLastActiveTeamId: true }
+    })
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: expect.arrayContaining([
+            expect.objectContaining({ teamId: 'teamId' })
+          ])
+        })
+      })
+    )
+  })
+
+  it('should filter by teamId', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = await authClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { teamId: 'teamId' }
+    })
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: expect.arrayContaining([
+            expect.objectContaining({ teamId: 'teamId' })
+          ])
+        })
+      })
+    )
+  })
+
+  it('should filter by template', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = await authClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { template: true }
+    })
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          AND: expect.arrayContaining([
+            expect.objectContaining({ template: true })
+          ])
+        })
+      })
+    )
+  })
+
+  it('should reject unauthenticated users', async () => {
+    mockGetUserFromPayload.mockReturnValue(null)
+    const unauthClient = getClient({
+      headers: { authorization: 'token' },
+      context: { currentUser: null }
+    })
+
+    const result = await unauthClient({
+      document: ADMIN_JOURNEYS_QUERY
+    })
+
+    expect(result.errors).toBeDefined()
+    expect(result.errors?.[0]?.message).toContain('Not authorized')
+  })
+})
