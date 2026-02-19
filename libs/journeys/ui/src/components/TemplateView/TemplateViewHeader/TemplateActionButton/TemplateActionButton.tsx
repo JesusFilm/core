@@ -3,7 +3,10 @@ import { ReactElement } from 'react'
 
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
-import { CreateJourneyButton } from '../../CreateJourneyButton'
+import {
+  CreateJourneyButton,
+  JourneyForTemplate
+} from '../../CreateJourneyButton'
 import { UseThisTemplateButton } from '../../UseThisTemplateButton'
 
 interface TemplateActionButtonProps {
@@ -11,6 +14,7 @@ interface TemplateActionButtonProps {
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
   handleCloseMenu?: () => void
+  journey?: JourneyForTemplate
   refetchTemplateStats?: (templateIds: string[]) => Promise<void>
 }
 
@@ -19,15 +23,23 @@ export function TemplateActionButton({
   signedIn,
   openTeamDialogOnSignIn = false,
   handleCloseMenu,
+  journey,
   refetchTemplateStats
 }: TemplateActionButtonProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey: journeyFromContext } = useJourney()
+  const journeyData = journey ?? journeyFromContext
 
-  if (journey != null && isJourneyCustomizable(journey)) {
-    return <UseThisTemplateButton variant={variant} signedIn={signedIn} />
+  if (journeyData != null && isJourneyCustomizable(journeyData)) {
+    return (
+      <UseThisTemplateButton
+        variant={variant}
+        signedIn={signedIn}
+        journeyId={journeyData?.id}
+      />
+    )
   }
 
-  if (journey == null && variant === 'button') {
+  if (journeyData == null && variant === 'button') {
     return (
       <Skeleton
         sx={{ minWidth: 180, height: '38px', borderRadius: 3 }}
@@ -41,6 +53,7 @@ export function TemplateActionButton({
       variant={variant}
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
+      journeyData={journeyData}
       handleCloseMenu={handleCloseMenu}
       refetchTemplateStats={refetchTemplateStats}
     />
