@@ -235,7 +235,9 @@ describe('adminJourneys', () => {
         where: expect.objectContaining({
           AND: expect.arrayContaining([
             expect.objectContaining({
-              OR: expect.arrayContaining([expect.objectContaining({ template: true })])
+              OR: expect.arrayContaining([
+                expect.objectContaining({ template: true })
+              ])
             })
           ])
         })
