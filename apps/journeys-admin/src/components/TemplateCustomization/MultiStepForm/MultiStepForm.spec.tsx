@@ -145,10 +145,13 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('media-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('media-next'))
 
-    // SocialScreen + DoneScreen
+    // SocialScreen
     expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
+
+    // DoneScreen
+    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
   })
 
   it('should hide edit manually button when on the language screen', () => {
@@ -221,13 +224,17 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('language-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('language-next'))
 
-    // SocialScreen + DoneScreen (should skip text and links)
+    // SocialScreen
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
 
-    // Text and Links screens should not be present
+    // DoneScreen
+    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+
+    // Text, Links and Media screens should not be present
     expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
     expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
   })
 
   it('should not render progress stepper when journey has no customization capabilities', async () => {
@@ -253,7 +260,7 @@ describe('MultiStepForm', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render only text screen when journey has editable text but no links', async () => {
+  it('should render only text screen when journey has editable text but no links or media', async () => {
     const journeyWithTextOnly = {
       ...journey,
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
@@ -291,11 +298,12 @@ describe('MultiStepForm', () => {
     // DoneScreen
     expect(screen.getByTestId('done-screen')).toBeInTheDocument()
 
-    // Links screen should not be present
+    // Links and Media screens should not be present
     expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
   })
 
-  it('should render only links screen when journey has customizable links but no editable text', async () => {
+  it('should render only links screen when journey has customizable links but no editable text or media', async () => {
     const journeyWithLinksOnly = {
       ...journey,
       journeyCustomizationDescription: null,
@@ -337,7 +345,63 @@ describe('MultiStepForm', () => {
     // DoneScreen
     expect(screen.getByTestId('done-screen')).toBeInTheDocument()
 
-    // Text screen should not be present
+    // Text and Media screens should not be present
     expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
+  })
+
+  it('should render only media screen when journey has customizable media but no editable text or links', async () => {
+    const journeyWithMediaOnly = {
+      ...journey,
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: [
+        {
+          __typename: 'ImageBlock',
+          id: 'img-1',
+          parentBlockId: null,
+          parentOrder: 0,
+          src: null,
+          alt: '',
+          width: 0,
+          height: 0,
+          blurhash: '',
+          scale: null,
+          focalTop: null,
+          focalLeft: null,
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <JourneyProvider value={{ journey: journeyWithMediaOnly }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    )
+    expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
+
+    // Progress stepper should be visible (hasCustomizableMedia)
+    expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
+    expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('language-next'))
+
+    // MediaScreen
+    expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+    expect(screen.getByTestId('media-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('media-next'))
+
+    // SocialScreen
+    expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
+    expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('social-next'))
+
+    // DoneScreen
+    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+
+    // Text and Links screens should not be present
+    expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
   })
 })
