@@ -135,7 +135,9 @@ export function MultiStepForm(): ReactElement {
               {t('Edit Manually')}
             </Button>
           </NextLink>
-          {(hasEditableText || hasCustomizableLinks || hasCustomizableMedia) && (
+          {(hasEditableText ||
+            hasCustomizableLinks ||
+            hasCustomizableMedia) && (
             <Box sx={{ mt: { xs: 3, sm: 6 } }}>
               <ProgressStepper
                 activeStepNumber={screens.indexOf(activeScreen)}
