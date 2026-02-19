@@ -1,7 +1,11 @@
 import { checkBlocksForCustomizableLinks } from '../checkBlocksForCustomizableLinks'
+import { checkBlocksForCustomizableMedia } from '../checkBlocksForCustomizableMedia'
 import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
 
-export function isJourneyCustomizable(journey?: Journey): boolean {
+export function isJourneyCustomizable(
+  journey?: Journey,
+  customizableMedia: boolean = false
+): boolean {
   const blocks = journey?.blocks ?? []
 
   const hasCustomizableLinks = checkBlocksForCustomizableLinks(blocks)
@@ -13,5 +17,9 @@ export function isJourneyCustomizable(journey?: Journey): boolean {
       journey?.journeyCustomizationFields.length > 0
   )
 
-  return hasEditableText || hasCustomizableLinks
+  const hasCustomizableMedia =
+    customizableMedia &&
+    checkBlocksForCustomizableMedia(blocks, journey?.logoImageBlock)
+
+  return hasEditableText || hasCustomizableLinks || hasCustomizableMedia
 }
