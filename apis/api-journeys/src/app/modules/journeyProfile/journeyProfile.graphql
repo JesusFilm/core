@@ -8,10 +8,6 @@ type JourneyProfile @key(fields: "id") @shareable {
   plausibleDashboardViewed: Boolean
 }
 
-extend type Query {
-  getJourneyProfile: JourneyProfile
-}
-
 input JourneyProfileUpdateInput {
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
