@@ -4,8 +4,8 @@ import { CSSProperties, ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { isInstagramAndroidWebView } from '@core/shared/ui/deviceUtils'
 import { defaultBackgroundVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { isInstagramAndroidWebView } from '@core/shared/ui/deviceUtils'
 
 import {
   VideoBlockObjectFit,
@@ -155,7 +155,12 @@ export function BackgroundVideo({
         <iframe
           src={`https://www.youtube.com/embed/${videoId}?start=${startAt ?? 0}&end=${endAt ?? 0}&autoplay=1&mute=1&loop=1&playsinline=1&controls=0`}
           allow="accelerometer; autoplay; encrypted-media"
-          style={{ width: '100%', height: '100%', border: 'none', pointerEvents: 'none' }}
+          style={{
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            pointerEvents: 'none'
+          }}
           title="Background video"
         />
       </Box>

@@ -226,7 +226,9 @@ export function Video({
           />
         )}
 
-      {videoId != null && inAppBrowser && source === VideoBlockSource.youTube ? (
+      {videoId != null &&
+      inAppBrowser &&
+      source === VideoBlockSource.youTube ? (
         <Box
           data-testid="in-app-browser-youtube-fallback"
           sx={{
