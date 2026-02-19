@@ -21,8 +21,10 @@ export function Items(): ReactElement {
       alignItems="center"
     >
       <Stack flexDirection="row" gap={2}>
-        {!isTemplate && <ResponsesItem variant="icon-button" />}
-        <AnalyticsItem variant="icon-button" />
+        {!isTemplate && (
+          <ResponsesItem variant="icon-button" journeyId={journey?.id} />
+        )}
+        <AnalyticsItem variant="icon-button" journeyId={journey?.id} />
       </Stack>
       <StrategyItem variant="button" />
       <ShareItem variant="button" journey={journey} />

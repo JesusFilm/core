@@ -10,7 +10,7 @@ import { MeInput } from "./globalTypes";
 // ====================================================
 
 export interface GetMe_me {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;

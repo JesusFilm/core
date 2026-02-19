@@ -20,8 +20,6 @@ import { GraphQLJSONObject } from 'graphql-type-json'
 import type PrismaTypes from '@core/prisma/journeys/__generated__/pothos-types'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
-import { env } from '../env'
-
 import { AuthScopes, Context, authScopes } from './authScopes'
 
 const PrismaPlugin = pluginName

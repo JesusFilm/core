@@ -512,6 +512,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   delete an existing short link
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
+  userMediaProfileUpdate(input: UserMediaProfileUpdateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
   videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
@@ -552,7 +553,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
-  validateEmail(email: String!, token: String!) : User @join__field(graph: API_USERS) 
+  validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -929,6 +930,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     first: Int
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
   videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
@@ -947,9 +949,9 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
-  me(input: MeInput) : User @join__field(graph: API_USERS) 
-  user(id: ID!) : User @join__field(graph: API_USERS) 
-  userByEmail(email: String!) : User @join__field(graph: API_USERS) 
+  me(input: MeInput) : AuthenticatedUser @join__field(graph: API_USERS) 
+  user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
 type ButtonBlockSettings @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2174,15 +2176,6 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
-type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
-  id: ID!
-  journeyId: ID!
-  senderId: ID!
-  email: String!
-  acceptedAt: DateTime
-  removedAt: DateTime
-}
-
 type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
@@ -2193,6 +2186,19 @@ type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: tr
   imageUrl: String @join__field(graph: API_USERS) 
   superAdmin: Boolean @join__field(graph: API_USERS) 
   emailVerified: Boolean! @join__field(graph: API_USERS) 
+}
+
+type AnonymousUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS, key: "id")  {
+  id: ID!
+}
+
+type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID!
+  journeyId: ID!
+  senderId: ID!
+  email: String!
+  acceptedAt: DateTime
+  removedAt: DateTime
 }
 
 type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
@@ -2556,17 +2562,6 @@ type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   visitors: Int!
 }
 
-type User @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
-  id: ID!
-  mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
-  firstName: String! @join__field(graph: API_USERS) 
-  lastName: String @join__field(graph: API_USERS) 
-  email: String! @join__field(graph: API_USERS) 
-  imageUrl: String @join__field(graph: API_USERS) 
-  superAdmin: Boolean @join__field(graph: API_USERS) 
-  emailVerified: Boolean! @join__field(graph: API_USERS) 
-}
-
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
   id: ID!
   primaryLanguageId: ID
@@ -2903,7 +2898,7 @@ type Playlist @join__type(graph: API_MEDIA)  {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  owner: User!
+  owner: AuthenticatedUser!
   items: [PlaylistItem!]!
 }
 
@@ -3110,6 +3105,29 @@ type UnsplashUserLinks @join__type(graph: API_MEDIA)  {
   self: String!
 }
 
+type UserMediaProfile @join__type(graph: API_MEDIA)  {
+  """
+  The database UUID
+  """
+  id: ID!
+  """
+  The Firebase user ID
+  """
+  userId: ID!
+  """
+  Language IDs array related to IDs in api-languages
+  """
+  languageInterests: [Language!]
+  """
+  Country IDs array
+  """
+  countryInterests: [ID!]
+  """
+  IDs of video collections the user is interested in
+  """
+  userInterests: [Video!]
+}
+
 type VideoDescription @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
@@ -3268,10 +3286,6 @@ type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__impleme
 type ZodFieldError @join__type(graph: API_MEDIA)  {
   message: String!
   path: [String!]!
-}
-
-type AnonymousUser @join__type(graph: API_USERS)  {
-  id: ID!
 }
 
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
@@ -5292,6 +5306,12 @@ input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
   note: String
   noteSharedAt: DateTime
   sharedAt: DateTime
+}
+
+input UserMediaProfileUpdateInput @join__type(graph: API_MEDIA)  {
+  languageInterestIds: [ID!]
+  countryInterestIds: [ID!]
+  userInterestIds: [ID!]
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {
