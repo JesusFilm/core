@@ -52,27 +52,80 @@ describe('JourneyListContent', () => {
     } as any)
   })
 
-  it('should render "Learn more" as an external link that opens in a new tab', async () => {
-    renderJourneyListContent({
-      mocks: [noTemplatesMock],
-      contentType: 'templates',
-      status: 'active'
+  describe('Learn more button visibility', () => {
+    it('should render "Learn more" as an external link when templates + active', async () => {
+      renderJourneyListContent({
+        mocks: [noTemplatesMock],
+        contentType: 'templates',
+        status: 'active'
+      })
+
+      const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
+      expect(learnMoreLink).toHaveAttribute(
+        'href',
+        'https://support.nextstep.is/article/1517-creating-a-template'
+      )
+      expect(learnMoreLink).toHaveAttribute('target', '_blank')
+      expect(learnMoreLink).toHaveAttribute(
+        'rel',
+        expect.stringContaining('noopener')
+      )
+      expect(learnMoreLink).toHaveAttribute(
+        'rel',
+        expect.stringContaining('noreferrer')
+      )
     })
 
-    const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
-    expect(learnMoreLink).toHaveAttribute(
-      'href',
-      'https://support.nextstep.is/'
-    )
-    expect(learnMoreLink).toHaveAttribute('target', '_blank')
-    expect(learnMoreLink).toHaveAttribute(
-      'rel',
-      expect.stringContaining('noopener')
-    )
-    expect(learnMoreLink).toHaveAttribute(
-      'rel',
-      expect.stringContaining('noreferrer')
-    )
+    it('should not show "Learn more" when contentType is journeys', async () => {
+      renderJourneyListContent({
+        mocks: [noJourneysMock],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      await waitFor(() =>
+        expect(screen.getByText('No journeys to display.')).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not show "Learn more" when contentType is templates and status is archived', async () => {
+      renderJourneyListContent({
+        mocks: [noArchivedTemplatesMock],
+        contentType: 'templates',
+        status: 'archived'
+      })
+
+      await waitFor(() =>
+        expect(screen.getByText('No archived templates.')).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not show "Learn more" when contentType is templates and status is trashed', async () => {
+      renderJourneyListContent({
+        mocks: [noTrashedTemplatesMock],
+        contentType: 'templates',
+        status: 'trashed'
+      })
+
+      await waitFor(() =>
+        expect(
+          screen.getByText('Your trashed templates will appear here.')
+        ).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
   })
 
   describe('Active Journeys', () => {

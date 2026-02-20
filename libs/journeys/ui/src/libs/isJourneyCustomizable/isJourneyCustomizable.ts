@@ -1,8 +1,19 @@
 import { checkBlocksForCustomizableLinks } from '../checkBlocksForCustomizableLinks'
-import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields_blocks as Block } from '../JourneyProvider/__generated__/JourneyFields'
 
-export function isJourneyCustomizable(journey?: Journey): boolean {
-  const blocks = journey?.blocks ?? []
+interface JourneyForCustomizableCheck {
+  blocks?: unknown[] | null
+  journeyCustomizationDescription?: string | null
+  journeyCustomizationFields?: Array<{
+    key: string
+    value?: string | null
+  }> | null
+}
+
+export function isJourneyCustomizable(
+  journey?: JourneyForCustomizableCheck
+): boolean {
+  const blocks = (journey?.blocks as Block[] | null | undefined) ?? []
 
   const hasCustomizableLinks = checkBlocksForCustomizableLinks(blocks)
 
