@@ -68,7 +68,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           selectedBlock
         ]

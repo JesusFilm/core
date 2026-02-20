@@ -26,6 +26,7 @@ export interface CardCtaCreate_image {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaCreate_subtitle_settings {

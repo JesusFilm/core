@@ -90,7 +90,8 @@ const cardQuoteCreateMock: MockedResponse<
         isCover: true,
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       },
       subtitleInput: {
         id: 'subtitleId',
@@ -149,7 +150,8 @@ const cardQuoteCreateMock: MockedResponse<
         __typename: 'ImageBlock',
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       },
       subtitle: {
         id: 'subtitleId',

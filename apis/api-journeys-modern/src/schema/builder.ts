@@ -33,6 +33,7 @@ export const builder = new SchemaBuilder<{
   AuthScopes: AuthScopes
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isAnonymous: Extract<Context, { type: 'authenticated' }>
     isInTeam: Extract<Context, { type: 'authenticated' }>
     isIntegrationOwner: Extract<Context, { type: 'authenticated' }>
     isTeamManager: Extract<Context, { type: 'authenticated' }>

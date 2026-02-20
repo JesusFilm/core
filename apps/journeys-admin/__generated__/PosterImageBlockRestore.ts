@@ -29,6 +29,7 @@ export interface PosterImageBlockRestore_blockRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_StepBlock | PosterImageBlockRestore_blockRestore_ImageBlock;

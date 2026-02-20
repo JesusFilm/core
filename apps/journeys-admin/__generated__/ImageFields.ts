@@ -24,4 +24,5 @@ export interface ImageFields {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
