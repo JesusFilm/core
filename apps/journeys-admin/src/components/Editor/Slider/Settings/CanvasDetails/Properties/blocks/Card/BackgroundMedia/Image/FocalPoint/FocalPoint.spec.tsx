@@ -26,7 +26,8 @@ describe('FocalPoint', () => {
     blurhash: 'blurhash',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const imageBlockResult = {

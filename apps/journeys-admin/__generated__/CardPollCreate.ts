@@ -26,6 +26,7 @@ export interface CardPollCreate_image {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollCreate_subtitle_settings {

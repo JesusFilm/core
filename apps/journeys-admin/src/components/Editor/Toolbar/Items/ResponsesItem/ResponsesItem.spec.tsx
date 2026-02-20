@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJourneyVisitorsCount'
@@ -16,14 +15,7 @@ describe('ResponsesItem', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
-          >
-            <ResponsesItem variant="icon-button" />
-          </JourneyProvider>
+          <ResponsesItem variant="icon-button" journeyId={defaultJourney.id} />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -37,14 +29,11 @@ describe('ResponsesItem', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
-          >
-            <ResponsesItem variant="icon-button" fromJourneyList />
-          </JourneyProvider>
+          <ResponsesItem
+            variant="icon-button"
+            fromJourneyList
+            journeyId={defaultJourney.id}
+          />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -69,14 +58,7 @@ describe('ResponsesItem', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[getVisitorCountMock]}>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
-          >
-            <ResponsesItem variant="icon-button" />
-          </JourneyProvider>
+          <ResponsesItem variant="icon-button" journeyId={defaultJourney.id} />
         </MockedProvider>
       </SnackbarProvider>
     )

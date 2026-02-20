@@ -242,6 +242,7 @@ export function DefaultMenu({
           <DuplicateJourneyMenuItem
             id={id}
             handleCloseMenu={handleCloseMenu}
+            journey={journey}
             fromTemplateId={journey?.fromTemplateId}
           />
           <MenuItem
@@ -258,12 +259,14 @@ export function DefaultMenu({
             variant="menu-item"
             globalPublish={false}
             handleCloseMenu={handleCloseMenu}
+            journey={journey}
           />
           {isPublisher === true && (
             <CreateTemplateItem
               variant="menu-item"
               globalPublish={true}
               handleCloseMenu={handleCloseMenu}
+              journey={journey}
             />
           )}
           <Divider />
@@ -274,6 +277,7 @@ export function DefaultMenu({
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}
+            journey={journey}
             refetchTemplateStats={refetchTemplateStats}
           />
           <Divider />

@@ -1,9 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
-import { MessagePlatform } from '../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
 import { MultiStepForm } from './MultiStepForm'
@@ -11,6 +12,14 @@ import { MultiStepForm } from './MultiStepForm'
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({
   useUser: () => ({ id: 'test-user-id' })
+}))
+
+jest.mock('./TemplateVideoUploadProvider', () => ({
+  TemplateVideoUploadProvider: ({
+    children
+  }: {
+    children: React.ReactNode
+  }) => <>{children}</>
 }))
 
 jest.mock('next/router', () => ({
@@ -46,6 +55,14 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
+  MediaScreen: ({ handleNext }: { handleNext: () => void }) => (
+    <div data-testid="media-screen">
+      <h2>Media Screen</h2>
+      <button onClick={handleNext} data-testid="media-next">
+        Next
+      </button>
+    </div>
+  ),
   SocialScreen: ({ handleNext }: { handleNext: () => void }) => (
     <div data-testid="social-screen">
       <h2>Social Screen</h2>
@@ -64,6 +81,20 @@ jest.mock('./Screens', () => ({
     </div>
   )
 }))
+
+function renderMultiStepForm(
+  journeyData: Journey,
+  options: { customizableMedia?: boolean } = {}
+): ReturnType<typeof render> {
+  const { customizableMedia = false } = options
+  return render(
+    <FlagsProvider flags={{ customizableMedia }}>
+      <JourneyProvider value={{ journey: journeyData }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    </FlagsProvider>
+  )
+}
 
 describe('MultiStepForm', () => {
   afterEach(() => {
@@ -93,15 +124,16 @@ describe('MultiStepForm', () => {
             customizable: true,
             parentStepId: null
           }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
         }
       ]
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithAllCapabilities, { customizableMedia: true })
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
@@ -119,10 +151,67 @@ describe('MultiStepForm', () => {
     expect(screen.getByTestId('links-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('links-next'))
 
-    // SocialScreen + DoneScreen
+    // MediaScreen
     expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
+    expect(screen.getByTestId('media-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('media-next'))
+
+    // SocialScreen
+    expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
+
+    // DoneScreen
+    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+  })
+
+  it('should skip media screen when customizableMedia flag is false', async () => {
+    const journeyWithAllCapabilities = {
+      ...journey,
+      journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+      journeyCustomizationFields: [
+        {
+          id: '1',
+          key: 'firstName',
+          value: 'John',
+          __typename: 'JourneyCustomizationField'
+        }
+      ],
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'LinkAction',
+            url: 'https://wa.me/123',
+            customizable: true,
+            parentStepId: null
+          }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    renderMultiStepForm(journeyWithAllCapabilities, {
+      customizableMedia: false
+    })
+
+    expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('language-next'))
+
+    expect(screen.getByTestId('text-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('text-next'))
+
+    expect(screen.getByTestId('links-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('links-next'))
+
+    expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
   })
 
   it('should hide edit manually button when on the language screen', () => {
@@ -130,11 +219,7 @@ describe('MultiStepForm', () => {
       id: 'test-journey-id'
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journey)
 
     const editButton = screen.getByText('Edit Manually')
     expect(editButton).toHaveStyle('visibility: hidden')
@@ -145,11 +230,7 @@ describe('MultiStepForm', () => {
       id: 'test-journey-id'
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journey }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journey)
 
     const editButton = screen.getByText('Edit Manually')
     expect(editButton).toHaveStyle('visibility: hidden')
@@ -164,11 +245,7 @@ describe('MultiStepForm', () => {
       id: null
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journey)
     expect(screen.getByText('Edit Manually')).toHaveAttribute(
       'aria-disabled',
       'true'
@@ -184,24 +261,24 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithNoCapabilities)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
     expect(screen.getByTestId('language-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('language-next'))
 
-    // SocialScreen + DoneScreen (should skip text and links)
+    // SocialScreen
     expect(screen.getByTestId('social-screen')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('social-next'))
 
-    // Text and Links screens should not be present
+    // DoneScreen
+    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+
+    // Text, Links and Media screens should not be present
     expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
     expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
   })
 
   it('should not render progress stepper when journey has no customization capabilities', async () => {
@@ -213,11 +290,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithNoCapabilities }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithNoCapabilities)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
     expect(
       screen.queryByTestId('progress-stepper-step-0')
@@ -227,7 +300,7 @@ describe('MultiStepForm', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render only text screen when journey has editable text but no links', async () => {
+  it('should render only text screen when journey has editable text but no links or media', async () => {
     const journeyWithTextOnly = {
       ...journey,
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
@@ -243,11 +316,7 @@ describe('MultiStepForm', () => {
       blocks: []
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithTextOnly }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithTextOnly)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
@@ -265,11 +334,12 @@ describe('MultiStepForm', () => {
     // DoneScreen
     expect(screen.getByTestId('done-screen')).toBeInTheDocument()
 
-    // Links screen should not be present
+    // Links and Media screens should not be present
     expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
   })
 
-  it('should render only links screen when journey has customizable links but no editable text', async () => {
+  it('should render only links screen when journey has customizable links but no editable text or media', async () => {
     const journeyWithLinksOnly = {
       ...journey,
       journeyCustomizationDescription: null,
@@ -289,11 +359,7 @@ describe('MultiStepForm', () => {
       ]
     } as unknown as Journey
 
-    render(
-      <JourneyProvider value={{ journey: journeyWithLinksOnly }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    )
+    renderMultiStepForm(journeyWithLinksOnly)
     expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
     // LanguageScreen
@@ -311,7 +377,59 @@ describe('MultiStepForm', () => {
     // DoneScreen
     expect(screen.getByTestId('done-screen')).toBeInTheDocument()
 
-    // Text screen should not be present
+    // Text and Media screens should not be present
     expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
+  })
+
+  it('should render only media screen when journey has customizable media but no editable text or links', async () => {
+    const journeyWithMediaOnly = {
+      ...journey,
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: [
+        {
+          __typename: 'ImageBlock',
+          id: 'img-1',
+          parentBlockId: null,
+          parentOrder: 0,
+          src: null,
+          alt: '',
+          width: 0,
+          height: 0,
+          blurhash: '',
+          scale: null,
+          focalTop: null,
+          focalLeft: null,
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    renderMultiStepForm(journeyWithMediaOnly, { customizableMedia: true })
+    expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
+
+    // Progress stepper should be visible (hasCustomizableMedia)
+    expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
+    expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('language-next'))
+
+    // MediaScreen
+    expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+    expect(screen.getByTestId('media-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('media-next'))
+
+    // SocialScreen
+    expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
+    expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('social-next'))
+
+    // DoneScreen
+    expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+
+    // Text and Links screens should not be present
+    expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
   })
 })

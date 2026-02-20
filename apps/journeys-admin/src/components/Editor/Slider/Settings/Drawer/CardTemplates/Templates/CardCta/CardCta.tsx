@@ -307,7 +307,8 @@ export function CardCta(): ReactElement {
       __typename: 'ImageBlock',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     } satisfies ImageBlock
 
     const subtitle = {

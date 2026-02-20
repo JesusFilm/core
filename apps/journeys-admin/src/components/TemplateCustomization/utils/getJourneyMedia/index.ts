@@ -1,0 +1,1 @@
+export { getJourneyMedia, type JourneyMedia } from './getJourneyMedia'
