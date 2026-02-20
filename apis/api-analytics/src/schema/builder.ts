@@ -52,8 +52,8 @@ export const builder = new SchemaBuilder<{
   ],
   scopeAuth: {
     authScopes: async (context) => ({
-      isAuthenticated: context.currentUser?.email != null,
-      isAnonymous: context.currentUser?.email == null
+      isAuthenticated: context.currentUser != null && context.currentUser.email != null,
+      isAnonymous: context.currentUser != null && context.currentUser.email == null
     })
   },
   tracing: {
