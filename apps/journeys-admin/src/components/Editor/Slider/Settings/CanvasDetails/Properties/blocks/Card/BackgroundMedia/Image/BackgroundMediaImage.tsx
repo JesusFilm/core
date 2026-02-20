@@ -106,7 +106,8 @@ export function BackgroundMediaImage({
       parentOrder: null,
       scale: 100,
       focalTop: 50,
-      focalLeft: 50
+      focalLeft: 50,
+      customizable: null
     }
 
     add({
@@ -344,21 +345,22 @@ export function BackgroundMediaImage({
     }
   }
 
+  const imageCoverBlock =
+    coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+
   return (
     <Stack gap={4}>
       <ImageSource
-        selectedBlock={
-          coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
-        }
+        selectedBlock={imageCoverBlock}
         onChange={handleChange}
         onDelete={async () => deleteImageBlock()}
       />
       <FocalPoint
-        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
+        imageBlock={imageCoverBlock}
         updateImageBlock={updateImageBlock}
       />
       <ZoomImage
-        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
+        imageBlock={imageCoverBlock}
         updateImageBlock={updateImageBlock}
       />
     </Stack>

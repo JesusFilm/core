@@ -192,7 +192,8 @@ describe('DoneScreen', () => {
         blurhash: 'test-blurhash',
         scale: 1,
         focalTop: null,
-        focalLeft: null
+        focalLeft: null,
+        customizable: null
       } satisfies ImageBlock
     }
 
