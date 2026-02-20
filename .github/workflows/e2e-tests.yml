@@ -161,10 +161,10 @@ jobs:
             test-results
           retention-days: 30
 
-  notify-slack-on-failure:
-    name: Notify Slack on E2E failure
+  notify-slack-on-deploy-and-test-failure:
+    name: Notify Slack on deploy-and-test failure
     needs: [deploy-and-test]
-    if: github.event_name == 'schedule' && needs.deploy-and-test.result == 'failure'
+    if: needs.deploy-and-test.result == 'failure'
     runs-on: ubuntu-latest
     steps:
       - uses: slackapi/slack-github-action@v2.1.1
@@ -174,13 +174,13 @@ jobs:
           payload-templated: true
           payload: |
             {
-              "text": "❌ E2E Tests Failed (morning run)",
+              "text": "❌ E2E Tests Failed (deploy-and-test)",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*E2E Tests Failed* (scheduled morning run)\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                    "text": "*E2E Tests Failed* (all-e2e)\n*Trigger:* ${{ github.event_name == 'schedule' && 'Scheduled morning run' || 'Manual run' }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
                   }
                 }
               ]
@@ -248,3 +248,28 @@ jobs:
             apps/${{ matrix.test-suite }}/src/e2e/
             test-results
           retention-days: 30
+
+  notify-slack-on-e2e-tests-failure:
+    name: Notify Slack on E2E_Tests failure
+    needs: [E2E_Tests]
+    if: needs.E2E_Tests.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload-templated: true
+          payload: |
+            {
+              "text": "❌ E2E Tests Failed (single suite)",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*E2E Tests Failed* (${{ inputs.TargetTests }})\n*Trigger:* Manual run\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
