@@ -654,7 +654,7 @@ export function JourneyListContent({
             variant="text"
             size="small"
             component="a"
-            href="https://support.nextstep.is/"
+            href="https://support.nextstep.is/article/1517-creating-a-template"
             target="_blank"
             rel="noopener noreferrer"
           >
