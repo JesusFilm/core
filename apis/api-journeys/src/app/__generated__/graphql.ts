@@ -391,6 +391,7 @@ export class ImageBlockCreateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockUpdateInput {
@@ -403,6 +404,7 @@ export class ImageBlockUpdateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -1319,6 +1321,7 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class MultiselectBlock implements Block {
@@ -1455,6 +1458,7 @@ export class VideoBlock implements Block {
     objectFit?: Nullable<VideoBlockObjectFit>;
     subtitleLanguage?: Nullable<Language>;
     showGeneratedSubtitles?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1804,7 +1808,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: User;
+    user: AuthenticatedUser;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -1915,11 +1919,6 @@ export class UserInvite {
     removedAt?: Nullable<DateTime>;
 }
 
-export class AnonymousUser {
-    __typename?: 'AnonymousUser';
-    id: string;
-}
-
 export class UserTeamInvite {
     __typename?: 'UserTeamInvite';
     id: string;
@@ -2015,6 +2014,10 @@ export class ShortLink {
 }
 
 export class AuthenticatedUser {
+    id: string;
+}
+
+export class AnonymousUser {
     id: string;
 }
 

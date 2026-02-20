@@ -10,12 +10,14 @@ interface TrashMenuProps {
   setOpenRestoreDialog: () => void
   setOpenDeleteDialog: () => void
   handleCloseMenu: () => void
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 export function TrashMenu({
   setOpenRestoreDialog,
   setOpenDeleteDialog,
-  handleCloseMenu
+  handleCloseMenu,
+  setHasOpenDialog
 }: TrashMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -26,6 +28,7 @@ export function TrashMenu({
         onClick={() => {
           setOpenRestoreDialog()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
         testId="Restore"
       />
@@ -36,6 +39,7 @@ export function TrashMenu({
         onClick={() => {
           setOpenDeleteDialog()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
         testId="Delete"
       />

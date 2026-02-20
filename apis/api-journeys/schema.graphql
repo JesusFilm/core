@@ -230,6 +230,21 @@ extend type Query {
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
+
+  """
+  returns all journeys that match the provided filters
+  If no team id is provided and template is not true then only returns journeys
+  where the user is not a member of a team but is an editor or owner of the
+  journey
+  """
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
@@ -238,6 +253,7 @@ extend type Query {
   journeyCollections(teamId: ID!): [JourneyCollection]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
+  getJourneyProfile: JourneyProfile
   journeyTheme(journeyId: ID!): JourneyTheme
 
   """Get a list of Visitor Information by Journey"""
@@ -263,6 +279,7 @@ extend type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
+  getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
   userTeamInvites(teamId: ID!): [UserTeamInvite!]!
@@ -809,6 +826,7 @@ type ImageBlock implements Block
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+  customizable: Boolean @shareable
 }
 
 input ImageBlockCreateInput {
@@ -835,6 +853,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -851,6 +870,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 type MultiselectBlock implements Block
@@ -1305,6 +1325,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit @shareable
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
+  customizable: Boolean @shareable
 }
 
 """
@@ -2409,7 +2430,7 @@ type UserTeam
 {
   journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
-  user: User!
+  user: AuthenticatedUser!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2677,6 +2698,18 @@ type Translation {
   primary: Boolean!
 }
 
+extend type AuthenticatedUser
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+extend type AnonymousUser
+  @key(fields: "id")
+{
+  id: ID!
+}
+
 type UserInvite
   @key(fields: "id")
   @shareable
@@ -2699,19 +2732,22 @@ enum UserJourneyRole {
   owner
 }
 
-extend type AuthenticatedUser
+type UserRole
   @key(fields: "id")
-{
-  id: ID! @external
-}
-
-type AnonymousUser
   @shareable
 {
   id: ID!
+  userId: ID!
+  roles: [Role!]
 }
 
-union User = AuthenticatedUser | AnonymousUser
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
+}
 
 enum UserTeamRole {
   manager
@@ -3022,4 +3058,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserTeam | Video | VideoBlock | Visitor
+union _Entity = AnonymousUser | AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

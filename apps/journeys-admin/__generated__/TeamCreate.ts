@@ -9,7 +9,7 @@ import { TeamCreateInput, UserTeamRole } from "./globalTypes";
 // GraphQL mutation operation: TeamCreate
 // ====================================================
 
-export interface TeamCreate_teamCreate_userTeams_user_AuthenticatedUser {
+export interface TeamCreate_teamCreate_userTeams_user {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
@@ -17,13 +17,6 @@ export interface TeamCreate_teamCreate_userTeams_user_AuthenticatedUser {
   imageUrl: string | null;
   email: string;
 }
-
-export interface TeamCreate_teamCreate_userTeams_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type TeamCreate_teamCreate_userTeams_user = TeamCreate_teamCreate_userTeams_user_AuthenticatedUser | TeamCreate_teamCreate_userTeams_user_AnonymousUser;
 
 export interface TeamCreate_teamCreate_userTeams {
   __typename: "UserTeam";

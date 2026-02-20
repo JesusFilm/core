@@ -911,13 +911,22 @@ export class JourneyResolver {
     accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    await this.prismaService.journey.updateMany({
-      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
-      data: { status: JourneyStatus.archived, archivedAt: new Date() }
-    })
-    return await this.prismaService.journey.findMany({
+    const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
+    return await Promise.all(
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id, updatedAt: journey.updatedAt },
+            data: {
+              status: JourneyStatus.archived,
+              archivedAt: new Date(),
+              updatedAt: journey.updatedAt
+            }
+          })
+      )
+    )
   }
 
   @Mutation()
@@ -927,13 +936,22 @@ export class JourneyResolver {
     accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    await this.prismaService.journey.updateMany({
-      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
-      data: { status: JourneyStatus.deleted, deletedAt: new Date() }
-    })
-    return await this.prismaService.journey.findMany({
+    const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
+    return await Promise.all(
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id, updatedAt: journey.updatedAt },
+            data: {
+              status: JourneyStatus.deleted,
+              deletedAt: new Date(),
+              updatedAt: journey.updatedAt
+            }
+          })
+      )
+    )
   }
 
   @Mutation()
@@ -943,13 +961,22 @@ export class JourneyResolver {
     accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    await this.prismaService.journey.updateMany({
-      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
-      data: { status: JourneyStatus.trashed, trashedAt: new Date() }
-    })
-    return await this.prismaService.journey.findMany({
+    const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
+    return await Promise.all(
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id, updatedAt: journey.updatedAt },
+            data: {
+              status: JourneyStatus.trashed,
+              trashedAt: new Date(),
+              updatedAt: journey.updatedAt
+            }
+          })
+      )
+    )
   }
 
   @Mutation()
@@ -966,10 +993,11 @@ export class JourneyResolver {
       results.map(
         async (journey) =>
           await this.prismaService.journey.update({
-            where: { id: journey.id },
+            where: { id: journey.id, updatedAt: journey.updatedAt },
             data: {
               status: JourneyStatus.published,
-              publishedAt: new Date()
+              publishedAt: new Date(),
+              updatedAt: journey.updatedAt
             }
           })
       )

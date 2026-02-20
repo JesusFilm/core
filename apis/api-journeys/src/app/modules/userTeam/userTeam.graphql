@@ -1,13 +1,3 @@
-extend type AuthenticatedUser @key(fields: "id") {
-  id: ID! @external
-}
-
-type AnonymousUser @shareable {
-  id: ID!
-}
-
-union User = AuthenticatedUser | AnonymousUser
-
 enum UserTeamRole {
   manager
   member
@@ -15,7 +5,7 @@ enum UserTeamRole {
 
 type UserTeam @key(fields: "id") @shareable {
   id: ID!
-  user: User!
+  user: AuthenticatedUser!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!

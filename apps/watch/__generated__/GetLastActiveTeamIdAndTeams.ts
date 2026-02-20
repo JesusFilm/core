@@ -15,7 +15,7 @@ export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
   lastActiveTeamId: string | null;
 }
 
-export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user_AuthenticatedUser {
+export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
@@ -23,13 +23,6 @@ export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user_AuthenticatedU
   imageUrl: string | null;
   email: string;
 }
-
-export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type GetLastActiveTeamIdAndTeams_teams_userTeams_user = GetLastActiveTeamIdAndTeams_teams_userTeams_user_AuthenticatedUser | GetLastActiveTeamIdAndTeams_teams_userTeams_user_AnonymousUser;
 
 export interface GetLastActiveTeamIdAndTeams_teams_userTeams {
   __typename: "UserTeam";
