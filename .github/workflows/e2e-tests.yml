@@ -161,6 +161,31 @@ jobs:
             test-results
           retention-days: 30
 
+  notify-slack-on-failure:
+    name: Notify Slack on E2E failure
+    needs: [deploy-and-test]
+    if: github.event_name == 'schedule' && needs.deploy-and-test.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "❌ E2E Tests Failed (morning run)",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*E2E Tests Failed* (scheduled morning run)\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ fromJSON(toJSON(secrets)).E2E_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
   E2E_Tests:
     if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
