@@ -25,7 +25,8 @@ describe('ImageLibrary', () => {
     parentOrder: 0,
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   describe('smUp', () => {

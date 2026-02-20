@@ -150,7 +150,8 @@ describe('TemplateView', () => {
         __typename: 'ImageBlock',
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       }
     }
     const { getAllByText, getAllByRole } = render(
@@ -197,7 +198,8 @@ describe('TemplateView', () => {
         __typename: 'ImageBlock',
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       }
     }
     const { queryAllByText, queryAllByRole } = render(

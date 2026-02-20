@@ -153,6 +153,7 @@ export interface BlockDuplicate_blockDuplicate_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_MultiselectOptionBlock {
@@ -550,6 +551,7 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
   action: BlockDuplicate_blockDuplicate_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

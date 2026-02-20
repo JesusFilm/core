@@ -153,6 +153,7 @@ export interface CardCtaRestore_imageRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_imageRestore_MultiselectOptionBlock {
@@ -550,6 +551,7 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
   action: CardCtaRestore_imageRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -758,6 +760,7 @@ export interface CardCtaRestore_subtitleRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_MultiselectOptionBlock {
@@ -1155,6 +1158,7 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
   action: CardCtaRestore_subtitleRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1363,6 +1367,7 @@ export interface CardCtaRestore_titleRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_titleRestore_MultiselectOptionBlock {
@@ -1760,6 +1765,7 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
   action: CardCtaRestore_titleRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1968,6 +1974,7 @@ export interface CardCtaRestore_button1Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_button1Restore_MultiselectOptionBlock {
@@ -2365,6 +2372,7 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
   action: CardCtaRestore_button1Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2573,6 +2581,7 @@ export interface CardCtaRestore_startIcon1Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_MultiselectOptionBlock {
@@ -2970,6 +2979,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
   action: CardCtaRestore_startIcon1Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3178,6 +3188,7 @@ export interface CardCtaRestore_endIcon1Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_MultiselectOptionBlock {
@@ -3575,6 +3586,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
   action: CardCtaRestore_endIcon1Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3783,6 +3795,7 @@ export interface CardCtaRestore_button2Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_button2Restore_MultiselectOptionBlock {
@@ -4180,6 +4193,7 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
   action: CardCtaRestore_button2Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4388,6 +4402,7 @@ export interface CardCtaRestore_startIcon2Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_MultiselectOptionBlock {
@@ -4785,6 +4800,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
   action: CardCtaRestore_startIcon2Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4993,6 +5009,7 @@ export interface CardCtaRestore_endIcon2Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_MultiselectOptionBlock {
@@ -5390,6 +5407,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
   action: CardCtaRestore_endIcon2Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -5598,6 +5616,7 @@ export interface CardCtaRestore_button3Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_button3Restore_MultiselectOptionBlock {
@@ -5995,6 +6014,7 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
   action: CardCtaRestore_button3Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -6203,6 +6223,7 @@ export interface CardCtaRestore_startIcon3Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_MultiselectOptionBlock {
@@ -6600,6 +6621,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
   action: CardCtaRestore_startIcon3Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -6808,6 +6830,7 @@ export interface CardCtaRestore_endIcon3Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_MultiselectOptionBlock {
@@ -7205,6 +7228,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
   action: CardCtaRestore_endIcon3Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

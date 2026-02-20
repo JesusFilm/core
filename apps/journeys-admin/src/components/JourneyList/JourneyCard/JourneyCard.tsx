@@ -18,6 +18,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
@@ -72,6 +73,7 @@ export function JourneyCard({
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const isNavigating = useNavigationState()
   const { t } = useTranslation('apps-journeys-admin')
+  const { customizableMedia } = useFlags()
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
@@ -211,7 +213,10 @@ export function JourneyCard({
               }}
             >
               {journey.template &&
-                isJourneyCustomizable(journey as unknown as JourneyFields) && (
+                isJourneyCustomizable(
+                  journey as unknown as JourneyFields,
+                  customizableMedia
+                ) && (
                   <Box
                     data-testid="JourneyCardQuickStartBadge"
                     sx={{
