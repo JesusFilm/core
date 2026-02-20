@@ -1,0 +1,1 @@
+export { updateLanguageInAlgolia } from './algoliaLanguageUpdate'
