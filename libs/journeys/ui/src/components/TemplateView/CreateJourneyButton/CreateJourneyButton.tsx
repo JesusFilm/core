@@ -15,6 +15,7 @@ import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
+import { JourneyFields_logoImageBlock as LogoImageBlock } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 
 export interface JourneyForTemplate {
   id: string
@@ -30,6 +31,7 @@ export interface JourneyForTemplate {
     key: string
     value?: string | null
   }> | null
+  logoImageBlock?: LogoImageBlock | null
 }
 
 interface CreateJourneyButtonProps {
