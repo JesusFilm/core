@@ -406,7 +406,6 @@ describe('api-users', () => {
       const data = (await authClient({
         document: UPDATE_ME_MUTATION,
         variables: {
-          // @ts-expect-error UpdateMeInput not in shared gql schema - input typed as never
           input: {
             firstName: 'Jane',
             lastName: 'Doe',
@@ -438,7 +437,6 @@ describe('api-users', () => {
       const data = (await authClient({
         document: UPDATE_ME_MUTATION,
         variables: {
-          // @ts-expect-error UpdateMeInput not in shared gql schema
           input: {
             firstName: 'Other',
             lastName: 'Name',
@@ -459,7 +457,6 @@ describe('api-users', () => {
       const data = (await authClient({
         document: UPDATE_ME_MUTATION,
         variables: {
-          // @ts-expect-error UpdateMeInput not in shared gql schema
           input: {
             firstName: 'Jane',
             lastName: null,

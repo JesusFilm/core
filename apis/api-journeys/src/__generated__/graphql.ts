@@ -5216,7 +5216,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: AuthenticatedUser;
+  user: User;
 };
 
 

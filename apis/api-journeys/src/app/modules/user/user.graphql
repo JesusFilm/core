@@ -5,3 +5,5 @@ extend type AuthenticatedUser @key(fields: "id") {
 extend type AnonymousUser @key(fields: "id") {
   id: ID!
 }
+
+union User = AuthenticatedUser | AnonymousUser

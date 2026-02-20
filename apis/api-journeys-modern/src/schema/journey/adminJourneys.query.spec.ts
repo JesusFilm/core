@@ -1,3 +1,5 @@
+import { ExecutionResult } from 'graphql'
+
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
@@ -119,12 +121,14 @@ describe('adminJourneys', () => {
   it('should return journeys for authenticated user', async () => {
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
-    const result = await authClient({
+    const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY
-    })
+    })) as ExecutionResult
 
     expect(result.data?.adminJourneys).toHaveLength(1)
-    expect(result.data?.adminJourneys[0]).toMatchObject({
+    expect(
+      (result.data?.adminJourneys as Array<Record<string, unknown>>)[0]
+    ).toMatchObject({
       id: 'journeyId',
       title: 'Test Journey',
       status: 'published',
@@ -147,9 +151,9 @@ describe('adminJourneys', () => {
 
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
-    const result = await anonClient({
+    const result = (await anonClient({
       document: ADMIN_JOURNEYS_QUERY
-    })
+    })) as ExecutionResult
 
     expect(result.data?.adminJourneys).toHaveLength(1)
   })
@@ -158,12 +162,11 @@ describe('adminJourneys', () => {
     prismaMock.journeyProfile.findUnique.mockResolvedValue(null)
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
-    const result = await authClient({
+    const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { useLastActiveTeamId: true }
-    })
+    })) as ExecutionResult
 
-    // Should not throw, should return journeys
     expect(result.errors).toBeUndefined()
     expect(result.data?.adminJourneys).toBeDefined()
   })
@@ -174,14 +177,16 @@ describe('adminJourneys', () => {
       userId: 'userId',
       lastActiveTeamId: 'teamId',
       acceptedTermsAt: new Date(),
-      onboardingComplete: false
+      journeyFlowBackButtonClicked: null,
+      plausibleJourneyFlowViewed: null,
+      plausibleDashboardViewed: null
     })
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
-    const result = await authClient({
+    const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { useLastActiveTeamId: true }
-    })
+    })) as ExecutionResult
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
@@ -198,10 +203,10 @@ describe('adminJourneys', () => {
   it('should filter by teamId', async () => {
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
-    const result = await authClient({
+    const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { teamId: 'teamId' }
-    })
+    })) as ExecutionResult
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
@@ -218,10 +223,10 @@ describe('adminJourneys', () => {
   it('should filter by template', async () => {
     prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
 
-    const result = await authClient({
+    const result = (await authClient({
       document: ADMIN_JOURNEYS_QUERY,
       variables: { template: true }
-    })
+    })) as ExecutionResult
 
     expect(result.data?.adminJourneys).toHaveLength(1)
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
@@ -242,9 +247,9 @@ describe('adminJourneys', () => {
       context: { currentUser: null }
     })
 
-    const result = await unauthClient({
+    const result = (await unauthClient({
       document: ADMIN_JOURNEYS_QUERY
-    })
+    })) as ExecutionResult
 
     expect(result.errors).toBeDefined()
     expect(result.errors?.[0]?.message).toContain('Not authorized')
