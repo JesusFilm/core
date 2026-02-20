@@ -54,8 +54,62 @@ describe('getCustomizableImageBlocks', () => {
   it('should return empty array if no blocks match', () => {
     const journey = {
       blocks: [
-        { ...imageBlock, parentBlockId: 'otherCardId' },
-        { ...imageBlock, customizable: false }
+        {
+          ...imageBlock,
+          id: 'imageUnderOtherCardId',
+          parentBlockId: 'otherCardId'
+        },
+        { ...imageBlock, id: 'nonCustomizableImageId', customizable: false }
+      ]
+    } as unknown as Journey
+
+    expect(getCustomizableImageBlocks(journey, cardBlockId)).toEqual([])
+  })
+
+  it('should return nested image blocks inside the card (e.g. poll option images)', () => {
+    const radioQuestionBlockId = 'radioQuestionId'
+    const radioOptionBlockId = 'radioOptionId'
+    const nestedImageBlock: ImageBlock = {
+      ...imageBlock,
+      id: 'nestedPollOptionImageId',
+      parentBlockId: radioOptionBlockId,
+      customizable: true
+    }
+    const journey = {
+      blocks: [
+        { id: cardBlockId, __typename: 'CardBlock', parentBlockId: null },
+        {
+          id: radioQuestionBlockId,
+          __typename: 'RadioQuestionBlock',
+          parentBlockId: cardBlockId
+        },
+        {
+          id: radioOptionBlockId,
+          __typename: 'RadioOptionBlock',
+          parentBlockId: radioQuestionBlockId
+        },
+        nestedImageBlock
+      ]
+    } as unknown as Journey
+
+    expect(getCustomizableImageBlocks(journey, cardBlockId)).toEqual([
+      nestedImageBlock
+    ])
+  })
+
+  it('should not return image blocks that belong to a different card', () => {
+    const otherCardId = 'otherCardId'
+    const imageUnderOtherCard: ImageBlock = {
+      ...imageBlock,
+      id: 'imageUnderOtherCardId',
+      parentBlockId: otherCardId,
+      customizable: true
+    }
+    const journey = {
+      blocks: [
+        { id: cardBlockId, __typename: 'CardBlock', parentBlockId: null },
+        { id: otherCardId, __typename: 'CardBlock', parentBlockId: null },
+        imageUnderOtherCard
       ]
     } as unknown as Journey
 
