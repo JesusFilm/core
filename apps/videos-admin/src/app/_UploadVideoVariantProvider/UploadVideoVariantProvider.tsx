@@ -252,6 +252,11 @@ export function UploadVideoVariantProvider({
   const [state, dispatch] = useReducer(uploadReducer, initialState)
   const { enqueueSnackbar } = useSnackbar()
 
+  const dispatchError = (errorMessage: string) => {
+    dispatch({ type: 'SET_ERROR', error: errorMessage })
+    enqueueSnackbar(errorMessage, { variant: 'error' })
+  }
+
   const [prepareR2Multipart] = useMutation(PREPARE_R2_MULTIPART)
   const [completeR2Multipart] = useMutation(COMPLETE_R2_MULTIPART)
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
@@ -267,6 +272,12 @@ export function UploadVideoVariantProvider({
         state.muxVideoId != null
       ) {
         stopPolling()
+        console.info('Mux video ready, creating video variant', {
+          muxVideoId: data.getMyMuxVideo.id,
+          assetId: data.getMyMuxVideo.assetId,
+          playbackId: data.getMyMuxVideo.playbackId,
+          duration: data.getMyMuxVideo.duration
+        })
         await handleCreateVideoVariant(
           data.getMyMuxVideo.id,
           data.getMyMuxVideo.playbackId,
@@ -277,8 +288,7 @@ export function UploadVideoVariantProvider({
     onError: (error) => {
       stopPolling()
       const errorMessage = error.message || 'Failed to get Mux video status'
-      dispatch({ type: 'SET_ERROR', error: errorMessage })
-      enqueueSnackbar(errorMessage, { variant: 'error' })
+      dispatchError(errorMessage)
     }
   })
 
@@ -287,35 +297,64 @@ export function UploadVideoVariantProvider({
     playbackId: string,
     duration?: number | null
   ) => {
+    const variantContext = {
+      muxId,
+      playbackId,
+      duration,
+      videoId: state.videoId,
+      languageId: state.languageId,
+      languageSlug: state.languageSlug,
+      edition: state.edition,
+      videoSlug: state.videoSlug
+    }
+
     if (
       state.videoId == null ||
       state.languageId == null ||
       state.languageSlug == null ||
       state.edition == null ||
       state.videoSlug == null
-    )
-      return
+    ) {
+      const missingFields = [
+        state.videoId == null && 'videoId',
+        state.languageId == null && 'languageId',
+        state.languageSlug == null && 'languageSlug',
+        state.edition == null && 'edition',
+        state.videoSlug == null && 'videoSlug'
+      ].filter(Boolean)
 
-    // Calculate lengthInMilliseconds from duration (duration is in seconds)
+      const errorMessage = `Failed to create video variant: missing required fields (${missingFields.join(', ')})`
+      console.error(errorMessage, variantContext)
+      dispatchError(errorMessage)
+      return
+    }
+
     const durationInSeconds = duration ?? 0
-    const lengthInMilliseconds = durationInSeconds * 1000
+
+    const variantInput = {
+      id: `${state.languageId}_${state.videoId}`,
+      videoId: state.videoId,
+      edition: state.edition,
+      languageId: state.languageId,
+      slug: `${state.videoSlug}/${state.languageSlug}`,
+      downloadable: true,
+      published: state.published ?? false,
+      muxVideoId: muxId,
+      hls: `https://stream.mux.com/${playbackId}.m3u8`,
+      duration: durationInSeconds,
+      lengthInMilliseconds: durationInSeconds * 1000
+    }
+
+    console.info('Creating video variant', {
+      ...variantContext,
+      variantId: variantInput.id,
+      slug: variantInput.slug
+    })
 
     try {
-      await createVideoVariant({
+      const result = await createVideoVariant({
         variables: {
-          input: {
-            id: `${state.languageId}_${state.videoId}`,
-            videoId: state.videoId,
-            edition: state.edition,
-            languageId: state.languageId,
-            slug: `${state.videoSlug}/${state.languageSlug}`,
-            downloadable: true,
-            published: state.published ?? false,
-            muxVideoId: muxId,
-            hls: `https://stream.mux.com/${playbackId}.m3u8`,
-            duration: durationInSeconds,
-            lengthInMilliseconds: lengthInMilliseconds
-          }
+          input: variantInput
         },
         onCompleted: () => {
           state.onComplete?.()
@@ -355,13 +394,27 @@ export function UploadVideoVariantProvider({
         }
       })
 
+      if (result.errors != null && result.errors.length > 0) {
+        const gqlErrors = result.errors.map((e) => e.message).join('; ')
+        const errorMessage = `Failed to create video variant: ${gqlErrors}`
+        console.error(errorMessage, {
+          ...variantContext,
+          graphqlErrors: result.errors
+        })
+        dispatchError(errorMessage)
+        return
+      }
+
+      console.info('Video variant created successfully', {
+        ...variantContext,
+        variantId: variantInput.id
+      })
       dispatch({ type: 'COMPLETE' })
       enqueueSnackbar('Audio Language Added', { variant: 'success' })
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Processing failed'
-      dispatch({ type: 'SET_ERROR', error: errorMessage })
-      enqueueSnackbar(errorMessage, { variant: 'error' })
+      const errorMessage = `Failed to create video variant: ${error instanceof Error ? error.message : 'Unknown error'}`
+      console.error(errorMessage, { ...variantContext, error })
+      dispatchError(errorMessage)
     }
   }
 
@@ -429,9 +482,7 @@ export function UploadVideoVariantProvider({
           ...logContext,
           r2FileName: fileName
         })
-        const errorMessage = 'Failed to prepare R2 multipart upload'
-        dispatch({ type: 'SET_ERROR', error: errorMessage })
-        enqueueSnackbar(errorMessage, { variant: 'error' })
+        dispatchError('Failed to prepare R2 multipart upload')
         return
       }
       console.info('R2 multipart upload prepared', {
@@ -451,9 +502,7 @@ export function UploadVideoVariantProvider({
           r2FileName: multipartData.fileName,
           r2UploadId: multipartData.uploadId
         })
-        const errorMessage = 'Failed to prepare R2 multipart upload'
-        dispatch({ type: 'SET_ERROR', error: errorMessage })
-        enqueueSnackbar(errorMessage, { variant: 'error' })
+        dispatchError('Failed to prepare R2 multipart upload')
         return
       }
 
@@ -524,18 +573,18 @@ export function UploadVideoVariantProvider({
             } catch (error) {
               attempt += 1
               if (attempt >= maxRetries) {
-                const errorMessage =
-                  error instanceof Error ? error.message : 'Unknown error'
                 console.error('R2 part upload failed', {
                   ...logContext,
                   r2FileName: multipartData.fileName,
                   r2UploadId: multipartData.uploadId,
                   partNumber,
                   attempts: attempt,
-                  errorMessage
+                  error
                 })
+                const message =
+                  error instanceof Error ? error.message : 'Unknown error'
                 throw new Error(
-                  `Failed to upload part ${partNumber} after ${maxRetries} attempts: ${errorMessage}`
+                  `Failed to upload part ${partNumber} after ${maxRetries} attempts: ${message}`
                 )
               }
               console.warn('Retrying R2 part upload', {
@@ -656,9 +705,7 @@ export function UploadVideoVariantProvider({
           ...logContext,
           r2FileName: multipartData.fileName
         })
-        const errorMessage = 'Failed to create Mux video'
-        dispatch({ type: 'SET_ERROR', error: errorMessage })
-        enqueueSnackbar(errorMessage, { variant: 'error' })
+        dispatchError('Failed to create Mux video')
         return
       }
 
@@ -679,21 +726,10 @@ export function UploadVideoVariantProvider({
         }
       })
     } catch (error) {
-      let errorMessage: string
-
-      if (error instanceof Error) {
-        errorMessage = error.message || 'Failed to upload video'
-      } else {
-        errorMessage = 'Failed to upload video'
-      }
-
-      console.error('Video upload failed', {
-        ...logContext,
-        errorMessage,
-        errorName: error instanceof Error ? error.name : undefined
-      })
-      dispatch({ type: 'SET_ERROR', error: errorMessage })
-      enqueueSnackbar(errorMessage, { variant: 'error' })
+      const errorMessage =
+        (error instanceof Error && error.message) || 'Failed to upload video'
+      console.error('Video upload failed', { ...logContext, error })
+      dispatchError(errorMessage)
     }
   }
 
