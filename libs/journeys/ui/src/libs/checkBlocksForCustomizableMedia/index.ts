@@ -1,0 +1,1 @@
+export { checkBlocksForCustomizableMedia } from './checkBlocksForCustomizableMedia'

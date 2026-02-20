@@ -1,8 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 
@@ -18,8 +20,27 @@ jest.mock('next-firebase-auth', () => ({
 }))
 
 const mockUseFlags = jest.fn(() => ({ templateCustomizationGuestFlow: false }))
-jest.mock('@core/shared/ui/FlagsProvider', () => ({
-  useFlags: () => mockUseFlags()
+jest.mock('@core/shared/ui/FlagsProvider', () => {
+  const actual = jest.requireActual('@core/shared/ui/FlagsProvider')
+  return {
+    ...actual,
+    useFlags: () => mockUseFlags()
+  }
+})
+
+jest.mock('./TemplateVideoUploadProvider', () => ({
+  TemplateVideoUploadProvider: ({
+    children
+  }: {
+    children: React.ReactNode
+  }) => <>{children}</>
+}))
+
+jest.mock('next/router', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    query: {}
+  })
 }))
 
 const mockPush = jest.fn()
@@ -90,6 +111,18 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
+  MediaScreen: ({
+    handleNext
+  }: {
+    handleNext: (overrideJourneyId?: string) => void
+  }) => (
+    <div data-testid="media-screen">
+      <h2>Media Screen</h2>
+      <button onClick={() => handleNext()} data-testid="media-next">
+        Next
+      </button>
+    </div>
+  ),
   SocialScreen: ({
     handleNext
   }: {
@@ -118,6 +151,20 @@ jest.mock('./Screens', () => ({
     </div>
   )
 }))
+
+function renderMultiStepForm(
+  journeyData: Journey,
+  options: { customizableMedia?: boolean } = {}
+): ReturnType<typeof render> {
+  const { customizableMedia = false } = options
+  return render(
+    <FlagsProvider flags={{ customizableMedia }}>
+      <JourneyProvider value={{ journey: journeyData }}>
+        <MultiStepForm />
+      </JourneyProvider>
+    </FlagsProvider>
+  )
+}
 
 describe('MultiStepForm', () => {
   afterEach(() => {
@@ -872,6 +919,323 @@ describe('MultiStepForm', () => {
       expect(mockReplace).toHaveBeenCalledWith(
         '/templates/override-journey-id/customize?screen=text'
       )
+    })
+  })
+
+  describe('media screen', () => {
+    it('should render all screens including media when customizableMedia flag is true', async () => {
+      mockUseFlags.mockReturnValue({
+        templateCustomizationGuestFlow: false,
+        customizableMedia: true
+      } as {
+        templateCustomizationGuestFlow: boolean
+        customizableMedia?: boolean
+      })
+      const journeyWithAllCapabilities = {
+        ...journey,
+        journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+        journeyCustomizationFields: [
+          {
+            id: '1',
+            key: 'firstName',
+            value: 'John',
+            __typename: 'JourneyCustomizationField'
+          }
+        ],
+        blocks: [
+          {
+            __typename: 'ButtonBlock',
+            id: '1',
+            label: 'Test Button',
+            action: {
+              __typename: 'LinkAction',
+              url: 'https://wa.me/123',
+              customizable: true,
+              parentStepId: null
+            }
+          },
+          {
+            __typename: 'ImageBlock',
+            id: '1',
+            customizable: true
+          }
+        ]
+      } as unknown as Journey
+
+      const journeyId = journeyWithAllCapabilities.id
+      setRouterQuery({ journeyId })
+
+      const { rerender } = render(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+      expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
+
+      expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
+      expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('language-next'))
+      setRouterQuery({ journeyId, screen: 'text' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+      expect(screen.getByTestId('text-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('text-next'))
+      setRouterQuery({ journeyId, screen: 'links' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
+      expect(screen.getByTestId('links-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('links-next'))
+      setRouterQuery({ journeyId, screen: 'media' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
+      expect(screen.getByTestId('media-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('media-next'))
+      setRouterQuery({ journeyId, screen: 'social' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
+      expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('social-next'))
+      setRouterQuery({ journeyId, screen: 'done' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+    })
+
+    it('should skip media screen when customizableMedia flag is false', async () => {
+      mockUseFlags.mockReturnValue({
+        templateCustomizationGuestFlow: false,
+        customizableMedia: false
+      } as {
+        templateCustomizationGuestFlow: boolean
+        customizableMedia?: boolean
+      })
+      const journeyWithAllCapabilities = {
+        ...journey,
+        journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+        journeyCustomizationFields: [
+          {
+            id: '1',
+            key: 'firstName',
+            value: 'John',
+            __typename: 'JourneyCustomizationField'
+          }
+        ],
+        blocks: [
+          {
+            __typename: 'ButtonBlock',
+            id: '1',
+            label: 'Test Button',
+            action: {
+              __typename: 'LinkAction',
+              url: 'https://wa.me/123',
+              customizable: true,
+              parentStepId: null
+            }
+          },
+          {
+            __typename: 'ImageBlock',
+            id: '1',
+            customizable: true
+          }
+        ]
+      } as unknown as Journey
+
+      const journeyId = journeyWithAllCapabilities.id
+      setRouterQuery({ journeyId })
+
+      const { rerender } = render(
+        <FlagsProvider flags={{ customizableMedia: false }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('language-next'))
+      setRouterQuery({ journeyId, screen: 'text' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: false }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('text-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('text-next'))
+      setRouterQuery({ journeyId, screen: 'links' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: false }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('links-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('links-next'))
+      setRouterQuery({ journeyId, screen: 'social' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: false }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+      expect(screen.queryByTestId('media-screen')).not.toBeInTheDocument()
+    })
+
+    it('should render only media screen when journey has customizable media but no editable text or links', async () => {
+      mockUseFlags.mockReturnValue({
+        templateCustomizationGuestFlow: false,
+        customizableMedia: true
+      } as {
+        templateCustomizationGuestFlow: boolean
+        customizableMedia?: boolean
+      })
+      const journeyWithMediaOnly = {
+        ...journey,
+        journeyCustomizationDescription: null,
+        journeyCustomizationFields: [],
+        chatButtons: [],
+        blocks: [
+          {
+            __typename: 'ImageBlock',
+            id: 'img-1',
+            parentBlockId: null,
+            parentOrder: 0,
+            src: null,
+            alt: '',
+            width: 0,
+            height: 0,
+            blurhash: '',
+            scale: null,
+            focalTop: null,
+            focalLeft: null,
+            customizable: true
+          }
+        ]
+      } as unknown as Journey
+
+      const journeyId = journeyWithMediaOnly.id
+      setRouterQuery({ journeyId })
+
+      const { rerender } = render(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithMediaOnly }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+      expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
+
+      expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
+      expect(screen.getByTestId('language-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('language-next'))
+      setRouterQuery({ journeyId, screen: 'media' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithMediaOnly }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+      expect(screen.getByTestId('media-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('media-next'))
+      setRouterQuery({ journeyId, screen: 'social' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithMediaOnly }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
+      expect(screen.getByTestId('social-screen')).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('social-next'))
+      setRouterQuery({ journeyId, screen: 'done' })
+      rerender(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey: journeyWithMediaOnly }}>
+              <MultiStepForm />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </FlagsProvider>
+      )
+
+      expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+
+      expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
     })
   })
 })

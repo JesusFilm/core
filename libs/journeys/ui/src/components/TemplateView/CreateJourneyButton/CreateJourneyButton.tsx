@@ -12,6 +12,7 @@ import { type ReactElement, useCallback, useEffect, useState } from 'react'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
+import { JourneyFields_logoImageBlock as LogoImageBlock } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
@@ -30,6 +31,7 @@ export interface JourneyForTemplate {
     key: string
     value?: string | null
   }> | null
+  logoImageBlock?: LogoImageBlock | null
 }
 
 interface CreateJourneyButtonProps {
