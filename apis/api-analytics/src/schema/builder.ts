@@ -28,9 +28,11 @@ export const builder = new SchemaBuilder<{
   Context: Context
   AuthScopes: {
     isAuthenticated: boolean
+    isAnonymous: boolean
   }
   AuthContexts: {
     isAuthenticated: Context & { currentUser: User; apiKey: string }
+    isAnonymous: Context & { currentUser: User; apiKey: string }
   }
   PrismaTypes: PrismaTypes
   Scalars: {
@@ -50,7 +52,8 @@ export const builder = new SchemaBuilder<{
   ],
   scopeAuth: {
     authScopes: async (context) => ({
-      isAuthenticated: context.currentUser != null
+      isAuthenticated: context.currentUser?.email != null,
+      isAnonymous: context.currentUser?.email == null
     })
   },
   tracing: {

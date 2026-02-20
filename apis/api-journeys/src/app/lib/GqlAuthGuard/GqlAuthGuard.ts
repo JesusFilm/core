@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
-import { contextToUserId } from '../firebaseClient'
+import { contextToUser } from '../firebaseClient'
 
 @Injectable()
 export class GqlAuthGuard implements CanActivate {
@@ -14,8 +14,11 @@ export class GqlAuthGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const req = GqlExecutionContext.create(context).getContext().req
-    const userId = contextToUserId(context, this.logger)
-    req.userId = userId
-    return userId != null
+    const user = contextToUser(context, this.logger)
+    const isAuthenticated = user?.email != null
+
+    req.userId = isAuthenticated ? user.id : null
+
+    return isAuthenticated
   }
 }

@@ -44,19 +44,31 @@ const payloadSchema = z
     emailVerified: data.email_verified ?? false
   }))
 
+function payloadToUser(payload: unknown, logger?: Logger): User | null {
+  const result = payloadSchema.safeParse(payload)
+  if (result.success) return result.data
+
+  if (payload != null) logger?.error('payloadToUser failed to parse', result.error)
+
+  return null
+}
+
+export function requestToUser(
+  req: { body?: unknown } | null | undefined,
+  logger?: Logger
+): User | null {
+  const payload = get(req, 'body.extensions.jwt.payload')
+  return payloadToUser(payload, logger)
+}
+
 export function contextToUserId(
   context: ExecutionContext,
   logger?: Logger
 ): string | null {
   const ctx = GqlExecutionContext.create(context).getContext()
-  const payload = get(ctx, 'req.body.extensions.jwt.payload')
-  const result = payloadSchema.safeParse(payload)
-  if (result.success) return result.data.id
-
-  if (payload != null)
-    logger?.error('contextToUserId failed to parse', result.error)
-
-  return null
+  const user = requestToUser(ctx.req, logger)
+  if (user == null) return null
+  return user.id
 }
 
 export function contextToUser(
@@ -64,15 +76,7 @@ export function contextToUser(
   logger?: Logger
 ): User | null {
   const ctx = GqlExecutionContext.create(context).getContext()
-  const payload = get(ctx, 'req.body.extensions.jwt.payload')
-  const result = payloadSchema.safeParse(payload)
-
-  if (result.success) return result.data
-
-  if (payload != null)
-    logger?.error('contextToUser failed to parse', result.error)
-
-  return null
+  return requestToUser(ctx.req, logger)
 }
 
 export async function impersonateUser(userId: string): Promise<string> {
