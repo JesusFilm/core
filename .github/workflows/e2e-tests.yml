@@ -183,7 +183,7 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ fromJSON(toJSON(secrets)).E2E_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   E2E_Tests:
