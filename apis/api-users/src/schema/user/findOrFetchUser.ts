@@ -87,8 +87,8 @@ export async function findOrFetchUser(
     if (user == null) {
       try {
         user = await prisma.user.create({
-        data
-      })
+          data
+        })
         userCreated = true
       } catch {
         user = await prisma.user.findUnique({

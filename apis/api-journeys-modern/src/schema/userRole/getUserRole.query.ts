@@ -22,11 +22,13 @@ async function getUserRoleByUserId(userId: string) {
 }
 
 builder.queryField('getUserRole', (t) =>
-  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).prismaField({
-    type: UserRoleRef,
-    nullable: true,
-    resolve: async (query, _parent, _args, context) => {
-      return await getUserRoleByUserId(context.user.id)
-    }
-  })
+  t
+    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
+    .prismaField({
+      type: UserRoleRef,
+      nullable: true,
+      resolve: async (query, _parent, _args, context) => {
+        return await getUserRoleByUserId(context.user.id)
+      }
+    })
 )

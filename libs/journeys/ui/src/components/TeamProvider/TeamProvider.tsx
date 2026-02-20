@@ -47,7 +47,7 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
         id
         user {
           ... on AuthenticatedUser {
-          id
+            id
             firstName
             lastName
             imageUrl

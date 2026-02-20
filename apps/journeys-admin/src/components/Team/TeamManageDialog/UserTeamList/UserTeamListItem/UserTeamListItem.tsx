@@ -100,7 +100,7 @@ export function UserTeamListItem({
           <Avatar src={imageUrl ?? undefined} alt={displayName || email}>
             {displayName != null && displayName !== ''
               ? displayName.charAt(0)?.toUpperCase()
-              : email?.charAt(0)?.toUpperCase() ?? '?'}
+              : (email?.charAt(0)?.toUpperCase() ?? '?')}
           </Avatar>
         </Grid>
         <Grid xs={journeyId != null ? 5 : 7} sm={journeyId != null ? 7 : 9}>
