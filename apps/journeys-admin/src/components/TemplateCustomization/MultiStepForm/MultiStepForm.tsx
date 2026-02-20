@@ -3,12 +3,23 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
 
+import {
+  CUSTOMIZE_SCREEN_QUERY_KEY,
+  buildCustomizeUrl,
+  getActiveScreenFromQuery,
+  getFirstGuestAllowedScreen,
+  isScreenAllowedForGuest
+} from '../utils/customizationRoutes'
 import {
   CustomizationScreen,
   getCustomizeFlowConfig
@@ -27,7 +38,7 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
-  handleNext: () => void,
+  handleNext: (overrideJourneyId?: string) => void,
   handleScreenNavigation: (screen: CustomizationScreen) => void
 ): ReactElement {
   switch (screen) {
@@ -68,24 +79,118 @@ function renderScreen(
 
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
+  const user = useUser()
   const { journey } = useJourney()
+  const { templateCustomizationGuestFlow } = useFlags()
 
   const { screens, totalSteps, hasEditableText, hasCustomizableLinks } =
     useMemo(() => getCustomizeFlowConfig(journey, t), [])
 
-  const [activeScreen, setActiveScreen] =
-    useState<CustomizationScreen>('language')
+  const journeyId = router.query.journeyId as string
+  const activeScreen = getActiveScreenFromQuery(
+    router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
+    screens
+  )
 
-  async function handleNext(): Promise<void> {
-    if (activeScreen !== screens[screens.length - 1]) {
-      setActiveScreen(screens[screens.indexOf(activeScreen) + 1])
+  const onTemplatesRedirect = useCallback(() => {
+    enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }, [enqueueSnackbar, t])
+
+  useEffect(() => {
+    if (!router.isReady || !journeyId || screens.length === 0) return
+    const screenQuery = router.query[CUSTOMIZE_SCREEN_QUERY_KEY]
+    const rawScreen =
+      typeof screenQuery === 'string'
+        ? screenQuery
+        : Array.isArray(screenQuery)
+          ? screenQuery[0]
+          : undefined
+
+    const isMissingScreen = rawScreen == null || rawScreen === ''
+    const isInvalidScreen =
+      rawScreen != null &&
+      rawScreen !== '' &&
+      !screens.includes(rawScreen as CustomizationScreen)
+
+    if (isMissingScreen || isInvalidScreen) {
+      if (isInvalidScreen) {
+        enqueueSnackbar(
+          t(
+            'Invalid customization step. You have been redirected to the first step.'
+          ),
+          { variant: 'error', preventDuplicate: true }
+        )
+      }
+      void router.replace(
+        buildCustomizeUrl(journeyId, screens[0], undefined, onTemplatesRedirect)
+      )
     }
+  }, [
+    router,
+    router.isReady,
+    journeyId,
+    router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
+    screens,
+    t,
+    enqueueSnackbar,
+    onTemplatesRedirect
+  ])
+
+  // Only place we check the flag: if not true, guest has no access → redirect to language; if true, redirect guest off non-guest screens
+  useEffect(() => {
+    if (!router.isReady || !journeyId || user?.id != null) return
+    const guestFlowEnabled = templateCustomizationGuestFlow === true
+    if (!guestFlowEnabled || !isScreenAllowedForGuest(activeScreen)) {
+      enqueueSnackbar(
+        t('This step is not available for guests. You have been redirected.'),
+        { variant: 'error', preventDuplicate: true }
+      )
+      void router.replace(
+        buildCustomizeUrl(
+          journeyId,
+          getFirstGuestAllowedScreen(),
+          true,
+          onTemplatesRedirect
+        )
+      )
+    }
+  }, [
+    router,
+    router.isReady,
+    journeyId,
+    user?.id,
+    templateCustomizationGuestFlow,
+    activeScreen,
+    t,
+    enqueueSnackbar,
+    onTemplatesRedirect
+  ])
+
+  async function handleNext(overrideJourneyId?: string): Promise<void> {
+    const currentIndex = screens.indexOf(activeScreen)
+    if (currentIndex < 0 || currentIndex >= screens.length - 1) return
+    const targetJourneyId = overrideJourneyId ?? journeyId
+    void router.replace(
+      buildCustomizeUrl(
+        targetJourneyId,
+        screens[currentIndex + 1],
+        undefined,
+        onTemplatesRedirect
+      )
+    )
   }
 
   async function handleScreenNavigation(
     screen: CustomizationScreen
   ): Promise<void> {
-    setActiveScreen(screen)
+    void router.replace(
+      buildCustomizeUrl(journeyId, screen, undefined, onTemplatesRedirect)
+    )
   }
 
   const link = `/journeys/${journey?.id ?? ''}`

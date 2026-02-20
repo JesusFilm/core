@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
@@ -28,10 +29,13 @@ import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
+const JOURNEY_NOT_FOUND_ERROR = 'journeyNotFound'
+
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
+  const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
   if (data?.me?.id != null && !data?.me?.emailVerified) {
@@ -41,6 +45,17 @@ function TemplateIndexPage(): ReactElement {
   useEffect(() => {
     void query.refetch()
   }, [user.id, query])
+
+  useEffect(() => {
+    if (!router.isReady || router.query.error !== JOURNEY_NOT_FOUND_ERROR)
+      return
+    enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
+      variant: 'error',
+      preventDuplicate: true
+    })
+    // Clear the error query param so the URL is clean and refresh won't re-show the message
+    void router.replace('/templates', undefined, { shallow: true })
+  }, [router.isReady, router.query.error, router, enqueueSnackbar, t])
 
   const userSignedIn = user?.id != null
 
