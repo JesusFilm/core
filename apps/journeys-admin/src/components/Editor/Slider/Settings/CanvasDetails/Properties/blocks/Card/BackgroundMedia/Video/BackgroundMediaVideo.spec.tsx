@@ -43,6 +43,7 @@ import {
   GetVideoVariables
 } from '../../../../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
@@ -145,6 +146,7 @@ const video: TreeBlock<VideoBlock> = {
   showGeneratedSubtitles: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -164,6 +166,12 @@ const video: TreeBlock<VideoBlock> = {
   },
   posterBlockId: null,
   children: []
+}
+
+const cardWithVideoCover: TreeBlock<CardBlock> = {
+  ...card,
+  coverBlockId: video.id,
+  children: [video]
 }
 
 const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {

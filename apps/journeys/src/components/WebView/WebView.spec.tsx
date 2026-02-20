@@ -280,6 +280,7 @@ describe('WebView', () => {
                 subtitleLanguage: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
                 children: []
               }
             ]

@@ -52,7 +52,8 @@ describe('StepHeader', () => {
               blurhash: 'blurhash',
               scale: 1,
               focalLeft: 50,
-              focalTop: 50
+              focalTop: 50,
+              customizable: null
             }
           }
         }}

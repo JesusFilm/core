@@ -1,0 +1,296 @@
+import { MockedProvider } from '@apollo/client/testing'
+import { render, screen } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
+
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
+import type {
+  GetJourney_journey as Journey,
+  GetJourney_journey_blocks_VideoBlock as VideoBlock
+} from '../../../../../../../../__generated__/GetJourney'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName,
+  VideoBlockSource
+} from '../../../../../../../../__generated__/globalTypes'
+
+import { VideosSection } from './VideosSection'
+
+jest.mock('next-i18next', () => ({
+  useTranslation: () => ({ t: (key: string) => key })
+}))
+
+jest.mock('./VideoPreviewPlayer', () => ({
+  VideoPreviewPlayer: () => <div data-testid="VideoPreviewPlayer" />
+}))
+
+const mockStartUpload = jest.fn()
+const mockGetUploadStatus = jest.fn()
+jest.mock('../../../../TemplateVideoUploadProvider', () => ({
+  ...jest.requireActual('../../../../TemplateVideoUploadProvider'),
+  useTemplateVideoUpload: () => ({
+    startUpload: mockStartUpload,
+    getUploadStatus: mockGetUploadStatus
+  })
+}))
+
+const cardBlockId = 'card-block-1'
+
+const journeyWithMatchingVideoBlock: Journey = {
+  __typename: 'Journey',
+  id: 'journey-1',
+  slug: 'journey-1',
+  title: 'Journey',
+  description: null,
+  status: JourneyStatus.draft,
+  language: {
+    __typename: 'Language',
+    id: 'lang-1',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+  },
+  createdAt: '',
+  updatedAt: '',
+  featuredAt: null,
+  publishedAt: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
+  strategySlug: null,
+  seoTitle: null,
+  seoDescription: null,
+  template: null,
+  blocks: [
+    {
+      __typename: 'VideoBlock',
+      id: 'video-block-1',
+      parentBlockId: cardBlockId,
+      parentOrder: 0,
+      muted: null,
+      autoplay: null,
+      startAt: null,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: null,
+      videoId: 'youtube-id',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      showGeneratedSubtitles: null,
+      subtitleLanguage: null,
+      mediaVideo: null,
+      action: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: true
+    }
+  ],
+  primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: null,
+  chatButtons: [],
+  host: null,
+  team: null,
+  tags: [],
+  website: null,
+  showShareButton: null,
+  showLikeButton: null,
+  showDislikeButton: null,
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
+}
+
+const journeyWithNoMatchingVideoBlock: Journey = {
+  ...journeyWithMatchingVideoBlock,
+  blocks: []
+}
+
+const journeyWithVideoBlockWithDisplayTitle: Journey = {
+  ...journeyWithMatchingVideoBlock,
+  blocks: [
+    {
+      ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+      title: 'My Video Display Title'
+    }
+  ]
+}
+
+function renderVideosSection({
+  journey = journeyWithNoMatchingVideoBlock,
+  cardBlockId: cardId = null
+}: {
+  journey?: Journey
+  cardBlockId?: string | null
+} = {}) {
+  return render(
+    <MockedProvider>
+      <SnackbarProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <VideosSection cardBlockId={cardId} />
+        </JourneyProvider>
+      </SnackbarProvider>
+    </MockedProvider>
+  )
+}
+
+describe('VideosSection', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockGetUploadStatus.mockReturnValue(null)
+  })
+
+  it('renders with VideosSection data-testid visible', () => {
+    renderVideosSection()
+    expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
+  })
+
+  it('renders Video heading', () => {
+    renderVideosSection()
+    expect(screen.getByText('Video')).toBeInTheDocument()
+  })
+
+  it('renders upload button with Upload file text', () => {
+    renderVideosSection()
+    expect(
+      screen.getByRole('button', { name: 'Upload File' })
+    ).toBeInTheDocument()
+  })
+
+  it('does not render VideoPreviewPlayer when cardBlockId is null', () => {
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId: null
+    })
+    expect(screen.queryByTestId('VideoPreviewPlayer')).not.toBeInTheDocument()
+  })
+
+  it('does not render VideoPreviewPlayer when journey has no matching customizable video block', () => {
+    renderVideosSection({
+      journey: journeyWithNoMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.queryByTestId('VideoPreviewPlayer')).not.toBeInTheDocument()
+  })
+
+  it('renders VideoPreviewPlayer when journey has a customizable card video block for the given cardBlockId', () => {
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByTestId('VideoPreviewPlayer')).toBeInTheDocument()
+  })
+
+  it('shows loading spinner when upload or processing is in progress', () => {
+    mockGetUploadStatus.mockReturnValue({
+      status: 'uploading',
+      progress: 0
+    })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('shows video display title when video block has a non-empty display title', () => {
+    renderVideosSection({
+      journey: journeyWithVideoBlockWithDisplayTitle,
+      cardBlockId
+    })
+    expect(screen.getByText('My Video Display Title')).toBeInTheDocument()
+  })
+
+  it('does not show video title when display title is empty', () => {
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.queryByText('My Video Display Title')).not.toBeInTheDocument()
+  })
+
+  it('disables upload button when loading', () => {
+    mockGetUploadStatus.mockReturnValue({
+      status: 'uploading',
+      progress: 0
+    })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
+  })
+
+  it('shows loading spinner and disables button when status is processing', () => {
+    mockGetUploadStatus.mockReturnValue({
+      status: 'processing',
+      progress: 100
+    })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Upload File' })).toBeDisabled()
+  })
+
+  it('calls getUploadStatus with video block id when card has video block', () => {
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(mockGetUploadStatus).toHaveBeenCalledWith('video-block-1')
+  })
+
+  it('shows error text when upload status is error', () => {
+    mockGetUploadStatus.mockReturnValue({
+      status: 'error',
+      progress: 0,
+      error: 'Upload failed. Please try again'
+    })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(
+      screen.getByText('Upload failed. Please try again')
+    ).toBeInTheDocument()
+  })
+
+  it('shows default message when upload status is uploading', () => {
+    mockGetUploadStatus.mockReturnValue({
+      status: 'uploading',
+      progress: 50
+    })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Upload failed. Please try again')
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows default message when no upload status', () => {
+    mockGetUploadStatus.mockReturnValue(null)
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+  })
+})

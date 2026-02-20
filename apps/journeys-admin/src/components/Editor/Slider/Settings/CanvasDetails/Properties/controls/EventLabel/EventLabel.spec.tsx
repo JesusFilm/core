@@ -965,7 +965,8 @@ describe('EventLabel', () => {
     it('should undo start event label', async () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: BlockEventLabel.specialVideoStart,
-        endEventLabel: null
+        endEventLabel: null,
+        customizable: null
       })
 
       const executeMock = createVideoStartEventLabelUpdateMock(
@@ -1025,7 +1026,8 @@ describe('EventLabel', () => {
     it('should redo start event label', async () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: BlockEventLabel.specialVideoStart,
-        endEventLabel: null
+        endEventLabel: null,
+        customizable: null
       })
 
       const executeMock = createVideoStartEventLabelUpdateMock(
@@ -1098,7 +1100,8 @@ describe('EventLabel', () => {
     it('should update end event label', async () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: null,
-        endEventLabel: null
+        endEventLabel: null,
+        customizable: null
       })
 
       const executeMock = createVideoEndEventLabelUpdateMock(

@@ -61,7 +61,8 @@ export const journeyVideoBlocks: Blocks[] = [
     },
     action: null,
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -109,7 +110,8 @@ export const journeyVideoBlocks: Blocks[] = [
     },
     action: null,
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -157,7 +159,8 @@ export const journeyVideoBlocks: Blocks[] = [
     },
     action: null,
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -184,7 +187,8 @@ export const journeyVideoBlocks: Blocks[] = [
     mediaVideo: null,
     action: null,
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'CardBlock',
@@ -254,7 +258,8 @@ export const journeyVideoBlocks: Blocks[] = [
       variantLanguages: []
     },
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'CardBlock',
@@ -366,7 +371,8 @@ export const videoBlocksFiltered = [
       gtmEventName: 'NavigateToBlockAction'
     },
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -415,7 +421,8 @@ export const videoBlocksFiltered = [
       gtmEventName: 'NavigateToBlockAction'
     },
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -449,7 +456,8 @@ export const videoBlocksFiltered = [
       gtmEventName: 'NavigateToBlockAction'
     },
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -500,7 +508,8 @@ export const videoBlocksFiltered = [
       gtmEventName: 'NavigateToBlockAction'
     },
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',
@@ -551,7 +560,8 @@ export const videoBlocksFiltered = [
       gtmEventName: 'NavigateToBlockAction'
     },
     eventLabel: null,
-    endEventLabel: null
+    endEventLabel: null,
+    customizable: null
   },
   {
     __typename: 'VideoBlock',

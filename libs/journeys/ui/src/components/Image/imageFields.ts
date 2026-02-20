@@ -13,5 +13,6 @@ export const IMAGE_FIELDS = gql`
     scale
     focalTop
     focalLeft
+    customizable
   }
 `

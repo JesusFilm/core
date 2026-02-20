@@ -144,7 +144,8 @@ export function Video({
     videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   const showVideoImage =
-    (variant === 'admin' && source === VideoBlockSource.youTube) ||
+    ((variant === 'admin' || variant === 'customize') &&
+      source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
     source === VideoBlockSource.mux
 

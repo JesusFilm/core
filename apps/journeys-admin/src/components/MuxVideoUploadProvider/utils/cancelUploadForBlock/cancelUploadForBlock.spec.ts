@@ -85,7 +85,8 @@ describe('cancelUploadForBlock', () => {
     posterBlockId: null,
     eventLabel: null,
     endEventLabel: null,
-    children: []
+    children: [],
+    customizable: null
   })
 
   it('should cancel upload for VideoBlock when task exists', () => {
