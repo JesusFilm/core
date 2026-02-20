@@ -167,8 +167,11 @@ jobs:
     if: github.event_name == 'schedule' && needs.deploy-and-test.result == 'failure'
     runs-on: ubuntu-latest
     steps:
-      - uses: slackapi/slack-github-action@v1.26.0
+      - uses: slackapi/slack-github-action@v2.1.1
         with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload-templated: true
           payload: |
             {
               "text": "❌ E2E Tests Failed (morning run)",
@@ -182,9 +185,6 @@ jobs:
                 }
               ]
             }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   E2E_Tests:
     if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
