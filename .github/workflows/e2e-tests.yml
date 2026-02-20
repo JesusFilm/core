@@ -164,7 +164,7 @@ jobs:
   notify-slack-on-deploy-and-test-failure:
     name: Notify Slack on deploy-and-test failure
     needs: [deploy-and-test]
-    if: needs.deploy-and-test.result == 'failure'
+    if: always() && needs.deploy-and-test.result == 'failure'
     runs-on: ubuntu-latest
     steps:
       - uses: slackapi/slack-github-action@v2.1.1
@@ -252,7 +252,7 @@ jobs:
   notify-slack-on-e2e-tests-failure:
     name: Notify Slack on E2E_Tests failure
     needs: [E2E_Tests]
-    if: needs.E2E_Tests.result == 'failure'
+    if: always() && needs.E2E_Tests.result == 'failure'
     runs-on: ubuntu-latest
     steps:
       - uses: slackapi/slack-github-action@v2.1.1
