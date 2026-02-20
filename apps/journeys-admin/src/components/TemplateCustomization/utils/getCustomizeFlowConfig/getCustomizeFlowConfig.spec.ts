@@ -84,7 +84,7 @@ describe('getCustomizeFlowConfig', () => {
     })
   })
 
-  it('should include both text and links screens when journey has both capabilities', () => {
+  it('should include text, links, and media screens when journey has all three capabilities', () => {
     const journey = {
       journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
       journeyCustomizationFields: [
@@ -106,11 +106,67 @@ describe('getCustomizeFlowConfig', () => {
             customizable: true,
             parentStepId: null
           }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
         }
       ]
     } as unknown as Journey
 
-    const result = getCustomizeFlowConfig(journey, t)
+    const result = getCustomizeFlowConfig(journey, t, {
+      customizableMedia: true
+    })
+
+    expect(result.screens).toEqual([
+      'language',
+      'text',
+      'links',
+      'media',
+      'social',
+      'done'
+    ])
+    expect(result.totalSteps).toBe(6)
+    expect(result.hasEditableText).toBe(true)
+    expect(result.hasCustomizableLinks).toBe(true)
+    expect(result.links).toHaveLength(1)
+  })
+
+  it('should exclude media screen when customizableMedia flag is false', () => {
+    const journey = {
+      journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+      journeyCustomizationFields: [
+        {
+          id: '1',
+          key: 'firstName',
+          value: 'John',
+          __typename: 'JourneyCustomizationField'
+        }
+      ],
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'EmailAction',
+            email: 'test@example.com',
+            customizable: true,
+            parentStepId: null
+          }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    const result = getCustomizeFlowConfig(journey, t, {
+      customizableMedia: false
+    })
 
     expect(result.screens).toEqual([
       'language',
@@ -120,9 +176,70 @@ describe('getCustomizeFlowConfig', () => {
       'done'
     ])
     expect(result.totalSteps).toBe(5)
-    expect(result.hasEditableText).toBe(true)
-    expect(result.hasCustomizableLinks).toBe(true)
-    expect(result.links).toHaveLength(1)
+    expect(result.hasCustomizableMedia).toBe(true)
+  })
+
+  it('should include media screen when customizableMedia flag is true', () => {
+    const journey = {
+      journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+      journeyCustomizationFields: [
+        {
+          id: '1',
+          key: 'firstName',
+          value: 'John',
+          __typename: 'JourneyCustomizationField'
+        }
+      ],
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: '1',
+          label: 'Test Button',
+          action: {
+            __typename: 'EmailAction',
+            email: 'test@example.com',
+            customizable: true,
+            parentStepId: null
+          }
+        },
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    const result = getCustomizeFlowConfig(journey, t, {
+      customizableMedia: true
+    })
+
+    expect(result.screens).toContain('media')
+  })
+
+  it('should exclude media screen when options are omitted (outage-safe default)', () => {
+    const journey = {
+      journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+      journeyCustomizationFields: [
+        {
+          id: '1',
+          key: 'firstName',
+          value: 'John',
+          __typename: 'JourneyCustomizationField'
+        }
+      ],
+      blocks: [
+        {
+          __typename: 'ImageBlock',
+          id: '1',
+          customizable: true
+        }
+      ]
+    } as unknown as Journey
+
+    const result = getCustomizeFlowConfig(journey, t)
+
+    expect(result.screens).not.toContain('media')
   })
 
   it('should not include text screen when journeyCustomizationDescription is empty', () => {

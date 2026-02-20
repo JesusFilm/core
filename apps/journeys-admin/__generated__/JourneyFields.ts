@@ -167,6 +167,7 @@ export interface JourneyFields_blocks_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_blocks_MultiselectOptionBlock {
@@ -564,6 +565,7 @@ export interface JourneyFields_blocks_VideoBlock {
   action: JourneyFields_blocks_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -645,6 +647,7 @@ export interface JourneyFields_primaryImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_creatorImageBlock {
@@ -664,6 +667,7 @@ export interface JourneyFields_creatorImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_userJourneys_user {
@@ -745,6 +749,7 @@ export interface JourneyFields_logoImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_menuStepBlock {

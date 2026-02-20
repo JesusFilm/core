@@ -45,7 +45,8 @@ describe('ImageUpload', () => {
     parentOrder: 0,
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const cfResponse = {

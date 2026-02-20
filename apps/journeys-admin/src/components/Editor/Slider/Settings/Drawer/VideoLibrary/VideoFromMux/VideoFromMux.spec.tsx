@@ -72,6 +72,7 @@ const selectedVideoBlock: TreeBlock<VideoBlock> = {
   mediaVideo: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   children: []
 }
 

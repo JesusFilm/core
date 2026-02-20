@@ -131,7 +131,8 @@ describe('UnsplashGallery', () => {
       width: 1080,
       scale: 100,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     })
   })
 

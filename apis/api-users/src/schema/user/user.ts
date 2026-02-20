@@ -167,7 +167,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const validatedEmail = await validateEmail(user.userId, user.email, token)
+      const validatedEmail = await validateEmail(user.userId, email, token)
       if (!validatedEmail)
         throw new GraphQLError('Invalid token', {
           extensions: { code: 'FORBIDDEN' }

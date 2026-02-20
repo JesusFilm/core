@@ -7,7 +7,7 @@ export const CurrentUser = createParamDecorator(
   (_data, context: ExecutionContext) => {
     const logger = new Logger(CurrentUser.name)
     const user = contextToUser(context, logger)
-    if (user == null)
+    if (user == null || user.email == null)
       throw new GraphQLError('Token is invalid', {
         extensions: { code: 'UNAUTHENTICATED' }
       })

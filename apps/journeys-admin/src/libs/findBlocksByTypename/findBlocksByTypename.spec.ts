@@ -57,6 +57,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
   posterBlockId: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   children: []
 }
 
@@ -73,7 +74,8 @@ const imageBlock: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const buttonBlock: TreeBlock<ButtonBlock> = {

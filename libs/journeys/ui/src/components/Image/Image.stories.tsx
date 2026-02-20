@@ -24,6 +24,7 @@ const emptyImage: Omit<ComponentProps<typeof Image>, 'src'> = {
   scale: null,
   focalLeft: 50,
   focalTop: 50,
+  customizable: null,
   children: []
 }
 
