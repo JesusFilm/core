@@ -48,7 +48,8 @@ function payloadToUser(payload: unknown, logger?: Logger): User | null {
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data
 
-  if (payload != null) logger?.error('payloadToUser failed to parse', result.error)
+  if (payload != null)
+    logger?.error('payloadToUser failed to parse', result.error)
 
   return null
 }
