@@ -1,12 +1,23 @@
 import { checkBlocksForCustomizableLinks } from '../checkBlocksForCustomizableLinks'
 import { checkBlocksForCustomizableMedia } from '../checkBlocksForCustomizableMedia'
-import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
+import { JourneyFields_blocks as Block } from '../JourneyProvider/__generated__/JourneyFields'
+
+interface JourneyForCustomizableCheck {
+  blocks?: unknown[] | null
+  journeyCustomizationDescription?: string | null
+  journeyCustomizationFields?: Array<{
+    key: string
+    value?: string | null
+  }> | null
+}
 
 export function isJourneyCustomizable(
-  journey?: Journey,
+  
+  journey?: JourneyForCustomizableCheck
+,
   customizableMedia: boolean = false
 ): boolean {
-  const blocks = journey?.blocks ?? []
+  const blocks = (journey?.blocks as Block[] | null | undefined) ?? []
 
   const hasCustomizableLinks = checkBlocksForCustomizableLinks(blocks)
 

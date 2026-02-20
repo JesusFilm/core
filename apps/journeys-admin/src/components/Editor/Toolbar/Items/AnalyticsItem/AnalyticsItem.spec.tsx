@@ -3,7 +3,6 @@ import { render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
@@ -61,14 +60,7 @@ describe('AnalyticsItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <AnalyticsItem variant="menu-item" />
-            </JourneyProvider>
+            <AnalyticsItem variant="menu-item" journeyId={defaultJourney.id} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -86,14 +78,7 @@ describe('AnalyticsItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <AnalyticsItem variant="button" />
-            </JourneyProvider>
+            <AnalyticsItem variant="button" journeyId={defaultJourney.id} />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -110,14 +95,11 @@ describe('AnalyticsItem', () => {
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
           <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <AnalyticsItem variant="button" fromJourneyList={true} />
-            </JourneyProvider>
+            <AnalyticsItem
+              variant="button"
+              fromJourneyList={true}
+              journeyId={defaultJourney.id}
+            />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -140,14 +122,10 @@ describe('AnalyticsItem', () => {
           mocks={[{ ...getJourneyPlausibleVisitorsMock, result }]}
         >
           <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <AnalyticsItem variant="icon-button" />
-            </JourneyProvider>
+            <AnalyticsItem
+              variant="icon-button"
+              journeyId={defaultJourney.id}
+            />
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>

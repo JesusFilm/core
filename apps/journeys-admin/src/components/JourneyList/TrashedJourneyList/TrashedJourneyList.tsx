@@ -8,10 +8,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -175,18 +172,11 @@ export function TrashedJourneyList({
                 key={journey.id}
                 size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
               >
-                <JourneyProvider
-                  value={{
-                    journey: journey as unknown as JourneyFields,
-                    variant: 'admin'
-                  }}
-                >
-                  <JourneyCard
-                    key={journey.id}
-                    journey={journey}
-                    refetch={refetch}
-                  />
-                </JourneyProvider>
+                <JourneyCard
+                  key={journey.id}
+                  journey={journey}
+                  refetch={refetch}
+                />
               </Grid>
             ))}
           </Grid>

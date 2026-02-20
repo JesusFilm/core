@@ -10,6 +10,7 @@ import Layout1Icon from '@core/shared/ui/icons/Layout1'
 import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
 import { Item } from '../Item/Item'
 
@@ -34,24 +35,27 @@ interface CreateTemplateItemProps {
   variant: ComponentProps<typeof Item>['variant']
   globalPublish?: boolean
   handleCloseMenu?: () => void
+  journey?: Journey
 }
 
 export function CreateTemplateItem({
   variant,
   globalPublish = false,
-  handleCloseMenu
+  handleCloseMenu,
+  journey
 }: CreateTemplateItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
   const router = useRouter()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { journey: journeyFromContext } = useJourney()
+  const journeyData = journey ?? journeyFromContext
 
   const [removeUserJourney] =
     useMutation<RemoveUserJourney>(REMOVE_USER_JOURNEY)
   const [createTemplate] = useMutation<CreateTemplate>(CREATE_TEMPLATE)
 
   const handleCreateTemplate = async (): Promise<void> => {
-    if (journey == null) return
+    if (journeyData == null) return
 
     // Detect if we're in Editor context (editing a journey) vs JourneyList context
     const isEditorContext = router.pathname === '/journeys/[journeyId]'
@@ -59,8 +63,8 @@ export function CreateTemplateItem({
     // Duplicate journey but don't add to journeys cache since we're converting to template immediately
     const { data } = await journeyDuplicate({
       variables: {
-        id: journey?.id,
-        teamId: globalPublish ? 'jfp-team' : (journey.team?.id ?? '')
+        id: journeyData.id,
+        teamId: globalPublish ? 'jfp-team' : (journeyData.team?.id ?? '')
       },
       update() {
         // Override default cache update - we'll handle cache update after converting to template
