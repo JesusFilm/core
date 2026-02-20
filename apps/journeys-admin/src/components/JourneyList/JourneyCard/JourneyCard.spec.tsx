@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
@@ -216,6 +216,50 @@ describe('JourneyCard', () => {
     )
 
     expect(screen.getByTestId('JourneyCardInfo')).toBeInTheDocument()
+  })
+
+  it('does not change hover state when dialog is open', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const card = screen.getByTestId('JourneyCard-journey-id')
+    const overlay = screen.getByTestId('JourneyCardOverlayBox')
+
+    expect(overlay).toHaveStyle({ opacity: '0' })
+
+    fireEvent.mouseEnter(card)
+    expect(overlay).toHaveStyle({ opacity: '1' })
+
+    fireEvent.mouseLeave(card)
+    expect(overlay).toHaveStyle({ opacity: '0' })
+
+    fireEvent.click(screen.getByTestId('JourneyCardMenuButton'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('menuitem', { name: 'Edit Details' })
+      ).toBeInTheDocument()
+    })
+
+    const editDetailsMenuItem = screen.getByRole('menuitem', {
+      name: 'Edit Details'
+    })
+    fireEvent.click(editDetailsMenuItem)
+
+    await waitFor(() => {
+      fireEvent.mouseLeave(card)
+    })
+
+    fireEvent.mouseEnter(card)
+
+    expect(overlay).toHaveStyle({ opacity: '0' })
   })
 
   // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature

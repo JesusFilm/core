@@ -114,6 +114,9 @@ youTube source: videoId, title, description, and duration present`,
           source: block.source
         } as any
       }
+    }),
+    customizable: t.exposeBoolean('customizable', {
+      nullable: true
     })
   })
 })

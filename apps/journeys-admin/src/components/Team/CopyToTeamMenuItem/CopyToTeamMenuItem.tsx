@@ -21,6 +21,7 @@ interface CopyToTeamMenuItemProps {
   handleCloseMenu: () => void
   handleKeepMounted?: () => void
   journey?: Journey
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 interface JourneyLanguage {
@@ -51,7 +52,8 @@ export function CopyToTeamMenuItem({
   id,
   handleCloseMenu,
   handleKeepMounted,
-  journey
+  journey,
+  setHasOpenDialog
 }: CopyToTeamMenuItemProps): ReactElement {
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
@@ -204,6 +206,7 @@ export function CopyToTeamMenuItem({
         onClick={() => {
           handleKeepMounted?.()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
           setDuplicateTeamDialogOpen(true)
         }}
         testId="Copy"
@@ -214,6 +217,7 @@ export function CopyToTeamMenuItem({
         open={duplicateTeamDialogOpen}
         loading={loading}
         onClose={() => {
+          setHasOpenDialog?.(false)
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}
@@ -224,6 +228,8 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
+        journeyIsTemplate={journeyData?.template ?? false}
+        journeyFromTemplateId={journeyData?.fromTemplateId}
       />
     </>
   )
