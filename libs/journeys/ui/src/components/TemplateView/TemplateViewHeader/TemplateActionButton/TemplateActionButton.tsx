@@ -32,7 +32,10 @@ export function TemplateActionButton({
   const journeyData = journey ?? journeyFromContext
   const { customizableMedia } = useFlags()
 
-  if (journeyData != null && isJourneyCustomizable(journeyData, customizableMedia)) {
+  if (
+    journeyData != null &&
+    isJourneyCustomizable(journeyData, customizableMedia)
+  ) {
     return (
       <UseThisTemplateButton
         variant={variant}
