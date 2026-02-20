@@ -110,18 +110,36 @@ export function LanguageScreen({
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
+  function shouldSkipDuplicate(
+    journey: {
+      template?: boolean | null
+      language?: { id: string } | null
+      team?: { id: string } | null
+    },
+    selectedLanguageId: string,
+    selectedTeamId: string
+  ): boolean {
+    const isNotTemplate = journey.template === false
+    const languageMatches = journey.language?.id === selectedLanguageId
+    const teamMatches = journey.team?.id === selectedTeamId
+    return Boolean(isNotTemplate && languageMatches && teamMatches)
+  }
+
   async function handleSubmit(values: FormikValues) {
-    // TODO: if not template, and language and team are the same as the current journey, then don't duplicate and just goto the next screen
-    setLoading(true)
-    if (journey == null) {
-      setLoading(false)
+    if (journey == null) return
+
+    const { teamSelect: teamId } = values
+    const {
+      languageSelect: { id: languageId }
+    } = values
+
+    if (isSignedIn && shouldSkipDuplicate(journey, languageId, teamId)) {
+      handleNext()
       return
     }
+
+    setLoading(true)
     if (isSignedIn) {
-      const { teamSelect: teamId } = values
-      const {
-        languageSelect: { id: languageId }
-      } = values
       const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
       const { data: duplicateData } = await journeyDuplicate({
         variables: { id: journeyId, teamId, forceNonTemplate: true }
@@ -136,12 +154,11 @@ export function LanguageScreen({
           }
         )
         setLoading(false)
-
         return
       }
       handleNext(duplicateData.journeyDuplicate.id)
-      setLoading(false)
     }
+    setLoading(false)
   }
 
   return (
