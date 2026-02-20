@@ -43,13 +43,18 @@ const UserMenu = dynamic(
 export const GET_ME = gql`
   query GetMe($input: MeInput) {
     me(input: $input) {
-      id
-      firstName
-      lastName
-      email
-      imageUrl
-      superAdmin
-      emailVerified
+      ... on AuthenticatedUser {
+        id
+        firstName
+        lastName
+        email
+        imageUrl
+        superAdmin
+        emailVerified
+      }
+      ... on AnonymousUser {
+        id
+      }
     }
   }
 `
@@ -130,45 +135,49 @@ export function UserNavigation({
           />
         </ListItemButton>
       )}
-      {data.me.superAdmin === true && (
+      {data.me?.__typename === 'AuthenticatedUser' &&
+        data.me.superAdmin === true && (
+          <ListItemButton
+            data-testid="NavigationListItemImpersonate"
+            onClick={handleImpersonateClick}
+          >
+            <ListItemIcon>
+              <UserProfile3Icon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('Impersonate')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
+          </ListItemButton>
+        )}
+      {data.me?.__typename === 'AuthenticatedUser' && (
         <ListItemButton
-          data-testid="NavigationListItemImpersonate"
-          onClick={handleImpersonateClick}
+          data-testid="NavigationListItemProfile"
+          onClick={handleProfileClick}
         >
           <ListItemIcon>
-            <UserProfile3Icon />
+            <Avatar
+              alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+              src={data.me.imageUrl ?? undefined}
+              sx={{ width: 24, height: 24 }}
+            />
           </ListItemIcon>
           <ListItemText
-            primary={t('Impersonate')}
+            primary={t('Profile')}
             primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
           />
         </ListItemButton>
       )}
-      <ListItemButton
-        data-testid="NavigationListItemProfile"
-        onClick={handleProfileClick}
-      >
-        <ListItemIcon>
-          <Avatar
-            alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
-            src={data.me.imageUrl ?? undefined}
-            sx={{ width: 24, height: 24 }}
+      {profileAnchorEl !== undefined &&
+        data.me?.__typename === 'AuthenticatedUser' && (
+          <UserMenu
+            apiUser={data.me}
+            profileOpen={profileOpen}
+            profileAnchorEl={profileAnchorEl}
+            handleProfileClose={handleProfileClose}
+            user={user}
           />
-        </ListItemIcon>
-        <ListItemText
-          primary={t('Profile')}
-          primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-        />
-      </ListItemButton>
-      {profileAnchorEl !== undefined && (
-        <UserMenu
-          apiUser={data.me}
-          profileOpen={profileOpen}
-          profileAnchorEl={profileAnchorEl}
-          handleProfileClose={handleProfileClose}
-          user={user}
-        />
-      )}
+        )}
       {impersonateOpen != null && (
         <ImpersonateDialog
           open={impersonateOpen}

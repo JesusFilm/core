@@ -13,24 +13,25 @@ import {
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser {
     me {
-      id
-      email
+      ... on AuthenticatedUser {
+        id
+        email
+      }
+      ... on AnonymousUser {
+        id
+      }
     }
   }
 `
 
 export function useCurrentUserLazyQuery(): {
   loadUser: LazyQueryExecFunction<GetCurrentUser, OperationVariables>
-  data: ApiUser
+  data?: ApiUser | null
 } {
   const [loadUser, { data }] = useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)
 
-  if (data?.me != null) {
-    return { loadUser, data: data.me }
-  }
-
   return {
     loadUser,
-    data: { __typename: 'AuthenticatedUser', id: '', email: '' }
+    data: data?.me
   }
 }

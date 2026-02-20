@@ -73,13 +73,22 @@ export function UserTeamList({
           {sortedUserTeams.length > 0 && currentUserTeam != null && (
             <>
               {sortedUserTeams.map((userTeam) => {
+                const currentUserEmail =
+                  currentUserTeam.user.__typename === 'AuthenticatedUser'
+                    ? currentUserTeam.user.email
+                    : undefined
+                const userTeamEmail =
+                  userTeam.user.__typename === 'AuthenticatedUser'
+                    ? userTeam.user.email
+                    : undefined
                 return (
                   <UserTeamListItem
                     key={userTeam.id}
                     user={userTeam}
                     disabled={
                       currentUserTeam.role !== UserTeamRole.manager ||
-                      currentUserTeam.user.email === userTeam.user.email ||
+                      (currentUserEmail != null &&
+                        currentUserEmail === userTeamEmail) ||
                       variant === 'readonly'
                     }
                     variant={variant}

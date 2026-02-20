@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
-import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockService } from '../block.service'
 
 import { VideoTriggerResolver } from './videoTrigger.resolver'
@@ -43,12 +42,7 @@ describe('VideoTriggerBlockResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        BlockService,
-        VideoTriggerResolver,
-        UserRoleService,
-        PrismaService
-      ]
+      providers: [BlockService, VideoTriggerResolver, PrismaService]
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)
     prismaService = module.get<PrismaService>(PrismaService)

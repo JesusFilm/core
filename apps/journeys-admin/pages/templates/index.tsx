@@ -34,7 +34,11 @@ function TemplateIndexPage(): ReactElement {
   const router = useRouter()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
-  if (data?.me?.id != null && !data?.me?.emailVerified) {
+  if (
+    data?.me?.__typename === 'AuthenticatedUser' &&
+    data?.me?.id != null &&
+    !data?.me?.emailVerified
+  ) {
     void router.push('/users/verify?redirect=/templates')
   }
 

@@ -36,7 +36,7 @@ export const Default = {
   ...Template,
   args: {
     apiUser: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '1',
       firstName: 'Person',
       lastName: 'One',

@@ -1,3 +1,5 @@
+import { User as PrismaUser } from '@core/prisma/users/client'
+
 import { builder } from '../../builder'
 
 // Type for anonymous user shape
@@ -5,8 +7,11 @@ interface AnonymousUserShape {
   id: string
 }
 
+// Union member type
+export type UserShape = PrismaUser | AnonymousUserShape
+
 export const AuthenticatedUser = builder.prismaObject('User', {
-  variant: 'AuthenticatedUser',
+  name: 'AuthenticatedUser',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     firstName: t.field({
@@ -43,3 +48,20 @@ export const AnonymousUser = builder.objectType(AnonymousUserRef, {
     id: t.exposeID('id', { nullable: false })
   })
 })
+
+export const User = builder.unionType('User', {
+  types: [AuthenticatedUser, AnonymousUser],
+  resolveType: (user) => {
+    if ('email' in user && user.email != null) {
+      return AuthenticatedUser
+    }
+    return AnonymousUser
+  }
+})
+
+// Type guard for use in resolvers
+export function isAuthenticatedUser(
+  user: PrismaUser | AnonymousUserShape
+): user is PrismaUser {
+  return 'email' in user && user.email != null
+}

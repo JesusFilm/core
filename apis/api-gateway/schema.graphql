@@ -553,6 +553,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
+  """
+  Updates the current user's firstName, lastName, and email. Only callable by anonymous users.
+  """
+  updateMe(input: UpdateMeInput!) : AuthenticatedUser @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
 
@@ -712,21 +716,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS) 
   hosts(teamId: ID!) : [Host!]! @join__field(graph: API_JOURNEYS) 
   integrations(teamId: ID!) : [Integration!]! @join__field(graph: API_JOURNEYS) 
-  """
-  returns all journeys that match the provided filters
-  If no team id is provided and template is not true then only returns journeys
-  where the user is not a member of a team but is an editor or owner of the
-  journey
-  """
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-    """
-    Use Last Active Team Id from JourneyProfile (if null will error)
-    """
-    useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS) 
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
   adminJourney(id: ID!, idType: IdType) : Journey! @join__field(graph: API_JOURNEYS) 
   journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 
@@ -735,7 +724,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter) : Int! @join__field(graph: API_JOURNEYS) 
-  getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
   journeyTheme(journeyId: ID!) : JourneyTheme @join__field(graph: API_JOURNEYS) 
   """
   Get a list of Visitor Information by Journey
@@ -768,7 +756,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   teams: [Team!]! @join__field(graph: API_JOURNEYS) 
   team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
   userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
-  getUserRole: UserRole @join__field(graph: API_JOURNEYS) 
   userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
   userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
   userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
@@ -798,6 +785,13 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+    useLastActiveTeamId: Boolean
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
@@ -850,6 +844,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -949,7 +944,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
-  me(input: MeInput) : AuthenticatedUser @join__field(graph: API_USERS) 
+  me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : AuthenticatedUser @join__field(graph: API_USERS) 
   userByEmail(email: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
 }
@@ -1980,7 +1975,7 @@ type JourneyNotification @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
 type UserTeam @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
   journeyNotification(journeyId: ID!) : JourneyNotification
-  user: AuthenticatedUser!
+  user: User! @join__field(graph: API_JOURNEYS, type: "User!")  @join__field(graph: API_JOURNEYS_MODERN, type: "AuthenticatedUser!") 
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2199,12 +2194,6 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: 
   email: String!
   acceptedAt: DateTime
   removedAt: DateTime
-}
-
-type UserRole @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
-  id: ID!
-  userId: ID!
-  roles: [Role!]
 }
 
 type UserTeamInvite @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2560,6 +2549,12 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
+}
+
+type UserRole @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
+  id: ID!
+  userId: ID!
+  roles: [Role!]
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -3325,6 +3320,8 @@ interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
 
+union User @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  @join__unionMember(graph: API_JOURNEYS, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS, member: "AnonymousUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AnonymousUser")  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AnonymousUser")  = AuthenticatedUser | AnonymousUser
+
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
 union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
@@ -3659,14 +3656,6 @@ enum UserTeamRole @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
   member @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
-enum Role @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  User can create templates and
-  add them to template library
-  """
-  publisher @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
 enum DeviceType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   console @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   mobile @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3757,6 +3746,10 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum Role @join__type(graph: API_JOURNEYS_MODERN)  {
+  publisher @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageRole @join__type(graph: API_LANGUAGES)  {
@@ -5502,5 +5495,11 @@ input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
 input MeInput @join__type(graph: API_USERS)  {
   redirect: String
   app: App
+}
+
+input UpdateMeInput @join__type(graph: API_USERS)  {
+  firstName: String!
+  lastName: String
+  email: String!
 }
     

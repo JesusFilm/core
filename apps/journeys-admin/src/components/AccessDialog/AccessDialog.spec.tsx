@@ -18,7 +18,7 @@ jest.mock('../../libs/useCurrentUserLazyQuery', () => ({
   useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       ...user1
     }
   })
@@ -45,7 +45,7 @@ const mocks = [
                 id: 'userTeamId',
                 role: 'manager',
                 user: {
-                  __typename: 'User',
+                  __typename: 'AuthenticatedUser',
                   email: 'kujojotaro@example.com',
                   firstName: 'Jotaro',
                   id: 'userId',
@@ -63,7 +63,7 @@ const mocks = [
                 id: 'userTeamId1',
                 role: 'member',
                 user: {
-                  __typename: 'User',
+                  __typename: 'AuthenticatedUser',
                   email: 'josukehigashikata@example.com',
                   firstName: 'Josuke',
                   id: 'userId1',
@@ -80,7 +80,7 @@ const mocks = [
                 id: 'userTeamId2',
                 role: 'member',
                 user: {
-                  __typename: 'User',
+                  __typename: 'AuthenticatedUser',
                   email: 'KoichiHirose@example.com',
                   firstName: 'Koichi',
                   id: 'userId2',
@@ -147,7 +147,7 @@ const mocks = [
               id: 'userJourneyId4',
               role: 'editor',
               user: {
-                __typename: 'User',
+                __typename: 'AuthenticatedUser',
                 email: 'kujojotaro@example.com',
                 firstName: 'Jotaro',
                 id: 'userId',

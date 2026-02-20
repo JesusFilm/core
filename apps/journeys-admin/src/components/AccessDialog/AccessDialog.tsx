@@ -36,11 +36,16 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
           id
           role
           user {
-            email
-            firstName
-            id
-            imageUrl
-            lastName
+            ... on AuthenticatedUser {
+              email
+              firstName
+              id
+              imageUrl
+              lastName
+            }
+            ... on AnonymousUser {
+              id
+            }
           }
           journeyNotification(journeyId: $id) {
             id
@@ -93,13 +98,20 @@ export function AccessDialog({
 
   const currentUserJourney = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === user.email
+      (userJourney) =>
+        userJourney.user?.__typename === 'AuthenticatedUser' &&
+        user?.__typename === 'AuthenticatedUser' &&
+        userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])
 
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
-    return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
-      return email === user?.email
+    return data?.journey?.team?.userTeams.find(({ user: teamUser }) => {
+      return (
+        user?.__typename === 'AuthenticatedUser' &&
+        teamUser.__typename === 'AuthenticatedUser' &&
+        teamUser.email === user.email
+      )
     })
   }, [data?.journey?.team?.userTeams, user])
 

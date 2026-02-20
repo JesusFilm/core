@@ -41,7 +41,7 @@ describe('findOrFetchUser', () => {
     const data = await findOrFetchUser({}, 'userId', undefined)
     expect(data).toEqual(user)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
-      where: { id: 'userId' },
+      where: { userId: 'userId' },
       data: { emailVerified: false }
     })
   })
@@ -67,6 +67,44 @@ describe('findOrFetchUser', () => {
       undefined,
       undefined
     )
+  })
+
+  it('should create anonymous user with null email', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      id: '1',
+      userId: '1',
+      createdAt: new Date('2021-01-01T00:00:00.000Z'),
+      displayName: 'Anonymous',
+      email: undefined,
+      photoURL: 'https://bit.ly/3Gth4',
+      emailVerified: false
+    })
+    jest.mocked(verifyUser).mockClear()
+
+    const anonymousUser = {
+      ...user,
+      email: null,
+      firstName: 'Anonymous',
+      lastName: ''
+    }
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValueOnce(anonymousUser)
+
+    const data = await findOrFetchUser({}, 'userId', undefined)
+
+    expect(data).toEqual(anonymousUser)
+    expect(prismaMock.user.create).toHaveBeenCalledWith({
+      data: {
+        email: null,
+        emailVerified: false,
+        firstName: 'Anonymous',
+        imageUrl: 'https://bit.ly/3Gth4',
+        lastName: '',
+        userId: 'userId'
+      }
+    })
+    expect(verifyUser).not.toHaveBeenCalled()
   })
 
   it('should allow verification email to be sent on a per app basis', async () => {

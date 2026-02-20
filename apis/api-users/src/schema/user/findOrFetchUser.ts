@@ -19,7 +19,7 @@ export async function findOrFetchUser(
   if (existingUser != null && existingUser.emailVerified == null) {
     const user = await prisma.user.update({
       where: {
-        id: userId
+        userId
       },
       data: {
         emailVerified: false
@@ -66,32 +66,36 @@ export async function findOrFetchUser(
     userId,
     firstName,
     lastName,
-    email: email ?? '',
+    email: email ?? null,
     imageUrl,
     emailVerified
   }
 
   let user: User | null = null
-  let retry = 0
   let userCreated = false
-  // this function can run in parallel as such it is possible for multiple
-  // calls to reach this point and try to create the same user
-  // due to the earlier firebase async call.
+  // This function can run in parallel; multiple calls may try to create the same user.
   try {
     user = await prisma.user.create({
       data
     })
     userCreated = true
-  } catch (e) {
-    do {
-      user = await prisma.user.update({
-        where: {
-          id: userId
-        },
-        data
-      })
-      retry++
-    } while (user == null && retry < 3)
+  } catch {
+    // Create failed (e.g. P2002 unique constraint from concurrent request). Use existing row or retry create once.
+    user = await prisma.user.findUnique({
+      where: { userId }
+    })
+    if (user == null) {
+      try {
+        user = await prisma.user.create({
+          data
+        })
+        userCreated = true
+      } catch {
+        user = await prisma.user.findUnique({
+          where: { userId }
+        })
+      }
+    }
   }
   // after user create so it is only sent once
   if (email != null && userCreated && !emailVerified)
