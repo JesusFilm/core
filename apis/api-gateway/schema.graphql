@@ -2176,7 +2176,7 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
-type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type AuthenticatedUser implements User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "User")  @join__implements(graph: API_LANGUAGES, interface: "User")  @join__implements(graph: API_USERS, interface: "User")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
@@ -2188,7 +2188,7 @@ type AuthenticatedUser @join__type(graph: API_JOURNEYS, key: "id", extension: tr
   emailVerified: Boolean! @join__field(graph: API_USERS) 
 }
 
-type AnonymousUser @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS, key: "id")  {
+type AnonymousUser implements User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "User")  @join__implements(graph: API_USERS, interface: "User")  {
   id: ID!
 }
 
@@ -2386,10 +2386,6 @@ type VisitorsConnection @join__type(graph: API_JOURNEYS)  {
   Information to aid in pagination.
   """
   pageInfo: PageInfo!
-}
-
-type AnonymousUser @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
-  id: ID!
 }
 
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3323,13 +3319,15 @@ interface Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_J
   type: IntegrationType!
 }
 
+interface User @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_USERS)  {
+  id: ID!
+}
+
 interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
 }
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
-
-union User @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  @join__unionMember(graph: API_JOURNEYS, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AuthenticatedUser")  @join__unionMember(graph: API_LANGUAGES, member: "AuthenticatedUser")  @join__unionMember(graph: API_MEDIA, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  = AuthenticatedUser
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 

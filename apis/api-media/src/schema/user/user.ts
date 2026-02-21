@@ -29,10 +29,3 @@ AuthenticatedUserRef.implement({
     })
   })
 })
-
-export const UserRef = builder.unionType('User', {
-  types: [AuthenticatedUserRef],
-  resolveType: (user) => {
-    return 'AuthenticatedUser'
-  }
-})

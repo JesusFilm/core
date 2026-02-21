@@ -1058,8 +1058,6 @@ type UnsplashUserLinks {
   self: String!
 }
 
-union User = AuthenticatedUser
-
 type UserMediaProfile {
   """The database UUID"""
   id: ID!

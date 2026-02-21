@@ -1,9 +1,11 @@
-extend type AuthenticatedUser @key(fields: "id") {
-  id: ID! @external
-}
-
-extend type AnonymousUser @key(fields: "id") {
+interface User {
   id: ID!
 }
 
-union User = AuthenticatedUser | AnonymousUser
+extend type AuthenticatedUser implements User @key(fields: "id") {
+  id: ID! @external
+}
+
+extend type AnonymousUser implements User @key(fields: "id") {
+  id: ID!
+}

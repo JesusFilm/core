@@ -1,7 +1,7 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
 
-type AnonymousUser
+type AnonymousUser implements User
   @key(fields: "id")
   @shareable
 {
@@ -13,7 +13,7 @@ enum App {
   JesusFilmOne
 }
 
-type AuthenticatedUser
+type AuthenticatedUser implements User
   @key(fields: "id")
 {
   id: ID!
@@ -53,4 +53,6 @@ input UpdateMeInput {
   email: String!
 }
 
-union User = AuthenticatedUser
+interface User {
+  id: ID!
+}

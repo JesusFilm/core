@@ -13,7 +13,7 @@ type AudioPreview
   codec: String!
 }
 
-type AuthenticatedUser
+type AuthenticatedUser implements User
   @key(fields: "id")
   @extends
 {
@@ -132,4 +132,6 @@ type Query {
   countries(term: String, ids: [ID!]): [Country!]!
 }
 
-union User = AuthenticatedUser
+interface User {
+  id: ID!
+}

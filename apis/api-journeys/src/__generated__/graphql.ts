@@ -34,7 +34,7 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
-export type AnonymousUser = {
+export type AnonymousUser = User & {
   __typename?: 'AnonymousUser';
   id: Scalars['ID']['output'];
 };
@@ -62,7 +62,7 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
-export type AuthenticatedUser = {
+export type AuthenticatedUser = User & {
   __typename?: 'AuthenticatedUser';
   email: Scalars['String']['output'];
   emailVerified: Scalars['Boolean']['output'];
@@ -5134,6 +5134,16 @@ export type UnsplashUserLinks = {
   photos: Scalars['String']['output'];
   portfolio: Scalars['String']['output'];
   self: Scalars['String']['output'];
+};
+
+export type UpdateMeInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = {
+  id: Scalars['ID']['output'];
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */

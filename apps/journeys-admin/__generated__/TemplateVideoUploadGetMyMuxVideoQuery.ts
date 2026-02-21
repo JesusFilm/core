@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: TemplateCustomizeGetMyMuxVideoQuery
+// GraphQL query operation: TemplateVideoUploadGetMyMuxVideoQuery
 // ====================================================
 
-export interface TemplateCustomizeGetMyMuxVideoQuery_getMyMuxVideo {
+export interface TemplateVideoUploadGetMyMuxVideoQuery_getMyMuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
@@ -15,10 +15,10 @@ export interface TemplateCustomizeGetMyMuxVideoQuery_getMyMuxVideo {
   readyToStream: boolean;
 }
 
-export interface TemplateCustomizeGetMyMuxVideoQuery {
-  getMyMuxVideo: TemplateCustomizeGetMyMuxVideoQuery_getMyMuxVideo;
+export interface TemplateVideoUploadGetMyMuxVideoQuery {
+  getMyMuxVideo: TemplateVideoUploadGetMyMuxVideoQuery_getMyMuxVideo;
 }
 
-export interface TemplateCustomizeGetMyMuxVideoQueryVariables {
+export interface TemplateVideoUploadGetMyMuxVideoQueryVariables {
   id: string;
 }
