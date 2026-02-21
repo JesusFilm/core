@@ -4,14 +4,12 @@ import { builder } from '../builder'
 
 import { LanguageRole } from './enums/languageRole'
 
-const UserRef = builder
-  .interfaceRef<{ id: string }>('User')
-  .implement({
-    resolveType: () => 'AuthenticatedUser',
-    fields: (t) => ({
-      id: t.exposeID('id', { nullable: false })
-    })
+const UserRef = builder.interfaceRef<{ id: string }>('User').implement({
+  resolveType: () => 'AuthenticatedUser',
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false })
   })
+})
 
 builder
   .externalRef('AuthenticatedUser', builder.selection<{ id: string }>('id'))

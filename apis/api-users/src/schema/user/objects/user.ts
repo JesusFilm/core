@@ -8,17 +8,15 @@ interface AnonymousUserShape {
 
 export type UserShape = PrismaUser | AnonymousUserShape
 
-export const User = builder
-  .interfaceRef<UserShape>('User')
-  .implement({
-    resolveType: (user) => {
-      if ('email' in user) return 'AuthenticatedUser'
-      return 'AnonymousUser'
-    },
-    fields: (t) => ({
-      id: t.exposeID('id', { nullable: false })
-    })
+export const User = builder.interfaceRef<UserShape>('User').implement({
+  resolveType: (user) => {
+    if ('email' in user) return 'AuthenticatedUser'
+    return 'AnonymousUser'
+  },
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false })
   })
+})
 
 export const AuthenticatedUser = builder.prismaObject('User', {
   variant: 'AuthenticatedUser',
