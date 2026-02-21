@@ -13,7 +13,7 @@ type AudioPreview
   codec: String!
 }
 
-type AuthenticatedUser
+type AuthenticatedUser implements User
   @key(fields: "id")
   @extends
 {
@@ -130,4 +130,8 @@ type Query {
   languagesCount(where: LanguagesFilter, term: String): Int!
   country(id: ID!): Country
   countries(term: String, ids: [ID!]): [Country!]!
+}
+
+interface User {
+  id: ID!
 }

@@ -879,6 +879,10 @@ export interface Integration {
     type: IntegrationType;
 }
 
+export interface User {
+    id: string;
+}
+
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
@@ -2030,11 +2034,11 @@ export class ShortLink {
     id: string;
 }
 
-export class AuthenticatedUser {
+export class AuthenticatedUser implements User {
     id: string;
 }
 
-export class AnonymousUser {
+export class AnonymousUser implements User {
     id: string;
 }
 
