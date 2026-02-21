@@ -118,6 +118,8 @@ export function JourneyFlow(): ReactElement {
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
   const dragTimeStampRef = useRef(0)
+  const edgesRef = useRef(edges)
+  edgesRef.current = edges
 
   const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
@@ -198,12 +200,13 @@ export function JourneyFlow(): ReactElement {
         x: DEFAULT_SOCIAL_NODE_X,
         y: DEFAULT_SOCIAL_NODE_Y
       }
-      const stepBlockInputs = Object.entries(arrangeSteps(steps)).map(
-        ([id, position]) => ({
-          id,
-          ...position
-        })
-      )
+
+      const stepBlockInputs = Object.entries(
+        arrangeSteps(steps, edgesRef.current)
+      ).map(([id, position]) => ({
+        id,
+        ...position
+      }))
       const input = [socialPreviewNodeInput, ...stepBlockInputs]
 
       if (onload) {

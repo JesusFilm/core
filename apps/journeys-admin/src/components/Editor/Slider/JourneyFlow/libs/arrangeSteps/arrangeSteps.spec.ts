@@ -99,9 +99,9 @@ describe('arrangeSteps', () => {
     const positions = arrangeSteps(steps)
     expect(positions).toEqual({
       'step0.id': { x: 0, y: -8 },
-      'step1.id': { x: 400, y: -8 },
-      'step2.id': { x: 800, y: -8 },
-      'step3.id': { x: 1200, y: -8 }
+      'step1.id': { x: 0, y: 145 },
+      'step2.id': { x: 0, y: 298 },
+      'step3.id': { x: 0, y: 451 }
     })
   })
 
@@ -126,7 +126,67 @@ describe('arrangeSteps', () => {
     ])
     expect(positions).toEqual({
       'step0.id': { x: 0, y: -8 },
-      'step1.id': { x: 600, y: -8 }
+      'step1.id': { x: 0, y: 172 }
     })
+  })
+
+  it('should arrange multiple isolated directed cycles', () => {
+    const cycleSteps = [
+      {
+        id: 'a.id',
+        __typename: 'StepBlock' as const,
+        parentBlockId: null,
+        parentOrder: 0,
+        locked: false,
+        nextBlockId: 'b.id' as string | null,
+        slug: null,
+        children: []
+      },
+      {
+        id: 'b.id',
+        __typename: 'StepBlock' as const,
+        parentBlockId: null,
+        parentOrder: 1,
+        locked: false,
+        nextBlockId: 'a.id' as string | null,
+        slug: null,
+        children: []
+      },
+      {
+        id: 'c.id',
+        __typename: 'StepBlock' as const,
+        parentBlockId: null,
+        parentOrder: 2,
+        locked: false,
+        nextBlockId: 'd.id' as string | null,
+        slug: null,
+        children: []
+      },
+      {
+        id: 'd.id',
+        __typename: 'StepBlock' as const,
+        parentBlockId: null,
+        parentOrder: 3,
+        locked: false,
+        nextBlockId: 'c.id' as string | null,
+        slug: null,
+        children: []
+      }
+    ]
+    const edges = [
+      { id: 'e1', source: 'a.id', target: 'b.id' },
+      { id: 'e2', source: 'b.id', target: 'a.id' },
+      { id: 'e3', source: 'c.id', target: 'd.id' },
+      { id: 'e4', source: 'd.id', target: 'c.id' }
+    ]
+    const positions = arrangeSteps(
+      cycleSteps as Array<TreeBlock<StepBlock>>,
+      edges
+    )
+    expect(Object.keys(positions)).toHaveLength(4)
+    expect(positions['a.id']).toBeDefined()
+    expect(positions['b.id']).toBeDefined()
+    expect(positions['c.id']).toBeDefined()
+    expect(positions['d.id']).toBeDefined()
   })
 })

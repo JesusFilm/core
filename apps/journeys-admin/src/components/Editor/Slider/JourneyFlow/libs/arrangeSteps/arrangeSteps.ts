@@ -1,6 +1,6 @@
 import findIndex from 'lodash/findIndex'
 import reduce from 'lodash/reduce'
-import { XYPosition } from 'reactflow'
+import { Edge, XYPosition } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
@@ -22,10 +22,30 @@ export interface PositionMap {
 
 type TreeStepBlock = TreeBlock<StepBlock>
 
-export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
+export function arrangeSteps(
+  steps: TreeStepBlock[],
+  edges?: Edge[]
+): PositionMap {
   const positions: PositionMap = {}
   const blocks: TreeStepBlock[][] = []
-  const unvisitedStepIds: string[] = steps.map((step) => step.id)
+
+  const stepIds = new Set(steps.map((s) => s.id))
+
+  const stepToStepEdges =
+    edges != null
+      ? edges.filter((e) => stepIds.has(e.source) && stepIds.has(e.target))
+      : []
+
+  const nonTargetSteps: TreeStepBlock[] =
+    stepToStepEdges.length > 0
+      ? steps.filter(
+          (s) => !stepToStepEdges.some((edge) => edge.target === s.id)
+        )
+      : []
+
+  const unvisitedStepIds: string[] = steps
+    .filter((step) => !nonTargetSteps.some((s) => s.id === step.id))
+    .map((step) => step.id)
 
   function visitStepId(id?: string): TreeStepBlock | undefined {
     if (id == null) return
@@ -68,23 +88,127 @@ export function arrangeSteps(steps: TreeStepBlock[]): PositionMap {
     if (descendants.length > 0) processSteps(descendants)
   }
 
-  while (unvisitedStepIds.length > 0) {
-    const step = visitStepId(unvisitedStepIds[0])
-    if (step != null) processSteps([step])
+  function buildSourceToTargetsMap(stepEdges: Edge[]): Map<string, string[]> {
+    const map = new Map<string, string[]>()
+    stepEdges.forEach((edge) => {
+      const list = map.get(edge.source) ?? []
+      list.push(edge.target)
+      map.set(edge.source, list)
+    })
+    return map
   }
 
-  const hasActionBlocks = blocks
-    .flat()
-    .some((step) => filterActionBlocks(step).length > 0)
+  function buildBlocksByEdgeTraversal(stepEdges: Edge[]): void {
+    const sourceToTargets = buildSourceToTargetsMap(stepEdges)
+    const placedIds = new Set<string>()
+
+    function processLevel(levelSteps: TreeStepBlock[]): void {
+      blocks.push(levelSteps)
+      levelSteps.forEach((s) => placedIds.add(s.id))
+      const nextIds = levelSteps.flatMap((s) => sourceToTargets.get(s.id) ?? [])
+      const uniqueNextIds = [...new Set(nextIds)].filter(
+        (id) => !placedIds.has(id)
+      )
+      const nextSteps = uniqueNextIds
+        .map((id) => steps.find((s) => s.id === id))
+        .filter((s): s is TreeStepBlock => s != null)
+      if (nextSteps.length > 0) processLevel(nextSteps)
+    }
+
+    if (nonTargetSteps.length > 0) processLevel(nonTargetSteps)
+    else if (steps[0] != null) processLevel([steps[0]])
+  }
+
+  function buildBlocksByStructureTraversal(): void {
+    while (unvisitedStepIds.length > 0) {
+      const step = visitStepId(unvisitedStepIds[0])
+      if (step != null) processSteps([step])
+    }
+  }
+
+  function finalizeBlocks(): void {
+    const nonTargetIds = new Set(nonTargetSteps.map((s) => s.id))
+    if (
+      blocks.length > 1 &&
+      blocks.every((column) => column.length === 1) &&
+      (nonTargetIds.size === 0 ||
+        blocks.flat().every((step) => nonTargetIds.has(step.id)))
+    ) {
+      blocks.splice(0, blocks.length, blocks.flat())
+    }
+
+    const placedIds = new Set(blocks.flat().map((s) => s.id))
+
+    function processLoopLevel(
+      levelSteps: TreeStepBlock[],
+      sourceToTargets: Map<string, string[]>,
+      currentRemaining: TreeStepBlock[],
+      loopPlacedIds: Set<string>,
+      loopBlocks: TreeStepBlock[][]
+    ): void {
+      loopBlocks.push(levelSteps)
+      levelSteps.forEach((s) => loopPlacedIds.add(s.id))
+      const nextIds = levelSteps.flatMap((s) => sourceToTargets.get(s.id) ?? [])
+      const uniqueNextIds = [...new Set(nextIds)].filter(
+        (id) =>
+          !loopPlacedIds.has(id) && currentRemaining.some((u) => u.id === id)
+      )
+      const nextSteps = uniqueNextIds
+        .map((id) => steps.find((s) => s.id === id))
+        .filter((s): s is TreeStepBlock => s != null)
+      if (nextSteps.length > 0)
+        processLoopLevel(
+          nextSteps,
+          sourceToTargets,
+          currentRemaining,
+          loopPlacedIds,
+          loopBlocks
+        )
+    }
+
+    const unplacedSteps = steps.filter((s) => !placedIds.has(s.id))
+    if (unplacedSteps.length > 0) {
+      if (stepToStepEdges.length > 0) {
+        const sourceToTargets = buildSourceToTargetsMap(stepToStepEdges)
+        let remainingUnplaced = [...unplacedSteps]
+
+        while (remainingUnplaced.length > 0) {
+          const currentRemaining = remainingUnplaced
+          const loopPlacedIds = new Set<string>()
+          const loopBlocks: TreeStepBlock[][] = []
+
+          processLoopLevel(
+            [remainingUnplaced[0]],
+            sourceToTargets,
+            currentRemaining,
+            loopPlacedIds,
+            loopBlocks
+          )
+          blocks.push(...loopBlocks)
+          remainingUnplaced = remainingUnplaced.filter(
+            (s) => !loopPlacedIds.has(s.id)
+          )
+        }
+      } else {
+        if (blocks.length > 0) {
+          blocks[0] = [...unplacedSteps, ...blocks[0]]
+        } else {
+          blocks[0] = unplacedSteps
+        }
+      }
+    }
+  }
+
+  if (stepToStepEdges.length > 0) {
+    buildBlocksByEdgeTraversal(stepToStepEdges)
+  } else {
+    buildBlocksByStructureTraversal()
+  }
+
+  finalizeBlocks()
 
   blocks.reduce((prevActionBlock, column, index) => {
-    const gap = hasActionBlocks
-      ? prevActionBlock
-        ? LINK_NODE_WIDTH_GAP_RIGHT
-        : LINK_NODE_WIDTH_GAP_RIGHT / 2
-      : 0
-
-    const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP + gap)
+    const stepX = index * (STEP_NODE_CARD_WIDTH + STEP_NODE_WIDTH_GAP)
 
     reduce<TreeStepBlock, TreeStepBlock | null>(
       column,
