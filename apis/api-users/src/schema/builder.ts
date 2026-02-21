@@ -69,8 +69,7 @@ export const builder = new SchemaBuilder<{
     authorizeOnSubscribe: true,
     authScopes: async (context: Context) => {
       switch (context.type) {
-        case 'authenticated':
-          // eslint-disable-next-line no-case-declarations -- This is intentional
+        case 'authenticated': {
           const user = await prisma.user.findUnique({
             where: { userId: context.currentUser.id }
           })
@@ -80,6 +79,7 @@ export const builder = new SchemaBuilder<{
             isSuperAdmin: user?.superAdmin ?? false,
             isValidInterop: false
           }
+        }
         case 'interop':
           return {
             isAuthenticated: false,

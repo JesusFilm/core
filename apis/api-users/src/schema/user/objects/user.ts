@@ -10,7 +10,7 @@ export type UserShape = PrismaUser | AnonymousUserShape
 
 export const User = builder.interfaceRef<UserShape>('User').implement({
   resolveType: (user) => {
-    if ('email' in user) return 'AuthenticatedUser'
+    if ('email' in user && user.email != null) return 'AuthenticatedUser'
     return 'AnonymousUser'
   },
   fields: (t) => ({
