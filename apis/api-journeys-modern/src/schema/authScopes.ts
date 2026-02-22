@@ -76,7 +76,6 @@ async function isTeamManager({
 
 export interface AuthScopes {
   isAuthenticated: boolean
-  isAnonymous: boolean
   isPublisher: boolean
   isValidInterop: boolean
 }
@@ -84,7 +83,6 @@ export interface AuthScopes {
 export async function authScopes(context: Context) {
   const defaultScopes = {
     isAuthenticated: false,
-    isAnonymous: false,
     isPublisher: false,
     isValidInterop: false
   }
@@ -93,7 +91,6 @@ export async function authScopes(context: Context) {
       return {
         ...defaultScopes,
         isAuthenticated: true,
-        isAnonymous: context.user.email == null,
         isPublisher: context.currentRoles.includes('publisher'),
         isInTeam: async (teamId: string) => await isInTeam({ context, teamId }),
         isIntegrationOwner: async (integrationId: string) =>
