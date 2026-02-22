@@ -51,12 +51,10 @@ export const builder = new SchemaBuilder<{
   Context: Context
   AuthScopes: {
     isAuthenticated: boolean
-    isAnonymous: boolean
     isPublisher: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
-    isAnonymous: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
@@ -89,22 +87,19 @@ export const builder = new SchemaBuilder<{
       switch (context.type) {
         case 'authenticated':
           return {
-            isAuthenticated: context.user.email != null,
-            isAnonymous: context.user.email == null,
+            isAuthenticated: true,
             isPublisher: context.currentRoles.includes('publisher'),
             isValidInterop: false
           }
         case 'interop':
           return {
             isAuthenticated: false,
-            isAnonymous: false,
             isPublisher: false,
             isValidInterop: true
           }
         default:
           return {
             isAuthenticated: false,
-            isAnonymous: false,
             isPublisher: false,
             isValidInterop: false
           }
