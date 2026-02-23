@@ -95,7 +95,10 @@ export function useMuxVideoProcessing({
             }
           ]
         })
-        enqueueSnackbar(t('File uploaded successfully'), { variant: 'success', autoHideDuration: 2000 })
+        enqueueSnackbar(t('File uploaded successfully'), {
+          variant: 'success',
+          autoHideDuration: 2000
+        })
         clearPollingForBlock(videoBlockId)
         removeTask(videoBlockId)
       } catch {

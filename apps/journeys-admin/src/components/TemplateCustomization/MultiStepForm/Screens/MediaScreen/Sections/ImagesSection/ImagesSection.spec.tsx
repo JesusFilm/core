@@ -221,11 +221,9 @@ describe('ImagesSection', () => {
 
     await waitFor(() => expect(updateResult).toHaveBeenCalled())
 
-    await waitFor(
-      () => {
-        expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
-      }
-    )
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+    })
   })
 
   it('should show error snackbar when imageBlockUpdate mutation fails', async () => {
@@ -283,14 +281,12 @@ describe('ImagesSection', () => {
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
     await user.upload(input, file)
 
-    await waitFor(
-      () => {
-        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-          'Upload failed. Please try again',
-          { variant: 'error', autoHideDuration: 2000 }
-        )
-      }
-    )
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        { variant: 'error', autoHideDuration: 2000 }
+      )
+    })
   })
 
   it('should filter blocks based on cardBlockId and customizable flag', () => {
