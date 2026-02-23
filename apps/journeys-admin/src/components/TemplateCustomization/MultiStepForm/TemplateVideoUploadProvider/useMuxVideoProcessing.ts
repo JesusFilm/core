@@ -95,12 +95,13 @@ export function useMuxVideoProcessing({
             }
           ]
         })
-        enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
+        enqueueSnackbar(t('File uploaded successfully'), { variant: 'success', autoHideDuration: 2000 })
         clearPollingForBlock(videoBlockId)
         removeTask(videoBlockId)
       } catch {
         enqueueSnackbar(t('Upload failed. Please try again'), {
-          variant: 'error'
+          variant: 'error',
+          autoHideDuration: 2000
         })
         updateTask(videoBlockId, {
           status: 'error',
@@ -166,7 +167,8 @@ export function useMuxVideoProcessing({
             clearPollingForBlock(videoBlockId)
             activeBlocksRef.current.delete(videoBlockId)
             enqueueSnackbar(t('Upload failed. Please try again'), {
-              variant: 'error'
+              variant: 'error',
+              autoHideDuration: 2000
             })
             updateTask(videoBlockId, {
               status: 'error',
