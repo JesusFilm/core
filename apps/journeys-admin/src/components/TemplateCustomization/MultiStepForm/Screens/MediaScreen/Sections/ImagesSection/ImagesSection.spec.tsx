@@ -27,8 +27,20 @@ jest.mock('notistack', () => ({
 }))
 
 describe('ImagesSection', () => {
+  const originalEnv = process.env
+  const originalFetch = global.fetch
+
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: ''
+    }
+  })
+
+  afterEach(() => {
+    process.env = originalEnv
+    global.fetch = originalFetch
   })
 
   const imageBlock: ImageBlock = {
@@ -137,13 +149,6 @@ describe('ImagesSection', () => {
   })
 
   it('should call imageBlockUpdate mutation when handleUploadComplete is triggered', async () => {
-    const originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: ''
-    }
-    const originalFetch = global.fetch
-
     const cloudflareResult = jest.fn().mockReturnValue({
       data: {
         createCloudflareUploadByFile: {
@@ -214,32 +219,16 @@ describe('ImagesSection', () => {
     const input = screen.getByTestId('ImagesSection-file-input-image1.id')
     await user.upload(input, file)
 
-    await waitFor(() => expect(updateResult).toHaveBeenCalled(), {
-      timeout: 3000
-    })
+    await waitFor(() => expect(updateResult).toHaveBeenCalled())
 
     await waitFor(
       () => {
-        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-          'File uploaded successfully',
-          { variant: 'success' }
-        )
-      },
-      { timeout: 3000 }
+        expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+      }
     )
-
-    process.env = originalEnv
-    global.fetch = originalFetch
   })
 
   it('should show error snackbar when imageBlockUpdate mutation fails', async () => {
-    const originalEnv = process.env
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY: ''
-    }
-    const originalFetch = global.fetch
-
     const cloudflareResult = jest.fn().mockReturnValue({
       data: {
         createCloudflareUploadByFile: {
@@ -298,14 +287,10 @@ describe('ImagesSection', () => {
       () => {
         expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
           'Upload failed. Please try again',
-          { variant: 'error' }
+          { variant: 'error', autoHideDuration: 2000 }
         )
-      },
-      { timeout: 3000 }
+      }
     )
-
-    process.env = originalEnv
-    global.fetch = originalFetch
   })
 
   it('should filter blocks based on cardBlockId and customizable flag', () => {
