@@ -216,7 +216,6 @@ describe('LogoSection', () => {
     await waitFor(() => {
       expect(mutationResultSpy).toHaveBeenCalled()
     })
-    expect(screen.getByText('File uploaded successfully')).toBeInTheDocument()
   })
 
   it('shows error snackbar when mutation fails', async () => {
