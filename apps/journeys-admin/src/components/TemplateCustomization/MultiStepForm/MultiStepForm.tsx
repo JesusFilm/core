@@ -86,8 +86,8 @@ export function MultiStepForm(): ReactElement {
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
-  const link = `/journeys/${journey?.id ?? ''}`
-  const journeyId = router.query.journeyId as string
+  const journeyId = journey?.id ?? ''
+  const link = `/journeys/${journeyId}`
 
   const {
     screens,

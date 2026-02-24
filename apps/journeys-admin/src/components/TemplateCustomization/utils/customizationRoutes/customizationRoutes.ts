@@ -6,11 +6,11 @@ export const CUSTOMIZE_SCREEN_QUERY_KEY = 'screen'
  * Screens that a guest user (not signed in) can access when templateCustomizationGuestFlow is on.
  * For now: language, text, and links only.
  */
-export const GUEST_ACCESSIBLE_SCREENS: readonly CustomizationScreen[] = [
+export const GUEST_ACCESSIBLE_SCREENS = [
   'language',
   'text',
   'links'
-] as const
+] as const satisfies readonly CustomizationScreen[]
 
 export type GuestAccessibleScreen = (typeof GUEST_ACCESSIBLE_SCREENS)[number]
 
