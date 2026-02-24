@@ -123,7 +123,10 @@ export function TemplateCardPreview({
 
   const initialSlide =
     scrollsToSelected && selectedStep != null
-      ? slidesToRender.findIndex((s) => s.id === selectedStep.id)
+      ? Math.max(
+          0,
+          slidesToRender.findIndex((s) => s.id === selectedStep.id)
+        )
       : 0
 
   useEffect(() => {
