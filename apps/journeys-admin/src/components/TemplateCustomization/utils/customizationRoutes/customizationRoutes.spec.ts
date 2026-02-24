@@ -37,41 +37,6 @@ describe('customizationRoutes', () => {
       expect(buildCustomizeUrl(undefined, 'language')).toBe('/templates')
     })
 
-    it('should call onTemplatesRedirect when journeyId is null', () => {
-      const onTemplatesRedirect = jest.fn()
-      const result = buildCustomizeUrl(
-        null,
-        'language',
-        undefined,
-        onTemplatesRedirect
-      )
-      expect(result).toBe('/templates')
-      expect(onTemplatesRedirect).toHaveBeenCalledTimes(1)
-    })
-
-    it('should call onTemplatesRedirect when journeyId is undefined', () => {
-      const onTemplatesRedirect = jest.fn()
-      const result = buildCustomizeUrl(
-        undefined,
-        'language',
-        undefined,
-        onTemplatesRedirect
-      )
-      expect(result).toBe('/templates')
-      expect(onTemplatesRedirect).toHaveBeenCalledTimes(1)
-    })
-
-    it('should not call onTemplatesRedirect when journeyId is provided', () => {
-      const onTemplatesRedirect = jest.fn()
-      buildCustomizeUrl(
-        'journey-123',
-        'language',
-        undefined,
-        onTemplatesRedirect
-      )
-      expect(onTemplatesRedirect).not.toHaveBeenCalled()
-    })
-
     it('with isGuest true, should never build URL for non-guest-accessible screen', () => {
       expect(buildCustomizeUrl('journey-123', 'social', true)).toBe(
         '/templates/journey-123/customize?screen=language'

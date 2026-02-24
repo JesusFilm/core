@@ -6,8 +6,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useMemo } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -22,7 +21,7 @@ import {
   CustomizationScreen,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
-import { useHandleTemplateCustomizationRedirect } from '../utils/useHandleTemplateCustomizationRedirect'
+import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizationRedirect'
 
 import { ProgressStepper } from './ProgressStepper'
 import {
@@ -83,7 +82,6 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { enqueueSnackbar } = useSnackbar()
   const user = useUser()
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
@@ -110,23 +108,12 @@ export function MultiStepForm(): ReactElement {
     screens
   )
 
-  const onTemplatesRedirect = useCallback(() => {
-    enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
-      variant: 'error',
-      preventDuplicate: true
-    })
-  }, [enqueueSnackbar, t])
-
-  useHandleTemplateCustomizationRedirect({
-    router,
+  useTemplateCustomizationRedirect({
     journeyId,
     screens,
     activeScreen,
     isGuest: user?.id == null,
-    guestFlowEnabled: templateCustomizationGuestFlow === true,
-    onTemplatesRedirect,
-    enqueueSnackbar,
-    t
+    guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 
   async function handleNext(overrideJourneyId?: string): Promise<void> {
@@ -138,8 +125,7 @@ export function MultiStepForm(): ReactElement {
       buildCustomizeUrl(
         targetJourneyId,
         screens[currentIndex + 1],
-        undefined,
-        onTemplatesRedirect
+        undefined
       )
     )
   }
@@ -147,9 +133,7 @@ export function MultiStepForm(): ReactElement {
   async function handleScreenNavigation(
     screen: CustomizationScreen
   ): Promise<void> {
-    void router.replace(
-      buildCustomizeUrl(journeyId, screen, undefined, onTemplatesRedirect)
-    )
+    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
   }
 
   return (

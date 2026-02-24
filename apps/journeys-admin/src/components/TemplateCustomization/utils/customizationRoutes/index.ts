@@ -7,7 +7,4 @@ export {
   getFirstGuestAllowedScreen,
   parseScreenFromQuery
 } from './customizationRoutes'
-export type {
-  GuestAccessibleScreen,
-  OnTemplatesRedirectCallback
-} from './customizationRoutes'
+export type { GuestAccessibleScreen } from './customizationRoutes'

@@ -1,4 +1,6 @@
-import type { NextRouter } from 'next/router'
+import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { useEffect } from 'react'
 
 import {
@@ -9,19 +11,12 @@ import {
 } from '../customizationRoutes'
 import type { CustomizationScreen } from '../getCustomizeFlowConfig'
 
-export interface UseHandleTemplateCustomizationRedirectParams {
-  router: NextRouter
+export interface UseTemplateCustomizationRedirectParams {
   journeyId: string
   screens: CustomizationScreen[]
   activeScreen: CustomizationScreen
   isGuest: boolean
   guestFlowEnabled: boolean
-  onTemplatesRedirect: () => void
-  enqueueSnackbar: (
-    message: string,
-    options: { variant: 'error'; preventDuplicate: boolean }
-  ) => void
-  t: (key: string) => string
 }
 
 /**
@@ -29,17 +24,17 @@ export interface UseHandleTemplateCustomizationRedirectParams {
  * 1. Syncs URL with a valid screen (redirects to first screen if missing/invalid).
  * 2. For guests: redirects away from non-guest screens or when guest flow is disabled.
  */
-export function useHandleTemplateCustomizationRedirect({
-  router,
+export function useTemplateCustomizationRedirect({
   journeyId,
   screens,
   activeScreen,
   isGuest,
-  guestFlowEnabled,
-  onTemplatesRedirect,
-  enqueueSnackbar,
-  t
-}: UseHandleTemplateCustomizationRedirectParams): void {
+  guestFlowEnabled
+}: UseTemplateCustomizationRedirectParams): void {
+  const router = useRouter()
+  const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+
   // 1. Validate screen from URL; redirect to first screen if missing or invalid
   useEffect(() => {
     if (!router.isReady || !journeyId || screens.length === 0) return
@@ -67,9 +62,7 @@ export function useHandleTemplateCustomizationRedirect({
           { variant: 'error', preventDuplicate: true }
         )
       }
-      void router.replace(
-        buildCustomizeUrl(journeyId, screens[0], undefined, onTemplatesRedirect)
-      )
+      void router.replace(buildCustomizeUrl(journeyId, screens[0], undefined))
     }
   }, [
     router,
@@ -78,8 +71,7 @@ export function useHandleTemplateCustomizationRedirect({
     router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
     screens,
     t,
-    enqueueSnackbar,
-    onTemplatesRedirect
+    enqueueSnackbar
   ])
 
   // 2. For guests: redirect if guest flow disabled or current screen not allowed
@@ -92,12 +84,7 @@ export function useHandleTemplateCustomizationRedirect({
         { variant: 'error', preventDuplicate: true }
       )
       void router.replace(
-        buildCustomizeUrl(
-          journeyId,
-          getFirstGuestAllowedScreen(),
-          true,
-          onTemplatesRedirect
-        )
+        buildCustomizeUrl(journeyId, getFirstGuestAllowedScreen(), true)
       )
     }
   }, [
@@ -108,7 +95,6 @@ export function useHandleTemplateCustomizationRedirect({
     guestFlowEnabled,
     activeScreen,
     t,
-    enqueueSnackbar,
-    onTemplatesRedirect
+    enqueueSnackbar
   ])
 }

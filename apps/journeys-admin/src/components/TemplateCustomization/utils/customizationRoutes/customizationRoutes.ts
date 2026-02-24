@@ -38,24 +38,16 @@ export function parseScreenFromQuery(
 }
 
 /**
- * Optional callback invoked when the returned URL is `/templates` because journeyId was null/undefined.
- * Use this to show an error snackbar or other feedback before redirecting.
- */
-export type OnTemplatesRedirectCallback = () => void
-
-/**
  * Builds the customize page URL with optional screen query.
- * If journeyId is null/undefined, calls onTemplatesRedirect (if provided) and returns `/templates`.
+ * If journeyId is null/undefined, returns `/templates`.
  * When isGuest is true, never outputs a URL for a non-guest-accessible screen.
  */
 export function buildCustomizeUrl(
   journeyId: string | null | undefined,
   screen: CustomizationScreen,
-  isGuest?: boolean,
-  onTemplatesRedirect?: OnTemplatesRedirectCallback
+  isGuest?: boolean
 ): string {
   if (journeyId == null) {
-    onTemplatesRedirect?.()
     return '/templates'
   }
 
