@@ -80,7 +80,7 @@ export function SocialScreen({
       </Stack>
       <CustomizeFlowNextButton
         label={t('Done')}
-        onClick={() => handleNext}
+        onClick={() => handleNext()}
         ariaLabel={t('Done')}
       />
     </Stack>
