@@ -29,7 +29,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx _serve api-journeys-modern | npx pino-pretty --config .pino-prettyrc.js"
+        "command": "nx _serve api-journeys-modern | pnpm exec pino-pretty --config .pino-prettyrc.js"
       }
     },
     "_serve": {
@@ -52,19 +52,20 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apis/api-journeys-modern"],
       "options": {
-        "jestConfig": "apis/api-journeys-modern/jest.config.ts"
+        "jestConfig": "apis/api-journeys-modern/jest.config.ts",
+        "runInBand": true
       }
     },
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true npx ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
+        "command": "pnpm exec hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
       }
     },
     "fetch-secrets": {
@@ -73,42 +74,10 @@
         "command": "DOPPLER_TOKEN=$DOPPLER_API_JOURNEYS_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-journeys > apis/api-journeys-modern/.env"
       }
     },
-    "prisma-generate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma generate --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-studio": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma studio --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-validate": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma validate --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
-    "prisma-introspect": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          "npx prisma db pull --schema apis/api-journeys-modern/db/schema.prisma"
-        ]
-      }
-    },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apis/api-journeys-modern/tsconfig.json"
+        "command": "pnpm exec tsc -b apis/api-journeys-modern/tsconfig.json"
       }
     },
     "codecov": {
@@ -130,7 +99,14 @@
     "update-shortlinks": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+        "command": "pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json apis/api-journeys-modern/src/workers/cli.ts shortlink-updater"
+      }
+    },
+    "playwright-cleanup": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-generate-ci"],
+      "options": {
+        "command": "pnpm exec ts-node -P apis/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apis/api-journeys-modern/src/workers/cli.ts e2e-cleanup"
       }
     }
   }

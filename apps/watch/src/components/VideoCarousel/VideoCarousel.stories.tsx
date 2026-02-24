@@ -1,15 +1,15 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { watchConfig } from '../../libs/storybook/config'
+import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'
 import { videos } from '../Videos/__generated__/testData'
-import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
 
 import { VideoCarousel } from './VideoCarousel'
 

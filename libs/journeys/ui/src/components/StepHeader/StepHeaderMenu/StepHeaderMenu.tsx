@@ -85,10 +85,9 @@ export function StepHeaderMenu(): ReactElement {
       sx={{
         borderRadius: 100,
         border: isEmpty ? 'dashed' : null,
-        borderWidth: 3,
-        borderColor: ({ palette }) => palette.grey[700],
-        minHeight: 44,
-        minWidth: 44,
+        borderWidth: 2,
+        minHeight: 46,
+        minWidth: 46,
         display: 'grid',
         placeItems: 'center',
         maxWidth: 'min-content',

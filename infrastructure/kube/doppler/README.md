@@ -4,7 +4,7 @@ create service account secret with the following command
 
 ```
 kubectl create secret generic doppler-token-secret \
-  --namespace doppler-operator-system \
+  --namespace default \
   --from-literal=serviceToken=dp.st.dev.XXXX
 ```
 

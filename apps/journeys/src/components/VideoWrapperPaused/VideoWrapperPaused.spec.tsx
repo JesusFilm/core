@@ -13,6 +13,10 @@ jest.mock('@core/journeys/ui/Video', () => ({
 }))
 
 describe('VideoWrapper', () => {
+  beforeEach(() => {
+    ;(Video as jest.Mock).mockClear()
+  })
+
   it('should set videoId to null', () => {
     const block: TreeBlock = {
       id: 'video5.id',
@@ -35,6 +39,11 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: false,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
       children: [
         {
           id: 'image5.id',
@@ -49,7 +58,8 @@ describe('VideoWrapper', () => {
           blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       ]
     }
@@ -76,7 +86,8 @@ describe('VideoWrapper', () => {
             width: 1920,
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ],
         endAt: null,
@@ -96,9 +107,14 @@ describe('VideoWrapper', () => {
         objectFit: null,
         mediaVideo: null,
         videoId: null,
-        videoVariantLanguageId: '529'
+        showGeneratedSubtitles: false,
+        videoVariantLanguageId: '529',
+        subtitleLanguage: null,
+        eventLabel: null,
+        endEventLabel: null,
+        customizable: null
       },
-      {}
+      undefined
     )
   })
 
@@ -124,6 +140,11 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: false,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
       children: [
         {
           id: 'image5.id',
@@ -138,7 +159,8 @@ describe('VideoWrapper', () => {
           blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       ]
     }
@@ -165,7 +187,8 @@ describe('VideoWrapper', () => {
             width: 1920,
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ],
         endAt: null,
@@ -185,9 +208,14 @@ describe('VideoWrapper', () => {
         objectFit: null,
         mediaVideo: null,
         videoId: null,
-        videoVariantLanguageId: '529'
+        showGeneratedSubtitles: false,
+        videoVariantLanguageId: '529',
+        subtitleLanguage: null,
+        eventLabel: null,
+        endEventLabel: null,
+        customizable: null
       },
-      {}
+      undefined
     )
   })
 })

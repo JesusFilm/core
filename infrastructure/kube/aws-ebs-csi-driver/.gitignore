@@ -1,0 +1,5 @@
+# Helm dependency build artifacts (do not commit)
+Chart.lock
+charts/
+
+

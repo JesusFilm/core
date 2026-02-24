@@ -41,12 +41,15 @@ describe('videoStudyQuestion', () => {
 
       it('should create video study question', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
+          async (callback: any) => await callback(prismaMock)
         )
+        ;(updateOrderCreate as jest.Mock).mockResolvedValue(undefined)
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -55,7 +58,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.create.mockResolvedValue({
           id: 'id',
@@ -64,7 +69,20 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoStudyQuestion.update.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: CREATE_VIDEO_STUDY_QUESTION_MUTATION,
@@ -118,7 +136,7 @@ describe('videoStudyQuestion', () => {
 
       it('should update video study question', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
+          async (callback: any) => await callback(prismaMock)
         )
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -127,12 +145,16 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.update.mockResolvedValue({
           id: 'id',
@@ -141,7 +163,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
@@ -179,12 +203,14 @@ describe('videoStudyQuestion', () => {
 
       it('should throw if not found', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
+          async (callback: any) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue(null)
         const result = await authClient({
@@ -202,24 +228,29 @@ describe('videoStudyQuestion', () => {
         expect(result).toHaveProperty('data', null)
       })
 
-      it('should throw if videoId not found', async () => {
+      it('should throw if referenced video not found', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
+          async (callback: any) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
-          videoId: null,
+          videoId: 'videoId',
           value: 'value',
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
+        prismaMock.video.findUnique.mockResolvedValue(null)
         const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {
@@ -247,12 +278,14 @@ describe('videoStudyQuestion', () => {
 
       it('should delete video study question', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
+          async (callback: any) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -261,7 +294,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.delete.mockResolvedValue({
           id: 'id',
@@ -270,7 +305,9 @@ describe('videoStudyQuestion', () => {
           primary: true,
           languageId: 'languageId',
           crowdInId: 'crowdInId',
-          order: 1
+          order: 1,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: DELETE_VIDEO_STUDY_QUESTION_MUTATION,
@@ -296,12 +333,14 @@ describe('videoStudyQuestion', () => {
 
       it('should throw if not found', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback) => await callback(prismaMock)
+          async (callback: any) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue(null)
         const result = await authClient({

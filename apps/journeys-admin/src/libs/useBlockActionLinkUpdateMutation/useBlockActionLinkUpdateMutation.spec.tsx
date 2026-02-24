@@ -1,7 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor } from '@testing-library/react'
-import { act } from 'react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
 
@@ -23,7 +22,8 @@ describe('useBlockActionLinkUpdateMutation', () => {
     endIconId: null,
     submitEnabled: null,
     action: null,
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   it('should update block action', async () => {
@@ -42,7 +42,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'https://github.com')
+      await result.current[0](block1, 'https://github.com', false, 'step.id')
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -65,7 +65,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'https://github.com')
+      await result.current[0](block1, 'https://github.com', false, 'step.id')
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -74,7 +74,9 @@ describe('useBlockActionLinkUpdateMutation', () => {
             __typename: 'LinkAction',
             gtmEventName: null,
             parentBlockId: 'button2.id',
-            url: 'https://github.com'
+            url: 'https://github.com',
+            customizable: false,
+            parentStepId: 'step.id'
           }
         })
       )

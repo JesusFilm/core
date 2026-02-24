@@ -5,6 +5,7 @@ import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
+import RelayPlugin from '@pothos/plugin-relay'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
@@ -16,32 +17,10 @@ import {
 } from 'graphql-scalars'
 import { GraphQLJSONObject } from 'graphql-type-json'
 
-import { Prisma, Role } from '.prisma/api-journeys-modern-client'
-import { User } from '@core/yoga/firebaseClient'
-import { InteropContext } from '@core/yoga/interop'
+import type PrismaTypes from '@core/prisma/journeys/__generated__/pothos-types'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
-import type PrismaTypes from '../__generated__/pothos-types'
-import { prisma } from '../lib/prisma'
-
-interface BaseContext {
-  type: string
-}
-
-interface PublicContext extends BaseContext {
-  type: 'public'
-}
-
-interface AuthenticatedContext extends BaseContext {
-  type: 'authenticated'
-  user: User
-  currentRoles: Role[]
-}
-
-interface LocalInteropContext extends BaseContext, InteropContext {
-  type: 'interop'
-}
-
-export type Context = LocalInteropContext | PublicContext | AuthenticatedContext
+import { AuthScopes, Context, authScopes } from './authScopes'
 
 const PrismaPlugin = pluginName
 
@@ -51,13 +30,12 @@ const createSpan = createOpenTelemetryWrapper(tracer, {
 
 export const builder = new SchemaBuilder<{
   Context: Context
-  AuthScopes: {
-    isAuthenticated: boolean
-    isPublisher: boolean
-    isValidInterop: boolean
-  }
+  AuthScopes: AuthScopes
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isInTeam: Extract<Context, { type: 'authenticated' }>
+    isIntegrationOwner: Extract<Context, { type: 'authenticated' }>
+    isTeamManager: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
@@ -75,6 +53,7 @@ export const builder = new SchemaBuilder<{
     TracingPlugin,
     ScopeAuthPlugin,
     PrismaPlugin,
+    RelayPlugin,
     WithInputPlugin,
     DirectivesPlugin,
     FederationPlugin
@@ -89,28 +68,7 @@ export const builder = new SchemaBuilder<{
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   },
   scopeAuth: {
-    authScopes: async (context: Context) => {
-      switch (context.type) {
-        case 'authenticated':
-          return {
-            isAuthenticated: true,
-            isPublisher: context.currentRoles.includes('publisher'),
-            isValidInterop: false
-          }
-        case 'interop':
-          return {
-            isAuthenticated: false,
-            isPublisher: false,
-            isValidInterop: true
-          }
-        default:
-          return {
-            isAuthenticated: false,
-            isPublisher: false,
-            isValidInterop: false
-          }
-      }
-    }
+    authScopes
   }
 })
 

@@ -6,14 +6,14 @@ import {
   JourneyTheme,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyThemeCreateInput,
   JourneyThemeUpdateInput
 } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { JourneyThemeResolver } from './journeyTheme.resolver'
@@ -77,7 +77,9 @@ describe('JourneyThemeResolver', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    showAssistant: null,
+    templateSite: null
   }
 
   const journeyWithUserTeam = {

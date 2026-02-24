@@ -1,6 +1,6 @@
 import { ApolloProvider, type NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
-import { AppCacheProvider } from '@mui/material-nextjs/v14-pagesRouter'
+import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
 import { Noto_Serif } from 'next/font/google'
@@ -12,18 +12,22 @@ import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 
 import { InstantSearchProvider } from '@core/journeys/ui/algolia/InstantSearchProvider'
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
+import { BetaBanner } from '../src/components/BetaBanner'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
-import '../public/watch/global.css'
-import './fonts/fonts.css'
+import '../styles/globals.css'
+
+// Polyfills
+import '../src/libs/polyfills/requestVideoFrameCallback'
 
 const notoSerif = Noto_Serif({
   weight: ['500', '700'],
@@ -69,7 +73,7 @@ type WatchAppProps = NextJsAppProps<{
 function WatchApp({
   Component,
   pageProps,
-  emotionCache
+  emotionCache = createEmotionCache({})
 }: WatchAppProps): ReactElement {
   useEffect(() => {
     // Remove the server-side injected CSS.
@@ -157,6 +161,7 @@ function WatchApp({
               themeName={ThemeName.website}
               themeMode={ThemeMode.light}
             >
+              <BetaBanner />
               <InstantSearchProvider>
                 <GoogleTagManager
                   gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}

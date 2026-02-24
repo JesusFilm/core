@@ -3,10 +3,16 @@ import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
-import { Prisma, Platform as PrismaPlatform } from '.prisma/api-media-client'
+import {
+  Prisma,
+  Platform as PrismaPlatform,
+  prisma
+} from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { prisma } from '../../lib/prisma'
+import {
+  updateVideoInAlgolia,
+  updateVideoPublishedStatus
+} from '../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
@@ -28,6 +34,7 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
+import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
 
 // Helper function to check if video viewing is restricted for the current platform
@@ -221,7 +228,8 @@ const Video = builder.prismaObject('Video', {
         input: t.arg({ type: VideoVariantFilter, required: false })
       },
       where: ({ input }) => ({
-        published: input?.onlyPublished === false ? undefined : true
+        published: input?.onlyPublished === false ? undefined : true,
+        languageId: input?.languageId ?? undefined
       })
     }),
     slug: t.string({
@@ -249,7 +257,8 @@ const Video = builder.prismaObject('Video', {
             slug: true
           },
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: input?.languageId ?? undefined
           }
         }
       }),
@@ -268,7 +277,8 @@ const Video = builder.prismaObject('Video', {
       select: ({ input }) => ({
         variants: {
           where: {
-            published: input?.onlyPublished === false ? undefined : true
+            published: input?.onlyPublished === false ? undefined : true,
+            languageId: input?.languageId ?? undefined
           }
         }
       }),
@@ -305,6 +315,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     variant: t.prismaField({
+      deprecationReason: 'Use variants instead',
       type: VideoVariant,
       args: {
         languageId: t.arg.id({ required: false }),
@@ -388,7 +399,16 @@ builder.prismaObjectField(Video, 'children', (t) =>
     type: [Video],
     nullable: false,
     select: (_args, context) => {
-      const whereCondition: Prisma.VideoWhereInput = {}
+      const whereCondition: Prisma.VideoWhereInput = {
+        // Only show published children with available languages
+        published: true,
+        availableLanguages: { isEmpty: false }
+      }
+      // Display unpublished and incomplete children in videos-admin
+      if (context.clientName != null && context.clientName === 'videos-admin') {
+        whereCondition.published = undefined
+        whereCondition.availableLanguages = undefined
+      }
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
           restrictViewPlatforms: {
@@ -417,7 +437,11 @@ builder.prismaObjectField(Video, 'parents', (t) =>
     type: [Video],
     nullable: false,
     select: (_args, context) => {
-      const whereCondition: Prisma.VideoWhereInput = {}
+      const whereCondition: Prisma.VideoWhereInput = {
+        // Only show published parents with available languages
+        published: true,
+        availableLanguages: { isEmpty: false }
+      }
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
           restrictViewPlatforms: {
@@ -510,11 +534,19 @@ builder.queryFields((t) => ({
           idType === IdTypeShape.slug
             ? await prisma.video.findFirstOrThrow({
                 ...query,
-                where: { variants: { some: { slug: id } }, published: true }
+                where: {
+                  variants: { some: { slug: id } },
+                  published: true,
+                  availableLanguages: { isEmpty: false }
+                }
               })
             : await prisma.video.findUniqueOrThrow({
                 ...query,
-                where: { id, published: true }
+                where: {
+                  id,
+                  published: true,
+                  availableLanguages: { isEmpty: false }
+                }
               })
 
         // Check if video viewing is restricted for the current platform
@@ -546,7 +578,10 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { offset, limit, where }, context) => {
       const filter = videosFilter(where ?? {})
+
+      // Public query: only show published videos with available languages
       filter.published = true
+      filter.availableLanguages = { isEmpty: false }
 
       // Add platform restriction filter if clientName is provided
       if (isValidClientName(context.clientName)) {
@@ -571,7 +606,10 @@ builder.queryFields((t) => ({
     nullable: false,
     resolve: async (_parent, { where }, context) => {
       const filter = videosFilter(where ?? {})
+
+      // Public query: only show published videos with available languages
       filter.published = true
+      filter.availableLanguages = { isEmpty: false }
 
       // Add platform restriction filter if clientName is provided
       if (isValidClientName(context.clientName)) {
@@ -782,6 +820,12 @@ builder.mutationFields((t) => ({
             console.error('Parent variant video update error:', error)
           }
         }
+        // Update variants' videoPublished status in Algolia when published status changes
+        try {
+          await updateVideoPublishedStatus(input.id, isNowPublished ?? false)
+        } catch (error) {
+          console.error('Video variants Algolia update error:', error)
+        }
       }
 
       try {
@@ -907,6 +951,33 @@ builder.mutationFields((t) => ({
       }
 
       return deletedVideo
+    }
+  }),
+  fixVideoLanguages: t.withAuth({ isPublisher: true }).field({
+    type: 'Boolean',
+    nullable: false,
+    args: {
+      videoId: t.arg.id({ required: true })
+    },
+    resolve: async (_parent, { videoId }) => {
+      // Verify video exists
+      const video = await prisma.video.findUnique({
+        where: { id: videoId },
+        select: { id: true }
+      })
+
+      if (video == null) {
+        throw new GraphQLError(`Video with id ${videoId} not found`)
+      }
+
+      // Use shared helper to recalculate and update availableLanguages
+      try {
+        await updateVideoAvailableLanguages(videoId)
+      } catch (error) {
+        console.error('Language management update error:', error)
+      }
+
+      return true
     }
   })
 }))

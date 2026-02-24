@@ -1,4 +1,4 @@
-import { MessagePlatform as PrismaMessagePlatform } from '.prisma/api-journeys-modern-client'
+import { MessagePlatform as PrismaMessagePlatform } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 

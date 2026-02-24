@@ -22,7 +22,8 @@ export enum GoalType {
   Chat = 'Chat',
   Bible = 'Bible',
   Website = 'Website',
-  Email = 'Email'
+  Email = 'Email',
+  Phone = 'Phone'
 }
 
 function isMessagePlatform(url: string): boolean {

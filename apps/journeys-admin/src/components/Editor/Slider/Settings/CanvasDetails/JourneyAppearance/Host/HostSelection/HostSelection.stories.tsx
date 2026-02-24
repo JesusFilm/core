@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -36,7 +36,7 @@ const userTeam: UserTeam = {
   __typename: 'UserTeam',
   role: UserTeamRole.manager,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     email: user.email,
     firstName: 'User',
     id: user.id,

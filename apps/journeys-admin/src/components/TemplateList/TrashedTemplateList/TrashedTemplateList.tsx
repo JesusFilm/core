@@ -8,19 +8,20 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
-import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
-import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
+import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
+import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 
 const Dialog = dynamic(
   async () =>
@@ -39,14 +40,22 @@ export function TrashedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
+
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -152,18 +161,11 @@ export function TrashedTemplateList({
                 key={journey.id}
                 size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
               >
-                <JourneyProvider
-                  value={{
-                    journey: journey as unknown as JourneyFields,
-                    variant: 'admin'
-                  }}
-                >
-                  <JourneyCard
-                    key={journey.id}
-                    journey={journey}
-                    refetch={refetch}
-                  />
-                </JourneyProvider>
+                <JourneyCard
+                  key={journey.id}
+                  journey={journey}
+                  refetch={refetch}
+                />
               </Grid>
             ))}
           </Grid>

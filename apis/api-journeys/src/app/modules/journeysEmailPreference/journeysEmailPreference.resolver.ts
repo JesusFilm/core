@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
-import { JourneysEmailPreference } from '.prisma/api-journeys-client'
+import { JourneysEmailPreference } from '@core/prisma/journeys/client'
 
 import { JourneysEmailPreferenceUpdateInput } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'

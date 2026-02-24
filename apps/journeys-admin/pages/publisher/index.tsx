@@ -95,29 +95,20 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  let variables: GetAdminJourneysVariables = {}
+  const variables: GetAdminJourneysVariables = {
+    template: true,
+    teamId: 'jfp-team'
+  }
 
   switch (query.tab ?? 'active') {
     case 'active':
-      variables = {
-        // from src/components/TemplateList/ActiveTemplateList useAdminJourneysQuery
-        status: [JourneyStatus.draft, JourneyStatus.published],
-        template: true
-      }
+      variables.status = [JourneyStatus.draft, JourneyStatus.published]
       break
     case 'archived':
-      variables = {
-        // from src/components/TemplateList/ArchivedTemplateList useAdminJourneysQuery
-        status: [JourneyStatus.archived],
-        template: true
-      }
+      variables.status = [JourneyStatus.archived]
       break
     case 'trashed':
-      variables = {
-        // from src/components/TemplateList/TrashedTemplateList useAdminJourneysQuery
-        status: [JourneyStatus.trashed],
-        template: true
-      }
+      variables.status = [JourneyStatus.trashed]
       break
   }
 

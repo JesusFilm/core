@@ -2,6 +2,9 @@ import '@testing-library/jest-dom'
 import 'isomorphic-fetch'
 import { configure } from '@testing-library/react'
 
+import { server } from './test/mswServer'
+import './test/i18n'
+
 configure({ asyncUtilTimeout: 2500 })
 
 jest.mock('next/image', () => ({
@@ -25,5 +28,34 @@ Object.defineProperty(
 
 jest.mock('next/router', () => require('next-router-mock'))
 
+// Mock ResizeObserver for components that use it
+class ResizeObserverMock {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  observe(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  unobserve(): void {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  disconnect(): void {}
+}
+
+global.ResizeObserver = ResizeObserverMock
+
+// Mock scrollIntoView for better test compatibility
+if (
+  window.HTMLElement != null &&
+  window.HTMLElement.prototype.scrollIntoView == null
+) {
+  Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+    configurable: true,
+    writable: true,
+    value: jest.fn()
+  })
+}
+
 if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })
+
+// Start/stop MSW for node test env
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())

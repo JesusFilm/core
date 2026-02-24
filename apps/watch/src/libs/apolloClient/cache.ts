@@ -18,6 +18,8 @@ export const cache = (): InMemoryCache =>
         'GridItemBlock',
         'IconBlock',
         'ImageBlock',
+        'MultiselectBlock',
+        'MultiselectOptionBlock',
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',
@@ -36,7 +38,7 @@ export const cache = (): InMemoryCache =>
             ...offsetLimitPagination(),
             keyArgs: [
               'where',
-              ['labels', 'availableVariantLanguageIds', 'title']
+              ['labels', 'availableVariantLanguageIds', 'title', 'ids']
             ]
           }
         }

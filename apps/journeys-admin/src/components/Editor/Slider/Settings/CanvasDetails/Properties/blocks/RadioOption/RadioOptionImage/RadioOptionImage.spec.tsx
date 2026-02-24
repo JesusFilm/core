@@ -108,7 +108,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const radioOption: TreeBlock<RadioOptionBlock> = {
@@ -119,11 +124,14 @@ const radioOption: TreeBlock<RadioOptionBlock> = {
   pollOptionImageBlockId: null,
   children: [],
   label: 'radio option 1',
+  eventLabel: null,
   action: {
     __typename: 'LinkAction',
     url: 'https://example.com',
     parentBlockId: 'radioQuestion1.id',
-    gtmEventName: 'radioOption1.id'
+    gtmEventName: 'radioOption1.id',
+    customizable: false,
+    parentStepId: null
   }
 }
 
@@ -140,7 +148,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 describe('RadioOptionImage', () => {
@@ -191,7 +200,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         radioOptionBlockUpdate: {
           id: radioOption.id,
@@ -476,7 +486,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const radioOptionImageUpdateMock: MockedResponse<
@@ -503,6 +514,8 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            // The Unsplash collection query is triggered multiple times during interactions
             listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
@@ -557,7 +570,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const radioOptionImageUpdateMock: MockedResponse<
@@ -587,6 +601,8 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            // Provide an extra mock as the query may fire twice
             listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
@@ -658,7 +674,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const radioOptionImageUpdateMock: MockedResponse<
@@ -691,6 +708,8 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            // Provide an extra mock as the query may fire multiple times
             listUnsplashCollectionPhotosMock,
             createCloudflareUploadByUrlMock,
             {
@@ -812,7 +831,12 @@ describe('RadioOptionImage', () => {
       render(
         <MockedProvider
           cache={cache}
-          mocks={[radioOptionImageDeleteMock, radioOptionImageRestoreMock]}
+          mocks={[
+            listUnsplashCollectionPhotosMock,
+            listUnsplashCollectionPhotosMock,
+            radioOptionImageDeleteMock,
+            radioOptionImageRestoreMock
+          ]}
         >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <SnackbarProvider>
@@ -865,6 +889,8 @@ describe('RadioOptionImage', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            listUnsplashCollectionPhotosMock,
+            listUnsplashCollectionPhotosMock,
             radioOptionImageDeleteMock,
             radioOptionImageRestoreMock,
             radioOptionImageDeleteMock

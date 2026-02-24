@@ -26,7 +26,9 @@ describe('SignUp Attributes', () => {
       __typename: 'LinkAction',
       parentBlockId: 'signup.id',
       gtmEventName: 'signup',
-      url: 'https://www.google.com'
+      url: 'https://www.google.com',
+      customizable: false,
+      parentStepId: null
     },
     submitIconId: 'icon',
     children: [
@@ -72,9 +74,7 @@ describe('SignUp Attributes', () => {
         <SignUp {...block} />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Action URL/Website' })
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Action Website' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Button Icon Arrow Right' })
     ).toBeInTheDocument()

@@ -100,11 +100,22 @@ export const JOURNEY_FIELDS = gql`
     menuStepBlock {
       ...StepFields
     }
+    socialNodeX
+    socialNodeY
     journeyTheme {
       id
       headerFont
       bodyFont
       labelFont
     }
+    journeyCustomizationDescription
+    journeyCustomizationFields {
+      id
+      journeyId
+      key
+      value
+      defaultValue
+    }
+    fromTemplateId
   }
 `

@@ -10,9 +10,13 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
+
+import Globe from '@core/shared/ui/icons/Globe'
+import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
+import { isTemplateCustomizable } from '../../libs/isTemplateCustomizable'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { useNavigationState } from '../../libs/useNavigationState'
 
@@ -52,6 +56,7 @@ export function TemplateGalleryCard({
 }: TemplateGalleryCardProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const isNavigating = useNavigationState()
+  const [isCardHovered, setIsCardHovered] = useState(false)
 
   const theme = useTheme()
   const router = useRouter()
@@ -113,142 +118,253 @@ export function TemplateGalleryCard({
           outlineColor: (theme) => theme.palette.primary.main
         }
       }}
+      onMouseEnter={() => setIsCardHovered(true)}
+      onMouseLeave={() => setIsCardHovered(false)}
     >
-      <NextLink href={journeyIdPath} passHref legacyBehavior prefetch>
-        <Box
-          component="a"
-          tabIndex={-1}
-          data-testid="templateGalleryCard"
+      <Box
+        component={NextLink}
+        href={journeyIdPath}
+        tabIndex={-1}
+        data-testid="templateGalleryCard"
+        sx={{
+          height: 'inherit',
+          color: 'inherit',
+          textDecoration: 'none'
+        }}
+      >
+        {journey != null ? (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: 'relative',
+              aspectRatio: 1,
+              overflow: 'hidden',
+              borderRadius: 2,
+              alignItems: 'center',
+              backgroundColor: 'background.default'
+            }}
+          >
+            <Stack
+              direction="column"
+              spacing={1}
+              alignItems="flex-start"
+              sx={{
+                position: 'absolute',
+                top: { xs: 4, md: 6 },
+                left: { xs: 4, md: 6 },
+                zIndex: 3
+              }}
+            >
+              {isTemplateCustomizable(journey) && (
+                <Box
+                  data-testid="TemplateGalleryCardQuickStartBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000000cc',
+                    borderRadius: { xs: 8, md: 11 },
+                    padding: { xs: 0.5, md: 1 },
+                    paddingRight: isCardHovered
+                      ? { xs: 2, md: 3 }
+                      : { xs: 0.5, md: 1 },
+                    transition: 'padding 0.3s ease',
+                    boxShadow: '0 3px 4px 0 #0000004D'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: { xs: 16, md: 22 },
+                      height: { xs: 16, md: 22 },
+                      borderRadius: '50%',
+                      background: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Lightning2
+                      sx={{ fontSize: { xs: 14, md: 18 }, color: '#FFD700' }}
+                    />
+                  </Box>
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? { xs: 60, md: 100 } : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#FFD700',
+                      typography: 'overline2',
+                      fontSize: { xs: '0.65rem', md: '0.75rem' }
+                    }}
+                  >
+                    {t('Quick Start')}
+                  </Typography>
+                </Box>
+              )}
+              {journey.website && (
+                <Box
+                  data-testid="TemplateGalleryCardWebsiteBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000000cc',
+                    borderRadius: { xs: 8, md: 11 },
+                    padding: { xs: 0.5, md: 1 },
+                    paddingRight: isCardHovered
+                      ? { xs: 2, md: 3 }
+                      : { xs: 0.5, md: 1 },
+                    transition: 'padding 0.3s ease',
+                    boxShadow: '0 3px 4px 0 #0000004D'
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: { xs: 16, md: 22 },
+                      height: { xs: 16, md: 22 },
+                      borderRadius: '50%',
+                      background: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Globe
+                      sx={{ fontSize: { xs: 14, md: 18 }, color: '#4DA3FF' }}
+                    />
+                  </Box>
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? { xs: 60, md: 100 } : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#4DA3FF',
+                      typography: 'overline2',
+                      fontSize: { xs: '0.65rem', md: '0.75rem' }
+                    }}
+                  >
+                    {t('Website')}
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
+            {journey?.primaryImageBlock?.src != null ? (
+              <>
+                <HoverLayer className="hoverImageEffects" />
+                <Image
+                  rel={priority === true ? 'preload' : undefined}
+                  priority={priority}
+                  className="MuiImageBackground-root"
+                  src={journey?.primaryImageBlock?.src}
+                  alt={journey?.primaryImageBlock.alt}
+                  fill
+                  // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
+                  sizes={`(max-width: ${
+                    theme.breakpoints.values.md - 0.5
+                  }px) 130px, (max-width: ${
+                    theme.breakpoints.values.xl - 0.5
+                  }px) 180px, 280px`}
+                  style={{
+                    objectFit: 'cover'
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <HoverLayer className="hoverImageEffects" />
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+              </>
+            )}
+          </Stack>
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            sx={{
+              width: { xs: 130, md: 180, xl: 240 },
+              height: { xs: 130, md: 180, xl: 240 },
+              borderColor: 'divider',
+              borderRadius: 2,
+              backgroundColor: 'background.default'
+            }}
+          />
+        )}
+        <Stack
           sx={{
-            height: 'inherit',
-            color: 'inherit',
-            textDecoration: 'none'
+            px: 0,
+            py: 3
           }}
         >
           {journey != null ? (
-            <Stack
-              justifyContent="center"
-              alignItems="center"
-              sx={{
-                position: 'relative',
-                aspectRatio: 1,
-                overflow: 'hidden',
-                borderRadius: 2,
-                alignItems: 'center',
-                backgroundColor: 'background.default'
-              }}
-            >
-              {journey?.primaryImageBlock?.src != null ? (
-                <>
-                  <HoverLayer className="hoverImageEffects" />
-                  <Image
-                    rel={priority === true ? 'preload' : undefined}
-                    priority={priority}
-                    className="MuiImageBackground-root"
-                    src={journey?.primaryImageBlock?.src}
-                    alt={journey?.primaryImageBlock.alt}
-                    fill
-                    // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
-                    sizes={`(max-width: ${
-                      theme.breakpoints.values.md - 0.5
-                    }px) 130px, (max-width: ${
-                      theme.breakpoints.values.xl - 0.5
-                    }px) 180px, 280px`}
-                    style={{
-                      objectFit: 'cover'
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <HoverLayer className="hoverImageEffects" />
-                  <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-                </>
-              )}
-            </Stack>
-          ) : (
-            <Skeleton
-              variant="rectangular"
-              sx={{
-                width: { xs: 130, md: 180, xl: 240 },
-                height: { xs: 130, md: 180, xl: 240 },
-                borderColor: 'divider',
-                borderRadius: 2,
-                backgroundColor: 'background.default'
-              }}
-            />
-          )}
-          <Stack
-            sx={{
-              px: 0,
-              py: 3
-            }}
-          >
-            {journey != null ? (
-              <>
+            <>
+              <Typography
+                variant="overline2"
+                sx={{
+                  whiteSpace: 'noWrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  color: (theme) => theme.palette.grey[700]
+                }}
+              >
+                {t('{{ date }} ● {{ displayLanguage }}', {
+                  date,
+                  displayLanguage
+                })}
+              </Typography>
+              <Box
+                sx={{
+                  display: { xs: 'none', md: '-webkit-box' },
+                  height: '66px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 3
+                }}
+              >
                 <Typography
-                  variant="overline2"
+                  variant="subtitle2"
                   sx={{
-                    whiteSpace: 'noWrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    color: (theme) => theme.palette.grey[700]
+                    my: 1
                   }}
                 >
-                  {t('{{ date }} ● {{ displayLanguage }}', {
-                    date,
-                    displayLanguage
-                  })}
+                  {journey.title}
                 </Typography>
-                <Box
-                  sx={{
-                    display: { xs: 'none', md: '-webkit-box' },
-                    height: '66px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      my: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: { xs: '-webkit-box', md: 'none' },
-                    height: '63px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3
-                  }}
-                >
-                  <Typography
-                    variant="subtitle3"
-                    sx={{
-                      my: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                </Box>
-              </>
-            ) : (
-              <Box>
-                <Skeleton variant="text" sx={{ width: '100%' }} />
-                <Skeleton variant="text" sx={{ width: '100%' }} />
-                <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
-            )}
-          </Stack>
-        </Box>
-      </NextLink>
+              <Box
+                sx={{
+                  display: { xs: '-webkit-box', md: 'none' },
+                  height: '63px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 3
+                }}
+              >
+                <Typography
+                  variant="subtitle3"
+                  sx={{
+                    my: 1
+                  }}
+                >
+                  {journey.title}
+                </Typography>
+              </Box>
+            </>
+          ) : (
+            <Box>
+              <Skeleton variant="text" sx={{ width: '100%' }} />
+              <Skeleton variant="text" sx={{ width: '100%' }} />
+              <Skeleton variant="text" sx={{ width: '60%' }} />
+            </Box>
+          )}
+        </Stack>
+      </Box>
     </Card>
   )
 }

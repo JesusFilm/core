@@ -49,7 +49,8 @@ export const journey: Journey = {
       blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'CardBlock',
@@ -61,7 +62,8 @@ export const journey: Journey = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     },
     {
       __typename: 'ButtonBlock',
@@ -79,9 +81,12 @@ export const journey: Journey = {
         __typename: 'LinkAction',
         parentBlockId: 'button1.id',
         gtmEventName: null,
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        customizable: false,
+        parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       __typename: 'StepBlock',
@@ -105,7 +110,8 @@ export const journey: Journey = {
       blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'CardBlock',
@@ -117,7 +123,8 @@ export const journey: Journey = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     },
     {
       id: 'signup.id',
@@ -129,7 +136,9 @@ export const journey: Journey = {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        customizable: false,
+        parentStepId: null
       },
       submitIconId: 'icon'
     },
@@ -162,5 +171,10 @@ export const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }

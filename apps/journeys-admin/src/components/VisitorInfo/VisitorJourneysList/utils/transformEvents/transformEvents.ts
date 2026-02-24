@@ -28,7 +28,8 @@ export function transformEvents(events: Event[]): TransformedEvents {
     'TextResponseSubmissionEvent',
     'ButtonClickEvent',
     'RadioQuestionSubmissionEvent',
-    'SignUpSubmissionEvent'
+    'SignUpSubmissionEvent',
+    'MultiselectSubmissionEvent'
   ]
 
   const eventTypesFilter: Array<Event['__typename']> = [
@@ -48,6 +49,7 @@ export function transformEvents(events: Event[]): TransformedEvents {
   )
 
   const eventsWithDuration: TimelineItem[] = []
+
   filteredEvents.forEach((event, i) => {
     eventsWithDuration.push({ event })
     if (i - 1 >= 0) {

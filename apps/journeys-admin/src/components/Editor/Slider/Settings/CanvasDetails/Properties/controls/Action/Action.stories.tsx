@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -71,7 +71,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const Template: StoryObj<typeof Action> = {
@@ -135,6 +140,13 @@ export const NavigateToBlockAction = {
   args: {
     steps,
     selectedBlock: steps[4].children[0].children[4]
+  }
+}
+
+export const PhoneAction = {
+  ...Template,
+  args: {
+    selectedBlock: steps[1].children[0].children[5]
   }
 }
 

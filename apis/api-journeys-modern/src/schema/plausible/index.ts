@@ -1,0 +1,8 @@
+import './inputs'
+import './journeysPlausibleStatsAggregate.query'
+import './journeysPlausibleStatsBreakdown.query'
+import './journeysPlausibleStatsRealtimeVisitors.query'
+import './journeysPlausibleStatsTimeseries.query'
+import './templateFamilyStatsAggregate'
+import './templateFamilyStatsBreakdown'
+import './plausible'

@@ -26,6 +26,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -43,7 +44,8 @@ const button: TreeBlock<ButtonBlock> = {
   submitEnabled: null,
   action: null,
   children: [],
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -59,7 +61,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const radioQuestion: TreeBlock<RadioQuestionBlock> = {
@@ -95,7 +98,8 @@ const textResponse: TreeBlock<TextResponseBlock> = {
   type: null,
   routeId: null,
   required: null,
-  children: []
+  children: [],
+  hideLabel: false
 }
 
 const typography: TreeBlock<TypographyBlock> = {
@@ -126,6 +130,7 @@ const video: TreeBlock<VideoBlock> = {
   posterBlockId: 'posterBlockId',
   fullsize: null,
   action: null,
+  customizable: null,
   videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
@@ -134,6 +139,10 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

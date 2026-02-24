@@ -10,6 +10,7 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
 import { AiEditButton } from './AiEditButton'
 import { Fab } from './Fab'
@@ -55,20 +56,22 @@ export function Editor({
           ...initialState
         }}
       >
-        <HotkeysProvider>
-          <FontLoader
-            fonts={[
-              journey?.journeyTheme?.headerFont ?? '',
-              journey?.journeyTheme?.bodyFont ?? '',
-              journey?.journeyTheme?.labelFont ?? ''
-            ]}
-          />
-          <Hotkeys />
-          <Toolbar user={user} />
-          <Slider />
-          <Fab variant="mobile" />
-          {aiEditButton && <AiEditButton />}
-        </HotkeysProvider>
+        <MuxVideoUploadProvider>
+          <HotkeysProvider>
+            <FontLoader
+              fonts={[
+                journey?.journeyTheme?.headerFont ?? '',
+                journey?.journeyTheme?.bodyFont ?? '',
+                journey?.journeyTheme?.labelFont ?? ''
+              ]}
+            />
+            <Hotkeys />
+            <Toolbar user={user} />
+            <Slider />
+            <Fab variant="mobile" />
+            {aiEditButton && <AiEditButton />}
+          </HotkeysProvider>
+        </MuxVideoUploadProvider>
       </EditorProvider>
     </JourneyProvider>
   )

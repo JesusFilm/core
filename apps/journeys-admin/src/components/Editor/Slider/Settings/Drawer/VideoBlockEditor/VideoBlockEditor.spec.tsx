@@ -1,12 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetVideoVariantLanguages_video } from '../../../../../../../__generated__/GetVideoVariantLanguages'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
@@ -32,6 +37,10 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: false,
+  eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -56,6 +65,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  customizable: null,
   children: []
 }
 
@@ -115,7 +125,12 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   source: VideoBlockSource.youTube,
   mediaVideo: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: false,
+  eventLabel: null,
+  endEventLabel: null,
   posterBlockId: 'poster1.id',
+  customizable: null,
   children: []
 }
 
@@ -324,5 +339,230 @@ describe('VideoBlockEditor', () => {
       </ThemeProvider>
     )
     expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+  })
+
+  it('renders VideoBlockEditorSettings when videoId is present', async () => {
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    await waitFor(() => {
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+    })
+  })
+
+  it('does not render VideoBlockEditorSettings when videoId is null', () => {
+    const videoWithoutId = {
+      ...videoInternal,
+      videoId: null
+    } as TreeBlock<VideoBlock>
+
+    const { queryByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoWithoutId}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(
+      queryByRole('checkbox', { name: 'Autoplay' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders Source component', () => {
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+  })
+
+  it('calls onChange when video properties are updated', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+    })
+  })
+
+  it('handles Mux video source', async () => {
+    const videoMux: TreeBlock<VideoBlock> = {
+      ...videoInternal,
+      source: VideoBlockSource.mux,
+      mediaVideo: {
+        __typename: 'MuxVideo',
+        id: 'muxVideoId',
+        assetId: 'assetId',
+        playbackId: 'playbackId'
+      }
+    }
+
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor selectedBlock={videoMux} onChange={jest.fn()} />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    })
+  })
+
+  it('finds posterBlock from children', async () => {
+    const videoWithPoster: TreeBlock<VideoBlock> = {
+      ...videoInternal,
+      posterBlockId: 'poster1.id',
+      children: [
+        {
+          id: 'poster1.id',
+          __typename: 'ImageBlock',
+          parentBlockId: 'video1.id',
+          parentOrder: 0,
+          src: 'https://example.com/poster.jpg',
+          alt: 'poster',
+          width: 1920,
+          height: 1080,
+          blurhash: 'blurhash',
+          scale: null,
+          focalTop: null,
+          focalLeft: null,
+          customizable: null,
+          children: []
+        }
+      ]
+    }
+
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoWithPoster}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    })
+  })
+
+  describe('BlockCustomizationToggle', () => {
+    it('should not render BlockCustomizationToggle when journey is not a template', () => {
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <VideoBlockEditor
+                selectedBlock={videoInternal}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should render BlockCustomizationToggle when journey is a template and selectedBlock is non-null', () => {
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoInternal}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when customizableMedia flag is false', () => {
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: false }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoInternal}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
   })
 })

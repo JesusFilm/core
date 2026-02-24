@@ -1,9 +1,10 @@
 import compact from 'lodash/compact'
 
-import { Platform } from '.prisma/api-media-client'
+import { Platform, prisma } from '@core/prisma/media/client'
 
+import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
-import { prisma } from '../../lib/prisma'
+import { ensureLanguageHasVideosTrue } from '../../lib/languages/ensureLanguageHasVideos'
 import {
   videoCacheReset,
   videoVariantCacheReset
@@ -12,6 +13,11 @@ import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { deleteVideo } from '../mux/video/service'
+import {
+  addLanguageToVideo,
+  removeLanguageFromVideoIfUnused,
+  updateParentCollectionLanguages
+} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
@@ -217,58 +223,6 @@ export async function handleParentVariantCreation(
   await Promise.allSettled(promises)
 }
 
-async function updateAvailableLanguages(
-  videoId: string,
-  languageId: string,
-  action: 'add' | 'check'
-) {
-  if (action === 'add') {
-    // Atomic add with duplicate prevention
-    await prisma.video.update({
-      where: {
-        id: videoId,
-        NOT: {
-          availableLanguages: {
-            has: languageId
-          }
-        }
-      },
-      data: {
-        availableLanguages: {
-          push: languageId
-        }
-      }
-    })
-  } else if (action === 'check') {
-    // Use a transaction to ensure consistency
-    await prisma.$transaction(async (tx) => {
-      const video = await tx.video.findUnique({
-        where: { id: videoId },
-        select: { availableLanguages: true }
-      })
-
-      if (!video) return
-
-      const hasOtherVariants = await tx.videoVariant.count({
-        where: { videoId, languageId, published: true }
-      })
-
-      if (hasOtherVariants === 0) {
-        await tx.video.update({
-          where: { id: videoId },
-          data: {
-            availableLanguages: {
-              set: video.availableLanguages.filter(
-                (lang: string) => lang !== languageId
-              )
-            }
-          }
-        })
-      }
-    })
-  }
-}
-
 // Helper function to handle parent variant cleanup for child videos
 export async function handleParentVariantCleanup(
   videoId: string,
@@ -470,7 +424,8 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
     version: t.withAuth({ isPublisher: true }).exposeInt('version', {
       nullable: false,
       description: 'version control for master video file'
-    })
+    }),
+    video: t.relation('video')
   })
 })
 
@@ -481,7 +436,7 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, context) => {
+    resolve: async (query, _parent, { id }) => {
       const videoVariant = await prisma.videoVariant.findUnique({
         ...query,
         where: { id }
@@ -502,7 +457,8 @@ builder.queryFields((t) => ({
         ...query,
 
         where: {
-          published: input?.onlyPublished === false ? undefined : true
+          published: input?.onlyPublished === false ? undefined : true,
+          languageId: input?.languageId ?? undefined
         }
       })
   })
@@ -516,6 +472,12 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      const hadAnyVariantsForLanguage =
+        (await prisma.videoVariant.findFirst({
+          where: { languageId: input.languageId },
+          select: { id: true }
+        })) != null
+
       const newVariant = await prisma.videoVariant.create({
         ...query,
         data: {
@@ -525,11 +487,25 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
-      await updateAvailableLanguages(
-        newVariant.videoId,
-        newVariant.languageId,
-        'add'
-      )
+      // Update video's availableLanguages and cascade to parent collections only for published variants
+      if (newVariant.published) {
+        await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
+        await updateParentCollectionLanguages(newVariant.videoId)
+        // Keep videos index (hasAvailableLanguages) in sync
+        try {
+          await updateVideoInAlgolia(newVariant.videoId)
+        } catch (error) {
+          console.error('Algolia update error:', error)
+        }
+      }
+
+      try {
+        if (!hadAnyVariantsForLanguage) {
+          await ensureLanguageHasVideosTrue(newVariant.languageId)
+        }
+      } catch (error) {
+        console.error('Language hasVideos update error:', error)
+      }
 
       // Handle parent variant creation for child videos
       try {
@@ -577,6 +553,15 @@ builder.mutationFields((t) => ({
         throw new Error(`VideoVariant with id ${input.id} not found`)
       }
 
+      const nextLanguageId = input.languageId ?? currentVariant.languageId
+      const languageChanged = nextLanguageId !== currentVariant.languageId
+      const hadAnyVariantsForNextLanguage = languageChanged
+        ? (await prisma.videoVariant.findFirst({
+            where: { languageId: nextLanguageId },
+            select: { id: true }
+          })) != null
+        : true
+
       const updated = await prisma.videoVariant.update({
         ...query,
         where: { id: input.id },
@@ -623,18 +608,38 @@ builder.mutationFields((t) => ({
         }
 
         // Update availableLanguages array based on published status change
-        if (isNowPublished) {
-          await updateAvailableLanguages(
-            currentVariant.videoId,
-            currentVariant.languageId,
-            'add'
-          )
-        } else {
-          await updateAvailableLanguages(
-            currentVariant.videoId,
-            currentVariant.languageId,
-            'check'
-          )
+        try {
+          if (isNowPublished) {
+            await addLanguageToVideo(
+              currentVariant.videoId,
+              currentVariant.languageId
+            )
+          } else {
+            await removeLanguageFromVideoIfUnused(
+              currentVariant.videoId,
+              currentVariant.languageId
+            )
+          }
+
+          // Cascade update to parent collections
+          await updateParentCollectionLanguages(currentVariant.videoId)
+
+          // Keep videos index (hasAvailableLanguages) in sync
+          try {
+            await updateVideoInAlgolia(currentVariant.videoId)
+          } catch (error) {
+            console.error('Algolia update error:', error)
+          }
+        } catch (error) {
+          console.error('Language management update error:', error)
+        }
+      }
+
+      if (languageChanged && !hadAnyVariantsForNextLanguage) {
+        try {
+          await ensureLanguageHasVideosTrue(nextLanguageId)
+        } catch (error) {
+          console.error('Language hasVideos update error:', error)
         }
       }
 
@@ -764,7 +769,21 @@ builder.mutationFields((t) => ({
       }
 
       // Update availableLanguages array when variant is deleted
-      await updateAvailableLanguages(videoId, languageId, 'check')
+      try {
+        await removeLanguageFromVideoIfUnused(videoId, languageId)
+
+        // Cascade update to parent collections
+        await updateParentCollectionLanguages(videoId)
+
+        // Keep videos index (hasAvailableLanguages) in sync
+        try {
+          await updateVideoInAlgolia(videoId)
+        } catch (error) {
+          console.error('Algolia update error:', error)
+        }
+      } catch (error) {
+        console.error('Language management cleanup error:', error)
+      }
 
       try {
         await updateVideoVariantInAlgolia(id)

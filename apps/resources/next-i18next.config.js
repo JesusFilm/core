@@ -1,0 +1,62 @@
+const isBrowser = typeof window !== 'undefined'
+
+let localePath
+if (isBrowser) {
+  // browser
+  localePath = './public/locales'
+} else if (process.env.VERCEL == null || process.env.CI != null) {
+  // not vercel or vercel build time
+  localePath = require('path').resolve('../../libs/locales')
+} else {
+  // vercel run time
+  localePath = require('path').resolve('./public/locales')
+}
+
+/**
+ * @type {Record<string, string>}
+ */
+const fallbackLng = {
+  es: 'es-ES',
+  fr: 'fr-FR',
+  id: 'id-ID',
+  th: 'th-TH',
+  ja: 'ja-JP',
+  ko: 'ko-KR',
+  ru: 'ru-RU',
+  tl: 'tl-PH',
+  tr: 'tr-TR',
+  zh: 'zh-Hans-CN'
+}
+
+/**
+ * @type {import('next-i18next').UserConfig}
+ **/
+const i18nConfig = {
+  i18n: {
+    defaultLocale: 'en',
+    locales: [
+      'en', // English
+      'es', // Spanish
+      'fr', // French
+      'id', // Indonesian
+      'th', // Thai
+      'ja', // Japanese
+      'ko', // Korean
+      'ru', // Russian
+      'tl', // Tagalog
+      'tr', // Turkish
+      'zh', // Chinese
+      'zh-Hans-CN' // Chinese, Simplified
+    ]
+  },
+  ns: ['apps-resources'],
+  fallbackLng: {
+    default: [] // left blank so english isn't sent to the client
+  },
+  localePath: (lng, ns) =>
+    `${localePath}/${fallbackLng[lng] ?? lng}/${ns}.json`,
+  serializeConfig: false,
+  react: { useSuspense: false }
+}
+
+module.exports = i18nConfig

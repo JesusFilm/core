@@ -62,6 +62,7 @@ data "aws_ssm_parameter" "doppler_core_prod_token" {
   name = "/terraform/prd/DOPPLER_CORE_PROD_TOKEN"
 }
 
-data "aws_ssm_parameter" "doppler_media_transcoder_prod_token" {
-  name = "/terraform/prd/DOPPLER_MEDIA_TRANSCODER_PROD_TOKEN"
+data "aws_ssm_parameter" "doppler_cms_prod_token" {
+  name = "/terraform/prd/DOPPLER_CMS_PROD_TOKEN"
 }
+

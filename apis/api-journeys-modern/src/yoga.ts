@@ -13,13 +13,14 @@ import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
+import { prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getInteropContext } from '@core/yoga/interop'
 
-import { prisma } from './lib/prisma'
+import { env } from './env'
 import { logger } from './logger'
 import { schema } from './schema'
-import { Context } from './schema/builder'
+import { Context } from './schema/authScopes'
 
 export const cache = createInMemoryCache()
 
@@ -33,18 +34,21 @@ export const yoga = createYoga<
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
 
-    if (user != null)
+    if (user != null) {
+      const currentRoles =
+        (
+          await prisma.userRole.findUnique({
+            where: { userId: user?.id }
+          })
+        )?.roles ?? []
+
       return {
         ...initContextCache(),
         type: 'authenticated',
-        user,
-        currentRoles:
-          (
-            await prisma.userRole.findUnique({
-              where: { userId: user.id }
-            })
-          )?.roles ?? []
+        user: { ...user, roles: currentRoles },
+        currentRoles
       }
+    }
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
     const interopContext = getInteropContext({ interopToken, ipAddress })
@@ -65,7 +69,7 @@ export const yoga = createYoga<
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
-          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+          secret: env.GATEWAY_HMAC_SECRET
         })
       : {},
     useReadinessCheck({
@@ -77,7 +81,17 @@ export const yoga = createYoga<
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
           session: () => null,
-          cache
+          cache,
+          ttlPerSchemaCoordinate: {
+            'Journey.blockTypenames': 0,
+            'Query.googleSheetsSyncs': 0,
+            'Query.journeysPlausibleStatsAggregate': 5000,
+            'Query.journeysPlausibleStatsBreakdown': 5000,
+            'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
+            'Query.journeysPlausibleStatsTimeseries': 5000,
+            'Query.templateFamilyStatsAggregate': 5000,
+            'Query.templateFamilyStatsBreakdown': 5000
+          }
         })
       : {}
   ]

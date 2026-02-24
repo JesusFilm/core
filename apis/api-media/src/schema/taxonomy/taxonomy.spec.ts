@@ -1,4 +1,4 @@
-import { Taxonomy, TaxonomyName } from '.prisma/api-media-client'
+import { Taxonomy, TaxonomyName } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -29,7 +29,9 @@ describe('Taxonomy', () => {
           id: '1',
           category: 'book',
           term: 'genesis',
-          name: []
+          name: [],
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ] as Array<Taxonomy & { name: TaxonomyName[] }>)
 
@@ -78,7 +80,9 @@ describe('Taxonomy', () => {
           id: '2',
           category: 'chapter',
           term: 'exodus',
-          name: []
+          name: [],
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ] as Array<Taxonomy & { name: TaxonomyName[] }>)
 

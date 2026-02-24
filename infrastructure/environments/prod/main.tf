@@ -117,6 +117,21 @@ module "api-media" {
   }
 }
 
+module "cms" {
+  source = "../../../apps/cms/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/_health"
+      health_check_port = "1337"
+    })
+  })
+  env              = "prod"
+  doppler_token    = data.aws_ssm_parameter.doppler_cms_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_name        = "cms.central.jesusfilm.org"
+}
+
 module "arclight" {
   source = "../../../apps/arclight/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
@@ -214,9 +229,3 @@ module "eks" {
   subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
 }
 
-module "media-transcoder" {
-  source                  = "../../../apis/media-transcoder/infrastructure"
-  env                     = "prod"
-  doppler_token           = data.aws_ssm_parameter.doppler_media_transcoder_prod_token.value
-  task_execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
-}

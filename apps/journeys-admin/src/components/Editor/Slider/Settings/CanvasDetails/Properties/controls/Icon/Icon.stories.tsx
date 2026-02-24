@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -36,6 +36,7 @@ export const Default: StoryObj<typeof Icon> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       children: [
         {
           id: 'iconBlock.id',
@@ -80,6 +81,7 @@ export const Filled: StoryObj<typeof Icon> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       children: [
         {
           __typename: 'IconBlock',

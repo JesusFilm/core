@@ -105,12 +105,20 @@ export function VideoDetails({
       videoId: null,
       videoVariantLanguageId: null,
       posterBlockId: null,
-      source: VideoBlockSource.internal
+      source: VideoBlockSource.internal,
+      startAt: null,
+      endAt: null
     })
   }
 
   return (
-    <Drawer title={t('Video Details')} open={open} onClose={onClose}>
+    <Drawer
+      title={t('Video Details')}
+      open={open}
+      onClose={() => {
+        onClose(true)
+      }}
+    >
       <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
         {activeVideoBlock != null && (
           <Stack
@@ -145,12 +153,17 @@ export function VideoDetails({
             mt: activeVideoBlock != null ? -6 : 0
           }}
         >
-          <Details
-            id={id}
-            open={open}
-            onSelect={handleSelect}
-            activeVideoBlock={activeVideoBlock}
-          />
+          {/* render conditional to unmount details content if not open */}
+          {open && (
+            <Details
+              data-testid="DetailsContent"
+              key={activeVideoBlock?.videoId}
+              id={id}
+              open={open}
+              onSelect={handleSelect}
+              activeVideoBlock={activeVideoBlock}
+            />
+          )}
         </Box>
       </Stack>
     </Drawer>

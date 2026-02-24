@@ -2,29 +2,22 @@ import { BullModule } from '@nestjs/bullmq'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import { VisitorService } from '../visitor/visitor.service'
 
-import {
-  ButtonClickEventResolver,
-  ChatOpenEventResolver
-} from './button/button.resolver'
+import { ChatOpenEventResolver } from './button/button.resolver'
 import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
-import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuestion.resolver'
-import { SignUpSubmissionEventResolver } from './signUp/signUp.resolver'
 import {
   StepNextEventResolver,
   StepPreviousEventResolver,
   StepViewEventResolver
 } from './step/step.resolver'
-import { TextResponseSubmissionEventResolver } from './textResponse/textResponse.resolver'
 import {
   VideoCollapseEventResolver,
   VideoCompleteEventResolver,
@@ -43,19 +36,15 @@ import {
   ],
   providers: [
     BlockService,
-    ButtonClickEventResolver,
     ChatOpenEventResolver,
     EventService,
     EventResolver,
     IntegrationGrowthSpacesService,
     JourneyViewEventResolver,
     PrismaService,
-    RadioQuestionSubmissionEventResolver,
-    SignUpSubmissionEventResolver,
     StepViewEventResolver,
     StepNextEventResolver,
     StepPreviousEventResolver,
-    TextResponseSubmissionEventResolver,
     VideoStartEventResolver,
     VideoPlayEventResolver,
     VideoPauseEventResolver,

@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Trình phát",
+    "description": "Truy cập vào /pl/[playlistId] để xem danh sách phát."
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Dự án Phim về Chúa Giê-su"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Danh sách phát",
+    "pageTitle": "{title} Bởi {name}",
+    "thisPlaylistIsEmpty": "Danh sách phát này trống.",
+    "defaultDescription": "Bạn bè của bạn đã chia sẻ những video này như một lời động viên dành cho bạn. Hãy nhấn play để xem những câu chuyện truyền cảm hứng về việc tìm thấy bình an trong Chúa Giê-su.",
+    "description": "Bạn của bạn {name} đã chia sẻ những video này như một lời động viên dành cho bạn. Nhấn play để xem những câu chuyện truyền cảm hứng về việc tìm thấy bình an trong Chúa Giê-su."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Không có video sẵn có."
+  },
+  "PlaylistList": {
+    "noThumbnail": "Không có hình thu nhỏ"
+  },
+  "StudyQuestions": {
+    "title": "Study Questions"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Để xem video này, vui lòng bật JavaScript và cân nhắc nâng cấp lên trình duyệt web <link>hỗ trợ video HTML5.</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Bạn của bạn <strong>{name}</strong> đã chia sẻ những video này với bạn như một lời động viên. Cách tốt nhất để xem những video này là tải xuống ứng dụng của chúng tôi.",
+    "downloadOnAppStore": "Tải xuống trên App Store",
+    "getItOnGooglePlay": "Tải xuống trên Google Play"
+  }
+}

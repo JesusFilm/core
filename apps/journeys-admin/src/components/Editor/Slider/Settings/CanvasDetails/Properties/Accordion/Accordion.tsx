@@ -6,6 +6,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
@@ -30,6 +31,7 @@ export function Accordion({
   children,
   disabled = false
 }: AccordionProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const {
     state: { selectedAttributeId },
@@ -84,13 +86,22 @@ export function Accordion({
       >
         <Stack spacing={3} alignItems="center" direction="row">
           {icon}
-          <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
+          <Box
+            sx={{
+              maxWidth: '24ch',
+              overflow: 'hidden',
+              position: 'relative',
+              top: 2
+            }}
+          >
             {value != null ? (
               <>
                 <Typography variant="caption" color="text.secondary" noWrap>
                   {name}
                 </Typography>
-                <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
+                <Typography noWrap>
+                  {value !== '' ? value : t('None')}
+                </Typography>
               </>
             ) : (
               <Typography variant="body1" noWrap>

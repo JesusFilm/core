@@ -1,4 +1,4 @@
-import { MediaRole } from '.prisma/api-media-client'
+import { MediaRole } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -13,8 +13,10 @@ describe('user', () => {
 
   const VIDEO_ROLES = graphql(`
     query VideoRoles {
-      _entities(representations: [{ __typename: "User", id: "id" }]) {
-        ... on User {
+      _entities(
+        representations: [{ __typename: "AuthenticatedUser", id: "id" }]
+      ) {
+        ... on AuthenticatedUser {
           id
           mediaUserRoles
         }
@@ -26,7 +28,9 @@ describe('user', () => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'id',
       userId: 'userId',
-      roles: [MediaRole.publisher]
+      roles: [MediaRole.publisher],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
     const data = await authClient({
       document: VIDEO_ROLES

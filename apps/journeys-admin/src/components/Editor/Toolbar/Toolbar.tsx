@@ -163,6 +163,14 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
+  // Determine the home href based on journey properties
+  // Local templates: template === true AND team.id !== "jfp-team" → templates tab
+  // Regular journeys: template === false → journeys tab
+  const homeHref =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+      ? '/?type=templates'
+      : '/?type=journeys'
+
   return (
     <Stack
       data-testid="Toolbar"
@@ -172,31 +180,30 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       sx={{
         height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
-        px: { xs: 2, sm: 4 },
+        px: { xs: 2, sm: 5 },
         flexShrink: 0
       }}
     >
-      <NextLink href="/" passHref legacyBehavior>
-        <IconButton data-testid="NextStepsLogo" disableRipple>
+      <Tooltip title={t('Back to Home')} placement="bottom" arrow>
+        <IconButton
+          component={NextLink}
+          href={homeHref}
+          data-testid="NextStepsLogo"
+          disableRipple
+          sx={{ p: '10px', ':active': { filter: 'brightness(0.85)' } }}
+        >
           <Image
             src={logo}
             alt="Next Steps"
             height={32}
-            width={32}
+            width={45}
             style={{
               maxWidth: '100%',
               height: 'auto'
             }}
           />
         </IconButton>
-      </NextLink>
-      <NextLink href="/" passHref legacyBehavior>
-        <Tooltip title="See all journeys" placement="bottom" arrow>
-          <IconButton data-testid="ToolbarBackButton" disabled={isNavigating}>
-            <FormatListBulletedIcon />
-          </IconButton>
-        </Tooltip>
-      </NextLink>
+      </Tooltip>
       <Stack
         gap={2}
         direction="row"
@@ -245,16 +252,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               {journey?.primaryImageBlock?.src == null ? (
                 <GridEmptyIcon color="secondary" />
               ) : (
-                <Image
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt}
-                  width={50}
-                  height={50}
-                  style={{
-                    borderRadius: '4px',
-                    objectFit: 'cover'
-                  }}
-                />
+                <Box width={50} height={50} sx={{ position: 'relative' }}>
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt}
+                    fill
+                    sizes="50px"
+                    style={{
+                      borderRadius: '4px',
+                      objectFit: 'cover'
+                    }}
+                  />
+                </Box>
               )}
             </Box>
           </Button>
@@ -270,7 +279,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               }}
             >
               <Tooltip
-                title="Click to edit"
+                title={t('Click to edit')}
                 placement="bottom"
                 arrow
                 PopperProps={{
@@ -296,7 +305,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     borderRadius: '8px',
-                    flexShrink: 1
+                    flexShrink: 1,
+                    width: '100%'
                   }}
                 >
                   <JourneyDetails />

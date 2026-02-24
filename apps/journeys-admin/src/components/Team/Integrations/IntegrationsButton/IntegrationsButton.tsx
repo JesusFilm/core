@@ -22,12 +22,19 @@ interface IntegrationsButtonProps {
   url: string
   type?: IntegrationType
   showAddButton?: boolean
+  /** Optional override for integrations not yet in IntegrationType enum */
+  titleOverride?: string
+  srcOverride?: StaticImageData
+  iconOverride?: ReactElement
 }
 
 export function IntegrationsButton({
   url,
   type,
-  showAddButton = false
+  showAddButton = false,
+  titleOverride,
+  srcOverride,
+  iconOverride
 }: IntegrationsButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -39,6 +46,8 @@ export function IntegrationsButton({
   }
 
   function getIntegrationContent(): IntegrationContentProps {
+    if (titleOverride != null || srcOverride != null)
+      return { title: titleOverride ?? '', src: srcOverride }
     const defaultContent = { title: '', src: undefined }
     if (type == null) return defaultContent
     return IntegrationContent[type]
@@ -47,61 +56,73 @@ export function IntegrationsButton({
   const { title, src } = getIntegrationContent()
 
   return (
-    <NextLink href={url} passHref legacyBehavior>
-      <Stack
-        justifyContent="center"
-        alignItems="center"
+    <Stack
+      component={NextLink}
+      href={url}
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        p: 4,
+        width: 150,
+        height: 180,
+        borderRadius: 2,
+        '&:hover': {
+          cursor: 'pointer',
+          backgroundColor: (theme) => theme.palette.grey[100]
+        }
+      }}
+      data-testid={`${type != null ? type : (titleOverride ?? 'Add')}-IntegrationsButton`}
+    >
+      <Box
         sx={{
-          p: 4,
-          width: 150,
-          height: 180,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 110,
+          width: 110,
+          border: (theme) => `1px solid ${theme.palette.grey[300]}`,
           borderRadius: 2,
-          '&:hover': {
-            cursor: 'pointer',
-            backgroundColor: (theme) => theme.palette.grey[100]
-          }
+          position: 'relative',
+          overflow: 'hidden',
+          mb: 3
         }}
-        data-testid={`${type != null ? type : 'Add'}-IntegrationsButton`}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 110,
-            width: 110,
-            border: (theme) => `1px solid ${theme.palette.grey[300]}`,
-            borderRadius: 2,
-            position: 'relative',
-            overflow: 'hidden',
-            mb: 3
-          }}
-        >
-          {showAddButton ? (
-            <Plus1Icon />
-          ) : src != null ? (
-            <Image src={src} alt={title ?? ''} height={65} width={65} />
-          ) : (
-            <InsertPhotoRoundedIcon />
-          )}
-        </Box>
-        {title != null || showAddButton ? (
-          <Typography
-            variant="body1"
+        {showAddButton ? (
+          <Plus1Icon />
+        ) : iconOverride != null ? (
+          <Box
             sx={{
-              width: '100%',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textAlign: 'center'
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 65,
+              width: 65
             }}
           >
-            {showAddButton ? t('Add Integration') : title}
-          </Typography>
+            {iconOverride}
+          </Box>
+        ) : src != null ? (
+          <Image src={src} alt={title ?? ''} height={65} width={65} />
         ) : (
-          <Skeleton variant="text" width="80%" />
+          <InsertPhotoRoundedIcon />
         )}
-      </Stack>
-    </NextLink>
+      </Box>
+      {title != null || showAddButton ? (
+        <Typography
+          variant="body1"
+          sx={{
+            width: '100%',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textAlign: 'center'
+          }}
+        >
+          {showAddButton ? t('Add Integration') : title}
+        </Typography>
+      ) : (
+        <Skeleton variant="text" width="80%" />
+      )}
+    </Stack>
   )
 }

@@ -20,7 +20,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.owner,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id1',
       firstName: 'Amin',
       lastName: 'One',
@@ -33,7 +33,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.editor,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id2',
       firstName: 'Horace',
       lastName: 'Two',
@@ -46,7 +46,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.editor,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id3',
       firstName: 'Coral',
       lastName: 'Three',
@@ -63,6 +63,13 @@ export const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
+  team: {
+    __typename: 'Team',
+    id: 'team1.id'
+  },
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  website: false,
   language: {
     __typename: 'Language',
     id: '529',
@@ -83,7 +90,8 @@ export const defaultJourney: Journey = {
   userJourneys,
   trashedAt: null,
   template: false,
-  primaryImageBlock: null
+  primaryImageBlock: null,
+  fromTemplateId: null
 }
 
 export const journeyWithImage: Journey = {
@@ -122,6 +130,100 @@ export const publishedJourney: Journey = {
   status: JourneyStatus.published
 }
 
+export const templateJourney: Journey = {
+  ...defaultJourney,
+  id: 'template-journey-id',
+  title: 'Template Journey Heading',
+  description: 'a template journey',
+  template: true
+}
+
+export const nonCustomizableLocalTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'journeyId',
+  title: 'Local Template Journey Heading',
+  description: 'a local template journey',
+  template: true,
+  team: { __typename: 'Team', id: 'teamId' }
+}
+
+export const nonCustomizableGlobalTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'journeyId',
+  title: 'Global Template Journey Heading',
+  description: 'a global template journey',
+  template: true,
+  team: { __typename: 'Team', id: 'jfp-team' }
+}
+
+export const templateJourneyFromTemplate: Journey = {
+  ...defaultJourney,
+  id: 'template-journey-from-template-id',
+  title: 'Template Journey From Template Heading',
+  description: 'a template journey from template',
+  template: true,
+  fromTemplateId: 'template-journey-id'
+}
+
+export const customizableTemplateJourney: Journey = {
+  ...templateJourney,
+  journeyCustomizationDescription: 'a customizable template journey',
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: 'journey-customization-field-id',
+      journeyId: 'template-journey-id',
+      key: 'journey-customization-field-key',
+      value: 'journey-customization-field-value',
+      defaultValue: 'journey-customization-field-default-value'
+    }
+  ]
+}
+
+export const websiteJourney: Journey = {
+  ...defaultJourney,
+  id: 'website-journey-id',
+  title: 'Website Journey Heading',
+  description: 'a website journey',
+  website: true
+}
+
+export const customizableWebsiteTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'customizable-website-template-journey-id',
+  title: 'Customizable Website Template Journey Heading',
+  description: 'a customizable website template journey',
+  website: true,
+  template: true,
+  journeyCustomizationDescription: 'a customizable website template journey',
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: 'journey-customization-field-id',
+      journeyId: 'customizable-website-template-journey-id',
+      key: 'journey-customization-field-key',
+      value: 'journey-customization-field-value',
+      defaultValue: 'journey-customization-field-default-value'
+    }
+  ]
+}
+
+export const publishedGlobalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-template-id',
+  title: 'Published Template Heading',
+  template: true,
+  team: { id: 'jfp-team' }
+} as Journey & { team: { id: string } }
+
+export const publishedLocalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-template-id',
+  title: 'Published Template Heading',
+  template: true,
+  team: { id: 'local-team-id' }
+} as Journey & { team: { id: string } }
+
 export const descriptiveJourney: Journey = {
   ...defaultJourney,
   id: 'descriptive-journey-id',
@@ -153,7 +255,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id4',
         firstName: 'Box',
         lastName: 'Four',
@@ -166,7 +268,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id5',
         firstName: 'John',
         lastName: 'Five',
@@ -179,7 +281,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id6',
         firstName: 'Jane',
         lastName: 'Six',
@@ -192,7 +294,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id7',
         firstName: 'Jannet',
         lastName: 'Seven',

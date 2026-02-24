@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { VideoBlockSource } from '../../../enums'
+import { BlockEventLabel, VideoBlockSource } from '../../../enums'
 import { VideoBlockObjectFit } from '../enums/videoObjectFit'
 
 export const VideoBlockCreateInput = builder.inputType(
@@ -9,6 +9,8 @@ export const VideoBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       journeyId: t.id({ required: true }),
       parentBlockId: t.id({ required: true }),
+      eventLabel: t.field({ type: BlockEventLabel, required: false }),
+      endEventLabel: t.field({ type: BlockEventLabel, required: false }),
       videoId: t.id({ required: false }),
       videoVariantLanguageId: t.id({ required: false }),
       source: t.field({ type: VideoBlockSource, required: false }),
@@ -27,7 +29,10 @@ export const VideoBlockCreateInput = builder.inputType(
       muted: t.boolean({ required: false }),
       autoplay: t.boolean({ required: false }),
       fullsize: t.boolean({ required: false }),
-      posterBlockId: t.id({ required: false })
+      posterBlockId: t.id({ required: false }),
+      subtitleLanguageId: t.id({ required: false }),
+      showGeneratedSubtitles: t.boolean({ required: false }),
+      customizable: t.boolean({ required: false })
     })
   }
 )

@@ -11,9 +11,18 @@ import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
-export function AboutTabPanel(): ReactElement {
+import { CustomizeTemplate } from './CustomizeTemplate'
+
+interface AboutTabPanelProps {
+  showStrategySection?: boolean
+}
+
+export function AboutTabPanel({
+  showStrategySection = false
+}: AboutTabPanelProps): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Stack direction="row" spacing={5}>
@@ -41,28 +50,34 @@ export function AboutTabPanel(): ReactElement {
         />
       </Stack>
       <Divider />
-      <TextField
-        id="strategySlug"
-        name="strategySlug"
-        value={values.strategySlug}
-        error={Boolean(errors?.strategySlug)}
-        variant="filled"
-        helperText={
-          errors?.strategySlug != null
-            ? errors?.strategySlug
-            : t('Embed web link from Google Slides or Canva')
-        }
-        onChange={handleChange}
-        label={t('Paste URL here')}
-        InputProps={{
-          endAdornment: <LinkAngled sx={{ color: 'secondary.light' }} />
-        }}
-      />
-      <StrategySection
-        strategySlug={values.strategySlug}
-        variant="placeholder"
-        isError={Boolean(errors?.strategySlug)}
-      />
+      <CustomizeTemplate />
+      {showStrategySection && (
+        <>
+          <TextField
+            data-testid="StrategySlugEdit"
+            id="strategySlug"
+            name="strategySlug"
+            value={values.strategySlug}
+            error={Boolean(errors?.strategySlug)}
+            variant="filled"
+            helperText={
+              errors?.strategySlug != null
+                ? errors?.strategySlug
+                : t('Embed web link from Google Slides or Canva')
+            }
+            onChange={handleChange}
+            label={t('Paste URL here')}
+            InputProps={{
+              endAdornment: <LinkAngled sx={{ color: 'secondary.light' }} />
+            }}
+          />
+          <StrategySection
+            strategySlug={values.strategySlug}
+            variant="placeholder"
+            isError={Boolean(errors?.strategySlug)}
+          />
+        </>
+      )}
     </>
   )
 }

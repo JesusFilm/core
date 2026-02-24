@@ -1,32 +1,22 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import baseConfig from '../../eslint.config.mjs'
-import eslintPluginReact from 'eslint-plugin-react'
+import yogaConfig from '../../libs/shared/eslint/yogaWithReactEmail.mjs'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-  recommendedConfig: js.configs.recommended
-})
+const tsconfigRootDir = dirname(fileURLToPath(import.meta.url))
 
 export default [
-  ...baseConfig,
-  ...compat.extends('plugin:@nx/react-typescript'),
+  ...yogaConfig,
   {
-    ignores: [
-      'apis/api-journeys-modern/eslint.config.js',
-      'apis/api-journeys-modern/webpack.config.js'
-    ]
+    ignores: ['apis/api-journeys-modern/webpack.config.js']
   },
-  {
-    plugins: {
-      react: eslintPluginReact
-    }
-  },
-  { rules: { 'i18next/no-literal-string': 'off' } },
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parserOptions: { project: ['apis/api-journeys-modern/tsconfig.*?.json'] }
+      parserOptions: {
+        project: ['./tsconfig.*'],
+        projectService: true,
+        tsconfigRootDir
+      }
     }
   }
 ]

@@ -20,7 +20,8 @@ import { getStepHeading } from '@core/journeys/ui/getStepHeading'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   JourneyPlausibleEvents,
-  keyify
+  keyify,
+  templateKeyify
 } from '@core/journeys/ui/plausibleHelpers'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -90,9 +91,9 @@ export function NavigationButton({
   // Handle fade navigation after 3 seconds inactive
   useEffect(() => {
     const isVideoOnlyBlock =
-      activeBlock?.children.length > 0 &&
-      activeBlock?.children[0].children.length === 1 &&
-      activeBlock?.children[0].children[0].__typename === 'VideoBlock'
+      (activeBlock?.children?.length ?? 0) > 0 &&
+      activeBlock?.children?.[0]?.children?.length === 1 &&
+      activeBlock?.children?.[0]?.children?.[0]?.__typename === 'VideoBlock'
 
     if (showNavigation && !isVideoOnlyBlock) {
       setTimeout(() => {
@@ -144,12 +145,18 @@ export function NavigationButton({
             stepId: input.blockId,
             event: 'navigateNextStep',
             blockId: input.blockId,
-            target: input.nextStepId
+            target: input.nextStepId,
+            journeyId: journey?.id
           }),
           simpleKey: keyify({
             stepId: input.blockId,
             event: 'navigateNextStep',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
+          }),
+          templateKey: templateKeyify({
+            event: 'navigateNextStep',
+            journeyId: journey?.id
           })
         }
       })
@@ -208,12 +215,18 @@ export function NavigationButton({
             stepId: input.blockId,
             event: 'navigatePreviousStep',
             blockId: input.blockId,
-            target: input.previousStepId
+            target: input.previousStepId,
+            journeyId: journey?.id
           }),
           simpleKey: keyify({
             stepId: input.blockId,
             event: 'navigatePreviousStep',
-            blockId: input.blockId
+            blockId: input.blockId,
+            journeyId: journey?.id
+          }),
+          templateKey: templateKeyify({
+            event: 'navigatePreviousStep',
+            journeyId: journey?.id
           })
         }
       })

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: cert-manager-app
+description: Wrapper chart for cert-manager and SSL issuers managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v1.15.0'
+
+dependencies:
+  - name: cert-manager
+    version: v1.15.0
+    repository: https://charts.jetstack.io

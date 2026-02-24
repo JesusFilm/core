@@ -10,6 +10,7 @@ export const TextResponseBlockUpdateInput = builder.inputType(
       placeholder: t.string({ required: false }),
       required: t.boolean({ required: false }),
       hint: t.string({ required: false }),
+      hideLabel: t.boolean({ required: false }),
       minRows: t.int({ required: false }),
       routeId: t.string({ required: false }),
       type: t.field({ type: TextResponseType, required: false }),

@@ -15,6 +15,7 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 interface TranslateJourneyDialogProps {
   open: boolean
@@ -58,6 +59,7 @@ export function TranslateJourneyDialog({
   const journeyData = journey ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const [loading, setLoading] = useState(false)
   const [translationVariables, setTranslationVariables] = useState<
     | {
@@ -118,6 +120,9 @@ export function TranslateJourneyDialog({
       setTranslationVariables(undefined)
     },
     onComplete() {
+      if (journeyData?.fromTemplateId != null) {
+        void refetchTemplateStats([journeyData.fromTemplateId])
+      }
       handleClose()
     }
   })

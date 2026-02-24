@@ -7,10 +7,27 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum BlockEventLabel {
+  custom1 = "custom1",
+  custom2 = "custom2",
+  custom3 = "custom3",
+  decisionForChrist = "decisionForChrist",
+  gospelPresentationComplete = "gospelPresentationComplete",
+  gospelPresentationStart = "gospelPresentationStart",
+  inviteFriend = "inviteFriend",
+  prayerRequest = "prayerRequest",
+  rsvp = "rsvp",
+  share = "share",
+  specialVideoComplete = "specialVideoComplete",
+  specialVideoStart = "specialVideoStart",
+}
+
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
 }
 
 export enum ButtonAlignment {
@@ -39,6 +56,11 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ContactActionType {
+  call = "call",
+  text = "text",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -54,6 +76,8 @@ export enum IconColor {
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
+  ArrowLeftContained2 = "ArrowLeftContained2",
+  ArrowRightContained2 = "ArrowRightContained2",
   BeenhereRounded = "BeenhereRounded",
   ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
   CheckCircleRounded = "CheckCircleRounded",
@@ -61,16 +85,24 @@ export enum IconName {
   ChevronRightRounded = "ChevronRightRounded",
   ContactSupportRounded = "ContactSupportRounded",
   FormatQuoteRounded = "FormatQuoteRounded",
+  Home4 = "Home4",
   Launch = "Launch",
+  LinkAngled = "LinkAngled",
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
   MailOutline = "MailOutline",
   MenuBookRounded = "MenuBookRounded",
+  MessageChat1 = "MessageChat1",
+  Note2 = "Note2",
+  Phone = "Phone",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
   SendRounded = "SendRounded",
   SubscriptionsRounded = "SubscriptionsRounded",
   TranslateRounded = "TranslateRounded",
+  UserProfile2 = "UserProfile2",
+  UsersProfiles3 = "UsersProfiles3",
+  Volume5 = "Volume5",
 }
 
 export enum IconSize {
@@ -254,18 +286,29 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+  fromTemplateId?: string | null;
+  teamId?: string | null;
 }
 
 export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
+  skipRoutingFilter?: boolean | null;
 }
 
 export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

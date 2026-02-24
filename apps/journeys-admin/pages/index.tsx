@@ -1,5 +1,4 @@
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -13,10 +12,10 @@ import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
-import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
@@ -33,6 +32,16 @@ function IndexPage(): ReactElement {
       void refetch()
     }
   }, [user.id, query, activeTeam, refetch])
+
+  // Only show side panel (OnboardingPanel) when on journeys tab, not templates tab
+  const currentContentType =
+    (router?.query?.type as 'journeys' | 'templates') ?? 'journeys'
+  const showSidePanel = currentContentType === 'journeys'
+
+  const userInfo = {
+    name: user?.displayName ?? '',
+    email: user?.email ?? ''
+  }
 
   return (
     <>
@@ -52,19 +61,11 @@ function IndexPage(): ReactElement {
             </Stack>
           </Stack>
         }
-        sidePanelChildren={<OnboardingPanel />}
+        sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
         sidePanelTitle={
-          <>
-            <Typography variant="subtitle1">
-              {t('Create a New Journey')}
-            </Typography>
-            <HelpScoutBeacon
-              userInfo={{
-                name: user?.displayName ?? '',
-                email: user?.email ?? ''
-              }}
-            />
-          </>
+          showSidePanel ? (
+            <SidePanelTitle name={userInfo.name} email={userInfo.email} />
+          ) : undefined
         }
       >
         <JourneyList user={user} />

@@ -1,4 +1,4 @@
-import { LanguageRole } from '.prisma/api-languages-client'
+import { LanguageRole } from '@core/prisma/languages/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -13,8 +13,10 @@ describe('user', () => {
 
   const VIDEO_ROLES = graphql(`
     query VideoRoles {
-      _entities(representations: [{ __typename: "User", id: "id" }]) {
-        ... on User {
+      _entities(
+        representations: [{ __typename: "AuthenticatedUser", id: "id" }]
+      ) {
+        ... on AuthenticatedUser {
           id
           languageUserRoles
         }

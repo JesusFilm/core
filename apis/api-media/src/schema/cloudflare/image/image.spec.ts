@@ -1,10 +1,11 @@
 import { Response } from 'node-fetch'
 
-import { CloudflareImage, ImageAspectRatio } from '.prisma/api-media-client'
+import { CloudflareImage, ImageAspectRatio } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
+import { queue } from '../../../workers/processImageBlurhash/queue'
 
 import {
   createImageByDirectUpload,
@@ -13,6 +14,14 @@ import {
   createImageFromUrl,
   deleteImage
 } from './service'
+
+jest.mock('../../../workers/processImageBlurhash/queue', () => ({
+  queue: {
+    add: jest.fn().mockResolvedValue({ id: 'job-id' })
+  }
+}))
+
+const mockedQueue = queue as jest.Mocked<typeof queue>
 
 const mockCreateImageByDirectUpload =
   createImageByDirectUpload as jest.MockedFunction<
@@ -40,7 +49,6 @@ jest.mock('./service', () => ({
 }))
 
 describe('cloudflareImage', () => {
-  const client = getClient()
   const authClient = getClient({
     headers: {
       authorization: 'token'
@@ -67,6 +75,7 @@ describe('cloudflareImage', () => {
             mobileCinematicVeryLow
             thumbnail
             videoStill
+            blurhash
           }
         }
       `)
@@ -81,10 +90,12 @@ describe('cloudflareImage', () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             aspectRatio: ImageAspectRatio.hd,
-            videoId: null
+            videoId: null,
+            blurhash: 'testBlurhash',
+            blurhashAttemptedAt: null
           }
         ])
-        const result = await client({
+        const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGES_QUERY
         })
         expect(result).toEqual({
@@ -106,7 +117,8 @@ describe('cloudflareImage', () => {
                 }/testId/f=jpg,w=120,h=68,q=95`,
                 videoStill: `https://imagedelivery.net/${
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-                }/testId/f=jpg,w=1920,h=1080,q=95`
+                }/testId/f=jpg,w=1920,h=1080,q=95`,
+                blurhash: 'testBlurhash'
               }
             ]
           }
@@ -126,10 +138,12 @@ describe('cloudflareImage', () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             aspectRatio: ImageAspectRatio.banner,
-            videoId: null
+            videoId: null,
+            blurhash: null,
+            blurhashAttemptedAt: null
           }
         ])
-        const result = await client({
+        const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGES_QUERY,
           variables: {
             offset: 0,
@@ -157,7 +171,8 @@ describe('cloudflareImage', () => {
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
                 }/testId/f=webp,w=640,h=300,q=50`,
                 thumbnail: null,
-                videoStill: null
+                videoStill: null,
+                blurhash: null
               }
             ]
           }
@@ -191,9 +206,11 @@ describe('cloudflareImage', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           aspectRatio: null,
-          videoId: null
+          videoId: null,
+          blurhash: 'testBlurhash',
+          blurhashAttemptedAt: null
         })
-        const result = await client({
+        const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
         })
         expect(result).toEqual({
@@ -241,9 +258,11 @@ describe('cloudflareImage', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           aspectRatio: ImageAspectRatio.hd,
-          videoId: 'videoId'
+          videoId: 'videoId',
+          blurhash: null,
+          blurhashAttemptedAt: null
         })
-        const result = await client({
+        const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
           variables: {
             input: {
@@ -277,17 +296,21 @@ describe('cloudflareImage', () => {
 
     describe('createCloudflareUploadByUrl', () => {
       const CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION = graphql(`
-        mutation createCloudflareUploadByUrl($url: String!) {
-          createCloudflareUploadByUrl(url: $url) {
+        mutation createCloudflareUploadByUrl(
+          $url: String!
+          $input: ImageInput!
+        ) {
+          createCloudflareUploadByUrl(url: $url, input: $input) {
             id
             uploadUrl
             userId
             aspectRatio
+            blurhash
           }
         }
       `)
 
-      it('should return cloudflare image', async () => {
+      it('should return cloudflare image and queue blurhash job', async () => {
         mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id',
@@ -297,9 +320,11 @@ describe('cloudflareImage', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           aspectRatio: ImageAspectRatio.banner,
-          videoId: 'videoId'
+          videoId: 'videoId',
+          blurhash: null,
+          blurhashAttemptedAt: null
         })
-        const result = await client({
+        const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
           variables: {
             url: 'testUrl',
@@ -315,7 +340,8 @@ describe('cloudflareImage', () => {
               id: 'id',
               uploadUrl: null,
               userId: 'testUserId',
-              aspectRatio: ImageAspectRatio.banner
+              aspectRatio: ImageAspectRatio.banner,
+              blurhash: null
             }
           }
         })
@@ -323,26 +349,36 @@ describe('cloudflareImage', () => {
           data: {
             id: 'id',
             uploaded: true,
-            userId: 'testUserId'
+            userId: 'testUserId',
+            aspectRatio: ImageAspectRatio.banner,
+            videoId: 'videoId'
           }
         })
         expect(mockCreateImageFromUrl).toHaveBeenCalledWith('testUrl')
+        expect(mockedQueue.add).toHaveBeenCalledWith(
+          'api-media-process-image-blurhash-job',
+          { imageId: 'id' }
+        )
       })
     })
 
     describe('createCloudflareImageFromPrompt', () => {
       const CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION = graphql(`
-        mutation createCloudflareImageFromPrompt($prompt: String!) {
-          createCloudflareImageFromPrompt(prompt: $prompt) {
+        mutation createCloudflareImageFromPrompt(
+          $prompt: String!
+          $input: ImageInput!
+        ) {
+          createCloudflareImageFromPrompt(prompt: $prompt, input: $input) {
             id
             uploadUrl
             userId
             aspectRatio
+            blurhash
           }
         }
       `)
 
-      it('should return cloudflare image', async () => {
+      it('should return cloudflare image and queue blurhash job', async () => {
         const response = new Response()
         mockCreateImageFromText.mockResolvedValue(response)
         mockCreateImageFromResponse.mockResolvedValue({ id: 'id' })
@@ -354,9 +390,11 @@ describe('cloudflareImage', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           aspectRatio: ImageAspectRatio.hd,
-          videoId: 'videoId'
+          videoId: 'videoId',
+          blurhash: null,
+          blurhashAttemptedAt: null
         })
-        const result = await client({
+        const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
           variables: {
             prompt: 'test prompt',
@@ -372,7 +410,8 @@ describe('cloudflareImage', () => {
               id: 'id',
               uploadUrl: null,
               userId: 'testUserId',
-              aspectRatio: ImageAspectRatio.hd
+              aspectRatio: ImageAspectRatio.hd,
+              blurhash: null
             }
           }
         })
@@ -380,9 +419,15 @@ describe('cloudflareImage', () => {
           data: {
             id: 'id',
             uploaded: true,
-            userId: 'testUserId'
+            userId: 'testUserId',
+            aspectRatio: ImageAspectRatio.hd,
+            videoId: 'videoId'
           }
         })
+        expect(mockedQueue.add).toHaveBeenCalledWith(
+          'api-media-process-image-blurhash-job',
+          { imageId: 'id' }
+        )
       })
     })
 
@@ -397,7 +442,9 @@ describe('cloudflareImage', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'testUserId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'notUser'
@@ -425,7 +472,7 @@ describe('cloudflareImage', () => {
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'testUserId'
         } as unknown as CloudflareImage)
-        const result = await client({
+        const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
         expect(mockDeleteImage).toHaveBeenCalledWith('testId')
@@ -455,8 +502,8 @@ describe('cloudflareImage', () => {
         }
       `)
 
-      it('should return true', async () => {
-        const result = await client({
+      it('should return true and queue blurhash job', async () => {
+        const result = await authClient({
           document: CLOUDFLARE_UPLOAD_COMPLETE_MUTATION
         })
         expect(result).toEqual({
@@ -468,6 +515,10 @@ describe('cloudflareImage', () => {
           where: { id: 'testId', userId: 'testUserId' },
           data: { uploaded: true }
         })
+        expect(mockedQueue.add).toHaveBeenCalledWith(
+          'api-media-process-image-blurhash-job',
+          { imageId: 'testId' }
+        )
       })
     })
   })

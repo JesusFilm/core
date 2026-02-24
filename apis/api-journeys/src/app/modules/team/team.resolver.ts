@@ -18,16 +18,16 @@ import {
   Prisma,
   Team,
   UserTeam
-} from '.prisma/api-journeys-client'
+} from '@core/prisma/journeys/client'
+
+import { Action, AppAbility } from '../../lib/casl/caslFactory'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import {
   CaslAbility,
   CaslAccessible,
   CaslPolicy
-} from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-
-import { Action, AppAbility } from '../../lib/casl/caslFactory'
-import { AppCaslGuard } from '../../lib/casl/caslGuard'
+} from '../../lib/CaslAuthModule'
+import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('Team')

@@ -5,6 +5,8 @@ EXPOSE 4001
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev && \
@@ -12,16 +14,12 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys .
-COPY ./package-lock.json .
+COPY ./libs/prisma/journeys/db ./prisma
 
-# dependencies that nestjs needs
-RUN npm install --production
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --prod --silent
+RUN pnpm add @prisma/client@6.18.0
+RUN pnpm add -D prisma@6.18.0
+RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
 
-WORKDIR /prisma
-COPY ./apis/api-journeys/db .
-RUN npx prisma@6 generate --generator client
-
-WORKDIR /app
-
-RUN npm install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@5 pino-pretty@^10.2.0
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma && node ./main.js

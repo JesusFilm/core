@@ -4,12 +4,43 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 import { JOURNEY_RESTORE } from './RestoreJourneyDialog'
 
 import { RestoreJourneyDialog } from '.'
 
+jest.mock(
+  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
+  () => ({
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn()
+  })
+)
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
+
 describe('RestoreJourneyDialog', () => {
+  const refetchTemplateStats = jest.fn()
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
+  })
+
   it('should restore journey to published', async () => {
     const handleClose = jest.fn()
     const result = jest.fn(() => ({
@@ -128,5 +159,55 @@ describe('RestoreJourneyDialog', () => {
 
     fireEvent.click(getByRole('button', { name: 'Restore' }))
     await waitFor(() => expect(getByText('Error')).toBeInTheDocument())
+  })
+
+  it('should call refetchTemplateStats when restoring a journey with fromTemplateId', async () => {
+    const handleClose = jest.fn()
+    const result = jest.fn(() => ({
+      data: {
+        journeysRestore: [
+          {
+            id: 'journey-id',
+            __typename: 'Journey',
+            status: JourneyStatus.published,
+            fromTemplateId: 'template-id-123'
+          }
+        ]
+      }
+    }))
+
+    const { getByRole, getByText } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_RESTORE,
+              variables: {
+                ids: ['journey-id']
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <RestoreJourneyDialog
+            id="journey-id"
+            published
+            open
+            handleClose={handleClose}
+            fromTemplateId="template-id-123"
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button', { name: 'Restore' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['template-id-123'])
+    })
+    expect(handleClose).toHaveBeenCalled()
+    expect(getByText('Journey Restored')).toBeInTheDocument()
   })
 })

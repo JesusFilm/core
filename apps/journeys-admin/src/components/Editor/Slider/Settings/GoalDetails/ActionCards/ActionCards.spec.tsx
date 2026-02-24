@@ -44,7 +44,8 @@ describe('ActionCards', () => {
                     themeMode: null,
                     themeName: null,
                     fullscreen: false,
-                    backdropBlur: null
+                    backdropBlur: null,
+                    eventLabel: null
                   },
                   {
                     __typename: 'RadioQuestionBlock',
@@ -63,9 +64,12 @@ describe('ActionCards', () => {
                       __typename: 'LinkAction',
                       parentBlockId: 'RadioOption1',
                       gtmEventName: 'poll',
-                      url: 'https://www.google.com/'
+                      url: 'https://www.google.com/',
+                      customizable: false,
+                      parentStepId: null
                     },
-                    pollOptionImageBlockId: null
+                    pollOptionImageBlockId: null,
+                    eventLabel: null
                   },
                   {
                     __typename: 'StepBlock',

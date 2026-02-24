@@ -20,6 +20,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -36,7 +37,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -58,6 +60,11 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

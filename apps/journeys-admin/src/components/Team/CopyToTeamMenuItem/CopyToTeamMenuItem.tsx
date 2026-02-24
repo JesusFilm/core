@@ -13,6 +13,7 @@ import { UpdateLastActiveTeamId } from '@core/journeys/ui/useUpdateLastActiveTea
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { MenuItem } from '../../MenuItem'
 
 interface CopyToTeamMenuItemProps {
@@ -20,6 +21,7 @@ interface CopyToTeamMenuItemProps {
   handleCloseMenu: () => void
   handleKeepMounted?: () => void
   journey?: Journey
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 interface JourneyLanguage {
@@ -50,7 +52,8 @@ export function CopyToTeamMenuItem({
   id,
   handleCloseMenu,
   handleKeepMounted,
-  journey
+  journey,
+  setHasOpenDialog
 }: CopyToTeamMenuItemProps): ReactElement {
   const [duplicateTeamDialogOpen, setDuplicateTeamDialogOpen] =
     useState<boolean>(false)
@@ -75,6 +78,7 @@ export function CopyToTeamMenuItem({
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null)
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journey ?? journeyFromContext
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const updateTeamState = (teamId: string): void => {
     setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
@@ -95,6 +99,11 @@ export function CopyToTeamMenuItem({
     variables: translationVariables,
     skip: !translationVariables,
     onComplete: () => {
+      // Refetch template stats if the source journey has a fromTemplateId
+      if (journeyData?.fromTemplateId != null) {
+        void refetchTemplateStats([journeyData.fromTemplateId])
+      }
+
       enqueueSnackbar(t('Journey Translated'), {
         variant: 'success',
         preventDuplicate: true
@@ -141,6 +150,11 @@ export function CopyToTeamMenuItem({
       })
 
       if (duplicateData?.journeyDuplicate?.id) {
+        // Refetch template stats if the source journey has a fromTemplateId
+        if (journeyData?.fromTemplateId != null) {
+          void refetchTemplateStats([journeyData.fromTemplateId])
+        }
+
         if (selectedLanguage == null || !showTranslation) {
           setLoading(false)
           enqueueSnackbar(t('Journey Copied'), {
@@ -192,6 +206,7 @@ export function CopyToTeamMenuItem({
         onClick={() => {
           handleKeepMounted?.()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
           setDuplicateTeamDialogOpen(true)
         }}
         testId="Copy"
@@ -202,6 +217,7 @@ export function CopyToTeamMenuItem({
         open={duplicateTeamDialogOpen}
         loading={loading}
         onClose={() => {
+          setHasOpenDialog?.(false)
           setDuplicateTeamDialogOpen(false)
         }}
         submitAction={handleDuplicateJourney}
@@ -212,6 +228,8 @@ export function CopyToTeamMenuItem({
             translationData?.journeyAiTranslateCreateSubscription.message ?? ''
         }}
         isTranslating={translationVariables != null}
+        journeyIsTemplate={journeyData?.template ?? false}
+        journeyFromTemplateId={journeyData?.fromTemplateId}
       />
     </>
   )

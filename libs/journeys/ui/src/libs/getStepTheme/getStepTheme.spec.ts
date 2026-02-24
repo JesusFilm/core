@@ -28,6 +28,7 @@ describe('getStepTheme', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
 

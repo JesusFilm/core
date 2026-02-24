@@ -31,7 +31,9 @@ variable "env" {
 }
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for Journeys Admin"
+  sensitive   = true
 }
 
 variable "alb_listener_arn" {

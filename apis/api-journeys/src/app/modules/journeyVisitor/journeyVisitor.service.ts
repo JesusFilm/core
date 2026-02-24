@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 
-import { JourneyVisitor, Prisma } from '.prisma/api-journeys-client'
+import { JourneyVisitor, Prisma } from '@core/prisma/journeys/client'
 
 import {
   JourneyVisitorFilter,
@@ -31,6 +31,8 @@ export class JourneyVisitorService {
           filter?.hasChatStarted === true ? { not: null } : undefined,
         lastRadioQuestion:
           filter?.hasPollAnswers === true ? { not: null } : undefined,
+        lastMultiselectSubmission:
+          filter?.hasMultiselectSubmission === true ? { not: null } : undefined,
         lastTextResponse:
           filter?.hasTextResponse === true ? { not: null } : undefined,
         activityCount: filter?.hideInactive === true ? { gt: 0 } : undefined,

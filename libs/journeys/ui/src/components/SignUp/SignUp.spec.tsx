@@ -12,7 +12,11 @@ import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import {
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import { SignUpFields } from './__generated__/SignUpFields'
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
@@ -62,7 +66,9 @@ const block: TreeBlock<SignUpFields> = {
     __typename: 'LinkAction',
     parentBlockId: 'signUp0.id',
     gtmEventName: 'signUp',
-    url: '#'
+    url: '#',
+    customizable: null,
+    parentStepId: null
   },
   children: []
 }
@@ -93,21 +99,6 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 )
 
 describe('SignUp', () => {
-  const originalLocation = window.location
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
-  })
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
-  })
-
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
@@ -234,7 +225,9 @@ describe('SignUp', () => {
           __typename: 'LinkAction',
           parentBlockId: 'signUp0.id',
           gtmEventName: 'signUp',
-          url: '#'
+          url: '#',
+          customizable: null,
+          parentStepId: null
         },
         undefined
       )
@@ -421,7 +414,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
-        u: `${mockOrigin}/journey.id/step.id`,
+        u: expect.stringContaining(`/journey.id/step.id`),
         props: {
           id: 'uuid',
           blockId: 'signUp0.id',
@@ -432,12 +425,19 @@ describe('SignUp', () => {
             stepId: 'step.id',
             event: 'signupSubmit',
             blockId: 'signUp0.id',
-            target: block.action
+            target: block.action,
+            journeyId: 'journey.id'
           }),
           simpleKey: keyify({
             stepId: 'step.id',
             event: 'signupSubmit',
-            blockId: 'signUp0.id'
+            blockId: 'signUp0.id',
+            journeyId: 'journey.id'
+          }),
+          templateKey: templateKeyify({
+            event: 'signupSubmit',
+            target: actionToTarget(block.action),
+            journeyId: 'journey.id'
           })
         }
       })

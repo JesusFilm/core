@@ -38,6 +38,7 @@ describe('ColorDisplayIcon', () => {
         themeName: ThemeName.base,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: []
       }
     ]

@@ -6,6 +6,7 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { GetAdminJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetAdminJourney'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 import { QuickControls } from '.'
 
@@ -19,7 +20,9 @@ describe('QuickControls', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <QuickControls open anchorEl={null} block={videoBlock} />
+          <MuxVideoUploadProvider>
+            <QuickControls open anchorEl={null} block={videoBlock} />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -35,7 +38,9 @@ describe('QuickControls', () => {
       <SnackbarProvider>
         <MockedProvider>
           <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <QuickControls open anchorEl={null} block={videoBlock} />
+            <MuxVideoUploadProvider>
+              <QuickControls open anchorEl={null} block={videoBlock} />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </MockedProvider>
       </SnackbarProvider>

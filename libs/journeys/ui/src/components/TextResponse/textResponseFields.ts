@@ -13,5 +13,6 @@ export const TEXT_RESPONSE_FIELDS = gql`
     type
     routeId
     integrationId
+    hideLabel
   }
 `

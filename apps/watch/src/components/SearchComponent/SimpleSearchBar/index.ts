@@ -1,0 +1,1 @@
+export { SimpleSearchBar } from './SimpleSearchBar'

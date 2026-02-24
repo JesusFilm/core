@@ -9,7 +9,13 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
-      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
+      Action: [
+        'NavigateToBlockAction',
+        'LinkAction',
+        'EmailAction',
+        'ChatAction',
+        'PhoneAction'
+      ],
       Block: [
         'ButtonBlock',
         'CardBlock',
@@ -17,6 +23,8 @@ export const cache = (): InMemoryCache =>
         'GridItemBlock',
         'IconBlock',
         'ImageBlock',
+        'MultiselectBlock',
+        'MultiselectOptionBlock',
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',

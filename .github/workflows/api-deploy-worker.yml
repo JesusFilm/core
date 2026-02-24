@@ -43,6 +43,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      SKIP_ENV_VALIDATION: 1
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -54,31 +55,21 @@ jobs:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v4
 
-      - name: Setup Node.js
-        uses: useblacksmith/setup-node@v5
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
-          path: ./node_modules
-      - name: NPM Install
-        run: npm install --silent
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
       - name: Prisma Generate
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
+          all: true
         env:
           DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
@@ -105,7 +96,7 @@ jobs:
 
       - name: Build and push Docker image to Amazon ECR
         id: build-image-ecs
-        uses: useblacksmith/build-push-action@v1
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: apis/${{ inputs.name }}/Dockerfile
@@ -118,7 +109,7 @@ jobs:
 
       - name: Set image output
         run: |
-          echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo 'image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}' >> $GITHUB_OUTPUT
 
       - name: Restart task definition
         run: |
@@ -126,4 +117,4 @@ jobs:
 
       - name: Update Hive managed subgraph
         run: |
-          npx hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github
+          pnpm exec hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github

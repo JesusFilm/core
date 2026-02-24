@@ -6,12 +6,17 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
+import {
+  TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+  TEXT_RESPONSE_LABEL_UPDATE
+} from './Label'
 
 import { Label } from '.'
 
@@ -34,7 +39,8 @@ describe('Edit Label field', () => {
     type: null,
     routeId: null,
     required: null,
-    children: []
+    children: [],
+    hideLabel: false
   }
 
   const mockLabelUpdate1 = {
@@ -246,5 +252,112 @@ describe('Edit Label field', () => {
     await waitFor(() => {
       expect(mockLabelUpdateWhitespace.result).not.toHaveBeenCalled()
     })
+  })
+
+  it('should toggle the hide label', async () => {
+    const mockHideLabelUpdate = {
+      request: {
+        query: TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+        variables: {
+          id: block.id,
+          hideLabel: true
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          textResponseBlockUpdate: {
+            id: block.id,
+            hideLabel: true
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider mocks={[mockHideLabelUpdate]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const toggleButton = screen.getByRole('button', { name: 'Hide label' })
+    fireEvent.click(toggleButton)
+    await waitFor(() => expect(mockHideLabelUpdate.result).toHaveBeenCalled())
+  })
+
+  it('should resolve customizable label value if journey is not a template', () => {
+    const blockWithCustomizableLabel = {
+      ...block,
+      label: '{{ label }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizableLabel }}
+          >
+            <Label />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('Your customized label')
+  })
+
+  it('should not resolve customizable label value for template journeys', () => {
+    const blockWithCustomizableLabel = {
+      ...block,
+      label: '{{ label }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      template: true,
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizableLabel }}
+          >
+            <Label />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('{{ label }}')
   })
 })

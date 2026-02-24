@@ -1,11 +1,11 @@
 import { CacheModule } from '@nestjs/cache-manager'
 import { Global, Module } from '@nestjs/common'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { IntegrationGoogleResolver } from './google/google.resolver'
 import { IntegrationGrowthSpacesResolver } from './growthSpaces/growthSpaces.resolver'
 import { IntegrationGrowthSpacesService } from './growthSpaces/growthSpaces.service'
 import { IntegrationResolver } from './integration.resolver'
@@ -17,7 +17,8 @@ import { IntegrationResolver } from './integration.resolver'
     PrismaService,
     IntegrationResolver,
     IntegrationGrowthSpacesService,
-    IntegrationGrowthSpacesResolver
+    IntegrationGrowthSpacesResolver,
+    IntegrationGoogleResolver
   ],
   exports: [IntegrationGrowthSpacesService]
 })

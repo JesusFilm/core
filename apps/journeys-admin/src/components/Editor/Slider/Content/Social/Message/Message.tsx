@@ -26,7 +26,7 @@ export function MessageBubble({
   direction = 'left',
   children
 }: MessageBubbleProps): ReactElement {
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement | null>(null)
   const [clientHeight, setClientHeight] = useState(ref?.current?.clientHeight)
   useEffect(() => {
     setClientHeight(ref?.current?.clientHeight)
@@ -112,17 +112,18 @@ export function Message(): ReactElement {
                         borderRadius="6px"
                       />
                     ) : (
-                      <Image
-                        src={journey.primaryImageBlock.src}
-                        alt={journey.primaryImageBlock.alt ?? ''}
-                        width="78"
-                        height="78"
-                        style={{
-                          borderRadius: '5px',
-                          maxWidth: '100%',
-                          objectFit: 'cover'
-                        }}
-                      />
+                      <Box width={78} height={78} sx={{ position: 'relative' }}>
+                        <Image
+                          src={journey.primaryImageBlock.src}
+                          alt={journey.primaryImageBlock.alt ?? ''}
+                          fill
+                          sizes="78px"
+                          style={{
+                            borderRadius: '5px',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      </Box>
                     )}
                   </Tooltip>
                   <Stack

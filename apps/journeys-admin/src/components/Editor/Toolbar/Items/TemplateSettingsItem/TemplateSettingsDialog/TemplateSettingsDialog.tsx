@@ -15,6 +15,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
+import { JourneyCustomizationDescriptionUpdate } from '../../../../../../../__generated__/JourneyCustomizationDescriptionUpdate'
 import { JourneyFeature } from '../../../../../../../__generated__/JourneyFeature'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
 
@@ -22,12 +23,30 @@ import { AboutTabPanel } from './AboutTabPanel'
 import { CategoriesTabPanel } from './CategoriesTabPanel'
 import { MetadataTabPanel } from './MetadataTabPanel'
 import { TemplateSettingsFormValues } from './useTemplateSettingsForm'
+import { formatTemplateCustomizationString } from './utils/formatTemplateCustomizationString'
+import { getTemplateCustomizationFields } from './utils/getTemplateCustomizationFields'
 
 export const JOURNEY_FEATURE_UPDATE = gql`
   mutation JourneyFeature($id: ID!, $feature: Boolean!) {
     journeyFeature(id: $id, feature: $feature) {
       id
       featuredAt
+    }
+  }
+`
+
+export const JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE = gql`
+  mutation JourneyCustomizationDescriptionUpdate(
+    $journeyId: ID!
+    $string: String!
+  ) {
+    journeyCustomizationFieldPublisherUpdate(
+      journeyId: $journeyId
+      string: $string
+    ) {
+      id
+      key
+      value
     }
   }
 `
@@ -47,7 +66,13 @@ export function TemplateSettingsDialog({
   const { journey } = useJourney()
   const [journeySettingsUpdate] = useJourneyUpdateMutation()
   const [journeyFeature] = useMutation<JourneyFeature>(JOURNEY_FEATURE_UPDATE)
+  const [journeyCustomizationDescriptionUpdate] =
+    useMutation<JourneyCustomizationDescriptionUpdate>(
+      JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE
+    )
   const { enqueueSnackbar } = useSnackbar()
+  const isGlobalTemplate = journey?.team?.id === 'jfp-team'
+
   const validationSchema = object({
     strategySlug: string()
       .trim()
@@ -75,7 +100,10 @@ export function TemplateSettingsDialog({
     strategySlug: journey?.strategySlug,
     tagIds: journey?.tags.map(({ id }) => id),
     creatorDescription: journey?.creatorDescription,
-    languageId: journey?.language?.id
+    languageId: journey?.language?.id,
+    journeyCustomizationDescription:
+      journey?.journeyCustomizationDescription ??
+      formatTemplateCustomizationString(getTemplateCustomizationFields(journey))
   }
 
   function handleTabChange(_event, newValue: number): void {
@@ -95,13 +123,21 @@ export function TemplateSettingsDialog({
   ): Promise<void> {
     if (journey == null) return
     try {
+      // Submit other form values
       await journeySettingsUpdate({
         variables: {
           id: journey.id,
           input: {
-            ...omit(values, 'featured')
+            ...omit(values, ['featured', 'journeyCustomizationDescription'])
           }
         }
+      })
+      await journeyCustomizationDescriptionUpdate({
+        variables: {
+          journeyId: journey.id,
+          string: values.journeyCustomizationDescription
+        },
+        refetchQueries: ['GetPublisherTemplate']
       })
       if (Boolean(journey.featuredAt) !== values.featured)
         await journeyFeature({
@@ -126,10 +162,13 @@ export function TemplateSettingsDialog({
         }
       }
       if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
+        enqueueSnackbar(
+          'Something went wrong, please reload the page and try again',
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
       }
     }
   }
@@ -165,25 +204,36 @@ export function TemplateSettingsDialog({
                 sx={{ borderBottom: 1, borderColor: 'divider' }}
               >
                 <Tab label={t('Metadata')} {...tabA11yProps('metadata', 0)} />
+                {isGlobalTemplate && (
+                  <Tab
+                    label={t('Categories')}
+                    {...tabA11yProps('categories', 1)}
+                  />
+                )}
                 <Tab
-                  label={t('Categories')}
-                  {...tabA11yProps('categories', 1)}
+                  label={t('About')}
+                  {...tabA11yProps('about', isGlobalTemplate ? 2 : 1)}
                 />
-                <Tab label={t('About')} {...tabA11yProps('about', 2)} />
               </Tabs>
               <TabPanel name="metadata" value={tab} index={0}>
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <MetadataTabPanel />
+                  <MetadataTabPanel showFeaturedSettings={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
-              <TabPanel name="categories" value={tab} index={1}>
+              {isGlobalTemplate && (
+                <TabPanel name="categories" value={tab} index={1}>
+                  <Stack sx={{ pt: 6 }} gap={5}>
+                    <CategoriesTabPanel />
+                  </Stack>
+                </TabPanel>
+              )}
+              <TabPanel
+                name="about"
+                value={tab}
+                index={isGlobalTemplate ? 2 : 1}
+              >
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <CategoriesTabPanel />
-                </Stack>
-              </TabPanel>
-              <TabPanel name="about" value={tab} index={2}>
-                <Stack sx={{ pt: 6 }} gap={5}>
-                  <AboutTabPanel />
+                  <AboutTabPanel showStrategySection={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
             </>

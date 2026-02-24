@@ -30,12 +30,10 @@ language-SCRIPT-REGION
 **ISO Standards Used:**
 
 - **ISO 639-1**: Two-letter language codes
-
   - Example: 'en' for English, 'zh' for Chinese
   - Identifies the base language
 
 - **ISO 15924**: Four-letter script codes
-
   - Example: 'Hans' for Simplified Chinese, 'Arab' for Arabic
   - Identifies how the language is written
 
@@ -52,7 +50,6 @@ language-SCRIPT-REGION
 [Crowdin](https://support.crowdin.com/github-integration/) is our translation management platform that automates the translation process. Here's how it works:
 
 1. **Source Upload**:
-
    - Developer merges changes containing English text into production
    - Changes in `locales/en` directory trigger Crowdin
    - Crowdin extracts new or modified text for translation
@@ -61,9 +58,12 @@ language-SCRIPT-REGION
    - Crowdin detects new content
    - DeepL automatically generates initial translations
    - Translation team reviews translations (optional)
-   - Crowdin automatically creates a GitHub PR with new translations
+   - Crowdin automatically creates a GitHub PR with new translations ([view open Crowdin PRs](https://github.com/JesusFilm/core/pulls?q=is%3Apr+title%3A+%22chore%3A+new+crowdin+translations%22+is%3Aopen))
      - This is configured in our crowdin.yml file
      - For more information see [Crowdin GitHub Integration](https://support.crowdin.com/github-integration/) and [Crowdin Configuration File](https://support.crowdin.com/developer/configuration-file/)
+
+3. **Crowdin PR review and merge**:
+   - The Production Engineering team is responsible for reviewing and merging Crowdin translation PRs on a weekly basis to ensure translations are regularly updated in production.
 
 > **Important**: Crowdin will create and push Pull Requests with translations automatically, regardless of whether the translation team has reviewed them. This ensures continuous deployment but means that manual review of translations should be done post-deployment if needed.
 
@@ -150,7 +150,6 @@ For languages that have multiple variants (e.g., Chinese with Simplified and Tra
 **Setup Steps:**
 
 1. First, in Crowdin:
-
    - Go to Language Mapping settings
    - Add custom codes for each variant
    - Example for Chinese:

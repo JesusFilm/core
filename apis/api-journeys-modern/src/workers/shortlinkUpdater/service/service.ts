@@ -2,9 +2,10 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
+import { prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 
-import { prisma } from '../../../lib/prisma'
+import { env } from '../../../env'
 
 // GraphQL queries for ShortLink operations
 export const GET_SHORT_LINK = graphql(`
@@ -49,11 +50,11 @@ export const UPDATE_SHORT_LINK = graphql(`
 // Create Apollo client for GraphQL operations
 const createApolloClient = () => {
   const httpLink = createHttpLink({
-    uri: process.env.GATEWAY_URL,
+    uri: env.GATEWAY_URL,
     headers: {
-      'interop-token': process.env.INTEROP_TOKEN ?? '',
+      'interop-token': env.INTEROP_TOKEN,
       'x-graphql-client-name': 'api-journeys-modern',
-      'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      'x-graphql-client-version': env.SERVICE_VERSION
     }
   })
 
@@ -72,10 +73,7 @@ async function buildJourneyUrl(
   slug: string,
   blockId?: string | undefined
 ): Promise<string> {
-  const journeysUrl = process.env.JOURNEYS_URL ?? ''
-  if (journeysUrl === '') {
-    throw new Error('JOURNEYS_URL not configured')
-  }
+  const journeysUrl = env.JOURNEYS_URL
 
   // Check if the journey's team has a custom domain
   const customDomain = await prisma.customDomain.findFirst({

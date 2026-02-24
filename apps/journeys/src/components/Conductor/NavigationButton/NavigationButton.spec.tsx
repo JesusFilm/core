@@ -11,7 +11,7 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
+import { keyify, templateKeyify } from '@core/journeys/ui/plausibleHelpers'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
@@ -78,21 +78,6 @@ const journey = {
 
 describe('NavigationButton', () => {
   mockUuidv4.mockReturnValue('uuid')
-
-  const originalLocation = window.location
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
-  })
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
-  })
 
   const stepNextResult = jest.fn(() => ({
     data: {
@@ -200,7 +185,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockOrigin}/journey.id/step1.id`,
+      u: expect.stringContaining(`/journey.id/step1.id`),
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -211,12 +196,18 @@ describe('NavigationButton', () => {
           stepId: 'step1.id',
           event: 'navigateNextStep',
           blockId: 'step1.id',
-          target: 'step3.id'
+          target: 'step3.id',
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step1.id',
           event: 'navigateNextStep',
-          blockId: 'step1.id'
+          blockId: 'step1.id',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'navigateNextStep',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -248,7 +239,7 @@ describe('NavigationButton', () => {
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockOrigin}/journey.id/step2.id`,
+      u: expect.stringContaining(`/journey.id/step2.id`),
       props: {
         id: 'uuid',
         blockId: 'step2.id',
@@ -259,12 +250,18 @@ describe('NavigationButton', () => {
           stepId: 'step2.id',
           event: 'navigatePreviousStep',
           blockId: 'step2.id',
-          target: 'step1.id'
+          target: 'step1.id',
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step2.id',
           event: 'navigatePreviousStep',
-          blockId: 'step2.id'
+          blockId: 'step2.id',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'navigatePreviousStep',
+          journeyId: 'journey.id'
         })
       }
     })

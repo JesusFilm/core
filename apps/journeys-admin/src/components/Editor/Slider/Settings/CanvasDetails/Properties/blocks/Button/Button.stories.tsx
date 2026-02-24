@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -42,7 +42,8 @@ const block: TreeBlock<ButtonBlock> = {
   submitEnabled: null,
   action: null,
   children: [],
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 const Template: StoryObj<ComponentProps<typeof Button>> = {
@@ -84,6 +85,7 @@ export const Filled: StoryObj<typeof Button> = {
         gtmEventName: 'navigateToBlock',
         blockId: 'step2.id'
       },
+      eventLabel: null,
       children: [
         {
           id: 'icon1',

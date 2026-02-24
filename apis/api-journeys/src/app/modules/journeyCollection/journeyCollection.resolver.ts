@@ -16,8 +16,7 @@ import {
   Journey,
   JourneyCollection,
   Prisma
-} from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyCollectionCreateInput,
@@ -25,6 +24,7 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('JourneyCollection')

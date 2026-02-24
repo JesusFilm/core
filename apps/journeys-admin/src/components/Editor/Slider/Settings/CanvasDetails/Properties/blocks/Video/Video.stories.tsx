@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { fn } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -51,9 +51,14 @@ const defaultVideo: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: null,
   posterBlockId: null,
   objectFit: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   children: []
 }
 

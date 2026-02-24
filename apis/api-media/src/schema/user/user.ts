@@ -1,9 +1,15 @@
-import { prisma } from '../../lib/prisma'
+import { prisma } from '@core/prisma/media/client'
+
 import { builder } from '../builder'
 
 import { MediaRole } from './enums/mediaRole'
 
-builder.externalRef('User', builder.selection<{ id: string }>('id')).implement({
+export const AuthenticatedUserRef = builder.externalRef(
+  'AuthenticatedUser',
+  builder.selection<{ id: string }>('id')
+)
+
+AuthenticatedUserRef.implement({
   externalFields: (t) => ({
     id: t.id({ nullable: false })
   }),

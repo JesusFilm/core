@@ -1,4 +1,5 @@
 import { builder } from '../../builder'
+import { BlockEventLabel } from '../../enums'
 import { Block } from '../block'
 
 export const RadioOptionBlock = builder.prismaObject('Block', {
@@ -7,6 +8,10 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'RadioOptionBlock',
   shareable: true,
   fields: (t) => ({
+    eventLabel: t.expose('eventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
     label: t.string({
       nullable: false,
       resolve: (block) => block.label ?? ''
@@ -16,6 +21,9 @@ export const RadioOptionBlock = builder.prismaObject('Block', {
       description: `pollOptionImageBlockId is present if a child block should be used as a poll option image.
       This child block should not be rendered normally, instead it should be used
       as a poll option image. Blocks are often of type ImageBlock`
+    }),
+    action: t.relation('action', {
+      nullable: true
     })
   })
 })

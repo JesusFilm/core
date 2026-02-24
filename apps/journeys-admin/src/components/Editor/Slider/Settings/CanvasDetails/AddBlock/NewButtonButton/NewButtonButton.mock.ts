@@ -35,7 +35,8 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   integrationId: null,
   placeholder: null,
   required: null,
-  children: []
+  children: [],
+  hideLabel: false
 }
 
 export const submitButtonBlock: TreeBlock<ButtonBlock> = {
@@ -55,7 +56,8 @@ export const submitButtonBlock: TreeBlock<ButtonBlock> = {
     __typename: 'ButtonBlockSettings',
     alignment: ButtonAlignment.justify
   },
-  children: []
+  children: [],
+  eventLabel: null
 }
 
 export const createCardBlock = (
@@ -71,6 +73,7 @@ export const createCardBlock = (
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children
 })
 

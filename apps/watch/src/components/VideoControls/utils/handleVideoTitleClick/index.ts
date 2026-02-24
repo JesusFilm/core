@@ -1,0 +1,1 @@
+export { handleVideoTitleClick } from './handleVideoTitleClick'

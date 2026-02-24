@@ -16,6 +16,10 @@
     "noEmit": true,
     "strict": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-journeys-modern/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/api-journeys-modern/tsc/.tsbuildinfo",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "outDir": "../../dist/out-tsc"
   }
 }

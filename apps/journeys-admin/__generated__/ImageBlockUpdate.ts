@@ -26,6 +26,7 @@ export interface ImageBlockUpdate_imageBlockUpdate {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface ImageBlockUpdate {

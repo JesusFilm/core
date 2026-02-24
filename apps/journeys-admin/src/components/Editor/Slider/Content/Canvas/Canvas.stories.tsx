@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -59,6 +59,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',
@@ -73,7 +74,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -124,6 +126,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step1.id'
             },
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -162,6 +165,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image1.id',
@@ -176,7 +180,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -226,6 +231,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step2.id'
             },
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -264,6 +270,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image2.id',
@@ -278,7 +285,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -315,7 +323,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption2.id',
@@ -330,7 +339,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption3.id',
@@ -345,6 +355,59 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step3.id'
                 },
+                children: [],
+                eventLabel: null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step3.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
+    parentOrder: 2,
+    locked: false,
+    nextBlockId: 'step4.id',
+    slug: null,
+    children: [
+      {
+        id: 'multiselectCard.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        coverBlockId: null,
+        parentOrder: 1,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        backdropBlur: null,
+        eventLabel: null,
+        children: [
+          {
+            id: 'multiselectQuestion1.id',
+            __typename: 'MultiselectBlock',
+            parentBlockId: 'multiselectCard.id',
+            parentOrder: 0,
+            min: null,
+            max: 2,
+            children: [
+              {
+                id: 'multiselectOption1.id',
+                __typename: 'MultiselectOptionBlock',
+                parentBlockId: 'multiselectQuestion1.id',
+                parentOrder: 0,
+                label: 'Option 1',
+                children: []
+              },
+              {
+                id: 'multiselectOption2.id',
+                __typename: 'MultiselectOptionBlock',
+                parentBlockId: 'multiselectQuestion1.id',
+                parentOrder: 1,
+                label: 'Option 2',
                 children: []
               }
             ]
@@ -373,6 +436,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image3.id',
@@ -387,7 +451,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -424,7 +489,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption2.id',
@@ -439,7 +505,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -467,6 +534,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'VideoBlock',
@@ -483,6 +551,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             duration: null,
             image: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
+            eventLabel: null,
+            endEventLabel: null,
             mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -511,6 +583,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             posterBlockId: null,
             fullsize: null,
             action: null,
+            customizable: null,
             children: []
           }
         ]
@@ -537,6 +610,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'ImageBlock',
@@ -551,7 +625,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: [],
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             __typename: 'SignUpBlock',
@@ -587,6 +662,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image6.id',
@@ -601,7 +677,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -667,6 +744,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
               gtmEventName: 'gtmEventName',
               blockId: 'step6.id'
             },
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -764,6 +842,7 @@ export const EmptyCard = {
             themeName: null,
             fullscreen: false,
             backdropBlur: null,
+            eventLabel: null,
             children: []
           }
         ]

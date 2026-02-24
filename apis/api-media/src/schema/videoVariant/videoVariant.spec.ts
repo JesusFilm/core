@@ -5,7 +5,7 @@ import {
   VideoSubtitle,
   VideoVariant,
   VideoVariantDownload
-} from '.prisma/api-media-client'
+} from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -37,6 +37,13 @@ jest.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
   updateVideoVariantInAlgolia: jest.fn()
 }))
 
+// Mock the video available languages functions
+jest.mock('../video/lib/updateAvailableLanguages', () => ({
+  addLanguageToVideo: jest.fn(),
+  removeLanguageFromVideoIfUnused: jest.fn(),
+  updateParentCollectionLanguages: jest.fn()
+}))
+
 // Get the mocked functions for testing
 const mockedVideoCacheReset = jest.mocked(videoCacheReset)
 const mockedVideoVariantCacheReset = jest.mocked(videoVariantCacheReset)
@@ -48,6 +55,11 @@ const { deleteR2File: mockedDeleteR2File } = jest.requireMock(
 )
 const { updateVideoVariantInAlgolia: mockedUpdateVideoVariantInAlgolia } =
   jest.requireMock('../../lib/algolia/algoliaVideoVariantUpdate')
+const {
+  addLanguageToVideo: mockedAddLanguageToVideo,
+  removeLanguageFromVideoIfUnused: mockedRemoveLanguageFromVideoIfUnused,
+  updateParentCollectionLanguages: mockedUpdateParentCollectionLanguages
+} = jest.requireMock('../video/lib/updateAvailableLanguages')
 
 type VideoVariantAndIncludes = VideoVariant & {
   downloads: VideoVariantDownload[]
@@ -80,6 +92,9 @@ describe('videoVariant', () => {
     mockedDeleteVideo.mockResolvedValue(undefined)
     mockedDeleteR2File.mockResolvedValue(undefined)
     mockedUpdateVideoVariantInAlgolia.mockResolvedValue(undefined)
+    mockedAddLanguageToVideo.mockResolvedValue(undefined)
+    mockedRemoveLanguageFromVideoIfUnused.mockResolvedValue(undefined)
+    mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
   })
 
   describe('videoVariants', () => {
@@ -124,6 +139,9 @@ describe('videoVariant', () => {
           muxVideo {
             id
           }
+          video {
+            id
+          }
         }
       }
     `)
@@ -150,6 +168,8 @@ describe('videoVariant', () => {
           assetId: null,
           muxVideoId: null,
           brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           videoEdition: {
             id: 'videoEditionId',
             videoId: 'videoId',
@@ -204,7 +224,7 @@ describe('videoVariant', () => {
             }
           ]
         }
-      ] as VideoVariantAndIncludes[])
+      ] as unknown as VideoVariantAndIncludes[])
       const data = await client({
         document: VIDEO_VARIANTS_QUERY,
         variables: {
@@ -218,11 +238,7 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          video: {
-            select: {
-              restrictDownloadPlatforms: true
-            }
-          },
+          video: true,
           videoEdition: {
             include: {
               _count: {
@@ -276,7 +292,10 @@ describe('videoVariant', () => {
           subtitleCount: 123,
           slug: 'videoSlug',
           published: true,
-          muxVideo: null
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
         }
       ])
     })
@@ -303,6 +322,8 @@ describe('videoVariant', () => {
           assetId: null,
           muxVideoId: null,
           brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           videoEdition: {
             id: 'videoEditionId',
             videoId: 'videoId',
@@ -330,7 +351,7 @@ describe('videoVariant', () => {
           },
           downloads: []
         }
-      ] as VideoVariantAndIncludes[])
+      ] as unknown as VideoVariantAndIncludes[])
       prismaMock.videoVariantDownload.findMany.mockResolvedValueOnce([
         {
           id: 'downloadId',
@@ -342,7 +363,9 @@ describe('videoVariant', () => {
           version: 1,
           assetId: null,
           bitrate: null,
-          videoVariantId: 'videoVariantId'
+          videoVariantId: 'videoVariantId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ])
       const data = await client({
@@ -354,11 +377,7 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          video: {
-            select: {
-              restrictDownloadPlatforms: true
-            }
-          },
+          video: true,
           videoEdition: {
             include: {
               _count: {
@@ -391,7 +410,10 @@ describe('videoVariant', () => {
           subtitleCount: 0,
           slug: 'videoSlug',
           published: true,
-          muxVideo: null
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
         }
       ])
     })
@@ -418,6 +440,8 @@ describe('videoVariant', () => {
           assetId: null,
           muxVideoId: null,
           brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           videoEdition: {
             id: 'videoEditionId',
             videoId: 'videoId',
@@ -472,7 +496,7 @@ describe('videoVariant', () => {
             }
           ]
         }
-      ] as VideoVariantAndIncludes[])
+      ] as unknown as VideoVariantAndIncludes[])
 
       const data = await client({
         document: VIDEO_VARIANTS_QUERY,
@@ -490,11 +514,7 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          video: {
-            select: {
-              restrictDownloadPlatforms: true
-            }
-          },
+          video: true,
           videoEdition: {
             include: {
               _count: {
@@ -547,7 +567,233 @@ describe('videoVariant', () => {
           subtitleCount: 123,
           slug: 'videoSlug',
           published: false,
-          muxVideo: null
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
+        }
+      ])
+    })
+
+    it('should query videoVariants with languageId filter', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          dash: null,
+          share: null,
+          duration: 768,
+          lengthInMilliseconds: null,
+          languageId: 'languageId1',
+          masterUrl: null,
+          masterWidth: null,
+          masterHeight: null,
+          edition: 'base',
+          slug: 'videoSlug',
+          downloadable: true,
+          published: true,
+          version: 1,
+          assetId: null,
+          muxVideoId: null,
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          videoEdition: {
+            id: 'videoEditionId',
+            videoId: 'videoId',
+            name: 'videoEditionName',
+            videoSubtitles: [],
+            _count: {
+              videoSubtitles: 0
+            }
+          },
+          muxVideo: null,
+          video: {
+            id: 'videoId',
+            published: true,
+            slug: 'video-slug',
+            label: 'shortFilm',
+            primaryLanguageId: 'languageId1',
+            noIndex: false,
+            childIds: [],
+            locked: false,
+            availableLanguages: ['languageId1'],
+            originId: null,
+            restrictDownloadPlatforms: [],
+            restrictViewPlatforms: [],
+            publishedAt: null
+          },
+          downloads: []
+        }
+      ] as unknown as VideoVariantAndIncludes[])
+
+      const data = await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            languageId: 'languageId1'
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: true,
+          languageId: 'languageId1'
+        },
+        include: {
+          downloads: true,
+          video: true,
+          videoEdition: {
+            include: {
+              _count: {
+                select: {
+                  videoSubtitles: true
+                }
+              },
+              videoSubtitles: {
+                where: {}
+              }
+            }
+          },
+          muxVideo: true
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariants', [
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          downloadable: true,
+          downloads: [],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
+          duration: 768,
+          language: { id: 'languageId1' },
+          subtitle: [],
+          subtitleCount: 0,
+          slug: 'videoSlug',
+          published: true,
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
+        }
+      ])
+    })
+
+    it('should query videoVariants with both onlyPublished and languageId filters', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          dash: null,
+          share: null,
+          duration: 768,
+          lengthInMilliseconds: null,
+          languageId: 'languageId1',
+          masterUrl: null,
+          masterWidth: null,
+          masterHeight: null,
+          edition: 'base',
+          slug: 'videoSlug',
+          downloadable: true,
+          published: false,
+          version: 1,
+          assetId: null,
+          muxVideoId: null,
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          videoEdition: {
+            id: 'videoEditionId',
+            videoId: 'videoId',
+            name: 'videoEditionName',
+            videoSubtitles: [],
+            _count: {
+              videoSubtitles: 0
+            }
+          },
+          muxVideo: null,
+          video: {
+            id: 'videoId',
+            published: true,
+            slug: 'video-slug',
+            label: 'shortFilm',
+            primaryLanguageId: 'languageId1',
+            noIndex: false,
+            childIds: [],
+            locked: false,
+            availableLanguages: ['languageId1'],
+            originId: null,
+            restrictDownloadPlatforms: [],
+            restrictViewPlatforms: [],
+            publishedAt: null
+          },
+          downloads: []
+        }
+      ] as unknown as VideoVariantAndIncludes[])
+
+      const data = await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            onlyPublished: false,
+            languageId: 'languageId1'
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: undefined,
+          languageId: 'languageId1'
+        },
+        include: {
+          downloads: true,
+          video: true,
+          videoEdition: {
+            include: {
+              _count: {
+                select: {
+                  videoSubtitles: true
+                }
+              },
+              videoSubtitles: {
+                where: {}
+              }
+            }
+          },
+          muxVideo: true
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariants', [
+        {
+          id: 'videoVariantId',
+          videoId: 'videoId',
+          hls: null,
+          downloadable: true,
+          downloads: [],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
+          duration: 768,
+          language: { id: 'languageId1' },
+          subtitle: [],
+          subtitleCount: 0,
+          slug: 'videoSlug',
+          published: false,
+          muxVideo: null,
+          video: {
+            id: 'videoId'
+          }
         }
       ])
     })
@@ -567,7 +813,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoVariant.create.mockResolvedValue({
           id: 'id',
@@ -588,7 +836,9 @@ describe('videoVariant', () => {
           masterHeight: 180,
           assetId: null,
           version: 1,
-          brightcoveId: null
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.video.findUnique.mockResolvedValue({
           id: 'videoId',
@@ -597,6 +847,8 @@ describe('videoVariant', () => {
           label: 'shortFilm',
           primaryLanguageId: 'en',
           noIndex: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           childIds: [],
           locked: false,
           availableLanguages: ['en'],
@@ -612,6 +864,8 @@ describe('videoVariant', () => {
           label: 'shortFilm',
           primaryLanguageId: 'en',
           noIndex: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           childIds: [],
           locked: false,
           availableLanguages: ['en', 'languageId'],
@@ -675,7 +929,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoVariant.create.mockResolvedValue({
           id: 'id',
@@ -696,7 +952,9 @@ describe('videoVariant', () => {
           masterHeight: 180,
           assetId: null,
           version: 1,
-          brightcoveId: null
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.video.findUnique.mockResolvedValue({
           id: 'videoId',
@@ -705,6 +963,8 @@ describe('videoVariant', () => {
           label: 'shortFilm',
           primaryLanguageId: 'en',
           noIndex: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           childIds: [],
           locked: false,
           availableLanguages: ['en'],
@@ -720,6 +980,8 @@ describe('videoVariant', () => {
           label: 'shortFilm',
           primaryLanguageId: 'en',
           noIndex: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
           childIds: [],
           locked: false,
           availableLanguages: ['en', 'languageId'],
@@ -785,6 +1047,82 @@ describe('videoVariant', () => {
         expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
         expect(mockedVideoCacheReset).not.toHaveBeenCalled()
       })
+
+      it('should not add language to availableLanguages when creating unpublished variant', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoVariant.create.mockResolvedValue({
+          id: 'unpublished-id',
+          hls: 'hls',
+          duration: 1024,
+          lengthInMilliseconds: 123456,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'newLanguageId',
+          published: false,
+          share: 'share',
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1,
+          brightcoveId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+
+        const result = await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'unpublished-id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              lengthInMilliseconds: 123456,
+              languageId: 'newLanguageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share',
+              downloadable: true,
+              published: false
+            }
+          }
+        })
+
+        expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
+          data: {
+            id: 'unpublished-id',
+            hls: 'hls',
+            dash: 'dash',
+            duration: 1024,
+            lengthInMilliseconds: 123456,
+            languageId: 'newLanguageId',
+            edition: 'base',
+            slug: 'videoSlug',
+            videoId: 'videoId',
+            share: 'share',
+            downloadable: true,
+            published: false
+          }
+        })
+
+        // Verify video.update was not called (language should not be added to availableLanguages)
+        expect(prismaMock.video.update).not.toHaveBeenCalled()
+        expect(result).toHaveProperty('data.videoVariantCreate', {
+          id: 'unpublished-id'
+        })
+      })
     })
 
     describe('videoVariantUpdate', () => {
@@ -800,7 +1138,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         // Mock the findUnique call for getting current variant
         prismaMock.videoVariant.findUnique.mockResolvedValue({
@@ -811,6 +1151,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.update.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',
@@ -872,14 +1214,16 @@ describe('videoVariant', () => {
 
       it('should continue even if cache reset function throws', async () => {
         // Mock cache reset function to throw error
-        mockedVideoVariantCacheReset.mockImplementation((id) => {
+        mockedVideoVariantCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
 
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         // Mock the findUnique call for getting current variant
         prismaMock.videoVariant.findUnique.mockResolvedValue({
@@ -890,6 +1234,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.update.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',
@@ -975,7 +1321,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         // Mock the findUnique method with includes
         prismaMock.videoVariant.findUnique.mockResolvedValue({
@@ -1004,6 +1352,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.delete.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',
@@ -1042,17 +1392,19 @@ describe('videoVariant', () => {
 
       it('should continue even if cache reset functions throw', async () => {
         // Mock cache reset functions to throw errors
-        mockedVideoVariantCacheReset.mockImplementation((id) => {
+        mockedVideoVariantCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
-        mockedVideoCacheReset.mockImplementation((id) => {
+        mockedVideoCacheReset.mockImplementation(() => {
           throw new Error('Cache reset failed')
         })
 
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoVariant.findUnique.mockResolvedValue({
           id: 'id',
@@ -1080,6 +1432,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.delete.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',
@@ -1136,7 +1490,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         // Mock variant with assets
@@ -1223,7 +1579,7 @@ describe('videoVariant', () => {
           publicUrl: 'publicUrl',
           videoId: 'videoId',
           contentType: 'video/mp4',
-          contentLength: 2000,
+          contentLength: BigInt(2000),
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -1252,6 +1608,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.delete.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',
@@ -1335,7 +1693,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         // Mock variant with downloads that have null assetId
@@ -1409,7 +1769,7 @@ describe('videoVariant', () => {
           publicUrl: 'publicUrl',
           videoId: 'videoId',
           contentType: 'video/mp4',
-          contentLength: 2000,
+          contentLength: BigInt(2000),
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -1422,6 +1782,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.delete.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',
@@ -1483,7 +1845,9 @@ describe('videoVariant', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
 
         // Mock variant with mux video that has null assetId
@@ -1542,6 +1906,8 @@ describe('videoVariant', () => {
         prismaMock.videoVariant.delete.mockResolvedValue({
           id: 'id',
           hls: 'hls',
+          createdAt: new Date(),
+          updatedAt: new Date(),
           duration: 1024,
           lengthInMilliseconds: 123456,
           dash: 'dash',

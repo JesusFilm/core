@@ -28,6 +28,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'video5.id',
@@ -50,6 +51,11 @@ describe('CardWrapper', () => {
           fullsize: null,
           action: null,
           objectFit: null,
+          subtitleLanguage: null,
+          showGeneratedSubtitles: null,
+          eventLabel: null,
+          endEventLabel: null,
+          customizable: null,
           children: [
             {
               id: 'image5.id',
@@ -64,7 +70,8 @@ describe('CardWrapper', () => {
               blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
               scale: null,
               focalLeft: 50,
-              focalTop: 50
+              focalTop: 50,
+              customizable: null
             }
           ]
         }
@@ -97,7 +104,8 @@ describe('CardWrapper', () => {
                 width: 1920,
                 scale: null,
                 focalLeft: 50,
-                focalTop: 50
+                focalTop: 50,
+                customizable: null
               }
             ],
             endAt: null,
@@ -117,7 +125,12 @@ describe('CardWrapper', () => {
             image: null,
             mediaVideo: null,
             videoId: null,
-            videoVariantLanguageId: '529'
+            videoVariantLanguageId: '529',
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -128,9 +141,10 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
+        eventLabel: null,
         wrappers: {}
       },
-      {}
+      undefined
     )
   })
 
@@ -149,6 +163,7 @@ describe('CardWrapper', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'video5.id',
@@ -171,6 +186,11 @@ describe('CardWrapper', () => {
           fullsize: null,
           action: null,
           objectFit: null,
+          subtitleLanguage: null,
+          showGeneratedSubtitles: null,
+          eventLabel: null,
+          endEventLabel: null,
+          customizable: null,
           children: [
             {
               id: 'image5.id',
@@ -185,7 +205,8 @@ describe('CardWrapper', () => {
               blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
               scale: null,
               focalLeft: 50,
-              focalTop: 50
+              focalTop: 50,
+              customizable: null
             }
           ]
         }
@@ -218,7 +239,8 @@ describe('CardWrapper', () => {
                 width: 1920,
                 scale: null,
                 focalLeft: 50,
-                focalTop: 50
+                focalTop: 50,
+                customizable: null
               }
             ],
             endAt: null,
@@ -238,7 +260,12 @@ describe('CardWrapper', () => {
             image: null,
             mediaVideo: null,
             videoId: null,
-            videoVariantLanguageId: '529'
+            videoVariantLanguageId: '529',
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -249,9 +276,10 @@ describe('CardWrapper', () => {
         parentOrder: 0,
         themeMode: null,
         themeName: null,
+        eventLabel: null,
         wrappers: {}
       },
-      {}
+      undefined
     )
   })
 })

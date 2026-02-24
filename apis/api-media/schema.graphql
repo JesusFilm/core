@@ -9,6 +9,14 @@ type ArclightApiKey
   defaultPlatform: DefaultPlatform!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  mediaUserRoles: [MediaRole!]!
+}
+
 interface BaseError {
   message: String
 }
@@ -41,6 +49,30 @@ type BibleCitation {
   video: Video!
 }
 
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
+type CheckVideoInAlgoliaMismatch {
+  field: String
+  expected: String
+  actual: String
+}
+
+type CheckVideoInAlgoliaResult {
+  ok: Boolean
+  mismatches: [CheckVideoInAlgoliaMismatch!]
+  recordUrl: String
+  error: String
+}
+
+type CheckVideoVariantsInAlgoliaResult {
+  ok: Boolean
+  missingVariants: [String!]
+  browseUrl: String
+}
+
 type CloudflareImage {
   id: ID!
   uploadUrl: String
@@ -53,11 +85,12 @@ type CloudflareImage {
   mobileCinematicVeryLow: String
   thumbnail: String
   videoStill: String
+  blurhash: String
 }
 
 type CloudflareR2 {
   id: ID!
-  contentLength: Int!
+  contentLength: BigInt!
   contentType: String!
   fileName: String!
   originalFilename: String
@@ -68,11 +101,25 @@ type CloudflareR2 {
   updatedAt: Date!
 }
 
+input CloudflareR2CompleteMultipartInput {
+  """CloudflareR2 id for the asset being uploaded"""
+  id: String
+
+  """Key of the multipart upload being completed"""
+  fileName: String!
+
+  """Upload ID returned from create multipart upload"""
+  uploadId: String!
+
+  """List of uploaded parts with their ETags"""
+  parts: [CloudflareR2MultipartUploadedPartInput!]!
+}
+
 input CloudflareR2CreateInput {
   id: String
 
   """the size of the file that is being uploaded"""
-  contentLength: Int!
+  contentLength: BigInt!
 
   """the type of file that is being uploaded. e.g. image or video/mp4"""
   contentType: String!
@@ -87,10 +134,77 @@ input CloudflareR2CreateInput {
   videoId: String!
 }
 
+input CloudflareR2MultipartPrepareInput {
+  id: String
+
+  """the size of the file that is being uploaded"""
+  contentLength: BigInt!
+
+  """the type of file that is being uploaded. e.g. image or video/mp4"""
+  contentType: String!
+
+  """the name of the file that is being uploaded"""
+  fileName: String!
+
+  """the original name of the file before any renaming"""
+  originalFilename: String
+
+  """the id of the Video object this file relates to in the database"""
+  videoId: String!
+
+  """
+  Optional preferred part size in bytes (minimum 5 MiB, capped to 10k parts)
+  """
+  preferredPartSize: Int
+}
+
+"""Metadata returned when preparing a multipart upload for Cloudflare R2"""
+type CloudflareR2MultipartPrepared {
+  """CloudflareR2 record id"""
+  id: String
+
+  """Upload ID for the multipart upload"""
+  uploadId: String
+
+  """Object key for the multipart upload"""
+  fileName: String
+
+  """Public URL for the completed asset"""
+  publicUrl: String
+
+  """Part size in bytes"""
+  partSize: Int
+
+  """Presigned URLs for each multipart part"""
+  parts: [CloudflareR2MultipartPreparedPart!]
+}
+
+"""Presigned upload URL for a multipart part"""
+type CloudflareR2MultipartPreparedPart {
+  """Presigned URL for the part"""
+  uploadUrl: String
+
+  """1-indexed part number"""
+  partNumber: Int
+}
+
+input CloudflareR2MultipartUploadedPartInput {
+  """1-indexed part number for the multipart upload"""
+  partNumber: Int!
+
+  """ETag returned after uploading the part"""
+  eTag: String!
+}
+
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 enum DefaultPlatform {
   ios
@@ -119,6 +233,11 @@ type ForeignKeyConstraintErrorLocation {
 
   """The value that was provided at the path"""
   value: String
+}
+
+input GenerateSubtitlesInput {
+  languageCode: String!
+  languageName: String!
 }
 
 enum IdType {
@@ -172,8 +291,6 @@ enum MediaRole {
 }
 
 type Mutation {
-  """Transcode an asset. Returns the bullmq job ID."""
-  transcodeAsset(input: TranscodeVideoInput!): String
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -182,6 +299,14 @@ type Mutation {
 
   """The endpoint to upload a file to Cloudflare R2"""
   cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
+
+  """
+  Prepare a multipart upload for Cloudflare R2 and return presigned part URLs
+  """
+  cloudflareR2MultipartPrepare(input: CloudflareR2MultipartPrepareInput!): CloudflareR2MultipartPrepared!
+
+  """Complete a multipart upload and persist the asset record"""
+  cloudflareR2CompleteMultipart(input: CloudflareR2CompleteMultipartInput!): CloudflareR2!
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
@@ -189,10 +314,18 @@ type Mutation {
   bibleCitationUpdate(input: MutationBibleCitationUpdateInput!): BibleCitation
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
+  playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
+  playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
+  playlistDelete(id: ID!): MutationPlaylistDeleteResult
+  playlistItemAdd(playlistId: ID!, videoVariantIds: [ID!]!): MutationPlaylistItemAddResult
+  playlistItemAddWithVideoAndLanguageIds(playlistId: ID!, videos: [PlaylistItemVideoInput!]!): MutationPlaylistItemAddWithVideoAndLanguageIdsResult
+  playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
+  playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
   """
   Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
@@ -215,6 +348,7 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+  userMediaProfileUpdate(input: UserMediaProfileUpdateInput!): UserMediaProfile!
   videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
   videoSubtitleDelete(id: ID!): VideoSubtitle!
@@ -227,6 +361,9 @@ type Mutation {
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
+  fixVideoLanguages(videoId: ID!): Boolean!
+  updateVideoAlgoliaIndex(videoId: ID!): Boolean!
+  updateVideoVariantAlgoliaIndex(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -245,6 +382,8 @@ type Mutation {
   videoOriginCreate(input: MutationVideoOriginCreateInput!): VideoOrigin!
   videoOriginUpdate(input: MutationVideoOriginUpdateInput!): VideoOrigin!
   videoOriginDelete(id: ID!): VideoOrigin!
+  videoPublishChildren(id: ID!): VideoPublishChildrenResult!
+  videoPublishChildrenAndLanguages(id: ID!): VideoPublishChildrenAndLanguagesResult!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
@@ -271,6 +410,48 @@ input MutationBibleCitationUpdateInput {
   verseStart: Int
   verseEnd: Int
   order: Int
+}
+
+union MutationPlaylistCreateResult = ZodError | MutationPlaylistCreateSuccess
+
+type MutationPlaylistCreateSuccess {
+  data: Playlist!
+}
+
+union MutationPlaylistDeleteResult = NotFoundError | MutationPlaylistDeleteSuccess
+
+type MutationPlaylistDeleteSuccess {
+  data: Playlist!
+}
+
+union MutationPlaylistItemAddResult = NotFoundError | MutationPlaylistItemAddSuccess
+
+type MutationPlaylistItemAddSuccess {
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistItemAddWithVideoAndLanguageIdsResult = NotFoundError | MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess
+
+type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess {
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistItemRemoveResult = NotFoundError | MutationPlaylistItemRemoveSuccess
+
+type MutationPlaylistItemRemoveSuccess {
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistItemsReorderResult = NotFoundError | MutationPlaylistItemsReorderSuccess
+
+type MutationPlaylistItemsReorderSuccess {
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistUpdateResult = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
+
+type MutationPlaylistUpdateSuccess {
+  data: Playlist!
 }
 
 input MutationShortLinkCreateInput {
@@ -372,7 +553,7 @@ input MutationShortLinkUpdateInput {
   bitrate: Int
 }
 
-union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
@@ -387,6 +568,15 @@ input MutationVideoOriginUpdateInput {
   id: ID!
   name: String
   description: String
+}
+
+type MuxSubtitleTrack {
+  id: ID!
+  trackId: String!
+  source: String!
+  status: String!
+  bcp47: String!
+  muxVideoId: ID!
 }
 
 type MuxVideo
@@ -457,8 +647,57 @@ enum Platform {
   watch
 }
 
+type Playlist {
+  id: ID!
+  name: String!
+  note: String
+  noteUpdatedAt: DateTime
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  slug: String!
+  owner: AuthenticatedUser!
+  items: [PlaylistItem!]!
+}
+
+input PlaylistCreateInput {
+  id: ID
+  name: String!
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+  slug: String
+}
+
+type PlaylistItem {
+  id: ID!
+  order: Int
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  videoVariant: VideoVariant!
+  playlist: Playlist!
+}
+
+"""
+The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId.
+"""
+input PlaylistItemVideoInput {
+  """The video id of the video variant"""
+  videoId: String!
+
+  """The language id of the video variant"""
+  languageId: String!
+}
+
+input PlaylistUpdateInput {
+  name: String
+  note: String
+  noteSharedAt: DateTime
+  sharedAt: DateTime
+}
+
 type Query {
-  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -470,6 +709,9 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
+  playlists: [Playlist!]
+  playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
@@ -505,6 +747,7 @@ type Query {
     first: Int
     last: Int
   ): QueryShortLinksConnection!
+  userMediaProfile: UserMediaProfile
   videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
@@ -513,13 +756,28 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
+  checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
   videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
+}
+
+union QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
+
+type QueryGetMyGeneratedMuxSubtitleTrackSuccess {
+  data: MuxSubtitleTrack!
+}
+
+union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess
+
+type QueryPlaylistSuccess {
+  data: Playlist!
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
@@ -560,6 +818,12 @@ type QueryShortLinksConnection {
 type QueryShortLinksConnectionEdge {
   node: ShortLink
   cursor: String!
+}
+
+union QueryYoutubeClosedCaptionLanguagesResult = Error | ZodError | QueryYoutubeClosedCaptionLanguagesSuccess
+
+type QueryYoutubeClosedCaptionLanguagesSuccess {
+  data: [Language!]!
 }
 
 enum RedirectType {
@@ -690,14 +954,6 @@ type TaxonomyName {
   taxonomy: Taxonomy!
 }
 
-input TranscodeVideoInput {
-  r2AssetId: String!
-  resolution: String!
-  videoBitrate: String
-  outputFilename: String!
-  outputPath: String!
-}
-
 enum UnsplashColor {
   black_and_white
   black
@@ -802,12 +1058,27 @@ type UnsplashUserLinks {
   self: String!
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  mediaUserRoles: [MediaRole!]!
+type UserMediaProfile {
+  """The database UUID"""
+  id: ID!
+
+  """The Firebase user ID"""
+  userId: ID!
+
+  """Language IDs array related to IDs in api-languages"""
+  languageInterests: [Language!]
+
+  """Country IDs array"""
+  countryInterests: [ID!]
+
+  """IDs of video collections the user is interested in"""
+  userInterests: [Video!]
+}
+
+input UserMediaProfileUpdateInput {
+  languageInterestIds: [ID!]
+  countryInterestIds: [ID!]
+  userInterestIds: [ID!]
 }
 
 type Video
@@ -843,7 +1114,7 @@ type Video
   variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
   variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
-  variant(languageId: ID, input: VideoVariantFilter): VideoVariant
+  variant(languageId: ID, input: VideoVariantFilter): VideoVariant @deprecated(reason: "Use variants instead")
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
@@ -875,6 +1146,7 @@ type VideoDescription {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 type VideoEdition {
@@ -919,6 +1191,20 @@ type VideoOrigin {
   description: String
 }
 
+type VideoPublishChildrenAndLanguagesResult {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
+  publishedVariantIds: [ID!]
+  publishedVariantsCount: Int
+}
+
+type VideoPublishChildrenResult {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
+}
+
 enum VideoRedirectType {
   hls
   dl
@@ -939,6 +1225,7 @@ type VideoStudyQuestion {
   primary: Boolean!
   order: Int!
   language: Language!
+  crowdInId: String
 }
 
 input VideoStudyQuestionCreateInput {
@@ -1019,6 +1306,7 @@ type VideoTitle {
   value: String!
   primary: Boolean!
   language: Language!
+  crowdInId: String
 }
 
 input VideoTranslationCreateInput {
@@ -1075,6 +1363,7 @@ type VideoVariant {
 
   """version control for master video file"""
   version: Int!
+  video: Video
 }
 
 input VideoVariantCreateInput {
@@ -1153,6 +1442,7 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
+  languageId: ID
 }
 
 input VideoVariantUpdateInput {

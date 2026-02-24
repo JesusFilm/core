@@ -57,6 +57,7 @@ describe('CardVideo', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
   const step: TreeBlock = {
@@ -101,8 +102,13 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
             mediaVideo: null,
-            action: null
+            action: null,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null
           }
         ]
       }
@@ -151,8 +157,13 @@ describe('CardVideo', () => {
           image: null,
           duration: null,
           objectFit: null,
+          subtitleLanguage: null,
+          showGeneratedSubtitles: null,
           mediaVideo: null,
-          action: null
+          action: null,
+          eventLabel: null,
+          endEventLabel: null,
+          customizable: null
         }
       }
     }
@@ -190,8 +201,13 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
             mediaVideo: null,
-            action: null
+            action: null,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null
           }
         ]
       }

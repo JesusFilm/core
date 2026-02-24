@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import {
@@ -148,7 +148,7 @@ const IconTemplate: IconStory = {
                         __typename: 'IconBlock',
                         parentBlockId: 'id',
                         parentOrder: 0,
-                        iconName: IconName.CheckCircleRounded,
+                        iconName: IconName.ChevronLeftRounded,
                         iconColor: null,
                         iconSize: IconSize.md,
                         children: []
@@ -160,7 +160,7 @@ const IconTemplate: IconStory = {
                         __typename: 'IconBlock',
                         parentBlockId: 'id',
                         parentOrder: 0,
-                        iconName: IconName.CheckCircleRounded,
+                        iconName: IconName.ChevronRightRounded,
                         iconColor: null,
                         iconSize: IconSize.md,
                         children: []

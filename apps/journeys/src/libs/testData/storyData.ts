@@ -31,6 +31,7 @@ export const basic: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: true,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -82,6 +83,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step2.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -97,6 +99,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step3.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -112,6 +115,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step4.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -129,7 +133,8 @@ export const basic: TreeBlock[] = [
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       }
@@ -155,6 +160,7 @@ export const basic: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -206,6 +212,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step1.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -221,6 +228,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step3.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -236,6 +244,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step4.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -264,6 +273,7 @@ export const basic: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -315,6 +325,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step1.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -330,6 +341,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step2.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -345,6 +357,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step4.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -373,6 +386,7 @@ export const basic: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -424,6 +438,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step1.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -439,6 +454,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step2.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -454,6 +470,7 @@ export const basic: TreeBlock[] = [
                   blockId: 'step3.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -485,6 +502,7 @@ export const imageBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -542,7 +560,8 @@ export const imageBlocks: TreeBlock[] = [
                 children: []
               }
             ],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             id: 'image0.id',
@@ -557,7 +576,8 @@ export const imageBlocks: TreeBlock[] = [
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       }
@@ -583,6 +603,7 @@ export const imageBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -639,7 +660,8 @@ export const imageBlocks: TreeBlock[] = [
                 children: []
               }
             ],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             id: 'image0.id',
@@ -654,7 +676,8 @@ export const imageBlocks: TreeBlock[] = [
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       }
@@ -680,6 +703,7 @@ export const imageBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -724,7 +748,8 @@ export const imageBlocks: TreeBlock[] = [
             type: null,
             routeId: null,
             required: null,
-            children: []
+            children: [],
+            hideLabel: false
           },
           {
             id: 'image0.id',
@@ -739,7 +764,8 @@ export const imageBlocks: TreeBlock[] = [
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       }
@@ -765,6 +791,7 @@ export const imageBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -811,6 +838,7 @@ export const imageBlocks: TreeBlock[] = [
                 label: 'Yes, God likes good people',
                 action: null,
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -821,6 +849,7 @@ export const imageBlocks: TreeBlock[] = [
                 label: 'No, He will accept me as I am',
                 action: null,
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -838,7 +867,8 @@ export const imageBlocks: TreeBlock[] = [
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       }
@@ -864,6 +894,7 @@ export const imageBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',
@@ -878,7 +909,8 @@ export const imageBlocks: TreeBlock[] = [
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -945,6 +977,8 @@ export const imageBlocks: TreeBlock[] = [
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
             },
+            settings: null,
+            eventLabel: null,
             children: [
               {
                 id: 'icon',
@@ -956,8 +990,7 @@ export const imageBlocks: TreeBlock[] = [
                 iconSize: IconSize.md,
                 children: []
               }
-            ],
-            settings: null
+            ]
           }
         ]
       }
@@ -986,6 +1019,7 @@ export const videoBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video1.id',
@@ -1011,6 +1045,11 @@ export const videoBlocks: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1039,6 +1078,7 @@ export const videoBlocks: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]
@@ -1067,6 +1107,7 @@ export const videoBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -1118,6 +1159,7 @@ export const videoBlocks: TreeBlock[] = [
                   blockId: 'step3.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -1133,6 +1175,7 @@ export const videoBlocks: TreeBlock[] = [
                   blockId: 'step4.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -1161,6 +1204,7 @@ export const videoBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video2.id',
@@ -1186,6 +1230,11 @@ export const videoBlocks: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1200,6 +1249,7 @@ export const videoBlocks: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]
@@ -1228,6 +1278,7 @@ export const videoBlocks: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video3.id',
@@ -1253,6 +1304,11 @@ export const videoBlocks: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: []
           }
         ]
@@ -1282,6 +1338,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video1.id',
@@ -1307,6 +1364,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1348,6 +1410,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -1399,6 +1462,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   blockId: 'step3.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -1414,6 +1478,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                   blockId: 'step4.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -1442,6 +1507,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video2.id',
@@ -1467,6 +1533,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1481,6 +1552,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]
@@ -1509,6 +1581,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video3.id',
@@ -1534,6 +1607,11 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: []
           }
         ]
@@ -1563,6 +1641,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video1.id',
@@ -1597,6 +1676,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1638,6 +1722,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -1689,6 +1774,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   blockId: 'step3.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               },
               {
@@ -1704,6 +1790,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                   blockId: 'step4.id'
                 },
                 pollOptionImageBlockId: null,
+                eventLabel: null,
                 children: []
               }
             ]
@@ -1732,6 +1819,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video2.id',
@@ -1757,6 +1845,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1771,6 +1864,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]
@@ -1799,6 +1893,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video3.id',
@@ -1824,6 +1919,11 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: []
           }
         ]
@@ -1853,6 +1953,7 @@ export const videoLoop: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'typographyBlockId1',
@@ -1910,7 +2011,8 @@ export const videoLoop: TreeBlock[] = [
                 children: []
               }
             ],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             id: 'video1.id',
@@ -1936,6 +2038,11 @@ export const videoLoop: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'image1.id',
@@ -1950,6 +2057,7 @@ export const videoLoop: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]
@@ -1978,6 +2086,7 @@ export const videoLoop: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video1.id',
@@ -2008,6 +2117,11 @@ export const videoLoop: TreeBlock[] = [
               blockId: 'step2.id'
             },
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'image1.id',
@@ -2022,6 +2136,7 @@ export const videoLoop: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]
@@ -2050,6 +2165,7 @@ export const videoLoop: TreeBlock[] = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        eventLabel: null,
         children: [
           {
             id: 'video2.id',
@@ -2075,6 +2191,11 @@ export const videoLoop: TreeBlock[] = [
             fullsize: true,
             action: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: false,
+            eventLabel: null,
+            endEventLabel: null,
+            customizable: null,
             children: [
               {
                 id: 'image1.id',
@@ -2089,6 +2210,7 @@ export const videoLoop: TreeBlock[] = [
                 scale: null,
                 focalLeft: 50,
                 focalTop: 50,
+                customizable: null,
                 children: []
               }
             ]

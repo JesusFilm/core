@@ -5,6 +5,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -29,6 +30,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',
@@ -43,7 +45,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -95,7 +98,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               blockId: 'step1.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           }
         ]
       }
@@ -121,6 +125,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image1.id',
@@ -135,7 +140,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -183,10 +189,13 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentBlockId: 'button1.id',
               __typename: 'LinkAction',
               gtmEventName: 'gtmEventName',
-              url: 'https://www.google.com'
+              url: 'https://www.google.com',
+              customizable: false,
+              parentStepId: null
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             __typename: 'ButtonBlock',
@@ -204,10 +213,39 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentBlockId: 'button2.id',
               __typename: 'EmailAction',
               gtmEventName: 'gtmEventName',
-              email: 'imissedmondshen@gmail.com'
+              email: 'imissedmondshen@gmail.com',
+              customizable: false,
+              parentStepId: null
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button3.id',
+            parentBlockId: 'card1.id',
+            parentOrder: 5,
+            label: 'Call Us',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: null,
+            endIconId: null,
+            submitEnabled: null,
+            action: {
+              parentBlockId: 'button3.id',
+              __typename: 'PhoneAction',
+              gtmEventName: 'gtmEventName',
+              phone: '+1234567890',
+              countryCode: 'US',
+              contactAction: ContactActionType.call,
+              customizable: false,
+              parentStepId: 'step1.id'
+            },
+            children: [],
+            settings: null,
+            eventLabel: null
           }
         ]
       }
@@ -233,6 +271,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image2.id',
@@ -247,7 +286,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -299,7 +339,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption3.id',
@@ -314,7 +355,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption4.id',
@@ -329,7 +371,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step2.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -357,6 +400,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image3.id',
@@ -371,7 +415,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -407,7 +452,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               blockId: 'step4.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           },
           {
             id: 'typographyBlockId2',
@@ -444,7 +490,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 id: 'radioOption3.id',
@@ -459,7 +506,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                   gtmEventName: 'gtmEventName',
                   blockId: 'step4.id'
                 },
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -487,6 +535,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image4.id',
@@ -501,7 +550,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -568,7 +618,8 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               blockId: 'step0.id'
             },
             children: [],
-            settings: null
+            settings: null,
+            eventLabel: null
           }
         ]
       }

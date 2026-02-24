@@ -1,6 +1,6 @@
 import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryFn, StoryObj } from '@storybook/react/*'
+import { Meta, StoryFn, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -106,10 +106,8 @@ export const Ellipsis = {
     }
   },
   decorators: [
-    (Story: StoryFn<typeof JourneyDetails>) => (
-      <Box width={400}>
-        <Story />
-      </Box>
+    (Story: StoryFn<typeof JourneyDetails>, context) => (
+      <Box width={400}>{Story(context.args, context)}</Box>
     )
   ]
 }

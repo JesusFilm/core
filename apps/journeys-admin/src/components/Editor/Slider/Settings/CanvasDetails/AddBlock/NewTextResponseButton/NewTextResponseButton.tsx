@@ -80,7 +80,7 @@ export function NewTextResponseButton(): ReactElement {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
-      label: t('Label'),
+      label: t('Field Name'),
       placeholder: null,
       hint: null,
       minRows: null,
@@ -88,7 +88,8 @@ export function NewTextResponseButton(): ReactElement {
       routeId: null,
       integrationId: null,
       required: null,
-      __typename: 'TextResponseBlock'
+      __typename: 'TextResponseBlock',
+      hideLabel: false
     }
 
     if (!hasSubmitButton) {
@@ -108,7 +109,8 @@ export function NewTextResponseButton(): ReactElement {
         settings: {
           __typename: 'ButtonBlockSettings',
           alignment: ButtonAlignment.justify
-        }
+        },
+        eventLabel: null
       }
 
       const blocks = { textResponseBlock, buttonBlock }

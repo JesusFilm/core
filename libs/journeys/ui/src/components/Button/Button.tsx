@@ -20,13 +20,19 @@ import {
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
+import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
+import { getJourneyRTL } from '../../libs/rtl'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
 
 import {
   ButtonClickEventCreate,
@@ -100,7 +106,8 @@ export function Button({
   children,
   editableLabel,
   submitEnabled,
-  settings
+  settings,
+  eventLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -113,6 +120,10 @@ export function Button({
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
+
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
+
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const formik = useFormikContext()
@@ -124,13 +135,13 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const endIcon = children.find(
+    (block) => block.id === endIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -163,8 +174,11 @@ export function Button({
         blockId,
         stepId: activeBlock?.id,
         label: heading,
-        value: label,
-        action: action?.__typename as ButtonAction | undefined,
+        value: resolvedLabel,
+        action:
+          action?.__typename != null
+            ? (action.__typename as ButtonAction)
+            : undefined,
         actionValue
       }
       void buttonClickEventCreate({
@@ -181,15 +195,47 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
               blockId: input.blockId,
-              target: action
+              target: action,
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey.id
+            }),
+            templateKey: templateKeyify({
+              event: 'buttonClick',
+              target: actionToTarget(action),
+              journeyId: journey.id
             })
           }
         })
+        if (eventLabel != null) {
+          plausible(eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                target: action,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       addEventToDataLayer(id)
     }
@@ -209,7 +255,7 @@ export function Button({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
         plausible('chatButtonClick', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
@@ -218,15 +264,48 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
               blockId: input.blockId,
-              target: action
+              target: action,
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey.id
+            }),
+            templateKey: templateKeyify({
+              event: 'chatButtonClick',
+              target: 'chat',
+              journeyId: journey.id
             })
           }
         })
+        if (eventLabel != null) {
+          plausible(eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                target: action,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: eventLabel,
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
+      }
       addEventToDataLayer(id)
     }
   }
@@ -242,7 +321,7 @@ export function Button({
       sendGTMEvent({
         ...eventProperties,
         event: 'outbound_action_click',
-        buttonLabel: label,
+        buttonLabel: resolvedLabel,
         outboundActionType: getLinkActionGoal(action.url),
         outboundActionValue: action.url
       })
@@ -254,32 +333,42 @@ export function Button({
     }
   }
 
-  function isEmptyForm(): boolean {
-    return Object.values(formik.values as string).every((value) => value === '')
-  }
-
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
     if (submitEnabled && formik != null) {
+      // Control submission flow to ensure events are recorded before navigation
+      e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (isEmptyForm()) {
-        e.preventDefault()
-      }
-
-      if (!isEmptyForm() && Object.keys(errors).length > 0) return
+      // Always call submitForm() to touch all fields, ensuring validation errors are displayed.
+      // Per Formik docs, submitForm() will abort submission if validation errors exist.
+      await formik.submitForm()
+      if (Object.keys(errors).length > 0) return
     }
 
-    if (messagePlatform == null) {
-      void createClickEvent()
-    } else {
+    const hasMessagePlatform = messagePlatform != null
+    const isChatAction = action?.__typename === 'ChatAction'
+    const isPhoneAction = action?.__typename === 'PhoneAction'
+    const isLinkChatAction =
+      action?.__typename === 'LinkAction' && hasMessagePlatform
+    const isChatEvent = isLinkChatAction || isChatAction || isPhoneAction
+
+    if (isChatEvent) {
       void createChatEvent()
+    } else {
+      void createClickEvent()
     }
 
     const nextStepSlug = getNextStepSlug(journey, action)
     handleAction(router, action, nextStepSlug)
   }
+
+  // In journey viewer with RTL: swap startIcon/endIcon positions so trailing icons appear on the left
+  // In editor: FramePortal sets dir="rtl" on iframe, so MUI Button handles icon swapping automatically
+  const shouldSwapIcons = variant !== 'admin' && rtl
+  const leadingIcon = shouldSwapIcons ? endIcon : startIcon
+  const trailingIcon = shouldSwapIcons ? startIcon : endIcon
 
   return (
     // Margin added via Box so it's ignored by admin selection border outline
@@ -304,8 +393,8 @@ export function Button({
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
-        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
-        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+        startIcon={leadingIcon != null ? <Icon {...leadingIcon} /> : undefined}
+        endIcon={trailingIcon != null ? <Icon {...trailingIcon} /> : undefined}
         onClick={handleClick}
         sx={{
           outline: '2px solid',
@@ -343,8 +432,8 @@ export function Button({
         >
           {editableLabel != null
             ? editableLabel
-            : label !== ''
-              ? label
+            : resolvedLabel !== ''
+              ? resolvedLabel
               : fallbackLabel}
         </Typography>
       </MuiButton>

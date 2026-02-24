@@ -259,7 +259,8 @@ export function CardForm(): ReactElement {
       __typename: 'ImageBlock',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     } satisfies ImageBlock
 
     const subtitle = {
@@ -304,7 +305,8 @@ export function CardForm(): ReactElement {
       routeId: null,
       integrationId: null,
       required: null,
-      __typename: 'TextResponseBlock'
+      __typename: 'TextResponseBlock',
+      hideLabel: false
     } satisfies TextResponseBlock
 
     const buttonBlock = {
@@ -320,7 +322,8 @@ export function CardForm(): ReactElement {
       endIconId: uuidv4(),
       action: null,
       submitEnabled: true,
-      settings: null
+      settings: null,
+      eventLabel: null
     } satisfies ButtonBlock
 
     const body = {
@@ -350,6 +353,7 @@ export function CardForm(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: true,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
@@ -402,7 +406,8 @@ export function CardForm(): ReactElement {
                 'type',
                 'routeId',
                 'integrationId',
-                'required'
+                'required',
+                'hideLabel'
               ]),
               journeyId: journey.id
             },

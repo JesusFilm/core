@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
+import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonCreate
@@ -22,6 +22,7 @@ export interface TextResponseWithButtonCreate_textResponse {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonCreate_button_action_NavigateToBlockAction {
@@ -36,6 +37,8 @@ export interface TextResponseWithButtonCreate_button_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonCreate_button_action_EmailAction {
@@ -43,9 +46,31 @@ export interface TextResponseWithButtonCreate_button_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction;
+export interface TextResponseWithButtonCreate_button_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface TextResponseWithButtonCreate_button_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction | TextResponseWithButtonCreate_button_action_ChatAction | TextResponseWithButtonCreate_button_action_PhoneAction;
 
 export interface TextResponseWithButtonCreate_button_settings {
   __typename: "ButtonBlockSettings";
@@ -69,6 +94,7 @@ export interface TextResponseWithButtonCreate_button {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_button_action | null;
   settings: TextResponseWithButtonCreate_button_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonCreate_startIcon {
@@ -103,6 +129,8 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
@@ -110,9 +138,31 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction;
+export interface TextResponseWithButtonCreate_buttonUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction | TextResponseWithButtonCreate_buttonUpdate_action_ChatAction | TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction;
 
 export interface TextResponseWithButtonCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";
@@ -136,6 +186,7 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   submitEnabled: boolean | null;
   action: TextResponseWithButtonCreate_buttonUpdate_action | null;
   settings: TextResponseWithButtonCreate_buttonUpdate_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface TextResponseWithButtonCreate {

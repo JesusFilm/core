@@ -1,6 +1,12 @@
 import { builder } from '../../builder'
 
-export const User = builder.prismaObject('User', {
+// Type for anonymous user shape
+interface AnonymousUserShape {
+  id: string
+}
+
+export const AuthenticatedUser = builder.prismaObject('User', {
+  variant: 'AuthenticatedUser',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     firstName: t.field({
@@ -18,9 +24,22 @@ export const User = builder.prismaObject('User', {
       }
     }),
     lastName: t.exposeString('lastName'),
-    email: t.exposeString('email', { nullable: false }),
+    email: t.field({
+      type: 'String',
+      nullable: false,
+      resolve: (user) => user.email ?? ''
+    }),
     imageUrl: t.exposeString('imageUrl'),
     superAdmin: t.exposeBoolean('superAdmin'),
     emailVerified: t.exposeBoolean('emailVerified', { nullable: false })
+  })
+})
+
+const AnonymousUserRef = builder.objectRef<AnonymousUserShape>('AnonymousUser')
+
+export const AnonymousUser = builder.objectType(AnonymousUserRef, {
+  shareable: true,
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false })
   })
 })

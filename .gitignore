@@ -80,6 +80,7 @@ terraform.tfstate.backup
 
 .nx/cache
 .nx/workspace-data
+.nx/
 
 # react-email
 .react-email
@@ -92,3 +93,7 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+
+# Strapi CMS compiled config files
+apis/cms/config/*.js
+apis/cms/config/*.js.map

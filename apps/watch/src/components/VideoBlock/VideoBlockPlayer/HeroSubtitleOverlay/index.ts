@@ -1,0 +1,1 @@
+export { HeroSubtitleOverlay } from './HeroSubtitleOverlay'

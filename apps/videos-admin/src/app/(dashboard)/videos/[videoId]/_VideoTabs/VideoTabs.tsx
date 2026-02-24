@@ -71,6 +71,12 @@ export function VideoTabView({
       value: 'editions',
       count: data?.adminVideo.videoEditions.length,
       href: `/videos/${videoId}/editions`
+    },
+    {
+      label: 'Troubleshooting',
+      value: 'troubleshooting',
+      count: null,
+      href: `/videos/${videoId}/troubleshooting`
     }
   ]
   if (showVideoChildren && videoLabel != null) {

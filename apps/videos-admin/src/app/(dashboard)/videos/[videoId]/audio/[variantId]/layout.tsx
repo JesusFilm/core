@@ -84,10 +84,15 @@ const validationSchema = object({
   published: string().required()
 })
 
-export default function VariantDialog({
-  children,
-  params: { variantId, videoId }
-}: VariantDialogProps): ReactElement | null {
+function VariantDialogContent({
+  variantId,
+  videoId,
+  children
+}: {
+  variantId: string
+  videoId: string
+  children: ReactNode
+}): ReactElement {
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
@@ -308,5 +313,17 @@ export default function VariantDialog({
       </Dialog>
       {children}
     </>
+  )
+}
+
+export default function VariantDialog({
+  children,
+  params
+}: VariantDialogProps): ReactElement | null {
+  const { variantId, videoId } = params
+  return (
+    <VariantDialogContent variantId={variantId} videoId={videoId}>
+      {children}
+    </VariantDialogContent>
   )
 }

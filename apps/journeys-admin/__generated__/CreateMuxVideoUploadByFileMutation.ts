@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { GenerateSubtitlesInput } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: CreateMuxVideoUploadByFileMutation
 // ====================================================
@@ -19,4 +21,5 @@ export interface CreateMuxVideoUploadByFileMutation {
 
 export interface CreateMuxVideoUploadByFileMutationVariables {
   name: string;
+  generateSubtitlesInput?: GenerateSubtitlesInput | null;
 }

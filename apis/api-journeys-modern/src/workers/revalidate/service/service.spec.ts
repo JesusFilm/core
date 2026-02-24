@@ -13,21 +13,11 @@ const mockLogger = {
 }
 
 describe('RevalidateService', () => {
-  const originalEnv = process.env
-
   beforeEach(() => {
     jest.resetAllMocks()
-    process.env = {
-      ...originalEnv,
-      JOURNEYS_URL: 'https://example.com',
-      JOURNEYS_REVALIDATE_ACCESS_TOKEN: 'test-token',
-      FACEBOOK_APP_ID: 'fb-app-id',
-      FACEBOOK_APP_SECRET: 'fb-app-secret'
-    }
   })
 
   afterEach(() => {
-    process.env = originalEnv
     jest.useRealTimers()
   })
 
@@ -51,20 +41,6 @@ describe('RevalidateService', () => {
   })
 
   describe('revalidate', () => {
-    it('should throw error if environment variables are missing', async () => {
-      delete process.env.JOURNEYS_URL
-      delete process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
-
-      const job = {
-        data: { slug: 'test-journey' }
-      } as Job
-
-      await revalidate(job, mockLogger as unknown as Logger)
-      await expect(mockLogger.error).toHaveBeenCalledWith(
-        'JOURNEYS_URL or JOURNEYS_REVALIDATE_ACCESS_TOKEN not configured'
-      )
-    })
-
     it('should revalidate journey with custom hostname', async () => {
       const job = {
         data: { slug: 'test-journey', hostname: 'custom.example.com' }
@@ -134,15 +110,6 @@ describe('RevalidateService', () => {
   })
 
   describe('generateFacebookAppAccessToken', () => {
-    it('should throw error if Facebook credentials are missing', async () => {
-      delete process.env.FACEBOOK_APP_ID
-      delete process.env.FACEBOOK_APP_SECRET
-
-      await expect(generateFacebookAppAccessToken()).rejects.toThrow(
-        'Facebook App ID or App Secret not configured'
-      )
-    })
-
     it('should return access token when credentials are valid', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,

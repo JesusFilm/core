@@ -1,15 +1,25 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  getByTestId,
+  render,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import {
+  defaultJourney,
+  publishedLocalTemplate
+} from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
 import {
+  JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
   JOURNEY_FEATURE_UPDATE,
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
@@ -36,16 +46,46 @@ describe('TemplateSettingsDialog', () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
-          id: defaultJourney.id,
+          ...defaultJourney,
           __typename: 'Journey',
+          id: defaultJourney.id,
           ...updatedJourney,
-          tags: [{ __typeName: 'Tag', id: 'tagId' }],
-          language: { id: '529', __typename: 'Language' }
+          tags: [{ __typename: 'Tag', id: 'tagId' }],
+          language: {
+            __typename: 'Language',
+            id: '529',
+            bcp47: 'en',
+            iso3: 'eng',
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
+          website: null,
+          showShareButton: null,
+          showLikeButton: null,
+          showDislikeButton: null,
+          displayTitle: null,
+          menuButtonIcon: null,
+          menuStepBlock: null
         }
       }
     }))
 
     const result2 = jest.fn(() => ({
+      data: {
+        journeyCustomizationDescriptionUpdate: {
+          id: defaultJourney.id,
+          __typename: 'Journey',
+          journeyCustomizationDescription: 'New Description'
+        }
+      }
+    }))
+
+    const result3 = jest.fn(() => ({
       data: {
         journeyFeature: {
           id: defaultJourney.id,
@@ -86,9 +126,50 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const { getByRole, getAllByRole } = render(
+    const { getByRole, getAllByRole, getByTestId } = render(
       <MockedProvider
         mocks={[
+          {
+            request: {
+              query: GET_LANGUAGES,
+              variables: { languageId: '529' }
+            },
+            result: {
+              data: {
+                languages: [
+                  {
+                    __typename: 'Language',
+                    id: '529',
+                    slug: 'en',
+                    name: [
+                      {
+                        __typename: 'LanguageName',
+                        value: 'English',
+                        primary: true
+                      }
+                    ]
+                  },
+                  {
+                    __typename: 'Language',
+                    id: '496',
+                    slug: 'fr',
+                    name: [
+                      {
+                        __typename: 'LanguageName',
+                        value: 'Français',
+                        primary: true
+                      },
+                      {
+                        __typename: 'LanguageName',
+                        value: 'French',
+                        primary: false
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
           {
             request: {
               query: GET_TAGS
@@ -103,12 +184,22 @@ describe('TemplateSettingsDialog', () => {
                 input: {
                   ...updatedJourney,
                   tagIds: ['tagId'],
-                  creatorDescription: null,
+                  creatorDescription: '',
                   languageId: '529'
                 }
               }
             },
             result
+          },
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: {
+                journeyId: defaultJourney.id,
+                string: ''
+              }
+            },
+            result: result2
           },
           {
             request: {
@@ -118,14 +209,18 @@ describe('TemplateSettingsDialog', () => {
                 feature: true
               }
             },
-            result: result2
+            result: result3
           }
         ]}
       >
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: defaultJourney,
+              journey: {
+                ...defaultJourney,
+                creatorDescription: '',
+                strategySlug: ''
+              },
               variant: 'admin'
             }}
           >
@@ -145,9 +240,14 @@ describe('TemplateSettingsDialog', () => {
 
     fireEvent.click(getByRole('tab', { name: 'About' }))
 
-    fireEvent.change(getAllByRole('textbox')[1], {
-      target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
-    })
+    fireEvent.change(
+      getByTestId('StrategySlugEdit')?.querySelector(
+        'input'
+      ) as HTMLInputElement,
+      {
+        target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
+      }
+    )
 
     fireEvent.click(getByRole('tab', { name: 'Categories' }))
 
@@ -165,6 +265,7 @@ describe('TemplateSettingsDialog', () => {
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
       expect(result2).toHaveBeenCalled()
+      expect(result3).toHaveBeenCalled()
       expect(onClose).toHaveBeenCalled()
     })
   })
@@ -183,6 +284,7 @@ describe('TemplateSettingsDialog', () => {
             {
               __typename: 'Language',
               id: '529',
+              slug: 'en',
               name: [
                 {
                   value: 'English',
@@ -194,6 +296,7 @@ describe('TemplateSettingsDialog', () => {
             {
               id: '496',
               __typename: 'Language',
+              slug: 'fr',
               name: [
                 {
                   value: 'Français',
@@ -210,6 +313,7 @@ describe('TemplateSettingsDialog', () => {
             {
               id: '1106',
               __typename: 'Language',
+              slug: 'de',
               name: [
                 {
                   value: 'Deutsch',
@@ -232,10 +336,34 @@ describe('TemplateSettingsDialog', () => {
       data: {
         journeyUpdate: {
           ...defaultJourney,
-          id: defaultJourney.id,
           __typename: 'Journey',
-          tags: [{ __typeName: 'Tag', id: 'tagId' }],
-          language: { id: '496', __typename: 'Language' }
+          id: defaultJourney.id,
+          tags: [{ __typename: 'Tag', id: 'tagId' }],
+          language: {
+            __typename: 'Language',
+            id: '496',
+            bcp47: 'fr',
+            iso3: 'fra',
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'Français',
+                primary: true
+              },
+              {
+                __typename: 'LanguageName',
+                value: 'French',
+                primary: false
+              }
+            ]
+          },
+          website: null,
+          showShareButton: null,
+          showLikeButton: null,
+          showDislikeButton: null,
+          displayTitle: null,
+          menuButtonIcon: null,
+          menuStepBlock: null
         }
       }
     }))
@@ -243,6 +371,11 @@ describe('TemplateSettingsDialog', () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[
+          getLanguagesMock,
+          {
+            request: { query: GET_TAGS },
+            result: { data: { tags: [] } }
+          },
           {
             request: {
               query: JOURNEY_SETTINGS_UPDATE,
@@ -259,9 +392,7 @@ describe('TemplateSettingsDialog', () => {
               }
             },
             result
-          },
-
-          getLanguagesMock
+          }
         ]}
       >
         <SnackbarProvider>
@@ -301,9 +432,29 @@ describe('TemplateSettingsDialog', () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
+          ...defaultJourney,
+          __typename: 'Journey',
+          id: defaultJourney.id,
+          ...updatedJourney,
+          language: defaultJourney.language,
+          tags: defaultJourney.tags,
+          website: null,
+          showShareButton: null,
+          showLikeButton: null,
+          showDislikeButton: null,
+          displayTitle: null,
+          menuButtonIcon: null,
+          menuStepBlock: null
+        }
+      }
+    }))
+
+    const result2 = jest.fn(() => ({
+      data: {
+        journeyCustomizationDescriptionUpdate: {
           id: defaultJourney.id,
           __typename: 'Journey',
-          ...updatedJourney
+          journeyCustomizationDescription: ''
         }
       }
     }))
@@ -313,6 +464,34 @@ describe('TemplateSettingsDialog', () => {
         mocks={[
           {
             request: {
+              query: GET_LANGUAGES,
+              variables: { languageId: '529' }
+            },
+            result: {
+              data: {
+                languages: [
+                  {
+                    __typename: 'Language',
+                    id: '529',
+                    slug: 'en',
+                    name: [
+                      {
+                        __typename: 'LanguageName',
+                        value: 'English',
+                        primary: true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            request: { query: GET_TAGS },
+            result: { data: { tags: [] } }
+          },
+          {
+            request: {
               query: JOURNEY_SETTINGS_UPDATE,
               variables: {
                 id: defaultJourney.id,
@@ -320,6 +499,16 @@ describe('TemplateSettingsDialog', () => {
               }
             },
             result
+          },
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
+              variables: {
+                journeyId: defaultJourney.id,
+                string: ''
+              }
+            },
+            result: result2
           }
         ]}
       >
@@ -355,11 +544,39 @@ describe('TemplateSettingsDialog', () => {
 
   it('should validate on invalid embed url', async () => {
     const { getByRole, getByText } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
+            result: {
+              data: {
+                languages: [
+                  {
+                    __typename: 'Language',
+                    id: '529',
+                    slug: 'en',
+                    name: [
+                      {
+                        __typename: 'LanguageName',
+                        value: 'English',
+                        primary: true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: defaultJourney,
+              journey: {
+                ...defaultJourney,
+                creatorDescription: '',
+                strategySlug: ''
+              },
               variant: 'admin'
             }}
           >
@@ -385,6 +602,27 @@ describe('TemplateSettingsDialog', () => {
     const { getByRole, getByText, getAllByRole } = render(
       <MockedProvider
         mocks={[
+          {
+            request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
+            result: {
+              data: {
+                languages: [
+                  {
+                    __typename: 'Language',
+                    id: '529',
+                    slug: 'en',
+                    name: [
+                      {
+                        __typename: 'LanguageName',
+                        value: 'English',
+                        primary: true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
           {
             request: {
               query: JOURNEY_SETTINGS_UPDATE,
@@ -474,7 +712,35 @@ describe('TemplateSettingsDialog', () => {
 
   it('switches between tabs', async () => {
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
+            result: {
+              data: {
+                languages: [
+                  {
+                    __typename: 'Language',
+                    id: '529',
+                    slug: 'en',
+                    name: [
+                      {
+                        __typename: 'LanguageName',
+                        value: 'English',
+                        primary: true
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          {
+            request: { query: GET_TAGS },
+            result: { data: { tags: [] } }
+          }
+        ]}
+      >
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -495,5 +761,16 @@ describe('TemplateSettingsDialog', () => {
         'Categories'
       )
     })
+  })
+
+  it('should not render categories tab for local template', () => {
+    const { queryByRole } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+          <TemplateSettingsDialog open onClose={onClose} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('tab', { name: 'Categories' })).not.toBeInTheDocument()
   })
 })

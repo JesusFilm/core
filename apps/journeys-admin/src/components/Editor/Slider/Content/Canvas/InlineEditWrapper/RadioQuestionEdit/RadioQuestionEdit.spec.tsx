@@ -48,7 +48,8 @@ describe('RadioQuestionEdit', () => {
     parentOrder: 0,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   }
 
   it('adds an option on click', async () => {

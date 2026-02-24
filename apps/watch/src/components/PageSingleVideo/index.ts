@@ -1,0 +1,1 @@
+export { PageSingleVideo } from './PageSingleVideo'

@@ -5,7 +5,7 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
-import { generateRandomNumber } from '../framework/helpers'
+import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
@@ -47,7 +47,7 @@ export class JourneyPage {
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.verifyJourneyTitleGotUpdated()
-    await this.backIcon()
+    await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
   async createANewCustomJourney() {
@@ -62,7 +62,7 @@ export class JourneyPage {
   async createAndVerifyTemplateFromNewJourney() {
     await this.clickThreeDotBtnOfCustomJourney()
     await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
-    await this.backIcon()
+    await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
@@ -71,7 +71,7 @@ export class JourneyPage {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
     await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
-    await this.backIcon()
+    await this.backToHome()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
   }
@@ -103,14 +103,14 @@ export class JourneyPage {
 
   async navigateToDiscoverPage() {
     await expect(
-      this.page.locator('a[data-testid="NavigationListItemDiscover"]')
+      this.page.locator('a[data-testid="NavigationListItemProjects"]')
     ).toBeVisible()
     await this.page
-      .locator('a[data-testid="NavigationListItemDiscover"]')
+      .locator('a[data-testid="NavigationListItemProjects"]')
       .click()
     await expect(
       this.page.locator(
-        'a[data-testid="NavigationListItemDiscover"][class*="Mui-selected"]'
+        'a[data-testid="NavigationListItemProjects"][class*="Mui-selected"]'
       )
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
@@ -217,7 +217,7 @@ export class JourneyPage {
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.verifyJourneyTitleGotUpdated()
-    await this.backIcon()
+    await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
 
@@ -243,7 +243,9 @@ export class JourneyPage {
     const createJourneyLoaderPath = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
     )
-    await this.page.waitForLoadState('load')
+    await this.page
+      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
+      .waitFor({ state: 'visible', timeout: 150000 })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
@@ -344,10 +346,13 @@ export class JourneyPage {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Save' })
       .click({ delay: 3000 })
+    await expect(this.page.getByTestId('JourneyDetailsDialog')).toBeHidden({
+      timeout: thirtySecondsTimeout
+    })
   }
 
-  async backIcon() {
-    await this.page.locator('a[data-testid="ToolbarBackButton"]').click()
+  async backToHome() {
+    await this.page.locator('a[data-testid="NextStepsLogo"]').click()
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
@@ -423,7 +428,22 @@ export class JourneyPage {
   }
 
   async clickArchivedTab() {
-    await this.page.locator('button[id*="archived-status-panel-tab"]').click()
+    const archivedTab = this.page.locator(
+      'button[id*="archived-status-panel-tab"]'
+    )
+    const visible = await archivedTab
+      .first()
+      .isVisible()
+      .catch(() => false)
+    if (!visible) {
+      const baseUrl = await getBaseUrl()
+      const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
+      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    }
+    await expect(archivedTab.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    await archivedTab.first().click()
     await expect(
       this.page.locator(
         'button[id*="archived-status-panel-tab"][aria-selected="true"]'
@@ -462,7 +482,9 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    await this.page.locator('button[id*="trashed-status-panel-tab"]').click()
+    const trashTab = this.page.locator('button[id*="trashed-status-panel-tab"]')
+    await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await trashTab.click()
     await expect(
       this.page.locator(
         'button[id*="trashed-status-panel-tab"][aria-selected="true"]'
@@ -507,7 +529,9 @@ export class JourneyPage {
   }
 
   async clickActiveTab() {
-    await this.page.locator('button[id*="active-status-panel-tab"]').click()
+    const activeTab = this.page.locator('button[id*="active-status-panel-tab"]')
+    await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await activeTab.click()
     await expect(
       this.page.locator(
         'button[id*="active-status-panel-tab"][aria-selected="true"]'
@@ -619,7 +643,7 @@ export class JourneyPage {
           `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     this.journeyList = await this.page
       .locator(
         `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
@@ -777,27 +801,23 @@ export class JourneyPage {
   }
 
   async clickSortByIcon() {
-    await this.page
-      .locator('div[aria-label="journey status tabs"] div[role="button"]')
-      .click()
+    const sortByButton = this.page.getByRole('button', {
+      name: /Sort By/i
+    })
+    await expect(sortByButton).toBeVisible({ timeout: thirtySecondsTimeout })
+    await sortByButton.click()
   }
 
   async clickSortOpion(sortOption: string) {
-    await this.page
-      .locator(
-        'div[aria-label="sort-by-options"] span[class*="MuiFormControlLabel"]',
-        { hasText: sortOption }
-      )
-      .click()
+    const option = this.page.getByRole('radio', { name: sortOption })
+    await expect(option).toBeVisible({ timeout: thirtySecondsTimeout })
+    await option.click()
   }
 
   async verifySelectedSortOptionInSortByIcon(selectedSortOption: string) {
     await expect(
-      this.page.locator(
-        'div[aria-label="journey status tabs"] div[role="button"]',
-        { hasText: selectedSortOption }
-      )
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+      this.page.getByRole('button', { name: /Sort By/i })
+    ).toContainText(selectedSortOption, { timeout: thirtySecondsTimeout })
   }
 
   async verifyJouyneysAreSortedByNames() {
@@ -1071,7 +1091,12 @@ export class JourneyPage {
   }
 
   async clickOnJourneyCard() {
-    await this.page.waitForLoadState('load')
+    await this.page
+      .frameLocator(this.journeyCardFrame)
+      .first()
+      .locator('div[data-testid="CardOverlayImageContainer"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
@@ -1212,7 +1237,7 @@ export class JourneyPage {
     expect(clipBoardText).toContain(actualValue)
   }
   async editUrlAndSave() {
-    await this.clickButtonInShareDialog('Edit URL')
+    await this.clickButtonInShareDialog('Edit Link')
     const updatedSlugName = await this.UpdateUrlSlug()
     await this.clickDialogActionBtnsInShareDialog('Save')
     await this.validateUrlUpdatedUrl(updatedSlugName)
@@ -1231,15 +1256,17 @@ export class JourneyPage {
     ).toBeVisible()
   }
   async clickDownloadDropDownAndSelectCopyShortLink() {
-    await this.page
-      .locator(
-        'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
-      )
-      .click()
-    await this.page
+    const dropdownBtn = this.page.locator(
+      'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
+    )
+    await expect(dropdownBtn).toBeVisible({ timeout: thirtySecondsTimeout })
+    await expect(dropdownBtn).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await dropdownBtn.click()
+    const menuItem = this.page
       .locator('div.MuiDialogContent-root div[role="tooltip"]')
       .getByRole('menuitem', { name: 'Copy Short Link' })
-      .click()
+    await expect(menuItem).toBeVisible({ timeout: thirtySecondsTimeout })
+    await menuItem.click()
   }
   async downloadQRCodeAsPng() {
     const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
@@ -1263,9 +1290,12 @@ export class JourneyPage {
       message: `Downloaded QR COde png file(${this.downloadedQrFile}) should be exist`
     }).toBeTruthy()
   }
-  async clickCloseIconForQrCodeDialog() {
+  async clickCloseIconForQrCodeDialog(): Promise<void> {
+    // Target only the close button in the QR Code dialog
     await this.page
-      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
+      .locator(
+        'div[role="dialog"]:has(h2:has-text("QR Code")) button[data-testid="dialog-close-button"]'
+      )
       .click()
   }
   async validateUrlFieldInShareDialog(expectedValue: string) {

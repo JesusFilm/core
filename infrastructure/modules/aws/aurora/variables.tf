@@ -7,7 +7,9 @@ variable "name" {
 }
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for Aurora"
+  sensitive   = true
 }
 
 variable "subnet_group_name" {

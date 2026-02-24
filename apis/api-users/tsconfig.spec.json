@@ -6,10 +6,17 @@
     "jsx": "react-jsx",
     "types": [
       "jest",
+      "@jest/globals",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
       "@nx/react/typings/image.d.ts"
     ]
   },
-  "include": ["**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
+  "include": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.d.ts",
+    "jest.config.ts",
+    "test/**/*.ts"
+  ]
 }

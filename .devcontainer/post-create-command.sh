@@ -5,7 +5,7 @@ set -e
 echo "Starting post-create setup..."
 
 
-cd /workspaces
+cd /workspaces/core
 
 # Wait for database to be ready
 echo "Waiting for database to be ready..."
@@ -21,25 +21,20 @@ echo "Database is ready!"
 echo "Creating test user in database..."
 psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || echo "User test-user might already exist"
 
-# install Nx CLI tool
-echo "Installing Nx CLI..."
-npm install -g nx
+# install pnpm
+echo "Installing pnpm..."
+corepack enable && corepack prepare pnpm --activate
 
-# install Nest CLI tool
-echo "Installing NestJS CLI..."
-npm install -g @nestjs/cli@^8.1.5
+# install global CLIs
+echo "Installing global CLIs..."
+npm i -g nx @nestjs/cli@^8.1.5 foreman apollo graphql
 
-# install Foreman CLI tool
-echo "Installing Foreman CLI..."
-npm install -g foreman
-
-# install Apollo CLI tool for codegen
-echo "Installing Apollo CLI..."
-npm install -g apollo graphql
+echo "Installing rover..."
+curl -sSL https://rover.apollo.dev/nix/v0.23.0 | sh
 
 # install all dependencies
 echo "Installing project dependencies..."
-npm i
+pnpm install
 
 # update plausible db (with error handling)
 echo "Setting up Plausible database..."
@@ -48,3 +43,12 @@ if ! psql -h db -U postgres -d plausible_db < .devcontainer/plausible.sql; then
   exit 1
 fi
 echo "Post-create setup completed!"
+
+echo "Setting up CMS database..."
+psql -U postgres -h db -tc "SELECT 1 FROM pg_database WHERE datname = 'cms'" | grep -q 1 \
+  || psql -U postgres -h db -c "CREATE DATABASE cms;"
+
+echo "Installing Argo CD..."
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64

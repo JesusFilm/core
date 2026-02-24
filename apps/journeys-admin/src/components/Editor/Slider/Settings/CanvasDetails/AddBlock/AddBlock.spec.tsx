@@ -40,6 +40,7 @@ describe('AddBlock', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'typography0.id',
@@ -80,6 +81,9 @@ describe('AddBlock', () => {
     ).toBeInTheDocument()
     expect(
       getByTestId('JourneysAdminButtonNewRadioQuestionButton')
+    ).toBeInTheDocument()
+    expect(
+      getByTestId('JourneysAdminButtonNewMultiselectButton')
     ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewButton')).toBeInTheDocument()
   })

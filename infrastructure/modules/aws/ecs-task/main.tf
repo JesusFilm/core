@@ -64,26 +64,32 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           protocol      = "tcp"
         }
       ]
-      secrets = concat(concat([
-        for param in aws_ssm_parameter.parameters : {
-          name      = param.tags.name
-          valueFrom = param.arn
-        }
-        ], [
-        {
-          name      = "DD_API_KEY"
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
-        }
-        ]), var.include_aws_env_vars ? [
-        {
-          name      = "AWS_ACCESS_KEY_ID",
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_ACCESS_KEY_ID"
-        },
-        {
-          name      = "AWS_SECRET_ACCESS_KEY",
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_SECRET_ACCESS_KEY"
-        }
-      ] : [])
+      secrets = concat(
+        concat(
+          [
+            for name in var.environment_variables : {
+              name      = name
+              valueFrom = aws_ssm_parameter.parameters[name].arn
+            }
+          ],
+          [
+            {
+              name      = "DD_API_KEY"
+              valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+            }
+          ]
+        ),
+        var.include_aws_env_vars ? [
+          {
+            name      = "AWS_ACCESS_KEY_ID",
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_ACCESS_KEY_ID"
+          },
+          {
+            name      = "AWS_SECRET_ACCESS_KEY",
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_SECRET_ACCESS_KEY"
+          }
+        ] : []
+      )
       logConfiguration = {
         logDriver = "awsfirelens"
         options = {
@@ -100,7 +106,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         secretOptions = [
           {
             name      = "apikey"
-            valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+            valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
           }
         ]
       }
@@ -120,7 +126,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         var.include_aws_env_vars ? [
           {
             name  = "AWS_REGION",
-            value = data.aws_region.current.name
+            value = data.aws_region.current.id
           },
           {
             name  = "ECS_CLUSTER",
@@ -190,7 +196,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       secrets = [
         {
           name      = "DD_API_KEY"
-          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.id}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
         }
       ]
       mountPoints = []
@@ -215,7 +221,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
-          awslogs-region        = data.aws_region.current.name
+          awslogs-region        = data.aws_region.current.id
           awslogs-stream-prefix = "core"
         }
       }
@@ -245,7 +251,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         logDriver = "awslogs"
         options = {
           awslogs-group         = resource.aws_cloudwatch_log_group.ecs_cw_log_group.name
-          awslogs-region        = data.aws_region.current.name
+          awslogs-region        = data.aws_region.current.id
           awslogs-stream-prefix = "core"
         }
       }
@@ -269,6 +275,13 @@ resource "aws_alb_target_group" "alb_target_group" {
     path                = var.service_config.alb_target_group.health_check_path
     port                = var.service_config.alb_target_group.health_check_port
     protocol            = var.service_config.alb_target_group.protocol
+    matcher             = var.service_config.alb_target_group.health_check_matcher
+  }
+
+  lifecycle {
+    ignore_changes = [
+      health_check,
+    ]
   }
 }
 
@@ -292,12 +305,13 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name                   = "${local.service_config_name_env}-service"
-  cluster                = var.ecs_config.cluster.id
-  task_definition        = aws_ecs_task_definition.ecs_task_definition.arn
-  launch_type            = "FARGATE"
-  desired_count          = var.service_config.desired_count
-  enable_execute_command = true
+  name                              = "${local.service_config_name_env}-service"
+  cluster                           = var.ecs_config.cluster.id
+  task_definition                   = aws_ecs_task_definition.ecs_task_definition.arn
+  launch_type                       = "FARGATE"
+  desired_count                     = var.service_config.desired_count
+  enable_execute_command            = true
+  health_check_grace_period_seconds = var.service_config.health_check_grace_period_seconds
 
   network_configuration {
     subnets          = var.ecs_config.subnets
@@ -313,6 +327,9 @@ resource "aws_ecs_service" "ecs_service" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes = [
+      availability_zone_rebalancing,
+    ]
   }
 }
 

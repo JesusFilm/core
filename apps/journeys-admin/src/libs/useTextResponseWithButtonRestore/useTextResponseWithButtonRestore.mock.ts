@@ -40,7 +40,8 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           integrationId: null,
           placeholder: null,
           required: null,
-          __typename: 'TextResponseBlock'
+          __typename: 'TextResponseBlock',
+          hideLabel: false
         }
       ],
       button: [
@@ -57,6 +58,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           action: null,
           submitEnabled: true,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         }
       ],

@@ -58,6 +58,7 @@ describe('CardCta', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
   const step: TreeBlock = {
@@ -96,7 +97,8 @@ describe('CardCta', () => {
           isCover: true,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -218,7 +220,8 @@ describe('CardCta', () => {
           __typename: 'ImageBlock',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         subtitle: {
           id: 'subtitleId',
@@ -261,6 +264,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon1: {
@@ -294,6 +298,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         button2: {
@@ -309,6 +314,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon2: {
@@ -342,6 +348,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         button3: {
@@ -357,6 +364,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon3: {
@@ -390,6 +398,7 @@ describe('CardCta', () => {
           submitEnabled: null,
           action: null,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         cardBlockUpdate: {
@@ -402,6 +411,7 @@ describe('CardCta', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           __typename: 'CardBlock'
         }
       }

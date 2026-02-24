@@ -10,6 +10,7 @@
 export interface JourneyDuplicate_journeyDuplicate {
   __typename: "Journey";
   id: string;
+  template: boolean | null;
 }
 
 export interface JourneyDuplicate {
@@ -19,4 +20,5 @@ export interface JourneyDuplicate {
 export interface JourneyDuplicateVariables {
   id: string;
   teamId: string;
+  forceNonTemplate?: boolean | null;
 }

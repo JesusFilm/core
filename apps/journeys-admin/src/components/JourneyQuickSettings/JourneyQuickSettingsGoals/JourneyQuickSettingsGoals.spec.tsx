@@ -53,9 +53,12 @@ const blocks: Blocks[] = [
       __typename: 'LinkAction',
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
-      url: 'https://www.google.com/'
+      url: 'https://www.google.com/',
+      customizable: null,
+      parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     __typename: 'ButtonBlock',
@@ -73,9 +76,12 @@ const blocks: Blocks[] = [
       __typename: 'LinkAction',
       parentBlockId: 'button2.id',
       gtmEventName: null,
-      url: 'https://m.me/some_user'
+      url: 'https://m.me/some_user',
+      customizable: null,
+      parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     __typename: 'ButtonBlock',
@@ -93,9 +99,12 @@ const blocks: Blocks[] = [
       __typename: 'LinkAction',
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
-      url: 'https://www.bible.com/'
+      url: 'https://www.bible.com/',
+      customizable: null,
+      parentStepId: null
     },
-    settings: null
+    settings: null,
+    eventLabel: null
   },
   {
     __typename: 'StepBlock',
@@ -116,7 +125,8 @@ const blocks: Blocks[] = [
     themeMode: null,
     themeName: null,
     fullscreen: false,
-    backdropBlur: null
+    backdropBlur: null,
+    eventLabel: null
   }
 ]
 
@@ -157,7 +167,7 @@ describe('JourneyQuickSettingsGoals', () => {
     expect(screen.getByTestId('JourneyQuickSettingsGoals')).toBeInTheDocument()
 
     expect(screen.getByText('https://m.me/some_user')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
 
     expect(screen.getByText('https://www.bible.com/')).toBeInTheDocument()
     expect(screen.getByText('Link to Bible')).toBeInTheDocument()

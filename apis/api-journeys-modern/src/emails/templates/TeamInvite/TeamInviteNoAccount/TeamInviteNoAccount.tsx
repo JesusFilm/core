@@ -15,8 +15,8 @@ import {
   ActionCard,
   BodyWrapper,
   EmailContainer,
-  Footer,
   Header,
+  NextStepsFooter,
   UnsubscribeLink
 } from '@core/yoga/email/components'
 import { User } from '@core/yoga/firebaseClient'
@@ -68,7 +68,7 @@ export const TeamInviteNoAccountEmail = ({
             </Section>
           </ActionCard>
         </BodyWrapper>
-        <Footer />
+        <NextStepsFooter />
         <UnsubscribeLink recipientEmail={recipientEmail} />
       </EmailContainer>
     </>
@@ -103,7 +103,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="my-[0px] mx-[0px] font-sans h-full w-full">
+    <Body className="mx-[0px] my-[0px] h-full w-full font-sans">
       {children}
     </Body>
   )

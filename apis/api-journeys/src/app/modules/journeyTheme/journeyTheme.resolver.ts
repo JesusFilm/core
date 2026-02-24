@@ -3,9 +3,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { JourneyTheme } from '.prisma/api-journeys-client'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
+import { JourneyTheme } from '@core/prisma/journeys/client'
 
 import {
   JourneyThemeCreateInput,
@@ -13,6 +11,8 @@ import {
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility } from '../../lib/CaslAuthModule'
+import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
 import { PrismaService } from '../../lib/prisma.service'
 
 @Resolver('JourneyTheme')

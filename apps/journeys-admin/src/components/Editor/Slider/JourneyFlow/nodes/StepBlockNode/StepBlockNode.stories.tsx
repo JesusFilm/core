@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
+import { userEvent, waitFor, within } from 'storybook/test'
 import 'reactflow/dist/style.css'
 
 import {
@@ -104,7 +104,7 @@ const defaultNode = {
                 parentOrder: 2,
                 align: null,
                 color: null,
-                content: 'Deutoronomy 10:11',
+                content: 'Deuteronomy 10:11',
                 variant: 'caption',
                 children: [],
                 settings: {
@@ -350,7 +350,7 @@ const typographyNode = {
             parentOrder: 2,
             align: null,
             color: null,
-            content: 'Deutoronomy 10:11',
+            content: 'Deuteronomy 10:11',
             variant: 'caption',
             children: [],
             settings: {
@@ -431,7 +431,7 @@ const typographyNode = {
                 parentOrder: 2,
                 align: null,
                 color: null,
-                content: 'Deutoronomy 10:11',
+                content: 'Deuteronomy 10:11',
                 variant: 'caption',
                 children: [],
                 settings: {

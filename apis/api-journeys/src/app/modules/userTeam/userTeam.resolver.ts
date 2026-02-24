@@ -10,8 +10,7 @@ import {
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { Prisma, UserTeam } from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { Prisma, UserTeam } from '@core/prisma/journeys/client'
 
 import {
   JourneyNotification,
@@ -20,6 +19,7 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamService } from './userTeam.service'
@@ -127,7 +127,7 @@ export class UserTeamResolver {
   async user(
     @Parent() userTeam: UserTeam
   ): Promise<{ __typename: string; id: string }> {
-    return { __typename: 'User', id: userTeam.userId }
+    return { __typename: 'AuthenticatedUser', id: userTeam.userId }
   }
 
   @ResolveField('journeyNotification')

@@ -22,6 +22,7 @@ export interface TextResponseBlockCreate_textResponseBlockCreate {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseBlockCreate {

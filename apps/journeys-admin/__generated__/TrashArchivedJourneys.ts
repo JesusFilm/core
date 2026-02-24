@@ -13,6 +13,7 @@ export interface TrashArchivedJourneys_journeysTrash {
   __typename: "Journey";
   id: string;
   status: JourneyStatus;
+  fromTemplateId: string | null;
 }
 
 export interface TrashArchivedJourneys {

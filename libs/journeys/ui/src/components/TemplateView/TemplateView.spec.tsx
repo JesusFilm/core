@@ -46,7 +46,8 @@ describe('TemplateView', () => {
         where: {
           template: true,
           orderByRecent: true,
-          tagIds: ['tag.id']
+          tagIds: ['tag.id'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -149,7 +150,8 @@ describe('TemplateView', () => {
         __typename: 'ImageBlock',
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       }
     }
     const { getAllByText, getAllByRole } = render(
@@ -196,7 +198,8 @@ describe('TemplateView', () => {
         __typename: 'ImageBlock',
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       }
     }
     const { queryAllByText, queryAllByRole } = render(
@@ -252,7 +255,8 @@ describe('TemplateView', () => {
                   template: true,
                   orderByRecent: true,
                   tagIds: ['tag.id'],
-                  limit: 10
+                  limit: 10,
+                  teamId: 'jfp-team'
                 }
               }
             },

@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, queryByRole, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
@@ -22,6 +22,22 @@ import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/u
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
 import { DefaultMenu } from '.'
+
+const makeJourneyMock = (id: string) => ({
+  request: {
+    query: GET_JOURNEY_WITH_USER_ROLES,
+    variables: { id }
+  },
+  result: {
+    data: {
+      adminJourney: {
+        __typename: 'Journey',
+        id,
+        userJourneys: []
+      }
+    }
+  }
+})
 
 const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
@@ -109,6 +125,23 @@ const baseTeamMock = {
 // Team mock with manager role (for clarity)
 const teamWithManagerMock = baseTeamMock
 
+// Team mock with shared with me team
+const teamSharedWithMeMock = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: null
+      }
+    }
+  }
+}
+
 // Team mock with member role (override the role)
 const teamWithMemberMock = {
   ...baseTeamMock,
@@ -185,8 +218,15 @@ const teamMockForNonManager = {
 
 describe('DefaultMenu', () => {
   it('should render menu for journey', async () => {
-    const { getByRole } = render(
-      <MockedProvider mocks={[teamWithManagerMock]}>
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          userRoleNonPublisherMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -212,6 +252,19 @@ describe('DefaultMenu', () => {
     await waitFor(() =>
       expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
     )
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(
+        queryByRole('menuitem', { name: 'Make Global Template' })
+      ).not.toBeInTheDocument()
+    )
+    expect(
+      queryByRole('menuitem', { name: 'Use This Template' })
+    ).not.toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() => {
@@ -220,9 +273,56 @@ describe('DefaultMenu', () => {
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
   })
 
+  it('should render menu for journey with publisher role', async () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          userRolePublisherMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Global Template' })
+      ).toBeInTheDocument()
+    )
+  })
+
   it('should render menu for templates', async () => {
     const { queryByRole, getByRole } = render(
-      <MockedProvider mocks={[teamWithManagerMock, userRolePublisherMock]}>
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          userRolePublisherMock,
+          currentUserMock,
+          makeJourneyMock('template-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -245,6 +345,9 @@ describe('DefaultMenu', () => {
 
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Use This Template' })
+    ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -258,6 +361,46 @@ describe('DefaultMenu', () => {
       queryByRole('menuitem', { name: 'Translate' })
     ).not.toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Make Template' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Make Global Template' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not render make template menu item for shared with me team', async () => {
+    const { queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          teamSharedWithMeMock,
+          userRolePublisherMock,
+          currentUserMock,
+          makeJourneyMock('template-id')
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="template-id"
+              slug="template-slug"
+              status={JourneyStatus.published}
+              journeyId="template-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              template
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(
+      queryByRole('menuitem', { name: 'Make Template' })
+    ).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {
@@ -265,7 +408,13 @@ describe('DefaultMenu', () => {
     const handleCloseMenu = jest.fn()
 
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu

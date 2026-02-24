@@ -27,6 +27,7 @@ describe('PaginationBullets', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'RadioQuestionBlock',
@@ -48,7 +49,8 @@ describe('PaginationBullets', () => {
                   blockId: 'step2.id'
                 },
                 pollOptionImageBlockId: null,
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }

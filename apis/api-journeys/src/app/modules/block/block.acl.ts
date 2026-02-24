@@ -2,11 +2,11 @@ import {
   JourneyStatus,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma/journeys/client'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
-export const blockAcl: AppAclFn = ({ can, cannot, user }: AppAclParameters) => {
+export const blockAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
   // manage block as a team manager or member
   can(Action.Manage, 'Block', {
     journey: {

@@ -7,14 +7,14 @@ import {
   JourneyCollection,
   Prisma,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+} from '@core/prisma/journeys/client'
 
 import {
   JourneyCollectionCreateInput,
   JourneyCollectionUpdateInput
 } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { JourneyCollectionResolver } from './journeyCollection.resolver'

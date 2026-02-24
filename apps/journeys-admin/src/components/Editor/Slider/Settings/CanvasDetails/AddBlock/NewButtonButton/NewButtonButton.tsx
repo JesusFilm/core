@@ -96,7 +96,8 @@ export function NewButtonButton(): ReactElement {
       settings: {
         __typename: 'ButtonBlockSettings',
         alignment: ButtonAlignment.justify
-      }
+      },
+      eventLabel: null
     }
 
     addBlock({

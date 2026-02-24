@@ -1,10 +1,10 @@
 import { InMemoryCache } from '@apollo/client'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import {
@@ -35,6 +35,11 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -75,7 +80,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const journey: Journey = {
@@ -125,7 +131,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]
@@ -142,6 +153,13 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'CardBlock:cardId': {
+        __typename: 'CardBlock',
+        id: 'cardId',
+        parentBlockId: 'step1.id',
+        parentOrder: 0,
+        children: []
       },
       'VideoBlock:videoId': { ...video },
       'ImageBlock:imageId': { ...image }
@@ -188,6 +206,24 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'StepBlock:step1.id': {
+        __typename: 'StepBlock',
+        id: 'step1.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 0,
+        children: []
+      },
+      'StepBlock:step2.id': {
+        __typename: 'StepBlock',
+        id: 'step2.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 1,
+        children: []
       }
     })
     blockDeleteUpdate(step1, response, cache, journey.id)

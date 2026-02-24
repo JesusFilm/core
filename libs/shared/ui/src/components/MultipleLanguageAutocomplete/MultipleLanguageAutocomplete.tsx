@@ -131,8 +131,9 @@ export function MultipleLanguageAutocomplete({
       )}
       renderOption={(props, option, { selected }) => {
         const { localName, nativeName } = option
+        const { key, ...optionProps } = props
         return (
-          <li {...props}>
+          <li key={key} {...optionProps}>
             <Checkbox
               icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
               checkedIcon={<CheckBoxIcon fontSize="small" />}

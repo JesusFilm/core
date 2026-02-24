@@ -1,5 +1,6 @@
 import { ActionInterface } from '../../action/action'
 import { builder } from '../../builder'
+import { BlockEventLabel } from '../../enums'
 import { Block } from '../block'
 
 import {
@@ -41,6 +42,10 @@ export const ButtonBlock = builder.prismaObject('Block', {
   isTypeOf: (obj: any) => obj.typename === 'ButtonBlock',
   shareable: true,
   fields: (t) => ({
+    eventLabel: t.expose('eventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
     label: t.string({
       nullable: false,
       resolve: (block) => block.label ?? ''
@@ -77,13 +82,8 @@ export const ButtonBlock = builder.prismaObject('Block', {
       },
       resolve: ({ settings }) => settings as unknown as ButtonBlockSettingsType
     }),
-    action: t.field({
-      type: ActionInterface,
-      nullable: true,
-      select: {
-        action: true
-      },
-      resolve: async (block) => block.action
+    action: t.relation('action', {
+      nullable: true
     })
   })
 })

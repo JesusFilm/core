@@ -23,6 +23,15 @@ export const GET_INTEGRATION = gql`
           name
         }
       }
+      ... on IntegrationGoogle {
+        id
+        type
+        user {
+          id
+          email # to force federation for user id
+        }
+        accountEmail
+      }
     }
   }
 `

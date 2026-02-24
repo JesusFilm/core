@@ -15,7 +15,7 @@ const ownerUserJourney: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: '2021-01-01T00:00:00Z',
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'user1.id',
     firstName: 'One',
     lastName: 'LastName',
@@ -29,7 +29,7 @@ const editorUserJourney: UserJourney = {
   role: UserJourneyRole.editor,
   openedAt: '2022-01-01T00:00:00Z',
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'user2.id',
     firstName: 'Two',
     lastName: 'LastName',
@@ -43,7 +43,7 @@ const newUserJourney: UserJourney = {
   role: UserJourneyRole.inviteRequested,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: 'user3.id',
     firstName: 'Three',
     lastName: 'LastName',
@@ -59,6 +59,13 @@ export const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
+  team: {
+    __typename: 'Team',
+    id: 'team1.id'
+  },
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  website: false,
   language: {
     __typename: 'Language',
     id: '529',
@@ -79,7 +86,8 @@ export const defaultJourney: Journey = {
   userJourneys: [ownerUserJourney, editorUserJourney],
   trashedAt: null,
   template: false,
-  primaryImageBlock: null
+  primaryImageBlock: null,
+  fromTemplateId: null
 }
 
 export const journey: Journey = {

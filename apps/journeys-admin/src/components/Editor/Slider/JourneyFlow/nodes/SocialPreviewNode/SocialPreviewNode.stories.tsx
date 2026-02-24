@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { StoryObj } from '@storybook/react'
+import { StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { Background, ReactFlow } from 'reactflow'
 
@@ -76,6 +76,7 @@ const stepAndCardBlockCreateMock: MockedResponse<
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         __typename: 'CardBlock'
       }
     }
@@ -94,7 +95,8 @@ const image: ImageBlock = {
   blurhash: '',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const defaultJourney: Journey = {
@@ -144,7 +146,12 @@ const defaultJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const blankSeoJourney: Journey = {

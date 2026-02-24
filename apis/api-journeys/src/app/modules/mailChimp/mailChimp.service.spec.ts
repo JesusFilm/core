@@ -1,7 +1,7 @@
 import mailchimp from '@mailchimp/mailchimp_marketing'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { User } from '@core/nest/common/firebaseClient'
+import { User } from '../../lib/firebaseClient'
 
 import { MailChimpService } from './mailChimp.service'
 
@@ -87,6 +87,7 @@ describe('MailChimpService', () => {
     })
 
     it('should throw error if the audience id is undefined', async () => {
+      delete process.env.MAILCHIMP_AUDIENCE_ID
       await expect(mailChimpService.syncUser(user)).rejects.toThrow(
         'Mailchimp Audience ID is undefined'
       )

@@ -1,0 +1,1 @@
+export { WebsiteCover } from './WebsiteCover'

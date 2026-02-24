@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { TypographyVariant } from '../../../__generated__/globalTypes'
@@ -47,7 +47,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 0,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   },
   {
     __typename: 'RadioOptionBlock',
@@ -57,7 +58,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 1,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   },
   {
     __typename: 'RadioOptionBlock',
@@ -67,7 +69,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 2,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   },
   {
     __typename: 'RadioOptionBlock',
@@ -77,7 +80,8 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
     parentOrder: 3,
     action: null,
     pollOptionImageBlockId: null,
-    children: []
+    children: [],
+    eventLabel: null
   }
 ]
 

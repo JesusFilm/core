@@ -98,6 +98,8 @@ export function CardVideo(): ReactElement {
       image: null,
       duration: null,
       objectFit: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: null,
       mediaVideo: {
         id: '1_jf-0-0',
         title: [
@@ -122,6 +124,9 @@ export function CardVideo(): ReactElement {
         __typename: 'Video'
       },
       action: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
       __typename: 'VideoBlock'
     } satisfies VideoBlock
 

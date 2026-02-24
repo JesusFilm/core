@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Lecteur",
+    "description": "Navigue vers /pl/[playlistId] pour voir une liste de lecture."
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Projet de film sur Jésus"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Liste de lecture",
+    "pageTitle": "{title} par {name}",
+    "thisPlaylistIsEmpty": "Cette liste de lecture est vide",
+    "defaultDescription": "Ton ami a partagé ces vidéos pour t'encourager. Appuie sur la touche lecture pour découvrir des histoires édifiantes sur la façon de trouver la paix en Jésus.",
+    "description": "Ton ami {name} a partagé ces vidéos pour t'encourager. Appuie sur la touche lecture pour découvrir des histoires édifiantes sur la façon de trouver la paix en Jésus."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Pas de vidéo disponible"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Pas de vignette"
+  },
+  "StudyQuestions": {
+    "title": "Questions d'étude"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Pour visionner cette vidéo, tu dois activer JavaScript et envisager de passer à un navigateur web qui <link>prend en charge la vidéo HTML5.</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Ton ami(e) <strong>{name}</strong> a partagé ces vidéos avec toi pour t'encourager. La meilleure façon de visionner ces vidéos est de télécharger notre appli.",
+    "downloadOnAppStore": "Télécharger sur l'App Store",
+    "getItOnGooglePlay": "Télécharge-le sur Google Play"
+  }
+}

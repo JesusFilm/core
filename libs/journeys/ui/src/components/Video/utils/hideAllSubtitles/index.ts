@@ -1,0 +1,1 @@
+export { hideAllSubtitles } from './hideAllSubtitles'

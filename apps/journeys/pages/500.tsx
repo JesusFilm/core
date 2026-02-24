@@ -40,7 +40,8 @@ export function Custom500(): ReactElement {
       parentBlockId: '500-stepBlock-id',
       parentOrder: 0,
       themeMode: null,
-      themeName: null
+      themeName: null,
+      eventLabel: null
     },
     {
       __typename: 'ImageBlock',
@@ -54,7 +55,8 @@ export function Custom500(): ReactElement {
       width: 3244,
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'TypographyBlock',
@@ -100,9 +102,12 @@ export function Custom500(): ReactElement {
         gtmEventName: null,
         parentBlockId: '500-button-id',
         url: '/',
-        __typename: 'LinkAction'
+        __typename: 'LinkAction',
+        customizable: null,
+        parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       __typename: 'IconBlock',

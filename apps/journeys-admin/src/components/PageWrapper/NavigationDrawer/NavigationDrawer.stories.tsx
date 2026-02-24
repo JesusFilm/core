@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { User } from 'next-firebase-auth'
 import { ComponentProps, ReactElement, useState } from 'react'
 
@@ -58,7 +58,7 @@ const getMeMock: MockedResponse<GetMe> = {
         email: 'amin@email.com',
         superAdmin: true,
         emailVerified: true,
-        __typename: 'User'
+        __typename: 'AuthenticatedUser'
       }
     }
   }

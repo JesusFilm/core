@@ -108,7 +108,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -130,6 +135,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -154,6 +161,9 @@ const video: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   children: []
 }
 
@@ -169,7 +179,8 @@ const image: ImageBlock = {
   blurhash: '',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const onClose = jest.fn()
@@ -210,7 +221,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           blurhash: '',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
     },
@@ -228,7 +240,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         videoBlockUpdate: {
           id: video.id,
@@ -386,7 +399,8 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const posterImageBlockUpdateMock: MockedResponse<

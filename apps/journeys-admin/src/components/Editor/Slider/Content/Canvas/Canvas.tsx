@@ -1,7 +1,6 @@
 import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
@@ -21,11 +20,12 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { FontFamilies, ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
+import { CardSlugEdit } from './CardSlugEdit'
 import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
@@ -69,6 +69,9 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 
+  const showSlugEdit =
+    journey?.website === true && activeSlide === ActiveSlide.Content
+
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
   const [scale, setScale] = useState(initialScale)
@@ -92,6 +95,10 @@ export function Canvas(): ReactElement {
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
+    })
+    dispatch({
+      type: 'SetSelectedBlockOnlyAction',
+      selectedBlock: selectedStep
     })
     const param = 'step-footer'
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -151,6 +158,8 @@ export function Canvas(): ReactElement {
     }
   }, [journeyTheme])
 
+  const nodeRef = useRef(null)
+
   return (
     <Stack
       ref={containerRef}
@@ -187,6 +196,7 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
+          <CardSlugEdit visible={showSlugEdit} />
           <Box
             data-testId="CanvasContainer"
             sx={{
@@ -263,11 +273,13 @@ export function Canvas(): ReactElement {
                     }}
                   >
                     <CSSTransition
+                      nodeRef={nodeRef}
                       key={selectedStep.id}
                       timeout={300}
                       classNames="card"
                     >
                       <Stack
+                        ref={nodeRef}
                         justifyContent="center"
                         sx={{
                           position: 'absolute',
@@ -317,6 +329,8 @@ export function Canvas(): ReactElement {
                                 ButtonWrapper: InlineEditWrapper,
                                 RadioQuestionWrapper: InlineEditWrapper,
                                 RadioOptionWrapper: InlineEditWrapper,
+                                MultiselectQuestionWrapper: InlineEditWrapper,
+                                MultiselectOptionWrapper: InlineEditWrapper,
                                 TextResponseWrapper: InlineEditWrapper,
                                 SignUpWrapper: InlineEditWrapper,
                                 VideoWrapper,

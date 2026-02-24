@@ -196,7 +196,9 @@ export function HeaderAndLanguageFilter({
         '5541', // Serbian
         '6788', // Farsi, Western
         '3804', // Korean
-        '1370' // Nepali
+        '1927', // Malay
+        '1370', // Nepali
+        '1254' // Myanmar (Burmese)
       ]
     }
   })
@@ -221,13 +223,7 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading: loading || selectedLanguageIds == null,
     onClick: () => {
-      const param = 'template-language'
-      void router.push({ query: { ...router.query, param } }, undefined, {
-        shallow: true
-      })
-      router.events.on('routeChangeComplete', () => {
-        setBeaconPageViewed(param)
-      })
+      setBeaconPageViewed('template-language')
       setOpen(!open)
     }
   }

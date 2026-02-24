@@ -152,7 +152,12 @@ describe('Editor', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
-    journeyTheme: null
+    journeyTheme: null,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   beforeEach(() => {
@@ -248,7 +253,8 @@ describe('Editor', () => {
           themeMode: ThemeMode.light,
           themeName: ThemeName.base,
           fullscreen: false,
-          backdropBlur: null
+          backdropBlur: null,
+          eventLabel: null
         },
         {
           __typename: 'TypographyBlock',

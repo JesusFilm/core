@@ -1,4 +1,4 @@
-import { BibleCitation } from '.prisma/api-media-client'
+import { BibleCitation } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -157,7 +157,9 @@ describe('BibleCitation', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userRoleId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.bibleCitation.create.mockResolvedValue({
           id: 'newId'
@@ -231,7 +233,9 @@ describe('BibleCitation', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userRoleId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.bibleCitation.update.mockResolvedValue({
           id: 'updatedId'
@@ -290,7 +294,9 @@ describe('BibleCitation', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userRoleId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.bibleCitation.delete.mockResolvedValue({
           id: 'deleteId',

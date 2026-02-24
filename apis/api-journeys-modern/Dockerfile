@@ -4,7 +4,10 @@ EXPOSE 4004
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
-ENV PRISMA_LOCATION_JOURNEYS_MODERN=/app/node_modules/.prisma/api-journeys-modern-client
+ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
+ENV PRISMA_LOCATION_USERS=/app/node_modules/.prisma/api-users-client
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apk upgrade --update-cache --available && \
     apk add g++ make python3 py3-pip curl-dev && \
@@ -12,16 +15,16 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys-modern .
-COPY ./package-lock.json .
+COPY ./libs/prisma/journeys/db ./prisma
+COPY ./libs/prisma/users/db ./prisma-users
 
-# dependencies that nestjs needs
-RUN npm install --production
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --prod --silent
+RUN pnpm add @prisma/client@6.18.0
+RUN pnpm add -D prisma@6.18.0
+RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
+RUN pnpm exec prisma generate --generator client --schema ./prisma-users/schema.prisma
 
-WORKDIR /prisma
-COPY ./apis/api-journeys-modern/db .
-RUN npx prisma@6 generate --generator client
-
-WORKDIR /app
-
-RUN npm install @prisma/client@5
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma \
+ && pnpm exec prisma migrate deploy --schema ./prisma-users/schema.prisma \
+ && node ./main.js

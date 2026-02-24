@@ -16,8 +16,8 @@ export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_tea
 
 export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_routes {
   __typename: "IntegrationGrowthSpacesRoute";
-  id: string;
-  name: string;
+  id: string | null;
+  name: string | null;
 }
 
 export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate {
@@ -25,9 +25,9 @@ export interface IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate {
   id: string;
   team: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_team;
   type: IntegrationType;
-  accessId: string;
-  accessSecretPart: string;
-  routes: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_routes[];
+  accessId: string | null;
+  accessSecretPart: string | null;
+  routes: IntegrationGrowthSpacesCreate_integrationGrowthSpacesCreate_routes[] | null;
 }
 
 export interface IntegrationGrowthSpacesCreate {

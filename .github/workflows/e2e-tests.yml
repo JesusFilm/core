@@ -39,9 +39,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app:
-          [
-            'arclight',
+        app: [
+            # 'arclight', # disable arclight from daily preview E2E (no Vercel DB access)
             'docs',
             'journeys',
             'journeys-admin',
@@ -68,29 +67,23 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event_name == 'schedule' && 'main' || github.ref }}
-      - uses: useblacksmith/setup-node@v5
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.app }}
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.app }}
-          path: ./node_modules
-      - name: Mount playwright cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-playwright-cache-${{ matrix.app }}
           path: ~/.cache/ms-playwright
-      - name: NPM Install
-        run: npm install --silent
+          key: ${{ runner.os }}-node-22-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-22-playwright-
       - uses: nrwl/nx-set-shas@v4
       - name: vercel deployment
         env:
@@ -106,7 +99,7 @@ jobs:
           WATCH_MODERN_VERCEL_PROJECT_ID: ${{ secrets.WATCH_MODERN_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: preview
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: pnpm exec nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: Set consistent Vercel alias for daily e2e
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -116,7 +109,7 @@ jobs:
           CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
 
           # Set the alias
-          npx vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
+          pnpm exec vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
 
           # Update the .vercel-url file with the consistent URL
           echo "https://$CONSISTENT_ALIAS" > apps/${{ matrix.app }}/.vercel-url
@@ -140,13 +133,21 @@ jobs:
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: pnpm exec nx run ${{ matrix.app == 'journeys-admin' && 'journeys-admin-e2e:e2e-full' || format('{0}-e2e:e2e', matrix.app) }}
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
+          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
+          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
+          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
+          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
+          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
+          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
+          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -160,6 +161,31 @@ jobs:
             test-results
           retention-days: 30
 
+  notify-slack-on-deploy-and-test-failure:
+    name: Notify Slack on deploy-and-test failure
+    needs: [deploy-and-test]
+    if: always() && needs.deploy-and-test.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload-templated: true
+          payload: |
+            {
+              "text": "❌ E2E Tests Failed (deploy-and-test)",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*E2E Tests Failed* (all-e2e)\n*Trigger:* ${{ github.event_name == 'schedule' && 'Scheduled morning run' || 'Manual run' }}\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }
+
   E2E_Tests:
     if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
@@ -169,31 +195,26 @@ jobs:
         test-suite: ${{ fromJSON(format('["{0}"]', inputs.TargetTests)) }}
     steps:
       - uses: actions/checkout@v4
-      - uses: useblacksmith/setup-node@v5
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          node-version: 22
-      - name: Get Node Version
-        id: node-version
-        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
-      - name: Mount NPM Cache
-        uses: useblacksmith/stickydisk@v1
+          run_install: false
+      - uses: actions/setup-node@v5
         with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache-${{ matrix.test-suite }}
-          path: ~/.npm
-      - name: Mount node_modules
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules-${{ matrix.test-suite }}
-          path: ./node_modules
-      - name: Mount playwright cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-playwright-cache-${{ matrix.test-suite }}
-          path: ~/.cache/ms-playwright
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
       - name: Install dependencies
-        run: npm install --silent
+        run: pnpm install --frozen-lockfile
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: pnpm exec playwright install --with-deps
       - name: Set deployment URL for single test run
         run: |
           if [ -z "${{ inputs.TargetAppUrl }}" ]; then
@@ -202,11 +223,19 @@ jobs:
           fi
           echo "DEPLOYMENT_URL=${{ inputs.TargetAppUrl }}" >> $GITHUB_ENV
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.test-suite }}:e2e
+        run: pnpm exec nx run ${{ matrix.test-suite == 'journeys-admin-e2e' && 'journeys-admin-e2e:e2e-full' || format('{0}:e2e', matrix.test-suite) }}
         env:
           DEPLOYMENT_URL: ${{ env.DEPLOYMENT_URL }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
           PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_EMAIL2: ${{ secrets.PLAYWRIGHT_EMAIL2 }}
+          PLAYWRIGHT_PASSWORD2: ${{ secrets.PLAYWRIGHT_PASSWORD2 }}
+          PLAYWRIGHT_EMAIL3: ${{ secrets.PLAYWRIGHT_EMAIL3 }}
+          PLAYWRIGHT_PASSWORD3: ${{ secrets.PLAYWRIGHT_PASSWORD3 }}
+          PLAYWRIGHT_EMAIL4: ${{ secrets.PLAYWRIGHT_EMAIL4 }}
+          PLAYWRIGHT_PASSWORD4: ${{ secrets.PLAYWRIGHT_PASSWORD4 }}
+          PLAYWRIGHT_EMAIL5: ${{ secrets.PLAYWRIGHT_EMAIL5 }}
+          PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
           PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
           PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
           EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
@@ -219,3 +248,28 @@ jobs:
             apps/${{ matrix.test-suite }}/src/e2e/
             test-results
           retention-days: 30
+
+  notify-slack-on-e2e-tests-failure:
+    name: Notify Slack on E2E_Tests failure
+    needs: [E2E_Tests]
+    if: always() && needs.E2E_Tests.result == 'failure'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: slackapi/slack-github-action@v2.1.1
+        with:
+          webhook: ${{ secrets.E2E_SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload-templated: true
+          payload: |
+            {
+              "text": "❌ E2E Tests Failed (single suite)",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*E2E Tests Failed* (${{ inputs.TargetTests }})\n*Trigger:* Manual run\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                  }
+                }
+              ]
+            }

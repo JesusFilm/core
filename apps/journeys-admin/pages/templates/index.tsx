@@ -55,7 +55,7 @@ function TemplateIndexPage(): ReactElement {
         showAppHeader={userSignedIn}
         showNavBar={userSignedIn}
         fadeInNavBar
-        background="background.paper"
+        backgroundColor="background.paper"
       >
         <Box
           sx={{
@@ -121,7 +121,9 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '5541', // Serbian
             '6788', // Farsi, Western
             '3804', // Korean
-            '1370' // Nepali
+            '1927', // Malay
+            '1370', // Nepali
+            '1254' // Myanmar (Burmese)
           ]
         }
       }
@@ -138,7 +140,8 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
           template: true,
           orderByRecent: true,
           tagIds: undefined,
-          languageIds: ['529']
+          languageIds: ['529'],
+          teamId: 'jfp-team'
         }
       }
     })

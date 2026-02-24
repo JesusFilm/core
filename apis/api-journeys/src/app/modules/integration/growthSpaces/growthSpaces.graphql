@@ -2,8 +2,8 @@ type IntegrationGrowthSpaces implements Integration @shareable {
   id: ID!
   team: Team!
   type: IntegrationType!
-  accessId: String!
-  accessSecretPart: String!
+  accessId: String
+  accessSecretPart: String
   routes: [IntegrationGrowthSpacesRoute!]!
 }
 

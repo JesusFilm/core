@@ -80,7 +80,8 @@ export function MenuActionButton(): ReactElement {
       backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
-      parentOrder: 0
+      parentOrder: 0,
+      eventLabel: null
     } satisfies CardBlock
 
     const heading = {
@@ -126,7 +127,8 @@ export function MenuActionButton(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      settings: null
+      settings: null,
+      eventLabel: null
     } satisfies ButtonBlock
 
     const button2 = {
@@ -142,7 +144,8 @@ export function MenuActionButton(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      settings: null
+      settings: null,
+      eventLabel: null
     } satisfies ButtonBlock
 
     const button3 = {
@@ -158,7 +161,8 @@ export function MenuActionButton(): ReactElement {
       endIconId: null,
       submitEnabled: null,
       action: null,
-      settings: null
+      settings: null,
+      eventLabel: null
     } satisfies ButtonBlock
 
     const createdBlocks = [

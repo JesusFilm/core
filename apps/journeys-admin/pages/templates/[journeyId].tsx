@@ -31,7 +31,10 @@ function TemplateDetailsPage(): ReactElement {
   const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,
-    idType: IdType.databaseId
+    idType: IdType.databaseId,
+    options: {
+      skipRoutingFilter: true
+    }
   })
   const { activeTeam, refetch, query } = useTeam()
 
@@ -52,7 +55,7 @@ function TemplateDetailsPage(): ReactElement {
       <JourneyProvider
         value={{
           journey: data?.journey,
-          variant: 'admin'
+          variant: 'customize'
         }}
       >
         <PageWrapper
@@ -85,7 +88,7 @@ function TemplateDetailsPage(): ReactElement {
           }
           showAppHeader={userSignedIn}
           showNavBar={userSignedIn}
-          background="background.paper"
+          backgroundColor="background.paper"
         >
           <Box
             sx={{
@@ -122,7 +125,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   resolvedUrl,
   params
 }) => {
-  const { redirect, apolloClient, translations } = await initAndAuthApp({
+  const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
     user,
     locale,
     resolvedUrl
@@ -156,7 +159,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
         where: {
           template: true,
           orderByRecent: true,
-          tagIds
+          tagIds,
+          teamId: 'jfp-team'
         }
       }
     })
@@ -179,6 +183,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   return {
     props: {
       ...translations,
+      flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }

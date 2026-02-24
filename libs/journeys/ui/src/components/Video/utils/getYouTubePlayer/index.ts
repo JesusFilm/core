@@ -1,0 +1,1 @@
+export { getYouTubePlayer } from './getYouTubePlayer'

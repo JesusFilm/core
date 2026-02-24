@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { Block, Integration, Journey } from '.prisma/api-journeys-client'
+import { Block, Integration, Journey } from '@core/prisma/journeys/client'
 
 import { PrismaService } from '../../../lib/prisma.service'
 
@@ -54,7 +54,10 @@ const integration: Integration = {
   // decrypted value for accessSecretCipherText should be "plaintext"
   accessSecretCipherText: 'saeRCBy44pMT',
   accessSecretIv: 'dx+2iBr7yYvilLIC',
-  accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
+  accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA==',
+  userId: null,
+  accountEmail: null,
+  oauthStale: false
 }
 
 const journey: Journey = {

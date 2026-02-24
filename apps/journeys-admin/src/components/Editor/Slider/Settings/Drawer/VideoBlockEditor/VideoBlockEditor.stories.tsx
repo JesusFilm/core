@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -46,6 +46,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: true,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -68,6 +69,8 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -92,6 +95,9 @@ const videoInternal: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: 'poster1.id',
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   children: []
 }
 
@@ -108,7 +114,8 @@ const posterInternal: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const videoYouTube: TreeBlock<VideoBlock> = {
@@ -135,7 +142,12 @@ const videoYouTube: TreeBlock<VideoBlock> = {
     id: 'videoId'
   },
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   posterBlockId: 'poster1.id',
+  customizable: null,
   children: []
 }
 
@@ -152,7 +164,8 @@ const posterYouTube: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()

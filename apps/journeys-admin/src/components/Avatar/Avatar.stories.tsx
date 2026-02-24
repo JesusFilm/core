@@ -1,6 +1,6 @@
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -20,7 +20,7 @@ const Template: StoryObj<typeof Avatar> = {
         <Avatar
           {...args}
           apiUser={{
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: '2',
             firstName: 'Person',
             lastName: 'Two',

@@ -3,10 +3,10 @@ import { generateObject, streamObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
+import { prisma } from '@core/prisma/journeys/client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
-import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 
@@ -187,8 +187,19 @@ Return in this format:
         const analysisResult = await generateObject({
           model: google('gemini-2.0-flash'),
           messages: [
-            { role: 'system', content: preSystemPrompt },
-            { role: 'user', content: combinedPrompt }
+            {
+              role: 'system',
+              content: preSystemPrompt
+            },
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: combinedPrompt
+                }
+              ]
+            }
           ],
           schema: JourneyAnalysisSchema
         })
@@ -372,8 +383,19 @@ If there is no Bible translation was available, use the the most popular English
               const { fullStream } = streamObject({
                 model: google('gemini-2.0-flash'),
                 messages: [
-                  { role: 'system', content: preSystemPrompt },
-                  { role: 'user', content: blockTranslationPrompt }
+                  {
+                    role: 'system',
+                    content: preSystemPrompt
+                  },
+                  {
+                    role: 'user',
+                    content: [
+                      {
+                        type: 'text',
+                        text: blockTranslationPrompt
+                      }
+                    ]
+                  }
                 ],
                 output: 'no-schema',
                 onError: ({ error }) => {
@@ -636,8 +658,19 @@ Return in this format:
         const { object: analysisAndTranslation } = await generateObject({
           model: google('gemini-2.0-flash'),
           messages: [
-            { role: 'system', content: preSystemPrompt },
-            { role: 'user', content: combinedPrompt }
+            {
+              role: 'system',
+              content: preSystemPrompt
+            },
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: combinedPrompt
+                }
+              ]
+            }
           ],
           schema: JourneyAnalysisSchema
         })
@@ -795,8 +828,19 @@ If there is no Bible translation was available, use the the most popular English
                 const { fullStream } = streamObject({
                   model: google('gemini-2.0-flash'),
                   messages: [
-                    { role: 'system', content: preSystemPrompt },
-                    { role: 'user', content: cardAnalysisPrompt }
+                    {
+                      role: 'system',
+                      content: preSystemPrompt
+                    },
+                    {
+                      role: 'user',
+                      content: [
+                        {
+                          type: 'text',
+                          text: cardAnalysisPrompt
+                        }
+                      ]
+                    }
                   ],
                   output: 'no-schema',
                   onError: ({ error }) => {

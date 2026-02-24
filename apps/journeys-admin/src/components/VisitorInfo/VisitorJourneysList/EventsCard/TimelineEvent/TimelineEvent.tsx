@@ -98,6 +98,12 @@ export function TimelineEvent({
       label = event.label
       variant = EventVariant.featured
       break
+    case 'MultiselectSubmissionEvent':
+      icon = <CheckContainedIcon />
+      activity = `${t('Multiselect')}:`
+      label = event.label
+      variant = EventVariant.featured
+      break
 
     // default
     case 'StepNextEvent':

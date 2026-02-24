@@ -1,2 +1,3 @@
-import './step'
 import './inputs'
+
+export { StepBlock } from './step'

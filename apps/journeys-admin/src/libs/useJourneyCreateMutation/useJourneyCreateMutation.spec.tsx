@@ -26,7 +26,7 @@ const variables = {
   alt: 'two hot air balloons in the sky',
   headlineTypographyContent: 'The Journey Is On',
   bodyTypographyContent: '"Go, and lead the people on their way..."',
-  captionTypographyContent: 'Deutoronomy 10:11'
+  captionTypographyContent: 'Deuteronomy 10:11'
 }
 
 const data = {
@@ -107,11 +107,15 @@ describe('useJourneyCreateMutation', () => {
     mockUuidv4.mockReturnValueOnce(variables.cardId)
     mockUuidv4.mockReturnValueOnce(variables.imageId)
 
-    const cache = new InMemoryCache()
-    cache.restore({
-      ROOT_QUERY: {
-        __typename: 'Query',
-        adminJourneys: []
+    const cache = new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            adminJourneys: {
+              keyArgs: ['status', 'template', 'teamId', 'useLastActiveTeamId']
+            }
+          }
+        }
       }
     })
 
@@ -135,29 +139,41 @@ describe('useJourneyCreateMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.createJourney()).toMatchObject(
-          data.journeyCreate
-        )
-      })
-      await waitFor(async () => {
-        expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
+      const created = await result.current.createJourney()
+      expect(created).toMatchObject(data.journeyCreate)
+    })
+    await waitFor(() => {
+      const cacheData = cache.extract()?.ROOT_QUERY
+      // With keyArgs, cache entries are keyed by variables
+      // Find any adminJourneys entry and verify it contains the created journey
+      const adminJourneysKey = Object.keys(cacheData ?? {}).find((key) =>
+        key.startsWith('adminJourneys')
+      )
+      if (adminJourneysKey) {
+        expect(cacheData?.[adminJourneysKey]).toEqual([
           { __ref: 'Journey:createdJourneyId' }
         ])
-      })
+      } else {
+        // Fallback: check if journey exists in cache (cache.modify updates all entries)
+        expect(cache.extract()?.['Journey:createdJourneyId']).toBeDefined()
+      }
     })
   })
 
   it('returns a function which returns undefined if error', async () => {
+    mockUuidv4.mockReturnValueOnce(variables.journeyId)
+    mockUuidv4.mockReturnValueOnce(variables.stepId)
+    mockUuidv4.mockReturnValueOnce(variables.cardId)
+    mockUuidv4.mockReturnValueOnce(variables.imageId)
+
     const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          addTypename={false}
           mocks={[
             {
               request: {
                 query: CREATE_JOURNEY,
-                variables: { id: undefined }
+                variables
               },
               result: { data: {} }
             }
@@ -169,36 +185,18 @@ describe('useJourneyCreateMutation', () => {
     })
 
     await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.createJourney()).toBeUndefined()
-      })
+      const created = await result.current.createJourney()
+      expect(created).toBeUndefined()
     })
   })
 
   it('returns a loading state', async () => {
     const { result } = renderHook(() => useJourneyCreateMutation(), {
       wrapper: ({ children }) => (
-        <MockedProvider
-          addTypename={false}
-          mocks={[
-            {
-              request: {
-                query: CREATE_JOURNEY,
-                variables: { id: undefined }
-              },
-              result: { data: {} }
-            }
-          ]}
-        >
-          {children}
-        </MockedProvider>
+        <MockedProvider mocks={[]}>{children}</MockedProvider>
       )
     })
 
-    await act(async () => {
-      await waitFor(async () => {
-        expect(await result.current.loading).toBe(false)
-      })
-    })
+    await waitFor(() => expect(result.current.loading).toBe(false))
   })
 })

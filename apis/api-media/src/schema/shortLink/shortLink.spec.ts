@@ -1,7 +1,6 @@
 import { nanoid } from 'nanoid'
-import { v4 as uuidv4 } from 'uuid'
 
-import { Prisma, ShortLink, ShortLinkDomain } from '.prisma/api-media-client'
+import { Prisma, ShortLink, ShortLinkDomain } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -11,16 +10,27 @@ jest.mock('nanoid')
 jest.mock('uuid')
 
 const nanoidMock = nanoid as jest.MockedFunction<typeof nanoid>
-const uuidMock = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('shortLink', () => {
   const client = getClient()
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    },
+    context: {
+      currentUser: {
+        id: 'userId'
+      }
+    }
+  })
 
   beforeEach(() => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',
       userId: 'testUserId',
-      roles: ['publisher']
+      roles: ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
   })
 
@@ -171,7 +181,7 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.findFirstOrThrow.mockResolvedValue(shortLink)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_QUERY,
           variables: { id: 'testId' }
         })
@@ -201,7 +211,7 @@ describe('shortLink', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_QUERY,
           variables: { id: 'testId' }
         })
@@ -266,7 +276,7 @@ describe('shortLink', () => {
         }
         prismaMock.shortLink.findMany.mockResolvedValue([shortLink])
         prismaMock.shortLink.count.mockResolvedValue(1)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINKS_QUERY
         })
         expect(result).toEqual({
@@ -320,7 +330,7 @@ describe('shortLink', () => {
         }
         prismaMock.shortLink.findMany.mockResolvedValue([shortLink])
         prismaMock.shortLink.count.mockResolvedValue(10)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINKS_QUERY,
           variables: { hostname: 'example.com' }
         })
@@ -364,7 +374,9 @@ describe('shortLink', () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
         userId: 'testUserId',
-        roles: ['publisher']
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
     })
 
@@ -435,7 +447,7 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.create.mockResolvedValue(shortLink)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -503,7 +515,7 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.create.mockResolvedValue(shortLink)
-        await client({
+        await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -562,7 +574,7 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.create.mockResolvedValue(shortLink)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -614,7 +626,7 @@ describe('shortLink', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -647,7 +659,7 @@ describe('shortLink', () => {
           updatedAt: new Date(),
           services: ['apiJourneys']
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -664,10 +676,10 @@ describe('shortLink', () => {
               message: JSON.stringify(
                 [
                   {
-                    validation: 'url',
-                    code: 'invalid_string',
-                    message: 'Invalid url',
-                    path: ['input', 'to']
+                    code: 'invalid_format',
+                    format: 'url',
+                    path: ['input', 'to'],
+                    message: 'Invalid URL'
                   }
                 ],
                 null,
@@ -675,7 +687,7 @@ describe('shortLink', () => {
               ),
               fieldErrors: [
                 {
-                  message: 'Invalid url',
+                  message: 'Invalid URL',
                   path: ['input', 'to']
                 }
               ]
@@ -686,7 +698,7 @@ describe('shortLink', () => {
 
       it('should return a ZodError if the hostname is invalid', async () => {
         prismaMock.shortLinkDomain.findFirst.mockResolvedValue(null)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -734,9 +746,11 @@ describe('shortLink', () => {
           services: ['apiJourneys']
         })
         prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue({
-          hostname: 'example.com'
+          hostname: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
           variables: {
             input: {
@@ -754,9 +768,9 @@ describe('shortLink', () => {
                 [
                   {
                     code: 'custom',
+                    path: ['input', 'to'],
                     message:
-                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)',
-                    path: ['input', 'to']
+                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)'
                   }
                 ],
                 null,
@@ -833,7 +847,7 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.update.mockResolvedValue(shortLink)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_UPDATE_MUTATION,
           variables: {
             input: {
@@ -869,7 +883,7 @@ describe('shortLink', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_UPDATE_MUTATION,
           variables: {
             input: {
@@ -889,7 +903,7 @@ describe('shortLink', () => {
       })
 
       it('should return a ZodError if the to URL is invalid', async () => {
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_UPDATE_MUTATION,
           variables: {
             input: {
@@ -904,10 +918,10 @@ describe('shortLink', () => {
               message: JSON.stringify(
                 [
                   {
-                    validation: 'url',
-                    code: 'invalid_string',
-                    message: 'Invalid url',
-                    path: ['input', 'to']
+                    code: 'invalid_format',
+                    format: 'url',
+                    path: ['input', 'to'],
+                    message: 'Invalid URL'
                   }
                 ],
                 null,
@@ -915,7 +929,7 @@ describe('shortLink', () => {
               ),
               fieldErrors: [
                 {
-                  message: 'Invalid url',
+                  message: 'Invalid URL',
                   path: ['input', 'to']
                 }
               ]
@@ -926,9 +940,11 @@ describe('shortLink', () => {
 
       it('should return a ZodError if the to URL is on the blocklist', async () => {
         prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue({
-          hostname: 'example.com'
+          hostname: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_UPDATE_MUTATION,
           variables: {
             input: {
@@ -944,9 +960,9 @@ describe('shortLink', () => {
                 [
                   {
                     code: 'custom',
+                    path: ['input', 'to'],
                     message:
-                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)',
-                    path: ['input', 'to']
+                      'to URL appears on blocklist (https://github.com/blocklistproject/Lists)'
                   }
                 ],
                 null,
@@ -1008,7 +1024,7 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.delete.mockResolvedValue(shortLink)
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DELETE_MUTATION,
           variables: { id: 'testId' }
         })
@@ -1033,7 +1049,7 @@ describe('shortLink', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DELETE_MUTATION,
           variables: { id: 'testId' }
         })

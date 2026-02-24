@@ -1,6 +1,8 @@
-import { prisma } from '../../../lib/prisma'
+import { prisma } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
-import { VideoBlockSource } from '../../enums'
+import { BlockEventLabel, VideoBlockSource } from '../../enums'
+import { Language } from '../../language/language'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
 
@@ -18,6 +20,14 @@ export const VideoBlock = builder.prismaObject('Block', {
   variant: 'VideoBlock',
   isTypeOf: (obj: any) => obj.typename === 'VideoBlock',
   fields: (t) => ({
+    eventLabel: t.expose('eventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
+    endEventLabel: t.expose('endEventLabel', {
+      type: BlockEventLabel,
+      nullable: true
+    }),
     autoplay: t.boolean({
       nullable: true,
       resolve: (block) => block.autoplay ?? false
@@ -68,7 +78,18 @@ youTube source: videoId, title, description, and duration present`,
       nullable: true,
       resolve: (block) => block.fullsize ?? false
     }),
+    subtitleLanguage: t.field({
+      type: Language,
+      nullable: true,
+      resolve: (block) => {
+        if (block.subtitleLanguageId == null) return null
+        return { id: block.subtitleLanguageId }
+      }
+    }),
     action: t.relation('action'),
+    showGeneratedSubtitles: t.exposeBoolean('showGeneratedSubtitles', {
+      nullable: true
+    }),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,
@@ -93,6 +114,9 @@ youTube source: videoId, title, description, and duration present`,
           source: block.source
         } as any
       }
+    }),
+    customizable: t.exposeBoolean('customizable', {
+      nullable: true
     })
   })
 })

@@ -26,17 +26,36 @@ describe('videoDescription', () => {
       `)
 
       it('should create video description', async () => {
+        prismaMock.$transaction.mockImplementation(async (arg: any) => {
+          if (typeof arg === 'function') return arg(prismaMock)
+          return Promise.all(arg as any[])
+        })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoDescription.create.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.videoDescription.update.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: CREATE_VIDEO_DESCRIPTION_MUTATION,
@@ -82,17 +101,32 @@ describe('videoDescription', () => {
       `)
 
       it('should update video description', async () => {
+        prismaMock.$transaction.mockImplementation(async (arg: any) => {
+          if (typeof arg === 'function') return arg(prismaMock)
+          return Promise.all(arg as any[])
+        })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
+        prismaMock.videoDescription.findUnique.mockResolvedValue({
+          videoId: 'videoId',
+          crowdInId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        } as any)
         prismaMock.videoDescription.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: UPDATE_VIDEO_DESCRIPTION_MUTATION,
@@ -139,20 +173,23 @@ describe('videoDescription', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoDescription.delete.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          crowdInId: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: DELETE_VIDEO_DESCRIPTION_MUTATION,
-          variables: {
-            id: 'id'
-          }
+          variables: { id: 'id' }
         })
         expect(result).toHaveProperty('data.videoDescriptionDelete', {
           id: 'id'
@@ -162,9 +199,7 @@ describe('videoDescription', () => {
       it('should reject if not publisher', async () => {
         const result = await client({
           document: DELETE_VIDEO_DESCRIPTION_MUTATION,
-          variables: {
-            id: 'id'
-          }
+          variables: { id: 'id' }
         })
         expect(result).toHaveProperty('data', null)
       })

@@ -10,6 +10,7 @@ import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 import MoreIcon from '@core/shared/ui/icons/More'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
+import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 import { MenuItem } from '../../MenuItem'
 
@@ -23,7 +24,7 @@ export function JourneyListMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
 
-  const activeTab = router?.query.tab?.toString() ?? 'active'
+  const currentStatus = router?.query.status?.toString() ?? 'active'
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -38,16 +39,33 @@ export function JourneyListMenu({
   }
   return (
     <>
-      {['active', 'archived', 'trashed'].includes(activeTab) && (
+      {['active', 'archived', 'trashed'].includes(currentStatus) && (
         <>
           <IconButton
             edge="end"
             color="inherit"
-            sx={{ mx: 3 }}
+            aria-label={t('Journey list actions')}
+            sx={{
+              mx: { xs: 0, sm: 3 },
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              '&:hover': {
+                borderRadius: '8px'
+              }
+            }}
             onClick={handleShowMenu}
             data-testid="JourneyListMenuButton"
           >
-            <MoreIcon data-testid="MoreIcon" />
+            <MoreIcon
+              data-testid="MoreIcon"
+              sx={{
+                width: '20px',
+                height: '20px',
+                color: palette[700]
+              }}
+            />
           </IconButton>
           <Menu
             id="edit-journey-actions"
@@ -65,9 +83,17 @@ export function JourneyListMenu({
               vertical: 'top',
               horizontal: 'right'
             }}
+            slotProps={{
+              paper: {
+                sx: {
+                  mt: '6px',
+                  borderRadius: '8px'
+                }
+              }
+            }}
             data-testid="JourneyListMenu"
           >
-            {activeTab === 'active' && [
+            {currentStatus === 'active' && [
               <MenuItem
                 label={t('Archive All')}
                 icon={<FolderUp1Icon />}
@@ -81,7 +107,7 @@ export function JourneyListMenu({
                 key="trashAllActive"
               />
             ]}
-            {activeTab === 'archived' && [
+            {currentStatus === 'archived' && [
               <MenuItem
                 label={t('Unarchive All')}
                 icon={<FolderDown1Icon />}
@@ -95,7 +121,7 @@ export function JourneyListMenu({
                 key="trashAllArchived"
               />
             ]}
-            {activeTab === 'trashed' && [
+            {currentStatus === 'trashed' && [
               <MenuItem
                 label={t('Restore All')}
                 icon={<CheckContainedIcon />}

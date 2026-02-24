@@ -1,5 +1,52 @@
-version: '3'
 services:
+  bootstrap:
+    image: mcr.microsoft.com/devcontainers/typescript-node:20
+    volumes:
+      - core-workspace:/workspaces
+      - core-node-user:/home/node
+    entrypoint: ['/bin/bash', '-lc']
+    command:
+      - |
+        LOGFILE=/workspaces/bootstrap.log
+        touch $LOGFILE
+        exec > >(tee -a "$LOGFILE") 2>&1
+        set -euxo pipefail
+        echo "=== Starting bootstrap at $(date) ==="
+
+        mkdir -p /workspaces/core
+        cd /workspaces/core
+
+        # trust the path for Git (avoids 'dubious ownership')
+        git config --global --add safe.directory /workspaces/core
+
+        # --- quick "already done?" guard ---
+        if git rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+          && [ "$(git remote get-url origin 2>/dev/null || echo '')" = "https://github.com/JesusFilm/core.git" ] \
+          && git ls-remote --exit-code origin main >/dev/null 2>&1; then
+          echo "Repo already bootstrapped; skipping clone/sync."
+          exit 0
+        fi
+        # -----------------------------------
+
+        # fresh init with 'main' as the initial branch (no 'master')
+        if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+          [ -d .git ] && rm -rf .git
+          git init -b main
+        fi
+
+        if git remote get-url origin >/dev/null 2>&1; then
+          git remote set-url origin https://github.com/JesusFilm/core.git
+        else
+          git remote add origin https://github.com/JesusFilm/core.git
+        fi
+
+        git fetch --depth 1 origin main
+        git checkout -B main origin/main
+        git reset --hard origin/main
+
+        chown -R 1000:1000 /workspaces
+        echo "BOOTSTRAP_OK at $(date)"
+        exit 0
   app:
     build:
       context: .
@@ -10,7 +57,7 @@ services:
         USER_UID: 1000
         USER_GID: 1000
     volumes:
-      - ..:/workspaces:delegated
+      - core-workspace:/workspaces
       - core-node-user:/home/node
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
@@ -28,6 +75,9 @@ services:
       PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
   db:
     image: postgres:13
     restart: unless-stopped
@@ -58,6 +108,17 @@ services:
       ]
     volumes:
       - redis-data:/data
+  serverless-redis-http:
+    image: hiett/serverless-redis-http:latest
+    restart: unless-stopped
+    depends_on:
+      - redis
+    ports:
+      - 8079:80
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: example_token
+      SRH_CONNECTION_STRING: redis://redis:6379
   maildev:
     image: 'maildev/maildev:latest'
     restart: unless-stopped
@@ -91,6 +152,7 @@ services:
       CLICKHOUSE_DATABASE_URL: http://clickhouse:8123/plausible_events_db
 volumes:
   core-node-user:
+  core-workspace:
   postgres-data:
   redis-data:
   event-data:

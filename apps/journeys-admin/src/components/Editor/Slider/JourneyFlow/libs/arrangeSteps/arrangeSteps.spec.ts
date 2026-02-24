@@ -32,7 +32,8 @@ const button: TreeBlock<ButtonBlock> = {
     blockId: 'step1.id'
   },
   children: [],
-  settings: null
+  settings: null,
+  eventLabel: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -46,6 +47,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: ThemeName.base,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [button]
 }
 

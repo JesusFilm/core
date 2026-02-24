@@ -14,6 +14,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
+  BigInt: { input: any; output: any; }
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
@@ -32,6 +34,16 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type AnonymousUser = {
+  __typename?: 'AnonymousUser';
+  id: Scalars['ID']['output'];
+};
+
+export enum App {
+  JesusFilmOne = 'JesusFilmOne',
+  NextSteps = 'NextSteps'
+}
+
 export type ArclightApiKey = {
   __typename?: 'ArclightApiKey';
   defaultPlatform: DefaultPlatform;
@@ -48,6 +60,19 @@ export type AudioPreview = {
   languageId: Scalars['ID']['output'];
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
+};
+
+export type AuthenticatedUser = {
+  __typename?: 'AuthenticatedUser';
+  email: Scalars['String']['output'];
+  emailVerified: Scalars['Boolean']['output'];
+  firstName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  languageUserRoles: Array<LanguageRole>;
+  lastName?: Maybe<Scalars['String']['output']>;
+  mediaUserRoles: Array<MediaRole>;
+  superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type BaseError = {
@@ -103,10 +128,28 @@ export type BlockDuplicateIdMap = {
   oldId: Scalars['ID']['input'];
 };
 
+export enum BlockEventLabel {
+  Custom1 = 'custom1',
+  Custom2 = 'custom2',
+  Custom3 = 'custom3',
+  DecisionForChrist = 'decisionForChrist',
+  GospelPresentationComplete = 'gospelPresentationComplete',
+  GospelPresentationStart = 'gospelPresentationStart',
+  InviteFriend = 'inviteFriend',
+  PrayerRequest = 'prayerRequest',
+  Rsvp = 'rsvp',
+  Share = 'share',
+  SpecialVideoComplete = 'specialVideoComplete',
+  SpecialVideoStart = 'specialVideoStart'
+}
+
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  chatUrl?: InputMaybe<Scalars['String']['input']>;
+  countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
   target?: InputMaybe<Scalars['String']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
 };
@@ -123,9 +166,11 @@ export type Browser = {
 };
 
 export enum ButtonAction {
+  ChatAction = 'ChatAction',
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
-  NavigateToBlockAction = 'NavigateToBlockAction'
+  NavigateToBlockAction = 'NavigateToBlockAction',
+  PhoneAction = 'PhoneAction'
 }
 
 export enum ButtonAlignment {
@@ -140,6 +185,7 @@ export type ButtonBlock = Block & {
   action?: Maybe<Action>;
   color?: Maybe<ButtonColor>;
   endIconId?: Maybe<Scalars['ID']['output']>;
+  eventLabel?: Maybe<BlockEventLabel>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -154,6 +200,7 @@ export type ButtonBlock = Block & {
 
 export type ButtonBlockCreateInput = {
   color?: InputMaybe<ButtonColor>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -180,6 +227,7 @@ export type ButtonBlockSettingsInput = {
 export type ButtonBlockUpdateInput = {
   color?: InputMaybe<ButtonColor>;
   endIconId?: InputMaybe<Scalars['ID']['input']>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   settings?: InputMaybe<ButtonBlockSettingsInput>;
@@ -261,6 +309,7 @@ export type CardBlock = Block & {
    * as a background. Blocks are often of type ImageBlock or VideoBlock.
    */
   coverBlockId?: Maybe<Scalars['ID']['output']>;
+  eventLabel?: Maybe<BlockEventLabel>;
   /**
    * fullscreen should control how the coverBlock is displayed. When fullscreen
    * is set to true the coverBlock Image should be displayed as a blur in the
@@ -286,6 +335,7 @@ export type CardBlock = Block & {
 export type CardBlockCreateInput = {
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
@@ -298,10 +348,30 @@ export type CardBlockUpdateInput = {
   backdropBlur?: InputMaybe<Scalars['Int']['input']>;
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   coverBlockId?: InputMaybe<Scalars['ID']['input']>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullscreen?: InputMaybe<Scalars['Boolean']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
+};
+
+export type ChatAction = Action & {
+  __typename?: 'ChatAction';
+  chatUrl: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
+  target?: Maybe<Scalars['String']['output']>;
+};
+
+export type ChatActionInput = {
+  chatUrl: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
+  target?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ChatButton = {
@@ -346,9 +416,32 @@ export type ChatOpenEventCreateInput = {
   value?: InputMaybe<MessagePlatform>;
 };
 
+export type CheckVideoInAlgoliaMismatch = {
+  __typename?: 'CheckVideoInAlgoliaMismatch';
+  actual?: Maybe<Scalars['String']['output']>;
+  expected?: Maybe<Scalars['String']['output']>;
+  field?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoInAlgoliaResult = {
+  __typename?: 'CheckVideoInAlgoliaResult';
+  error?: Maybe<Scalars['String']['output']>;
+  mismatches?: Maybe<Array<CheckVideoInAlgoliaMismatch>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+  recordUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoVariantsInAlgoliaResult = {
+  __typename?: 'CheckVideoVariantsInAlgoliaResult';
+  browseUrl?: Maybe<Scalars['String']['output']>;
+  missingVariants?: Maybe<Array<Scalars['String']['output']>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
+  blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
@@ -363,7 +456,7 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
-  contentLength: Scalars['Int']['output'];
+  contentLength: Scalars['BigInt']['output'];
   contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
@@ -375,9 +468,20 @@ export type CloudflareR2 = {
   userId: Scalars['ID']['output'];
 };
 
+export type CloudflareR2CompleteMultipartInput = {
+  /** Key of the multipart upload being completed */
+  fileName: Scalars['String']['input'];
+  /** CloudflareR2 id for the asset being uploaded */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** List of uploaded parts with their ETags */
+  parts: Array<CloudflareR2MultipartUploadedPartInput>;
+  /** Upload ID returned from create multipart upload */
+  uploadId: Scalars['String']['input'];
+};
+
 export type CloudflareR2CreateInput = {
   /** the size of the file that is being uploaded */
-  contentLength: Scalars['Int']['input'];
+  contentLength: Scalars['BigInt']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */
@@ -388,6 +492,60 @@ export type CloudflareR2CreateInput = {
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
+
+export type CloudflareR2MultipartPrepareInput = {
+  /** the size of the file that is being uploaded */
+  contentLength: Scalars['BigInt']['input'];
+  /** the type of file that is being uploaded. e.g. image or video/mp4 */
+  contentType: Scalars['String']['input'];
+  /** the name of the file that is being uploaded */
+  fileName: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
+  /** Optional preferred part size in bytes (minimum 5 MiB, capped to 10k parts) */
+  preferredPartSize?: InputMaybe<Scalars['Int']['input']>;
+  /** the id of the Video object this file relates to in the database */
+  videoId: Scalars['String']['input'];
+};
+
+/** Metadata returned when preparing a multipart upload for Cloudflare R2 */
+export type CloudflareR2MultipartPrepared = {
+  __typename?: 'CloudflareR2MultipartPrepared';
+  /** Object key for the multipart upload */
+  fileName?: Maybe<Scalars['String']['output']>;
+  /** CloudflareR2 record id */
+  id?: Maybe<Scalars['String']['output']>;
+  /** Part size in bytes */
+  partSize?: Maybe<Scalars['Int']['output']>;
+  /** Presigned URLs for each multipart part */
+  parts?: Maybe<Array<CloudflareR2MultipartPreparedPart>>;
+  /** Public URL for the completed asset */
+  publicUrl?: Maybe<Scalars['String']['output']>;
+  /** Upload ID for the multipart upload */
+  uploadId?: Maybe<Scalars['String']['output']>;
+};
+
+/** Presigned upload URL for a multipart part */
+export type CloudflareR2MultipartPreparedPart = {
+  __typename?: 'CloudflareR2MultipartPreparedPart';
+  /** 1-indexed part number */
+  partNumber?: Maybe<Scalars['Int']['output']>;
+  /** Presigned URL for the part */
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CloudflareR2MultipartUploadedPartInput = {
+  /** ETag returned after uploading the part */
+  eTag: Scalars['String']['input'];
+  /** 1-indexed part number for the multipart upload */
+  partNumber: Scalars['Int']['input'];
+};
+
+export enum ContactActionType {
+  Call = 'call',
+  Text = 'text'
+}
 
 export type Continent = {
   __typename?: 'Continent';
@@ -450,7 +608,16 @@ export type CountryName = {
   value: Scalars['String']['output'];
 };
 
+export type CreateGoogleSheetsSyncInput = {
+  folderId?: InputMaybe<Scalars['String']['input']>;
+  integrationId: Scalars['ID']['input'];
+  journeyId: Scalars['ID']['input'];
+  sheetName: Scalars['String']['input'];
+  spreadsheetId: Scalars['ID']['input'];
+};
+
 export type CreateVerificationRequestInput = {
+  app?: InputMaybe<App>;
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -565,6 +732,7 @@ export enum EventType {
   ButtonClickEvent = 'ButtonClickEvent',
   ChatOpenEvent = 'ChatOpenEvent',
   JourneyViewEvent = 'JourneyViewEvent',
+  MultiselectSubmissionEvent = 'MultiselectSubmissionEvent',
   RadioQuestionSubmissionEvent = 'RadioQuestionSubmissionEvent',
   SignUpSubmissionEvent = 'SignUpSubmissionEvent',
   StepNextEvent = 'StepNextEvent',
@@ -593,6 +761,38 @@ export type ForeignKeyConstraintErrorLocation = {
   path?: Maybe<Array<Scalars['String']['output']>>;
   /** The value that was provided at the path */
   value?: Maybe<Scalars['String']['output']>;
+};
+
+export type GenerateSubtitlesInput = {
+  languageCode: Scalars['String']['input'];
+  languageName: Scalars['String']['input'];
+};
+
+export enum GoogleSheetExportMode {
+  Create = 'create',
+  Existing = 'existing'
+}
+
+export type GoogleSheetsSync = {
+  __typename?: 'GoogleSheetsSync';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  folderId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration?: Maybe<Integration>;
+  integrationId?: Maybe<Scalars['ID']['output']>;
+  journey: Journey;
+  journeyId: Scalars['ID']['output'];
+  sheetName?: Maybe<Scalars['String']['output']>;
+  spreadsheetId: Scalars['ID']['output'];
+  teamId: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type GoogleSheetsSyncsFilter = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export enum GridAlignItems {
@@ -703,6 +903,8 @@ export enum IconColor {
 export enum IconName {
   ArrowBackRounded = 'ArrowBackRounded',
   ArrowForwardRounded = 'ArrowForwardRounded',
+  ArrowLeftContained2 = 'ArrowLeftContained2',
+  ArrowRightContained2 = 'ArrowRightContained2',
   BeenhereRounded = 'BeenhereRounded',
   ChatBubbleOutlineRounded = 'ChatBubbleOutlineRounded',
   CheckCircleRounded = 'CheckCircleRounded',
@@ -710,16 +912,24 @@ export enum IconName {
   ChevronRightRounded = 'ChevronRightRounded',
   ContactSupportRounded = 'ContactSupportRounded',
   FormatQuoteRounded = 'FormatQuoteRounded',
+  Home4 = 'Home4',
   Launch = 'Launch',
+  LinkAngled = 'LinkAngled',
   LiveTvRounded = 'LiveTvRounded',
   LockOpenRounded = 'LockOpenRounded',
   MailOutline = 'MailOutline',
   MenuBookRounded = 'MenuBookRounded',
+  MessageChat1 = 'MessageChat1',
+  Note2 = 'Note2',
+  Phone = 'Phone',
   PlayArrowRounded = 'PlayArrowRounded',
   RadioButtonUncheckedRounded = 'RadioButtonUncheckedRounded',
   SendRounded = 'SendRounded',
   SubscriptionsRounded = 'SubscriptionsRounded',
-  TranslateRounded = 'TranslateRounded'
+  TranslateRounded = 'TranslateRounded',
+  UserProfile2 = 'UserProfile2',
+  UsersProfiles3 = 'UsersProfiles3',
+  Volume5 = 'Volume5'
 }
 
 export enum IconSize {
@@ -748,6 +958,7 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
@@ -764,6 +975,7 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -782,6 +994,7 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -802,12 +1015,32 @@ export type Integration = {
   type: IntegrationType;
 };
 
+export type IntegrationGoogle = Integration & {
+  __typename?: 'IntegrationGoogle';
+  accountEmail?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  team: Team;
+  type: IntegrationType;
+  user?: Maybe<AuthenticatedUser>;
+};
+
+export type IntegrationGoogleCreateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGoogleUpdateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+};
+
 export type IntegrationGrowthSpaces = Integration & {
   __typename?: 'IntegrationGrowthSpaces';
-  accessId: Scalars['String']['output'];
-  accessSecretPart: Scalars['String']['output'];
+  accessId?: Maybe<Scalars['String']['output']>;
+  accessSecretPart?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  routes: Array<IntegrationGrowthSpacesRoute>;
+  routes?: Maybe<Array<IntegrationGrowthSpacesRoute>>;
   team: Team;
   type: IntegrationType;
 };
@@ -820,8 +1053,8 @@ export type IntegrationGrowthSpacesCreateInput = {
 
 export type IntegrationGrowthSpacesRoute = {
   __typename?: 'IntegrationGrowthSpacesRoute';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type IntegrationGrowthSpacesUpdateInput = {
@@ -830,12 +1063,15 @@ export type IntegrationGrowthSpacesUpdateInput = {
 };
 
 export enum IntegrationType {
+  Google = 'google',
   GrowthSpaces = 'growthSpaces'
 }
 
 export type Journey = {
   __typename?: 'Journey';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Distinct block typenames present on this journey (non-deleted blocks only) */
+  blockTypenames: Array<Scalars['String']['output']>;
   blocks?: Maybe<Array<Block>>;
   chatButtons: Array<ChatButton>;
   createdAt: Scalars['DateTime']['output'];
@@ -865,6 +1101,7 @@ export type Journey = {
   seoDescription?: Maybe<Scalars['String']['output']>;
   /** title for seo and sharing */
   seoTitle?: Maybe<Scalars['String']['output']>;
+  showAssistant?: Maybe<Scalars['Boolean']['output']>;
   showChatButtons?: Maybe<Scalars['Boolean']['output']>;
   showDislikeButton?: Maybe<Scalars['Boolean']['output']>;
   showDisplayTitle?: Maybe<Scalars['Boolean']['output']>;
@@ -882,6 +1119,8 @@ export type Journey = {
   tags: Array<Tag>;
   team?: Maybe<Team>;
   template?: Maybe<Scalars['Boolean']['output']>;
+  /** used to see if a template has a site created for it */
+  templateSite?: Maybe<Scalars['Boolean']['output']>;
   themeMode: ThemeMode;
   themeName: ThemeName;
   /** private title for creators */
@@ -971,7 +1210,7 @@ export type JourneyCustomizationFieldInput = {
  * JourneyEvent aggregates all event types. For detailed event type definitions,
  * see the specific event files in the event module
  */
-export type JourneyEvent = Event & {
+export type JourneyEvent = Event & Node & {
   __typename?: 'JourneyEvent';
   /** Additional specific event fields */
   action?: Maybe<ButtonAction>;
@@ -1030,6 +1269,7 @@ export type JourneyEventsExportLogInput = {
 };
 
 export type JourneyEventsFilter = {
+  includeUnconnectedCards?: InputMaybe<Scalars['Boolean']['input']>;
   periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
   periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1210,6 +1450,7 @@ export type JourneyVisitor = {
    * link action button. Populated by ButtonClickEvent
    */
   lastLinkAction?: Maybe<Scalars['String']['output']>;
+  lastMultiselectSubmission?: Maybe<Scalars['String']['output']>;
   /**
    * The selected option  of the last radio option the visitor filled out,
    * populated by RadioQuestionSubmission mutation
@@ -1252,14 +1493,41 @@ export type JourneyVisitorEdge = {
   node: JourneyVisitor;
 };
 
+export type JourneyVisitorExportSelect = {
+  createdAt?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['Boolean']['input']>;
+  phone?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type JourneyVisitorFilter = {
   countryCode?: InputMaybe<Scalars['String']['input']>;
   hasChatStarted?: InputMaybe<Scalars['Boolean']['input']>;
   hasIcon?: InputMaybe<Scalars['Boolean']['input']>;
+  hasMultiselectSubmission?: InputMaybe<Scalars['Boolean']['input']>;
   hasPollAnswers?: InputMaybe<Scalars['Boolean']['input']>;
   hasTextResponse?: InputMaybe<Scalars['Boolean']['input']>;
   hideInactive?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['String']['input'];
+};
+
+export type JourneyVisitorGoogleSheetDestinationInput = {
+  /** Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive. */
+  folderId?: InputMaybe<Scalars['String']['input']>;
+  mode: GoogleSheetExportMode;
+  /** Required when mode is "existing". The name of the sheet within the existing spreadsheet. */
+  sheetName?: InputMaybe<Scalars['String']['input']>;
+  /** Required when mode is "existing". The ID of the existing spreadsheet to export to. */
+  spreadsheetId?: InputMaybe<Scalars['String']['input']>;
+  /** Required when mode is "create". The title for the new spreadsheet. */
+  spreadsheetTitle?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type JourneyVisitorGoogleSheetExportResult = {
+  __typename?: 'JourneyVisitorGoogleSheetExportResult';
+  sheetName: Scalars['String']['output'];
+  spreadsheetId: Scalars['ID']['output'];
+  spreadsheetUrl: Scalars['String']['output'];
 };
 
 export enum JourneyVisitorSort {
@@ -1291,11 +1559,13 @@ export type JourneysEmailPreferenceUpdateInput = {
 
 export type JourneysFilter = {
   featured?: InputMaybe<Scalars['Boolean']['input']>;
+  fromTemplateId?: InputMaybe<Scalars['ID']['input']>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   languageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderByRecent?: InputMaybe<Scalars['Boolean']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  teamId?: InputMaybe<Scalars['String']['input']>;
   template?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -1309,6 +1579,8 @@ export type JourneysQueryOptions = {
   hostname?: InputMaybe<Scalars['String']['input']>;
   /** limit results to journeys in a journey collection (currently only available when using hostname option) */
   journeyCollection?: InputMaybe<Scalars['Boolean']['input']>;
+  /** skip custom domain routing filter (for admin template customization) */
+  skipRoutingFilter?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum JourneysReportType {
@@ -1404,6 +1676,7 @@ export enum MaxResolutionTier {
 }
 
 export type MeInput = {
+  app?: InputMaybe<App>;
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1450,6 +1723,70 @@ export enum MessagePlatform {
   WhatsApp = 'whatsApp'
 }
 
+export type MultiselectBlock = Block & {
+  __typename?: 'MultiselectBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  max?: Maybe<Scalars['Int']['output']>;
+  min?: Maybe<Scalars['Int']['output']>;
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MultiselectBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+};
+
+export type MultiselectBlockUpdateInput = {
+  max?: InputMaybe<Scalars['Int']['input']>;
+  min?: InputMaybe<Scalars['Int']['input']>;
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MultiselectOptionBlock = Block & {
+  __typename?: 'MultiselectOptionBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MultiselectOptionBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  label: Scalars['String']['input'];
+  parentBlockId: Scalars['ID']['input'];
+};
+
+export type MultiselectOptionBlockUpdateInput = {
+  label?: InputMaybe<Scalars['String']['input']>;
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MultiselectSubmissionEvent = Event & {
+  __typename?: 'MultiselectSubmissionEvent';
+  /** time event was created */
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  /** ID of the journey that the multiselect block belongs to */
+  journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
+  label?: Maybe<Scalars['String']['output']>;
+  /** comma separated selected option labels */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type MultiselectSubmissionEventCreateInput = {
+  blockId: Scalars['ID']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  stepId?: InputMaybe<Scalars['ID']['input']>;
+  values: Array<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   audioPreviewCreate: AudioPreview;
@@ -1467,9 +1804,11 @@ export type Mutation = {
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
   blockUpdateAction: Action;
+  blockUpdateChatAction: ChatAction;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
+  blockUpdatePhoneAction: PhoneAction;
   buttonBlockCreate: ButtonBlock;
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
@@ -1479,9 +1818,13 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  /** Complete a multipart upload and persist the asset record */
+  cloudflareR2CompleteMultipart: CloudflareR2;
   /** The endpoint to upload a file to Cloudflare R2 */
   cloudflareR2Create: CloudflareR2;
   cloudflareR2Delete: CloudflareR2;
+  /** Prepare a multipart upload for Cloudflare R2 and return presigned part URLs */
+  cloudflareR2MultipartPrepare: CloudflareR2MultipartPrepared;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1490,6 +1833,7 @@ export type Mutation = {
   createImageBySegmindPrompt: CloudflareImage;
   createJourneyEventsExportLog: JourneyEventsExportLog;
   createKeyword: Keyword;
+  createMuxVideoAndQueueUpload: MuxVideo;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1500,6 +1844,11 @@ export type Mutation = {
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
+  fixVideoLanguages: Scalars['Boolean']['output'];
+  /** Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events. */
+  googleSheetsSyncBackfill: GoogleSheetsSync;
+  googleSheetsSyncCreate: GoogleSheetsSync;
+  googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1508,6 +1857,8 @@ export type Mutation = {
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
   integrationDelete: Integration;
+  integrationGoogleCreate: IntegrationGoogle;
+  integrationGoogleUpdate: IntegrationGoogle;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyAiTranslateCreate: Journey;
@@ -1539,6 +1890,7 @@ export type Mutation = {
    * period of the previous JourneyViewEvent
    */
   journeyViewEventCreate?: Maybe<JourneyViewEvent>;
+  journeyVisitorExportToGoogleSheet: JourneyVisitorGoogleSheetExportResult;
   /** Sets journeys statuses to archived */
   journeysArchive?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to deleted */
@@ -1547,6 +1899,18 @@ export type Mutation = {
   journeysRestore?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to trashed */
   journeysTrash?: Maybe<Array<Maybe<Journey>>>;
+  multiselectBlockCreate: MultiselectBlock;
+  multiselectBlockUpdate: MultiselectBlock;
+  multiselectOptionBlockCreate: MultiselectOptionBlock;
+  multiselectOptionBlockUpdate: MultiselectOptionBlock;
+  multiselectSubmissionEventCreate: MultiselectSubmissionEvent;
+  playlistCreate?: Maybe<MutationPlaylistCreateResult>;
+  playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
+  playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemAddWithVideoAndLanguageIds?: Maybe<MutationPlaylistItemAddWithVideoAndLanguageIdsResult>;
+  playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
+  playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
+  playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
   qrCodeCreate: QrCode;
   qrCodeDelete: QrCode;
   qrCodeUpdate: QrCode;
@@ -1584,12 +1948,12 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
-  /** Transcode an asset. Returns the bullmq job ID. */
-  transcodeAsset?: Maybe<Scalars['String']['output']>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
+  updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -1606,7 +1970,7 @@ export type Mutation = {
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
-  validateEmail?: Maybe<User>;
+  validateEmail?: Maybe<AuthenticatedUser>;
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -1629,6 +1993,8 @@ export type Mutation = {
   videoPauseEventCreate: VideoPauseEvent;
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
+  videoPublishChildren: VideoPublishChildrenResult;
+  videoPublishChildrenAndLanguages: VideoPublishChildrenAndLanguagesResult;
   videoSnippetCreate: VideoSnippet;
   videoSnippetDelete: VideoSnippet;
   videoSnippetUpdate: VideoSnippet;
@@ -1723,7 +2089,14 @@ export type MutationBlockRestoreArgs = {
 
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<BlockUpdateActionInput>;
+  input: BlockUpdateActionInput;
+};
+
+
+export type MutationBlockUpdateChatActionArgs = {
+  id: Scalars['ID']['input'];
+  input: ChatActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1744,6 +2117,13 @@ export type MutationBlockUpdateLinkActionArgs = {
 export type MutationBlockUpdateNavigateToBlockActionArgs = {
   id: Scalars['ID']['input'];
   input: NavigateToBlockActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationBlockUpdatePhoneActionArgs = {
+  id: Scalars['ID']['input'];
+  input: PhoneActionInput;
   journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1800,6 +2180,11 @@ export type MutationChatOpenEventCreateArgs = {
 };
 
 
+export type MutationCloudflareR2CompleteMultipartArgs = {
+  input: CloudflareR2CompleteMultipartInput;
+};
+
+
 export type MutationCloudflareR2CreateArgs = {
   input: CloudflareR2CreateInput;
 };
@@ -1807,6 +2192,11 @@ export type MutationCloudflareR2CreateArgs = {
 
 export type MutationCloudflareR2DeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationCloudflareR2MultipartPrepareArgs = {
+  input: CloudflareR2MultipartPrepareInput;
 };
 
 
@@ -1849,8 +2239,25 @@ export type MutationCreateKeywordArgs = {
 };
 
 
+export type MutationCreateMuxVideoAndQueueUploadArgs = {
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  duration: Scalars['Int']['input'];
+  durationMs: Scalars['Int']['input'];
+  edition: Scalars['String']['input'];
+  height: Scalars['Int']['input'];
+  languageId: Scalars['ID']['input'];
+  maxResolution?: InputMaybe<MaxResolutionTier>;
+  originalFilename: Scalars['String']['input'];
+  r2PublicUrl: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+  videoId: Scalars['ID']['input'];
+  width: Scalars['Int']['input'];
+};
+
+
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  generateSubtitlesInput?: InputMaybe<GenerateSubtitlesInput>;
   maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1908,6 +2315,26 @@ export type MutationEnableMuxDownloadArgs = {
 };
 
 
+export type MutationFixVideoLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncBackfillArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncCreateArgs = {
+  input: CreateGoogleSheetsSyncInput;
+};
+
+
+export type MutationGoogleSheetsSyncDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationHostCreateArgs = {
   input: HostCreateInput;
   teamId: Scalars['ID']['input'];
@@ -1953,6 +2380,17 @@ export type MutationImageBlockUpdateArgs = {
 
 export type MutationIntegrationDeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationIntegrationGoogleCreateArgs = {
+  input: IntegrationGoogleCreateInput;
+};
+
+
+export type MutationIntegrationGoogleUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: IntegrationGoogleUpdateInput;
 };
 
 
@@ -2007,6 +2445,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
@@ -2077,6 +2516,16 @@ export type MutationJourneyViewEventCreateArgs = {
 };
 
 
+export type MutationJourneyVisitorExportToGoogleSheetArgs = {
+  destination: JourneyVisitorGoogleSheetDestinationInput;
+  filter?: InputMaybe<JourneyEventsFilter>;
+  integrationId: Scalars['ID']['input'];
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type MutationJourneysArchiveArgs = {
   ids: Array<Scalars['ID']['input']>;
 };
@@ -2094,6 +2543,75 @@ export type MutationJourneysRestoreArgs = {
 
 export type MutationJourneysTrashArgs = {
   ids: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectBlockCreateArgs = {
+  input: MultiselectBlockCreateInput;
+};
+
+
+export type MutationMultiselectBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: MultiselectBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectOptionBlockCreateArgs = {
+  input: MultiselectOptionBlockCreateInput;
+};
+
+
+export type MutationMultiselectOptionBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: MultiselectOptionBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectSubmissionEventCreateArgs = {
+  input: MultiselectSubmissionEventCreateInput;
+};
+
+
+export type MutationPlaylistCreateArgs = {
+  input: PlaylistCreateInput;
+};
+
+
+export type MutationPlaylistDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemAddArgs = {
+  playlistId: Scalars['ID']['input'];
+  videoVariantIds: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsArgs = {
+  playlistId: Scalars['ID']['input'];
+  videos: Array<PlaylistItemVideoInput>;
+};
+
+
+export type MutationPlaylistItemRemoveArgs = {
+  itemId: Scalars['ID']['input'];
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistItemsReorderArgs = {
+  itemIds: Array<Scalars['ID']['input']>;
+  playlistId: Scalars['ID']['input'];
+};
+
+
+export type MutationPlaylistUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: PlaylistUpdateInput;
 };
 
 
@@ -2265,11 +2783,6 @@ export type MutationTextResponseSubmissionEventCreateArgs = {
 };
 
 
-export type MutationTranscodeAssetArgs = {
-  input: TranscodeVideoInput;
-};
-
-
 export type MutationTriggerUnsplashDownloadArgs = {
   url: Scalars['String']['input'];
 };
@@ -2289,6 +2802,16 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -2480,6 +3003,16 @@ export type MutationVideoProgressEventCreateArgs = {
 };
 
 
+export type MutationVideoPublishChildrenArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoPublishChildrenAndLanguagesArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationVideoSnippetCreateArgs = {
   input: VideoTranslationCreateInput;
 };
@@ -2639,6 +3172,55 @@ export type MutationJourneyLanguageAiDetectInput = {
   textLanguageName: Scalars['String']['input'];
 };
 
+export type MutationPlaylistCreateResult = MutationPlaylistCreateSuccess | ZodError;
+
+export type MutationPlaylistCreateSuccess = {
+  __typename?: 'MutationPlaylistCreateSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistDeleteResult = MutationPlaylistDeleteSuccess | NotFoundError;
+
+export type MutationPlaylistDeleteSuccess = {
+  __typename?: 'MutationPlaylistDeleteSuccess';
+  data: Playlist;
+};
+
+export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddSuccess = {
+  __typename?: 'MutationPlaylistItemAddSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsResult = MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess = {
+  __typename?: 'MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
+
+export type MutationPlaylistItemRemoveSuccess = {
+  __typename?: 'MutationPlaylistItemRemoveSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemsReorderResult = MutationPlaylistItemsReorderSuccess | NotFoundError;
+
+export type MutationPlaylistItemsReorderSuccess = {
+  __typename?: 'MutationPlaylistItemsReorderSuccess';
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistUpdateResult = MutationPlaylistUpdateSuccess | NotFoundError | ZodError;
+
+export type MutationPlaylistUpdateSuccess = {
+  __typename?: 'MutationPlaylistUpdateSuccess';
+  data: Playlist;
+};
+
 export type MutationShortLinkCreateInput = {
   /** bitrate of the video variant download */
   bitrate?: InputMaybe<Scalars['Int']['input']>;
@@ -2743,6 +3325,16 @@ export type MutationVideoOriginUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type MuxSubtitleTrack = {
+  __typename?: 'MuxSubtitleTrack';
+  bcp47: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  muxVideoId: Scalars['ID']['output'];
+  source: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  trackId: Scalars['String']['output'];
+};
+
 export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
@@ -2772,6 +3364,10 @@ export type NavigateToBlockAction = Action & {
 export type NavigateToBlockActionInput = {
   blockId: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Node = {
+  id: Scalars['ID']['output'];
 };
 
 export type NotFoundError = BaseError & {
@@ -2823,30 +3419,82 @@ export type PageInfo = {
   startCursor?: Maybe<Scalars['String']['output']>;
 };
 
+export type PhoneAction = Action & {
+  __typename?: 'PhoneAction';
+  contactAction: ContactActionType;
+  countryCode: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
+  phone: Scalars['String']['output'];
+};
+
+export type PhoneActionInput = {
+  contactAction?: InputMaybe<ContactActionType>;
+  countryCode: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['String']['input'];
+};
+
 export enum Platform {
   Arclight = 'arclight',
   Journeys = 'journeys',
   Watch = 'watch'
 }
 
+export enum PlausibleEvent {
+  ButtonClick = 'buttonClick',
+  ChatButtonClick = 'chatButtonClick',
+  ChatsClicked = 'chatsClicked',
+  ChristDecisionCapture = 'christDecisionCapture',
+  Custom1Capture = 'custom1Capture',
+  Custom2Capture = 'custom2Capture',
+  Custom3Capture = 'custom3Capture',
+  FooterChatButtonClick = 'footerChatButtonClick',
+  FooterThumbsDownButtonClick = 'footerThumbsDownButtonClick',
+  FooterThumbsUpButtonClick = 'footerThumbsUpButtonClick',
+  GospelCompleteCapture = 'gospelCompleteCapture',
+  GospelStartCapture = 'gospelStartCapture',
+  JourneyResponses = 'journeyResponses',
+  JourneyVisitors = 'journeyVisitors',
+  LinksClicked = 'linksClicked',
+  MultiSelectSubmit = 'multiSelectSubmit',
+  NavigateNextStep = 'navigateNextStep',
+  NavigatePreviousStep = 'navigatePreviousStep',
+  Pageview = 'pageview',
+  PrayerRequestCapture = 'prayerRequestCapture',
+  RadioQuestionSubmit = 'radioQuestionSubmit',
+  RsvpCapture = 'rsvpCapture',
+  ShareButtonClick = 'shareButtonClick',
+  SignUpSubmit = 'signUpSubmit',
+  SpecialVideoCompleteCapture = 'specialVideoCompleteCapture',
+  SpecialVideoStartCapture = 'specialVideoStartCapture',
+  TextResponseSubmit = 'textResponseSubmit',
+  VideoCollapse = 'videoCollapse',
+  VideoComplete = 'videoComplete',
+  VideoExpand = 'videoExpand',
+  VideoPause = 'videoPause',
+  VideoPlay = 'videoPlay',
+  VideoProgress25 = 'videoProgress25',
+  VideoProgress50 = 'videoProgress50',
+  VideoProgress75 = 'videoProgress75',
+  VideoStart = 'videoStart',
+  VideoTrigger = 'videoTrigger'
+}
+
 export type PlausibleStatsAggregateFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
-   * When using a custom range, the date parameter expects two ISO-8601 formatted
-   * dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-   * for the whole date range inclusive of the start and end dates.
+   * When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
    */
   date?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * See [filtering](https://plausible.io/docs/stats-api#filtering)
-   * section for more details.
-   */
+  /** See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details. */
   filters?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * Off by default. You can specify `previous_period` to calculate the percent
-   * difference with the previous period for each metric. The previous period
-   * will be of the exact same length as specified in the period parameter.
-   */
+  /** Off by default. You can specify `previous_period` to calculate the percent difference with the previous period for each metric. The previous period will be of the exact same length as specified in the period parameter. */
   interval?: InputMaybe<Scalars['String']['input']>;
   /**
    * See [time periods](https://plausible.io/docs/stats-api#time-periods).
@@ -2859,28 +3507,15 @@ export type PlausibleStatsAggregateResponse = {
   __typename?: 'PlausibleStatsAggregateResponse';
   /** Bounce rate percentage. */
   bounceRate?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The percentage of visitors who completed the goal. Requires an `event:goal`
-   * filter or `event:goal` property in the breakdown endpoint
-   */
+  /** The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint. */
   conversionRate?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The number of events (pageviews + custom events). When filtering by a goal,
-   *  this metric corresponds to "Total Conversions" in the dashboard.
-   */
+  /** The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard. */
   events?: Maybe<PlausibleStatsAggregateValue>;
   /** The number of pageview events. */
   pageviews?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
+  /** The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint. */
   timeOnPage?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The number of pageviews divided by the number of visits.
-   * Returns a floating point number. Currently only supported in Aggregate and
-   * Timeseries endpoints.
-   */
+  /** The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints. */
   viewsPerVisit?: Maybe<PlausibleStatsAggregateValue>;
   /** Visit duration in seconds. */
   visitDuration?: Maybe<PlausibleStatsAggregateValue>;
@@ -2899,37 +3534,24 @@ export type PlausibleStatsAggregateValue = {
 export type PlausibleStatsBreakdownFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
-   * When using a custom range, the date parameter expects two ISO-8601 formatted
-   * dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-   * for the whole date range inclusive of the start and end dates.
+   * When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
    */
   date?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * See [filtering](https://plausible.io/docs/stats-api#filtering)
-   * section for more details.
-   */
+  /** See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details. */
   filters?: InputMaybe<Scalars['String']['input']>;
   /**
    * Limit the number of results. Maximum value is 1000. Defaults to 100.
-   * If you want to get more than 1000 results, you can make multiple requests
-   * and paginate the results by specifying the page parameter (e.g. make the
-   * same request with page=1, then page=2, etc)
+   * If you want to get more than 1000 results, you can make multiple requests and paginate the results by specifying the page parameter (e.g. make the same request with page=1, then page=2, etc).
    */
   limit?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * Number of the page, used to paginate results.
-   * Importantly, the page numbers start from 1 not 0.
-   */
+  /** Number of the page, used to paginate results. Importantly, the page numbers start from 1 not 0. */
   page?: InputMaybe<Scalars['Int']['input']>;
   /**
    * See [time periods](https://plausible.io/docs/stats-api#time-periods).
    * If not specified, it will default to 30d.
    */
   period?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * Which [property](https://plausible.io/docs/stats-api#properties)
-   * to break down the stats by.
-   */
+  /** Which [property](https://plausible.io/docs/stats-api#properties) to break down the stats by. */
   property: Scalars['String']['input'];
 };
 
@@ -2937,33 +3559,17 @@ export type PlausibleStatsResponse = {
   __typename?: 'PlausibleStatsResponse';
   /** Bounce rate percentage. */
   bounceRate?: Maybe<Scalars['Int']['output']>;
-  /**
-   * The percentage of visitors who completed the goal. Requires an `event:goal`
-   * filter or `event:goal` property in the breakdown endpoint
-   */
+  /** The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint. */
   conversionRate?: Maybe<Scalars['Int']['output']>;
-  /**
-   * The number of events (pageviews + custom events). When filtering by a goal,
-   *  this metric corresponds to "Total Conversions" in the dashboard.
-   */
+  /** The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard. */
   events?: Maybe<Scalars['Int']['output']>;
   /** The number of pageview events. */
   pageviews?: Maybe<Scalars['Int']['output']>;
-  /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
-   */
+  /** On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for. */
   property: Scalars['String']['output'];
-  /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
+  /** The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint. */
   timeOnPage?: Maybe<Scalars['Float']['output']>;
-  /**
-   * The number of pageviews divided by the number of visits.
-   * Returns a floating point number. Currently only supported in Aggregate and
-   * Timeseries endpoints.
-   */
+  /** The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints. */
   viewsPerVisit?: Maybe<Scalars['Float']['output']>;
   /** Visit duration in seconds. */
   visitDuration?: Maybe<Scalars['Int']['output']>;
@@ -2976,27 +3582,67 @@ export type PlausibleStatsResponse = {
 export type PlausibleStatsTimeseriesFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
-   * When using a custom range, the date parameter expects two ISO-8601 formatted
-   * dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-   * for the whole date range inclusive of the start and end dates.
+   * When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
    */
   date?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * See [filtering](https://plausible.io/docs/stats-api#filtering)
-   * section for more details.
-   */
+  /** See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details. */
   filters?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * Choose your reporting interval. Valid options are date (always) and month
-   * (when specified period is longer than one calendar month). Defaults to month
-   * for 6mo and 12mo, otherwise falls back to date.
-   */
+  /** Choose your reporting interval. Valid options are date (always) and month (when specified period is longer than one calendar month). Defaults to month for 6mo and 12mo, otherwise falls back to date. */
   interval?: InputMaybe<Scalars['String']['input']>;
   /**
    * See [time periods](https://plausible.io/docs/stats-api#time-periods).
    * If not specified, it will default to 30d.
    */
   period?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type Playlist = {
+  __typename?: 'Playlist';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  items: Array<PlaylistItem>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
+  noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
+  owner: AuthenticatedUser;
+  sharedAt?: Maybe<Scalars['DateTime']['output']>;
+  slug: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type PlaylistCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type PlaylistItem = {
+  __typename?: 'PlaylistItem';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  order?: Maybe<Scalars['Int']['output']>;
+  playlist: Playlist;
+  updatedAt: Scalars['DateTime']['output'];
+  videoVariant: VideoVariant;
+};
+
+/** The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId. */
+export type PlaylistItemVideoInput = {
+  /** The language id of the video variant */
+  languageId: Scalars['String']['input'];
+  /** The video id of the video variant */
+  videoId: Scalars['String']['input'];
+};
+
+export type PlaylistUpdateInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  noteSharedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  sharedAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type PowerBiEmbed = {
@@ -3068,6 +3714,8 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  checkVideoInAlgolia: CheckVideoInAlgoliaResult;
+  checkVideoVariantsInAlgolia: CheckVideoVariantsInAlgoliaResult;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -3076,11 +3724,13 @@ export type Query = {
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
+  getMyGeneratedMuxSubtitleTrack: QueryGetMyGeneratedMuxSubtitleTrackResult;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
-  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   getUserRole?: Maybe<UserRole>;
+  googleSheetsSyncs: Array<GoogleSheetsSync>;
   hosts: Array<Host>;
+  integrationGooglePickerToken: Scalars['String']['output'];
   integrations: Array<Integration>;
   journey: Journey;
   journeyCollection: JourneyCollection;
@@ -3091,6 +3741,8 @@ export type Query = {
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
+  /** Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information */
+  journeyVisitorExport?: Maybe<Scalars['String']['output']>;
   /** Get a list of Visitor Information by Journey */
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
@@ -3109,17 +3761,16 @@ export type Query = {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
   journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
-   * If you are familiar with the Plausible dashboard, this endpoint
-   * corresponds to the main visitor graph.
+   * If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
    */
   journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
@@ -3127,7 +3778,11 @@ export type Query = {
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
-  me?: Maybe<User>;
+  me?: Maybe<AuthenticatedUser>;
+  node?: Maybe<Node>;
+  nodes: Array<Maybe<Node>>;
+  playlist?: Maybe<QueryPlaylistResult>;
+  playlists?: Maybe<Array<Playlist>>;
   qrCode: QrCode;
   qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -3145,8 +3800,10 @@ export type Query = {
   taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
-  user?: Maybe<User>;
-  userByEmail?: Maybe<User>;
+  templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
+  templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
+  user?: Maybe<AuthenticatedUser>;
+  userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
@@ -3163,6 +3820,7 @@ export type Query = {
   visitor: Visitor;
   /** A list of visitors that are connected with a specific team. */
   visitorsConnection: VisitorsConnection;
+  youtubeClosedCaptionLanguages: QueryYoutubeClosedCaptionLanguagesResult;
 };
 
 
@@ -3228,6 +3886,16 @@ export type QueryBlocksArgs = {
 };
 
 
+export type QueryCheckVideoInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type QueryCheckVideoVariantsInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
 export type QueryCountriesArgs = {
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   term?: InputMaybe<Scalars['String']['input']>;
@@ -3266,6 +3934,13 @@ export type QueryGetMyCloudflareImagesArgs = {
 };
 
 
+export type QueryGetMyGeneratedMuxSubtitleTrackArgs = {
+  bcp47: Scalars['String']['input'];
+  muxVideoId: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type QueryGetMyMuxVideoArgs = {
   id: Scalars['ID']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3278,13 +3953,18 @@ export type QueryGetMyMuxVideosArgs = {
 };
 
 
-export type QueryGetTranscodeAssetProgressArgs = {
-  jobId: Scalars['String']['input'];
+export type QueryGoogleSheetsSyncsArgs = {
+  filter: GoogleSheetsSyncsFilter;
 };
 
 
 export type QueryHostsArgs = {
   teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryIntegrationGooglePickerTokenArgs = {
+  integrationId: Scalars['ID']['input'];
 };
 
 
@@ -3336,6 +4016,14 @@ export type QueryJourneyThemeArgs = {
 
 export type QueryJourneyVisitorCountArgs = {
   filter: JourneyVisitorFilter;
+};
+
+
+export type QueryJourneyVisitorExportArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3418,6 +4106,22 @@ export type QueryMeArgs = {
 };
 
 
+export type QueryNodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryNodesArgs = {
+  ids: Array<Scalars['ID']['input']>;
+};
+
+
+export type QueryPlaylistArgs = {
+  id: Scalars['ID']['input'];
+  idType?: IdType;
+};
+
+
 export type QueryQrCodeArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3482,6 +4186,22 @@ export type QueryTaxonomiesArgs = {
 
 export type QueryTeamArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryTemplateFamilyStatsAggregateArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsAggregateFilter;
+};
+
+
+export type QueryTemplateFamilyStatsBreakdownArgs = {
+  events?: InputMaybe<Array<PlausibleEvent>>;
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  status?: InputMaybe<Array<JourneyStatus>>;
+  where: PlausibleStatsBreakdownFilter;
 };
 
 
@@ -3560,6 +4280,25 @@ export type QueryVisitorsConnectionArgs = {
   teamId?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryYoutubeClosedCaptionLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+export type QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess;
+
+export type QueryGetMyGeneratedMuxSubtitleTrackSuccess = {
+  __typename?: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess';
+  data: MuxSubtitleTrack;
+};
+
+export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
+
+export type QueryPlaylistSuccess = {
+  __typename?: 'QueryPlaylistSuccess';
+  data: Playlist;
+};
+
 export type QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess;
 
 export type QueryShortLinkByPathSuccess = {
@@ -3607,9 +4346,17 @@ export type QueryShortLinksConnectionEdge = {
   node?: Maybe<ShortLink>;
 };
 
+export type QueryYoutubeClosedCaptionLanguagesResult = Error | QueryYoutubeClosedCaptionLanguagesSuccess | ZodError;
+
+export type QueryYoutubeClosedCaptionLanguagesSuccess = {
+  __typename?: 'QueryYoutubeClosedCaptionLanguagesSuccess';
+  data: Array<Language>;
+};
+
 export type RadioOptionBlock = Block & {
   __typename?: 'RadioOptionBlock';
   action?: Maybe<Action>;
+  eventLabel?: Maybe<BlockEventLabel>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label: Scalars['String']['output'];
@@ -3624,6 +4371,7 @@ export type RadioOptionBlock = Block & {
 };
 
 export type RadioOptionBlockCreateInput = {
+  eventLabel?: InputMaybe<BlockEventLabel>;
   id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   label: Scalars['String']['input'];
@@ -3631,6 +4379,7 @@ export type RadioOptionBlockCreateInput = {
 };
 
 export type RadioOptionBlockUpdateInput = {
+  eventLabel?: InputMaybe<BlockEventLabel>;
   label?: InputMaybe<Scalars['String']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   pollOptionImageBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -3666,14 +4415,10 @@ export type RadioQuestionSubmissionEvent = Event & {
 
 export type RadioQuestionSubmissionEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
   radioOptionBlockId: Scalars['ID']['input'];
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** label of the selected radioOption block */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -3804,13 +4549,9 @@ export type SignUpSubmissionEvent = Event & {
 
 export type SignUpSubmissionEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** email from the signUpBlock form */
   email: Scalars['String']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** name from the signUpBlock form */
   name: Scalars['String']['input'];
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -3824,6 +4565,7 @@ export type Site = {
 };
 
 export type SiteCreateInput = {
+  disableSharedLinks?: InputMaybe<Scalars['Boolean']['input']>;
   domain: Scalars['String']['input'];
   goals?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -4101,8 +4843,31 @@ export type TeamUpdateInput = {
   title: Scalars['String']['input'];
 };
 
+export type TemplateFamilyStatsAggregateResponse = {
+  __typename?: 'TemplateFamilyStatsAggregateResponse';
+  childJourneysCount: Scalars['Int']['output'];
+  totalJourneysResponses: Scalars['Int']['output'];
+  totalJourneysViews: Scalars['Int']['output'];
+};
+
+export type TemplateFamilyStatsBreakdownResponse = {
+  __typename?: 'TemplateFamilyStatsBreakdownResponse';
+  journeyId: Scalars['String']['output'];
+  journeyName: Scalars['String']['output'];
+  stats: Array<TemplateFamilyStatsEventResponse>;
+  status?: Maybe<JourneyStatus>;
+  teamName: Scalars['String']['output'];
+};
+
+export type TemplateFamilyStatsEventResponse = {
+  __typename?: 'TemplateFamilyStatsEventResponse';
+  event: Scalars['String']['output'];
+  visitors: Scalars['Int']['output'];
+};
+
 export type TextResponseBlock = Block & {
   __typename?: 'TextResponseBlock';
+  hideLabel?: Maybe<Scalars['Boolean']['output']>;
   hint?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   integrationId?: Maybe<Scalars['String']['output']>;
@@ -4125,6 +4890,7 @@ export type TextResponseBlockCreateInput = {
 };
 
 export type TextResponseBlockUpdateInput = {
+  hideLabel?: InputMaybe<Scalars['Boolean']['input']>;
   hint?: InputMaybe<Scalars['String']['input']>;
   integrationId?: InputMaybe<Scalars['String']['input']>;
   label?: InputMaybe<Scalars['String']['input']>;
@@ -4143,7 +4909,7 @@ export type TextResponseSubmissionEvent = Event & {
   /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
-  /** ID of the journey that the buttonBlock belongs to */
+  /** ID of the journey that the TextResponseBlock belongs to */
   journeyId: Scalars['ID']['output'];
   /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
@@ -4153,13 +4919,9 @@ export type TextResponseSubmissionEvent = Event & {
 
 export type TextResponseSubmissionEventCreateInput = {
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** response from the TextResponseBlock form */
   value: Scalars['String']['input'];
 };
 
@@ -4178,14 +4940,6 @@ export enum ThemeMode {
 export enum ThemeName {
   Base = 'base'
 }
-
-export type TranscodeVideoInput = {
-  outputFilename: Scalars['String']['input'];
-  outputPath: Scalars['String']['input'];
-  r2AssetId: Scalars['String']['input'];
-  resolution: Scalars['String']['input'];
-  videoBitrate?: InputMaybe<Scalars['String']['input']>;
-};
 
 export type Translation = {
   __typename?: 'Translation';
@@ -4375,19 +5129,6 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
-export type User = {
-  __typename?: 'User';
-  email: Scalars['String']['output'];
-  emailVerified: Scalars['Boolean']['output'];
-  firstName: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  languageUserRoles: Array<LanguageRole>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  mediaUserRoles: Array<MediaRole>;
-  superAdmin?: Maybe<Scalars['Boolean']['output']>;
-};
-
 /** These types are a subset provided by the @types/ua-parser-js library. */
 export type UserAgent = {
   __typename?: 'UserAgent';
@@ -4419,7 +5160,7 @@ export type UserJourney = {
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
-  user?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
   userId: Scalars['ID']['output'];
 };
 
@@ -4443,7 +5184,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
+  user: AuthenticatedUser;
 };
 
 
@@ -4505,6 +5246,7 @@ export type Video = {
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   title: Array<VideoTitle>;
+  /** @deprecated Use variants instead */
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
@@ -4586,6 +5328,7 @@ export type VideoBlock = Block & {
   /** action that should be performed when the video ends */
   action?: Maybe<Action>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field
@@ -4601,6 +5344,8 @@ export type VideoBlock = Block & {
   duration?: Maybe<Scalars['Int']['output']>;
   /** endAt dictates at which point of time the video should end */
   endAt?: Maybe<Scalars['Int']['output']>;
+  endEventLabel?: Maybe<BlockEventLabel>;
+  eventLabel?: Maybe<BlockEventLabel>;
   fullsize?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   /**
@@ -4622,6 +5367,7 @@ export type VideoBlock = Block & {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId?: Maybe<Scalars['ID']['output']>;
+  showGeneratedSubtitles?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
@@ -4629,6 +5375,7 @@ export type VideoBlock = Block & {
   source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
+  subtitleLanguage?: Maybe<Language>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -4657,43 +5404,28 @@ export type VideoBlock = Block & {
 
 export type VideoBlockCreateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
+  endEventLabel?: InputMaybe<BlockEventLabel>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   /** True if the coverBlockId in a parent block should be set to this block's id. */
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** how the video should display within the VideoBlock */
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source: videoId and videoVariantLanguageId required
-   * youTube source: videoId required
-   */
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   source?: InputMaybe<VideoBlockSource>;
-  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4731,37 +5463,28 @@ export enum VideoBlockSource {
 
 export type VideoBlockUpdateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
-  /** endAt dictates at which point of time the video should end */
   endAt?: InputMaybe<Scalars['Int']['input']>;
+  endEventLabel?: InputMaybe<BlockEventLabel>;
+  eventLabel?: InputMaybe<BlockEventLabel>;
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
+  image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** how the video should display within the VideoBlock */
   objectFit?: InputMaybe<VideoBlockObjectFit>;
-  /**
-   * posterBlockId is present if a child block should be used as a poster.
-   * This child block should not be rendered normally, instead it should be used
-   * as the video poster. PosterBlock should be of type ImageBlock.
-   */
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   /**
    * internal source: videoId and videoVariantLanguageId required
-   * youTube source: videoId required
+   *   youTube source: videoId required
    */
   source?: InputMaybe<VideoBlockSource>;
-  /** startAt dictates at which point of time the video should start playing */
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
+  subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -4840,6 +5563,7 @@ export type VideoCreateInput = {
 
 export type VideoDescription = {
   __typename?: 'VideoDescription';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
@@ -5019,6 +5743,22 @@ export type VideoProgressEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoPublishChildrenAndLanguagesResult = {
+  __typename?: 'VideoPublishChildrenAndLanguagesResult';
+  parentId?: Maybe<Scalars['ID']['output']>;
+  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+  publishedVariantIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedVariantsCount?: Maybe<Scalars['Int']['output']>;
+};
+
+export type VideoPublishChildrenResult = {
+  __typename?: 'VideoPublishChildrenResult';
+  parentId?: Maybe<Scalars['ID']['output']>;
+  publishedChildIds?: Maybe<Array<Scalars['ID']['output']>>;
+  publishedChildrenCount?: Maybe<Scalars['Int']['output']>;
+};
+
 export enum VideoRedirectType {
   Dh = 'dh',
   Dl = 'dl',
@@ -5067,6 +5807,7 @@ export type VideoStartEventCreateInput = {
 
 export type VideoStudyQuestion = {
   __typename?: 'VideoStudyQuestion';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   order: Scalars['Int']['output'];
@@ -5144,6 +5885,7 @@ export type VideoSubtitleUpdateInput = {
 
 export type VideoTitle = {
   __typename?: 'VideoTitle';
+  crowdInId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
@@ -5218,6 +5960,7 @@ export type VideoVariant = {
   subtitleCount: Scalars['Int']['output'];
   /** version control for master video file */
   version: Scalars['Int']['output'];
+  video?: Maybe<Video>;
   videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
@@ -5302,6 +6045,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -5541,26 +6285,12 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type GetMuxVideoQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetMuxVideoQuery = { __typename?: 'Query', getMuxVideo?: { __typename?: 'MuxVideo', id: string, name?: string | null, playbackId?: string | null, duration?: number | null } | null };
-
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
 }>;
 
 
 export type GetLanguagesQuery = { __typename?: 'Query', language?: { __typename?: 'Language', bcp47?: string | null, id: string } | null };
-
-export type SiteCreateMutationVariables = Exact<{
-  input: SiteCreateInput;
-}>;
-
-
-export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message?: string | null } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
 
 export type GetShortLinkQueryVariables = Exact<{
   id: Scalars['String']['input'];
@@ -5591,9 +6321,7 @@ export type ShortLinkDeleteMutationVariables = Exact<{
 export type ShortLinkDeleteMutation = { __typename?: 'Mutation', shortLinkDelete: { __typename?: 'MutationShortLinkDeleteSuccess', data: { __typename?: 'ShortLink', id: string } } | { __typename?: 'NotFoundError', message?: string | null } };
 
 
-export const GetMuxVideoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMuxVideo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMuxVideo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"playbackId"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}}]} as unknown as DocumentNode<GetMuxVideoQuery, GetMuxVideoQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
-export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;
 export const GetShortLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShortLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QueryShortLinkSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetShortLinkQuery, GetShortLinkQueryVariables>;
 export const ShortLinkCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"shortLinkCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLinkCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ZodError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotUniqueError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShortLinkCreateMutation, ShortLinkCreateMutationVariables>;
 export const ShortLinkUpdateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"shortLinkUpdate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLinkUpdate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ZodError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkUpdateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShortLinkUpdateMutation, ShortLinkUpdateMutationVariables>;

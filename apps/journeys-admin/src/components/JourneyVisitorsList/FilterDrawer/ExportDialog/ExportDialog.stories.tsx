@@ -1,38 +1,10 @@
-import { MockedResponse } from '@apollo/client/testing'
 import { ThemeProvider } from '@mui/material/styles'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { simpleComponentConfig } from '@core/shared/ui/simpleComponentConfig'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import {
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables,
-  GetJourneyCreatedAt_journey as Journey
-} from '../../../../../__generated__/GetJourneyCreatedAt'
-
-import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
-
-const journey: Journey = {
-  __typename: 'Journey' as const,
-  id: 'journey-id',
-  createdAt: '2024-01-01T00:00:00Z'
-}
-
-const getJourneyCreatedAtMock: MockedResponse<
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables
-> = {
-  request: {
-    query: GET_JOURNEY_CREATED_AT,
-    variables: { id: 'journey-id' }
-  },
-  result: {
-    data: {
-      journey
-    }
-  }
-}
+import { ExportDialog } from './ExportDialog'
 
 const ExportDialogStory: Meta<typeof ExportDialog> = {
   ...simpleComponentConfig,
@@ -57,12 +29,14 @@ export const Default = {
   args: {
     open: true,
     onClose: () => null,
-    journeyId: 'journey-id'
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [getJourneyCreatedAtMock]
-    }
+    journeyId: 'journey-id',
+    availableBlockTypes: [
+      'RadioQuestionBlock',
+      'MultiselectBlock',
+      'TextResponseBlock',
+      'SignUpBlock'
+    ],
+    createdAt: '2024-01-01T00:00:00Z'
   }
 }
 

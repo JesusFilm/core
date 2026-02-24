@@ -25,7 +25,7 @@ export interface YoutubeVideo {
   snippet: {
     title: string
     description: string
-    thumbnails: { default: { url: string } }
+    thumbnails: { default: { url: string }; high: { url: string } }
   }
   contentDetails: {
     duration: string
@@ -37,7 +37,7 @@ export interface YoutubePlaylist {
   snippet: {
     title: string
     description: string
-    thumbnails: { default: { url: string } }
+    thumbnails: { default: { url: string }; high: { url: string } }
   }
   contentDetails: {
     videoId: string
@@ -69,7 +69,8 @@ const fetcher = async (query: string): Promise<Data> => {
     id: item.kind === 'youtube#video' ? item.id : item.contentDetails.videoId,
     title: item.snippet.title,
     description: item.snippet.description,
-    image: item.snippet.thumbnails.default.url,
+    image: item.snippet.thumbnails.default?.url,
+    imageHigh: item.snippet.thumbnails.high.url,
     source: VideoBlockSource.youTube,
     duration:
       item.kind === 'youtube#video'

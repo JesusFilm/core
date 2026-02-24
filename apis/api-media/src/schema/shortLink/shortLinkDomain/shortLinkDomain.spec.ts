@@ -1,4 +1,4 @@
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
@@ -32,16 +32,27 @@ const mockRemoveVercelDomain = removeVercelDomain as jest.MockedFunction<
 >
 
 describe('shortLinkDomain', () => {
-  const client = getClient()
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    },
+    context: {
+      currentUser: {
+        id: 'userId'
+      }
+    }
+  })
 
   beforeEach(() => {
     prismaMock.$transaction.mockImplementation(
-      async (cb) => await cb(prismaMock)
+      async (cb: any) => await cb(prismaMock)
     )
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',
       userId: 'userId',
-      roles: ['publisher']
+      roles: ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
   })
 
@@ -101,7 +112,7 @@ describe('shortLinkDomain', () => {
           verified: true,
           verification: []
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAINS_QUERY
         })
         expect(result).toEqual({
@@ -161,7 +172,7 @@ describe('shortLinkDomain', () => {
             }
           ]
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAINS_QUERY,
           variables: { service: 'apiJourneys' }
         })
@@ -261,7 +272,9 @@ describe('shortLinkDomain', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
       })
 
@@ -279,7 +292,7 @@ describe('shortLinkDomain', () => {
           verified: true,
           verification: []
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_QUERY,
           variables: { id: 'testId' }
         })
@@ -316,7 +329,7 @@ describe('shortLinkDomain', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_QUERY,
           variables: { id: 'testId' }
         })
@@ -385,7 +398,7 @@ describe('shortLinkDomain', () => {
           updatedAt: new Date(),
           services: ['apiJourneys']
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
@@ -431,7 +444,7 @@ describe('shortLinkDomain', () => {
           updatedAt: new Date(),
           services: []
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
@@ -474,7 +487,7 @@ describe('shortLinkDomain', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
@@ -497,7 +510,7 @@ describe('shortLinkDomain', () => {
       })
 
       it('should return a validation error if the hostname is invalid', async () => {
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
@@ -513,8 +526,8 @@ describe('shortLinkDomain', () => {
                 [
                   {
                     code: 'custom',
-                    message: 'hostname must be valid',
-                    path: ['input', 'hostname']
+                    path: ['input', 'hostname'],
+                    message: 'hostname must be valid'
                   }
                 ],
                 null,
@@ -543,7 +556,7 @@ describe('shortLinkDomain', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        await client({
+        await authClient({
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
@@ -592,7 +605,7 @@ describe('shortLinkDomain', () => {
           updatedAt: new Date(),
           services: ['apiJourneys']
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
           variables: {
             input: {
@@ -629,7 +642,7 @@ describe('shortLinkDomain', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
           variables: {
             input: {
@@ -686,7 +699,7 @@ describe('shortLinkDomain', () => {
           updatedAt: new Date(),
           services: []
         })
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_DELETE_MUTATION,
           variables: { id: 'testId' }
         })
@@ -712,7 +725,7 @@ describe('shortLinkDomain', () => {
             clientVersion: 'prismaVersion'
           })
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_DELETE_MUTATION,
           variables: { id: 'testId' }
         })
@@ -739,7 +752,7 @@ describe('shortLinkDomain', () => {
             }
           )
         )
-        const result = await client({
+        const result = await authClient({
           document: SHORT_LINK_DOMAIN_DELETE_MUTATION,
           variables: { id: 'testId' }
         })

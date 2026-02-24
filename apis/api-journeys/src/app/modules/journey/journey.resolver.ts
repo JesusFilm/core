@@ -30,14 +30,7 @@ import {
   Team,
   UserJourney,
   UserJourneyRole
-} from '.prisma/api-journeys-client'
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import {
-  PowerBiEmbed,
-  getPowerBiEmbed
-} from '@core/nest/powerBi/getPowerBiEmbed'
+} from '@core/prisma/journeys/client'
 
 import {
   IdType,
@@ -51,11 +44,18 @@ import {
 } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
+import { CurrentUserId } from '../../lib/decorators/CurrentUserId'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
+import {
+  PowerBiEmbed,
+  getPowerBiEmbed
+} from '../../lib/powerBi/getPowerBiEmbed'
 import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-import { PlausibleJob } from '../plausible/plausible.consumer'
+import { PlausibleJob } from '../plausible/plausible.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 type BlockWithAction = Block & { action: BlockAction | null }
@@ -265,6 +265,9 @@ export class JourneyResolver {
     }
     if (where?.languageIds != null)
       filter.languageId = { in: where?.languageIds }
+    if (where?.fromTemplateId != null)
+      filter.fromTemplateId = where.fromTemplateId
+    if (where?.teamId != null) filter.teamId = where.teamId
 
     if (OR.length > 0) filter.OR = OR
 
@@ -289,7 +292,8 @@ export class JourneyResolver {
     @Args('options')
     options: JourneysQueryOptions = {
       hostname: null,
-      embedded: false
+      embedded: false,
+      skipRoutingFilter: false
     }
   ): Promise<Journey | null> {
     if (options.embedded === true && options.hostname != null) return null
@@ -314,7 +318,7 @@ export class JourneyResolver {
             }
           ]
         }
-      } else {
+      } else if (options.skipRoutingFilter !== true) {
         filter.team = {
           customDomains: { none: { routeAllTeamJourneys: true } }
         }
@@ -456,7 +460,8 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string
+    @Args('teamId') teamId: string,
+    @Args('forceNonTemplate') forceNonTemplate?: boolean
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -466,7 +471,8 @@ export class JourneyResolver {
         team: {
           include: { userTeams: true }
         },
-        journeyCustomizationFields: true
+        journeyCustomizationFields: true,
+        journeyTheme: true
       }
     })
     if (journey == null)
@@ -539,21 +545,21 @@ export class JourneyResolver {
       }
     }
 
-    const existingActiveDuplicateJourneys =
-      await this.prismaService.journey.findMany({
+    const existingDuplicateJourneys = await this.prismaService.journey.findMany(
+      {
         where: {
           title: {
             contains: journey.title
           },
-          archivedAt: null,
           trashedAt: null,
           deletedAt: null,
           template: false,
           team: { id: teamId }
         }
-      })
+      }
+    )
     const duplicates = this.getJourneyDuplicateNumbers(
-      existingActiveDuplicateJourneys,
+      existingDuplicateJourneys,
       journey.title
     )
     const duplicateNumber = this.getFirstMissingNumber(duplicates)
@@ -577,6 +583,8 @@ export class JourneyResolver {
         journeyId: duplicateJourneyId
       })
     )
+    const isLocalTemplate = journey.teamId !== 'jfp-team' && journey.template
+    const duplicateAsTemplate = forceNonTemplate ? false : isLocalTemplate
 
     let retry = true
     while (retry) {
@@ -597,7 +605,9 @@ export class JourneyResolver {
                   'journeyTags',
                   'logoImageBlockId',
                   'menuStepBlockId',
-                  'journeyCustomizationFields'
+                  'journeyCustomizationFields',
+                  'journeyTheme',
+                  'templateSite'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -605,7 +615,10 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
-                template: false,
+                archivedAt: null,
+                trashedAt: null,
+                deletedAt: null,
+                template: duplicateAsTemplate,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),
@@ -695,8 +708,11 @@ export class JourneyResolver {
             await this.prismaService.action.create({
               data: {
                 ...block.action,
-                customizable: false,
-                parentStepId: null,
+                customizable: block?.action?.customizable ?? false,
+                parentStepId:
+                  block.action.parentStepId != null
+                    ? (duplicateStepIds.get(block.action.parentStepId) ?? null)
+                    : null,
                 parentBlockId: block.id
               }
             })
@@ -719,6 +735,17 @@ export class JourneyResolver {
           await this.prismaService.journey.update({
             where: { id: duplicateJourneyId },
             data: { menuStepBlockId: duplicateMenuStepBlockId }
+          })
+        }
+        if (journey.journeyTheme != null) {
+          await this.prismaService.journeyTheme.create({
+            data: {
+              journeyId: duplicateJourneyId,
+              userId,
+              headerFont: journey.journeyTheme.headerFont,
+              bodyFont: journey.journeyTheme.bodyFont,
+              labelFont: journey.journeyTheme.labelFont
+            }
           })
         }
         retry = false
@@ -934,13 +961,22 @@ export class JourneyResolver {
     accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    await this.prismaService.journey.updateMany({
-      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
-      data: { status: JourneyStatus.archived, archivedAt: new Date() }
-    })
-    return await this.prismaService.journey.findMany({
+    const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
+    return await Promise.all(
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id, updatedAt: journey.updatedAt },
+            data: {
+              status: JourneyStatus.archived,
+              archivedAt: new Date(),
+              updatedAt: journey.updatedAt
+            }
+          })
+      )
+    )
   }
 
   @Mutation()
@@ -950,13 +986,22 @@ export class JourneyResolver {
     accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    await this.prismaService.journey.updateMany({
-      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
-      data: { status: JourneyStatus.deleted, deletedAt: new Date() }
-    })
-    return await this.prismaService.journey.findMany({
+    const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
+    return await Promise.all(
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id, updatedAt: journey.updatedAt },
+            data: {
+              status: JourneyStatus.deleted,
+              deletedAt: new Date(),
+              updatedAt: journey.updatedAt
+            }
+          })
+      )
+    )
   }
 
   @Mutation()
@@ -966,13 +1011,22 @@ export class JourneyResolver {
     accessibleJourneys: Prisma.JourneyWhereInput,
     @Args('ids') ids: string[]
   ): Promise<Journey[]> {
-    await this.prismaService.journey.updateMany({
-      where: { AND: [accessibleJourneys, { id: { in: ids } }] },
-      data: { status: JourneyStatus.trashed, trashedAt: new Date() }
-    })
-    return await this.prismaService.journey.findMany({
+    const results = await this.prismaService.journey.findMany({
       where: { AND: [accessibleJourneys, { id: { in: ids } }] }
     })
+    return await Promise.all(
+      results.map(
+        async (journey) =>
+          await this.prismaService.journey.update({
+            where: { id: journey.id, updatedAt: journey.updatedAt },
+            data: {
+              status: JourneyStatus.trashed,
+              trashedAt: new Date(),
+              updatedAt: journey.updatedAt
+            }
+          })
+      )
+    )
   }
 
   @Mutation()
@@ -989,10 +1043,11 @@ export class JourneyResolver {
       results.map(
         async (journey) =>
           await this.prismaService.journey.update({
-            where: { id: journey.id },
+            where: { id: journey.id, updatedAt: journey.updatedAt },
             data: {
               status: JourneyStatus.published,
-              publishedAt: new Date()
+              publishedAt: new Date(),
+              updatedAt: journey.updatedAt
             }
           })
       )
@@ -1015,17 +1070,36 @@ export class JourneyResolver {
         }
       }
     })
+    const isGlobalTemplate = journey?.team?.id === 'jfp-team'
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+    if (
+      isGlobalTemplate &&
+      ability.cannot(Action.Manage, subject('Journey', journey), 'template')
+    )
       throw new GraphQLError(
         'user is not allowed to change journey to or from a template',
         {
           extensions: { code: 'FORBIDDEN' }
         }
       )
+
+    if (input.template === true) {
+      await this.plausibleQueue.add(
+        'create-template-site',
+        {
+          __typename: 'plausibleCreateTemplateSite',
+          templateId: id
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: { age: FIVE_DAYS, count: 50 }
+        }
+      )
+    }
+
     return await this.prismaService.journey.update({
       where: { id },
       data: input

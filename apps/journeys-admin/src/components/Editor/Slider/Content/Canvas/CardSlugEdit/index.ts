@@ -1,0 +1,1 @@
+export { CardSlugEdit } from './CardSlugEdit'

@@ -43,7 +43,8 @@ describe('SocialPreviewNode', () => {
     blurhash: '',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const defaultJourney: Journey = {
@@ -93,7 +94,12 @@ describe('SocialPreviewNode', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
-    journeyTheme: null
+    journeyTheme: null,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   const blankSeoJourney: Journey = {

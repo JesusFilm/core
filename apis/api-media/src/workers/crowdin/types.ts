@@ -1,5 +1,4 @@
-import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
-import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
+import { SourceStringsModel } from '@crowdin/crowdin-api-client'
 import { StringTranslationsModel } from '@crowdin/crowdin-api-client/out/stringTranslations'
 
 export interface CrowdinApiErrorData {
@@ -71,11 +70,6 @@ export interface CrowdinError {
   languageCode?: string
   message: string
   code?: number
-}
-
-export interface CrowdinApis {
-  sourceStrings: SourceStrings
-  stringTranslations: StringTranslations
 }
 
 export interface ProcessedTranslation {

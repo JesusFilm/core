@@ -7,7 +7,6 @@ const { composePlugins, withNx } = require('@nx/next')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  swcMinify: true,
   compiler: {
     emotion: true
   },
@@ -31,16 +30,15 @@ const nextConfig = {
     ],
     minimumCacheTTL: 31536000
   },
+  experimental: {
+    reactCompiler: true
+  },
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
     }
   },
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
+  nx: {},
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
@@ -51,14 +49,12 @@ const nextConfig = {
     ignoreDuringBuilds: true
   },
   transpilePackages: ['locales'],
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    }
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
   }
 }
 

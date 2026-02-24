@@ -8,17 +8,18 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+import { JourneyCard } from '../../JourneyList/JourneyCard'
+import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
-import { JourneyCard } from '../../JourneyList/JourneyCard'
-import type { JourneyListProps } from '../../JourneyList/JourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 
@@ -39,12 +40,15 @@ export function ActiveTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
+
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
-        enqueueSnackbar(t('Journeys Archived'), {
+        enqueueSnackbar(t('Templates Archived'), {
           variant: 'success'
         })
         void refetch()
@@ -54,9 +58,15 @@ export function ActiveTemplateList({
   const [trash] = useMutation(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys Trashed'), {
+        enqueueSnackbar(t('Templates Trashed'), {
           variant: 'success'
         })
+
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysTrash)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -138,18 +148,11 @@ export function ActiveTemplateList({
                 key={journey.id}
                 size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
               >
-                <JourneyProvider
-                  value={{
-                    journey: journey as unknown as JourneyFields,
-                    variant: 'admin'
-                  }}
-                >
-                  <JourneyCard
-                    key={journey.id}
-                    journey={journey}
-                    refetch={refetch}
-                  />
-                </JourneyProvider>
+                <JourneyCard
+                  key={journey.id}
+                  journey={journey}
+                  refetch={refetch}
+                />
               </Grid>
             ))}
           </Grid>

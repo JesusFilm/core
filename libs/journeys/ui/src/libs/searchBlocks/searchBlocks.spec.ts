@@ -16,6 +16,7 @@ describe('searchBlocks', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -47,7 +48,8 @@ describe('searchBlocks', () => {
                 parentOrder: 0,
                 action: null,
                 pollOptionImageBlockId: null,
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 __typename: 'RadioOptionBlock',
@@ -57,7 +59,8 @@ describe('searchBlocks', () => {
                 parentOrder: 1,
                 action: null,
                 pollOptionImageBlockId: null,
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }
@@ -74,6 +77,7 @@ describe('searchBlocks', () => {
       parentOrder: 0,
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       children: []
     })
   })
@@ -91,6 +95,7 @@ describe('searchBlocks', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -122,7 +127,8 @@ describe('searchBlocks', () => {
                 parentOrder: 0,
                 action: null,
                 pollOptionImageBlockId: null,
-                children: []
+                children: [],
+                eventLabel: null
               },
               {
                 __typename: 'RadioOptionBlock',
@@ -132,7 +138,8 @@ describe('searchBlocks', () => {
                 parentOrder: 1,
                 action: null,
                 pollOptionImageBlockId: null,
-                children: []
+                children: [],
+                eventLabel: null
               }
             ]
           }

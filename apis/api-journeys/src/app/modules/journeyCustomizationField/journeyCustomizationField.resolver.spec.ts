@@ -10,10 +10,10 @@ import {
   UserTeam,
   UserTeamRole
 } from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -76,7 +76,9 @@ describe('JourneyCustomizationFieldResolver', () => {
     socialNodeX: null,
     socialNodeY: null,
     fromTemplateId: null,
-    journeyCustomizationDescription: null
+    journeyCustomizationDescription: null,
+    showAssistant: null,
+    templateSite: null
   }
 
   const mockTeam: Team = {

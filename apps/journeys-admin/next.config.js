@@ -7,11 +7,7 @@ const { i18n } = require('./next-i18next.config')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
+  nx: {},
   i18n,
   images: {
     remotePatterns: [
@@ -58,6 +54,11 @@ const nextConfig = {
         source: '/publisher/:slug/edit',
         destination: '/publisher/:slug',
         permanent: true
+      },
+      {
+        source: '/privacy',
+        destination: 'https://www.cru.org/us/en/about/privacy.html',
+        permanent: true
       }
     ]
   },
@@ -102,16 +103,16 @@ const nextConfig = {
     '@mui/x-tree-view',
     '@mui/x-charts'
   ],
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
+  },
   experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    },
     instrumentationHook: true,
-    fallbackNodePolyfills: false
+    reactCompiler: true
   },
   webpack: (config) => {
     config.module.rules.push({

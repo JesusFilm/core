@@ -45,21 +45,6 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 
 const StyledVideo = styled('video')(() => ({}))
 
-const StyledVideoGradient = styled(Box)`
-  width: 100%;
-  height: 25%;
-  position: absolute;
-  bottom: 0;
-  z-index: 1;
-  /* @noflip */
-  background: linear-gradient(
-    to top,
-    #000000a6 0%,
-    #00000080 15%,
-    #00000000 95%
-  );
-`
-
 export function Video({
   id: blockId,
   mediaVideo,
@@ -75,7 +60,11 @@ export function Video({
   children,
   action,
   objectFit,
-  videoVariantLanguageId
+  videoVariantLanguageId,
+  subtitleLanguage,
+  showGeneratedSubtitles,
+  eventLabel,
+  endEventLabel
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -87,7 +76,7 @@ export function Video({
   const [activeStep, setActiveStep] = useState(false)
 
   const { blockHistory } = useBlocks()
-  const { variant } = useJourney()
+  const { variant, journey } = useJourney()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -122,9 +111,11 @@ export function Video({
     Math.min(...triggerTimes, endAt ?? 10000)
   )
 
+  const isWebsite = journey?.website === true
+
   // Set video layout
   let videoFit: CSSProperties['objectFit']
-  if (source === VideoBlockSource.youTube) {
+  if (source === VideoBlockSource.youTube || isWebsite) {
     videoFit = 'contain'
   } else {
     switch (objectFit) {
@@ -147,7 +138,8 @@ export function Video({
     videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   const showVideoImage =
-    (variant === 'admin' && source === VideoBlockSource.youTube) ||
+    ((variant === 'admin' || variant === 'customize') &&
+      source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
     source === VideoBlockSource.mux
 
@@ -208,6 +200,8 @@ export function Video({
         title={title}
         mediaVideo={mediaVideo}
         videoVariantLanguageId={videoVariantLanguageId}
+        subtitleLanguage={subtitleLanguage}
+        showGeneratedSubtitles={showGeneratedSubtitles}
       />
       {activeStep &&
         player != null &&
@@ -222,12 +216,13 @@ export function Video({
             startAt={videoControlsStartAt}
             endAt={videoEndTime}
             action={action}
+            eventLabel={eventLabel}
+            endEventLabel={endEventLabel}
           />
         )}
 
       {videoId != null ? (
         <>
-          <StyledVideoGradient />
           <Box
             height={{
               xs: isFillAndNotYoutube() ? hundredVh : '100%',
@@ -252,7 +247,7 @@ export function Video({
                 '> .vjs-tech': {
                   objectFit: videoFit,
                   transform:
-                    objectFit === VideoBlockObjectFit.zoomed
+                    objectFit === VideoBlockObjectFit.zoomed && !isWebsite
                       ? 'scale(1.33)'
                       : undefined
                 },
@@ -293,6 +288,7 @@ export function Video({
                 startAt={videoControlsStartAt}
                 endAt={videoEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
+                source={source}
                 loading={loading}
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}

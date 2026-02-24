@@ -1,0 +1,2 @@
+import './qrCode'
+import './inputs'

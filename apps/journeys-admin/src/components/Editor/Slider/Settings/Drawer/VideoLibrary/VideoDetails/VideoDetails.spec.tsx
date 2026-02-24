@@ -37,7 +37,8 @@ describe('VideoDetails', () => {
     children: [],
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
   const videoBlock: TreeBlock<VideoBlock> = {
     id: 'videoBlockId',
@@ -57,9 +58,14 @@ describe('VideoDetails', () => {
     description: null,
     duration: null,
     image: null,
+    subtitleLanguage: null,
+    showGeneratedSubtitles: null,
     mediaVideo: null,
     posterBlockId: 'imageBlockId',
     objectFit: null,
+    eventLabel: null,
+    endEventLabel: null,
+    customizable: null,
     children: [imageBlock]
   }
 
@@ -148,21 +154,23 @@ describe('VideoDetails', () => {
     )
   })
 
-  it('should close VideoDetails on close Icon click', () => {
-    const onClose = jest.fn()
-    const { getByRole } = render(
-      <MockedProvider>
-        <VideoDetails
-          id="2_Acts7302-0-0"
-          source={VideoBlockSource.internal}
-          open
-          onClose={onClose}
-          onSelect={jest.fn()}
-        />
-      </MockedProvider>
-    )
-    fireEvent.click(getByRole('button', { name: 'close-image-library' }))
-    expect(onClose).toHaveBeenCalled()
+  describe('onClose behavior', () => {
+    it('should call onClose with true when close button is clicked', () => {
+      const onClose = jest.fn()
+      const { getByRole } = render(
+        <MockedProvider>
+          <VideoDetails
+            id="2_Acts7302-0-0"
+            source={VideoBlockSource.internal}
+            open
+            onClose={onClose}
+            onSelect={jest.fn()}
+          />
+        </MockedProvider>
+      )
+      fireEvent.click(getByRole('button', { name: 'close-image-library' }))
+      expect(onClose).toHaveBeenCalledWith(true)
+    })
   })
 
   it('should open the languages drawer on language button click', () => {
@@ -281,6 +289,7 @@ describe('VideoDetails', () => {
                     themeName: null,
                     fullscreen: false,
                     backdropBlur: null,
+                    eventLabel: null,
                     children: [videoBlock]
                   }
                 ]
@@ -305,7 +314,9 @@ describe('VideoDetails', () => {
       source: VideoBlockSource.internal,
       videoId: null,
       posterBlockId: null,
-      videoVariantLanguageId: null
+      videoVariantLanguageId: null,
+      startAt: null,
+      endAt: null
     })
   })
 })

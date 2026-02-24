@@ -173,7 +173,8 @@ export function useCreateStepFromStep(): (
       backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
-      parentOrder: 0
+      parentOrder: 0,
+      eventLabel: null
     }
 
     add({

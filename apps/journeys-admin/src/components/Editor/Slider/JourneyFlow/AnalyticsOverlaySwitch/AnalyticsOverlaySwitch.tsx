@@ -3,6 +3,7 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { formatISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
+import { enqueueSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -32,6 +33,12 @@ export function AnalyticsOverlaySwitch(): ReactElement {
       dispatch({
         type: 'SetAnalyticsAction',
         analytics
+      })
+    },
+    onError: (_) => {
+      enqueueSnackbar(t('Error fetching analytics'), {
+        variant: 'error',
+        preventDuplicate: true
       })
     }
   })

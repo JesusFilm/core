@@ -60,22 +60,6 @@ function getLocaleFromPath(pathname: string): string | undefined {
   return localeEntry?.locale
 }
 
-function getLocaleFromGeoHeaders(req: NextRequest): string | undefined {
-  const country =
-    req.headers.get('cf-ipcountry') ||
-    req.headers.get('x-vercel-ip-country') ||
-    undefined
-
-  if (!country) return undefined
-
-  const countryCode = country.toUpperCase()
-  const localeEntry = Object.values(LANGUAGE_MAPPINGS).find((mapping) =>
-    mapping.geoLocations.includes(countryCode)
-  )
-
-  return localeEntry?.locale
-}
-
 function getBrowserLanguage(req: NextRequest): string {
   const acceptedLanguagesHeader = req.headers.get('accept-language')
   if (acceptedLanguagesHeader == null) return DEFAULT_LOCALE
@@ -87,40 +71,53 @@ function getBrowserLanguage(req: NextRequest): string {
   return getPreferredLanguage(sortedLanguages) ?? DEFAULT_LOCALE
 }
 
-function getLocale(req: NextRequest): string {
+interface GetLocaleOptions {
+  ignoreLocaleFromPath?: boolean
+}
+
+function getLocale(
+  req: NextRequest,
+  options?: GetLocaleOptions
+): string | undefined {
   // Priority 1: Cookie
   const cookieLocale = req.cookies.get('NEXT_LOCALE')?.value?.split('---')[1]
   if (cookieLocale != null) return cookieLocale
 
   // Priority 2: URL Path
   const pathLocale = getLocaleFromPath(req.nextUrl.pathname)
-  if (pathLocale != null) return pathLocale
+  if (pathLocale != null && !options?.ignoreLocaleFromPath) return pathLocale
 
   // Priority 3: Browser Language
   const browserLocale = getBrowserLanguage(req)
-  if (browserLocale !== DEFAULT_LOCALE) return browserLocale
-
-  // Priority 4: Geolocation (only check if no other locale found)
-  const geoLocale = getLocaleFromGeoHeaders(req)
-  return geoLocale ?? DEFAULT_LOCALE
+  if (browserLocale != null && browserLocale !== DEFAULT_LOCALE)
+    return browserLocale
 }
 
-export function middleware(req: NextRequest): NextResponse | undefined {
-  const isNextInternal = req.nextUrl.pathname.startsWith('/_next')
-  const isApi = req.nextUrl.pathname.includes('/api/')
-  const isWatchRoute = req.nextUrl.pathname.startsWith('/watch')
-  const isAsset = req.nextUrl.pathname.includes('/assets/')
+export const config = {
+  matcher: ['/watch/((?!assets).*)', '/watch']
+}
 
-  if (isNextInternal || isApi || !isWatchRoute || isAsset) {
-    return
+/** Paths that look like static assets; do not rewrite so they are served from public/ */
+const STATIC_ASSET_EXT =
+  /\.(svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|otf|css|js|map)(\?.*)?$/i
+
+export async function middleware(req: NextRequest): Promise<NextResponse> {
+  const pathname = req.nextUrl.pathname
+
+  if (STATIC_ASSET_EXT.test(pathname)) {
+    return NextResponse.next()
   }
 
-  const locale = getLocale(req)
+  const locale = getLocale(req) ?? DEFAULT_LOCALE
+  const rewriteUrl = req.nextUrl.clone()
 
+  if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
+    rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`
+    return NextResponse.redirect(rewriteUrl, 302)
+  }
   if (locale !== DEFAULT_LOCALE) {
-    const rewriteUrl = req.nextUrl.clone()
-    const cleanPathname = req.nextUrl.pathname.split('?')[0]
-    rewriteUrl.pathname = `/${locale}${cleanPathname}`
+    rewriteUrl.pathname = `/${locale}${pathname}`
+
     return NextResponse.rewrite(rewriteUrl)
   }
 

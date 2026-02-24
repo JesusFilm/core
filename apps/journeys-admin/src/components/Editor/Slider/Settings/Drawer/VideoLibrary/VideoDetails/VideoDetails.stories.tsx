@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -174,7 +174,8 @@ const imageBlock: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 const videoBlock: TreeBlock<VideoBlock> = {
   id: 'videoBlockId',
@@ -194,9 +195,14 @@ const videoBlock: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: null,
   posterBlockId: 'imageBlockId',
   objectFit: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   children: [imageBlock]
 }
 

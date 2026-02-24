@@ -6,14 +6,24 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
+import {
+  RadioOptionBlockCreate,
+  RadioOptionBlockCreateVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockCreate'
 import {
   RadioOptionBlockUpdateContent,
   RadioOptionBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { InlineEditInput } from '../InlineEditInput'
+import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
+import { handleCreateRadioOption } from '../RadioQuestionEdit/utils/handleCreateRadioOption/handleCreateRadioOption'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -34,12 +44,21 @@ export function RadioOptionEdit({
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+
+  const resolvedLabel = !journey?.template
+    ? (resolveJourneyCustomizationString(
+        label,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? label)
+    : label
+
   const [radioOptionBlockUpdate] = useMutation<
     RadioOptionBlockUpdateContent,
     RadioOptionBlockUpdateContentVariables
   >(RADIO_OPTION_BLOCK_UPDATE_CONTENT)
 
-  const [value, setValue] = useState(label)
+  const [value, setValue] = useState(resolvedLabel)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
 
@@ -59,9 +78,9 @@ export function RadioOptionEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    if (value !== label) setValue(label)
+    if (value !== resolvedLabel) setValue(resolvedLabel)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label])
+  }, [resolvedLabel])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
@@ -115,6 +134,12 @@ export function RadioOptionEdit({
     })
   }
 
+  const { addBlock } = useBlockCreateCommand()
+  const [radioOptionBlockCreate] = useMutation<
+    RadioOptionBlockCreate,
+    RadioOptionBlockCreateVariables
+  >(RADIO_OPTION_BLOCK_CREATE)
+
   return (
     <RadioOption
       {...radioOptionProps}
@@ -146,6 +171,29 @@ export function RadioOptionEdit({
           onChange={(e) => {
             setValue(e.currentTarget.value)
             handleSubmit(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              handleSubmit(value)
+
+              const parentBlock = searchBlocks(
+                selectedStep?.children ?? [],
+                radioOptionProps.parentBlockId ?? ''
+              )
+              const siblingCount = parentBlock?.children?.length ?? 0
+
+              if (siblingCount >= 12) return
+
+              handleCreateRadioOption({
+                dispatch,
+                addBlock,
+                radioOptionBlockCreate,
+                parentBlockId: radioOptionProps.parentBlockId,
+                journey,
+                siblingCount
+              })
+            }
           }}
           onClick={(e) => e.stopPropagation()}
         />

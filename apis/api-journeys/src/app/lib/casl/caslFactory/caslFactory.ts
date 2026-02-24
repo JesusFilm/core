@@ -1,8 +1,7 @@
 import { AbilityBuilder, PureAbility } from '@casl/ability'
 import { Injectable } from '@nestjs/common'
 
-import { Role } from '.prisma/api-journeys-client'
-import { CaslFactory } from '@core/nest/common/CaslAuthModule'
+import { Role } from '@core/prisma/journeys/client'
 
 import { blockAcl } from '../../../modules/block/block.acl'
 import { customDomainAcl } from '../../../modules/customDomain/customDomain.acl'
@@ -21,6 +20,7 @@ import { userJourneyAcl } from '../../../modules/userJourney/userJourney.acl'
 import { userTeamAcl } from '../../../modules/userTeam/userTeam.acl'
 import { userTeamInviteAcl } from '../../../modules/userTeamInvite/userTeamInvite.acl'
 import { visitorAcl } from '../../../modules/visitor/visitor.acl'
+import { CaslFactory } from '../../CaslAuthModule'
 import { PrismaSubjects } from '../__generated__/prismaSubjects'
 import { PrismaQuery, createPrismaAbility } from '../caslPrisma'
 

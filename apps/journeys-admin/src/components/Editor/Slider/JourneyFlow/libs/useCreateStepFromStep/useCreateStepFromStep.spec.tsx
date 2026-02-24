@@ -87,7 +87,8 @@ describe('useCreateStepFromStep', () => {
       themeMode: 'dark',
       themeName: 'base',
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     })
   })
 
@@ -156,7 +157,8 @@ describe('useCreateStepFromStep', () => {
       themeMode: 'dark',
       themeName: 'base',
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -232,7 +234,8 @@ describe('useCreateStepFromStep', () => {
       themeMode: 'dark',
       themeName: 'base',
       fullscreen: false,
-      backdropBlur: null
+      backdropBlur: null,
+      eventLabel: null
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

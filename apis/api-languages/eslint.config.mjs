@@ -1,17 +1,19 @@
-import baseConfig from '../../eslint.config.mjs'
+import apiConfig from '../../libs/shared/eslint/api.mjs'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
+
+const tsconfigRootDir = dirname(fileURLToPath(import.meta.url))
 
 export default [
-  ...baseConfig,
-  {
-    ignores: [
-      'apis/api-languages/eslint.config.js',
-      'apis/api-languages/webpack.config.js'
-    ]
-  },
+  ...apiConfig,
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parserOptions: { project: ['apis/api-languages/tsconfig.*?.json'] }
+      parserOptions: {
+        project: ['./tsconfig.*'],
+        projectService: true,
+        tsconfigRootDir
+      }
     }
   }
 ]

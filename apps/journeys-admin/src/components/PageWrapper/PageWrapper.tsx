@@ -8,6 +8,7 @@ import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
+import { HelpScoutBeacon } from '../HelpScoutBeacon'
 
 import { AppHeader } from './AppHeader'
 import { MainPanelBody } from './MainPanelBody'
@@ -39,6 +40,7 @@ interface PageWrapperProps {
   user?: User
   initialState?: Partial<PageState>
   background?: string
+  backgroundColor?: string
 }
 
 export function PageWrapper({
@@ -58,13 +60,19 @@ export function PageWrapper({
   customSidePanel,
   user,
   initialState,
-  background
+  background,
+  backgroundColor
 }: PageWrapperProps): ReactElement {
   const [open, setOpen] = useState<boolean>(false)
   const theme = useTheme()
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
+
+  const userInfo = {
+    name: user?.displayName ?? '',
+    email: user?.email ?? ''
+  }
 
   return (
     <PageProvider initialState={initialState}>
@@ -81,7 +89,7 @@ export function PageWrapper({
           <Box
             sx={{
               minWidth: navbar.width,
-              backgroundColor: background ?? 'background.default'
+              backgroundColor: backgroundColor ?? 'background.default'
             }}
           >
             {showNavBar && (
@@ -102,7 +110,8 @@ export function PageWrapper({
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
-              backgroundColor: background ?? 'background.default',
+              backgroundColor: backgroundColor ?? 'background.default',
+              ...(background != null && { background }),
               width: '100%',
               pt: { xs: toolbar.height, md: 0 },
               pb: {
@@ -112,7 +121,19 @@ export function PageWrapper({
             }}
           >
             {showAppHeader && (
-              <AppHeader onClick={() => setOpen(!open)} user={user} />
+              <>
+                <AppHeader onClick={() => setOpen(!open)} user={user} />
+                <Box
+                  sx={{
+                    position: 'fixed',
+                    bottom: 16,
+                    right: 16,
+                    zIndex: (theme) => theme.zIndex.modal + 3
+                  }}
+                >
+                  <HelpScoutBeacon variant="fab" userInfo={userInfo} />
+                </Box>
+              </>
             )}
 
             <Stack

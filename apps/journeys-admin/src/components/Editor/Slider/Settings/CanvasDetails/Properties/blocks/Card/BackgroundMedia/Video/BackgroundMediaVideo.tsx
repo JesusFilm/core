@@ -131,7 +131,19 @@ export function BackgroundMediaVideo({
       source: input.source ?? VideoBlockSource.internal,
       posterBlockId: input.posterBlockId ?? null,
       fullsize: input.fullsize ?? null,
-      objectFit: input.objectFit ?? null
+      objectFit: input.objectFit ?? null,
+      subtitleLanguage:
+        input.subtitleLanguageId != null
+          ? {
+              __typename: 'Language',
+              id: input.subtitleLanguageId,
+              bcp47: ''
+            }
+          : null,
+      showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null
     }
 
     add({
@@ -362,12 +374,10 @@ export function BackgroundMediaVideo({
     }
   }
 
+  const videoCoverBlock =
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
+
   return (
-    <VideoBlockEditor
-      selectedBlock={
-        coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
-      }
-      onChange={handleChange}
-    />
+    <VideoBlockEditor selectedBlock={videoCoverBlock} onChange={handleChange} />
   )
 }
