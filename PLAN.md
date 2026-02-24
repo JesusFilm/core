@@ -280,8 +280,13 @@ Issues found when running `nx serve journeys-admin` and entering AI-related area
 More issues are expected (e.g. Zod v4, lint failures) and will be added here as they are resolved.
 
 ### Current Status
-- Branch is stabilized with essential AI-related types and lockfile.
-- Unrelated codegen changes (renames and global type additions) deferred to a separate cleanup task.
-- Run builds and test suites
-- Run manual test to verify behaviour
-- Not pushed to remote yet.
+
+**Phase 1 (Merge and Stabilize)** is effectively complete: merge done, conflicts resolved, dependencies and build/serve issues fixed (see issue resolution table). The app runs, and the AI chat can send a message and receive a streamed response. Unrelated codegen changes remain deferred. Build/test suite and full manual test still to run; not pushed to remote yet.
+
+**Observations (early Step 2 – verify behaviour)** — these sit between Phase 1 and Phase 2 and affect prototype reliability:
+
+- **aiEditButton visibility:** The button appears intermittently when opening journeys in the editor. Expected behaviour is that it shows every time a journey is opened. This will interfere with testing but is not the top priority.
+- **aiChat and tool-call reliability:** Responses are intermittent (e.g. possibly only the first query works). Tool calls may be failing intermittently, making recovery difficult. Consider re‑introducing per-tool try/catch and a controlled error response (experimented with previously but likely not committed).
+- **No actual journey updates / mirror responses:** The AI often reflects the user’s request back instead of applying journey changes. Likely causes: tool calls failing silently, and/or the system prompt (e.g. Langfuse `system/api/chat/route`) not in a good state. Needs verification of tool execution and prompt content.
+
+Next: run builds and test suites, then address the observations above (feature flag/visibility, tool error handling, system prompt and tool verification) before or alongside Phase 2 (architecture and dependency audit).
