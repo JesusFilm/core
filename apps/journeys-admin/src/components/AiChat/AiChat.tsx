@@ -52,7 +52,8 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
       prepareSendMessagesRequest: async (options) => {
         const token = await user?.getIdToken()
         if (!token) throw new Error('Missing auth token')
-        const legacyMessages = toLegacyMessages(options.messages)
+        const sourceMessages = Array.isArray(options.messages) ? options.messages : []
+        const legacyMessages = toLegacyMessages(sourceMessages)
         return {
           body: {
             ...options.body,

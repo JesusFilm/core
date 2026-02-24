@@ -42,7 +42,17 @@ export const messagesSchema = z.array(
 export type Messages = z.infer<typeof messagesSchema>
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
+  const body = await req.json().catch(() => ({}))
+  if (body.messages == null) {
+    return Response.json(
+      {
+        error: 'Missing or invalid request body: messages array is required',
+        detail: 'The chat client must send { messages: [{ role, content }], ... }. Received keys: ' +
+          Object.keys(body).join(', ')
+      },
+      { status: 400 }
+    )
+  }
   const schema = z.object({
     messages: messagesSchema,
     journeyId: z.string().optional(),
@@ -50,8 +60,15 @@ export async function POST(req: NextRequest) {
     selectedBlockId: z.string().optional(),
     sessionId: z.string().optional()
   })
+  const parseResult = schema.safeParse(body)
+  if (!parseResult.success) {
+    return Response.json(
+      { error: 'Invalid request body', detail: parseResult.error.flatten() },
+      { status: 400 }
+    )
+  }
   const { messages, journeyId, selectedStepId, selectedBlockId, sessionId } =
-    schema.parse(body)
+    parseResult.data
 
   const token = req.headers.get('Authorization')
 
@@ -135,12 +152,11 @@ export async function POST(req: NextRequest) {
     }
   })
 
-  return result.toDataStreamResponse({
+  return result.toUIMessageStreamResponse({
     headers: {
       'Transfer-Encoding': 'chunked',
       Connection: 'keep-alive',
       'x-trace-id': langfuseTraceId
-    },
-    getErrorMessage: errorHandler
+    }
   })
 }
