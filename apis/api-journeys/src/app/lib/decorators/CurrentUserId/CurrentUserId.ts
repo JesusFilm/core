@@ -1,16 +1,16 @@
 import { ExecutionContext, Logger, createParamDecorator } from '@nestjs/common'
 import { GraphQLError } from 'graphql'
 
-import { contextToUserId } from '../../firebaseClient'
+import { contextToUser } from '../../firebaseClient'
 
 export const CurrentUserId = createParamDecorator(
   (_data, context: ExecutionContext) => {
     const logger = new Logger(CurrentUserId.name)
-    const userId = contextToUserId(context, logger)
-    if (userId == null)
+    const user = contextToUser(context, logger)
+    if (user == null || user.email == null)
       throw new GraphQLError('Token is invalid', {
         extensions: { code: 'UNAUTHENTICATED' }
       })
-    return userId
+    return user.id
   }
 )
