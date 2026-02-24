@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -31,9 +31,14 @@ export interface TemplateCardPreviewItemProps {
   selectedStep?: TreeBlock<StepBlock> | null
 }
 
+const DEFAULT_LOGICAL_WIDTH = 485
+const DEFAULT_LOGICAL_HEIGHT = 738
+
 /**
  * Renders a single template step as a preview card inside a FramePortal.
  * Applies variant-based sizing, optional selection scale, and theme/RTL from the journey.
+ * For variants with useFluidSizing, card dimensions are driven by the Swiper slide
+ * container and the inner journey content is scaled dynamically via ResizeObserver.
  * Invokes onClick when the card is clicked.
  *
  * @returns A clickable card box containing the step content in a scaled frame.
@@ -51,8 +56,111 @@ export function TemplateCardPreviewItem({
   ) as TreeBlock<CardBlock>
 
   const config = VARIANT_CONFIGS[variant]
-  const { cardWidth, cardHeight, framePortal, cardSx } = config
+  const {
+    cardWidth,
+    cardHeight,
+    framePortal,
+    cardSx,
+    useFluidSizing,
+    framePortalLogicalSize
+  } = config
   const isSelected = selectedStep?.id === step.id
+
+  const logicalWidth = framePortalLogicalSize?.width ?? DEFAULT_LOGICAL_WIDTH
+  const logicalHeight = framePortalLogicalSize?.height ?? DEFAULT_LOGICAL_HEIGHT
+
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [fluidScale, setFluidScale] = useState(0)
+
+  const handleResize = useCallback(
+    (entries: ResizeObserverEntry[]) => {
+      const entry = entries[0]
+      if (entry == null) return
+      const { width, height } = entry.contentRect
+      if (width === 0 || height === 0) return
+      setFluidScale(Math.min(width / logicalWidth, height / logicalHeight))
+    },
+    [logicalWidth, logicalHeight]
+  )
+
+  useEffect(() => {
+    if (!useFluidSizing || cardRef.current == null) return
+
+    const observer = new ResizeObserver(handleResize)
+    observer.observe(cardRef.current)
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [useFluidSizing, handleResize])
+
+  if (useFluidSizing) {
+    return (
+      <Box
+        ref={cardRef}
+        sx={{
+          ...cardSx,
+          width: '100%',
+          height: '100%',
+          opacity: fluidScale === 0 ? 0 : 1
+        }}
+        onClick={() => onClick?.(step)}
+        data-testid="TemplateCardPreviewItem"
+      >
+        {/* Spacer covers the full card to intercept pointer events */}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 2,
+            cursor: 'grab',
+            borderRadius: framePortal.borderRadius
+          }}
+        />
+        {/* Inner wrapper stays at logical size; transform scales it to fit the card */}
+        <Box
+          sx={{
+            transform: `scale(${fluidScale})`,
+            transformOrigin: 'top left',
+            borderRadius: framePortal.borderRadius,
+            width: logicalWidth,
+            height: logicalHeight
+          }}
+        >
+          <FramePortal
+            sx={{
+              width: logicalWidth,
+              height: logicalHeight,
+              borderRadius: framePortal.borderRadius
+            }}
+            dir={rtl ? 'rtl' : 'ltr'}
+          >
+            <ThemeProvider
+              themeName={cardBlock?.themeName ?? ThemeName.base}
+              themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+              rtl={rtl}
+              locale={locale}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  borderRadius: framePortal.borderRadius
+                }}
+              >
+                <BlockRenderer
+                  block={step}
+                  wrappers={{
+                    VideoWrapper,
+                    CardWrapper
+                  }}
+                />
+              </Box>
+            </ThemeProvider>
+          </FramePortal>
+        </Box>
+      </Box>
+    )
+  }
 
   return (
     <Box

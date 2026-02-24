@@ -87,7 +87,7 @@ export function TemplateCardPreview({
   variant = 'preview',
   onClick,
   selectedStep
-}: TemplateCardPreviewProps): ReactElement {
+}: TemplateCardPreviewProps): ReactElement | null {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
   const [swiper, setSwiper] = useState<SwiperClass>()
@@ -109,11 +109,25 @@ export function TemplateCardPreview({
     [breakpoints.values.sm]: VARIANT_CONFIGS[variant].breakpoints.sm
   }
 
+  const usesAllSteps =
+    variant === 'media' ||
+    variant === 'guestPreviewMobile' ||
+    variant === 'guestPreviewDesktop'
   const slidesToRender =
-    steps != null ? (variant === 'media' ? steps : take(steps, 7)) : []
+    steps != null ? (usesAllSteps ? steps : take(steps, 7)) : []
+
+  const scrollsToSelected =
+    variant === 'media' ||
+    variant === 'guestPreviewMobile' ||
+    variant === 'guestPreviewDesktop'
+
+  const initialSlide =
+    scrollsToSelected && selectedStep != null
+      ? slidesToRender.findIndex((s) => s.id === selectedStep.id)
+      : 0
 
   useEffect(() => {
-    if (variant !== 'media' || swiper == null || selectedStep == null) return
+    if (!scrollsToSelected || swiper == null || selectedStep == null) return
 
     const index = slidesToRender.findIndex(
       (step) => step.id === selectedStep.id
@@ -124,15 +138,19 @@ export function TemplateCardPreview({
     swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
+  // For fluid variants, height is driven by slide aspect-ratio + autoHeight prop
+  const swiperHeightSx = config.useFluidSizing ? {} : { height: swiperHeight }
+
   return steps != null ? (
     <StyledSwiper
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
+      initialSlide={initialSlide}
       {...swiperProps}
       sx={{
         ...swiperSx,
-        height: swiperHeight
+        ...swiperHeightSx
       }}
     >
       {slidesToRender.map((step) => {
@@ -160,7 +178,9 @@ export function TemplateCardPreview({
               step={step}
               variant={variant}
               onClick={onClick}
-              selectedStep={selectedStep}
+              selectedStep={
+                variant === 'guestPreviewMobile' ? null : selectedStep
+              }
             />
           </StyledSwiperSlide>
         )
@@ -234,7 +254,7 @@ export function TemplateCardPreview({
         </StyledSwiperSlide>
       )}
     </StyledSwiper>
-  ) : (
+  ) : config.useFluidSizing ? null : (
     <TemplateCardPreviewPlaceholder
       cardWidth={cardWidth}
       cardHeight={cardHeight}

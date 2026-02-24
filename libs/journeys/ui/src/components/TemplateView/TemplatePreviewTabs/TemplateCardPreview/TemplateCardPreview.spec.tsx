@@ -120,6 +120,48 @@ describe('TemplateCardPreview', () => {
     )
   })
 
+  describe('guestPreviewDesktop variant', () => {
+    it('should render all steps and not show more cards slide', async () => {
+      const steps = [
+        { id: '1', children: [{ __typename: 'CardBlock' }] },
+        { id: '2', children: [{ __typename: 'CardBlock' }] },
+        { id: '3', children: [{ __typename: 'CardBlock' }] },
+        { id: '4', children: [{ __typename: 'CardBlock' }] },
+        { id: '5', children: [{ __typename: 'CardBlock' }] },
+        { id: '6', children: [{ __typename: 'CardBlock' }] },
+        { id: '7', children: [{ __typename: 'CardBlock' }] },
+        { id: '8', children: [{ __typename: 'CardBlock' }] }
+      ] as Array<TreeBlock<StepBlock>>
+
+      render(
+        <ThemeProvider theme={createTheme()}>
+          <TemplateCardPreview steps={steps} variant="guestPreviewDesktop" />
+        </ThemeProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
+          8
+        )
+      )
+      expect(screen.queryByTestId('UseTemplatesSlide')).not.toBeInTheDocument()
+    })
+
+    it('should render null when steps are undefined (no skeleton)', () => {
+      const { container } = render(
+        <ThemeProvider theme={createTheme()}>
+          <TemplateCardPreview
+            steps={undefined}
+            variant="guestPreviewDesktop"
+          />
+        </ThemeProvider>
+      )
+      expect(
+        screen.queryByTestId('TemplateCardsPreviewPlaceholder')
+      ).not.toBeInTheDocument()
+      expect(container.firstChild).toBeNull()
+    })
+  })
+
   describe('media variant', () => {
     it('should render all steps and not show more cards slide', async () => {
       const steps = [
@@ -168,6 +210,27 @@ describe('TemplateCardPreview', () => {
         </ThemeProvider>
       )
       await waitFor(() => expect(mockSlideTo).toHaveBeenCalledWith(1, 500))
+    })
+  })
+
+  describe('guestPreviewMobile variant', () => {
+    it('should render all steps', async () => {
+      const steps = [
+        { id: '1', children: [{ __typename: 'CardBlock' }] },
+        { id: '2', children: [{ __typename: 'CardBlock' }] },
+        { id: '3', children: [{ __typename: 'CardBlock' }] }
+      ] as Array<TreeBlock<StepBlock>>
+
+      render(
+        <ThemeProvider theme={createTheme()}>
+          <TemplateCardPreview steps={steps} variant="guestPreviewMobile" />
+        </ThemeProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
+          3
+        )
+      )
     })
   })
 })

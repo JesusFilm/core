@@ -97,4 +97,45 @@ describe('TemplateCardPreviewItem', () => {
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
+
+  describe('guestPreviewDesktop variant (fluid sizing)', () => {
+    it('should render with fluid sizing', () => {
+      const { getByTestId } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreviewDesktop" />
+      )
+      expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+    })
+
+    it('should call onClick when clicked', () => {
+      const handleClick = jest.fn()
+      const { getByTestId } = renderWithProviders(
+        <TemplateCardPreviewItem
+          step={step}
+          variant="guestPreviewDesktop"
+          onClick={handleClick}
+        />
+      )
+      getByTestId('TemplateCardPreviewItem').click()
+      expect(handleClick).toHaveBeenCalledTimes(1)
+      expect(handleClick).toHaveBeenCalledWith(step)
+    })
+
+    it('should attach a ResizeObserver on mount and disconnect on unmount', () => {
+      const observeSpy = jest.spyOn(ResizeObserver.prototype, 'observe')
+      const disconnectSpy = jest.spyOn(ResizeObserver.prototype, 'disconnect')
+
+      const { unmount } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreviewDesktop" />
+      )
+
+      expect(observeSpy).toHaveBeenCalledTimes(1)
+
+      unmount()
+
+      expect(disconnectSpy).toHaveBeenCalledTimes(1)
+
+      observeSpy.mockRestore()
+      disconnectSpy.mockRestore()
+    })
+  })
 })

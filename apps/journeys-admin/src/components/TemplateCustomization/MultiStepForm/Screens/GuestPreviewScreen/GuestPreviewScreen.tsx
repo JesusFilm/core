@@ -7,13 +7,14 @@ import { ReactElement, useMemo, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { AccountCheckDialog } from '@core/journeys/ui/TemplateView/AccountCheckDialog'
+import { TemplateCardZoomDialog } from '@core/journeys/ui/TemplateView/TemplateCardZoomDialog'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { CardsPreview } from '../LinksScreen/CardsPreview'
+import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import Box from '@mui/material/Box'
 
 interface GuestPreviewScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
@@ -34,11 +35,18 @@ export function GuestPreviewScreen({
     [journey]
   )
 
+  const [stepInZoomDialog, setStepInZoomDialog] =
+    useState<TreeBlock<StepBlock> | null>(null)
+
   const displayDesktop = { xs: 'none', sm: 'block' }
   const displayMobile = { xs: 'block', sm: 'none' }
 
   function handleContinueToPreview(): void {
     // TODO: Implement continue to preview
+  }
+
+  function handleCloseZoomDialog(): void {
+    setStepInZoomDialog(null)
   }
 
   return (
@@ -93,7 +101,19 @@ export function GuestPreviewScreen({
       <Typography variant="subtitle2" color="text.secondary">
         &quot;{journey?.title ?? ''}&quot;
       </Typography>
-      <CardsPreview steps={steps} />
+      <Box sx={{ overflowX: 'hidden', width: '100%' }}>
+        <TemplateCardPreview
+          steps={steps}
+          variant="media"
+          onClick={(step) => setStepInZoomDialog(step)}
+        />
+      </Box>
+      <TemplateCardZoomDialog
+        open={stepInZoomDialog != null}
+        steps={steps}
+        selectedStep={stepInZoomDialog}
+        onClose={handleCloseZoomDialog}
+      />
       <Card
         variant="outlined"
         sx={{
