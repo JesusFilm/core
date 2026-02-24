@@ -1,10 +1,6 @@
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import absoluteUrl from 'next-absolute-url'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
@@ -26,7 +22,10 @@ function CustomizePage() {
   const user = useUser()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,
-    idType: IdType.databaseId
+    idType: IdType.databaseId,
+    options: {
+      skipRoutingFilter: true
+    }
   })
 
   return (
@@ -55,7 +54,8 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   user,
   locale,
   resolvedUrl,
-  params
+  params,
+  req
 }) => {
   const { apolloClient, flags, translations } = await initAndAuthApp({
     user,
@@ -63,6 +63,22 @@ export const getServerSideProps = withUserTokenSSR()(async ({
     resolvedUrl,
     makeAccountOnAnonymous: true
   })
+
+  const templateCustomizationGuestFlow =
+    flags?.templateCustomizationGuestFlow ?? false
+  if (user?.id == null && !templateCustomizationGuestFlow) {
+    const { origin } = absoluteUrl(req)
+    const redirectUrl = new URL(
+      resolvedUrl ?? req?.url ?? '/',
+      origin
+    ).toString()
+    return {
+      redirect: {
+        destination: `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`,
+        permanent: false
+      }
+    }
+  }
 
   const journeyId = params?.journeyId
   if (journeyId == null) {
@@ -79,7 +95,10 @@ export const getServerSideProps = withUserTokenSSR()(async ({
       query: GET_JOURNEY,
       variables: {
         id: journeyId.toString(),
-        idType: IdType.databaseId
+        idType: IdType.databaseId,
+        options: {
+          skipRoutingFilter: true
+        }
       }
     })
   } catch (error) {
@@ -103,7 +122,4 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   }
 })
 
-export default withUser({
-  // TODO: remove this after anon user is implemented
-  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN
-})(CustomizePage)
+export default withUser()(CustomizePage)

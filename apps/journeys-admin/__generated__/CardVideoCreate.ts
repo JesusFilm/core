@@ -190,6 +190,7 @@ export interface CardVideoCreate_video {
   action: CardVideoCreate_video_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardVideoCreate {

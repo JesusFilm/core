@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Experimente o novo design.",
+  "Better search, languages, and collections.": "Melhor pesquisa, idiomas e coleções.",
+  "Better search. Better language support. Better collections.": "Melhor pesquisa. Melhor suporte a idiomas. Melhores coleções.",
+  "New Design": "Novo design",
   "close": "fechar",
   "No Downloads Available": "Não há downloads disponíveis",
   "Highest": "Mais alto",
@@ -36,8 +40,6 @@
   "Language": "Linguagem",
   "Subtitles are not available in {{language}}.": "As legendas não estão disponíveis em {{language}}.",
   "Subtitles": "Legendas",
-  "Available Languages": "Idiomas disponíveis",
-  "Other Languages": "Outros idiomas",
   "Show subtitles": "Mostrar legendas",
   "Read more...": "Leia mais...",
   "Related questions": "Perguntas relacionadas",
@@ -93,9 +95,5 @@
   "Behind The Scenes": "Nos bastidores",
   "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Disponível no idioma {{count}} .",
-  "Available in {{count}} languages._other": "Disponível em {{count}} idiomas.",
-  "Better search. Better language support. Better collections.": "Melhor pesquisa. Melhor suporte de idiomas. Melhores coleções.",
-  "Better search, languages, and collections.": "Melhor pesquisa, idiomas e coleções.",
-  "Try the new design.": "Experimente o novo design.",
-  "New Design": "Novo Design"
+  "Available in {{count}} languages._other": "Disponível em {{count}} idiomas."
 }

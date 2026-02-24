@@ -1,6 +1,6 @@
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -87,6 +87,14 @@ export function TagsFilter({
   )
 
   const hasMultipleColumns = tagNames.length > 1
+
+  const filterOptions = createFilterOptions<Tag>({
+    stringify: (option: Tag) =>
+      option.name.map((tagNames) => tagNames.value).join(' '),
+    trim: true,
+    ignoreCase: true
+  })
+
   return (
     <Autocomplete
       PopperComponent={popperElementId != null ? Popper : undefined}
@@ -99,6 +107,7 @@ export function TagsFilter({
       onChange={handleChange}
       popupIcon={<ChevronDownIcon />}
       options={filteredChildTags}
+      filterOptions={filterOptions}
       groupBy={(option) => option.parentId ?? ''}
       getOptionLabel={(option) =>
         option.name.find(({ primary }) => primary)?.value ?? ''

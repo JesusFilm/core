@@ -148,7 +148,7 @@ const IconTemplate: IconStory = {
                         __typename: 'IconBlock',
                         parentBlockId: 'id',
                         parentOrder: 0,
-                        iconName: IconName.CheckCircleRounded,
+                        iconName: IconName.ChevronLeftRounded,
                         iconColor: null,
                         iconSize: IconSize.md,
                         children: []
@@ -160,7 +160,7 @@ const IconTemplate: IconStory = {
                         __typename: 'IconBlock',
                         parentBlockId: 'id',
                         parentOrder: 0,
-                        iconName: IconName.CheckCircleRounded,
+                        iconName: IconName.ChevronRightRounded,
                         iconColor: null,
                         iconSize: IconSize.md,
                         children: []

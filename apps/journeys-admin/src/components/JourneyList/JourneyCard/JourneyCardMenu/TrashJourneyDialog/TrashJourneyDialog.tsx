@@ -9,12 +9,14 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { GetAdminJourneys } from '../../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
 import { JourneyTrash } from '../../../../../../__generated__/JourneyTrash'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 export const JOURNEY_TRASH = gql`
   mutation JourneyTrash($ids: [ID!]!) {
     journeysTrash(ids: $ids) {
       id
       status
+      fromTemplateId
     }
   }
 `
@@ -24,17 +26,20 @@ export interface TrashJourneyDialogProps {
   open: boolean
   handleClose: () => void
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  fromTemplateId?: string | null
 }
 
 export function TrashJourneyDialog({
   id,
   open,
   handleClose,
-  refetch
+  refetch,
+  fromTemplateId
 }: TrashJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
@@ -45,7 +50,8 @@ export function TrashJourneyDialog({
         {
           id,
           status: JourneyStatus.deleted,
-          __typename: 'Journey'
+          __typename: 'Journey',
+          fromTemplateId: fromTemplateId ?? null
         }
       ]
     }
@@ -54,7 +60,13 @@ export function TrashJourneyDialog({
   async function handleTrash(): Promise<void> {
     setLoading(true)
     try {
-      await trashJourney()
+      const { data } = await trashJourney()
+      const templateIdToRefetch =
+        data?.journeysTrash?.[0]?.fromTemplateId ?? fromTemplateId
+      if (templateIdToRefetch != null) {
+        void refetchTemplateStats([templateIdToRefetch])
+      }
+
       await refetch?.()
       enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',

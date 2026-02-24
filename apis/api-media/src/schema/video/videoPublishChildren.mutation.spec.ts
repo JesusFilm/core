@@ -27,7 +27,9 @@ describe('videoPublishChildren', () => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',
       userId: 'userId',
-      roles: ['publisher']
+      roles: ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
     prismaMock.video.findUnique.mockResolvedValue({
       id: 'parent',

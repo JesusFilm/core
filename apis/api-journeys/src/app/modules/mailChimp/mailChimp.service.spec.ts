@@ -1,7 +1,7 @@
 import mailchimp from '@mailchimp/mailchimp_marketing'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { User } from '@core/nest/common/firebaseClient'
+import { User } from '../../lib/firebaseClient'
 
 import { MailChimpService } from './mailChimp.service'
 

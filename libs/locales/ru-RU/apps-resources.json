@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Попробуй новый дизайн.",
+  "Better search, languages, and collections.": "Улучшенный поиск, языки и коллекции.",
+  "Better search. Better language support. Better collections.": "Улучшенный поиск. Лучшая поддержка языков. Более качественные коллекции.",
+  "New Design": "Новый дизайн",
   "close": "закрыть",
   "No Downloads Available": "Загрузки нет",
   "Highest": "Самый высокий",
@@ -36,8 +40,6 @@
   "Language": "Язык",
   "Subtitles are not available in {{language}}.": "Субтитры недоступны на сайте {{language}}.",
   "Subtitles": "Субтитры",
-  "Available Languages": "Доступные Языки",
-  "Other Languages": "Другие языки",
   "Show subtitles": "Показать субтитры",
   "Read more...": "Читать дальше...",
   "Related questions": "Похожие вопросы",
@@ -95,9 +97,5 @@
   "Available in {{count}} languages._one": "Доступно на языке {{count}} .",
   "Available in {{count}} languages._few": "Доступно на {{count}} языках.",
   "Available in {{count}} languages._many": "Доступно на {{count}} языках.",
-  "Available in {{count}} languages._other": "Доступно на {{count}} языках.",
-  "Better search. Better language support. Better collections.": "Лучший поиск. Лучшая поддержка языков. Лучшие коллекции.",
-  "Better search, languages, and collections.": "Лучший поиск, языки и коллекции.",
-  "Try the new design.": "Попробуйте новый дизайн.",
-  "New Design": "Новый дизайн"
+  "Available in {{count}} languages._other": "Доступно на {{count}} языках."
 }

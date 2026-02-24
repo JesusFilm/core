@@ -1,10 +1,23 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
   gtmEventName: String
   parentBlock: Block!
+}
+
+type AnonymousUser
+  @shareable
+{
+  id: ID!
+}
+
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
 }
 
 interface Block {
@@ -593,6 +606,16 @@ enum IconName {
   ContactSupportRounded
   Launch
   MailOutline
+  ArrowLeftContained2
+  ArrowRightContained2
+  MessageChat1
+  Home4
+  LinkAngled
+  Volume5
+  Note2
+  UserProfile2
+  UsersProfiles3
+  Phone
 }
 
 enum IconSize {
@@ -629,6 +652,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -655,6 +679,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -672,6 +697,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -687,7 +713,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: User
+  user: AuthenticatedUser
 }
 
 input IntegrationGoogleCreateInput {
@@ -1166,6 +1192,9 @@ input JourneysQueryOptions {
   limit results to journeys in a journey collection (currently only available when using hostname option)
   """
   journeyCollection: Boolean
+
+  """skip custom domain routing filter (for admin template customization)"""
+  skipRoutingFilter: Boolean
 }
 
 enum JourneysReportType {
@@ -1326,27 +1355,35 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): MultiselectOptionBlock!
-  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
+  videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
     input: VideoBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): VideoBlock! @override(from: "api-journeys")
-  blockDeleteAction(id: ID!, journeyId: ID): Block! @override(from: "api-journeys")
-  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action! @override(from: "api-journeys")
-  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction! @override(from: "api-journeys")
-  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
-  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
-  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
-  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction! @override(from: "api-journeys")
+  ): VideoBlock!
+  blockDeleteAction(id: ID!, journeyId: ID): Block!
+  blockUpdateAction(id: ID!, input: BlockUpdateActionInput!): Action!
+  blockUpdateEmailAction(id: ID!, input: EmailActionInput!, journeyId: ID): EmailAction!
+  blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction!
+  blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
+  blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction!
+  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
-  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+  radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
+  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent!
+  signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
+  textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
+
+  """
+  Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
+  """
+  googleSheetsSyncBackfill(id: ID!): GoogleSheetsSync!
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
@@ -2229,13 +2266,6 @@ enum TypographyVariant {
   overline
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-}
-
 type UserAgent
   @shareable
 {
@@ -2269,7 +2299,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: User
+  user: AuthenticatedUser
   journeyNotification: JourneyNotification
 }
 
@@ -2295,7 +2325,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  user: AuthenticatedUser!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 
@@ -2366,6 +2396,7 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
 }
 
 input VideoBlockCreateInput {
@@ -2395,6 +2426,7 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 enum VideoBlockObjectFit {
@@ -2435,6 +2467,7 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 type VideoCollapseEvent implements Event

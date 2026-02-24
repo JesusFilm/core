@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "เครื่องเล่น",
+    "description": "ไปที่ /pl/[playlistId] เพื่อดูเพลย์ลิสต์"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | โครงการภาพยนตร์พระเยซู"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "เพลย์ลิสต์",
+    "pageTitle": "{title} โดย {name}",
+    "thisPlaylistIsEmpty": "เพลย์ลิสต์นี้ว่างเปล่า",
+    "defaultDescription": "เพื่อนของคุณได้แชร์วิดีโอเหล่านี้เพื่อเป็นกำลังใจให้คุณ กดเล่นเพื่อรับฟังเรื่องราวที่สร้างแรงบันดาลใจเกี่ยวกับการค้นพบสันติสุขในพระเยซู",
+    "description": "เพื่อนของคุณ {name} ได้แชร์วิดีโอเหล่านี้เพื่อเป็นกำลังใจให้คุณ กดเล่นเพื่อรับชมเรื่องราวที่สร้างแรงบันดาลใจเกี่ยวกับการค้นพบสันติสุขในพระเยซู"
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "ไม่มีวิดีโอให้บริการ"
+  },
+  "PlaylistList": {
+    "noThumbnail": "ไม่มีภาพขนาดย่อ"
+  },
+  "StudyQuestions": {
+    "title": "Study Questions"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "เพื่อดูวิดีโอนี้ โปรดเปิดใช้งาน JavaScript และพิจารณาอัปเกรดเว็บเบราว์เซอร์ของคุณที่<link>รองรับวิดีโอ HTML5</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "เพื่อนของคุณ <strong>{name}</strong>แชร์วิดีโอเหล่านี้กับคุณเพื่อเป็นกำลังใจให้คุณ วิธีที่ดีที่สุดในการรับชมวิดีโอเหล่านี้คือการดาวน์โหลดแอปของเรา",
+    "downloadOnAppStore": "ดาวน์โหลดบน App Store",
+    "getItOnGooglePlay": "ดาวน์โหลดได้ที่ Google Play"
+  }
+}

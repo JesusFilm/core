@@ -30,6 +30,7 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
@@ -70,6 +71,7 @@ interface DefaultMenuProps {
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -108,11 +110,13 @@ export function DefaultMenu({
   setOpenTranslateDialog,
   handleKeepMounted,
   template,
-  refetch
+  refetch,
+  setHasOpenDialog
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { data: userRoleData } = useUserRoleQuery()
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
@@ -184,6 +188,7 @@ export function DefaultMenu({
         onClick={() => {
           setOpenDetailsDialog()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
       />
       <Divider />
@@ -194,6 +199,7 @@ export function DefaultMenu({
           onClick={() => {
             setOpenAccessDialog()
             handleCloseMenu()
+            setHasOpenDialog?.(true)
           }}
         />
       )}
@@ -216,17 +222,24 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
+        setHasOpenDialog={setHasOpenDialog}
       />
       <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
-          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <DuplicateJourneyMenuItem
+            id={id}
+            handleCloseMenu={handleCloseMenu}
+            journey={journey}
+            fromTemplateId={journey?.fromTemplateId}
+          />
           <MenuItem
             label={t('Translate')}
             icon={<TranslateIcon color="secondary" />}
             onClick={() => {
               setOpenTranslateDialog()
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
           />
           <Divider />
@@ -234,12 +247,14 @@ export function DefaultMenu({
             variant="menu-item"
             globalPublish={false}
             handleCloseMenu={handleCloseMenu}
+            journey={journey}
           />
           {isPublisher === true && (
             <CreateTemplateItem
               variant="menu-item"
               globalPublish={true}
               handleCloseMenu={handleCloseMenu}
+              journey={journey}
             />
           )}
           <Divider />
@@ -250,6 +265,8 @@ export function DefaultMenu({
           <TemplateActionButton
             variant="menu-item"
             handleCloseMenu={handleCloseMenu}
+            journey={journey}
+            refetchTemplateStats={refetchTemplateStats}
           />
           <Divider />
         </>
@@ -260,6 +277,7 @@ export function DefaultMenu({
           handleCloseMenu={handleCloseMenu}
           handleKeepMounted={handleKeepMounted}
           journey={journey}
+          setHasOpenDialog={setHasOpenDialog}
         />
       )}
       {activeTeam != null && (
@@ -278,6 +296,7 @@ export function DefaultMenu({
             onClick={() => {
               setOpenTrashDialog()
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
             disabled={cantManageJourney}
           />

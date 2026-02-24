@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "جرّب التصميم الجديد.",
+  "Better search, languages, and collections.": "تحسين البحث، واللغات، والمجموعات.",
+  "Better search. Better language support. Better collections.": "بحث أفضل. دعم لغات أفضل. مجموعات أفضل.",
+  "New Design": "تصميم جديد",
   "close": "إغلاق",
   "No Downloads Available": "لا توجد تنزيلات متاحة",
   "Highest": "الأعلى",
@@ -36,8 +40,6 @@
   "Language": "اللغة",
   "Subtitles are not available in {{language}}.": "الترجمة غير متوفرة في {{language}}.",
   "Subtitles": "الترجمات",
-  "Available Languages": "اللغات المتاحة",
-  "Other Languages": "لغات أخرى",
   "Show subtitles": "إظهار الترجمة",
   "Read more...": "اقرأ المزيد...",
   "Related questions": "أسئلة ذات صلة",
@@ -97,9 +99,5 @@
   "Available in {{count}} languages._two": "متوفر في {{count}} لغات",
   "Available in {{count}} languages._few": "متوفر في {{count}} لغات",
   "Available in {{count}} languages._many": "متوفر في {{count}} لغات",
-  "Available in {{count}} languages._other": "متوفر في {{count}} لغات",
-  "Better search. Better language support. Better collections.": "بحث أفضل. دعم لغوي أفضل. مجموعات أفضل.",
-  "Better search, languages, and collections.": "بحث أفضل، لغات، ومجموعات.",
-  "Try the new design.": "جرب التصميم الجديد.",
-  "New Design": "تصميم جديد"
+  "Available in {{count}} languages._other": "متوفر في {{count}} لغات"
 }

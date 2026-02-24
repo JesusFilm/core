@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Hãy thử thiết kế mới.",
+  "Better search, languages, and collections.": "Tìm kiếm tốt hơn, hỗ trợ nhiều ngôn ngữ và bộ sưu tập phong phú.",
+  "Better search. Better language support. Better collections.": "Tìm kiếm tốt hơn. Hỗ trợ ngôn ngữ tốt hơn. Bộ sưu tập tốt hơn.",
+  "New Design": "Thiết kế mới",
   "close": "đóng",
   "No Downloads Available": "Không có tệp để tải xuống",
   "Highest": "Cao nhất",
@@ -36,8 +40,6 @@
   "Language": "Language",
   "Subtitles are not available in {{language}}.": "Phụ đề không có sẵn trong {{language}}.",
   "Subtitles": "Subtitles",
-  "Available Languages": "Available Languages",
-  "Other Languages": "Các ngôn ngữ khác",
   "Show subtitles": "Hiển thị phụ đề",
   "Read more...": "Đọc thêm...",
   "Related questions": "Câu hỏi liên quan",
@@ -92,9 +94,5 @@
   "Short Film": "Phim ngắn",
   "Behind The Scenes": "Phía sau hậu trường",
   "Trailer": "Trailer",
-  "Available in {{count}} languages._other": "Có sẵn trong các ngôn ngữ {{count}} .",
-  "Better search. Better language support. Better collections.": "Tìm kiếm tốt hơn. Hỗ trợ ngôn ngữ tốt hơn. Bộ sưu tập tốt hơn.",
-  "Better search, languages, and collections.": "Tìm kiếm, ngôn ngữ và bộ sưu tập tốt hơn.",
-  "Try the new design.": "Thử thiết kế mới.",
-  "New Design": "Thiết kế mới"
+  "Available in {{count}} languages._other": "Có sẵn trong các ngôn ngữ {{count}} ."
 }

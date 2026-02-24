@@ -55,6 +55,7 @@ describe('CardWrapper', () => {
           showGeneratedSubtitles: null,
           eventLabel: null,
           endEventLabel: null,
+          customizable: null,
           children: [
             {
               id: 'image5.id',
@@ -69,7 +70,8 @@ describe('CardWrapper', () => {
               blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
               scale: null,
               focalLeft: 50,
-              focalTop: 50
+              focalTop: 50,
+              customizable: null
             }
           ]
         }
@@ -102,7 +104,8 @@ describe('CardWrapper', () => {
                 width: 1920,
                 scale: null,
                 focalLeft: 50,
-                focalTop: 50
+                focalTop: 50,
+                customizable: null
               }
             ],
             endAt: null,
@@ -126,7 +129,8 @@ describe('CardWrapper', () => {
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
             eventLabel: null,
-            endEventLabel: null
+            endEventLabel: null,
+            customizable: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -186,6 +190,7 @@ describe('CardWrapper', () => {
           showGeneratedSubtitles: null,
           eventLabel: null,
           endEventLabel: null,
+          customizable: null,
           children: [
             {
               id: 'image5.id',
@@ -200,7 +205,8 @@ describe('CardWrapper', () => {
               blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
               scale: null,
               focalLeft: 50,
-              focalTop: 50
+              focalTop: 50,
+              customizable: null
             }
           ]
         }
@@ -233,7 +239,8 @@ describe('CardWrapper', () => {
                 width: 1920,
                 scale: null,
                 focalLeft: 50,
-                focalTop: 50
+                focalTop: 50,
+                customizable: null
               }
             ],
             endAt: null,
@@ -257,7 +264,8 @@ describe('CardWrapper', () => {
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
             eventLabel: null,
-            endEventLabel: null
+            endEventLabel: null,
+            customizable: null
           }
         ],
         coverBlockId: 'video5.id',

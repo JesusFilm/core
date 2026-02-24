@@ -1,1 +1,1 @@
-corepack enable && corepack prepare pnpm --activate
+corepack enable && corepack prepare pnpm@10.15.1 --activate

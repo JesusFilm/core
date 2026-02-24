@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 
-import { CaslFactory, CaslGuard } from '@core/nest/common/CaslAuthModule'
-
+import { CaslFactory, CaslGuard } from '../CaslAuthModule'
 import { PrismaService } from '../prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../prismaErrors'
 

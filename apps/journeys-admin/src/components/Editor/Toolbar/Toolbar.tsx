@@ -305,7 +305,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     borderRadius: '8px',
-                    flexShrink: 1
+                    flexShrink: 1,
+                    width: '100%'
                   }}
                 >
                   <JourneyDetails />

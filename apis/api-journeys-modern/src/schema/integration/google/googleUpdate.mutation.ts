@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { GraphQLError } from 'graphql'
 
-import { encryptSymmetric } from '@core/nest/common/crypto'
 import { prisma } from '@core/prisma/journeys/client'
+import { encryptSymmetric } from '@core/yoga/crypto'
 
 import { env } from '../../../env'
 import { builder } from '../../builder'
@@ -97,7 +97,8 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
               accessSecretCipherText: ciphertext,
               accessSecretIv: iv,
               accessSecretTag: tag,
-              accountEmail
+              accountEmail,
+              oauthStale: false // Clear stale flag on successful reconnection
             }
           })
         }

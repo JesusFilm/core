@@ -43,20 +43,21 @@ locals {
     "VERCEL_TOKEN"
   ]
   service_config = {
-    name           = "api-journeys"
-    is_public      = false
-    container_port = local.port
-    host_port      = local.port
-    cpu            = 1024
-    memory         = 2048
-    desired_count  = 2
-    zone_id        = var.ecs_config.zone_id
+    name                              = "api-journeys"
+    is_public                         = false
+    container_port                    = local.port
+    host_port                         = local.port
+    cpu                               = 1024
+    memory                            = 2048
+    desired_count                     = var.env == "stage" ? 1 : 2
+    zone_id                           = var.ecs_config.zone_id
+    health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })
     auto_scaling = {
-      max_capacity = 4
-      min_capacity = 2
+      max_capacity = var.env == "stage" ? 1 : 4
+      min_capacity = var.env == "stage" ? 1 : 2
       cpu = {
         target_value = 75
       }

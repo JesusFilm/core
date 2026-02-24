@@ -789,9 +789,9 @@ describe('EventLabel', () => {
       const select = screen.getByRole('combobox')
       fireEvent.mouseDown(select)
       await waitFor(() => {
-        expect(screen.getByText('Custom Event 1')).toBeInTheDocument()
+        expect(screen.getByText('Custom Tracking 1')).toBeInTheDocument()
       })
-      fireEvent.click(screen.getByText('Custom Event 1'))
+      fireEvent.click(screen.getByText('Custom Tracking 1'))
 
       await waitFor(() => {
         expect(mockExecuteResult).toHaveBeenCalled()
@@ -841,9 +841,9 @@ describe('EventLabel', () => {
       const select = screen.getByRole('combobox')
       fireEvent.mouseDown(select)
       await waitFor(() => {
-        expect(screen.getByText('Custom Event 2')).toBeInTheDocument()
+        expect(screen.getByText('Custom Tracking 2')).toBeInTheDocument()
       })
-      fireEvent.click(screen.getByText('Custom Event 2'))
+      fireEvent.click(screen.getByText('Custom Tracking 2'))
 
       await waitFor(() => expect(mockExecuteResult).toHaveBeenCalled())
 
@@ -903,9 +903,9 @@ describe('EventLabel', () => {
       const select = screen.getByRole('combobox')
       fireEvent.mouseDown(select)
       await waitFor(() => {
-        expect(screen.getByText('Custom Event 2')).toBeInTheDocument()
+        expect(screen.getByText('Custom Tracking 2')).toBeInTheDocument()
       })
-      fireEvent.click(screen.getByText('Custom Event 2'))
+      fireEvent.click(screen.getByText('Custom Tracking 2'))
 
       await waitFor(() => expect(mockExecuteResult).toHaveBeenCalled())
 
@@ -965,7 +965,8 @@ describe('EventLabel', () => {
     it('should undo start event label', async () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: BlockEventLabel.specialVideoStart,
-        endEventLabel: null
+        endEventLabel: null,
+        customizable: null
       })
 
       const executeMock = createVideoStartEventLabelUpdateMock(
@@ -1025,7 +1026,8 @@ describe('EventLabel', () => {
     it('should redo start event label', async () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: BlockEventLabel.specialVideoStart,
-        endEventLabel: null
+        endEventLabel: null,
+        customizable: null
       })
 
       const executeMock = createVideoStartEventLabelUpdateMock(
@@ -1098,7 +1100,8 @@ describe('EventLabel', () => {
     it('should update end event label', async () => {
       const videoBlock = createVideoBlockMock({
         eventLabel: null,
-        endEventLabel: null
+        endEventLabel: null,
+        customizable: null
       })
 
       const executeMock = createVideoEndEventLabelUpdateMock(

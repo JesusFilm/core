@@ -78,13 +78,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
       driver: ApolloFederationDriver,
       typePaths:
         process.env.NODE_ENV !== 'production'
-          ? [
-              join(process.cwd(), 'apis/api-journeys/src/app/**/*.graphql'),
-              join(
-                process.cwd(),
-                'libs/nest/common/src/lib/TranslationModule/translation.graphql'
-              )
-            ]
+          ? [join(process.cwd(), 'apis/api-journeys/src/app/**/*.graphql')]
           : [join(process.cwd(), 'assets/**/*.graphql')],
       context: ({ req }) => ({ headers: req.headers }),
       cache: 'bounded'

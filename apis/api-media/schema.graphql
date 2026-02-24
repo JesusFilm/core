@@ -9,6 +9,14 @@ type ArclightApiKey
   defaultPlatform: DefaultPlatform!
 }
 
+type AuthenticatedUser
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  mediaUserRoles: [MediaRole!]!
+}
+
 interface BaseError {
   message: String
 }
@@ -45,6 +53,25 @@ type BibleCitation {
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
+
+type CheckVideoInAlgoliaMismatch {
+  field: String
+  expected: String
+  actual: String
+}
+
+type CheckVideoInAlgoliaResult {
+  ok: Boolean
+  mismatches: [CheckVideoInAlgoliaMismatch!]
+  recordUrl: String
+  error: String
+}
+
+type CheckVideoVariantsInAlgoliaResult {
+  ok: Boolean
+  missingVariants: [String!]
+  browseUrl: String
+}
 
 type CloudflareImage {
   id: ID!
@@ -321,6 +348,7 @@ type Mutation {
 
   """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+  userMediaProfileUpdate(input: UserMediaProfileUpdateInput!): UserMediaProfile!
   videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
   videoSubtitleDelete(id: ID!): VideoSubtitle!
@@ -334,6 +362,8 @@ type Mutation {
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
   fixVideoLanguages(videoId: ID!): Boolean!
+  updateVideoAlgoliaIndex(videoId: ID!): Boolean!
+  updateVideoVariantAlgoliaIndex(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -627,7 +657,7 @@ type Playlist {
   createdAt: DateTime!
   updatedAt: DateTime!
   slug: String!
-  owner: User!
+  owner: AuthenticatedUser!
   items: [PlaylistItem!]!
 }
 
@@ -717,6 +747,7 @@ type Query {
     first: Int
     last: Int
   ): QueryShortLinksConnection!
+  userMediaProfile: UserMediaProfile
   videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
@@ -725,6 +756,8 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
+  checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
   videoOrigins: [VideoOrigin!]!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
@@ -1025,12 +1058,27 @@ type UnsplashUserLinks {
   self: String!
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  mediaUserRoles: [MediaRole!]!
+type UserMediaProfile {
+  """The database UUID"""
+  id: ID!
+
+  """The Firebase user ID"""
+  userId: ID!
+
+  """Language IDs array related to IDs in api-languages"""
+  languageInterests: [Language!]
+
+  """Country IDs array"""
+  countryInterests: [ID!]
+
+  """IDs of video collections the user is interested in"""
+  userInterests: [Video!]
+}
+
+input UserMediaProfileUpdateInput {
+  languageInterestIds: [ID!]
+  countryInterestIds: [ID!]
+  userInterestIds: [ID!]
 }
 
 type Video

@@ -50,6 +50,7 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -68,7 +69,8 @@ export function ShareItem({
   journey,
   handleCloseMenu,
   handleKeepMounted,
-  buttonVariant = 'icon'
+  buttonVariant = 'icon',
+  setHasOpenDialog
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -105,6 +107,7 @@ export function ShareItem({
     setAnchorEl(event.currentTarget)
     handleKeepMounted?.()
     handleCloseMenu?.()
+    setHasOpenDialog?.(true)
   }
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -128,6 +131,7 @@ export function ShareItem({
         open={Boolean(anchorEl)}
         onClose={() => {
           setAnchorEl(null)
+          setHasOpenDialog?.(false)
         }}
         dialogTitle={{ title: t('Share'), closeButton: true }}
         sx={{ minWidth: 350 }}

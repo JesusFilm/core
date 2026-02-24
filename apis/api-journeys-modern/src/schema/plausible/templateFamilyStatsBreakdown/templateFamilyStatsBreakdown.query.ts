@@ -109,7 +109,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         events
       )
 
-      const journeyIds = [
+      const journeyIdsFromPlausible = [
         ...new Set(
           transformedResults.map(
             (result: TransformedResult) => result.journeyId
@@ -126,6 +126,37 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         allowedEvents == null || allowedEvents.has('journeyVisitors')
       const shouldIncludeJourneyResponses =
         allowedEvents == null || allowedEvents.has('journeyResponses')
+
+      // Fetch all child journeys from the template to check for responses
+      const allChildJourneys = await prisma.journey.findMany({
+        where: {
+          fromTemplateId: templateJourney.id,
+          ...(status != null && status.length > 0
+            ? { status: { in: status } }
+            : {})
+        },
+        select: {
+          id: true
+        }
+      })
+
+      const allChildJourneyIds = allChildJourneys.map((journey) => journey.id)
+
+      // Get responses for all child journeys
+      const allChildJourneysResponses = shouldIncludeJourneyResponses
+        ? await getJourneysResponses(allChildJourneyIds)
+        : []
+
+      // Include journey IDs that have responses but no Plausible stats
+      const journeyIdsWithResponses = new Set(
+        allChildJourneysResponses.map((result) => result.journeyId)
+      )
+      const journeyIds = [
+        ...new Set([
+          ...journeyIdsFromPlausible,
+          ...Array.from(journeyIdsWithResponses)
+        ])
+      ]
 
       const [journeys, pageVisitors] = await Promise.all([
         prisma.journey.findMany({
@@ -184,7 +215,11 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       const resultsWithPermissions = addPermissionsAndNames(
         transformedResults,
         journeys,
-        context.user
+        context.user,
+        {
+          responsesByJourneyId,
+          allowedEvents
+        }
       )
 
       return resultsWithPermissions.map((result) => {

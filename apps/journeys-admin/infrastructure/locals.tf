@@ -36,7 +36,7 @@ locals {
     host_port      = local.port
     cpu            = 1024
     memory         = 2048
-    desired_count  = 1
+    desired_count  = var.env == "stage" ? 1 : 1
     zone_id        = var.ecs_config.zone_id
     alb = {
       arn      = var.ecs_config.alb.arn
@@ -46,8 +46,8 @@ locals {
       port = local.port
     })
     auto_scaling = {
-      max_capacity = 4
-      min_capacity = 1
+      max_capacity = var.env == "stage" ? 1 : 4
+      min_capacity = var.env == "stage" ? 1 : 1
       cpu = {
         target_value = 75
       }

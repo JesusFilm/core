@@ -9,7 +9,6 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { TeamMenu } from '.'
 
@@ -310,13 +309,11 @@ describe('TeamMenu', () => {
 
     const { getByRole } = render(
       <MockedProvider mocks={[{ ...getTeamsMock, result }]}>
-        <FlagsProvider flags={{ teamIntegrations: true }}>
-          <SnackbarProvider>
-            <TeamProvider>
-              <TeamMenu />
-            </TeamProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamMenu />
+          </TeamProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('button'))

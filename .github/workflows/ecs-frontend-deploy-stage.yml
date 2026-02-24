@@ -7,11 +7,9 @@ on:
       - stage
 jobs:
   affected:
-    name: Detect affected projects
     runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
-      arclight: ${{ steps.set.outputs.arclight }}
-      journeys_admin: ${{ steps.set.outputs.journeys_admin }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,27 +23,16 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
-      - id: set
-        name: compute if arclight is affected
+      - id: set-matrix
+        name: set matrix app to affected array
         run: |
-          set -euo pipefail
-          list=$(pnpm -s exec nx show projects --affected)
-          if echo "$list" | awk '{print $1}' | grep -xq 'arclight'; then
-            echo "arclight=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "arclight=false" >> "$GITHUB_OUTPUT"
-          fi
-          if echo "$list" | awk '{print $1}' | grep -xq 'journeys-admin'; then
-            echo "journeys_admin=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "journeys_admin=false" >> "$GITHUB_OUTPUT"
-          fi
-
+          echo "matrix=$(pnpm exec ts-node tools/scripts/affected-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
   arclight:
     needs: [affected]
-    if: ${{ needs.affected.outputs.arclight == 'true' }}
+    if: contains(needs.affected.outputs.matrix, 'arclight')
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
       name: arclight
@@ -62,6 +49,7 @@ jobs:
       DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
       DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
       DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
       DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
       DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
       DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
@@ -71,11 +59,10 @@ jobs:
       DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
       DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-
   e2e-arclight:
     name: E2E Arclight (stage)
     needs: [affected, arclight]
-    if: ${{ needs.affected.outputs.arclight == 'true' }}
+    if: contains(needs.affected.outputs.matrix, 'arclight')
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -90,7 +77,7 @@ jobs:
           node-version: 22
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
+        run: pnpm install --frozen-lockfile
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests (Arclight stage)
@@ -112,7 +99,7 @@ jobs:
           PLAYWRIGHT_PASSWORD5: ${{ secrets.PLAYWRIGHT_PASSWORD5 }}
   journeys-admin:
     needs: [affected]
-    if: ${{ needs.affected.outputs.journeys_admin == 'true' }}
+    if: contains(needs.affected.outputs.matrix, 'journeys-admin')
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
     with:
       name: journeys-admin
@@ -129,6 +116,36 @@ jobs:
       DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
       DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
       DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
+      DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
+      DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
+      DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+      DOPPLER_PLAYER_TOKEN: ${{ secrets.DOPPLER_PLAYER_TOKEN }}
+      DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+      DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
+      DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+      DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+  cms:
+    needs: [affected]
+    if: contains(needs.affected.outputs.matrix, 'cms')
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-stage-worker.yml@stage
+    with:
+      name: cms
+      env: stage
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
+      DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
+      DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
+      DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+      DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+      DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+      DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_CMS_TOKEN: ${{ secrets.DOPPLER_CMS_TOKEN }}
       DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
       DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
       DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}

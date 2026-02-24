@@ -21,7 +21,7 @@ interface LinksFormProps {
 
 export function LinksForm({ links }: LinksFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { values, errors, touched, handleBlur, setFieldValue, handleChange } =
+  const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<Record<string, string>>()
 
   function handleOpenLink(
@@ -52,8 +52,9 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     window.open(targetUrl, '_blank', 'noopener,noreferrer')
   }
 
-  function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>): void {
+  function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>): void {
     const { name, value } = e.target
+    if (!value) return
     const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
     void setFieldValue(name, url)
   }
@@ -156,12 +157,8 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                   fullWidth
                   type={link.linkType === 'email' ? 'email' : 'text'}
                   value={values?.[fieldName] ?? ''}
-                  onChange={
-                    link.linkType === 'email' || link.linkType === 'chatButtons'
-                      ? handleChange
-                      : handleLinkChange
-                  }
-                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  onBlur={handleLinkBLur}
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
                   helperText={hasError ? (errors?.[fieldName] as string) : ' '}

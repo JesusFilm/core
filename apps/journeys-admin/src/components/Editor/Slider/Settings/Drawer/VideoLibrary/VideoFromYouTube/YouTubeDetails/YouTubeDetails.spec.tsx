@@ -170,6 +170,8 @@ describe('YouTubeDetails', () => {
     expect(onSelect).toHaveBeenCalledWith({
       endAt: 363,
       startAt: 0,
+      image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg',
+      title: 'Blessing and Curse',
       source: VideoBlockSource.youTube,
       videoId: 'jQaeIJOA6J0',
       subtitleLanguageId: null
@@ -234,6 +236,7 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -385,6 +388,7 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -595,6 +599,7 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -701,6 +706,7 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -727,6 +733,8 @@ describe('YouTubeDetails', () => {
     expect(onSelect).toHaveBeenCalledWith({
       endAt: 100,
       startAt: 10,
+      image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg',
+      title: 'Blessing and Curse',
       source: VideoBlockSource.youTube,
       videoId: 'jQaeIJOA6J0',
       subtitleLanguageId: '529'
@@ -760,6 +768,7 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -786,6 +795,8 @@ describe('YouTubeDetails', () => {
     expect(onSelect).toHaveBeenCalledWith({
       endAt: 200,
       startAt: 20,
+      image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg',
+      title: 'Blessing and Curse',
       source: VideoBlockSource.youTube,
       videoId: 'jQaeIJOA6J0',
       subtitleLanguageId: null
@@ -835,6 +846,7 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
       children: []
     }
 
@@ -861,6 +873,8 @@ describe('YouTubeDetails', () => {
     expect(onSelect).toHaveBeenCalledWith({
       endAt: 363,
       startAt: 0,
+      image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg',
+      title: 'Blessing and Curse',
       source: VideoBlockSource.youTube,
       videoId: 'jQaeIJOA6J0',
       subtitleLanguageId: null

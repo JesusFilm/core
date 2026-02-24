@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
 import { JourneyProfile } from '@core/prisma/journeys/client'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { User } from '../../lib/firebaseClient'
 import { PrismaService } from '../../lib/prisma.service'
 import { MailChimpService } from '../mailChimp/mailChimp.service'
 

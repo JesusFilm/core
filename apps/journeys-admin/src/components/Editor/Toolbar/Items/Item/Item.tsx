@@ -48,6 +48,8 @@ export function Item({
               }
             ]
           }}
+          enterTouchDelay={0}
+          leaveTouchDelay={2000}
         >
           <span>
             {count != null ? (

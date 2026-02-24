@@ -1,4 +1,4 @@
-import '@core/nest/common/tracer'
+import './app/lib/tracer'
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { json } from 'body-parser'

@@ -1,5 +1,9 @@
 {
   "724": "724",
+  "Try the new design.": "Yeni tasarımı deneyin.",
+  "Better search, languages, and collections.": "Daha iyi arama, diller ve koleksiyonlar.",
+  "Better search. Better language support. Better collections.": "Daha iyi arama. Daha iyi dil desteği. Daha iyi koleksiyonlar.",
+  "New Design": "Yeni Tasarım",
   "close": "Kapat",
   "No Downloads Available": "Mevcut İndirme Yok",
   "Highest": "En yüksek",
@@ -36,8 +40,6 @@
   "Language": "Dil",
   "Subtitles are not available in {{language}}.": "Altyazılar {{language}}adresinde mevcut değildir.",
   "Subtitles": "Altyazılar",
-  "Available Languages": "Mevcut Diller",
-  "Other Languages": "Diğer Diller",
   "Show subtitles": "Altyazıları göster",
   "Read more...": "Daha fazlasını okuyun...",
   "Related questions": "İlgili sorular",
@@ -46,7 +48,7 @@
   "Have a private discussion with someone who is ready to listen.": "Dinlemeye hazır biriyle özel bir görüşme yapın.",
   "Chat with a person": "Bir kişiyle sohbet edin",
   "Ask a Bible question": "Bir Kutsal Kitap sorusu sorun",
-  "Clip ": "Klips ",
+  "Clip ": "Klip ",
   " of ": " . ",
   "If you could ask the creator of this video a question, what would it be?": "Bu videonun yaratıcısına bir soru sorabilseydiniz, bu ne olurdu?",
   "Bible Quotes": "İncil'den Alıntılar",
@@ -93,9 +95,5 @@
   "Behind The Scenes": "Perde Arkası",
   "Trailer": "Fragman",
   "Available in {{count}} languages._one": "{{count}} dilinde mevcuttur.",
-  "Available in {{count}} languages._other": "{{count}} dillerinde mevcuttur.",
-  "Better search. Better language support. Better collections.": "Daha iyi arama. Daha iyi dil desteği. Daha iyi koleksiyonlar.",
-  "Better search, languages, and collections.": "Daha iyi arama, diller ve koleksiyonlar.",
-  "Try the new design.": "Yeni tasarımı deneyin.",
-  "New Design": "Yeni Tasarım"
+  "Available in {{count}} languages._other": "{{count}} dillerinde mevcuttur."
 }

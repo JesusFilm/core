@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Formik, FormikProvider } from 'formik'
 
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
@@ -89,6 +90,38 @@ describe('LinksForm', () => {
       'textbox'
     )
     fireEvent.change(input, { target: { value: 'example.com' } })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
+  })
+
+  it('should update value on change and not add https:// protocol if it exists', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'url-1',
+        linkType: 'url',
+        url: '',
+        label: 'URL Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = jest.fn()
+    render(
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, { target: { value: 'https://example.com' } })
+    fireEvent.blur(input)
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
 
@@ -331,6 +364,7 @@ describe('LinksForm', () => {
       'textbox'
     )
     fireEvent.change(input, { target: { value: 'example.com' } })
+    fireEvent.blur(input)
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
 

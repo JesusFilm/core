@@ -58,9 +58,12 @@ language-SCRIPT-REGION
    - Crowdin detects new content
    - DeepL automatically generates initial translations
    - Translation team reviews translations (optional)
-   - Crowdin automatically creates a GitHub PR with new translations
+   - Crowdin automatically creates a GitHub PR with new translations ([view open Crowdin PRs](https://github.com/JesusFilm/core/pulls?q=is%3Apr+title%3A+%22chore%3A+new+crowdin+translations%22+is%3Aopen))
      - This is configured in our crowdin.yml file
      - For more information see [Crowdin GitHub Integration](https://support.crowdin.com/github-integration/) and [Crowdin Configuration File](https://support.crowdin.com/developer/configuration-file/)
+
+3. **Crowdin PR review and merge**:
+   - The Production Engineering team is responsible for reviewing and merging Crowdin translation PRs on a weekly basis to ensure translations are regularly updated in production.
 
 > **Important**: Crowdin will create and push Pull Requests with translations automatically, regardless of whether the translation team has reviewed them. This ensures continuous deployment but means that manual review of translations should be done post-deployment if needed.
 

@@ -10,9 +10,6 @@ import { MultiselectSubmissionEventRef } from './multiselectSubmissionEvent'
 
 builder.mutationField('multiselectSubmissionEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     nullable: false,
     type: MultiselectSubmissionEventRef,
     args: {

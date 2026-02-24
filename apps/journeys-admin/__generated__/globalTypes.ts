@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum App {
+  JesusFilmOne = "JesusFilmOne",
+  NextSteps = "NextSteps",
+}
+
 export enum BlockEventLabel {
   custom1 = "custom1",
   custom2 = "custom2",
@@ -101,6 +106,8 @@ export enum IconColor {
 export enum IconName {
   ArrowBackRounded = "ArrowBackRounded",
   ArrowForwardRounded = "ArrowForwardRounded",
+  ArrowLeftContained2 = "ArrowLeftContained2",
+  ArrowRightContained2 = "ArrowRightContained2",
   BeenhereRounded = "BeenhereRounded",
   ChatBubbleOutlineRounded = "ChatBubbleOutlineRounded",
   CheckCircleRounded = "CheckCircleRounded",
@@ -108,16 +115,24 @@ export enum IconName {
   ChevronRightRounded = "ChevronRightRounded",
   ContactSupportRounded = "ContactSupportRounded",
   FormatQuoteRounded = "FormatQuoteRounded",
+  Home4 = "Home4",
   Launch = "Launch",
+  LinkAngled = "LinkAngled",
   LiveTvRounded = "LiveTvRounded",
   LockOpenRounded = "LockOpenRounded",
   MailOutline = "MailOutline",
   MenuBookRounded = "MenuBookRounded",
+  MessageChat1 = "MessageChat1",
+  Note2 = "Note2",
+  Phone = "Phone",
   PlayArrowRounded = "PlayArrowRounded",
   RadioButtonUncheckedRounded = "RadioButtonUncheckedRounded",
   SendRounded = "SendRounded",
   SubscriptionsRounded = "SubscriptionsRounded",
   TranslateRounded = "TranslateRounded",
+  UserProfile2 = "UserProfile2",
+  UsersProfiles3 = "UsersProfiles3",
+  Volume5 = "Volume5",
 }
 
 export enum IconSize {
@@ -205,6 +220,46 @@ export enum MessagePlatform {
   viber = "viber",
   vk = "vk",
   whatsApp = "whatsApp",
+}
+
+export enum PlausibleEvent {
+  buttonClick = "buttonClick",
+  chatButtonClick = "chatButtonClick",
+  chatsClicked = "chatsClicked",
+  christDecisionCapture = "christDecisionCapture",
+  custom1Capture = "custom1Capture",
+  custom2Capture = "custom2Capture",
+  custom3Capture = "custom3Capture",
+  footerChatButtonClick = "footerChatButtonClick",
+  footerThumbsDownButtonClick = "footerThumbsDownButtonClick",
+  footerThumbsUpButtonClick = "footerThumbsUpButtonClick",
+  gospelCompleteCapture = "gospelCompleteCapture",
+  gospelStartCapture = "gospelStartCapture",
+  journeyResponses = "journeyResponses",
+  journeyVisitors = "journeyVisitors",
+  linksClicked = "linksClicked",
+  multiSelectSubmit = "multiSelectSubmit",
+  navigateNextStep = "navigateNextStep",
+  navigatePreviousStep = "navigatePreviousStep",
+  pageview = "pageview",
+  prayerRequestCapture = "prayerRequestCapture",
+  radioQuestionSubmit = "radioQuestionSubmit",
+  rsvpCapture = "rsvpCapture",
+  shareButtonClick = "shareButtonClick",
+  signUpSubmit = "signUpSubmit",
+  specialVideoCompleteCapture = "specialVideoCompleteCapture",
+  specialVideoStartCapture = "specialVideoStartCapture",
+  textResponseSubmit = "textResponseSubmit",
+  videoCollapse = "videoCollapse",
+  videoComplete = "videoComplete",
+  videoExpand = "videoExpand",
+  videoPause = "videoPause",
+  videoPlay = "videoPlay",
+  videoProgress25 = "videoProgress25",
+  videoProgress50 = "videoProgress50",
+  videoProgress75 = "videoProgress75",
+  videoStart = "videoStart",
+  videoTrigger = "videoTrigger",
 }
 
 export enum Role {
@@ -419,6 +474,7 @@ export interface ChatOpenEventCreateInput {
 
 export interface CreateVerificationRequestInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface CustomDomainCreateInput {
@@ -487,6 +543,7 @@ export interface ImageBlockCreateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  customizable?: boolean | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -499,6 +556,7 @@ export interface ImageBlockUpdateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  customizable?: boolean | null;
 }
 
 export interface IntegrationGoogleCreateInput {
@@ -612,13 +670,6 @@ export interface JourneyUpdateInput {
   socialNodeY?: number | null;
 }
 
-export interface JourneyVisitorExportSelect {
-  name?: boolean | null;
-  email?: boolean | null;
-  phone?: boolean | null;
-  createdAt?: boolean | null;
-}
-
 export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
@@ -660,6 +711,7 @@ export interface JourneysQueryOptions {
   hostname?: string | null;
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
+  skipRoutingFilter?: boolean | null;
 }
 
 export interface LanguagesFilter {
@@ -678,6 +730,7 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface MultiselectBlockCreateInput {
@@ -726,6 +779,15 @@ export interface PlausibleStatsAggregateFilter {
   date?: string | null;
   filters?: string | null;
   interval?: string | null;
+}
+
+export interface PlausibleStatsBreakdownFilter {
+  property: string;
+  period?: string | null;
+  date?: string | null;
+  limit?: number | null;
+  page?: number | null;
+  filters?: string | null;
 }
 
 export interface QrCodeCreateInput {
@@ -942,6 +1004,7 @@ export interface VideoBlockCreateInput {
   posterBlockId?: string | null;
   subtitleLanguageId?: string | null;
   showGeneratedSubtitles?: boolean | null;
+  customizable?: boolean | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -964,6 +1027,7 @@ export interface VideoBlockUpdateInput {
   subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
   showGeneratedSubtitles?: boolean | null;
+  customizable?: boolean | null;
 }
 
 export interface VideoCollapseEventCreateInput {

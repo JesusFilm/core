@@ -72,6 +72,7 @@ describe('getCurrentEventLabel', () => {
       subtitleLanguage: null,
       mediaVideo: null,
       action: null,
+      customizable: null,
       children: []
     }
 
@@ -101,6 +102,6 @@ describe('getCurrentEventLabel', () => {
 
     const result = getCurrentEventLabel(t, buttonBlock)
     expect(result.type).toBe(BlockEventLabel.custom1)
-    expect(result.label).toBe('Custom Event 1')
+    expect(result.label).toBe('Custom Tracking 1')
   })
 })

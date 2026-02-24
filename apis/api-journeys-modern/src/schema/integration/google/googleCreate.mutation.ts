@@ -1,8 +1,8 @@
 import axios, { type AxiosResponse } from 'axios'
 import { GraphQLError } from 'graphql'
 
-import { encryptSymmetric } from '@core/nest/common/crypto'
 import { prisma } from '@core/prisma/journeys/client'
+import { encryptSymmetric } from '@core/yoga/crypto'
 
 import { env } from '../../../env'
 import { builder } from '../../builder'

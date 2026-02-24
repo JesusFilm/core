@@ -20,15 +20,24 @@ export const UNKNOWN_JOURNEYS_AGGREGATE_ID = '__unknown_journeys__'
  *
  * Filters out results for journeys that cannot be matched.
  *
+ * Also includes journeys with only responses (no Plausible stats) if provided.
+ *
  * @param transformedResults - The transformed breakdown results with journey IDs and stats
  * @param journeys - Array of journeys with ACL information
  * @param user - The current user for permission checking
+ * @param options - Optional configuration
+ * @param options.responsesByJourneyId - Map of journey IDs to response counts for journeys with only responses
+ * @param options.allowedEvents - Set of allowed event names to filter by
  * @returns Array of breakdown responses with journey names, team names, and stats
  */
 export function addPermissionsAndNames(
   transformedResults: TransformedResult[],
   journeys: JourneyWithAcl[],
-  user: User
+  user: User,
+  options?: {
+    responsesByJourneyId?: Map<string, number>
+    allowedEvents?: Set<string> | null
+  }
 ): TemplateFamilyStatsBreakdownResponse[] {
   const journeyById = new Map(journeys.map((journey) => [journey.id, journey]))
 
@@ -81,6 +90,45 @@ export function addPermissionsAndNames(
         visitors: unknownStatsByEvent.get(event) ?? 0
       }))
     })
+  }
+
+  // Add journeys with only responses (no Plausible stats)
+  if (options?.responsesByJourneyId != null) {
+    const journeyIdsWithPlausibleStats = new Set(
+      results
+        .filter((result) => result.journeyId !== UNKNOWN_JOURNEYS_AGGREGATE_ID)
+        .map((result) => result.journeyId)
+    )
+
+    const allowedEvents = options.allowedEvents
+    const shouldIncludeJourneyResponses =
+      allowedEvents == null || allowedEvents.has('journeyResponses')
+
+    if (shouldIncludeJourneyResponses) {
+      for (const journey of journeys) {
+        const hasPlausibleStats = journeyIdsWithPlausibleStats.has(journey.id)
+        const responsesCount = options.responsesByJourneyId.get(journey.id) ?? 0
+
+        if (
+          !hasPlausibleStats &&
+          responsesCount > 0 &&
+          ability(Action.Read, subject('Journey', journey), user)
+        ) {
+          results.push({
+            journeyId: journey.id,
+            journeyName: journey.title ?? 'Untitled Journey',
+            teamName: journey.team?.title ?? 'No Team',
+            status: journey.status,
+            stats: [
+              {
+                event: 'journeyResponses',
+                visitors: responsesCount
+              }
+            ]
+          })
+        }
+      }
+    }
   }
 
   return results

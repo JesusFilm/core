@@ -9,6 +9,8 @@ import {
 import { builder } from '../builder'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
+import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+
 const VideoPublishChildrenAndLanguagesResult = builder.objectRef<{
   parentId: string
   publishedChildIds: string[]
@@ -93,30 +95,25 @@ builder.mutationFields((t) => ({
             where: { id: { in: unpublishedVariantIds } },
             data: { published: true }
           })
-
-          // Update availableLanguages per video to include language if missing
-          const updatesByVideo: Record<string, Set<string>> = {}
-          for (const v of unpublishedVariants) {
-            if (!updatesByVideo[v.videoId])
-              updatesByVideo[v.videoId] = new Set()
-            updatesByVideo[v.videoId].add(v.languageId)
-          }
-          await Promise.all(
-            Object.entries(updatesByVideo).map(async ([videoId, langSet]) => {
-              const languageIds = Array.from(langSet)
-              for (const languageId of languageIds) {
-                await tx.video.update({
-                  where: {
-                    id: videoId,
-                    NOT: { availableLanguages: { has: languageId } }
-                  },
-                  data: { availableLanguages: { push: languageId } }
-                })
-              }
-            })
-          )
         }
       })
+
+      try {
+        await Promise.all(
+          allChildIds.map(async (childId) => {
+            await updateVideoAvailableLanguages(childId, {
+              skipAlgolia: true,
+              skipCache: true
+            })
+          })
+        )
+        await updateVideoAvailableLanguages(parent.id, {
+          skipAlgolia: true,
+          skipCache: true
+        })
+      } catch (error) {
+        console.error('Language management update error:', error)
+      }
 
       // Ensure parent has empty variants for all published child variant languages
       const variantsToConsider = await prisma.videoVariant.findMany({
@@ -134,7 +131,12 @@ builder.mutationFields((t) => ({
 
       // Update indices and caches
       try {
-        await updateVideoInAlgolia(parent.id)
+        // Update videos index for parent + all children (hasAvailableLanguages relies on availableLanguages)
+        await Promise.all(
+          [parent.id, ...allChildIds].map((videoId) =>
+            updateVideoInAlgolia(videoId)
+          )
+        )
       } catch (error) {
         console.error('Algolia update error:', error)
       }

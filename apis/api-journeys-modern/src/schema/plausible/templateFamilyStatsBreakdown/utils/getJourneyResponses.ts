@@ -6,17 +6,20 @@ import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
  * Gets the count of text responses for each journey.
  * Only counts journey visitors that have submitted a text response (lastTextResponse is not null).
  *
- * @param journeys - Array of journeys to get response counts for
- * @returns Array of journey IDs with response counts. Returns an empty array if journeys is empty or if no journeys have responses.
+ * @param journeysOrIds - Array of journeys or journey IDs to get response counts for
+ * @returns Array of journey IDs with response counts. Returns an empty array if input is empty or if no journeys have responses.
  */
 export async function getJourneysResponses(
-  journeys: JourneyWithAcl[]
+  journeysOrIds: JourneyWithAcl[] | string[]
 ): Promise<{ journeyId: string; visitors: number }[]> {
-  if (journeys.length === 0) {
+  if (journeysOrIds.length === 0) {
     return []
   }
 
-  const journeyIds = journeys.map((journey) => journey.id)
+  const journeyIds =
+    typeof journeysOrIds[0] === 'string'
+      ? (journeysOrIds as string[])
+      : (journeysOrIds as JourneyWithAcl[]).map((journey) => journey.id)
 
   const results = await prisma.journeyVisitor.groupBy({
     by: ['journeyId'],

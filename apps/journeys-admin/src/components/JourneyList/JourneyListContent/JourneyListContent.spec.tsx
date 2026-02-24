@@ -52,6 +52,82 @@ describe('JourneyListContent', () => {
     } as any)
   })
 
+  describe('Learn more button visibility', () => {
+    it('should render "Learn more" as an external link when templates + active', async () => {
+      renderJourneyListContent({
+        mocks: [noTemplatesMock],
+        contentType: 'templates',
+        status: 'active'
+      })
+
+      const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
+      expect(learnMoreLink).toHaveAttribute(
+        'href',
+        'https://support.nextstep.is/article/1517-creating-a-template'
+      )
+      expect(learnMoreLink).toHaveAttribute('target', '_blank')
+      expect(learnMoreLink).toHaveAttribute(
+        'rel',
+        expect.stringContaining('noopener')
+      )
+      expect(learnMoreLink).toHaveAttribute(
+        'rel',
+        expect.stringContaining('noreferrer')
+      )
+    })
+
+    it('should not show "Learn more" when contentType is journeys', async () => {
+      renderJourneyListContent({
+        mocks: [noJourneysMock],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      await waitFor(() =>
+        expect(screen.getByText('No journeys to display.')).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not show "Learn more" when contentType is templates and status is archived', async () => {
+      renderJourneyListContent({
+        mocks: [noArchivedTemplatesMock],
+        contentType: 'templates',
+        status: 'archived'
+      })
+
+      await waitFor(() =>
+        expect(screen.getByText('No archived templates.')).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not show "Learn more" when contentType is templates and status is trashed', async () => {
+      renderJourneyListContent({
+        mocks: [noTrashedTemplatesMock],
+        contentType: 'templates',
+        status: 'trashed'
+      })
+
+      await waitFor(() =>
+        expect(
+          screen.getByText('Your trashed templates will appear here.')
+        ).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('Active Journeys', () => {
     it('should render journeys list', async () => {
       const { getByText } = renderJourneyListContent({
@@ -130,7 +206,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('This feature is coming soon.')).toBeInTheDocument()
+        expect(getByText('Make your first template.')).toBeInTheDocument()
       )
     })
 
@@ -462,9 +538,7 @@ describe('JourneyListContent', () => {
 
       await waitFor(() => {
         expect(
-          getByText(
-            'Full template functionality will be available in a future update.'
-          )
+          getByText('Templates let your team reuse and share projects.')
         ).toBeInTheDocument()
       })
     })

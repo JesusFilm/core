@@ -9,12 +9,30 @@ import {
 } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
+import { JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION } from '@core/journeys/ui/useJourneyAiTranslateSubscription/useJourneyAiTranslateSubscription'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
+
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 
 import { TranslateJourneyDialog } from './TranslateJourneyDialog'
 
 jest.mock('@mui/material/useMediaQuery')
+
+jest.mock(
+  '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery',
+  () => ({
+    useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
+    extractTemplateIdsFromJourneys: jest.requireActual(
+      '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+    ).extractTemplateIdsFromJourneys
+  })
+)
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 describe('TranslateJourneyDialog', () => {
   // Mock console methods to reduce noise during tests
@@ -121,10 +139,23 @@ describe('TranslateJourneyDialog', () => {
   }
 
   const handleClose = jest.fn()
+  const refetchTemplateStats = jest.fn()
 
   beforeEach(() => {
     journeyDuplicateMock.result.mockClear()
     handleClose.mockClear()
+    refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   it('should render correctly', () => {
@@ -287,5 +318,107 @@ describe('TranslateJourneyDialog', () => {
       },
       { timeout: 3000 }
     )
+  })
+
+  it('should call refetchTemplateStats when translating a journey with fromTemplateId', async () => {
+    const journeyWithTemplateId = {
+      ...defaultJourney,
+      fromTemplateId: 'template-id-123',
+      trashedAt: null
+    }
+
+    const translateSubscriptionMock = {
+      request: {
+        query: JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
+        variables: {
+          journeyId: 'duplicatedJourneyId',
+          name: 'Journey Heading',
+          journeyLanguageName: '',
+          textLanguageId: '496',
+          textLanguageName: 'Français'
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyAiTranslateCreateSubscription: {
+            progress: 100,
+            message: 'Translation completed',
+            journey: {
+              id: 'duplicatedJourneyId',
+              title: 'Viaje Traducido',
+              description: 'Esta es una descripción traducida',
+              languageId: '496',
+              createdAt: '2023-04-25T12:34:56Z',
+              updatedAt: '2023-04-25T12:34:56Z',
+              blocks: [],
+              __typename: 'Journey',
+              language: {
+                __typename: 'Language',
+                id: '496',
+                name: [
+                  {
+                    __typename: 'LanguageName',
+                    value: 'Français',
+                    primary: true
+                  }
+                ]
+              }
+            },
+            __typename: 'JourneyAiTranslateCreateSubscriptionPayload'
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          getLanguagesMock,
+          getLastActiveTeamIdAndTeamsMock,
+          {
+            ...journeyDuplicateMock,
+            result: jest.fn(() => ({
+              data: {
+                journeyDuplicate: {
+                  id: 'duplicatedJourneyId',
+                  fromTemplateId: 'template-id-123'
+                }
+              }
+            }))
+          },
+          translateSubscriptionMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <JourneyProvider
+              value={{ journey: journeyWithTemplateId, variant: 'admin' }}
+            >
+              <TranslateJourneyDialog
+                open={true}
+                onClose={handleClose}
+                journey={journeyWithTemplateId}
+              />
+            </JourneyProvider>
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox')).not.toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
+
+    fireEvent.focus(screen.getByRole('combobox'))
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => {
+      expect(refetchTemplateStats).toHaveBeenCalledWith(['template-id-123'])
+    })
   })
 })

@@ -104,8 +104,8 @@ export function Dialog({
     >
       {dialogTitle != null && (
         <MuiDialogTitle>
-          {dialogTitle.icon != null && dialogTitle.icon}
           {dialogTitle.title}
+          {dialogTitle.icon != null && dialogTitle.icon}
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
             <IconButton
               size="medium"
