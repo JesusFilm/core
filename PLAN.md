@@ -272,6 +272,7 @@ Issues found when running `nx serve journeys-admin` and entering AI-related area
 |---|---------|--------|------------|
 | 1 | `Module not found: Can't resolve 'langfuse'` in `src/libs/ai/langfuse/server.ts` (and client) | Code imports `Langfuse` / `LangfuseWeb` from the `langfuse` package and `LangfuseExporter` from `langfuse-vercel`. Only `langfuse-vercel` was in `package.json`; the core SDK is a separate dependency. | Added `langfuse: "^3.37.4"` to `package.json` and ran `pnpm install`. |
 | 2 | `Module not found: Can't resolve '@ai-sdk/react'` in `AiChat.tsx` (and other AI UI components) | Merge took main's `ai` v5 and kept `@ai-sdk/google` etc., but the React bindings package `@ai-sdk/react` was never added. | Added `@ai-sdk/react: "^2.0.0"` to `package.json` (v2 pairs with ai v5; v3 requires ai v6) and ran `pnpm install`. |
+| 3 | Runtime error at `value.trim()` in `Form.tsx` (line 33) when checking empty input | In AI SDK v5, `useChat`'s `input` can be `undefined`. `isInputEmpty(value: string)` was called with `input`, so `.trim()` threw when `input` was undefined. | Made `isInputEmpty` accept `string or undefined` and guard with null check and `String(value).trim().length === 0`. |
 
 More issues are expected (e.g. AI SDK v5 API breakages, Zod v4, lint failures) and will be added here as they are resolved.
 

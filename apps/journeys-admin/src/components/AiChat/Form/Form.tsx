@@ -29,8 +29,8 @@ export function Form({
 }: FormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const isInputEmpty = (value: string): boolean => {
-    return value.trim().length === 0
+  const isInputEmpty = (value: string | undefined): boolean => {
+    return value == null || String(value).trim().length === 0
   }
 
   const handleFormSubmit = (e: React.FormEvent) => {
