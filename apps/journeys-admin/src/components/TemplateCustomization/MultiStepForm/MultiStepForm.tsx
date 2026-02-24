@@ -120,7 +120,9 @@ export function MultiStepForm(): ReactElement {
     const targetJourneyId =
       typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
     const currentIndex = screens.indexOf(activeScreen)
-    if (currentIndex < 0 || currentIndex >= screens.length - 1) return
+    const isLastOrInvalidScreen =
+      currentIndex < 0 || currentIndex >= screens.length - 1
+    if (isLastOrInvalidScreen) return
     void router.replace(
       buildCustomizeUrl(targetJourneyId, screens[currentIndex + 1], undefined)
     )

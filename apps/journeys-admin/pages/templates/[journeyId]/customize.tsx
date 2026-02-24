@@ -3,7 +3,6 @@ import absoluteUrl from 'next-absolute-url'
 import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { useEffect } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
@@ -16,8 +15,7 @@ import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
-
-const JOURNEY_NOT_FOUND_ERROR = 'journeyNotFound'
+import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 
 function CustomizePage() {
   const router = useRouter()
@@ -30,14 +28,6 @@ function CustomizePage() {
       skipRoutingFilter: true
     }
   })
-
-  useEffect(() => {
-    if (!router.isReady || loading) return
-    const journeyId = router.query.journeyId
-    if (journeyId != null && data?.journey == null) {
-      void router.replace(`/templates?error=${JOURNEY_NOT_FOUND_ERROR}`)
-    }
-  }, [router.isReady, router.query.journeyId, loading, data?.journey, router])
 
   return (
     <>

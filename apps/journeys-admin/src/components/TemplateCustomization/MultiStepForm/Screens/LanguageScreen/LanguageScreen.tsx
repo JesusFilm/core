@@ -133,13 +133,10 @@ export function LanguageScreen({
       languageSelect: { id: languageId }
     } = values
 
-    if (isSignedIn && shouldSkipDuplicate(journey, languageId, teamId)) {
-      handleNext()
-      return
-    }
-
     setLoading(true)
-    if (isSignedIn) {
+    if (shouldSkipDuplicate(journey, languageId, teamId)) {
+      handleNext()
+    } else if (isSignedIn) {
       const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
       const { data: duplicateData } = await journeyDuplicate({
         variables: { id: journeyId, teamId, forceNonTemplate: true }
