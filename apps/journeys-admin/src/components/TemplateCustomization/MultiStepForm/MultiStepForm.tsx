@@ -122,11 +122,7 @@ export function MultiStepForm(): ReactElement {
     const currentIndex = screens.indexOf(activeScreen)
     if (currentIndex < 0 || currentIndex >= screens.length - 1) return
     void router.replace(
-      buildCustomizeUrl(
-        targetJourneyId,
-        screens[currentIndex + 1],
-        undefined
-      )
+      buildCustomizeUrl(targetJourneyId, screens[currentIndex + 1], undefined)
     )
   }
 

@@ -62,9 +62,7 @@ describe('useTemplateCustomizationRedirect', () => {
         replace: mockReplace
       })
 
-      renderHook(() =>
-        useTemplateCustomizationRedirect(createParams())
-      )
+      renderHook(() => useTemplateCustomizationRedirect(createParams()))
 
       expect(mockReplace).not.toHaveBeenCalled()
     })
@@ -182,11 +180,7 @@ describe('useTemplateCustomizationRedirect', () => {
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl(
-          'journey-1',
-          getFirstGuestAllowedScreen(),
-          true
-        )
+        buildCustomizeUrl('journey-1', getFirstGuestAllowedScreen(), true)
       )
     })
 
@@ -204,11 +198,7 @@ describe('useTemplateCustomizationRedirect', () => {
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl(
-          'journey-1',
-          getFirstGuestAllowedScreen(),
-          true
-        )
+        buildCustomizeUrl('journey-1', getFirstGuestAllowedScreen(), true)
       )
     })
 

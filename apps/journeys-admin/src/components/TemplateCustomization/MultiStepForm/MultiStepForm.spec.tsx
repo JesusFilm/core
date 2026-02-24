@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React from 'react'
 import { SnackbarProvider } from 'notistack'
+import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
@@ -524,7 +524,9 @@ describe('MultiStepForm', () => {
         )
         expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
-        expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-0')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('language-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('language-next'))
         setRouterQuery({ journeyId, screen: 'text' })
@@ -538,7 +540,9 @@ describe('MultiStepForm', () => {
           </FlagsProvider>
         )
 
-        expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-1')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('text-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('text-next'))
         setRouterQuery({ journeyId, screen: 'links' })
@@ -552,7 +556,9 @@ describe('MultiStepForm', () => {
           </FlagsProvider>
         )
 
-        expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-2')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('links-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('links-next'))
         setRouterQuery({ journeyId, screen: 'media' })
@@ -566,7 +572,9 @@ describe('MultiStepForm', () => {
           </FlagsProvider>
         )
 
-        expect(screen.getByTestId('progress-stepper-step-3')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-3')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('media-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('media-next'))
         setRouterQuery({ journeyId, screen: 'social' })
@@ -580,7 +588,9 @@ describe('MultiStepForm', () => {
           </FlagsProvider>
         )
 
-        expect(screen.getByTestId('progress-stepper-step-4')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-4')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('social-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('social-next'))
         setRouterQuery({ journeyId, screen: 'done' })
@@ -724,7 +734,9 @@ describe('MultiStepForm', () => {
         )
         expect(screen.getByTestId('MultiStepForm')).toBeInTheDocument()
 
-        expect(screen.getByTestId('progress-stepper-step-0')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-0')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('language-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('language-next'))
         setRouterQuery({ journeyId, screen: 'media' })
@@ -738,7 +750,9 @@ describe('MultiStepForm', () => {
           </FlagsProvider>
         )
 
-        expect(screen.getByTestId('progress-stepper-step-1')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-1')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('media-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('media-next'))
         setRouterQuery({ journeyId, screen: 'social' })
@@ -752,7 +766,9 @@ describe('MultiStepForm', () => {
           </FlagsProvider>
         )
 
-        expect(screen.getByTestId('progress-stepper-step-2')).toBeInTheDocument()
+        expect(
+          screen.getByTestId('progress-stepper-step-2')
+        ).toBeInTheDocument()
         expect(screen.getByTestId('social-screen')).toBeInTheDocument()
         fireEvent.click(screen.getByTestId('social-next'))
         setRouterQuery({ journeyId, screen: 'done' })
