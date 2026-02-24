@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -16,6 +15,13 @@ import { useUploadTaskMap } from './useUploadTaskMap'
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
+
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => {
+  return {
+    useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+  }
+})
 
 const mockJourney = { ...mockJourneyBase, id: 'journey-1' }
 
@@ -76,6 +82,20 @@ const videoBlockUpdateMock: MockedResponse = {
   }
 }
 
+const videoBlockUpdateErrorMock: MockedResponse = {
+  request: {
+    query: VIDEO_BLOCK_UPDATE,
+    variables: {
+      id: 'video-block-1',
+      input: {
+        videoId: 'mux-video-id',
+        source: 'mux'
+      }
+    }
+  },
+  error: new Error('Update failed')
+}
+
 function useMuxVideoProcessingWithTaskMap() {
   const taskMap = useUploadTaskMap()
   const processing = useMuxVideoProcessing({
@@ -96,13 +116,11 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
   }): ReactElement {
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: mockJourney, variant: 'customize' }}
-          >
-            {children}
-          </JourneyProvider>
-        </SnackbarProvider>
+        <JourneyProvider
+          value={{ journey: mockJourney, variant: 'customize' }}
+        >
+          {children}
+        </JourneyProvider>
       </MockedProvider>
     )
   }
@@ -112,6 +130,7 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
 describe('useMuxVideoProcessing', () => {
   beforeEach(() => {
     jest.useFakeTimers()
+    jest.clearAllMocks()
   })
 
   afterEach(() => {
@@ -166,6 +185,10 @@ describe('useMuxVideoProcessing', () => {
       await jest.runAllTimersAsync()
     })
 
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith('File uploaded successfully', {
+      variant: 'success',
+      autoHideDuration: 2000
+    })
     expect(result.current.getUploadStatus('video-block-1')).toBeNull()
   })
 
@@ -197,6 +220,10 @@ describe('useMuxVideoProcessing', () => {
       await jest.runAllTimersAsync()
     })
 
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Upload failed. Please try again',
+      { variant: 'error', autoHideDuration: 2000 }
+    )
     const status = result.current.getUploadStatus('video-block-1')
     expect(status?.status).toBe('error')
     expect(status?.error).toBe('Failed to check video status')
@@ -233,5 +260,37 @@ describe('useMuxVideoProcessing', () => {
     expect(result.current.getUploadStatus('video-block-1')).toMatchObject({
       status: 'processing'
     })
+  })
+
+  it('should update task to error and show error snackbar when update mutation fails', async () => {
+    const Wrapper = createWrapper([
+      getMyMuxVideoReadyMock,
+      videoBlockUpdateErrorMock
+    ])
+    const { result } = renderHook(() => useMuxVideoProcessingWithTaskMap(), {
+      wrapper: Wrapper
+    })
+
+    act(() => {
+      result.current.setUploadTasks((prev) =>
+        new Map(prev).set('video-block-1', createInitialTask('video-block-1'))
+      )
+    })
+
+    act(() => {
+      result.current.startPolling('video-block-1', 'mux-video-id')
+    })
+
+    await act(async () => {
+      await jest.runAllTimersAsync()
+    })
+
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Upload failed. Please try again',
+      { variant: 'error', autoHideDuration: 2000 }
+    )
+    const status = result.current.getUploadStatus('video-block-1')
+    expect(status?.status).toBe('error')
+    expect(status?.error).toBe('Upload failed. Please try again')
   })
 })

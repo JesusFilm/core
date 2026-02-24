@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { UpChunk } from '@mux/upchunk'
-import { act, render, renderHook } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
+import { act, render, renderHook, waitFor } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -26,6 +25,11 @@ jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
 
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
+
 const mockJourney = { ...mockJourneyBase, id: 'journey-1' }
 
 const createMuxVideoUploadByFileMock: MockedResponse = {
@@ -42,6 +46,14 @@ const createMuxVideoUploadByFileMock: MockedResponse = {
       }
     }
   }
+}
+
+const createMuxVideoUploadByFileErrorMock: MockedResponse = {
+  request: {
+    query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
+    variables: { name: 'video.mp4' }
+  },
+  error: new Error('Upload failed')
 }
 
 const getMyMuxVideoReadyMock: MockedResponse = {
@@ -111,15 +123,13 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
   }): ReactElement {
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: mockJourney, variant: 'customize' }}
-          >
-            <TemplateVideoUploadProvider>
-              {children}
-            </TemplateVideoUploadProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
+        <JourneyProvider
+          value={{ journey: mockJourney, variant: 'customize' }}
+        >
+          <TemplateVideoUploadProvider>
+            {children}
+          </TemplateVideoUploadProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
   }
@@ -339,5 +349,54 @@ describe('TemplateVideoUploadProvider', () => {
       expect(status?.status).toBe('error')
       expect(status?.error).toBe('File is too large. Max size is 1GB.')
     })
+  })
+
+  it('shows error snackbar when upload fails', async () => {
+    const Wrapper = createWrapper([createMuxVideoUploadByFileErrorMock])
+    const { result } = renderHook(() => useTemplateVideoUpload(), {
+      wrapper: Wrapper
+    })
+
+    const file = new File([''], 'video.mp4', { type: 'video/mp4' })
+    await act(async () => {
+      result.current.startUpload('video-block-1', file)
+    })
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        { variant: 'error', autoHideDuration: 2000 }
+      )
+    })
+  })
+
+  it('shows error snackbar when UpChunk emits error', async () => {
+    const mockUpload = {
+      on: jest.fn((event: string, cb: () => void) => {
+        if (event === 'error') setTimeout(cb, 0)
+      }),
+      abort: jest.fn()
+    }
+    ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
+
+    const Wrapper = createWrapper([createMuxVideoUploadByFileMock])
+    const { result } = renderHook(() => useTemplateVideoUpload(), {
+      wrapper: Wrapper
+    })
+
+    const file = new File([''], 'video.mp4', { type: 'video/mp4' })
+    await act(async () => {
+      result.current.startUpload('video-block-1', file)
+    })
+
+    await waitFor(() => {
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        { variant: 'error', autoHideDuration: 2000 }
+      )
+    })
+    const status = result.current.getUploadStatus('video-block-1')
+    expect(status?.status).toBe('error')
+    expect(status?.error).toBe('Upload failed')
   })
 })
