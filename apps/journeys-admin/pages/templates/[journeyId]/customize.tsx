@@ -14,8 +14,8 @@ import {
 import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
-import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
+import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {
   const router = useRouter()
