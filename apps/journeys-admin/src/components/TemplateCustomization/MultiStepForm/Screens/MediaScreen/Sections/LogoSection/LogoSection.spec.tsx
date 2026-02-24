@@ -36,6 +36,12 @@ jest.mock('../../../../../../../libs/useImageUpload', () => {
   }
 })
 
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
+
 const logoImageBlock: LogoImageBlock = {
   __typename: 'ImageBlock',
   id: 'logo-block-id',
@@ -251,9 +257,10 @@ describe('LogoSection', () => {
     onUploadCompleteCallback('https://example.com/new-logo.png')
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Upload failed. Please try again')
-      ).toBeInTheDocument()
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        { variant: 'error', autoHideDuration: 2000 }
+      )
     })
   })
 
