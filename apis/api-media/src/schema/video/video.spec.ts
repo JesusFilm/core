@@ -3558,11 +3558,7 @@ describe('video', () => {
           query CoreVideoNullLang {
             _entities(
               representations: [
-                {
-                  __typename: "Video"
-                  id: "testId"
-                  primaryLanguageId: null
-                }
+                { __typename: "Video", id: "testId", primaryLanguageId: null }
               ]
             ) {
               ... on Video {
