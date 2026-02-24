@@ -75,8 +75,9 @@ export const builder = new SchemaBuilder<{
             where: { userId: context.currentUser.id }
           })
           return {
-            isAuthenticated: user?.email != null,
-            isAnonymous: user != null && user?.email == null,
+            isAuthenticated: context.currentUser?.email != null,
+            isAnonymous:
+              context.currentUser != null && context.currentUser?.email == null,
             isSuperAdmin: user?.superAdmin ?? false,
             isValidInterop: false
           }
