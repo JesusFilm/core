@@ -165,7 +165,7 @@ describe('LogoSection', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('calls imageBlockUpdate mutation and shows success snackbar on upload complete', async () => {
+  it('calls imageBlockUpdate mutation on upload complete', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
     mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
