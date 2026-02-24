@@ -26,7 +26,7 @@ import {
 } from './utils/mediaScreenUtils'
 
 interface MediaScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
 }
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {

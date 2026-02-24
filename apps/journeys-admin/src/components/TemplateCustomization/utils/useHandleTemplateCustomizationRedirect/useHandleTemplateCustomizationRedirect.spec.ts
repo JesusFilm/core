@@ -7,8 +7,8 @@ import {
 import type { CustomizationScreen } from '../getCustomizeFlowConfig'
 
 import {
-  useHandleTemplateCustomizationRedirect,
-  type UseHandleTemplateCustomizationRedirectParams
+  type UseHandleTemplateCustomizationRedirectParams,
+  useHandleTemplateCustomizationRedirect
 } from './useHandleTemplateCustomizationRedirect'
 
 const mockReplace = jest.fn()
@@ -37,11 +37,11 @@ function createParams(
   }
 }
 
-beforeEach(() => {
-  jest.clearAllMocks()
-})
-
 describe('useHandleTemplateCustomizationRedirect', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('screen validation (missing or invalid screen in URL)', () => {
     it('does not redirect when router is not ready', () => {
       renderHook(() =>
@@ -62,7 +62,14 @@ describe('useHandleTemplateCustomizationRedirect', () => {
     it('does not redirect when journeyId is empty', () => {
       renderHook(() =>
         useHandleTemplateCustomizationRedirect(
-          createParams({ journeyId: '', router: { isReady: true, query: {}, replace: mockReplace } as unknown as UseHandleTemplateCustomizationRedirectParams['router'] })
+          createParams({
+            journeyId: '',
+            router: {
+              isReady: true,
+              query: {},
+              replace: mockReplace
+            } as unknown as UseHandleTemplateCustomizationRedirectParams['router']
+          })
         )
       )
 
@@ -71,9 +78,7 @@ describe('useHandleTemplateCustomizationRedirect', () => {
 
     it('does not redirect when screens is empty', () => {
       renderHook(() =>
-        useHandleTemplateCustomizationRedirect(
-          createParams({ screens: [] })
-        )
+        useHandleTemplateCustomizationRedirect(createParams({ screens: [] }))
       )
 
       expect(mockReplace).not.toHaveBeenCalled()
@@ -91,7 +96,12 @@ describe('useHandleTemplateCustomizationRedirect', () => {
       renderHook(() => useHandleTemplateCustomizationRedirect(params))
 
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl('journey-1', 'language', undefined, mockOnTemplatesRedirect)
+        buildCustomizeUrl(
+          'journey-1',
+          'language',
+          undefined,
+          mockOnTemplatesRedirect
+        )
       )
       expect(mockEnqueueSnackbar).not.toHaveBeenCalledWith(
         expect.any(String),
@@ -115,7 +125,12 @@ describe('useHandleTemplateCustomizationRedirect', () => {
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl('journey-1', 'language', undefined, mockOnTemplatesRedirect)
+        buildCustomizeUrl(
+          'journey-1',
+          'language',
+          undefined,
+          mockOnTemplatesRedirect
+        )
       )
     })
 

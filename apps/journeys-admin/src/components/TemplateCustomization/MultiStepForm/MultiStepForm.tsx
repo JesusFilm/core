@@ -88,6 +88,9 @@ export function MultiStepForm(): ReactElement {
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
+  const link = `/journeys/${journey?.id ?? ''}`
+  const journeyId = router.query.journeyId as string
+
   const {
     screens,
     totalSteps,
@@ -102,7 +105,6 @@ export function MultiStepForm(): ReactElement {
     [journey, t, customizableMedia]
   )
 
-  const journeyId = router.query.journeyId as string
   const activeScreen = getActiveScreenFromQuery(
     router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
     screens
@@ -128,9 +130,10 @@ export function MultiStepForm(): ReactElement {
   })
 
   async function handleNext(overrideJourneyId?: string): Promise<void> {
+    const targetJourneyId =
+      typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
     const currentIndex = screens.indexOf(activeScreen)
     if (currentIndex < 0 || currentIndex >= screens.length - 1) return
-    const targetJourneyId = overrideJourneyId ?? journeyId
     void router.replace(
       buildCustomizeUrl(
         targetJourneyId,
@@ -148,8 +151,6 @@ export function MultiStepForm(): ReactElement {
       buildCustomizeUrl(journeyId, screen, undefined, onTemplatesRedirect)
     )
   }
-
-  const link = `/journeys/${journey?.id ?? ''}`
 
   return (
     <TemplateVideoUploadProvider>
