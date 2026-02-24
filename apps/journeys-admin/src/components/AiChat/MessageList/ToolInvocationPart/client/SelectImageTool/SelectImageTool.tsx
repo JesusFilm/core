@@ -1,4 +1,3 @@
-import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -9,15 +8,12 @@ import { ReactElement, useState } from 'react'
 
 import { ImageLibrary } from '../../../../../Editor/Slider/Settings/Drawer/ImageLibrary'
 
+import type { AddToolResultChildArg } from '../../ToolInvocationPart'
+import type { LegacyToolInvocationPart } from '../../MessageList'
+
 interface ClientSelectImageToolProps {
-  part: ToolInvocationUIPart
-  addToolResult: ({
-    toolCallId,
-    result
-  }: {
-    toolCallId: string
-    result: any
-  }) => void
+  part: LegacyToolInvocationPart
+  addToolResult: (arg: AddToolResultChildArg) => void
 }
 
 export function ClientSelectImageTool({

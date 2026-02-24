@@ -2,7 +2,8 @@ import { useChat } from '@ai-sdk/react'
 import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useUser } from 'next-firebase-auth'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { DefaultChatTransport, UIMessage } from 'ai'
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
@@ -12,6 +13,18 @@ import { Form } from './Form'
 import { MessageList } from './MessageList'
 import { StateEmpty, StateError, StateLoading } from './State'
 
+/** Convert UIMessage[] to legacy { role, content }[] for the current API route. */
+function toLegacyMessages(messages: UIMessage[]): { role: string; content: string }[] {
+  return messages.map((msg) => {
+    const content =
+      msg.parts
+        ?.filter((p): p is { type: 'text'; text: string } => p.type === 'text')
+        .map((p) => p.text)
+        .join('') ?? ''
+    return { role: msg.role, content }
+  })
+}
+
 interface AiChatProps {
   variant?: 'popup' | 'page'
 }
@@ -20,90 +33,110 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
   const user = useUser()
   const client = useApolloClient()
   const { journey } = useJourney()
-  const traceId = useRef<string | null>()
-  const sessionId = useRef<string | null>()
+  const traceId = useRef<string | null>(null)
+  const sessionId = useRef<string | null>(null)
   const {
     state: { selectedStepId, selectedBlockId }
   } = useEditor()
   const [waitForToolResult, setWaitForToolResult] = useState(false)
-  const fetchWithAuthorization = useCallback(
-    async (url: string, options: RequestInit): Promise<Response> => {
-      const token = await user?.getIdToken()
-      if (!token) throw new Error('Missing auth token')
+  const [input, setInput] = useState('')
 
-      return await fetch(url, {
-        ...options,
-        headers: {
-          ...options.headers,
-          Authorization: `JWT ${token}`
-        }
-      })
-    },
-    [user]
-  )
   useEffect(() => {
     sessionId.current = uuidv4()
   }, [])
+
+  const transport = useMemo(() => {
+    return new DefaultChatTransport({
+      api: '/api/chat',
+      credentials: 'omit',
+      prepareSendMessagesRequest: async (options) => {
+        const token = await user?.getIdToken()
+        if (!token) throw new Error('Missing auth token')
+        const legacyMessages = toLegacyMessages(options.messages)
+        return {
+          body: {
+            ...options.body,
+            messages: legacyMessages,
+            journeyId: journey?.id,
+            selectedStepId,
+            selectedBlockId,
+            sessionId: sessionId.current
+          },
+          headers: {
+            ...(options.headers as Record<string, string>),
+            Authorization: `JWT ${token}`
+          }
+        }
+      }
+    })
+  }, [user, journey?.id, selectedStepId, selectedBlockId])
+
   const {
     messages,
-    append,
+    sendMessage,
     status,
-    addToolResult,
-    handleInputChange,
-    handleSubmit,
-    input,
-    stop,
+    addToolResult: addToolResultV5,
+    setMessages,
     error,
-    reload,
-    setMessages
+    regenerate,
+    stop
   } = useChat({
-    fetch: fetchWithAuthorization,
-    maxSteps: 50,
-    credentials: 'omit',
+    transport,
     onToolCall: ({ toolCall }) => {
       if (toolCall.toolName.startsWith('client')) setWaitForToolResult(true)
     },
-    onResponse: (response) => {
-      traceId.current = response.headers.get('x-trace-id')
-    },
-    onFinish: (result) => {
-      setMessages((messages) =>
-        messages.map((message) => {
-          if (message.id == result.id) {
-            return {
-              ...message,
-              traceId: traceId.current
-            }
+    onFinish: ({ message, messages: currentMessages }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === message.id) {
+            return { ...msg, traceId: traceId.current }
           }
-          return message
+          return msg
         })
       )
-      const shouldRefetch = result.parts?.some(
-        (part) =>
+      const shouldRefetch = message.parts?.some(
+        (part: { type: string; toolInvocation?: { toolName: string } }) =>
           part.type === 'tool-invocation' &&
-          part.toolInvocation.toolName.endsWith('Update')
+          part.toolInvocation?.toolName.endsWith('Update')
       )
       if (shouldRefetch) {
         void client.refetchQueries({
           include: ['GetAdminJourney', 'GetStepBlocksWithPosition']
         })
       }
-    },
-    experimental_prepareRequestBody: (options) => {
-      return {
-        ...options,
-        journeyId: journey?.id,
-        selectedStepId,
-        selectedBlockId,
-        sessionId: sessionId.current
-      }
     }
   })
 
-  function handleAddToolResult(response: Parameters<typeof addToolResult>[0]) {
-    setWaitForToolResult(false)
-    addToolResult(response)
-  }
+  const handleSubmit = useCallback(
+    (e?: { preventDefault?: () => void }) => {
+      e?.preventDefault?.()
+      const text = input.trim()
+      if (!text) return
+      setInput('')
+      void sendMessage({ text })
+    },
+    [input, sendMessage]
+  )
+
+  const handleAddToolResult = useCallback(
+    ({
+      tool,
+      toolCallId,
+      result
+    }: {
+      tool: string
+      toolCallId: string
+      result: unknown
+    }) => {
+      setWaitForToolResult(false)
+      void addToolResultV5({
+        tool: tool as Parameters<typeof addToolResultV5>[0]['tool'],
+        toolCallId,
+        output: result
+      })
+    },
+    [addToolResultV5]
+  )
 
   return (
     <>
@@ -130,13 +163,12 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
           justifyContent: variant === 'page' ? 'flex-end' : undefined
         }}
       >
-        {/* this component displays it's children in reverse order */}
         <StateLoading status={status} />
         <StateEmpty
           messages={messages.filter((message) => message.role !== 'system')}
-          append={append}
+          onSendMessage={(text) => void sendMessage({ text })}
         />
-        <StateError error={error} reload={reload} />
+        <StateError error={error} onRetry={() => void regenerate()} />
         <MessageList
           status={status}
           messages={messages}
@@ -154,8 +186,8 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
       />
       <Form
         input={input}
+        setInput={setInput}
         onSubmit={handleSubmit}
-        onInputChange={handleInputChange}
         error={error}
         status={status}
         stop={stop}

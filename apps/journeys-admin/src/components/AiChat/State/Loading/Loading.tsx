@@ -1,11 +1,10 @@
-import { UseChatHelpers } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Collapse from '@mui/material/Collapse'
 import { ReactElement } from 'react'
 
 interface StateLoadingProps {
-  status: UseChatHelpers['status']
+  status: 'ready' | 'submitted' | 'streaming' | 'error'
 }
 
 export function StateLoading({

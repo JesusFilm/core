@@ -1,4 +1,3 @@
-import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -6,8 +5,10 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import type { LegacyToolInvocationPart } from '../../../MessageList'
+
 interface ClientRedirectUserToEditorToolProps {
-  part: ToolInvocationUIPart
+  part: LegacyToolInvocationPart
 }
 
 export function ClientRedirectUserToEditorTool({

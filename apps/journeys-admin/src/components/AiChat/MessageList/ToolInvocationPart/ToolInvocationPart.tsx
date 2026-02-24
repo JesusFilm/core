@@ -1,6 +1,5 @@
-import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback } from 'react'
 
 import { AgentGenerateImageTool } from './agent/GenerateImageTool'
 import { BasicTool } from './BasicTool'
@@ -9,15 +8,17 @@ import { RequestFormTool } from './client/RequestFormTool'
 import { ClientSelectImageTool } from './client/SelectImageTool'
 import { ClientSelectVideoTool } from './client/SelectVideoTool'
 
+import type { AddToolResultArg, LegacyToolInvocationPart } from '../MessageList'
+
 interface ToolInvocationPartProps {
-  part: ToolInvocationUIPart
-  addToolResult: ({
-    toolCallId,
-    result
-  }: {
-    toolCallId: string
-    result: any
-  }) => void
+  part: LegacyToolInvocationPart
+  addToolResult: (arg: AddToolResultArg) => void
+}
+
+/** Shape client tools use when calling addToolResult (tool name is added by this component). */
+export type AddToolResultChildArg = {
+  toolCallId: string
+  result: unknown
 }
 
 export function ToolInvocationPart({
@@ -25,6 +26,17 @@ export function ToolInvocationPart({
   addToolResult
 }: ToolInvocationPartProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const addToolResultForChild = useCallback(
+    ({ toolCallId, result }: AddToolResultChildArg) => {
+      addToolResult({
+        tool: part.toolInvocation.toolName,
+        toolCallId,
+        result
+      })
+    },
+    [addToolResult, part.toolInvocation.toolName]
+  )
 
   switch (part.toolInvocation.toolName) {
     case 'agentWebSearch':
@@ -78,13 +90,28 @@ export function ToolInvocationPart({
         />
       )
     case 'clientSelectImage':
-      return <ClientSelectImageTool part={part} addToolResult={addToolResult} />
+      return (
+        <ClientSelectImageTool
+          part={part}
+          addToolResult={addToolResultForChild}
+        />
+      )
     case 'clientRedirectUserToEditor':
       return <ClientRedirectUserToEditorTool part={part} />
     case 'clientSelectVideo':
-      return <ClientSelectVideoTool part={part} addToolResult={addToolResult} />
+      return (
+        <ClientSelectVideoTool
+          part={part}
+          addToolResult={addToolResultForChild}
+        />
+      )
     case 'clientRequestForm':
-      return <RequestFormTool part={part} addToolResult={addToolResult} />
+      return (
+        <RequestFormTool
+          part={part}
+          addToolResult={addToolResultForChild}
+        />
+      )
     case 'agentGenerateImage':
       return <AgentGenerateImageTool part={part} />
     default:

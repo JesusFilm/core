@@ -1,4 +1,4 @@
-import { Message, UseChatHelpers } from '@ai-sdk/react'
+import { getToolOrDynamicToolName, isToolOrDynamicToolUIPart, UIMessage } from 'ai'
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
@@ -6,16 +6,50 @@ import { TextPart } from './TextPart'
 import { ToolInvocationPart } from './ToolInvocationPart'
 import { UserFeedback } from './UserFeedback'
 
-interface MessageListProps {
-  status: UseChatHelpers['status']
-  messages: (Message & { traceId?: string | null })[]
-  addToolResult: ({
-    toolCallId,
-    result
-  }: {
+export type AddToolResultArg = {
+  tool: string
+  toolCallId: string
+  result: unknown
+}
+
+/** Normalize v5 tool part to legacy shape for existing UI components (toolInvocation.state: 'call' | 'result', args/result). */
+export function normalizeToolPart(
+  part: Parameters<typeof isToolOrDynamicToolUIPart>[0]
+): LegacyToolInvocationPart {
+  const toolName = getToolOrDynamicToolName(part)
+  const state =
+    part.state === 'output-available' || part.state === 'output-error'
+      ? 'result'
+      : 'call'
+  const input = 'input' in part ? part.input : undefined
+  const output = 'output' in part ? part.output : undefined
+  return {
+    toolInvocation: {
+      toolName,
+      toolCallId: part.toolCallId,
+      state,
+      args: input,
+      ...(part.state === 'output-available' && output !== undefined
+        ? { result: output }
+        : {})
+    }
+  }
+}
+
+export type LegacyToolInvocationPart = {
+  toolInvocation: {
+    toolName: string
     toolCallId: string
-    result: any
-  }) => void
+    state: 'call' | 'result'
+    args: unknown
+    result?: unknown
+  }
+}
+
+interface MessageListProps {
+  status: 'ready' | 'submitted' | 'streaming' | 'error'
+  messages: (UIMessage & { traceId?: string | null })[]
+  addToolResult: (arg: AddToolResultArg) => void
 }
 
 export function MessageList({
@@ -50,26 +84,25 @@ export function MessageList({
                   }}
                 >
                   {message.parts?.map((part, i) => {
-                    switch (part.type) {
-                      case 'text':
-                        return (
-                          <TextPart
-                            message={message}
-                            part={part}
-                            key={`text-${i}`}
-                          />
-                        )
-                      case 'tool-invocation':
-                        return (
-                          <ToolInvocationPart
-                            part={part}
-                            addToolResult={addToolResult}
-                            key={`tool-invocation-${i}`}
-                          />
-                        )
-                      default:
-                        return null
+                    if (part.type === 'text') {
+                      return (
+                        <TextPart
+                          message={message}
+                          part={part}
+                          key={`text-${i}`}
+                        />
+                      )
                     }
+                    if (isToolOrDynamicToolUIPart(part)) {
+                      return (
+                        <ToolInvocationPart
+                          part={normalizeToolPart(part)}
+                          addToolResult={addToolResult}
+                          key={`tool-${part.toolCallId}-${i}`}
+                        />
+                      )
+                    }
+                    return null
                   })}
                   {((isLastMessage && status === 'ready') || !isLastMessage) &&
                     message.traceId && (

@@ -1,4 +1,4 @@
-import { Message, TextUIPart } from '@ai-sdk/ui-utils'
+import { UIMessage } from 'ai'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
@@ -6,8 +6,8 @@ import { ReactElement } from 'react'
 import Markdown from 'react-markdown'
 
 interface TextPartProps {
-  message: Message
-  part: TextUIPart
+  message: UIMessage
+  part: { type: 'text'; text: string }
 }
 
 export function TextPart({ message, part }: TextPartProps): ReactElement {

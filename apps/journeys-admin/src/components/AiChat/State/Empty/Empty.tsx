@@ -1,4 +1,4 @@
-import { Message, UseChatHelpers } from '@ai-sdk/react'
+import { UIMessage } from 'ai'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
@@ -6,13 +6,13 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 interface StateEmptyProps {
-  messages: Message[]
-  append: UseChatHelpers['append']
+  messages: UIMessage[]
+  onSendMessage: (text: string) => void
 }
 
 export function StateEmpty({
   messages,
-  append
+  onSendMessage
 }: StateEmptyProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -30,45 +30,31 @@ export function StateEmpty({
           label={t('Customize my journey')}
           size="small"
           variant="outlined"
-          onClick={() => {
-            void append({
-              role: 'user',
-              content: 'Help me customize my journey.'
-            })
-          }}
+          onClick={() => onSendMessage('Help me customize my journey.')}
         />
         <Chip
           label={t('Translate to another language')}
           size="small"
           variant="outlined"
-          onClick={() => {
-            void append({
-              role: 'user',
-              content: 'Help me to translate my journey to another language.'
-            })
-          }}
+          onClick={() =>
+            onSendMessage(
+              'Help me to translate my journey to another language.'
+            )
+          }
         />
         <Chip
           label={t('Tell me about my journey')}
           size="small"
           variant="outlined"
-          onClick={() => {
-            void append({
-              role: 'user',
-              content: 'Tell me about my journey.'
-            })
-          }}
+          onClick={() => onSendMessage('Tell me about my journey.')}
         />
         <Chip
           label={t('What can I do to improve my journey?')}
           size="small"
           variant="outlined"
-          onClick={() => {
-            void append({
-              role: 'user',
-              content: 'What can I do to improve my journey?'
-            })
-          }}
+          onClick={() =>
+            onSendMessage('What can I do to improve my journey?')
+          }
         />
       </Box>
       <Typography

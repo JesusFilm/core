@@ -1,12 +1,13 @@
-import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import { lighten } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
+import type { LegacyToolInvocationPart } from '../../MessageList'
+
 interface BasicToolProps {
-  part: ToolInvocationUIPart
+  part: LegacyToolInvocationPart
   callText?: string
   resultText?: string
 }

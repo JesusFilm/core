@@ -1,4 +1,3 @@
-import { UseChatHelpers } from '@ai-sdk/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -9,19 +8,19 @@ import { ReactElement } from 'react'
 import ArrowUpIcon from '@core/shared/ui/icons/ArrowUp'
 
 interface FormProps {
-  onSubmit: UseChatHelpers['handleSubmit']
-  onInputChange: UseChatHelpers['handleInputChange']
-  error: UseChatHelpers['error']
-  status: UseChatHelpers['status']
-  stop: UseChatHelpers['stop']
-  input: UseChatHelpers['input']
+  input: string
+  setInput: (value: string) => void
+  onSubmit: (e?: { preventDefault?: () => void }) => void
+  error: Error | undefined
+  status: 'ready' | 'submitted' | 'streaming' | 'error'
+  stop: () => void
   waitForToolResult?: boolean
 }
 
 export function Form({
   input,
+  setInput,
   onSubmit: handleSubmit,
-  onInputChange: handleInputChange,
   error,
   status,
   stop,
@@ -53,7 +52,7 @@ export function Form({
           <TextField
             name="userMessage"
             value={input}
-            onChange={handleInputChange}
+            onChange={(e) => setInput(e.target.value)}
             placeholder={t('Ask Anything')}
             fullWidth
             multiline

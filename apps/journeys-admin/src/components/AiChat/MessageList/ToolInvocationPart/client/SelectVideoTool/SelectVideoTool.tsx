@@ -1,4 +1,3 @@
-import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -7,15 +6,12 @@ import { ReactElement, useState } from 'react'
 
 import { VideoLibrary } from '../../../../../Editor/Slider/Settings/Drawer/VideoLibrary'
 
+import type { AddToolResultChildArg } from '../../ToolInvocationPart'
+import type { LegacyToolInvocationPart } from '../../MessageList'
+
 interface ClientSelectVideoToolProps {
-  part: ToolInvocationUIPart
-  addToolResult: ({
-    toolCallId,
-    result
-  }: {
-    toolCallId: string
-    result: any
-  }) => void
+  part: LegacyToolInvocationPart
+  addToolResult: (arg: AddToolResultChildArg) => void
 }
 
 export function ClientSelectVideoTool({

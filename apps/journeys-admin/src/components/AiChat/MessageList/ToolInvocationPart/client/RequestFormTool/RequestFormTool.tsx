@@ -1,4 +1,5 @@
-import { ToolInvocationUIPart } from '@ai-sdk/ui-utils'
+import type { LegacyToolInvocationPart } from '../../../MessageList'
+import type { AddToolResultChildArg } from '../../ToolInvocationPart'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -91,14 +92,8 @@ function buildValidationSchema(formItems: any[]) {
   return z.object(shape)
 }
 interface RequestFormToolProps {
-  part: ToolInvocationUIPart
-  addToolResult: ({
-    toolCallId,
-    result
-  }: {
-    toolCallId: string
-    result: any
-  }) => void
+  part: LegacyToolInvocationPart
+  addToolResult: (arg: AddToolResultChildArg) => void
 }
 
 export function RequestFormTool({
