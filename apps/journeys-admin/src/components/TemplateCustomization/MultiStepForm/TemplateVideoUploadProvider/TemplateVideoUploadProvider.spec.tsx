@@ -123,12 +123,8 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
   }): ReactElement {
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
-        <JourneyProvider
-          value={{ journey: mockJourney, variant: 'customize' }}
-        >
-          <TemplateVideoUploadProvider>
-            {children}
-          </TemplateVideoUploadProvider>
+        <JourneyProvider value={{ journey: mockJourney, variant: 'customize' }}>
+          <TemplateVideoUploadProvider>{children}</TemplateVideoUploadProvider>
         </JourneyProvider>
       </MockedProvider>
     )

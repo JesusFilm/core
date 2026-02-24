@@ -116,9 +116,7 @@ function createWrapper(mocks: MockedResponse[] = []): React.FC<{
   }): ReactElement {
     return (
       <MockedProvider mocks={mocks} addTypename={false}>
-        <JourneyProvider
-          value={{ journey: mockJourney, variant: 'customize' }}
-        >
+        <JourneyProvider value={{ journey: mockJourney, variant: 'customize' }}>
           {children}
         </JourneyProvider>
       </MockedProvider>
@@ -185,10 +183,13 @@ describe('useMuxVideoProcessing', () => {
       await jest.runAllTimersAsync()
     })
 
-    expect(mockEnqueueSnackbar).toHaveBeenCalledWith('File uploaded successfully', {
-      variant: 'success',
-      autoHideDuration: 2000
-    })
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'File uploaded successfully',
+      {
+        variant: 'success',
+        autoHideDuration: 2000
+      }
+    )
     expect(result.current.getUploadStatus('video-block-1')).toBeNull()
   })
 
