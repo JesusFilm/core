@@ -1,19 +1,32 @@
+import { User as PrismaUser } from '@core/prisma/users/client'
+
 import { builder } from '../../builder'
 
-// Type for anonymous user shape
 interface AnonymousUserShape {
   id: string
 }
 
+export type UserShape = PrismaUser | AnonymousUserShape
+
+export const User = builder.interfaceRef<UserShape>('User').implement({
+  resolveType: (user) => {
+    if ('email' in user && user.email != null) return 'AuthenticatedUser'
+    return 'AnonymousUser'
+  },
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false })
+  })
+})
+
 export const AuthenticatedUser = builder.prismaObject('User', {
   variant: 'AuthenticatedUser',
+  interfaces: [User],
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     firstName: t.field({
       type: 'String',
       nullable: false,
       resolve: (user) => {
-        // Additional safeguard for firstName field
         if (!user.firstName || user.firstName.trim() === '') {
           console.warn(
             `User ${user.userId} has invalid firstName: "${user.firstName}", using fallback`
@@ -38,6 +51,7 @@ export const AuthenticatedUser = builder.prismaObject('User', {
 const AnonymousUserRef = builder.objectRef<AnonymousUserShape>('AnonymousUser')
 
 export const AnonymousUser = builder.objectType(AnonymousUserRef, {
+  interfaces: [User],
   shareable: true,
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false })
