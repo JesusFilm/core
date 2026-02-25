@@ -33,26 +33,25 @@ export function TemplateCardZoomDialog({
       onClose={onClose}
       aria-label={t('Card preview')}
       fullWidth
-      maxWidth={isDesktop ? 'lg' : 'sm'}
       disableScrollLock
       slotProps={{
         backdrop: {
           sx: { backgroundColor: 'rgba(0, 0, 0, 0.65)' }
-        }
-      }}
-      sx={{
-        '& .MuiPaper-root': {
-          borderRadius: 2,
-          width: '100%',
-          maxWidth: '95vw',
-          maxHeight: '90vh',
-          m: 'auto',
-          backgroundColor: 'transparent',
-          boxShadow: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'visible'
+        },
+        paper: {
+          sx: {
+            borderRadius: 2,
+            width: '100%',
+            maxWidth: '95vw',
+            maxHeight: '90vh',
+            m: 'auto',
+            backgroundColor: 'transparent',
+            boxShadow: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'visible'
+          }
         }
       }}
     >
