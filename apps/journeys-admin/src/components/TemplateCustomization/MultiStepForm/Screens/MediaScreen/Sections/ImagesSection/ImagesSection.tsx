@@ -70,10 +70,10 @@ export function ImagesSection({
           input: { src, scale: 100, focalLeft: 50, focalTop: 50 }
         }
       })
-      enqueueSnackbar(t('File uploaded successfully'), { variant: 'success' })
     } catch {
       enqueueSnackbar(t('Upload failed. Please try again'), {
-        variant: 'error'
+        variant: 'error',
+        autoHideDuration: 2000
       })
     }
   }
