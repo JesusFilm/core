@@ -105,5 +105,4 @@ describe('JourneyProfileResolver', () => {
       expect(await resolver.journeyProfileCreate(user)).toEqual(profile)
     })
   })
-
 })
