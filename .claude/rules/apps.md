@@ -1,12 +1,17 @@
 ---
 paths:
-  - 'apps/**/*.{ts,tsx}'
-  - 'apps/**/*.{js,jsx}'
+  - 'apps/arclight/**/*'
+  - 'apps/cms/**/*'
+  - 'apps/docs/**/*'
+  - 'apps/journeys/**/*'
+  - 'apps/journeys-admin/**/*'
+  - 'apps/player/**/*'
+  - 'apps/resources/**/*'
+  - 'apps/short-links/**/*'
+  - 'apps/video-importer/**/*'
+  - 'apps/videos-admin/**/*'
+  - 'apps/watch/**/*'
 ---
-
-# Apps Rules
-
-Applies to all apps **except** `apps/watch-modern` (which has its own rules).
 
 ## Stack
 

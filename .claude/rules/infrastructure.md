@@ -1,8 +1,6 @@
 ---
 paths:
-  - 'infrastructure/**/*.tf'
-  - 'infrastructure/**/*.tfvars'
-  - 'infrastructure/**/*.hcl'
+  - 'infrastructure/**/*'
 ---
 
 # Infrastructure Rules (Terraform / AWS)
