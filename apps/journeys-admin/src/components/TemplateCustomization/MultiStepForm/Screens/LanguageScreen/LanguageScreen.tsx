@@ -152,21 +152,21 @@ export function LanguageScreen({
 
   return (
     <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
+      <Stack alignItems="center" sx={{ pb: { xs: 6, sm: 10 } }}>
         <Typography
           variant="h4"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{ mb: 2 }}
         >
-          {t("Let's get started!")}
+          {t("Let's Get Started!")}
         </Typography>
         <Typography
           variant="h6"
           display={{ xs: 'block', sm: 'none' }}
           gutterBottom
         >
-          {t("Let's get started!")}
+          {t('Get Started')}
         </Typography>
         <Typography
           variant="subtitle2"
@@ -176,15 +176,25 @@ export function LanguageScreen({
         >
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          align="center"
+          display={{ xs: 'block', sm: 'none' }}
+        >
+          {t("A few quick edits and it's ready to share!")}
+        </Typography>
       </Stack>
-      <SocialImage />
+
       <Typography
         variant="subtitle2"
         gutterBottom
         sx={{ mb: { xs: 0, sm: 2 } }}
       >
-        {journey?.title ?? ''}
+        {`'${journey?.title ?? ''}'`}
       </Typography>
+      <SocialImage />
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
