@@ -1,10 +1,11 @@
 import { google } from '@ai-sdk/google'
-import { NoSuchToolError, generateObject, streamText } from 'ai'
+import { NoSuchToolError, streamText } from 'ai'
 import { jwtDecode } from 'jwt-decode'
 import { NextRequest } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
+import { messagesSchema } from '../../../src/libs/ai/chatRouteUtils'
 import {
   langfuse,
   langfuseEnvironment,
@@ -15,31 +16,6 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30
-
-export function errorHandler(error: unknown) {
-  if (error == null) {
-    return 'unknown error'
-  }
-
-  if (typeof error === 'string') {
-    return error
-  }
-
-  if (error instanceof Error) {
-    return error.message
-  }
-
-  return JSON.stringify(error)
-}
-
-export const messagesSchema = z.array(
-  z.object({
-    role: z.enum(['system', 'user', 'assistant']),
-    content: z.string()
-  })
-)
-
-export type Messages = z.infer<typeof messagesSchema>
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
@@ -115,31 +91,12 @@ export async function POST(req: NextRequest) {
         sessionId: sessionId ?? `${decoded.user_id}-${decoded.auth_time}`
       }
     },
-    experimental_repairToolCall: async ({
-      toolCall,
-      tools,
-      parameterSchema,
-      error
-    }) => {
-      if (NoSuchToolError.isInstance(error)) return null // do not attempt to fix invalid tool names
-
-      const tool = tools[toolCall.toolName]
-
-      const { object: repairedArgs } = await generateObject({
-        model: google('gemini-2.5-flash'),
-        schema: tool.parameters,
-        prompt: [
-          `The model tried to call the tool "${toolCall.toolName}"` +
-            ` with the following arguments:`,
-          JSON.stringify(toolCall.args),
-          `The tool accepts the following schema:`,
-          JSON.stringify(parameterSchema(toolCall)),
-          'Please fix the arguments.'
-        ].join('\n')
-      })
-      return { ...toolCall, args: JSON.stringify(repairedArgs) }
+    // Repair disabled: AI SDK no longer exposes tool.parameters (Zod) on tools;
+    // only inputSchema (JSONSchema7) is available, and generateObject expects Zod.
+    experimental_repairToolCall: async ({ error }) => {
+      if (NoSuchToolError.isInstance(error)) return null
+      return null // TODO: re-enable when SDK supports repair with current tool types
     },
-    maxSteps: 10,
     onFinish: async (result) => {
       await langfuseExporter.forceFlush()
       const trace = langfuse.trace({

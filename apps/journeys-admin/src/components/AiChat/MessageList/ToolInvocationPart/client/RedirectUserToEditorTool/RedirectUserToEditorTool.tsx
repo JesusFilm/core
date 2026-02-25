@@ -7,6 +7,11 @@ import { ReactElement } from 'react'
 
 import type { LegacyToolInvocationPart } from '../../../MessageList'
 
+interface RedirectArgs {
+  message?: string
+  journeyId?: string
+}
+
 interface ClientRedirectUserToEditorToolProps {
   part: LegacyToolInvocationPart
 }
@@ -16,21 +21,20 @@ export function ClientRedirectUserToEditorTool({
 }: ClientRedirectUserToEditorToolProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const args = part.toolInvocation.args as RedirectArgs
 
   switch (part.toolInvocation.state) {
     case 'call':
       return (
         <Box>
           <Typography variant="body2" color="text.secondary">
-            {part.toolInvocation.args.message}
+            {args.message}
           </Typography>
           <Box>
             <Button
               variant="outlined"
               onClick={() => {
-                void router.push(
-                  `/journeys/${part.toolInvocation.args.journeyId}`
-                )
+                void router.push(`/journeys/${args.journeyId}`)
               }}
             >
               {t('See My Journey!')}

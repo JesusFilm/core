@@ -1,7 +1,7 @@
-import { UIMessage } from 'ai'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Typography from '@mui/material/Typography'
+import { UIMessage } from 'ai'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 

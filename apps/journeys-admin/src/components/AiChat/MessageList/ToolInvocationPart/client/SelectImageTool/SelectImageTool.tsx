@@ -7,9 +7,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { ImageLibrary } from '../../../../../Editor/Slider/Settings/Drawer/ImageLibrary'
-
-import type { AddToolResultChildArg } from '../../ToolInvocationPart'
 import type { LegacyToolInvocationPart } from '../../MessageList'
+import type { AddToolResultChildArg } from '../../ToolInvocationPart'
 
 interface ClientSelectImageToolProps {
   part: LegacyToolInvocationPart

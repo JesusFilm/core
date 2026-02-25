@@ -1,5 +1,13 @@
-import { getToolOrDynamicToolName, isToolOrDynamicToolUIPart, UIMessage } from 'ai'
 import Box from '@mui/material/Box'
+/* eslint-disable sort-imports -- type ToolUIPart and value UIMessage order required for both type and alphabetical rules */
+import {
+  DynamicToolUIPart,
+  getToolOrDynamicToolName,
+  isToolOrDynamicToolUIPart,
+  type ToolUIPart,
+  UIMessage
+} from 'ai'
+/* eslint-enable sort-imports */
 import { ReactElement } from 'react'
 
 import { TextPart } from './TextPart'
@@ -14,7 +22,7 @@ export type AddToolResultArg = {
 
 /** Normalize v5 tool part to legacy shape for existing UI components (toolInvocation.state: 'call' | 'result', args/result). */
 export function normalizeToolPart(
-  part: Parameters<typeof isToolOrDynamicToolUIPart>[0]
+  part: ToolUIPart<Record<string, { input: unknown; output: unknown }>> | DynamicToolUIPart
 ): LegacyToolInvocationPart {
   const toolName = getToolOrDynamicToolName(part)
   const state =

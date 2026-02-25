@@ -1,7 +1,7 @@
-import { UIMessage } from 'ai'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
+import { UIMessage } from 'ai'
 import { ReactElement } from 'react'
 import Markdown from 'react-markdown'
 

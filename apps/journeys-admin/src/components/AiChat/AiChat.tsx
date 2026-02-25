@@ -1,8 +1,8 @@
 import { useChat } from '@ai-sdk/react'
 import { useApolloClient } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { useUser } from 'next-firebase-auth'
 import { DefaultChatTransport, UIMessage } from 'ai'
+import { useUser } from 'next-firebase-auth'
 import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -131,7 +131,7 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
     }) => {
       setWaitForToolResult(false)
       void addToolResultV5({
-        tool: tool as Parameters<typeof addToolResultV5>[0]['tool'],
+        tool,
         toolCallId,
         output: result
       })
@@ -167,9 +167,16 @@ export function AiChat({ variant = 'popup' }: AiChatProps): ReactElement {
         <StateLoading status={status} />
         <StateEmpty
           messages={messages.filter((message) => message.role !== 'system')}
-          onSendMessage={(text) => void sendMessage({ text })}
+          onSendMessage={(text) => {
+            void sendMessage({ text })
+          }}
         />
-        <StateError error={error} onRetry={() => void regenerate()} />
+        <StateError
+          error={error}
+          onRetry={() => {
+            void regenerate()
+          }}
+        />
         <MessageList
           status={status}
           messages={messages}

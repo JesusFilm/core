@@ -1,5 +1,3 @@
-import type { LegacyToolInvocationPart } from '../../../MessageList'
-import type { AddToolResultChildArg } from '../../ToolInvocationPart'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -25,6 +23,8 @@ import { z } from 'zod'
 import { toFormikValidationSchema } from 'zod-formik-adapter'
 
 import { formItemSchema } from '../../../../../../libs/ai/tools/client/requestForm/requestForm'
+import type { LegacyToolInvocationPart } from '../../../MessageList'
+import type { AddToolResultChildArg } from '../../ToolInvocationPart'
 
 type FormItem = z.infer<typeof formItemSchema>
 
@@ -50,9 +50,7 @@ function getStringValidator(
   }
 }
 
-function getNumberValidator(
-  item: FormItem
-): z.ZodNumber | z.ZodOptional<z.ZodNumber> {
+function getNumberValidator(item: FormItem): z.ZodType<number | undefined> {
   const validator = z.coerce.number()
   if (!item.required) return validator.optional()
 

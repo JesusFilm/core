@@ -289,4 +289,20 @@ More issues are expected (e.g. Zod v4, lint failures) and will be added here as 
 - **aiChat and tool-call reliability:** Responses are intermittent (e.g. possibly only the first query works). Tool calls may be failing intermittently, making recovery difficult. Consider re‑introducing per-tool try/catch and a controlled error response (experimented with previously but likely not committed).
 - **No actual journey updates / mirror responses:** The AI often reflects the user’s request back instead of applying journey changes. Likely causes: tool calls failing silently, and/or the system prompt (e.g. Langfuse `system/api/chat/route`) not in a good state. Needs verification of tool execution and prompt content.
 
-Next: run builds and test suites, then address the observations above (feature flag/visibility, tool error handling, system prompt and tool verification) before or alongside Phase 2 (architecture and dependency audit).
+**Build and test run (journeys-admin, 2025-02-24)** — scope limited to journeys-admin and related shared-ui/api as above.
+
+- **Fixes applied (low-hanging):**
+  - **ESLint (AiChat and related):** Import order and grouping in AiChat, MessageList, TextPart, ToolInvocationPart, RequestFormTool, SelectImageTool, SelectVideoTool, Empty; satisfied no-floating-promises (void where needed); removed unnecessary type assertion; sort-imports in MessageList resolved via eslint-disable for type vs value order.
+  - **Spec:** `get.spec.ts` → `get.spec.tsx` (JSX parse) and import group fix.
+  - **Next route:** Moved `errorHandler` and `messagesSchema` to `src/libs/ai/chatRouteUtils.ts` so the route only exports allowed symbols.
+  - **AI SDK (chat route):** `experimental_repairToolCall`: `parameterSchema` → `inputSchema`; repair logic **disabled** (tools no longer expose `tool.parameters`; only `inputSchema`; `generateObject` expects Zod). Removed `maxSteps` (no longer in streamText options). Dropped unused `generateObject` import.
+  - **Types:** MessageList `normalizeToolPart(part)` typed as `ToolUIPart | DynamicToolUIPart` with correct UITools constraint; RedirectUserToEditorTool `args` cast to `RedirectArgs`; RequestFormTool `getNumberValidator` return type `z.ZodType<number | undefined>` for coerced number + optional.
+
+- **Remaining / report-only:**
+  - **Build still fails:** Next.js build fails on **ESLint warnings** (many `@typescript-eslint/no-unused-vars` across pages/components; config treats warnings as errors). One run also exited with SIGKILL during lint/type-check (likely resource limit).
+  - **AI SDK breaking changes (for follow-up):** Route export constraint (fixed); repair callback disabled until tool schema can be supplied in a way compatible with `generateObject`; `maxSteps` removed/renamed in streamText; tool types (ToolUIPart / DynamicToolUIPart, UITools `output`).
+  - **Tests:** `nx test journeys-admin` started; several specs PASS (e.g. transformSteps, YouTubeDetails, EventLabel, CopyToTeamMenuItem). Console: Jest “Unknown option collectCoverage”, React “outdated JSX transform”, some “not wrapped in act(...)”, Apollo refetchQueries / “No more mocked responses”. Full run did not complete within timeout; no final pass/fail tally.
+
+- **Suggested next steps:** (1) Fix or relax ESLint so warnings do not fail the build. (2) Re-enable and reimplement tool-call repair using current SDK if needed. (3) Re-run `nx test journeys-admin` to completion and fix failing specs and mock/act warnings.
+
+Next: run builds and test suites **limited to journeys-admin and any related shared-ui and api files**, then address the observations above (feature flag/visibility, tool error handling, system prompt and tool verification) before or alongside Phase 2 (architecture and dependency audit).

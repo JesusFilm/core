@@ -1,5 +1,4 @@
 import { MockedResponse } from '@apollo/client/testing'
-
 import { renderHook } from '@testing-library/react'
 
 import { ApolloLoadingProvider } from '@core/shared/ui/ApolloLoadingProvider'
@@ -47,9 +46,9 @@ describe('loadLanguages', () => {
     )
 
     const tool = loadLanguages(result.current.client, { langfuseTraceId: 'test' })
-    
+
     const response = await tool.execute({ subtitles: ['529', '496'] })
-    
+
     expect(response).toEqual(mockLanguages)
   })
 
@@ -82,9 +81,9 @@ describe('loadLanguages', () => {
     )
 
     const tool = loadLanguages(result.current.client, { langfuseTraceId: 'test' })
-    
+
     const response = await tool.execute({ subtitles: [] })
-    
+
     expect(response).toEqual([])
   })
 
@@ -122,7 +121,7 @@ describe('loadLanguages', () => {
     )
 
     const tool = loadLanguages(result.current.client, { langfuseTraceId: 'test' })
-    
+
     await expect(tool.execute({ subtitles: ['invalid'] })).rejects.toThrow(
       'Invalid language data for ID valid-id'
     )
