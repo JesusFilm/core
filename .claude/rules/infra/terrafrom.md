@@ -3,7 +3,7 @@ paths:
   - 'infrastructure/**/*'
 ---
 
-# Infrastructure Rules (Terraform / AWS)
+# Terraform Rules (Terraform / AWS)
 
 ## Principles
 
