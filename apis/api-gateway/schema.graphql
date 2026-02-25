@@ -2171,7 +2171,7 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
-type AuthenticatedUser implements User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "User")  @join__implements(graph: API_LANGUAGES, interface: "User")  @join__implements(graph: API_USERS, interface: "User")  {
+type AuthenticatedUser implements User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "User")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "User")  @join__implements(graph: API_LANGUAGES, interface: "User")  @join__implements(graph: API_USERS, interface: "User")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
@@ -2183,7 +2183,7 @@ type AuthenticatedUser implements User @join__type(graph: API_JOURNEYS, key: "id
   emailVerified: Boolean! @join__field(graph: API_USERS) 
 }
 
-type AnonymousUser implements User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "User")  @join__implements(graph: API_USERS, interface: "User")  {
+type AnonymousUser implements User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "User")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "User")  @join__implements(graph: API_USERS, interface: "User")  {
   id: ID!
 }
 
@@ -3314,7 +3314,7 @@ interface Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_J
   type: IntegrationType!
 }
 
-interface User @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_USERS)  {
+interface User @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_USERS)  {
   id: ID!
 }
 
@@ -3323,8 +3323,6 @@ interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
-
-union User @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  @join__unionMember(graph: API_JOURNEYS, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS, member: "AnonymousUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AuthenticatedUser")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "AnonymousUser")  @join__unionMember(graph: API_USERS, member: "AuthenticatedUser")  @join__unionMember(graph: API_USERS, member: "AnonymousUser")  = AuthenticatedUser | AnonymousUser
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 

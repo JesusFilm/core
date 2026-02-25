@@ -9,5 +9,3 @@ extend type AuthenticatedUser implements User @key(fields: "id") {
 extend type AnonymousUser implements User @key(fields: "id") {
   id: ID!
 }
-
-union User = AuthenticatedUser | AnonymousUser
