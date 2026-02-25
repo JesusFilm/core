@@ -72,7 +72,7 @@ export function TemplateVideoUploadProvider({
 
       if (file.size > MAX_VIDEO_SIZE) {
         const message = t('File is too large. Max size is 1GB.')
-        enqueueSnackbar(message, { variant: 'error' })
+        enqueueSnackbar(message, { variant: 'error', autoHideDuration: 2000 })
         setUploadTasks((prev) => {
           const next = new Map(prev)
           next.set(videoBlockId, {
@@ -131,7 +131,8 @@ export function TemplateVideoUploadProvider({
           uploadInstancesRef.current.delete(videoBlockId)
           activeBlocksRef.current.delete(videoBlockId)
           enqueueSnackbar(t('Upload failed. Please try again'), {
-            variant: 'error'
+            variant: 'error',
+            autoHideDuration: 2000
           })
           updateTask(videoBlockId, {
             status: 'error',
@@ -142,7 +143,8 @@ export function TemplateVideoUploadProvider({
         activeBlocksRef.current.delete(videoBlockId)
         const message = err instanceof Error ? err.message : 'Upload failed'
         enqueueSnackbar(t('Upload failed. Please try again'), {
-          variant: 'error'
+          variant: 'error',
+          autoHideDuration: 2000
         })
         updateTask(videoBlockId, {
           status: 'error',

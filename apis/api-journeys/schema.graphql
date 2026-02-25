@@ -253,7 +253,6 @@ extend type Query {
   journeyCollections(teamId: ID!): [JourneyCollection]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  getJourneyProfile: JourneyProfile
   journeyTheme(journeyId: ID!): JourneyTheme
 
   """Get a list of Visitor Information by Journey"""
@@ -2698,13 +2697,17 @@ type Translation {
   primary: Boolean!
 }
 
-extend type AuthenticatedUser
+interface User {
+  id: ID!
+}
+
+extend type AuthenticatedUser implements User
   @key(fields: "id")
 {
   id: ID! @external
 }
 
-extend type AnonymousUser
+extend type AnonymousUser implements User
   @key(fields: "id")
 {
   id: ID!

@@ -1718,6 +1718,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  getJourneyProfile: JourneyProfile
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
