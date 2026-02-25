@@ -29,7 +29,7 @@ model User {
   userId        String   @unique
   firstName     String
   lastName      String?
-  email         String   @unique
+  email         String?  @unique
   imageUrl      String?
   createdAt     DateTime @default(now())
   superAdmin    Boolean  @default(false)

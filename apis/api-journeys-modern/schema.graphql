@@ -7,7 +7,13 @@ interface Action {
   parentBlock: Block!
 }
 
-type AuthenticatedUser
+type AnonymousUser implements User
+  @shareable
+{
+  id: ID!
+}
+
+type AuthenticatedUser implements User
   @key(fields: "id")
   @extends
 {
@@ -2260,11 +2266,8 @@ enum TypographyVariant {
   overline
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
+interface User {
+  id: ID!
 }
 
 type UserAgent

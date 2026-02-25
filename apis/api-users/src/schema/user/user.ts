@@ -6,45 +6,14 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import { CreateVerificationRequestInput, MeInput } from './inputs'
-import { AuthenticatedUser, User } from './objects'
+import {
+  CreateVerificationRequestInput,
+  MeInput,
+  UpdateMeInput
+} from './inputs'
+import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
-
-builder.asEntity(User, {
-  key: builder.selection<{ id: string }>('id'),
-  resolveReference: async ({ id }) => {
-    try {
-      const user = await prisma.user.findUnique({ where: { userId: id } })
-
-      // Handle cases where user doesn't exist
-      if (user == null) {
-        console.warn(`Federation: User not found for userId: ${id}`)
-        return null
-      }
-
-      // Handle cases where firstName is null or empty (data integrity issue)
-      // This provides a fallback to prevent GraphQL federation errors
-      if (user.firstName == null || user.firstName.trim() === '') {
-        console.warn(
-          `Federation: User ${id} has null/empty firstName, using fallback`
-        )
-        return {
-          ...user,
-          firstName: 'Unknown User'
-        }
-      }
-
-      return user
-    } catch (error) {
-      console.error(
-        `Federation: Error resolving User entity for userId: ${id}`,
-        error
-      )
-      return null
-    }
-  }
-})
 
 builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
@@ -81,9 +50,18 @@ builder.asEntity(AuthenticatedUser, {
   }
 })
 
+builder.asEntity(AnonymousUser, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) => {
+    return await prisma.user.findUnique({
+      where: { userId: id }
+    })
+  }
+})
+
 builder.queryFields((t) => ({
   me: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       input: t.arg({
@@ -101,7 +79,7 @@ builder.queryFields((t) => ({
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       id: t.arg.id({ required: true })
@@ -113,7 +91,7 @@ builder.queryFields((t) => ({
       })
   }),
   userByEmail: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       email: t.arg.string({ required: true })
@@ -172,7 +150,7 @@ builder.mutationFields((t) => ({
     }
   }),
   validateEmail: t.field({
-    type: User,
+    type: AuthenticatedUser,
     args: {
       email: t.arg.string({ required: true }),
       token: t.arg.string({ required: true })
@@ -189,7 +167,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const validatedEmail = await validateEmail(user.userId, user.email, token)
+      const validatedEmail = await validateEmail(user.userId, email, token)
       if (!validatedEmail)
         throw new GraphQLError('Invalid token', {
           extensions: { code: 'FORBIDDEN' }

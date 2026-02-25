@@ -110,7 +110,8 @@ export const Filled: StoryObj<typeof Card> = {
           children: [],
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       ]
     }

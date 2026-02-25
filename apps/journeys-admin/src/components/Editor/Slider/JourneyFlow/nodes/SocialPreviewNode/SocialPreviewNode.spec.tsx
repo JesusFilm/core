@@ -43,7 +43,8 @@ describe('SocialPreviewNode', () => {
     blurhash: '',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const defaultJourney: Journey = {

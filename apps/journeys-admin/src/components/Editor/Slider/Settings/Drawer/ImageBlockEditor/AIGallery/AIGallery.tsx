@@ -57,7 +57,8 @@ export function AIGallery({
           alt: `Prompt: ${prompt}`,
           scale: 100,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         })
       } else {
         enqueueSnackbar(t('Something went wrong, please try again!'), {
