@@ -1,6 +1,6 @@
 ---
 paths:
-  - 'infrastructure/kube/**/*'
+  - 'infrastructure/kube/**/*.{yaml,yml,sh}'
 ---
 
 # Kubernetes Rules

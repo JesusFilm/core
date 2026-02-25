@@ -1,6 +1,6 @@
 ---
 paths:
-  - 'workers/**/*'
+  - 'workers/**/*.ts'
 ---
 
 # Cloudflare Workers Rules

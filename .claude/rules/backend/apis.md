@@ -1,6 +1,6 @@
 ---
 paths:
-  - 'apis/**/*'
+  - 'apis/**/*.{ts,tsx}'
 ---
 
 # API Rules

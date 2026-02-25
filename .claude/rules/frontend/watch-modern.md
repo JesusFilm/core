@@ -1,6 +1,6 @@
 ---
 paths:
-  - 'apps/watch-modern/**/*'
+  - 'apps/watch-modern/src/**/*.{ts,tsx}'
 ---
 
 # Watch-Modern Rules
@@ -17,6 +17,7 @@ paths:
 
 ## Code Guidelines
 
+- Do not introduce MUI components; this app uses shadcn/ui and Tailwind CSS only.
 - Prefer `shadcn/ui` components over custom implementations or raw HTML elements.
   If a shadcn/ui component doesn't exist, use semantic HTML + Tailwind CSS and document the reason.
 - Use early returns whenever possible to reduce nesting and improve readability.

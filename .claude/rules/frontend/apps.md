@@ -1,16 +1,16 @@
 ---
 paths:
-  - 'apps/arclight/**/*'
-  - 'apps/cms/**/*'
-  - 'apps/docs/**/*'
-  - 'apps/journeys/**/*'
-  - 'apps/journeys-admin/**/*'
-  - 'apps/player/**/*'
-  - 'apps/resources/**/*'
-  - 'apps/short-links/**/*'
-  - 'apps/video-importer/**/*'
-  - 'apps/videos-admin/**/*'
-  - 'apps/watch/**/*'
+  - 'apps/arclight/src/**/*.{ts,tsx}'
+  - 'apps/cms/src/**/*.{ts,tsx}'
+  - 'apps/docs/src/**/*.{ts,tsx}'
+  - 'apps/journeys/src/**/*.{ts,tsx}'
+  - 'apps/journeys-admin/src/**/*.{ts,tsx}'
+  - 'apps/player/src/**/*.{ts,tsx}'
+  - 'apps/resources/src/**/*.{ts,tsx}'
+  - 'apps/short-links/**/*.{ts,tsx}'
+  - 'apps/video-importer/**/*.{ts,tsx}'
+  - 'apps/videos-admin/src/**/*.{ts,tsx}'
+  - 'apps/watch/src/**/*.{ts,tsx}'
 ---
 
 ## Stack
