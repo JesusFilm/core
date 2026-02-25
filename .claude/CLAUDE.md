@@ -1,6 +1,7 @@
 ## Critical Workflow: Rule Precedence (CLAUDE.md)
 
 Before implementing ANY request that modifies a file:
+
 1. Glob `.claude/rules/**/*` to find applicable rules by file path
 2. Read the matching rule files
 3. Check for conflicts between the rules and the user's request
@@ -30,4 +31,3 @@ The project is an **Nx monorepo**.
 
 - Use early returns whenever possible to reduce nesting and improve readability.
 - Use descriptive variable and function/const names.
-
