@@ -10,6 +10,9 @@ builder.mutationField('journeyProfileUpdate', (t) =>
     .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
     .prismaField({
       type: JourneyProfileRef,
+      override: {
+        from: 'api-journeys'
+      },
       nullable: false,
       args: {
         input: t.arg({ type: JourneyProfileUpdateInput, required: true })
