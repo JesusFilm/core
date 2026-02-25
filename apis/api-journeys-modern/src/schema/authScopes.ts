@@ -92,8 +92,8 @@ export async function authScopes(context: Context) {
     case 'authenticated':
       return {
         ...defaultScopes,
-        isAuthenticated: true,
-        isAnonymous: context.user.email == null,
+        isAuthenticated: context.user?.email != null,
+        isAnonymous: context.user != null && context.user.email == null,
         isPublisher: context.currentRoles.includes('publisher'),
         isInTeam: async (teamId: string) => await isInTeam({ context, teamId }),
         isIntegrationOwner: async (integrationId: string) =>
