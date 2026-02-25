@@ -1025,8 +1025,6 @@ export abstract class IQuery {
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
 
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
