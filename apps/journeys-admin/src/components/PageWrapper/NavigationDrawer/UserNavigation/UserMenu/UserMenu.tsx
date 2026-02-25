@@ -17,12 +17,12 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 
-import { GetMe_me_AuthenticatedUser } from '../../../../../../__generated__/GetMe'
+import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
 import { LanguageSwitcher } from '../../../../LanguageSwitcher'
 import { MenuItem } from '../../../../MenuItem'
 
 export interface UserMenuProps {
-  apiUser: GetMe_me_AuthenticatedUser
+  apiUser: ApiUser
   profileOpen: boolean
   profileAnchorEl: HTMLElement | null
   handleProfileClose: () => void
