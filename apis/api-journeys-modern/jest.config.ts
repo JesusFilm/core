@@ -23,8 +23,7 @@ const config: Config = {
   transformIgnorePatterns: ['node_modules/(?!(@react-email/render)/)'],
   moduleNameMapper: {
     '@react-email/render': '<rootDir>/test/reactEmailRenderMock.ts',
-    '^.+/env$': '<rootDir>/test/env.mock.ts',
-    '@core/yoga/tracer': '<rootDir>/test/tracerMock.ts'
+    '^.+/env$': '<rootDir>/test/env.mock.ts'
   }
 }
 
