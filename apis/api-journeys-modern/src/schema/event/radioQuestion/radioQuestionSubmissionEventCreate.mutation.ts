@@ -9,7 +9,7 @@ import { RadioQuestionSubmissionEventCreateInput } from './inputs/radioQuestionS
 import { RadioQuestionSubmissionEventRef } from './radioQuestionSubmissionEvent'
 
 builder.mutationField('radioQuestionSubmissionEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: RadioQuestionSubmissionEventRef,
     args: {
