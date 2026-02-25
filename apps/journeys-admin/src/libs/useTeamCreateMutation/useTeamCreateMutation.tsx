@@ -21,11 +21,43 @@ export const TEAM_CREATE = gql`
       userTeams {
         id
         user {
-          id
-          firstName
-          lastName
-          imageUrl
-          email
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            imageUrl
+            email
+          }
+          ... on AnonymousUser {
+            id
+          }
+        }
+        role
+      }
+      customDomains {
+        id
+        name
+      }
+    }
+  }
+`
+
+/** Minimal selection for guest flow: only user.id to avoid User entity field resolution errors in federation. */
+export const TEAM_CREATE_GUEST = gql`
+  mutation TeamCreateGuest($input: TeamCreateInput!) {
+    teamCreate(input: $input) {
+      id
+      title
+      publicTitle
+      userTeams {
+        id
+        user {
+          ... on AuthenticatedUser {
+            id
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
         role
       }
@@ -70,4 +102,38 @@ export function useTeamCreateMutation(
   })
 
   return mutation
+}
+
+/** Use for guest flow: only requests user.id to avoid federation User field resolution errors. */
+export function useTeamCreateMutationGuest(
+  options?: MutationHookOptions<TeamCreate, TeamCreateVariables>
+): MutationTuple<TeamCreate, TeamCreateVariables> {
+  const { setActiveTeam } = useTeam()
+  return useMutation<TeamCreate>(TEAM_CREATE_GUEST, {
+    update(cache, { data }) {
+      if (data?.teamCreate != null) {
+        cache.modify({
+          fields: {
+            teams(existingTeams = []) {
+              const newTeamRef = cache.writeFragment({
+                data: data.teamCreate,
+                fragment: gql`
+                  fragment NewTeam on Team {
+                    id
+                  }
+                `
+              })
+              return [...existingTeams, newTeamRef]
+            }
+          }
+        })
+      }
+    },
+    onCompleted(data) {
+      if (data?.teamCreate != null) {
+        setActiveTeam(data.teamCreate)
+      }
+    },
+    ...options
+  })
 }

@@ -1952,6 +1952,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  /** Updates the current user's firstName, lastName, and email. Only callable by anonymous users. */
+  updateMe?: Maybe<AuthenticatedUser>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
@@ -2803,6 +2805,11 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateMeArgs = {
+  input: UpdateMeInput;
 };
 
 
@@ -3702,12 +3709,6 @@ export type QrCodesFilter = {
 export type Query = {
   __typename?: 'Query';
   adminJourney: Journey;
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
   adminVideo: Video;
@@ -3784,7 +3785,7 @@ export type Query = {
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
-  me?: Maybe<AuthenticatedUser>;
+  me?: Maybe<User>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
   playlist?: Maybe<QueryPlaylistResult>;
@@ -4437,10 +4438,6 @@ export enum RedirectType {
 }
 
 export enum Role {
-  /**
-   * User can create templates and
-   * add them to template library
-   */
   Publisher = 'publisher'
 }
 
@@ -5221,7 +5218,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: AuthenticatedUser;
+  user: User;
 };
 
 

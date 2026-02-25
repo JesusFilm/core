@@ -12,7 +12,6 @@ import {
   Host,
   Journey,
   JourneyCollection,
-  JourneyProfile,
   Prisma,
   Team,
   ThemeMode,
@@ -35,8 +34,6 @@ import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService, BlockWithAction } from '../block/block.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
-import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { UserRoleService } from '../userRole/userRole.service'
 
 import { JourneyResolver } from './journey.resolver'
 
@@ -164,8 +161,6 @@ describe('JourneyResolver', () => {
           useValue: mockDeep<QrCodeService>()
         },
         BlockResolver,
-        UserRoleResolver,
-        UserRoleService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -356,155 +351,6 @@ describe('JourneyResolver', () => {
           'POWER_BI_JOURNEYS_SINGLE_SUMMARY_REPORT_ID',
           'userId'
         )
-      })
-    })
-  })
-
-  describe('adminJourneys', () => {
-    const journeysSharedWithMe: Prisma.JourneyWhereInput = {
-      userJourneys: {
-        some: {
-          userId: 'userId',
-          role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
-        }
-      },
-      team: {
-        userTeams: {
-          none: {
-            userId: 'userId'
-          }
-        }
-      }
-    }
-
-    beforeEach(() => {
-      prismaService.journey.findMany.mockResolvedValueOnce([journey])
-    })
-
-    it('should get journeys that are shared with me', async () => {
-      expect(
-        await resolver.adminJourneys('userId', accessibleJourneys)
-      ).toEqual([journey])
-      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [accessibleJourneys, journeysSharedWithMe]
-        }
-      })
-    })
-
-    it('should get filtered journeys', async () => {
-      expect(
-        await resolver.adminJourneys(
-          'userId',
-          accessibleJourneys,
-          [JourneyStatus.archived],
-          false,
-          'teamId'
-        )
-      ).toEqual([journey])
-      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [
-            accessibleJourneys,
-            {
-              status: { in: [JourneyStatus.archived] },
-              template: false,
-              teamId: 'teamId'
-            }
-          ]
-        }
-      })
-    })
-
-    describe('status', () => {
-      it('should get journeys that are shared with me with status', async () => {
-        expect(
-          await resolver.adminJourneys('userId', accessibleJourneys, [
-            JourneyStatus.draft
-          ])
-        ).toEqual([journey])
-        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-          where: {
-            AND: [
-              accessibleJourneys,
-              { ...journeysSharedWithMe, status: { in: [JourneyStatus.draft] } }
-            ]
-          }
-        })
-      })
-    })
-
-    describe('template', () => {
-      it('should get template journeys', async () => {
-        expect(
-          await resolver.adminJourneys(
-            'userId',
-            accessibleJourneys,
-            undefined,
-            true
-          )
-        ).toEqual([journey])
-        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-          where: {
-            AND: [accessibleJourneys, { template: true }]
-          }
-        })
-      })
-    })
-
-    describe('useLastActiveTeamId', () => {
-      it('should get journeys belonging to last active team', async () => {
-        prismaService.journeyProfile.findUnique.mockResolvedValue({
-          lastActiveTeamId: 'teamId'
-        } as unknown as JourneyProfile)
-        expect(
-          await resolver.adminJourneys(
-            'userId',
-            accessibleJourneys,
-            undefined,
-            undefined,
-            undefined,
-            true
-          )
-        ).toEqual([journey])
-        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-          where: {
-            AND: [accessibleJourneys, { teamId: 'teamId' }]
-          }
-        })
-      })
-
-      it('should throw error if profile not found', async () => {
-        prismaService.journeyProfile.findUnique.mockResolvedValue(null)
-        await expect(
-          resolver.adminJourneys(
-            'userId',
-            accessibleJourneys,
-            undefined,
-            undefined,
-            undefined,
-            true
-          )
-        ).rejects.toThrow('journey profile not found')
-      })
-    })
-
-    describe('teamId', () => {
-      it('should get journeys belonging to team', async () => {
-        expect(
-          await resolver.adminJourneys(
-            'userId',
-            accessibleJourneys,
-            undefined,
-            undefined,
-            'teamId'
-          )
-        ).toEqual([journey])
-        expect(prismaService.journey.findMany).toHaveBeenCalledWith({
-          where: {
-            AND: [accessibleJourneys, { teamId: 'teamId' }]
-          }
-        })
       })
     })
   })

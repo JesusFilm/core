@@ -124,6 +124,12 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
+  const isAnonymousUser = currentUser?.__typename === 'AnonymousUser'
+  const currentUserEmail =
+    currentUser?.__typename === 'AuthenticatedUser'
+      ? currentUser.email
+      : undefined
+
   // Lazy query for journey data if context is missing
   const [loadJourney, { data: journeyFromLazyQuery }] =
     useJourneyForSharingLazyQuery()
@@ -143,8 +149,8 @@ export function DefaultMenu({
     [journeyWithUserRoles?.journey?.userJourneys]
   )
   const isOwner = useMemo(
-    () => owner?.user?.email === currentUser?.email,
-    [currentUser?.email, owner?.user?.email]
+    () => owner?.user?.email === currentUserEmail,
+    [currentUserEmail, owner?.user?.email]
   )
 
   useEffect(() => {
@@ -157,15 +163,17 @@ export function DefaultMenu({
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
-    if (activeTeam?.userTeams == null || currentUser?.email == null)
+    if (activeTeam?.userTeams == null || currentUserEmail == null)
       return undefined
 
     const userTeam = activeTeam.userTeams.find(
-      (userTeam) => userTeam.user.email === currentUser.email
+      (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
+        userTeam.user.email === currentUserEmail
     )
 
     return userTeam?.role
-  }, [activeTeam?.userTeams, currentUser?.email])
+  }, [activeTeam?.userTeams, currentUserEmail])
 
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
@@ -179,6 +187,10 @@ export function DefaultMenu({
 
   const isLocalTemplate =
     journey?.template === true && journey?.team?.id !== 'jfp-team'
+
+  if (isAnonymousUser) {
+    return <></>
+  }
 
   return (
     <>

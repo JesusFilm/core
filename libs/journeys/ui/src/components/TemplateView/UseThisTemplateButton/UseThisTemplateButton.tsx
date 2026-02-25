@@ -42,13 +42,12 @@ export function UseThisTemplateButton({
 
   const handleCheckSignIn = async (): Promise<void> => {
     // For menu-item variant, assume user is signed in
-    const canCustomize = templateCustomizationGuestFlow || signedIn
-    if (variant === 'menu-item' || canCustomize) {
-      setLoading(true)
-      await handleCustomizeNavigation()
-    } else {
-      setOpenAccountDialog(true)
-    }
+    // if (variant === 'menu-item' || signedIn) {
+    setLoading(true)
+    await handleCustomizeNavigation()
+    // } else {
+    //   setOpenAccountDialog(true)
+    // }
   }
 
   const handleSignIn = (login: boolean): void => {

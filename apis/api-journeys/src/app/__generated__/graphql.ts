@@ -272,10 +272,6 @@ export enum UserJourneyRole {
     owner = "owner"
 }
 
-export enum Role {
-    publisher = "publisher"
-}
-
 export enum UserTeamRole {
     manager = "manager",
     member = "member"
@@ -1007,8 +1003,6 @@ export abstract class IQuery {
 
     abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
 
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
-
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
@@ -1024,8 +1018,6 @@ export abstract class IQuery {
     abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
-
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
@@ -1044,8 +1036,6 @@ export abstract class IQuery {
     abstract team(id: string): Team | Promise<Team>;
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
     abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
@@ -1822,7 +1812,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: AuthenticatedUser;
+    user: User;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -1931,13 +1921,6 @@ export class UserInvite {
     email: string;
     acceptedAt?: Nullable<DateTime>;
     removedAt?: Nullable<DateTime>;
-}
-
-export class UserRole {
-    __typename?: 'UserRole';
-    id: string;
-    userId: string;
-    roles?: Nullable<Role[]>;
 }
 
 export class UserTeamInvite {

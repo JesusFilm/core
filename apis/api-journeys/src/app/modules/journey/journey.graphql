@@ -154,21 +154,6 @@ type PowerBiEmbed @shareable {
 }
 
 extend type Query {
-  """
-  returns all journeys that match the provided filters
-  If no team id is provided and template is not true then only returns journeys
-  where the user is not a member of a team but is an editor or owner of the
-  journey
-  """
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-    """
-    Use Last Active Team Id from JourneyProfile (if null will error)
-    """
-    useLastActiveTeamId: Boolean
-  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!

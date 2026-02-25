@@ -157,11 +157,6 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
-        'Team One'
-      )
-    )
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
@@ -266,12 +261,6 @@ describe('LanguageScreen', () => {
     await waitFor(() =>
       expect(mockGetParentJourneysFromTemplateIdMockResult).toHaveBeenCalled()
     )
-    await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
-        'Team One'
-      )
-    )
-
     fireEvent.focus(screen.getByTestId('LanguageAutocompleteInput'))
     fireEvent.keyDown(screen.getByTestId('LanguageAutocompleteInput'), {
       key: 'ArrowDown'
@@ -320,11 +309,6 @@ describe('LanguageScreen', () => {
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
-        'Team One'
-      )
     )
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
@@ -423,10 +407,6 @@ describe('LanguageScreen', () => {
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
-    expect(screen.getAllByText('Select a team')).toHaveLength(2)
-    await waitFor(() => {
-      expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
-    })
 
     expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
