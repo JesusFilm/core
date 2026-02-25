@@ -1,7 +1,7 @@
 ---
 paths:
-  - "apis/**/*.ts"
-  - "apis/**/*.js"
+  - 'apis/**/*.ts'
+  - 'apis/**/*.js'
 ---
 
 # API Rules

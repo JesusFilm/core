@@ -1,7 +1,7 @@
 ---
 paths:
-  - "apps/**/*.{ts,tsx}"
-  - "apps/**/*.{js,jsx}"
+  - 'apps/**/*.{ts,tsx}'
+  - 'apps/**/*.{js,jsx}'
 ---
 
 # Apps Rules

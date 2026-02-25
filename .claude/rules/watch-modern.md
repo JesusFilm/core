@@ -1,7 +1,7 @@
 ---
 paths:
-  - "apps/watch-modern/**/*.{ts,tsx}"
-  - "apps/watch-modern/**/*.{js,jsx}"
+  - 'apps/watch-modern/**/*.{ts,tsx}'
+  - 'apps/watch-modern/**/*.{js,jsx}'
 ---
 
 # Watch-Modern Rules
