@@ -13,7 +13,7 @@ import { TextResponseSubmissionEventCreateInput } from './inputs/textResponseSub
 import { TextResponseSubmissionEventRef } from './textResponseSubmissionEvent'
 
 builder.mutationField('textResponseSubmissionEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: TextResponseSubmissionEventRef,
     args: {
