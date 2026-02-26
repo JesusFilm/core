@@ -66,8 +66,7 @@ export function SocialScreen({
         data-testid="SocialShareAppearance"
         sx={{
           width: '100%',
-          py: 5,
-          px: { xs: 5, sm: 10 }
+          py: 5
         }}
       >
         <SocialScreenSocialImage />
