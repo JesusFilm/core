@@ -10,6 +10,9 @@ builder.mutationField('journeyProfileUpdate', (t) =>
     .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
     .prismaField({
       type: JourneyProfileRef,
+      override: {
+        from: 'api-journeys'
+      },
       nullable: false,
       args: {
         input: t.arg({ type: JourneyProfileUpdateInput, required: true })
@@ -19,9 +22,13 @@ builder.mutationField('journeyProfileUpdate', (t) =>
           where: { userId: context.user.id }
         })
 
+        if (profile == null) {
+          throw new Error(`JourneyProfile not found for user.`)
+        }
+
         return await prisma.journeyProfile.update({
           ...query,
-          where: { id: profile?.id },
+          where: { id: profile.id },
           data: args.input
         })
       }

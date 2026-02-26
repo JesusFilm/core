@@ -186,9 +186,7 @@ describe('journeyProfileUpdate', () => {
     })
 
     expect(result).toEqual({
-      data: {
-        journeyProfileUpdate: null
-      },
+      data: null,
       errors: [
         expect.objectContaining({
           message: expect.stringContaining('Not authorized')
