@@ -26,7 +26,7 @@ import {
 } from './utils/mediaScreenUtils'
 
 interface MediaScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
 }
 
 export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
@@ -103,7 +103,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
         <CustomizeFlowNextButton
           label={t('Next')}
-          onClick={handleNext}
+          onClick={() => handleNext()}
           ariaLabel={t('Next')}
           loading={hasActiveUploads}
         />

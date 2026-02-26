@@ -14,13 +14,14 @@ import {
 import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
+import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const { data } = useJourneyQuery({
+  const { data, loading } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
     options: {
@@ -105,7 +106,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
     if (error.message === 'journey not found') {
       return {
         redirect: {
-          destination: '/templates',
+          destination: `/templates?error=${JOURNEY_NOT_FOUND_ERROR}`,
           permanent: false
         }
       }
