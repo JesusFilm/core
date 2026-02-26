@@ -6,16 +6,16 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Play3Icon from '@core/shared/ui/icons/Play3'
-import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
+import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
+import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { TreeBlock } from '@core/journeys/ui/block'
-import { transformer } from '@core/journeys/ui/transformer'
-import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
 
 interface DoneScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
