@@ -3,17 +3,25 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
 
 import {
+  CUSTOMIZE_SCREEN_QUERY_KEY,
+  buildCustomizeUrl,
+  getActiveScreenFromQuery
+} from '../utils/customizationRoutes'
+import {
   CustomizationScreen,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
+import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizationRedirect'
 
 import { ProgressStepper } from './ProgressStepper'
 import {
@@ -30,7 +38,7 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
-  handleNext: () => void,
+  handleNext: (overrideJourneyId?: string) => void,
   handleScreenNavigation: (screen: CustomizationScreen) => void
 ): ReactElement {
   switch (screen) {
@@ -73,8 +81,13 @@ function renderScreen(
 
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+  const user = useUser()
   const { journey } = useJourney()
-  const { customizableMedia } = useFlags()
+  const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
+
+  const journeyId = journey?.id ?? ''
+  const link = `/journeys/${journeyId}`
 
   const {
     screens,
@@ -90,22 +103,36 @@ export function MultiStepForm(): ReactElement {
     [journey, t, customizableMedia]
   )
 
-  const [activeScreen, setActiveScreen] =
-    useState<CustomizationScreen>('language')
+  const activeScreen = getActiveScreenFromQuery(
+    router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
+    screens
+  )
 
-  async function handleNext(): Promise<void> {
-    if (activeScreen !== screens[screens.length - 1]) {
-      setActiveScreen(screens[screens.indexOf(activeScreen) + 1])
-    }
+  useTemplateCustomizationRedirect({
+    journeyId,
+    screens,
+    activeScreen,
+    isGuest: user?.id == null,
+    guestFlowEnabled: templateCustomizationGuestFlow === true
+  })
+
+  async function handleNext(overrideJourneyId?: string): Promise<void> {
+    const targetJourneyId =
+      typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
+    const currentIndex = screens.indexOf(activeScreen)
+    const isLastOrInvalidScreen =
+      currentIndex < 0 || currentIndex >= screens.length - 1
+    if (isLastOrInvalidScreen) return
+    void router.replace(
+      buildCustomizeUrl(targetJourneyId, screens[currentIndex + 1], undefined)
+    )
   }
 
   async function handleScreenNavigation(
     screen: CustomizationScreen
   ): Promise<void> {
-    setActiveScreen(screen)
+    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
   }
-
-  const link = `/journeys/${journey?.id ?? ''}`
 
   return (
     <TemplateVideoUploadProvider>

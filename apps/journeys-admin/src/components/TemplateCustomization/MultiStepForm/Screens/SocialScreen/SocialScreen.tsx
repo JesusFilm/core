@@ -11,7 +11,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
@@ -80,7 +80,7 @@ export function SocialScreen({
       </Stack>
       <CustomizeFlowNextButton
         label={t('Done')}
-        onClick={handleNext}
+        onClick={() => handleNext()}
         ariaLabel={t('Done')}
       />
     </Stack>
