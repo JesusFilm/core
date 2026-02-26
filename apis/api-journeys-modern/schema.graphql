@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -7,13 +7,13 @@ interface Action {
   parentBlock: Block!
 }
 
-type AnonymousUser
+type AnonymousUser implements User
   @shareable
 {
   id: ID!
 }
 
-type AuthenticatedUser
+type AuthenticatedUser implements User
   @key(fields: "id")
   @extends
 {
@@ -1390,6 +1390,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1718,7 +1719,6 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
   getJourneyProfile: JourneyProfile
 
   """
@@ -2266,6 +2266,10 @@ enum TypographyVariant {
   body2
   caption
   overline
+}
+
+interface User {
+  id: ID!
 }
 
 type UserAgent

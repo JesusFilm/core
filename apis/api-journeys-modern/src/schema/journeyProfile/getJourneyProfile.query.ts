@@ -5,14 +5,16 @@ import { builder } from '../builder'
 import { JourneyProfileRef } from './journeyProfile'
 
 builder.queryField('getJourneyProfile', (t) =>
-  t.withAuth({ isAuthenticated: true }).prismaField({
-    type: JourneyProfileRef,
-    nullable: true,
-    resolve: async (query, _parent, _args, context) => {
-      return await prisma.journeyProfile.findUnique({
-        ...query,
-        where: { userId: context.user.id }
-      })
-    }
-  })
+  t
+    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
+    .prismaField({
+      type: JourneyProfileRef,
+      nullable: true,
+      resolve: async (query, _parent, _args, context) => {
+        return await prisma.journeyProfile.findUnique({
+          ...query,
+          where: { userId: context.user.id }
+        })
+      }
+    })
 )

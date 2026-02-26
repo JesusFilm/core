@@ -18,7 +18,7 @@ COPY ./dist/apps/api-journeys-modern .
 COPY ./libs/prisma/journeys/db ./prisma
 COPY ./libs/prisma/users/db ./prisma-users
 
-RUN corepack enable && corepack prepare pnpm --activate
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
 RUN pnpm add @prisma/client@6.18.0
 RUN pnpm add -D prisma@6.18.0
