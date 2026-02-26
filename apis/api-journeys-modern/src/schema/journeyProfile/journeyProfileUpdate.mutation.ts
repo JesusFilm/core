@@ -23,9 +23,7 @@ builder.mutationField('journeyProfileUpdate', (t) =>
         })
 
         if (profile == null) {
-          throw new Error(
-            `JourneyProfile not found for user: ${context.user.id}`
-          )
+          throw new Error(`JourneyProfile not found for user.`)
         }
 
         return await prisma.journeyProfile.update({
