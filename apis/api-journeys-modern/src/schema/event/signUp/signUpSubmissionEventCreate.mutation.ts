@@ -13,7 +13,7 @@ import { SignUpSubmissionEventCreateInput } from './inputs/signUpSubmissionEvent
 import { SignUpSubmissionEventRef } from './signUpSubmissionEvent'
 
 builder.mutationField('signUpSubmissionEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: SignUpSubmissionEventRef,
     args: {

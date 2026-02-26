@@ -6,8 +6,12 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import { CreateVerificationRequestInput, MeInput } from './inputs'
-import { AnonymousUser, AuthenticatedUser } from './objects'
+import {
+  CreateVerificationRequestInput,
+  MeInput,
+  UpdateMeInput
+} from './inputs'
+import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
@@ -163,7 +167,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const validatedEmail = await validateEmail(user.userId, user.email, token)
+      const validatedEmail = await validateEmail(user.userId, email, token)
       if (!validatedEmail)
         throw new GraphQLError('Invalid token', {
           extensions: { code: 'FORBIDDEN' }

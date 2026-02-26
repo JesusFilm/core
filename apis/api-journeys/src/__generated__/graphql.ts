@@ -34,7 +34,7 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
-export type AnonymousUser = {
+export type AnonymousUser = User & {
   __typename?: 'AnonymousUser';
   id: Scalars['ID']['output'];
 };
@@ -62,7 +62,7 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
-export type AuthenticatedUser = {
+export type AuthenticatedUser = User & {
   __typename?: 'AuthenticatedUser';
   email: Scalars['String']['output'];
   emailVerified: Scalars['Boolean']['output'];
@@ -1965,6 +1965,7 @@ export type Mutation = {
   /** Removes all userJourneys associated with a journeyId */
   userJourneyRemoveAll: Array<UserJourney>;
   userJourneyRequest: UserJourney;
+  userMediaProfileUpdate: UserMediaProfile;
   userTeamDelete: UserTeam;
   userTeamInviteAcceptAll: Array<UserTeamInvite>;
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
@@ -2860,6 +2861,11 @@ export type MutationUserJourneyRemoveAllArgs = {
 export type MutationUserJourneyRequestArgs = {
   idType?: InputMaybe<IdType>;
   journeyId: Scalars['ID']['input'];
+};
+
+
+export type MutationUserMediaProfileUpdateArgs = {
+  input: UserMediaProfileUpdateInput;
 };
 
 
@@ -3805,6 +3811,7 @@ export type Query = {
   user?: Maybe<AuthenticatedUser>;
   userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
+  userMediaProfile?: Maybe<UserMediaProfile>;
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
@@ -5129,6 +5136,16 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
+export type UpdateMeInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type User = {
+  id: Scalars['ID']['output'];
+};
+
 /** These types are a subset provided by the @types/ua-parser-js library. */
 export type UserAgent = {
   __typename?: 'UserAgent';
@@ -5169,6 +5186,26 @@ export enum UserJourneyRole {
   InviteRequested = 'inviteRequested',
   Owner = 'owner'
 }
+
+export type UserMediaProfile = {
+  __typename?: 'UserMediaProfile';
+  /** Country IDs array */
+  countryInterests?: Maybe<Array<Scalars['ID']['output']>>;
+  /** The database UUID */
+  id: Scalars['ID']['output'];
+  /** Language IDs array related to IDs in api-languages */
+  languageInterests?: Maybe<Array<Language>>;
+  /** The Firebase user ID */
+  userId: Scalars['ID']['output'];
+  /** IDs of video collections the user is interested in */
+  userInterests?: Maybe<Array<Video>>;
+};
+
+export type UserMediaProfileUpdateInput = {
+  countryInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  languageInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  userInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
 
 export type UserRole = {
   __typename?: 'UserRole';

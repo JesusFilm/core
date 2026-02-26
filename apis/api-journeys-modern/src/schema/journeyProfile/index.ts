@@ -1,3 +1,4 @@
+import './getJourneyProfile.query'
 import './journeyProfile'
 import './inputs'
 
