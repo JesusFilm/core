@@ -201,7 +201,8 @@ export function LanguageScreen({
       >
         {`'${journey?.title ?? ''}'`}
       </Typography>
-      <CardsPreview steps={steps} />
+
+      {steps.length > 0 && <CardsPreview steps={steps} />}
 
       <Formik
         initialValues={initialValues}

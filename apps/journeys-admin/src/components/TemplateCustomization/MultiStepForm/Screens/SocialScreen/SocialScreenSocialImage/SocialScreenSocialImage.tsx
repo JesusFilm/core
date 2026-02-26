@@ -32,10 +32,6 @@ interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
 }
 
-const WIDE_ASPECT_RATIO = {
-  width: { xs: 223, sm: 284 },
-  height: { xs: 139, sm: 194 }
-}
 const MEDIA_MOBILE_WIDTH = 223
 const MEDIA_MOBILE_HEIGHT = 139
 const MEDIA_DESKTOP_WIDTH = 284
@@ -213,6 +209,7 @@ export function SocialScreenSocialImage({
             )}
             <IconButton
               component="label"
+              aria-label="Edit social image"
               sx={{
                 position: 'absolute',
                 bottom: 10,

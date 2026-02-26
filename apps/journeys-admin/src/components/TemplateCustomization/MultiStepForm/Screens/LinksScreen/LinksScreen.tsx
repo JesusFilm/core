@@ -225,7 +225,7 @@ export function LinksScreen({
           align="center"
         >
           {t(
-            'This contains contains buttons linking to external sites. Check them and update the links below.'
+            'This content contains buttons linking to external sites. Check them and update the links below.'
           )}
         </Typography>
         <Typography

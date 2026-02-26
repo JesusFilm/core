@@ -81,7 +81,9 @@ export function DoneScreen({
         {t('Share your unique link on any platform.')}
       </Typography>
 
-      <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+      {steps.length > 0 && (
+        <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+      )}
 
       <Stack
         gap={4}
@@ -120,6 +122,7 @@ export function DoneScreen({
         </Box>
       </Stack>
       <Button
+        data-testid="ProjectsDashboardButton"
         onClick={handleGoToProjectsDashboard}
         endIcon={<ArrowRightContained1Icon />}
         sx={{ mt: 4 }}
