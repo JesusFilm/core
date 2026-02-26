@@ -33,7 +33,7 @@ import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 
 interface LinksScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
