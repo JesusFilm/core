@@ -22,9 +22,15 @@ builder.mutationField('journeyProfileUpdate', (t) =>
           where: { userId: context.user.id }
         })
 
+        if (profile == null) {
+          throw new Error(
+            `JourneyProfile not found for user: ${context.user.id}`
+          )
+        }
+
         return await prisma.journeyProfile.update({
           ...query,
-          where: { id: profile?.id },
+          where: { id: profile.id },
           data: args.input
         })
       }
