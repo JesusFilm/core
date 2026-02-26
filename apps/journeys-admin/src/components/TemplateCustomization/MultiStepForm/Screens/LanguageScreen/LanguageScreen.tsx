@@ -11,10 +11,10 @@ import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
@@ -22,6 +22,11 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { TreeBlock } from '@core/journeys/ui/block'
+import { transformer } from '@core/journeys/ui/transformer'
+import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
+import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -40,6 +45,9 @@ export function LanguageScreen({
   const { enqueueSnackbar } = useSnackbar()
 
   const { journey } = useJourney()
+  const steps = transformer(journey?.blocks ?? []) as Array<
+    TreeBlock<StepBlock>
+  >
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
@@ -193,7 +201,7 @@ export function LanguageScreen({
       >
         {`'${journey?.title ?? ''}'`}
       </Typography>
-      <SocialImage />
+      <CardsPreview steps={steps} />
 
       <Formik
         initialValues={initialValues}
