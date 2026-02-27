@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik, FormikValues } from 'formik'
-import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -29,6 +28,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { useRouter } from 'next/router'
 
 interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
