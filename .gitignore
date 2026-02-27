@@ -87,6 +87,10 @@ terraform.tfstate.backup
 
 .cursor/rules/*.dev.mdc
 
+# personal claude rules
+.claude/rules/preferences.md
+.claude/rules/workflows.md
+
 # ignore exports
 /exports/*
 /imports/*

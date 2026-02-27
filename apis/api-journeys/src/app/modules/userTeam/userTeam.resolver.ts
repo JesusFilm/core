@@ -127,7 +127,7 @@ export class UserTeamResolver {
   async user(
     @Parent() userTeam: UserTeam
   ): Promise<{ __typename: string; id: string }> {
-    return { __typename: 'User', id: userTeam.userId }
+    return { __typename: 'AuthenticatedUser', id: userTeam.userId }
   }
 
   @ResolveField('journeyNotification')

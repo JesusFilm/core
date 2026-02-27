@@ -395,6 +395,7 @@ export class ImageBlockCreateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockUpdateInput {
@@ -407,6 +408,7 @@ export class ImageBlockUpdateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -877,6 +879,10 @@ export interface Integration {
     type: IntegrationType;
 }
 
+export interface User {
+    id: string;
+}
+
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
@@ -1019,8 +1025,6 @@ export abstract class IQuery {
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
 
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
@@ -1157,7 +1161,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>, duplicateAsDraft?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1329,6 +1333,7 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class MultiselectBlock implements Block {
@@ -1465,6 +1470,7 @@ export class VideoBlock implements Block {
     objectFit?: Nullable<VideoBlockObjectFit>;
     subtitleLanguage?: Nullable<Language>;
     showGeneratedSubtitles?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1705,7 +1711,7 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    user?: Nullable<User>;
+    user?: Nullable<AuthenticatedUser>;
     accountEmail?: Nullable<string>;
 }
 
@@ -1742,7 +1748,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
-    user?: Nullable<User>;
+    user?: Nullable<AuthenticatedUser>;
     openedAt?: Nullable<DateTime>;
 }
 
@@ -1814,7 +1820,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: User;
+    user: AuthenticatedUser;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -2026,11 +2032,11 @@ export class ShortLink {
     id: string;
 }
 
-export class User {
+export class AuthenticatedUser implements User {
     id: string;
 }
 
-export class AuthenticatedUser {
+export class AnonymousUser implements User {
     id: string;
 }
 

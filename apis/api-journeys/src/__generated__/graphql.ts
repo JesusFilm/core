@@ -34,6 +34,11 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export type AnonymousUser = User & {
+  __typename?: 'AnonymousUser';
+  id: Scalars['ID']['output'];
+};
+
 export enum App {
   JesusFilmOne = 'JesusFilmOne',
   NextSteps = 'NextSteps'
@@ -57,14 +62,16 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
-export type AuthenticatedUser = {
+export type AuthenticatedUser = User & {
   __typename?: 'AuthenticatedUser';
   email: Scalars['String']['output'];
   emailVerified: Scalars['Boolean']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
+  languageUserRoles: Array<LanguageRole>;
   lastName?: Maybe<Scalars['String']['output']>;
+  mediaUserRoles: Array<MediaRole>;
   superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -951,6 +958,7 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   focalLeft?: Maybe<Scalars['Int']['output']>;
   focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
@@ -967,6 +975,7 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -985,6 +994,7 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   focalLeft?: InputMaybe<Scalars['Int']['input']>;
   focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
@@ -1011,7 +1021,7 @@ export type IntegrationGoogle = Integration & {
   id: Scalars['ID']['output'];
   team: Team;
   type: IntegrationType;
-  user?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1955,12 +1965,13 @@ export type Mutation = {
   /** Removes all userJourneys associated with a journeyId */
   userJourneyRemoveAll: Array<UserJourney>;
   userJourneyRequest: UserJourney;
+  userMediaProfileUpdate: UserMediaProfile;
   userTeamDelete: UserTeam;
   userTeamInviteAcceptAll: Array<UserTeamInvite>;
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
-  validateEmail?: Maybe<User>;
+  validateEmail?: Maybe<AuthenticatedUser>;
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -2854,6 +2865,11 @@ export type MutationUserJourneyRequestArgs = {
 };
 
 
+export type MutationUserMediaProfileUpdateArgs = {
+  input: UserMediaProfileUpdateInput;
+};
+
+
 export type MutationUserTeamDeleteArgs = {
   id: Scalars['ID']['input'];
 };
@@ -3596,7 +3612,7 @@ export type Playlist = {
   note?: Maybe<Scalars['String']['output']>;
   noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
   noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
-  owner: User;
+  owner: AuthenticatedUser;
   sharedAt?: Maybe<Scalars['DateTime']['output']>;
   slug: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -3769,7 +3785,7 @@ export type Query = {
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
-  me?: Maybe<User>;
+  me?: Maybe<AuthenticatedUser>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
   playlist?: Maybe<QueryPlaylistResult>;
@@ -3793,9 +3809,10 @@ export type Query = {
   teams: Array<Team>;
   templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
-  user?: Maybe<User>;
-  userByEmail?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
+  userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
+  userMediaProfile?: Maybe<UserMediaProfile>;
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
@@ -5120,17 +5137,14 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
+export type UpdateMeInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
-  __typename?: 'User';
-  email: Scalars['String']['output'];
-  emailVerified: Scalars['Boolean']['output'];
-  firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  languageUserRoles: Array<LanguageRole>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  mediaUserRoles: Array<MediaRole>;
-  superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
@@ -5164,7 +5178,7 @@ export type UserJourney = {
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
-  user?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
   userId: Scalars['ID']['output'];
 };
 
@@ -5173,6 +5187,26 @@ export enum UserJourneyRole {
   InviteRequested = 'inviteRequested',
   Owner = 'owner'
 }
+
+export type UserMediaProfile = {
+  __typename?: 'UserMediaProfile';
+  /** Country IDs array */
+  countryInterests?: Maybe<Array<Scalars['ID']['output']>>;
+  /** The database UUID */
+  id: Scalars['ID']['output'];
+  /** Language IDs array related to IDs in api-languages */
+  languageInterests?: Maybe<Array<Language>>;
+  /** The Firebase user ID */
+  userId: Scalars['ID']['output'];
+  /** IDs of video collections the user is interested in */
+  userInterests?: Maybe<Array<Video>>;
+};
+
+export type UserMediaProfileUpdateInput = {
+  countryInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  languageInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  userInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
 
 export type UserRole = {
   __typename?: 'UserRole';
@@ -5188,7 +5222,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: User;
+  user: AuthenticatedUser;
 };
 
 
@@ -5332,6 +5366,7 @@ export type VideoBlock = Block & {
   /** action that should be performed when the video ends */
   action?: Maybe<Action>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field
@@ -5407,6 +5442,7 @@ export type VideoBlock = Block & {
 
 export type VideoBlockCreateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   endAt?: InputMaybe<Scalars['Int']['input']>;
@@ -5465,6 +5501,7 @@ export enum VideoBlockSource {
 
 export type VideoBlockUpdateInput = {
   autoplay?: InputMaybe<Scalars['Boolean']['input']>;
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   endAt?: InputMaybe<Scalars['Int']['input']>;

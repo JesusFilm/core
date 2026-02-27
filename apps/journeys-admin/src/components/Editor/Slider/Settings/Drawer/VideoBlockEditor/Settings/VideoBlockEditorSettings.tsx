@@ -146,10 +146,7 @@ export function VideoBlockEditorSettings({
     })
 
   return (
-    <Box
-      sx={{ px: 4, pt: 2, width: '100%' }}
-      data-testid="VideoBlockEditorSettings"
-    >
+    <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
       <Stack direction="column" spacing={6}>
         {/* Youtube Subtitles */}
         {selectedBlock?.source === VideoBlockSource.youTube && (

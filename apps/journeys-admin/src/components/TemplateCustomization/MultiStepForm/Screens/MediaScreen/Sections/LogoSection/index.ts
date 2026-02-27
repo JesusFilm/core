@@ -1,0 +1,1 @@
+export { LogoSection } from './LogoSection'
