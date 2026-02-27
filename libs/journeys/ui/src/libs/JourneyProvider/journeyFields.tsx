@@ -53,10 +53,15 @@ export const JOURNEY_FIELDS = gql`
       role
       openedAt
       user {
-        id
-        firstName
-        lastName
-        imageUrl
+        ... on AuthenticatedUser {
+          id
+          firstName
+          lastName
+          imageUrl
+        }
+        ... on AnonymousUser {
+          id
+        }
       }
     }
     chatButtons {

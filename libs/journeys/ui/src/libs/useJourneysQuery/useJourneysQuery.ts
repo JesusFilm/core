@@ -47,10 +47,15 @@ export const GET_JOURNEYS = gql`
         role
         openedAt
         user {
-          id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            imageUrl
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
       }
       primaryImageBlock {

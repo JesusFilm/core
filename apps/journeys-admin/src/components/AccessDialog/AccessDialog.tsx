@@ -54,11 +54,13 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
         id
         role
         user {
-          id
-          firstName
-          lastName
-          email
-          imageUrl
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            email
+            imageUrl
+          }
         }
         journeyNotification {
           id
