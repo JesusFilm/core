@@ -150,9 +150,13 @@ export function DefaultMenu({
       ),
     [journeyWithUserRoles?.journey?.userJourneys]
   )
+  const ownerEmail =
+    owner?.user?.__typename === 'AuthenticatedUser'
+      ? owner.user.email
+      : undefined
   const isOwner = useMemo(
-    () => owner?.user?.email === currentUserEmail,
-    [currentUserEmail, owner?.user?.email]
+    () => ownerEmail === currentUserEmail,
+    [currentUserEmail, ownerEmail]
   )
 
   useEffect(() => {
