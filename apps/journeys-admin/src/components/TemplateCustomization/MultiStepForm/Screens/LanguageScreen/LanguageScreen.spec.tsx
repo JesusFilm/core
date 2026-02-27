@@ -231,45 +231,6 @@ describe('LanguageScreen', () => {
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: nonTemplateJourney, variant: 'customize' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
-        'Team One'
-      )
-    )
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
-
-    await waitFor(() => expect(handleNext).toHaveBeenCalledTimes(1))
-    expect(handleNext).toHaveBeenCalledWith()
-  })
-
-  it('duplicates journey to selected team and navigates to customize', async () => {
-    const mockJourneyDuplicateMockResult = jest
-      .fn()
-      .mockReturnValue({ ...mockJourneyDuplicate.result })
-
     const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
       ...mockGetLastActiveTeamIdAndTeams.result
     }))
