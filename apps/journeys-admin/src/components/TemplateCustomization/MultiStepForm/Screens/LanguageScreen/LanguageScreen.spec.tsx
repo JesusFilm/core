@@ -175,22 +175,61 @@ describe('LanguageScreen', () => {
     } as unknown as NextRouter)
   })
 
-  it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
-    const nonTemplateJourney = {
-      ...journey,
-      id: 'journeyId',
-      template: false,
-      language: {
-        ...journey.language,
-        id: '529'
-      },
-      team: {
-        __typename: 'Team' as const,
-        id: 'teamId1',
-        title: 'Team One',
-        publicTitle: 'Team 1'
-      }
+  const nonTemplateJourney = {
+    ...journey,
+    id: 'journeyId',
+    template: false,
+    language: {
+      ...journey.language,
+      id: '529'
+    },
+    team: {
+      __typename: 'Team' as const,
+      id: 'teamId1',
+      title: 'Team One',
+      publicTitle: 'Team 1'
     }
+  }
+
+  it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: nonTemplateJourney, variant: 'customize' }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() => expect(handleNext).toHaveBeenCalledTimes(1))
+    expect(handleNext).toHaveBeenCalledWith()
+  })
+
+  it('duplicates journey to selected team and navigates to customize', async () => {
+    const mockJourneyDuplicateMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockJourneyDuplicate.result })
 
     render(
       <MockedProvider
