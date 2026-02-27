@@ -411,7 +411,7 @@ describe('LanguageScreen', () => {
       result: {
         data: {
           me: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'anon-user-id',
             email: ''
           }
