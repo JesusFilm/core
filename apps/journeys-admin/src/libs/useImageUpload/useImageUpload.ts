@@ -1,3 +1,4 @@
+import { useTranslation } from 'next-i18next'
 import { useEffect, useRef, useState } from 'react'
 import {
   Accept,
@@ -20,7 +21,10 @@ export type ImageUploadErrorCode = ErrorCode | number | 'unknown-error'
 export interface UseImageUploadOptions {
   onUploadComplete: (url: string) => void
   onUploadStart?: () => void
-  onUploadError?: (errorCode: ImageUploadErrorCode) => void
+  onUploadError?: (
+    errorCode: ImageUploadErrorCode,
+    errorMessage: string
+  ) => void
   maxSize?: number
   accept?: Accept
   disabled?: boolean
@@ -41,7 +45,6 @@ export interface UseImageUploadReturn {
   errorCode: ImageUploadErrorCode | undefined
   acceptedFiles: readonly File[]
   fileRejections: readonly FileRejection[]
-  resetState: () => void
 }
 
 const DEFAULT_MAX_SIZE = 10485760 // 10MB
@@ -56,6 +59,7 @@ const DEFAULT_ACCEPT: Accept = {
 export function useImageUpload(
   useImageUploadOptions: UseImageUploadOptions
 ): UseImageUploadReturn {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     onUploadComplete,
     onUploadStart,
@@ -84,6 +88,26 @@ export function useImageUpload(
     }
   }, [])
 
+  function getErrorMessage(errorCode: ImageUploadErrorCode) {
+    switch (errorCode) {
+      case ErrorCode.FileTooLarge: {
+        return t(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      }
+      case ErrorCode.FileInvalidType: {
+        return t(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+        )
+      }
+      default: {
+        return t('Something went wrong: ({{errorCode}})', {
+          errorCode: String(errorCode)
+        })
+      }
+    }
+  }
+
   const handleDrop = async (
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
@@ -96,7 +120,7 @@ export function useImageUpload(
       setLoading(false)
       loadingRef.current = false
       setSuccess(false)
-      onUploadError?.(error)
+      onUploadError?.(error, getErrorMessage(error))
       return
     }
 
@@ -144,17 +168,17 @@ export function useImageUpload(
           if (response.errors?.length > 0) {
             const error = response.errors[0].code as ImageUploadErrorCode
             setErrorCode(error)
-            onUploadError?.(error)
+            onUploadError?.(error, getErrorMessage(error))
           }
         }
       } else {
-        throw new Error('No upload URL')
+        throw new Error(t('No upload URL'))
       }
     } catch {
       setSuccess(false)
       const error: ImageUploadErrorCode = 'unknown-error'
       setErrorCode(error)
-      onUploadError?.(error)
+      onUploadError?.(error, getErrorMessage(error))
     } finally {
       setLoading(false)
       loadingRef.current = false
@@ -183,13 +207,6 @@ export function useImageUpload(
     fileRejections
   } = useDropzone(dropzoneOptions)
 
-  const resetState = (): void => {
-    setLoading(false)
-    loadingRef.current = false
-    setSuccess(undefined)
-    setErrorCode(undefined)
-  }
-
   return {
     getRootProps,
     getInputProps,
@@ -201,7 +218,6 @@ export function useImageUpload(
     success,
     errorCode,
     acceptedFiles,
-    fileRejections,
-    resetState
+    fileRejections
   }
 }

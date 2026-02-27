@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik, FormikValues } from 'formik'
-import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -26,11 +25,14 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { useRouter } from 'next/router'
 
 interface LanguageScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
+
+const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
 export function LanguageScreen({
   handleNext,
@@ -38,17 +40,20 @@ export function LanguageScreen({
 }: LanguageScreenProps): ReactElement {
   const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
-  const user = useUser()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
+  const user = useUser()
 
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { loadUser } = useCurrentUserLazyQuery()
+  const [teamCreate] = useTeamCreateMutation()
   const { journey } = useJourney()
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
-  const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
+  const [loading, setLoading] = useState(false)
 
   const isParentTemplate = journey?.fromTemplateId == null
+  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
+  const isSignedIn = user?.email != null && user?.id != null
 
   const {
     languages: childJourneyLanguages,
@@ -112,11 +117,20 @@ export function LanguageScreen({
     }
   }
 
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const { loadUser } = useCurrentUserLazyQuery()
-  const [teamCreate] = useTeamCreateMutation()
-
-  const FORM_SM_BREAKPOINT_WIDTH = '390px'
+  function shouldSkipDuplicate(
+    journey: {
+      template?: boolean | null
+      language?: { id: string } | null
+      team?: { id: string } | null
+    },
+    selectedLanguageId: string,
+    selectedTeamId: string
+  ): boolean {
+    const isNotTemplate = journey.template === false
+    const languageMatches = journey.language?.id === selectedLanguageId
+    const teamMatches = journey.team?.id === selectedTeamId
+    return Boolean(isNotTemplate && languageMatches && teamMatches)
+  }
 
   async function createGuestUser(): Promise<{ teamId: string }> {
     const teamName = t('My Team')
@@ -156,7 +170,7 @@ export function LanguageScreen({
     })
     if (data?.journeyDuplicate == null) return false
 
-    await router.push(
+    void router.push(
       `/templates/${data.journeyDuplicate.id}/customize`,
       undefined,
       { shallow: true }
@@ -165,6 +179,13 @@ export function LanguageScreen({
   }
 
   async function handleSubmit(values: FormikValues) {
+    if (journey == null) return
+
+    const { teamSelect: teamId } = values
+    const {
+      languageSelect: { id: languageId }
+    } = values
+
     setLoading(true)
     if (journey == null) {
       setLoading(false)
@@ -182,7 +203,10 @@ export function LanguageScreen({
       return
     }
 
-    if (isSignedIn) {
+    if (shouldSkipDuplicate(journey, languageId, teamId)) {
+      handleNext()
+      return
+    } else if (isSignedIn) {
       // Duplicates journey for a signed in user
       const teams = query?.data?.teams ?? []
       const teamId =
@@ -244,6 +268,7 @@ export function LanguageScreen({
         setLoading(false)
       }
     }
+    setLoading(false)
   }
 
   return (

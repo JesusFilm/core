@@ -1,0 +1,11 @@
+interface User {
+  id: ID!
+}
+
+extend type AuthenticatedUser implements User @key(fields: "id") {
+  id: ID! @external
+}
+
+extend type AnonymousUser implements User @key(fields: "id") {
+  id: ID!
+}

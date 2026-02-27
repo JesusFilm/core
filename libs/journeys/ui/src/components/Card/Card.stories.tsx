@@ -109,7 +109,8 @@ const image: TreeBlock<ImageFields> = {
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const video: TreeBlock<VideoFields> = {
@@ -159,6 +160,7 @@ const video: TreeBlock<VideoFields> = {
   },
   action: null,
   fullsize: null,
+  customizable: null,
   children: []
 }
 

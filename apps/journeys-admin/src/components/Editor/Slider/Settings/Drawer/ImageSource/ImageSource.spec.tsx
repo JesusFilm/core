@@ -4,6 +4,14 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+import { JourneyFields } from '../../../../../../../__generated__/JourneyFields'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 
 import { ImageSource } from './ImageSource'
@@ -162,5 +170,92 @@ describe('ImageSource', () => {
       clipboardData: { getData: () => 'https://example.com/image.jpg' }
     })
     await waitFor(() => expect(onChange).toHaveBeenCalled())
+  })
+
+  describe('BlockCustomizationToggle', () => {
+    const imageBlock: TreeBlock<ImageBlock> = {
+      id: 'image1.id',
+      __typename: 'ImageBlock',
+      parentBlockId: 'card.id',
+      parentOrder: 0,
+      src: 'https://example.com/image.jpg',
+      alt: 'image alt',
+      width: 1920,
+      height: 1080,
+      blurhash: '',
+      children: [],
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50,
+      customizable: null
+    }
+
+    it('should not render BlockCustomizationToggle when journey is not a template', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <ImageSource
+              selectedBlock={imageBlock}
+              onChange={onChange}
+              onDelete={onDelete}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when selectedBlock is null (even when journey is template)', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { template: true } as unknown as JourneyFields,
+                variant: 'admin'
+              }}
+            >
+              <ImageSource
+                selectedBlock={null}
+                onChange={onChange}
+                onDelete={onDelete}
+              />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('should not render BlockCustomizationToggle when customizableMedia flag is false', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <FlagsProvider flags={{ customizableMedia: false }}>
+              <JourneyProvider
+                value={{
+                  journey: { template: true } as unknown as JourneyFields,
+                  variant: 'admin'
+                }}
+              >
+                <CommandProvider>
+                  <EditorProvider>
+                    <ImageSource
+                      selectedBlock={imageBlock}
+                      onChange={onChange}
+                      onDelete={onDelete}
+                    />
+                  </EditorProvider>
+                </CommandProvider>
+              </JourneyProvider>
+            </FlagsProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
   })
 })

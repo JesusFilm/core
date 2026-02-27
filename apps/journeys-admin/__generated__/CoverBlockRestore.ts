@@ -195,6 +195,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
   action: CoverBlockRestore_blockRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CoverBlockRestore_blockRestore_ImageBlock {
@@ -214,6 +215,7 @@ export interface CoverBlockRestore_blockRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_StepBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;

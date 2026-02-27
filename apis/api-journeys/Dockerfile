@@ -16,7 +16,7 @@ WORKDIR /app
 COPY ./dist/apps/api-journeys .
 COPY ./libs/prisma/journeys/db ./prisma
 
-RUN corepack enable && corepack prepare pnpm --activate
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
 RUN pnpm add @prisma/client@6.18.0
 RUN pnpm add -D prisma@6.18.0

@@ -47,11 +47,13 @@ export const builder = new SchemaBuilder<{
   }
   AuthScopes: {
     isAuthenticated: boolean
+    isAnonymous: boolean
     isSuperAdmin: boolean
     isValidInterop: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isAnonymous: Extract<Context, { type: 'authenticated' }>
     isSuperAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
@@ -67,26 +69,29 @@ export const builder = new SchemaBuilder<{
     authorizeOnSubscribe: true,
     authScopes: async (context: Context) => {
       switch (context.type) {
-        case 'authenticated':
+        case 'authenticated': {
+          const user = await prisma.user.findUnique({
+            where: { userId: context.currentUser.id }
+          })
           return {
-            isAuthenticated: true,
-            isSuperAdmin:
-              (
-                await prisma.user.findUnique({
-                  where: { userId: context.currentUser.id }
-                })
-              )?.superAdmin ?? false,
+            isAuthenticated: context.currentUser?.email != null,
+            isAnonymous:
+              context.currentUser != null && context.currentUser?.email == null,
+            isSuperAdmin: user?.superAdmin ?? false,
             isValidInterop: false
           }
+        }
         case 'interop':
           return {
             isAuthenticated: false,
+            isAnonymous: false,
             isSuperAdmin: false,
             isValidInterop: true
           }
         default:
           return {
             isAuthenticated: false,
+            isAnonymous: false,
             isSuperAdmin: false,
             isValidInterop: false
           }
