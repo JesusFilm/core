@@ -1,11 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -33,6 +28,12 @@ import {
 } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
+import { useAuth } from '../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
@@ -72,7 +73,7 @@ export const USER_JOURNEY_OPEN = gql`
 function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const { data } = useQuery<GetAdminJourney, GetAdminJourneyVariables>(
     GET_ADMIN_JOURNEY,
     {
@@ -112,23 +113,24 @@ function JourneyEditPage({ status }): ReactElement {
           initialState={{
             activeContent: router.query.view as ActiveContent | undefined
           }}
-          user={user}
+          user={user ?? undefined}
         />
       )}
     </InstantSearch>
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, query, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (
+  ctx: GetServerSidePropsContext
+) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
 
+  const user = toUser(tokens)
   const { apolloClient, flags, redirect, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -140,7 +142,7 @@ export const getServerSideProps = withUserTokenSSR({
     >({
       query: GET_SSR_ADMIN_JOURNEY,
       variables: {
-        id: query?.journeyId as string
+        id: ctx.query?.journeyId as string
       }
     })
 
@@ -167,7 +169,7 @@ export const getServerSideProps = withUserTokenSSR({
       variables: { id: data.journey?.id }
     })
   } catch (error) {
-    if (error.message === 'journey not found') {
+    if ((error as Error).message === 'journey not found') {
       return {
         redirect: {
           permanent: false,
@@ -175,10 +177,11 @@ export const getServerSideProps = withUserTokenSSR({
         }
       }
     }
-    if (error.message === 'user is not allowed to view journey') {
+    if ((error as Error).message === 'user is not allowed to view journey') {
       return {
         props: {
           status: 'noAccess',
+          userSerialized: JSON.stringify(user),
           ...translations,
           flags,
           initialApolloState: apolloClient.cache.extract()
@@ -191,13 +194,12 @@ export const getServerSideProps = withUserTokenSSR({
   return {
     props: {
       status: 'success',
+      userSerialized: JSON.stringify(user),
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneyEditPage)
+export default JourneyEditPage

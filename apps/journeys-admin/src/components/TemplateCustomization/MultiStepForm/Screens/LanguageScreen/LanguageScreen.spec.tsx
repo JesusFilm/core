@@ -37,9 +37,19 @@ import {
 
 import { LanguageScreen } from './LanguageScreen'
 
-jest.mock('next-firebase-auth', () => ({
+jest.mock('../../../../../libs/auth', () => ({
   __esModule: true,
-  useUser: () => ({ id: 'user-id', email: 'urim@thumim.example.io' })
+  useAuth: () => ({
+    user: {
+      id: 'user-id',
+      email: 'urim@thumim.example.io',
+      displayName: null,
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: false,
+      token: 'mock-token'
+    }
+  })
 }))
 
 jest.mock('next/router', () => ({

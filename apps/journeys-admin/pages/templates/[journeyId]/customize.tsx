@@ -1,6 +1,5 @@
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import absoluteUrl from 'next-absolute-url'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
@@ -15,12 +14,14 @@ import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
+import { useAuth } from '../../../src/libs/auth'
+import { getAuthTokens, redirectToLogin, toUser } from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const { data, loading } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
@@ -51,37 +52,24 @@ function CustomizePage() {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR()(async ({
-  user,
-  locale,
-  resolvedUrl,
-  params,
-  req
-}) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : null
+
   const { apolloClient, flags, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl,
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl,
     makeAccountOnAnonymous: true
   })
 
   const templateCustomizationGuestFlow =
     flags?.templateCustomizationGuestFlow ?? false
   if (user?.id == null && !templateCustomizationGuestFlow) {
-    const { origin } = absoluteUrl(req)
-    const redirectUrl = new URL(
-      resolvedUrl ?? req?.url ?? '/',
-      origin
-    ).toString()
-    return {
-      redirect: {
-        destination: `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`,
-        permanent: false
-      }
-    }
+    return redirectToLogin(ctx)
   }
 
-  const journeyId = params?.journeyId
+  const journeyId = ctx.params?.journeyId
   if (journeyId == null) {
     return {
       redirect: {
@@ -116,11 +104,12 @@ export const getServerSideProps = withUserTokenSSR()(async ({
 
   return {
     props: {
+      userSerialized: user != null ? JSON.stringify(user) : null,
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }
-})
+}
 
-export default withUser()(CustomizePage)
+export default CustomizePage

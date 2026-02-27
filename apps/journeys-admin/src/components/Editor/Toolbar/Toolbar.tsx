@@ -13,7 +13,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 

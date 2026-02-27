@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { RenderResult, render } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
 import { ThemeProvider } from '../../ThemeProvider'

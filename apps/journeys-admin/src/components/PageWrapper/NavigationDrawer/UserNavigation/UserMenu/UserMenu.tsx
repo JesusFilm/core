@@ -8,7 +8,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../../../libs/auth'
+import { logout } from '../../../../../libs/auth/firebase'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -103,7 +104,7 @@ export function UserMenu({
           onClick={async () => {
             handleProfileClose()
             await client.clearStore()
-            await user.signOut()
+            await logout()
             await enqueueSnackbar(t('Logout successful'), {
               variant: 'success',
               preventDuplicate: true

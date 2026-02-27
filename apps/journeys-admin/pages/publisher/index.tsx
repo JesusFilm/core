@@ -1,11 +1,6 @@
 import Stack from '@mui/material/Stack'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
@@ -21,12 +16,14 @@ import { JourneyStatus, Role } from '../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
+import { useAuth } from '../../src/libs/auth'
+import { getAuthTokens, redirectToLogin, toUser } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function PublisherIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
 
@@ -37,7 +34,7 @@ function PublisherIndexPage(): ReactElement {
     if (activeTeam == null) {
       void refetch()
     }
-  }, [user.id, query, activeTeam, refetch])
+  }, [user?.id, query, activeTeam, refetch])
 
   useEffect(() => {
     if (
@@ -81,16 +78,16 @@ function PublisherIndexPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl, query }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : null
+
+  if (user == null) return redirectToLogin(ctx)
 
   const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -100,7 +97,7 @@ export const getServerSideProps = withUserTokenSSR({
     teamId: 'jfp-team'
   }
 
-  switch (query.tab ?? 'active') {
+  switch (ctx.query.tab ?? 'active') {
     case 'active':
       variables.status = [JourneyStatus.draft, JourneyStatus.published]
       break
@@ -119,12 +116,11 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(PublisherIndexPage)
+export default PublisherIndexPage

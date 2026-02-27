@@ -1,10 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { verifyIdToken } from 'next-firebase-auth'
+import { getTokens } from 'next-firebase-auth-edge'
 import fetch from 'node-fetch'
 
-import { initAuth } from '../../src/libs/firebaseClient/initAuth'
-
-initAuth()
+import { authConfig } from '../../src/libs/auth/config'
 
 async function sleep(ms: number | undefined): Promise<void> {
   return await new Promise((resolve) => {
@@ -16,19 +14,26 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  if (req.cookies['journeys-admin.AuthUser'] == null)
-    return res.status(400).json({ error: 'Missing Authorization header value' })
-
   if (
     process.env.JOURNEYS_URL == null ||
     process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN == null
   )
     return res.status(500).json({ error: 'Missing Environment Variables' })
 
-  const token = req.cookies['journeys-admin.AuthUser']
+  const cookies = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get(name: string): any {
+      const value = req.cookies[name]
+      return value != null ? { name, value } : undefined
+    }
+  }
 
   try {
-    await verifyIdToken(token)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tokens = await getTokens(cookies as any, authConfig)
+    if (tokens == null) {
+      return res.status(403).json({ error: 'Not authorized' })
+    }
   } catch (e) {
     return res.status(403).json({ error: 'Not authorized' })
   }

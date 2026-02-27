@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { ReactElement, useEffect } from 'react'
 
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
@@ -14,6 +14,7 @@ import {
   JourneyNotificationUpdate,
   JourneyNotificationUpdateVariables
 } from '../../../__generated__/JourneyNotificationUpdate'
+import { getAuthTokens, redirectToLogin, toUser } from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { JOURNEY_NOTIFICATION_UPDATE } from '../../../src/libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate'
 
@@ -35,13 +36,16 @@ function TemplateQuickPage(): ReactElement {
   return <></>
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl, query }) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : null
+
+  if (user == null) return redirectToLogin(ctx)
+
   const { redirect, apolloClient } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -50,14 +54,14 @@ export const getServerSideProps = withUserTokenSSR({
     query: GET_TEAMS
   })
 
-  if (getTeams.teams.length === 1 && query?.journeyId != null) {
+  if (getTeams.teams.length === 1 && ctx.query?.journeyId != null) {
     const { data: journeyDuplicate } = await apolloClient.mutate<
       JourneyDuplicate,
       JourneyDuplicateVariables
     >({
       mutation: JOURNEY_DUPLICATE,
       variables: {
-        id: query.journeyId.toString(),
+        id: ctx.query.journeyId.toString(),
         teamId: getTeams.teams[0].id
       }
     })
@@ -85,12 +89,10 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     redirect: {
-      destination: `/templates/${(query?.journeyId ?? '') as string}`,
+      destination: `/templates/${(ctx.query?.journeyId ?? '') as string}`,
       permanent: false
     }
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateQuickPage)
+export default TemplateQuickPage

@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth/authContext'
 import { Suspense } from 'react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
@@ -82,7 +82,10 @@ describe('NavigationDrawer', () => {
       id: 'userId',
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',
-      email: 'amin@email.com'
+      email: 'amin@email.com',
+      phoneNumber: null,
+      emailVerified: true,
+      token: 'mock-token'
     } as unknown as User
 
     const getMeMock: MockedResponse<GetMe> = {

@@ -11,7 +11,7 @@ import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import type { User } from 'next-firebase-auth'
+import type { User } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Suspense, useState } from 'react'
 

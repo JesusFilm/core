@@ -4,7 +4,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
+import { useAuth } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
@@ -82,7 +82,7 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 

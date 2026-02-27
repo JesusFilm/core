@@ -1,6 +1,6 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Grid from '@mui/material/Grid'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../../libs/auth/authContext'
 import { ReactElement, useMemo } from 'react'
 
 import {

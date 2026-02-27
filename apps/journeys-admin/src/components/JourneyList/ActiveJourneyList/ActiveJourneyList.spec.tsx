@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -152,7 +152,15 @@ describe('ActiveJourneyList', () => {
             <SnackbarProvider>
               <ActiveJourneyList
                 event="archiveAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -177,7 +185,15 @@ describe('ActiveJourneyList', () => {
             <SnackbarProvider>
               <ActiveJourneyList
                 event="archiveAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -212,7 +228,15 @@ describe('ActiveJourneyList', () => {
             <SnackbarProvider>
               <ActiveJourneyList
                 event="trashAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -232,7 +256,15 @@ describe('ActiveJourneyList', () => {
             <SnackbarProvider>
               <ActiveJourneyList
                 event="trashAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -258,7 +290,15 @@ describe('ActiveJourneyList', () => {
               <SnackbarProvider>
                 <ActiveJourneyList
                   event="trashAllActive"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -307,7 +347,15 @@ describe('ActiveJourneyList', () => {
             <SnackbarProvider>
               <ActiveJourneyList
                 event="trashAllActive"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>

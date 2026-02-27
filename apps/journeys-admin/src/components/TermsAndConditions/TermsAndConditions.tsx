@@ -9,7 +9,7 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
+import { useAuth } from '../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -42,7 +42,7 @@ export function TermsAndConditions(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [accepted, setAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const user = useUser()
+  const { user } = useAuth()
   const [teamCreate] = useTeamCreateMutation()
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE

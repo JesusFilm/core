@@ -1,6 +1,6 @@
 import { ApolloError, useMutation } from '@apollo/client'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'

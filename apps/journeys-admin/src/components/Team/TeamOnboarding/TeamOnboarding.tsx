@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 

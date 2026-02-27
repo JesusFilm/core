@@ -1,4 +1,4 @@
-import { User } from 'next-firebase-auth'
+import { User } from '../../libs/auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 

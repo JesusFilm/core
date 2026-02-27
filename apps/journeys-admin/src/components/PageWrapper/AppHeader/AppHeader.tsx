@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 

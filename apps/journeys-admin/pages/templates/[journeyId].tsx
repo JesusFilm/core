@@ -1,8 +1,7 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { GetStaticProps } from 'next'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
@@ -23,12 +22,14 @@ import { GetTags } from '../../__generated__/GetTags'
 import { IdType } from '../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
+import { useAuth } from '../../src/libs/auth'
+import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const { data } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
@@ -42,7 +43,7 @@ function TemplateDetailsPage(): ReactElement {
     if (activeTeam == null) {
       void refetch()
     }
-  }, [user.id, query, activeTeam, refetch])
+  }, [user?.id, query, activeTeam, refetch])
 
   const userSignedIn = user?.id != null
 
@@ -119,19 +120,17 @@ function TemplateDetailsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
-  user,
-  locale,
-  resolvedUrl,
-  params
-}) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : null
+
   const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
-  if (params?.journeyId == null) {
+  if (ctx.params?.journeyId == null) {
     return {
       redirect: {
         destination: '/templates',
@@ -147,7 +146,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
       variables: {
-        id: params.journeyId.toString(),
+        id: ctx.params.journeyId.toString(),
         idType: IdType.databaseId
       }
     })
@@ -182,11 +181,12 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
 
   return {
     props: {
+      userSerialized: user != null ? JSON.stringify(user) : null,
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract()
     }
   }
-})
+}
 
-export default withUser()(TemplateDetailsPage)
+export default TemplateDetailsPage

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
 
@@ -73,7 +73,10 @@ describe('UserNavigation', () => {
     id: 'userId',
     displayName: 'Amin One',
     photoURL: 'https://bit.ly/3Gth4Yf',
-    email: 'amin@email.com'
+    email: 'amin@email.com',
+    phoneNumber: null,
+    emailVerified: true,
+    token: 'mock-token'
   } as unknown as User
 
   beforeEach(() => {

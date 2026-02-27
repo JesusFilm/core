@@ -2,7 +2,7 @@ import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
-import { useUser } from 'next-firebase-auth'
+import { useAuth } from '../../../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -38,7 +38,7 @@ export function LanguageScreen({
 }: LanguageScreenProps): ReactElement {
   const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
-  const user = useUser()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -46,7 +46,7 @@ export function LanguageScreen({
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
   >
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
+  // If the user is not authenticated, useAuth returns { user: null }
   const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
 

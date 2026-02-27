@@ -17,11 +17,12 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import i18nConfig from '../next-i18next.config'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
-import { initAuth } from '../src/libs/firebaseClient/initAuth'
+import { AuthProvider, User } from '../src/libs/auth'
+import { getFirebaseAuth } from '../src/libs/auth/firebase'
 
 import './globals.css'
 
-initAuth()
+getFirebaseAuth()
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
@@ -39,14 +40,14 @@ function JourneysAdminApp({
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const user =
+  const user: User | null =
     pageProps.userSerialized != null
       ? JSON.parse(pageProps.userSerialized)
       : null
 
   const apolloClient = useApollo({
     initialState: pageProps.initialApolloState,
-    token: user?._token
+    token: user?.token
   })
 
   useEffect(() => {
@@ -111,22 +112,24 @@ function JourneysAdminApp({
            `}
               </Script>
             )}
-          <ApolloProvider client={apolloClient}>
-            <TeamProvider>
-              <SnackbarProvider
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-              >
-                <GoogleTagManager
-                  gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
-                  dataLayer={{ userId: user?.id }}
-                />
-                <Component {...pageProps} />
-              </SnackbarProvider>
-            </TeamProvider>
-          </ApolloProvider>
+          <AuthProvider user={user}>
+            <ApolloProvider client={apolloClient}>
+              <TeamProvider>
+                <SnackbarProvider
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                >
+                  <GoogleTagManager
+                    gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
+                    dataLayer={{ userId: user?.id }}
+                  />
+                  <Component {...pageProps} />
+                </SnackbarProvider>
+              </TeamProvider>
+            </ApolloProvider>
+          </AuthProvider>
         </ThemeProvider>
       </AppCacheProvider>
     </FlagsProvider>

@@ -4,7 +4,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
-import { User } from 'next-firebase-auth'
+import { AuthUser as User } from '../../../libs/auth/types'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'

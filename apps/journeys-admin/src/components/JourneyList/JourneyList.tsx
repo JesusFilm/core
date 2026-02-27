@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
+import { User } from '../../libs/auth/authContext'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'

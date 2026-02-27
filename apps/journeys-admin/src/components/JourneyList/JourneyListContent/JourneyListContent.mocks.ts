@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth/authContext'
 
 import {
   GetAdminJourneys,
@@ -21,7 +21,11 @@ import {
 export const user: User = {
   id: 'user-id1',
   displayName: 'Test User',
-  email: 'test@example.com'
+  email: 'test@example.com',
+  photoURL: null,
+  phoneNumber: null,
+  emailVerified: true,
+  token: 'mock-token'
 } as unknown as User
 
 export const activeJourneysMock: MockedResponse<

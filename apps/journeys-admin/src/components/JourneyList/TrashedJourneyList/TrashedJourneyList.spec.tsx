@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
+import { User } from '../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -275,7 +275,15 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -301,7 +309,15 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="restoreAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={{
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -324,7 +340,15 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -382,7 +406,15 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="deleteAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={{
+                  id: 'user-id1',
+                  email: null,
+                  displayName: null,
+                  photoURL: null,
+                  phoneNumber: null,
+                  emailVerified: false,
+                  token: 'mock-token'
+                } as unknown as User}
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -408,7 +440,15 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="deleteAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={{
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User}
                 />
               </SnackbarProvider>
             </ThemeProvider>

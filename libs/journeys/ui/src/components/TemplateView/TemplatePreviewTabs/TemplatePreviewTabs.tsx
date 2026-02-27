@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { User } from 'next-firebase-auth'
+import { AuthUser as User } from '../../../libs/auth/types'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useMemo, useState } from 'react'
 

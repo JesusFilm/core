@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { authMiddleware } from 'next-firebase-auth-edge'
+
+import { authConfig } from './src/libs/auth/config'
 
 const PUBLIC_FILE_REGEX = /\.(.*)$/
 
@@ -25,6 +28,8 @@ const SUPPORTED_LOCALES = [
   'ms', // Malay
   'pt' // Portuguese
 ]
+
+const PUBLIC_PATHS = ['/users/sign-in']
 
 interface LanguagePriority {
   code: string
@@ -80,28 +85,18 @@ function getBrowserLanguage(req: NextRequest): string {
   return getPreferredLanguage(sortedLanguages) ?? DEFAULT_LOCALE
 }
 
-function handleRedirect(req: NextRequest, locale?: string): NextResponse {
-  const redirectUrl = new URL(
-    `${locale !== DEFAULT_LOCALE ? `/${locale}` : ''}${req.nextUrl.pathname}${
-      req.nextUrl.search
-    }`,
-    req.url
-  )
-  const response =
-    redirectUrl.toString() === req.url.toString()
-      ? NextResponse.next()
-      : NextResponse.redirect(redirectUrl)
-  response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${locale}`)
-  return response
-}
-
-export function middleware(req: NextRequest): NextResponse | undefined {
+function applyLocale(
+  req: NextRequest,
+  headers?: Headers
+): NextResponse | undefined {
   if (
     req.nextUrl.pathname.startsWith('/_next') ||
     req.nextUrl.pathname.includes('/api/') ||
     PUBLIC_FILE_REGEX.test(req.nextUrl.pathname)
   )
-    return
+    return headers != null
+      ? NextResponse.next({ request: { headers } })
+      : NextResponse.next()
 
   const nextLocaleCookie = req.cookies
     .get('NEXT_LOCALE')
@@ -110,13 +105,83 @@ export function middleware(req: NextRequest): NextResponse | undefined {
   // Redirect if NEXT_LOCALE cookie is not set
   if (nextLocaleCookie == null) {
     const browserLanguage = getBrowserLanguage(req)
-    return handleRedirect(req, browserLanguage)
+    return handleLocaleRedirect(req, browserLanguage, headers)
   }
 
   const nextLocale = req.nextUrl.locale
   const extractedLocale = getSupportedLocale(nextLocaleCookie ?? '')
 
-  // Check if the NEXT_LOCALE cookie is set and does not match the current locale
   if (extractedLocale != null && extractedLocale !== nextLocale)
-    return handleRedirect(req, extractedLocale)
+    return handleLocaleRedirect(req, extractedLocale, headers)
+
+  return headers != null
+    ? NextResponse.next({ request: { headers } })
+    : NextResponse.next()
+}
+
+function handleLocaleRedirect(
+  req: NextRequest,
+  locale: string | undefined,
+  headers?: Headers
+): NextResponse {
+  const redirectUrl = new URL(
+    `${locale !== DEFAULT_LOCALE ? `/${locale}` : ''}${req.nextUrl.pathname}${
+      req.nextUrl.search
+    }`,
+    req.url
+  )
+  const isSameUrl = redirectUrl.toString() === req.url.toString()
+  const response = isSameUrl
+    ? headers != null
+      ? NextResponse.next({ request: { headers } })
+      : NextResponse.next()
+    : NextResponse.redirect(redirectUrl)
+  response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${locale}`)
+  return response
+}
+
+function isPublicPath(req: NextRequest): boolean {
+  const pathname = req.nextUrl.pathname
+  return PUBLIC_PATHS.some(
+    (p) =>
+      pathname === p ||
+      pathname.match(
+        new RegExp(
+          `^/[a-z]{2}(-[A-Za-z]+(-[A-Za-z]+)?)?${p.replace('/', '\\/')}$`
+        )
+      )
+  )
+}
+
+export default async function middleware(
+  req: NextRequest
+): Promise<NextResponse> {
+  return await authMiddleware(req, {
+    ...authConfig,
+    loginPath: '/api/login',
+    logoutPath: '/api/logout',
+    cookieSerializeOptions: {
+      path: '/',
+      httpOnly: true,
+      secure:
+        process.env.NEXT_PUBLIC_VERCEL_ENV === 'prod' ||
+        process.env.NEXT_PUBLIC_VERCEL_ENV === 'stage' ||
+        process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview',
+      sameSite: 'strict' as const,
+      maxAge: 12 * 60 * 60 * 24
+    },
+    handleValidToken: async (_tokens, headers) => {
+      return applyLocale(req, headers) ?? NextResponse.next()
+    },
+    handleInvalidToken: async () => {
+      return applyLocale(req) ?? NextResponse.next()
+    },
+    handleError: async () => {
+      return applyLocale(req) ?? NextResponse.next()
+    }
+  })
+}
+
+export const config = {
+  matcher: ['/api/login', '/api/logout', '/((?!_next|favicon.ico|__nextjs).*)']
 }
