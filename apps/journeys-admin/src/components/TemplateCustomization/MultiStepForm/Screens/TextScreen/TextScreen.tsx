@@ -125,7 +125,7 @@ const renderEditableText = (
 }
 
 interface TextScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 

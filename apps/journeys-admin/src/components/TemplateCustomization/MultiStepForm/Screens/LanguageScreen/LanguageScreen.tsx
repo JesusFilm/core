@@ -2,7 +2,6 @@ import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
-import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -29,7 +28,7 @@ import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
@@ -40,7 +39,6 @@ export function LanguageScreen({
   const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
   const user = useUser()
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
 
@@ -120,17 +118,33 @@ export function LanguageScreen({
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
+  function shouldSkipDuplicate(
+    journey: {
+      template?: boolean | null
+      language?: { id: string } | null
+      team?: { id: string } | null
+    },
+    selectedLanguageId: string,
+    selectedTeamId: string
+  ): boolean {
+    const isNotTemplate = journey.template === false
+    const languageMatches = journey.language?.id === selectedLanguageId
+    const teamMatches = journey.team?.id === selectedTeamId
+    return Boolean(isNotTemplate && languageMatches && teamMatches)
+  }
+
   async function handleSubmit(values: FormikValues) {
+    if (journey == null) return
+
+    const { teamSelect: teamId } = values
+    const {
+      languageSelect: { id: languageId }
+    } = values
+
     setLoading(true)
-    if (journey == null) {
-      setLoading(false)
-      return
-    }
-    if (isSignedIn) {
-      const { teamSelect: teamId } = values
-      const {
-        languageSelect: { id: languageId }
-      } = values
+    if (shouldSkipDuplicate(journey, languageId, teamId)) {
+      handleNext()
+    } else if (isSignedIn) {
       const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
       const { data: duplicateData } = await journeyDuplicate({
         variables: { id: journeyId, teamId, forceNonTemplate: true }
@@ -145,17 +159,11 @@ export function LanguageScreen({
           }
         )
         setLoading(false)
-
         return
       }
-      await router.push(
-        `/templates/${duplicateData.journeyDuplicate.id}/customize`,
-        undefined,
-        { shallow: true }
-      )
-      handleNext()
-      setLoading(false)
+      handleNext(duplicateData.journeyDuplicate.id)
     }
+    setLoading(false)
   }
 
   return (
