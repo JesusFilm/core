@@ -233,7 +233,7 @@ export function TextScreen({
           }}
         >
           {t(
-            "Fill out the blue fields and we'll customise the content with your information."
+            "Fill out the blue fields and we'll customize the content with your information."
           )}
         </Typography>
         <Typography
@@ -245,7 +245,7 @@ export function TextScreen({
             maxWidth: { xs: '100%', sm: '90%' }
           }}
         >
-          {t('Fill in the blue fields to customise the content.')}
+          {t('Fill in the blue fields to customize the content.')}
         </Typography>
       </Stack>
       <Box sx={{ position: 'relative', width: '100%' }}>

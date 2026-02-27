@@ -291,7 +291,7 @@ export function SocialScreenSocialImage({
           color="text.secondary"
           sx={{ fontWeight: 600 }}
         >
-          {t('your.nextsteps.is')}
+          {t('your.nextstep.is')}
         </Typography>
       </CardContent>
 

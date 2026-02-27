@@ -50,7 +50,7 @@ export function SocialScreen({
           display: { xs: 'none', sm: 'block' }
         }}
       >
-        {t('Customise how your invite appears when shared on social media.')}
+        {t('Customize how your invite appears when shared on social media.')}
       </Typography>
       <Typography
         variant="body2"
