@@ -55,7 +55,7 @@ describe('TeamManageDialog', () => {
             id: 'userTeamId',
             role: UserTeamRole.manager,
             user: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               email: 'miguelohara@example.com',
               firstName: 'Miguel',
               id: 'userId',

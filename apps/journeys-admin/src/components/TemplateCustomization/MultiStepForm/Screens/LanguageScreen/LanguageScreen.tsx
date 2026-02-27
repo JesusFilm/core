@@ -11,10 +11,12 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
+import { transformer } from '@core/journeys/ui/transformer'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
@@ -24,31 +26,39 @@ import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGet
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
+
+const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
 export function LanguageScreen({
   handleNext,
   handleScreenNavigation
 }: LanguageScreenProps): ReactElement {
-  const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
-  const user = useUser()
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
-
+  const router = useRouter()
+  const user = useUser()
   const { journey } = useJourney()
+  const { query } = useTeam()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { loadUser } = useCurrentUserLazyQuery()
+  const [teamCreate] = useTeamCreateMutation()
+  const [loading, setLoading] = useState(false)
+
+  const steps = transformer(journey?.blocks ?? []) as Array<
+    TreeBlock<StepBlock>
+  >
+  const isParentTemplate = journey?.fromTemplateId == null
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
-  const { query } = useTeam()
-
-  const isParentTemplate = journey?.fromTemplateId == null
 
   const {
     languages: childJourneyLanguages,
@@ -112,11 +122,20 @@ export function LanguageScreen({
     }
   }
 
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
-  const { loadUser } = useCurrentUserLazyQuery()
-  const [teamCreate] = useTeamCreateMutation()
-
-  const FORM_SM_BREAKPOINT_WIDTH = '390px'
+  function shouldSkipDuplicate(
+    journey: {
+      template?: boolean | null
+      language?: { id: string } | null
+      team?: { id: string } | null
+    },
+    selectedLanguageId: string,
+    selectedTeamId: string
+  ): boolean {
+    const isNotTemplate = journey.template === false
+    const languageMatches = journey.language?.id === selectedLanguageId
+    const teamMatches = journey.team?.id === selectedTeamId
+    return Boolean(isNotTemplate && languageMatches && teamMatches)
+  }
 
   async function createGuestUser(): Promise<{ teamId: string }> {
     const teamName = t('My Team')
@@ -156,7 +175,7 @@ export function LanguageScreen({
     })
     if (data?.journeyDuplicate == null) return false
 
-    await router.push(
+    void router.push(
       `/templates/${data.journeyDuplicate.id}/customize`,
       undefined,
       { shallow: true }
@@ -165,6 +184,13 @@ export function LanguageScreen({
   }
 
   async function handleSubmit(values: FormikValues) {
+    if (journey == null) return
+
+    const { teamSelect: teamId } = values
+    const {
+      languageSelect: { id: languageId }
+    } = values
+
     setLoading(true)
     if (journey == null) {
       setLoading(false)
@@ -182,7 +208,10 @@ export function LanguageScreen({
       return
     }
 
-    if (isSignedIn) {
+    if (shouldSkipDuplicate(journey, languageId, teamId)) {
+      handleNext()
+      return
+    } else if (isSignedIn) {
       // Duplicates journey for a signed in user
       const teams = query?.data?.teams ?? []
       const teamId =
@@ -244,25 +273,26 @@ export function LanguageScreen({
         setLoading(false)
       }
     }
+    setLoading(false)
   }
 
   return (
     <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
+      <Stack alignItems="center" sx={{ pb: { xs: 6, sm: 10 } }}>
         <Typography
           variant="h4"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{ mb: 2 }}
         >
-          {t("Let's get started!")}
+          {t("Let's Get Started!")}
         </Typography>
         <Typography
           variant="h6"
           display={{ xs: 'block', sm: 'none' }}
           gutterBottom
         >
-          {t("Let's get started!")}
+          {t('Get Started')}
         </Typography>
         <Typography
           variant="subtitle2"
@@ -272,15 +302,26 @@ export function LanguageScreen({
         >
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          align="center"
+          display={{ xs: 'block', sm: 'none' }}
+        >
+          {t("A few quick edits and it's ready to share!")}
+        </Typography>
       </Stack>
-      <SocialImage />
+
       <Typography
         variant="subtitle2"
         gutterBottom
         sx={{ mb: { xs: 0, sm: 2 } }}
       >
-        {journey?.title ?? ''}
+        {`'${journey?.title ?? ''}'`}
       </Typography>
+
+      {steps.length > 0 && <CardsPreview steps={steps} />}
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

@@ -18,7 +18,7 @@ COPY ./dist/apps/api-media .
 COPY ./libs/prisma/media/db ./prisma
 COPY ./libs/prisma/languages/db ./prisma-languages
 
-RUN corepack enable && corepack prepare pnpm --activate
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
 RUN pnpm add @prisma/client@6.18.0
 RUN pnpm add -D prisma@6.18.0

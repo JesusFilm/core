@@ -25,7 +25,7 @@ COPY ./libs/prisma/media/db ./prisma-media
 COPY ./libs/prisma/languages/db ./prisma-languages
 
 # dependencies
-RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm --activate
+RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm add -g next
 RUN pnpm install --prod --silent
 RUN pnpm add sharp pino dd-trace next-logger @prisma/client@6.18.0 --silent

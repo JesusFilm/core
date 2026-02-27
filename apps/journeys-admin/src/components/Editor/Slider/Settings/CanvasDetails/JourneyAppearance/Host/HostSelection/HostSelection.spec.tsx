@@ -25,7 +25,7 @@ describe('HostSelection', () => {
     __typename: 'UserTeam',
     role: UserTeamRole.manager,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       email: user.email,
       firstName: 'User',
       id: user.id,

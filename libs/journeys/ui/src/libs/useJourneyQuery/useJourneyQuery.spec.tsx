@@ -62,7 +62,7 @@ describe('useJourneyQuery', () => {
           role: UserJourneyRole.owner,
           openedAt: null,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user-id1',
             firstName: 'Amin',
             lastName: 'One',

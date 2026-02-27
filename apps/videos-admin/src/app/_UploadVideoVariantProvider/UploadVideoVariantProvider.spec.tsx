@@ -664,14 +664,16 @@ describe('UploadVideoVariantContext', () => {
 
       // Should set error state
       await waitFor(() => {
-        expect(result.current.uploadState.error).toBe('Variant creation failed')
+        expect(result.current.uploadState.error).toBe(
+          'Failed to create video variant: Variant creation failed'
+        )
         expect(result.current.uploadState.isUploading).toBe(false)
         expect(result.current.uploadState.isProcessing).toBe(false)
       })
 
       // Should show error snackbar
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Variant creation failed',
+        'Failed to create video variant: Variant creation failed',
         {
           variant: 'error'
         }

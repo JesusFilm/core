@@ -13,7 +13,7 @@ const mockGetUserFromPayload = getUserFromPayload as jest.MockedFunction<
 >
 
 describe('googleSheetsSyncDelete', () => {
-  const mockUser = { id: 'userId' }
+  const mockUser = { id: 'userId', email: 'test@example.com' }
   const authClient = getClient({
     headers: { authorization: 'token' },
     context: { currentUser: mockUser }

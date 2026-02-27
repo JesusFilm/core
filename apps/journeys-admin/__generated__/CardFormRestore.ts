@@ -153,6 +153,7 @@ export interface CardFormRestore_image_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_image_MultiselectOptionBlock {
@@ -550,6 +551,7 @@ export interface CardFormRestore_image_VideoBlock {
   action: CardFormRestore_image_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -758,6 +760,7 @@ export interface CardFormRestore_subtitle_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_subtitle_MultiselectOptionBlock {
@@ -1155,6 +1158,7 @@ export interface CardFormRestore_subtitle_VideoBlock {
   action: CardFormRestore_subtitle_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1363,6 +1367,7 @@ export interface CardFormRestore_title_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_title_MultiselectOptionBlock {
@@ -1760,6 +1765,7 @@ export interface CardFormRestore_title_VideoBlock {
   action: CardFormRestore_title_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1968,6 +1974,7 @@ export interface CardFormRestore_textResponse_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_textResponse_MultiselectOptionBlock {
@@ -2365,6 +2372,7 @@ export interface CardFormRestore_textResponse_VideoBlock {
   action: CardFormRestore_textResponse_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2573,6 +2581,7 @@ export interface CardFormRestore_button_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_button_MultiselectOptionBlock {
@@ -2970,6 +2979,7 @@ export interface CardFormRestore_button_VideoBlock {
   action: CardFormRestore_button_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3178,6 +3188,7 @@ export interface CardFormRestore_startIcon_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_startIcon_MultiselectOptionBlock {
@@ -3575,6 +3586,7 @@ export interface CardFormRestore_startIcon_VideoBlock {
   action: CardFormRestore_startIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3783,6 +3795,7 @@ export interface CardFormRestore_endIcon_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_endIcon_MultiselectOptionBlock {
@@ -4180,6 +4193,7 @@ export interface CardFormRestore_endIcon_VideoBlock {
   action: CardFormRestore_endIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4388,6 +4402,7 @@ export interface CardFormRestore_body_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_body_MultiselectOptionBlock {
@@ -4785,6 +4800,7 @@ export interface CardFormRestore_body_VideoBlock {
   action: CardFormRestore_body_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CardFormRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

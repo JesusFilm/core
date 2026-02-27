@@ -26,7 +26,10 @@ import {
   JourneyDuplicate,
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
-import { TeamCreate } from '../../../../../../__generated__/TeamCreate'
+import {
+  TeamCreate,
+  TeamCreateVariables
+} from '../../../../../../__generated__/TeamCreate'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import {
@@ -47,8 +50,11 @@ const defaultMockUser = {
   email: 'urim@thumim.example.io'
 }
 
-let mockUser: { id: string | null; email: string | null; firebaseUser?: { isAnonymous: boolean } } =
-  defaultMockUser
+let mockUser: {
+  id: string | null
+  email: string | null
+  firebaseUser?: { isAnonymous: boolean }
+} = defaultMockUser
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
@@ -127,21 +133,97 @@ const mockJourneyDuplicate: MockedResponse<
   }
 }
 
-describe('LanguageScreen', () => {
-  const handleNext = jest.fn()
-  const handleScreenNavigation = jest.fn()
+const guestTeamIdFromCreate = 'guest-team-id'
+const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
+  request: {
+    query: TEAM_CREATE,
+    variables: {
+      input: { title: 'My Team', publicTitle: 'My Team' }
+    }
+  },
+  result: {
+    data: {
+      teamCreate: {
+        __typename: 'Team',
+        id: guestTeamIdFromCreate,
+        title: 'My Team',
+        publicTitle: 'My Team',
+        userTeams: [],
+        customDomains: []
+      }
+    }
+  }
+}
 
+describe('LanguageScreen', () => {
+  let handleNext: jest.Mock
+  const handleScreenNavigation = jest.fn()
   let push: jest.Mock
 
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()
     mockUser = defaultMockUser
+    handleNext = jest.fn((overrideJourneyId?: string) => {
+      const id = overrideJourneyId ?? 'journeyId'
+      push(`/templates/${id}/customize`, undefined, { shallow: true })
+    })
 
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: null }
     } as unknown as NextRouter)
+  })
+
+  it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
+    const nonTemplateJourney = {
+      ...journey,
+      id: 'journeyId',
+      template: false,
+      language: {
+        ...journey.language,
+        id: '529'
+      },
+      team: {
+        __typename: 'Team' as const,
+        id: 'teamId1',
+        title: 'Team One',
+        publicTitle: 'Team 1'
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: nonTemplateJourney, variant: 'customize' }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() => expect(handleNext).toHaveBeenCalledTimes(1))
+    expect(handleNext).toHaveBeenCalledWith()
   })
 
   it('duplicates journey to selected team and navigates to customize', async () => {
@@ -150,7 +232,7 @@ describe('LanguageScreen', () => {
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
     const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
-      data: mockGetLastActiveTeamIdAndTeams.result?.data
+      ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
     render(
@@ -329,30 +411,9 @@ describe('LanguageScreen', () => {
       result: {
         data: {
           me: {
-            __typename: 'AnonymousUser',
-            id: 'anon-user-id'
-          }
-        }
-      }
-    }
-
-    const guestTeamId = 'guest-team-id'
-    const mockTeamCreate: MockedResponse<TeamCreate> = {
-      request: {
-        query: TEAM_CREATE,
-        variables: {
-          input: { title: 'My Team', publicTitle: 'My Team' }
-        }
-      },
-      result: {
-        data: {
-          teamCreate: {
-            __typename: 'Team',
-            id: guestTeamId,
-            title: 'My Team',
-            publicTitle: 'My Team',
-            userTeams: [],
-            customDomains: []
+            __typename: 'AuthenticatedUser',
+            id: 'anon-user-id',
+            email: ''
           }
         }
       }
@@ -366,7 +427,7 @@ describe('LanguageScreen', () => {
         query: JOURNEY_DUPLICATE,
         variables: {
           id: 'journeyId',
-          teamId: guestTeamId,
+          teamId: guestTeamIdFromCreate,
           forceNonTemplate: true,
           duplicateAsDraft: true
         }
@@ -383,10 +444,10 @@ describe('LanguageScreen', () => {
     }
 
     const mockTeamCreateResult = jest.fn(() => ({
-      data: mockTeamCreate.result?.data
+      ...mockTeamCreate.result
     }))
     const mockJourneyDuplicateForGuestResult = jest.fn(() => ({
-      data: mockJourneyDuplicateForGuest.result?.data
+      ...mockJourneyDuplicateForGuest.result
     }))
 
     render(
@@ -397,7 +458,10 @@ describe('LanguageScreen', () => {
           mockGetParentJourneysFromTemplateId,
           mockGetCurrentUser,
           { ...mockTeamCreate, result: mockTeamCreateResult },
-          { ...mockJourneyDuplicateForGuest, result: mockJourneyDuplicateForGuestResult }
+          {
+            ...mockJourneyDuplicateForGuest,
+            result: mockJourneyDuplicateForGuestResult
+          }
         ]}
       >
         <SnackbarProvider>
@@ -438,7 +502,7 @@ describe('LanguageScreen', () => {
     })
 
     const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
-      data: mockGetLastActiveTeamIdAndTeams.result?.data
+      ...mockGetLastActiveTeamIdAndTeams.result
     }))
 
     const { getByText } = render(
@@ -484,7 +548,7 @@ describe('LanguageScreen', () => {
     )
   })
 
-  it('renders the correct social media image', async () => {
+  it('renders the journey preview', async () => {
     const journeyWithImage = {
       ...journey,
       primaryImageBlock: {
@@ -499,7 +563,8 @@ describe('LanguageScreen', () => {
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
         scale: null,
         focalLeft: 50,
-        focalTop: 50
+        focalTop: 50,
+        customizable: null
       }
     }
 
@@ -528,14 +593,10 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    await waitFor(() => {
-      const img = screen.getByRole('img')
-      expect(img).toHaveAttribute('alt', 'journey social image')
-    })
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
   })
 
-  it('renders all required components correctly', async () => {
+  it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
         mocks={[
@@ -559,14 +620,19 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
+    expect(screen.getByText("Let's Get Started!")).toBeInTheDocument()
+    expect(screen.getByText('Get Started')).toBeInTheDocument()
     expect(
       screen.getByText(
         'A few quick edits and your template will be ready to share.'
       )
     ).toBeInTheDocument()
-    expect(screen.getAllByText(journey.title)).toHaveLength(1)
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    expect(
+      screen.getByText("A few quick edits and it's ready to share!")
+    ).toBeInTheDocument()
+
+    expect(screen.getByText(`'${journey.title}'`)).toBeInTheDocument()
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
@@ -579,40 +645,5 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
       'Next'
     )
-  })
-
-  it('renders skeleton when no journey image is provided', () => {
-    const journeyWithoutImage = {
-      ...journey,
-      primaryImageBlock: null
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
-            <JourneyProvider
-              value={{ journey: journeyWithoutImage, variant: 'admin' }}
-            >
-              <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
-              </TeamProvider>
-            </JourneyProvider>
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
 })

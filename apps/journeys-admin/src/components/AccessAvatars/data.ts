@@ -7,7 +7,7 @@ export const userJourney1: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '1',
     firstName: 'Amin',
     lastName: 'One',
@@ -21,7 +21,7 @@ export const userJourney2: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '2',
     firstName: 'Horace',
     lastName: 'Two',
@@ -34,7 +34,7 @@ export const userJourney3: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '3',
     firstName: 'Coral',
     lastName: 'Three',
@@ -47,7 +47,7 @@ export const userJourney4: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '4',
     firstName: 'Effie',
     lastName: 'Four',
@@ -60,7 +60,7 @@ export const userJourney5: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '5',
     firstName: 'Janelle',
     lastName: 'Five',
@@ -74,7 +74,7 @@ export const userJourney6: UserJourney = {
   role: UserJourneyRole.owner,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '6',
     firstName: 'Drake',
     lastName: 'Six',
@@ -88,7 +88,7 @@ export const userJourney7: UserJourney = {
   role: UserJourneyRole.inviteRequested,
   openedAt: null,
   user: {
-    __typename: 'User',
+    __typename: 'AuthenticatedUser',
     id: '6',
     firstName: 'Drake',
     lastName: 'Six',
