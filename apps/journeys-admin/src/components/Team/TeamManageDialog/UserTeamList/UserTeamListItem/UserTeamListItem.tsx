@@ -63,7 +63,8 @@ export function UserTeamListItem({
       displayName: isAuthenticated
         ? compact([user.firstName, user.lastName]).join(' ')
         : '',
-      userId: user?.id,
+      userId:
+        user?.__typename === 'AuthenticatedUser' ? user.id : undefined,
       imageUrl: isAuthenticated ? user.imageUrl : undefined,
       role: listItem.role
     }
@@ -129,7 +130,11 @@ export function UserTeamListItem({
                 }
                 journeyId={journeyId}
                 checked={checked}
-                disabled={currentUserTeam?.user?.id !== userId}
+                disabled={
+                  (currentUserTeam?.user?.__typename === 'AuthenticatedUser'
+                    ? currentUserTeam.user.id
+                    : undefined) !== userId
+                }
               />
             )}
           </Grid>

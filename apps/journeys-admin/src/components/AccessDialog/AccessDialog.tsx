@@ -116,7 +116,10 @@ export function AccessDialog({
 
   const userTeamsMap = useMemo(() => {
     return new Map(
-      data?.journey.team?.userTeams.map((obj) => [obj.user.id, obj])
+      data?.journey.team?.userTeams.map((obj) => [
+        obj.user.__typename === 'AuthenticatedUser' ? obj.user.id : '',
+        obj
+      ])
     )
   }, [data?.journey?.team?.userTeams])
 
@@ -130,10 +133,20 @@ export function AccessDialog({
         requests.push(userJourney)
       } else {
         // if user is already part of user team, don't display their user journey
-        if (userTeamsMap.get(userJourney?.user?.id ?? '') == null)
+        if (
+          userTeamsMap.get(
+            userJourney?.user?.__typename === 'AuthenticatedUser'
+              ? userJourney.user.id
+              : ''
+          ) == null
+        )
           users.push(userJourney)
       }
-      if (userJourney.user != null) emails.push(userJourney.user.email)
+      if (
+        userJourney.user != null &&
+        userJourney.user.__typename === 'AuthenticatedUser'
+      )
+        emails.push(userJourney.user.email)
     })
 
     const invites =

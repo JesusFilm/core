@@ -122,8 +122,9 @@ export function GoogleIntegrationDetails(): ReactElement {
     (integration) => integration.id === integrationId
   )
   const integrationOwnerId =
-    integrationOwner?.__typename === 'IntegrationGoogle'
-      ? integrationOwner.user?.id
+    integrationOwner?.__typename === 'IntegrationGoogle' &&
+    integrationOwner.user?.__typename === 'AuthenticatedUser'
+      ? integrationOwner.user.id
       : undefined
 
   const isIntegrationOwner =
@@ -135,6 +136,7 @@ export function GoogleIntegrationDetails(): ReactElement {
     currentUserId != null &&
     (teamData?.userTeams?.some(
       (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
         userTeam.user.id === currentUserId &&
         userTeam.role === UserTeamRole.manager
     ) ??

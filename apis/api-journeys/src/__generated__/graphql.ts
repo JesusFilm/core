@@ -1021,7 +1021,7 @@ export type IntegrationGoogle = Integration & {
   id: Scalars['ID']['output'];
   team: Team;
   type: IntegrationType;
-  user?: Maybe<AuthenticatedUser>;
+  user?: Maybe<User>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -5184,7 +5184,7 @@ export type UserJourney = {
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
-  user?: Maybe<AuthenticatedUser>;
+  user?: Maybe<User>;
   userId: Scalars['ID']['output'];
 };
 
