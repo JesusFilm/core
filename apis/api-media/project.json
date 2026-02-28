@@ -161,6 +161,12 @@
         "command": "pnpm exec ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
     },
+    "update-mux-download-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/update-mux-download-urls.ts"
+      }
+    },
     "populate-crowdin-ids": {
       "executor": "nx:run-commands",
       "options": {
