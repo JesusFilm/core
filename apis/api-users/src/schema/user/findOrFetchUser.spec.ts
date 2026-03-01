@@ -41,7 +41,7 @@ describe('findOrFetchUser', () => {
     const data = await findOrFetchUser({}, 'userId', undefined)
     expect(data).toEqual(user)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
-      where: { id: 'userId' },
+      where: { userId: 'userId' },
       data: { emailVerified: false }
     })
   })

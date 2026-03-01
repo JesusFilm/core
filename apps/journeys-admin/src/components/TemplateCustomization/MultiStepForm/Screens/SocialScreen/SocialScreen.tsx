@@ -11,7 +11,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
@@ -33,14 +33,14 @@ export function SocialScreen({
         gutterBottom
         display={{ xs: 'none', sm: 'block' }}
       >
-        {t('Almost There!')}
+        {t('Final Details')}
       </Typography>
       <Typography
         variant="h6"
         gutterBottom
         display={{ xs: 'block', sm: 'none' }}
       >
-        {t('Almost There!')}
+        {t('Final Details')}
       </Typography>
       <Typography
         variant="subtitle2"
@@ -50,9 +50,7 @@ export function SocialScreen({
           display: { xs: 'none', sm: 'block' }
         }}
       >
-        {t(
-          'Here’s how your invitation will appear when shared on social media. You can update it if you’d like.'
-        )}
+        {t('Customize how your invite appears when shared on social media.')}
       </Typography>
       <Typography
         variant="body2"
@@ -60,9 +58,7 @@ export function SocialScreen({
         align="center"
         display={{ xs: 'block', sm: 'none' }}
       >
-        {t(
-          'Here’s how your invitation will appear when shared on social media. You can update it if you’d like.'
-        )}
+        {t('This is how your content will appear when shared on social media.')}
       </Typography>
       <Stack
         alignItems="center"
@@ -70,8 +66,7 @@ export function SocialScreen({
         data-testid="SocialShareAppearance"
         sx={{
           width: '100%',
-          py: 5,
-          px: { xs: 5, sm: 10 }
+          py: 5
         }}
       >
         <SocialScreenSocialImage />
@@ -80,7 +75,7 @@ export function SocialScreen({
       </Stack>
       <CustomizeFlowNextButton
         label={t('Done')}
-        onClick={handleNext}
+        onClick={() => handleNext()}
         ariaLabel={t('Done')}
       />
     </Stack>

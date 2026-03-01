@@ -18,11 +18,7 @@ export class JourneyProfileResolver {
     private readonly mailChimpService: MailChimpService
   ) {}
 
-  @Query()
-  @UseGuards(AppCaslGuard)
-  async getJourneyProfile(
-    @CurrentUserId() userId: string
-  ): Promise<JourneyProfile | null> {
+  async getJourneyProfile(userId: string): Promise<JourneyProfile | null> {
     return await this.prismaService.journeyProfile.findUnique({
       where: { userId }
     })

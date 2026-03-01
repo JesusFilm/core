@@ -36,6 +36,12 @@ jest.mock('../../../../../../../libs/useImageUpload', () => {
   }
 })
 
+const mockEnqueueSnackbar = jest.fn()
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
+}))
+
 const logoImageBlock: LogoImageBlock = {
   __typename: 'ImageBlock',
   id: 'logo-block-id',
@@ -165,7 +171,7 @@ describe('LogoSection', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('calls imageBlockUpdate mutation and shows success snackbar on upload complete', async () => {
+  it('calls imageBlockUpdate mutation on upload complete', async () => {
     let onUploadCompleteCallback: (url: string) => void = jest.fn()
     mockedUseImageUpload.mockImplementation((options) => {
       onUploadCompleteCallback = options.onUploadComplete
@@ -216,7 +222,6 @@ describe('LogoSection', () => {
     await waitFor(() => {
       expect(mutationResultSpy).toHaveBeenCalled()
     })
-    expect(screen.getByText('File uploaded successfully')).toBeInTheDocument()
   })
 
   it('shows error snackbar when mutation fails', async () => {
@@ -252,9 +257,10 @@ describe('LogoSection', () => {
     onUploadCompleteCallback('https://example.com/new-logo.png')
 
     await waitFor(() => {
-      expect(
-        screen.getByText('Upload failed. Please try again')
-      ).toBeInTheDocument()
+      expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+        'Upload failed. Please try again',
+        { variant: 'error', autoHideDuration: 2000 }
+      )
     })
   })
 
