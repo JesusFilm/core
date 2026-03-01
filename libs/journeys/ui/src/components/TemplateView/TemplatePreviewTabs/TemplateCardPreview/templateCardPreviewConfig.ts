@@ -3,8 +3,8 @@ import { A11y, FreeMode, Keyboard, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
 export type TemplateCardPreviewVariant =
-  | 'preview'
-  | 'media'
+  | 'standard'
+  | 'compact'
   | 'guestPreviewMobile'
   | 'guestPreviewDesktop'
 
@@ -49,12 +49,12 @@ export interface VariantConfig {
   framePortalLogicalSize?: { width: number; height: number }
 }
 
-export const SELECTED_SCALE = 1.07 // 1.07 is the scale of the selected card in the media variant
+export const SELECTED_SCALE = 1.07 // 1.07 is the scale of the selected card in the compact variant
 const MEDIA_CARD_HEIGHT = 209
 const PREVIEW_CARD_HEIGHT_XS = 295
 const PREVIEW_CARD_HEIGHT_SM = 404
 
-const PREVIEW_VARIANT_CONFIG: VariantConfig = {
+const STANDARD_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 194, sm: 267 },
   cardHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
   swiperHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
@@ -95,7 +95,7 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   modules: [Mousewheel, FreeMode, A11y]
 }
 
-const MEDIA_VARIANT_CONFIG: VariantConfig = {
+const COMPACT_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 120, sm: 120 },
   cardHeight: { xs: MEDIA_CARD_HEIGHT, sm: MEDIA_CARD_HEIGHT },
   swiperHeight: {
@@ -282,8 +282,8 @@ export const VARIANT_CONFIGS: Record<
   TemplateCardPreviewVariant,
   VariantConfig
 > = {
-  preview: PREVIEW_VARIANT_CONFIG,
-  media: MEDIA_VARIANT_CONFIG,
+  standard: STANDARD_VARIANT_CONFIG,
+  compact: COMPACT_VARIANT_CONFIG,
   guestPreviewMobile: GUEST_PREVIEW_MOBILE_VARIANT_CONFIG,
   guestPreviewDesktop: GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG
 }

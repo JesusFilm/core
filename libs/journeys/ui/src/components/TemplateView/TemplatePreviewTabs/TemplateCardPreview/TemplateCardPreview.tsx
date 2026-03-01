@@ -69,22 +69,22 @@ const StyledSwiper = styled(Swiper)(() => ({}))
  *
  * TemplateCardPreview has two variants:
  *
- * 'preview': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
+ * 'standard': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
  *
- * 'media': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
+ * 'compact': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
  *
  * @param props - Component props
  * @param props.steps - Journey step blocks to display as cards
  * @param props.authUser - Authenticated user for CTA sign-in state
- * @param props.variant - 'preview' | 'media'; controls layout and behaviour
+ * @param props.variant - 'standard' | 'compact'; controls layout and behaviour
  * @param props.onClick - Handler when a card is clicked
- * @param props.selectedStep - Selected step (media variant)
+ * @param props.selectedStep - Selected step (compact variant)
  * @returns Carousel UI or skeleton placeholder when steps are loading
  */
 export function TemplateCardPreview({
   steps,
   authUser,
-  variant = 'preview',
+  variant = 'standard',
   onClick,
   selectedStep
 }: TemplateCardPreviewProps): ReactElement | null {
@@ -110,23 +110,20 @@ export function TemplateCardPreview({
   }
 
   const usesAllSteps =
-    variant === 'media' ||
+    variant === 'compact' ||
     variant === 'guestPreviewMobile' ||
     variant === 'guestPreviewDesktop'
   const slidesToRender =
     steps != null ? (usesAllSteps ? steps : take(steps, 7)) : []
 
   const scrollsToSelected =
-    variant === 'media' ||
+    variant === 'compact' ||
     variant === 'guestPreviewMobile' ||
     variant === 'guestPreviewDesktop'
 
   const initialSlide =
     scrollsToSelected && selectedStep != null
-      ? Math.max(
-          0,
-          slidesToRender.findIndex((s) => s.id === selectedStep.id)
-        )
+      ? slidesToRender.findIndex((s) => s.id === selectedStep.id)
       : 0
 
   useEffect(() => {
@@ -159,7 +156,7 @@ export function TemplateCardPreview({
       {slidesToRender.map((step) => {
         const isSelected = selectedStep?.id === step.id
         const selectedSlideSx =
-          variant === 'media' && isSelected
+          variant === 'compact' && isSelected
             ? {
                 width: {
                   xs: cardWidth.xs * SELECTED_SCALE,

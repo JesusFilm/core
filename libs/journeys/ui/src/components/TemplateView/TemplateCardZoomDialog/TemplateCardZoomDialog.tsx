@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '../../../libs/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { TemplateCardPreview } from '../TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import Box from '@mui/material/Box'
 
 export interface TemplateCardZoomDialogProps {
   open: boolean
@@ -25,7 +26,8 @@ export function TemplateCardZoomDialog({
   const theme = useTheme()
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'), { noSsr: true })
 
-  const variant = isDesktop ? 'guestPreviewDesktop' : 'guestPreviewMobile'
+  const displayDesktop = { xs: 'none', md: 'block' }
+  const displayMobile = { xs: 'block', md: 'none' }
 
   return (
     <Dialog
@@ -33,7 +35,7 @@ export function TemplateCardZoomDialog({
       onClose={onClose}
       aria-label={t('Card preview')}
       fullWidth
-      disableScrollLock
+      // disableScrollLock
       slotProps={{
         backdrop: {
           sx: { backgroundColor: 'rgba(0, 0, 0, 0.65)' }
@@ -42,7 +44,7 @@ export function TemplateCardZoomDialog({
           sx: {
             borderRadius: 2,
             width: '100%',
-            maxWidth: '95vw',
+            maxWidth: isDesktop ? 'lg' : 'sm',
             maxHeight: '90vh',
             m: 'auto',
             backgroundColor: 'transparent',
@@ -55,11 +57,20 @@ export function TemplateCardZoomDialog({
         }
       }}
     >
-      <TemplateCardPreview
-        steps={steps}
-        variant={variant}
-        selectedStep={selectedStep}
-      />
+      <Box sx={{ display: displayMobile }}>
+        <TemplateCardPreview
+          steps={steps}
+          variant="guestPreviewMobile"
+          selectedStep={selectedStep}
+        />
+      </Box>
+      <Box sx={{ display: displayDesktop }}>
+        <TemplateCardPreview
+          steps={steps}
+          variant="guestPreviewDesktop"
+          selectedStep={selectedStep}
+        />
+      </Box>
     </Dialog>
   )
 }

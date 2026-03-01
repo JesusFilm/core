@@ -162,7 +162,7 @@ describe('TemplateCardPreview', () => {
     })
   })
 
-  describe('media variant', () => {
+  describe('compact variant', () => {
     it('should render all steps and not show more cards slide', async () => {
       const steps = [
         { id: '1', children: [{ __typename: 'CardBlock' }] },
@@ -179,7 +179,7 @@ describe('TemplateCardPreview', () => {
 
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview steps={steps} variant="media" />
+          <TemplateCardPreview steps={steps} variant="compact" />
         </ThemeProvider>
       )
       await waitFor(() =>
@@ -204,7 +204,7 @@ describe('TemplateCardPreview', () => {
         <ThemeProvider theme={createTheme()}>
           <TemplateCardPreview
             steps={steps}
-            variant="media"
+            variant="compact"
             selectedStep={steps[1]}
           />
         </ThemeProvider>

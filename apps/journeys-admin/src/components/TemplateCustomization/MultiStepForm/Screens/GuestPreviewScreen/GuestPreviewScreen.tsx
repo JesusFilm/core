@@ -104,7 +104,7 @@ export function GuestPreviewScreen({
       <Box sx={{ overflowX: 'hidden', width: '100%' }}>
         <TemplateCardPreview
           steps={steps}
-          variant="media"
+          variant="compact"
           onClick={(step) => setStepInZoomDialog(step)}
         />
       </Box>
