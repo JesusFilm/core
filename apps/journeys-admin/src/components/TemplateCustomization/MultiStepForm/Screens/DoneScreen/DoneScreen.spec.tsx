@@ -225,7 +225,7 @@ describe('DoneScreen', () => {
 
     expect(screen.getByTestId('DoneScreenPreviewButton')).toBeInTheDocument()
     expect(
-      screen.getByTestId('DoneScreenContinueEditingButton')
+      screen.getByTestId('DoneScreenGoToDashboardButton')
     ).toBeInTheDocument()
     expect(screen.getByTestId('ShareItem')).toBeInTheDocument()
   })
@@ -252,50 +252,21 @@ describe('DoneScreen', () => {
     expect(previewButton).toHaveAttribute('target', '_blank')
   })
 
-  it('navigates to journey edit page when continue editing is clicked', () => {
-    const journeyWithId = {
-      ...journey,
-      id: 'test-journey-id'
-    }
-
+  it('navigates to journey list when go to dashboard is clicked', () => {
     render(
       <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const continueEditingButton = screen.getByRole('button', {
-      name: 'Keep Editing'
+    const goToDashboardButton = screen.getByRole('button', {
+      name: 'Go to Dashboard'
     })
-    fireEvent.click(continueEditingButton)
+    fireEvent.click(goToDashboardButton)
 
-    expect(push).toHaveBeenCalledWith('/journeys/test-journey-id')
-  })
-
-  it('does not navigate when journey has no id', () => {
-    const journeyWithoutId = {
-      ...journey,
-      id: null as unknown as string
-    }
-
-    render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithoutId, variant: 'admin' }}
-        >
-          <DoneScreen />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const continueEditingButton = screen.getByRole('button', {
-      name: 'Keep Editing'
-    })
-    fireEvent.click(continueEditingButton)
-
-    expect(push).not.toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith('/journeys')
   })
 
   it('opens the share dialog when clicked', async () => {

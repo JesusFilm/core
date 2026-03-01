@@ -26,8 +26,8 @@ export function DoneScreen({
   const journeyPath = `/api/preview?slug=${journey?.slug}`
   const href = journey?.slug != null ? journeyPath : undefined
 
-  function handleContinueEditing(): void {
-    if (journey?.id != null) void router.push(`/journeys/${journey.id}`)
+  function handleGoToDashboard(): void {
+    void router.push('/journeys')
   }
 
   return (
@@ -166,17 +166,17 @@ export function DoneScreen({
         </Box>
 
         <Button
-          data-testid="DoneScreenContinueEditingButton"
+          data-testid="DoneScreenGoToDashboardButton"
           fullWidth
           variant="contained"
-          onClick={handleContinueEditing}
+          onClick={handleGoToDashboard}
           sx={{
             borderRadius: 3,
             backgroundColor: 'secondary.main',
             height: '41px'
           }}
         >
-          <Typography variant="subtitle2">{t('Keep Editing')}</Typography>
+          <Typography variant="subtitle2">{t('Go to Dashboard')}</Typography>
         </Button>
       </Stack>
     </Stack>
