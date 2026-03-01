@@ -9,10 +9,10 @@ jest.mock('next-i18next', () => ({
 }))
 
 describe('StateEmpty', () => {
-  const mockAppend = jest.fn()
+  const mockOnSendMessage = jest.fn()
   const defaultProps = {
     messages: [],
-    append: mockAppend
+    onSendMessage: mockOnSendMessage
   }
 
   beforeEach(() => {
@@ -45,8 +45,8 @@ describe('StateEmpty', () => {
     it('should return null when messages array has content', () => {
       const { container } = render(
         <StateEmpty
-          messages={[{ id: '1', role: 'user', content: 'test message' }]}
-          append={mockAppend}
+          messages={[{ id: '1', role: 'user', parts: [] }]}
+          onSendMessage={mockOnSendMessage}
         />
       )
 
@@ -61,10 +61,9 @@ describe('StateEmpty', () => {
 
       fireEvent.click(screen.getByText('Customize my journey'))
 
-      expect(mockAppend).toHaveBeenCalledWith({
-        role: 'user',
-        content: 'Help me customize my journey.'
-      })
+      expect(mockOnSendMessage).toHaveBeenCalledWith(
+        'Help me customize my journey.'
+      )
     })
 
     it('should call append with translate message when clicked', () => {
@@ -72,10 +71,9 @@ describe('StateEmpty', () => {
 
       fireEvent.click(screen.getByText('Translate to another language'))
 
-      expect(mockAppend).toHaveBeenCalledWith({
-        role: 'user',
-        content: 'Help me to translate my journey to another language.'
-      })
+      expect(mockOnSendMessage).toHaveBeenCalledWith(
+        'Help me to translate my journey to another language.'
+      )
     })
 
     it('should call append with tell me about journey message when clicked', () => {
@@ -83,10 +81,9 @@ describe('StateEmpty', () => {
 
       fireEvent.click(screen.getByText('Tell me about my journey'))
 
-      expect(mockAppend).toHaveBeenCalledWith({
-        role: 'user',
-        content: 'Tell me about my journey.'
-      })
+      expect(mockOnSendMessage).toHaveBeenCalledWith(
+        'Tell me about my journey.'
+      )
     })
 
     it('should call append with improvement message when clicked', () => {
@@ -94,10 +91,9 @@ describe('StateEmpty', () => {
 
       fireEvent.click(screen.getByText('What can I do to improve my journey?'))
 
-      expect(mockAppend).toHaveBeenCalledWith({
-        role: 'user',
-        content: 'What can I do to improve my journey?'
-      })
+      expect(mockOnSendMessage).toHaveBeenCalledWith(
+        'What can I do to improve my journey?'
+      )
     })
   })
 })

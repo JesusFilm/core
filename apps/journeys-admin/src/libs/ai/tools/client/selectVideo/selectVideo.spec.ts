@@ -7,26 +7,26 @@ describe('clientSelectVideo', () => {
     jest.clearAllMocks()
   })
 
-  it('should return a tool with correct description, parameters, and descriptions', () => {
+  it('should return a tool with correct description, inputSchema, and descriptions', () => {
     const tool = clientSelectVideo()
 
     expect(tool.description).toBe('Ask the user for confirmation on a video.')
-    expect(tool.parameters).toBeInstanceOf(z.ZodObject)
+    expect(tool.inputSchema).toBeInstanceOf(z.ZodObject)
 
-    const parametersShape = tool.parameters.shape as {
+    const inputSchemaShape = tool.inputSchema.shape as {
       message: z.ZodTypeAny
       videoId: z.ZodTypeAny
     }
 
     // Test parameter types
-    expect(parametersShape.message).toBeInstanceOf(z.ZodString)
-    expect(parametersShape.videoId).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.message).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.videoId).toBeInstanceOf(z.ZodString)
 
     // Test parameter descriptions
-    expect(parametersShape.message.description).toBe(
+    expect(inputSchemaShape.message.description).toBe(
       'The message to ask for confirmation.'
     )
-    expect(parametersShape.videoId.description).toBe(
+    expect(inputSchemaShape.videoId.description).toBe(
       'The id of the video to select.'
     )
   })
@@ -38,7 +38,7 @@ describe('clientSelectVideo', () => {
       videoId: 'video-123'
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(true)
   })
 
@@ -46,7 +46,7 @@ describe('clientSelectVideo', () => {
     const tool = clientSelectVideo()
     const input = {}
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])
@@ -62,7 +62,7 @@ describe('clientSelectVideo', () => {
       videoId: 'video-123'
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])
@@ -77,7 +77,7 @@ describe('clientSelectVideo', () => {
       videoId: 456
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])

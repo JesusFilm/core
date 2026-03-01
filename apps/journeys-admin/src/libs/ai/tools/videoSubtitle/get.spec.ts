@@ -2,19 +2,19 @@ import { ApolloClient, InMemoryCache } from '@apollo/client'
 
 import { loadVideoSubtitleContent } from './get'
 
-// Mock fetch for testing
-global.fetch = jest.fn()
-
 describe('loadVideoSubtitleContent', () => {
   let mockClient: ApolloClient<any>
-  
+  let fetchMock: jest.SpyInstance
+
   beforeEach(() => {
     mockClient = new ApolloClient({
       cache: new InMemoryCache()
     })
-    
-    // Reset fetch mock
-    ;(global.fetch as jest.Mock).mockClear()
+    fetchMock = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({ ok: false } as Response))
+  })
+
+  afterEach(() => {
+    fetchMock.mockRestore()
   })
 
   it('should load subtitle data with SRT content when srtSrc is available', async () => {
@@ -37,8 +37,7 @@ describe('loadVideoSubtitleContent', () => {
       }
     } as any)
 
-    // Mock successful fetch response
-    ;(global.fetch as jest.Mock).mockResolvedValue({
+    fetchMock.mockResolvedValue({
       ok: true,
       text: () => Promise.resolve('1\n00:00:01,000 --> 00:00:05,000\nHello world\n\n2\n00:00:06,000 --> 00:00:10,000\nThis is a test')
     })
@@ -59,8 +58,7 @@ describe('loadVideoSubtitleContent', () => {
       srtContent: '1\n00:00:01,000 --> 00:00:05,000\nHello world\n\n2\n00:00:06,000 --> 00:00:10,000\nThis is a test'
     })
 
-    // Verify fetch was called to get SRT content
-    expect(global.fetch).toHaveBeenCalledWith('https://example.com/subtitle.srt')
+    expect(fetchMock).toHaveBeenCalledWith('https://example.com/subtitle.srt')
   })
 
   it('should handle fetch errors gracefully when SRT content fetch fails', async () => {
@@ -83,8 +81,7 @@ describe('loadVideoSubtitleContent', () => {
       }
     } as any)
 
-    // Mock fetch error
-    ;(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
+    fetchMock.mockRejectedValue(new Error('Network error'))
 
     const tool = loadVideoSubtitleContent(mockClient, { langfuseTraceId: 'test-trace-id' })
     
@@ -103,7 +100,7 @@ describe('loadVideoSubtitleContent', () => {
     })
 
     // Verify fetch was called but failed
-    expect(global.fetch).toHaveBeenCalledWith('https://example.com/subtitle.srt')
+    expect(fetchMock).toHaveBeenCalledWith('https://example.com/subtitle.srt')
   })
 
   it('should not fetch SRT content when srtSrc is not available', async () => {
@@ -142,7 +139,7 @@ describe('loadVideoSubtitleContent', () => {
     })
 
     // Verify fetch was not called since srtSrc is null
-    expect(global.fetch).not.toHaveBeenCalled()
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   it('should handle missing subtitle gracefully', async () => {

@@ -53,7 +53,7 @@ export const formItemSchema = z.object({
 export function clientRequestForm(): Tool {
   return tool({
     description: 'Ask the user to fill out a form.',
-    parameters: z.object({
+    inputSchema: z.object({
       formItems: z
         .array(formItemSchema)
         .describe('Array of form items to be filled out by the user.')

@@ -21,7 +21,7 @@ export function youtubeAnalyzerTool(
 ): Tool {
   return tool({
     description: 'Analyzes a YouTube video.',
-    parameters: z.object({
+    inputSchema: z.object({
       url: z.string().describe('The full URL of the YouTube video to analyze.')
     }),
     execute: async ({ url }) => {

@@ -52,7 +52,7 @@ export function agentWebSearch(
   _options: ToolOptions
 ): Tool {
   return tool({
-    parameters: z.object({
+    inputSchema: z.object({
       searchQuery: z
         .string()
         .describe(

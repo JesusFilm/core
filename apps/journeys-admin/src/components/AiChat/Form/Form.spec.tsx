@@ -1,4 +1,4 @@
-import { UseChatHelpers } from '@ai-sdk/react'
+import { UIMessage, UseChatHelpers } from 'ai'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -23,10 +23,10 @@ describe('Form', () => {
 
   const defaultProps = {
     input: '',
-    onSubmit: mockHandleSubmit as UseChatHelpers['handleSubmit'],
-    onInputChange: mockHandleInputChange as UseChatHelpers['handleInputChange'],
+    setInput: mockHandleInputChange,
+    onSubmit: mockHandleSubmit as UseChatHelpers<UIMessage>['handleSubmit'],
     error: undefined,
-    status: 'ready' as UseChatHelpers['status'],
+    status: 'ready' as 'ready',
     stop: mockStop,
     waitForToolResult: false
   }
@@ -85,23 +85,29 @@ describe('Form', () => {
     })
 
     it('should allow line breaks with Shift+Enter without submitting', async () => {
-      // Use a local state to simulate controlled input behavior
       let currentValue = ''
-      const mockInputChange = jest.fn().mockImplementation((e) => {
-        currentValue = e.target.value
+      const mockSetInput = jest.fn().mockImplementation((value: string) => {
+        currentValue = value
       })
 
-      render(
+      const { rerender } = render(
         <Form
           {...defaultProps}
           input={currentValue}
-          onInputChange={mockInputChange}
+          setInput={mockSetInput}
         />
       )
 
       const textField = screen.getByRole('textbox')
 
       await userEvent.type(textField, 'Line 1')
+      rerender(
+        <Form
+          {...defaultProps}
+          input={currentValue}
+          setInput={mockSetInput}
+        />
+      )
 
       fireEvent.keyDown(textField, {
         key: 'Enter',
@@ -110,7 +116,7 @@ describe('Form', () => {
       })
 
       expect(mockHandleSubmit).not.toHaveBeenCalled()
-      expect(mockInputChange).toHaveBeenCalled()
+      expect(mockSetInput).toHaveBeenCalled()
     })
 
     it('should handle input changes properly', async () => {

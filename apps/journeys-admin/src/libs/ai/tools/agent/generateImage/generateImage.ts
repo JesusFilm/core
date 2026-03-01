@@ -26,7 +26,7 @@ export function agentGenerateImage(
   return tool({
     description:
       'Generate an image or collection of images. It returns an array of images URLs',
-    parameters: z.object({
+    inputSchema: z.object({
       prompt: z.string().describe('The prompt to generate the image from'),
       n: z
         .number()

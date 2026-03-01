@@ -4,7 +4,7 @@ import { z } from 'zod'
 export function clientRedirectUserToEditor(): Tool {
   return tool({
     description: 'Redirect the user to the editor.',
-    parameters: z.object({
+    inputSchema: z.object({
       message: z
         .string()
         .describe(

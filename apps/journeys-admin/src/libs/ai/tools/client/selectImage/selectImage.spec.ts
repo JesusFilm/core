@@ -7,29 +7,29 @@ describe('clientSelectImage', () => {
     jest.clearAllMocks()
   })
 
-  it('should return a tool with correct description, parameters, and descriptions', () => {
+  it('should return a tool with correct description, inputSchema, and descriptions', () => {
     const tool = clientSelectImage()
 
     expect(tool.description).toBe('Ask the user for confirmation on an image.')
-    expect(tool.parameters).toBeInstanceOf(z.ZodObject)
+    expect(tool.inputSchema).toBeInstanceOf(z.ZodObject)
 
-    const parametersShape = tool.parameters.shape as {
+    const inputSchemaShape = tool.inputSchema.shape as {
       message: z.ZodTypeAny
       imageId: z.ZodTypeAny
       generatedImageUrls: z.ZodTypeAny
     }
 
-    expect(parametersShape.message).toBeInstanceOf(z.ZodString)
-    expect(parametersShape.imageId).toBeInstanceOf(z.ZodString)
-    expect(parametersShape.generatedImageUrls).toBeInstanceOf(z.ZodOptional)
+    expect(inputSchemaShape.message).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.imageId).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.generatedImageUrls).toBeInstanceOf(z.ZodOptional)
 
-    expect(parametersShape.message.description).toBe(
+    expect(inputSchemaShape.message.description).toBe(
       'The message to ask for confirmation.'
     )
-    expect(parametersShape.imageId.description).toBe(
+    expect(inputSchemaShape.imageId.description).toBe(
       'The id of the image to select.'
     )
-    expect(parametersShape.generatedImageUrls.description).toBe(
+    expect(inputSchemaShape.generatedImageUrls.description).toBe(
       'The urls of the generated images. Pass result from AgentGenerateImage tool.'
     )
   })
@@ -42,7 +42,7 @@ describe('clientSelectImage', () => {
       generatedImageUrls: ['https://example.com/image.png']
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(true)
   })
 
@@ -52,7 +52,7 @@ describe('clientSelectImage', () => {
       generatedImageUrls: ['https://example.com/image.png']
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])
@@ -68,7 +68,7 @@ describe('clientSelectImage', () => {
       imageId: 'img-abc'
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(true)
   })
 
@@ -80,7 +80,7 @@ describe('clientSelectImage', () => {
       generatedImageUrls: 'not-an-array'
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])

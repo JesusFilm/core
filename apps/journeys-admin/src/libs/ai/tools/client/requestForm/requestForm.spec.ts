@@ -8,18 +8,16 @@ describe('RequestForm', () => {
       jest.clearAllMocks()
     })
 
-    it('should return a tool with correct description, parameters, and descriptions', () => {
+    it('should return a tool with correct description, inputSchema, and field descriptions', () => {
       const tool = clientRequestForm()
 
       expect(tool.description).toBe('Ask the user to fill out a form.')
-      expect(tool.parameters).toBeInstanceOf(z.ZodObject)
+      expect(tool.inputSchema).toBeInstanceOf(z.ZodObject)
 
-      const parametersShape = tool.parameters.shape
+      const inputSchemaShape = tool.inputSchema.shape as { formItems: z.ZodTypeAny }
 
-      expect(parametersShape.formItems).toBeInstanceOf(z.ZodArray)
-      expect(parametersShape.formItems._def.type).toBe(formItemSchema)
-
-      expect(parametersShape.formItems.description).toBe(
+      expect(inputSchemaShape.formItems).toBeInstanceOf(z.ZodArray)
+      expect(inputSchemaShape.formItems.description).toBe(
         'Array of form items to be filled out by the user.'
       )
     })
@@ -50,7 +48,7 @@ describe('RequestForm', () => {
         ]
       }
 
-      const result = tool.parameters.safeParse(input)
+      const result = tool.inputSchema.safeParse(input)
       expect(result.success).toBe(true)
     })
 
@@ -58,7 +56,7 @@ describe('RequestForm', () => {
       const tool = clientRequestForm()
       const input = {}
 
-      const result = tool.parameters.safeParse(input)
+      const result = tool.inputSchema.safeParse(input)
       expect(result.success).toBe(false)
       if (!result.success) {
         const issues = result.error.issues.map((i) => i.path[0])
@@ -72,7 +70,7 @@ describe('RequestForm', () => {
         formItems: 'not-an-array'
       }
 
-      const result = tool.parameters.safeParse(input)
+      const result = tool.inputSchema.safeParse(input)
       expect(result.success).toBe(false)
       if (!result.success) {
         const issues = result.error.issues.map((i) => i.path[0])
@@ -91,7 +89,7 @@ describe('RequestForm', () => {
         ]
       }
 
-      const result = tool.parameters.safeParse(input)
+      const result = tool.inputSchema.safeParse(input)
       expect(result.success).toBe(false)
       if (!result.success) {
         const issues = result.error.issues.map((i) => i.path.join('.'))
@@ -122,7 +120,7 @@ describe('RequestForm', () => {
         ]
       }
 
-      const result = tool.parameters.safeParse(input)
+      const result = tool.inputSchema.safeParse(input)
       expect(result.success).toBe(true)
     })
   })

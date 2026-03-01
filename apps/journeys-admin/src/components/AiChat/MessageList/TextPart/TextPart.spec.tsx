@@ -12,7 +12,7 @@ describe('TextPart', () => {
     const userMessage = {
       id: '1',
       role: 'user' as const,
-      content: 'user message'
+      parts: []
     }
 
     it('should render user message with styled box and text-part class', () => {
@@ -56,7 +56,7 @@ describe('TextPart', () => {
     const aiMessage = {
       id: '1',
       role: 'assistant' as const,
-      content: 'AI response'
+      parts: []
     }
 
     it('should render AI message with markdown and no user styling', () => {

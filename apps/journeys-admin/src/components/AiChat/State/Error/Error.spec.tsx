@@ -17,7 +17,7 @@ describe('StateError', () => {
   })
 
   it('should render error message and retry button when error exists', () => {
-    render(<StateError error={mockError} reload={mockReload} />)
+    render(<StateError error={mockError} onRetry={mockReload} />)
 
     expect(
       screen.getByText('An error occurred. Please try again.')
@@ -27,7 +27,7 @@ describe('StateError', () => {
 
   it('should return null when error is null', () => {
     const { container } = render(
-      <StateError error={undefined} reload={mockReload} />
+      <StateError error={undefined} onRetry={mockReload} />
     )
 
     expect(container).toBeEmptyDOMElement()
@@ -41,7 +41,7 @@ describe('StateError', () => {
 
   it('should return null when error is undefined', () => {
     const { container } = render(
-      <StateError error={undefined} reload={mockReload} />
+      <StateError error={undefined} onRetry={mockReload} />
     )
 
     expect(container).toBeEmptyDOMElement()
@@ -54,7 +54,7 @@ describe('StateError', () => {
   })
 
   it('should call reload when retry button is clicked', () => {
-    render(<StateError error={mockError} reload={mockReload} />)
+    render(<StateError error={mockError} onRetry={mockReload} />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
 

@@ -36,7 +36,7 @@ export function journeySimpleGet(
       'Fetches a simplified journey by ID and returns a validated JSON structure.' +
       '\n\nOutput schema (auto-generated from Zod):\n' +
       getSchemaDescription(journeySimpleSchema),
-    parameters: z.object({
+    inputSchema: z.object({
       journeyId: z.string().describe('The ID of the journey to fetch.')
     }),
 

@@ -21,12 +21,12 @@ describe('journeySimpleGet', () => {
     jest.restoreAllMocks()
   })
 
-  it('should return a tool with correct description and parameters', () => {
+  it('should return a tool with correct description and inputSchema', () => {
     const tool = journeySimpleGet(mockClient, { langfuseTraceId: 'test' })
     expect(typeof tool.description).toBe('string')
-    expect(tool.parameters).toBeInstanceOf(z.ZodObject)
-    const parametersShape = tool.parameters.shape as { journeyId: z.ZodTypeAny }
-    expect(parametersShape.journeyId).toBeInstanceOf(z.ZodString)
+    expect(tool.inputSchema).toBeInstanceOf(z.ZodObject)
+    const inputSchemaShape = tool.inputSchema.shape as { journeyId: z.ZodTypeAny }
+    expect(inputSchemaShape.journeyId).toBeInstanceOf(z.ZodString)
   })
 
   it('should execute the query and return validated data on success', async () => {
@@ -52,23 +52,43 @@ describe('journeySimpleGet', () => {
     expect(journeySimpleSchema.safeParse(result).success).toBe(true)
   })
 
-  it('should throw an error if the returned journey is invalid', async () => {
+  it('should return success false and errors if the returned journey is invalid', async () => {
     const invalidJourney = { foo: 'bar' }
     ;(mockClient.query as jest.Mock).mockResolvedValue({
       data: { journeySimpleGet: invalidJourney }
     })
     const tool = journeySimpleGet(mockClient, { langfuseTraceId: 'test' })
-    await expect(
-      tool.execute!({ journeyId: 'jid' }, { toolCallId: 'tid', messages: [] })
-    ).rejects.toThrow('Returned journey is invalid')
+    const result = await tool.execute!(
+      { journeyId: 'jid' },
+      { toolCallId: 'tid', messages: [] }
+    )
+    expect(result).toEqual(
+      expect.objectContaining({
+        success: false,
+        errors: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.stringContaining('Returned journey is invalid')
+          })
+        ])
+      })
+    )
   })
 
-  it('should throw an error if the query fails', async () => {
+  it('should return success false and errors if the query fails', async () => {
     const mockError = new Error('Network error')
     ;(mockClient.query as jest.Mock).mockRejectedValue(mockError)
     const tool = journeySimpleGet(mockClient, { langfuseTraceId: 'test' })
-    await expect(
-      tool.execute!({ journeyId: 'jid' }, { toolCallId: 'tid', messages: [] })
-    ).rejects.toThrow('Network error')
+    const result = await tool.execute!(
+      { journeyId: 'jid' },
+      { toolCallId: 'tid', messages: [] }
+    )
+    expect(result).toEqual(
+      expect.objectContaining({
+        success: false,
+        errors: expect.arrayContaining([
+          expect.objectContaining({ message: 'Network error' })
+        ])
+      })
+    )
   })
 })

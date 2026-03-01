@@ -21,17 +21,17 @@ describe('journeySimpleUpdate', () => {
     jest.restoreAllMocks()
   })
 
-  it('should return a tool with correct description and parameters', () => {
+  it('should return a tool with correct description and inputSchema', () => {
     const tool = journeySimpleUpdate(mockClient, { langfuseTraceId: 'test' })
     expect(typeof tool.description).toBe('string')
-    expect(tool.parameters).toBeInstanceOf(z.ZodObject)
-    const parametersShape = tool.parameters.shape as {
+    expect(tool.inputSchema).toBeInstanceOf(z.ZodObject)
+    const inputSchemaShape = tool.inputSchema.shape as {
       journeyId: z.ZodTypeAny
       journey: z.ZodTypeAny
     }
-    expect(parametersShape.journeyId).toBeInstanceOf(z.ZodString)
-    expect(parametersShape.journey).toBeInstanceOf(z.ZodObject)
-    const journeySchema = parametersShape.journey as z.ZodObject<any>
+    expect(inputSchemaShape.journeyId).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.journey).toBeInstanceOf(z.ZodObject)
+    const journeySchema = inputSchemaShape.journey as z.ZodObject<any>
     expect(journeySchema.shape).toEqual(journeySimpleSchema.shape)
   })
 

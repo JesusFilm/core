@@ -99,9 +99,10 @@ export function RequestFormTool({
   addToolResult
 }: RequestFormToolProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
+  const rawArgs = toolInvocation.args as Record<string, unknown> | undefined
   const formItems = z
     .array(formItemSchema)
-    .parse(toolInvocation.args?.formItems || [])
+    .parse(rawArgs?.formItems ?? [])
 
   // Build initial values for Formik
   const initialValues = formItems.reduce(
@@ -330,7 +331,7 @@ export function RequestFormTool({
         </Formik>
       )
     case 'result':
-      if (toolInvocation.result?.cancelled) {
+      if ((toolInvocation.result as Record<string, unknown>)?.cancelled) {
         return (
           <Box maxWidth="80%">
             <Chip label={t('Form was cancelled')} size="small" />

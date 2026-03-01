@@ -17,12 +17,6 @@ jest.mock('next/router', () => ({
   })
 }))
 
-jest.mock('../../../libs/ai/langfuse/client', () => ({
-  langfuseWeb: {
-    score: jest.fn().mockResolvedValue({})
-  }
-}))
-
 jest.mock('../../Editor/Slider/Settings/Drawer/ImageLibrary', () => ({
   ImageLibrary: function MockImageLibrary() {
     return <div data-testid="image-library">Image Library</div>

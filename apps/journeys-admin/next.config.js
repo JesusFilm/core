@@ -111,7 +111,6 @@ const nextConfig = {
     ]
   },
   experimental: {
-    instrumentationHook: true,
     reactCompiler: true
   },
   webpack: (config) => {

@@ -2,8 +2,8 @@ import Box from '@mui/material/Box'
 /* eslint-disable sort-imports -- type ToolUIPart and value UIMessage order required for both type and alphabetical rules */
 import {
   DynamicToolUIPart,
-  getToolOrDynamicToolName,
-  isToolOrDynamicToolUIPart,
+  getToolName,
+  isToolUIPart,
   type ToolUIPart,
   UIMessage
 } from 'ai'
@@ -24,7 +24,7 @@ export type AddToolResultArg = {
 export function normalizeToolPart(
   part: ToolUIPart<Record<string, { input: unknown; output: unknown }>> | DynamicToolUIPart
 ): LegacyToolInvocationPart {
-  const toolName = getToolOrDynamicToolName(part)
+  const toolName = getToolName(part)
   const state =
     part.state === 'output-available' || part.state === 'output-error'
       ? 'result'
@@ -57,13 +57,15 @@ export type LegacyToolInvocationPart = {
 interface MessageListProps {
   status: 'ready' | 'submitted' | 'streaming' | 'error'
   messages: (UIMessage & { traceId?: string | null })[]
-  addToolResult: (arg: AddToolResultArg) => void
+  addToolResult?: (arg: AddToolResultArg) => void
 }
+
+const noopAddToolResult: (arg: AddToolResultArg) => void = () => {}
 
 export function MessageList({
   status,
   messages,
-  addToolResult
+  addToolResult = noopAddToolResult
 }: MessageListProps): ReactElement {
   return (
     <>
@@ -101,12 +103,23 @@ export function MessageList({
                         />
                       )
                     }
-                    if (isToolOrDynamicToolUIPart(part)) {
+                    if (isToolUIPart(part)) {
                       return (
                         <ToolInvocationPart
                           part={normalizeToolPart(part)}
                           addToolResult={addToolResult}
                           key={`tool-${part.toolCallId}-${i}`}
+                        />
+                      )
+                    }
+                    // Legacy shape from tests: { type: 'tool-invocation', toolInvocation }
+                    const legacyPart = part as { type: string; toolInvocation?: LegacyToolInvocationPart['toolInvocation'] }
+                    if (legacyPart.type === 'tool-invocation' && legacyPart.toolInvocation) {
+                      return (
+                        <ToolInvocationPart
+                          part={{ toolInvocation: legacyPart.toolInvocation }}
+                          addToolResult={addToolResult}
+                          key={`tool-${legacyPart.toolInvocation.toolCallId}-${i}`}
                         />
                       )
                     }

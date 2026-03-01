@@ -24,12 +24,6 @@ jest.mock('@apollo/client', () => ({
   useApolloClient: jest.fn()
 }))
 
-jest.mock('../../libs/ai/langfuse/client', () => ({
-  langfuseWeb: {
-    score: jest.fn().mockResolvedValue(undefined)
-  }
-}))
-
 const validateChatRequestPayload = (
   payload: any,
   expectedMessage: { content: string; role: string } = {

@@ -93,7 +93,7 @@ export function agentInternalVideoSearch(
   return tool({
     description:
       'Search for internal videos using Algolia. Returns video metadata with videoId for card block references.',
-    parameters: z.object({
+    inputSchema: z.object({
       searchTerm: z.string().describe('The search term to find internal videos. Can be a title, description, or any text to search for.'),
       limit: z
         .number()

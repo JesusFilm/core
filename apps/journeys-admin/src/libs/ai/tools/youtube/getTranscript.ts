@@ -52,7 +52,7 @@ export function youTubeTranscriptTool(
   return tool({
     description:
       'Fetches the transcript for a YouTube video by ID or URL and returns an array of segments (text, start, duration in seconds).',
-    parameters: z.object({
+    inputSchema: z.object({
       videoIdOrUrl: z.string().describe('The YouTube video ID or URL.')
     }),
     execute: async ({ videoIdOrUrl }) => {

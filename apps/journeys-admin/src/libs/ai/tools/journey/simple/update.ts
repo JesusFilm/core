@@ -32,7 +32,7 @@ export function journeySimpleUpdate(
       'Updates a journey by ID and returns the validated result.' +
       '\n\nOutput schema (auto-generated from Zod):\n' +
       getSchemaDescription(journeySimpleSchema),
-    parameters: z.object({
+    inputSchema: z.object({
       journeyId: z.string().describe('The ID of the journey to update.'),
       journey: journeySimpleSchema.describe(
         'The new journey object to replace the existing journey.'

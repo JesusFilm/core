@@ -59,7 +59,7 @@ export function loadVideoSubtitleContent(
       'Fetches video subtitle data by video ID and language ID and returns a validated JSON structure including srtSrc content URL.' +
       '\n\nOutput schema (auto-generated from Zod):\n' +
       getSchemaDescription(videoSubtitleContentSchema),
-    parameters: z.object({
+    inputSchema: z.object({
       videoId: z.string().describe('The ID of the video to fetch subtitle for.'),
       languageId: z.string().describe('The language ID of the subtitle to fetch.')
     }),

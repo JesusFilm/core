@@ -1,16 +1,19 @@
-import { Langfuse } from 'langfuse'
-import { LangfuseExporter } from 'langfuse-vercel'
+import { LangfuseClient } from '@langfuse/client'
+import { LangfuseSpanProcessor } from '@langfuse/otel'
 
-export const langfuseEnvironment =
-  process.env.VERCEL_ENV ??
-  process.env.DD_ENV ??
-  process.env.NODE_ENV ??
-  'development'
+export function getLangfuseEnvironment(): string {
+  console.log('process.env.VERCEL_ENV', process.env.VERCEL_ENV)
+  console.log('process.env.DD_ENV', process.env.DD_ENV)
+  console.log('process.env.NODE_ENV', process.env.NODE_ENV)
+  return (
+    process.env.VERCEL_ENV ??
+    process.env.DD_ENV ??
+    process.env.NODE_ENV ??
+    'development'
+  )
+}
 
-export const langfuseExporter = new LangfuseExporter({
-  environment: langfuseEnvironment
+export const langfuseSpanProcessor = new LangfuseSpanProcessor({
+  environment: getLangfuseEnvironment()
 })
-
-export const langfuse = new Langfuse({
-  environment: langfuseEnvironment
-})
+export const langfuse = new LangfuseClient()

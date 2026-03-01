@@ -7,26 +7,26 @@ describe('clientRedirectUserToEditor', () => {
     jest.clearAllMocks()
   })
 
-  it('should return a tool with correct description, parameters, and descriptions', () => {
+  it('should return a tool with correct description, inputSchema, and descriptions', () => {
     const tool = clientRedirectUserToEditor()
 
     expect(tool.description).toBe('Redirect the user to the editor.')
-    expect(tool.parameters).toBeInstanceOf(z.ZodObject)
+    expect(tool.inputSchema).toBeInstanceOf(z.ZodObject)
 
-    const parametersShape = tool.parameters.shape as {
+    const inputSchemaShape = tool.inputSchema.shape as {
       message: z.ZodTypeAny
       journeyId: z.ZodTypeAny
     }
 
     // Test parameter types
-    expect(parametersShape.message).toBeInstanceOf(z.ZodString)
-    expect(parametersShape.journeyId).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.message).toBeInstanceOf(z.ZodString)
+    expect(inputSchemaShape.journeyId).toBeInstanceOf(z.ZodString)
 
     // Test parameter descriptions
-    expect(parametersShape.message.description).toBe(
+    expect(inputSchemaShape.message.description).toBe(
       'The message to let the user know they can see their journey by clicking the button below and inform them it takes them to the editor.'
     )
-    expect(parametersShape.journeyId.description).toBe(
+    expect(inputSchemaShape.journeyId.description).toBe(
       'The id of the journey to redirect to.'
     )
   })
@@ -38,7 +38,7 @@ describe('clientRedirectUserToEditor', () => {
       journeyId: 'journey-456'
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(true)
   })
 
@@ -46,7 +46,7 @@ describe('clientRedirectUserToEditor', () => {
     const tool = clientRedirectUserToEditor()
     const input = {}
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])
@@ -62,7 +62,7 @@ describe('clientRedirectUserToEditor', () => {
       journeyId: 'journey-456'
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])
@@ -77,7 +77,7 @@ describe('clientRedirectUserToEditor', () => {
       journeyId: null
     }
 
-    const result = tool.parameters.safeParse(input)
+    const result = tool.inputSchema.safeParse(input)
     expect(result.success).toBe(false)
     if (!result.success) {
       const issues = result.error.issues.map((i) => i.path[0])

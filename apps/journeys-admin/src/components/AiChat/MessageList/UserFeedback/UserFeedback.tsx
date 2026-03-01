@@ -6,22 +6,15 @@ import { useState } from 'react'
 import ThumbsDown from '@core/shared/ui/icons/ThumbsDown'
 import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
-import { langfuseWeb } from '../../../../libs/ai/langfuse/client'
-
 interface UserFeedbackProps {
   traceId: string
 }
 
-export function UserFeedback({ traceId }: UserFeedbackProps) {
+export function UserFeedback({ traceId: _traceId }: UserFeedbackProps) {
   const [feedback, setFeedback] = useState<number | null>(null)
 
   function handleUserFeedback(value: number) {
     setFeedback(value)
-    void langfuseWeb.score({
-      traceId,
-      name: 'user_feedback',
-      value
-    })
   }
 
   return (

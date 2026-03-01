@@ -1,5 +1,15 @@
 import { z } from 'zod'
 
+/** Validates request body message shape (matches UIMessage from ai). */
+const uiMessageSchema = z.object({
+  id: z.string().optional(),
+  role: z.enum(['system', 'user', 'assistant']),
+  metadata: z.unknown().optional(),
+  parts: z.array(z.unknown())
+})
+
+export const messagesSchema = z.array(uiMessageSchema)
+
 export function errorHandler(error: unknown): string {
   if (error == null) {
     return 'unknown error'
@@ -16,11 +26,3 @@ export function errorHandler(error: unknown): string {
   return JSON.stringify(error)
 }
 
-export const messagesSchema = z.array(
-  z.object({
-    role: z.enum(['system', 'user', 'assistant']),
-    content: z.string()
-  })
-)
-
-export type Messages = z.infer<typeof messagesSchema>

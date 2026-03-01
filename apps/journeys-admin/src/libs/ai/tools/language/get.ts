@@ -30,7 +30,7 @@ export function loadLanguages(
       'Fetches language records by subtitle IDs and returns an array of language objects with id and slug fields.' +
       '\n\nOutput schema (auto-generated from Zod):\n' +
       getSchemaDescription(languageSchema),
-    parameters: z.object({
+    inputSchema: z.object({
       subtitles: z.array(z.string()).describe('Array of subtitle IDs to look up languages for.')
     }),
 

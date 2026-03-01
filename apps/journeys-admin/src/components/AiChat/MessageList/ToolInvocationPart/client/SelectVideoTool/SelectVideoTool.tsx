@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { VideoLibrary } from '../../../../../Editor/Slider/Settings/Drawer/VideoLibrary'
-import type { LegacyToolInvocationPart } from '../../MessageList'
+import type { LegacyToolInvocationPart } from '../../../MessageList'
 import type { AddToolResultChildArg } from '../../ToolInvocationPart'
 
 interface ClientSelectVideoToolProps {
