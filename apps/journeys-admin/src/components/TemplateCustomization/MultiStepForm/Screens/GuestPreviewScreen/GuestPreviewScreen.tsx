@@ -11,7 +11,10 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { CardsPreview } from '../LinksScreen/CardsPreview'
+import {
+  CardsPreview,
+  TemplateCardPreviewDialog
+} from '../LinksScreen/CardsPreview'
 
 interface GuestPreviewScreenProps {
   handleNext?: (overrideJourneyId?: string) => void
@@ -31,6 +34,19 @@ export function GuestPreviewScreen({
         : [],
     [journey]
   )
+
+  const [overlayOpen, setOverlayOpen] = useState(false)
+  const [clickedStepId, setClickedStepId] = useState<string | null>(null)
+
+  function handleCardClick(step: TreeBlock<StepBlock>): void {
+    setClickedStepId(step.id)
+    setOverlayOpen(true)
+  }
+
+  function handleOverlayClose(): void {
+    setOverlayOpen(false)
+    setClickedStepId(null)
+  }
 
   const displayDesktop = { xs: 'none', sm: 'block' }
   const displayMobile = { xs: 'block', sm: 'none' }
@@ -91,7 +107,15 @@ export function GuestPreviewScreen({
       <Typography variant="subtitle2" color="text.secondary">
         &quot;{journey?.title ?? ''}&quot;
       </Typography>
-      <CardsPreview steps={steps} />
+      <CardsPreview steps={steps} onCardClick={handleCardClick} />
+      {overlayOpen && (
+        <TemplateCardPreviewDialog
+          open={overlayOpen}
+          onClose={handleOverlayClose}
+          steps={steps}
+          initialStepId={clickedStepId}
+        />
+      )}
       <Card
         variant="outlined"
         sx={{
