@@ -28,6 +28,7 @@ interface TemplateCardPreviewProps {
   variant?: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
+  initialStepId?: string | null
 }
 
 interface TemplateCardPreviewPlaceholderProps {
@@ -107,7 +108,8 @@ export function TemplateCardPreview({
   authUser,
   variant = 'standard',
   onClick,
-  selectedStep
+  selectedStep,
+  initialStepId
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -126,13 +128,34 @@ export function TemplateCardPreview({
     modules
   } = config
 
-  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: VARIANT_CONFIGS[variant].breakpoints.xs,
-    [breakpoints.values.sm]: VARIANT_CONFIGS[variant].breakpoints.sm
-  }
+  const isGuestPreviewVariant =
+    variant === 'guestPreviewDesktop' || variant === 'guestPreviewMobile'
+
+  const variantBreakpoints = VARIANT_CONFIGS[variant].breakpoints
+  const swiperBreakpoints: SwiperOptions['breakpoints'] | undefined =
+    variantBreakpoints != null
+      ? {
+          [breakpoints.values.xs]: variantBreakpoints.xs,
+          [breakpoints.values.sm]: variantBreakpoints.sm
+        }
+      : undefined
 
   const slidesToRender =
-    steps != null ? (variant === 'compact' ? steps : take(steps, 7)) : []
+    steps != null
+      ? isGuestPreviewVariant
+        ? steps
+        : variant === 'compact'
+          ? steps
+          : take(steps, 7)
+      : []
+
+  const initialSlide =
+    initialStepId != null && slidesToRender.length > 0
+      ? Math.max(
+          0,
+          slidesToRender.findIndex((s) => s.id === initialStepId)
+        )
+      : 0
 
   useEffect(() => {
     if (variant !== 'compact' || swiper == null || selectedStep == null) return
@@ -151,6 +174,7 @@ export function TemplateCardPreview({
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
+      initialSlide={isGuestPreviewVariant ? initialSlide : undefined}
       {...swiperProps}
       sx={{
         ...swiperSx,
