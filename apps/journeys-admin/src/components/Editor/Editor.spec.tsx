@@ -103,7 +103,8 @@ describe('Editor', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null
   }
 
   beforeEach(() => {
