@@ -19,7 +19,7 @@ interface ActivePriorityListProps {
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<GetAdminJourneys>>
-  user?: User
+  user?: User | null
 }
 
 export function ActivePriorityList({

@@ -23,7 +23,7 @@ import { TemplateCardPreviewItem } from './TemplateCardPreviewItem'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
-  authUser?: User
+  authUser?: User | null
   variant?: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null

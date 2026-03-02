@@ -100,7 +100,7 @@ export const DELETE_TRASHED_JOURNEYS = gql`
 export interface JourneyListContentProps {
   contentType: ContentType
   status: JourneyStatusFilter
-  user?: User
+  user?: User | null
   sortOrder?: SortOrder
   event?: JourneyListEvent
 }

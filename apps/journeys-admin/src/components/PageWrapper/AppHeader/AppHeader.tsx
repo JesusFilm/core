@@ -18,7 +18,7 @@ import { usePageWrapperStyles } from '../utils/usePageWrapperStyles'
 
 export interface MainBodyContainerProps {
   onClick: () => void
-  user?: User
+  user?: User | null
 }
 
 export function AppHeader({

@@ -36,7 +36,7 @@ export const GET_ROLE = gql`
 `
 
 interface MenuProps {
-  user?: User
+  user?: User | null
 }
 
 export function Menu({ user }: MenuProps): ReactElement {

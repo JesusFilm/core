@@ -11,7 +11,7 @@ import { JourneyFields as Journey } from '../../../../__generated__/JourneyField
 import { MultiStepForm } from './MultiStepForm'
 
 // Mock complex dependencies that the screens use (user is null when unauthenticated)
-const defaultAuth = {
+const defaultAuth: { user: { id: string; email: string | null; displayName: string | null; photoURL: string | null; phoneNumber: string | null; emailVerified: boolean; token: string } | null } = {
   user: {
     id: 'test-user-id',
     email: null,
@@ -25,7 +25,7 @@ const defaultAuth = {
 const guestAuth = { user: null }
 const mockUseAuth = jest.fn(() => defaultAuth)
 jest.mock('../../../libs/auth', () => ({
-  useAuth: (...args: unknown[]) => mockUseAuth(...args)
+  useAuth: () => mockUseAuth()
 }))
 
 const defaultFlags = {

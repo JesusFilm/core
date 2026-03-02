@@ -123,7 +123,7 @@ function JourneysAdminApp({
                 >
                   <GoogleTagManager
                     gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
-                    dataLayer={{ userId: user?.id }}
+                    dataLayer={{ userId: user?.id ?? '' }}
                   />
                   <Component {...pageProps} />
                 </SnackbarProvider>

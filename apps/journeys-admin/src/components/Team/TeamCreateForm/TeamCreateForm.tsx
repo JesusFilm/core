@@ -21,7 +21,7 @@ interface TeamCreateFormProps {
   ) => void
   children?: FormikConfig<TeamCreateInput>['children']
   onboarding?: boolean
-  user?: User
+  user?: User | null
 }
 
 export function TeamCreateForm({

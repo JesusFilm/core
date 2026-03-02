@@ -24,7 +24,7 @@ import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
-  authUser?: User
+  authUser?: User | null
   hideOverflow?: boolean
 }
 

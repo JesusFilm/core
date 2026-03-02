@@ -36,7 +36,7 @@ const UserNavigation = dynamic(
 interface NavigationDrawerProps {
   open?: boolean
   onClose?: (value: boolean) => void
-  user?: User
+  user?: User | null
   selectedPage?: string
 }
 

@@ -58,7 +58,7 @@ const JourneyDetailsDialog = dynamic(
 )
 
 interface ToolbarProps {
-  user?: User
+  user?: User | null
 }
 
 export const GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`

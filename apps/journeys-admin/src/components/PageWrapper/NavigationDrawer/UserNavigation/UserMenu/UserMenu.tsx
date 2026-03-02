@@ -27,7 +27,7 @@ export interface UserMenuProps {
   profileOpen: boolean
   profileAnchorEl: HTMLElement | null
   handleProfileClose: () => void
-  user: User
+  user: User | null
 }
 
 export function UserMenu({
@@ -76,7 +76,7 @@ export function UserMenu({
             <Typography>
               {compact([apiUser.firstName, apiUser.lastName]).join(' ')}
             </Typography>
-            {user.email != null && (
+            {user?.email != null && (
               <Typography variant="body2" color="textSecondary">
                 {user.email}
               </Typography>

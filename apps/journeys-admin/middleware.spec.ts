@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 
-import { COOKIE_FINGERPRINT, middleware } from './middleware'
+import middleware, { COOKIE_FINGERPRINT } from './middleware'
 
 describe('middleware', () => {
   const url = 'http://localhost:4200/'

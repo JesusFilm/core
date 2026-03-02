@@ -37,7 +37,7 @@ interface PageWrapperProps {
   // Either render default SidePanel with sidePanelChildren
   // Or render customSidePanel
   customSidePanel?: ReactNode
-  user?: User
+  user?: User | null
   initialState?: Partial<PageState>
   background?: string
   backgroundColor?: string

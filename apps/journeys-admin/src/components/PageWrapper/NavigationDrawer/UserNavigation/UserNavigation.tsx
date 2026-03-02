@@ -55,7 +55,7 @@ export const GET_ME = gql`
 `
 
 interface UserNavigationProps {
-  user: User
+  user: User | null
   selectedPage?: string
   setTooltip?: (value: string | undefined) => void
 }
@@ -83,7 +83,7 @@ export function UserNavigation({
 
   useEffect(() => {
     switch (
-      user.id != null
+      user?.id != null
         ? getJourneyTooltip(journeysData.journeys, user.id)
         : undefined
     ) {
@@ -94,7 +94,7 @@ export function UserNavigation({
         setTooltip?.(t('New Journey'))
         break
     }
-  }, [journeysData.journeys, user.id, t, setTooltip])
+  }, [journeysData.journeys, user?.id, t, setTooltip])
   function handleImpersonateClick(): void {
     setImpersonateOpen(true)
   }
@@ -111,7 +111,7 @@ export function UserNavigation({
     setProfileAnchorEl(null)
   }
 
-  return user.id != null && data.me != null ? (
+  return user?.id != null && data.me != null ? (
     <>
       <Divider sx={{ mb: 0.5, mx: 6, borderColor: 'secondary.main' }} />
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (

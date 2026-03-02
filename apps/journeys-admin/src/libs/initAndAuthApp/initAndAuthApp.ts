@@ -15,7 +15,7 @@ import { User } from '../auth/authContext'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 interface InitAndAuthAppProps {
-  user?: User
+  user?: User | null
   locale: string | undefined
   resolvedUrl?: string
   makeAccountOnAnonymous?: boolean

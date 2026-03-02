@@ -21,7 +21,7 @@ interface EditorProps {
   journey?: Journey
   selectedStepId?: string
   initialState?: Partial<EditorState>
-  user?: User
+  user?: User | null
 }
 
 /**

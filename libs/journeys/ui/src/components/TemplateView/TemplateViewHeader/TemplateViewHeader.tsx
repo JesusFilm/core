@@ -17,7 +17,7 @@ import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
-  authUser: User | undefined
+  authUser?: User | null
 }
 
 export function TemplateViewHeader({

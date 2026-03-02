@@ -21,7 +21,7 @@ import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'
 
 interface TemplatePreviewTabsProps {
-  authUser?: User
+  authUser?: User | null
 }
 
 export function TemplatePreviewTabs({

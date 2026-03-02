@@ -20,7 +20,7 @@ interface OnboardingPageWrapperProps {
   title?: string
   emailSubject: string
   children: ReactNode
-  user?: User
+  user?: User | null
 }
 
 export function OnboardingPageWrapper({

@@ -16,7 +16,7 @@ import { SortOrder } from './JourneySort'
 export interface JourneyListProps {
   sortOrder?: SortOrder
   event?: JourneyListEvent
-  user?: User
+  user?: User | null
 }
 
 export type JourneyListEvent =

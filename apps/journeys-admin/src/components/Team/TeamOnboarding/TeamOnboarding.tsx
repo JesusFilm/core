@@ -21,7 +21,7 @@ import { TeamCreateForm } from '../TeamCreateForm'
 export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'
 
 interface TeamOnboardingProps {
-  user?: User
+  user?: User | null
 }
 
 export function TeamOnboarding({ user }: TeamOnboardingProps): ReactElement {
