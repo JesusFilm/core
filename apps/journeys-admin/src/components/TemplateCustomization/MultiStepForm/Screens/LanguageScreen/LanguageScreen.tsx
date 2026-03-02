@@ -24,6 +24,7 @@ import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGet
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
@@ -168,116 +169,97 @@ export function LanguageScreen({
 
   return (
     <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <Stack alignItems="center" sx={{ pb: { xs: 6, sm: 10 } }}>
-        <Typography
-          variant="h4"
-          display={{ xs: 'none', sm: 'block' }}
-          gutterBottom
-          sx={{ mb: 2 }}
-        >
-          {t("Let's Get Started!")}
-        </Typography>
-        <Typography
-          variant="h6"
-          display={{ xs: 'block', sm: 'none' }}
-          gutterBottom
-        >
-          {t('Get Started')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          align="center"
-          display={{ xs: 'none', sm: 'block' }}
-        >
-          {t('A few quick edits and your template will be ready to share.')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          align="center"
-          display={{ xs: 'block', sm: 'none' }}
-        >
-          {t("A few quick edits and it's ready to share!")}
-        </Typography>
-      </Stack>
-
-      <Typography
-        variant="subtitle2"
-        gutterBottom
-        sx={{ mb: { xs: 0, sm: 2 } }}
-      >
-        {`'${journey?.title ?? ''}'`}
-      </Typography>
-
-      {steps.length > 0 && <CardsPreview steps={steps} />}
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit, setFieldValue, values }) => (
-          <Form style={{ width: '100%' }}>
-            <FormControl
-              sx={{
-                width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH },
-                alignSelf: 'center'
-              }}
-            >
-              <Stack gap={2}>
-                <Typography variant="h6" display={{ xs: 'none', sm: 'block' }}>
-                  {t('Select a language')}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  display={{ xs: 'block', sm: 'none' }}
-                >
-                  {t('Select a language')}
-                </Typography>
-                <LanguageAutocomplete
-                  value={values.languageSelect}
-                  languages={languages.map((language) => ({
-                    id: language?.id,
-                    name: language?.name,
-                    slug: language?.slug
-                  }))}
-                  onChange={(value) => setFieldValue('languageSelect', value)}
-                />
-                {isSignedIn && (
-                  <>
-                    <Typography
-                      variant="h6"
-                      display={{ xs: 'none', sm: 'block' }}
-                      sx={{ mt: 4 }}
-                    >
-                      {t('Select a team')}
-                    </Typography>
-
-                    <Typography
-                      variant="body2"
-                      display={{ xs: 'block', sm: 'none' }}
-                      sx={{ mt: 4 }}
-                    >
-                      {t('Select a team')}
-                    </Typography>
-                    <JourneyCustomizeTeamSelect />
-                  </>
-                )}
-                <CustomizeFlowNextButton
-                  label={t('Next')}
-                  onClick={() => handleSubmit()}
-                  disabled={
-                    (templateCustomizationGuestFlow && !isSignedIn) || loading
-                  }
-                  ariaLabel={t('Next')}
-                />
-              </Stack>
-            </FormControl>
-          </Form>
+      <ScreenWrapper
+        title={t("Let's Get Started!")}
+        mobileTitle={t('Get Started')}
+        subtitle={t(
+          'A few quick edits and your template will be ready to share.'
         )}
-      </Formik>
+        mobileSubtitle={t("A few quick edits and it's ready to share!")}
+        headerSx={{ pb: { xs: 6, sm: 10 } }}
+      >
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{ mb: { xs: 0, sm: 2 } }}
+        >
+          {`'${journey?.title ?? ''}'`}
+        </Typography>
+
+        {steps.length > 0 && <CardsPreview steps={steps} />}
+
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          enableReinitialize
+          onSubmit={handleSubmit}
+        >
+          {({ handleSubmit, setFieldValue, values }) => (
+            <Form style={{ width: '100%' }}>
+              <FormControl
+                sx={{
+                  width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH },
+                  alignSelf: 'center'
+                }}
+              >
+                <Stack gap={2}>
+                  <Typography
+                    variant="h6"
+                    display={{ xs: 'none', sm: 'block' }}
+                  >
+                    {t('Select a language')}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    display={{ xs: 'block', sm: 'none' }}
+                  >
+                    {t('Select a language')}
+                  </Typography>
+                  <LanguageAutocomplete
+                    value={values.languageSelect}
+                    languages={languages.map((language) => ({
+                      id: language?.id,
+                      name: language?.name,
+                      slug: language?.slug
+                    }))}
+                    onChange={(value) =>
+                      setFieldValue('languageSelect', value)
+                    }
+                  />
+                  {isSignedIn && (
+                    <>
+                      <Typography
+                        variant="h6"
+                        display={{ xs: 'none', sm: 'block' }}
+                        sx={{ mt: 4 }}
+                      >
+                        {t('Select a team')}
+                      </Typography>
+
+                      <Typography
+                        variant="body2"
+                        display={{ xs: 'block', sm: 'none' }}
+                        sx={{ mt: 4 }}
+                      >
+                        {t('Select a team')}
+                      </Typography>
+                      <JourneyCustomizeTeamSelect />
+                    </>
+                  )}
+                  <CustomizeFlowNextButton
+                    label={t('Next')}
+                    onClick={() => handleSubmit()}
+                    disabled={
+                      (templateCustomizationGuestFlow && !isSignedIn) || loading
+                    }
+                    ariaLabel={t('Next')}
+                  />
+                </Stack>
+              </FormControl>
+            </Form>
+          )}
+        </Formik>
+      </ScreenWrapper>
     </Stack>
   )
 }

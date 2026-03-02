@@ -16,6 +16,7 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 interface DoneScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
@@ -40,48 +41,12 @@ export function DoneScreen({
 
   return (
     <Stack alignItems="center" sx={{ pb: 4, px: { xs: 4, sm: 18 } }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        display={{ xs: 'none', sm: 'block' }}
-        sx={{ mb: { xs: 0, sm: 2 } }}
+      <ScreenWrapper
+        title={t('Ready to Share!')}
+        subtitle={t('Share your unique link on any platform.')}
+        headerSx={{ pb: { xs: 4, sm: 6 } }}
       >
-        {t('Ready to Share!')}
-      </Typography>
-      <Typography
-        variant="h6"
-        display={{ xs: 'block', sm: 'none' }}
-        gutterBottom
-        sx={{ mb: { xs: 0, sm: 2 } }}
-      >
-        {t('Ready to Share!')}
-      </Typography>
-      <Typography
-        color="text.secondary"
-        align="center"
-        variant="subtitle2"
-        display={{ xs: 'none', sm: 'block' }}
-        sx={{
-          maxWidth: { xs: '100%', sm: '90%' },
-          pb: 6
-        }}
-      >
-        {t('Share your unique link on any platform.')}
-      </Typography>
-      <Typography
-        color="text.secondary"
-        align="center"
-        variant="body2"
-        display={{ xs: 'block', sm: 'none' }}
-        sx={{
-          maxWidth: { xs: '100%', sm: '90%' },
-          pb: 4
-        }}
-      >
-        {t('Share your unique link on any platform.')}
-      </Typography>
-
-      {steps.length > 0 && (
+        {steps.length > 0 && (
         <TemplateCardPreviewItem step={steps[0]} variant="preview" />
       )}
 
@@ -131,6 +96,7 @@ export function DoneScreen({
           {t('Go To Projects Dashboard')}
         </Typography>
       </Button>
+      </ScreenWrapper>
     </Stack>
   )
 }
