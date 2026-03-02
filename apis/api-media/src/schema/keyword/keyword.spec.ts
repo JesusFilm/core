@@ -33,7 +33,9 @@ describe('Keyword', () => {
         {
           id: 'keywordId',
           value: 'value',
-          languageId: 'languageId'
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ])
       const data = await client({
@@ -67,13 +69,17 @@ describe('Keyword', () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
         userId: 'userId',
-        roles: ['publisher']
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
 
       prismaMock.keyword.upsert.mockResolvedValue({
         id: 'newKeywordId',
         value: 'newValue',
-        languageId: 'languageId'
+        languageId: 'languageId',
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
 
       const data = await authClient({

@@ -24,7 +24,8 @@ describe('SocialImage', () => {
               blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
               scale: null,
               focalLeft: 50,
-              focalTop: 50
+              focalTop: 50,
+              customizable: null
             }
           },
           variant: 'admin'

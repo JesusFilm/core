@@ -1,15 +1,36 @@
 import { builder } from '../builder'
 
-// Define the federated User type reference - this should only be defined once
-export const UserRef = builder.externalRef(
-  'User',
+export const UserRef = builder.interfaceRef<{ id: string }>('User').implement({
+  resolveType: (_user, context) => {
+    if (context.type !== 'authenticated' || context.user.email == null) {
+      return 'AnonymousUser'
+    }
+    return 'AuthenticatedUser'
+  },
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false })
+  })
+})
+
+export const AuthenticatedUserRef = builder.externalRef(
+  'AuthenticatedUser',
   builder.selection<{ id: string }>('id')
 )
 
-// Implement the external fields for the User type
-UserRef.implement({
+AuthenticatedUserRef.implement({
+  interfaces: [UserRef],
   externalFields: (t) => ({ id: t.id({ nullable: false }) }),
+  fields: (t) => ({})
+})
+
+export const AnonymousUserRef = builder.objectRef<{ id: string }>(
+  'AnonymousUser'
+)
+
+AnonymousUserRef.implement({
+  interfaces: [UserRef],
+  shareable: true,
   fields: (t) => ({
-    // No additional fields needed - this is just the external reference
+    id: t.exposeID('id', { nullable: false })
   })
 })

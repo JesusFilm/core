@@ -10,6 +10,7 @@ import { nua9 } from './seeds/nua9'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
 import { playwrightUserAccess } from './seeds/playwrightUserAccess'
+import { quickStartTemplate } from './seeds/quickStartTemplate'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -21,6 +22,7 @@ async function main(): Promise<void> {
   await nua1()
   await onboarding()
   await onboardingTemplates()
+  await quickStartTemplate()
   await playwrightUserAccess()
 
   await formBlocksDelete()

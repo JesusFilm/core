@@ -27,6 +27,7 @@ describe('ContainedCover', () => {
     scale: null,
     focalLeft: 50,
     focalTop: 50,
+    customizable: null,
     children: []
   }
 
@@ -77,6 +78,7 @@ describe('ContainedCover', () => {
       },
       variantLanguages: []
     },
+    customizable: null,
     children: []
   }
 

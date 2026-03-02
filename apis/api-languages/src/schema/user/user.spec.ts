@@ -13,8 +13,10 @@ describe('user', () => {
 
   const VIDEO_ROLES = graphql(`
     query VideoRoles {
-      _entities(representations: [{ __typename: "User", id: "id" }]) {
-        ... on User {
+      _entities(
+        representations: [{ __typename: "AuthenticatedUser", id: "id" }]
+      ) {
+        ... on AuthenticatedUser {
           id
           languageUserRoles
         }

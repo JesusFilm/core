@@ -73,7 +73,11 @@ function setupApolloMocks({
     ])
     .mockImplementationOnce(() => [
       loadSyncsMock,
-      { data: { googleSheetsSyncs: syncs }, loading: syncsLoading }
+      {
+        data: { googleSheetsSyncs: syncs },
+        loading: syncsLoading,
+        called: true
+      }
     ])
 
   mockUseMutation
@@ -105,7 +109,7 @@ describe('GoogleSheetsSyncDialog', () => {
     })
     mockUseLazyQuery.mockImplementation(() => [
       jest.fn(),
-      { data: undefined, loading: false }
+      { data: undefined, loading: false, called: false }
     ])
     mockUseMutation.mockImplementation(() => [jest.fn(), { loading: false }])
   })
@@ -154,5 +158,34 @@ describe('GoogleSheetsSyncDialog', () => {
     )
 
     await screen.findByRole('button', { name: 'Create Sync' })
+  })
+
+  it('does not auto-open the add sync dialog when there are existing syncs', async () => {
+    setupApolloMocks({
+      syncs: [
+        {
+          id: 'sync1',
+          spreadsheetId: 'spreadsheet1',
+          sheetName: 'Sheet1',
+          email: 'test@example.com',
+          deletedAt: null,
+          createdAt: '2024-01-01T00:00:00.000Z',
+          integration: { __typename: 'IntegrationGoogle', id: 'integration1' }
+        }
+      ]
+    })
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    // Wait for syncs to be fetched, then assert the create-sync modal is not shown
+    await waitFor(() => {
+      expect(loadSyncsMock).toHaveBeenCalled()
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Create Sync' })
+    ).not.toBeInTheDocument()
   })
 })

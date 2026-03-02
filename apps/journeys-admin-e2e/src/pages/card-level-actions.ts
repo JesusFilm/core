@@ -582,9 +582,11 @@ export class CardLevelActionPage {
         )
         .click()
     }
-    await frame
+    const actionListbox = this.page
       .locator('div[data-testid="Action"] div[aria-haspopup="listbox"]')
-      .click()
+      .first()
+    await expect(actionListbox).toBeVisible({ timeout: sixtySecondsTimeout })
+    await actionListbox.click()
   }
 
   async clickUrlOrWebSiteOptionInPollOptionProperties() {
@@ -758,9 +760,11 @@ export class CardLevelActionPage {
   }
 
   async clickActionOfFeedBackProperties() {
-    await this.page
+    const actionListbox = this.page
       .locator('div[data-testid="Action"] div[aria-haspopup="listbox"]')
-      .click()
+      .first()
+    await expect(actionListbox).toBeVisible({ timeout: sixtySecondsTimeout })
+    await actionListbox.click()
   }
 
   async selectEmailOptionInPropertiesOptions() {
@@ -1307,8 +1311,12 @@ export class CardLevelActionPage {
       .click()
   }
   async chooseIconFromList(iconName: string) {
-    //"Arrow Right", "Chat Bubble"
-    await this.page.getByRole('option', { name: iconName }).click()
+    const option = this.page.getByRole('option', {
+      name: iconName,
+      exact: true
+    })
+    await expect(option).toBeVisible({ timeout: sixtySecondsTimeout })
+    await option.click()
   }
   async chooseColorForIcon(iconColor: string) {
     await this.page

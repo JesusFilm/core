@@ -29,14 +29,18 @@ describe('videoImageAlt', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoImageAlt.create.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: CREATE_VIDEO_IMAGE_ALT_MUTATION,
@@ -85,14 +89,18 @@ describe('videoImageAlt', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoImageAlt.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: UPDATE_VIDEO_IMAGE_ALT_MUTATION,
@@ -139,14 +147,18 @@ describe('videoImageAlt', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoImageAlt.delete.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: DELETE_VIDEO_IMAGE_ALT_MUTATION,

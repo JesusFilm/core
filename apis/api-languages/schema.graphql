@@ -13,6 +13,14 @@ type AudioPreview
   codec: String!
 }
 
+type AuthenticatedUser implements User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  languageUserRoles: [LanguageRole!]!
+}
+
 type Continent {
   id: ID!
   name(languageId: ID, primary: Boolean): [ContinentName!]!
@@ -124,10 +132,6 @@ type Query {
   countries(term: String, ids: [ID!]): [Country!]!
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  languageUserRoles: [LanguageRole!]!
+interface User {
+  id: ID!
 }

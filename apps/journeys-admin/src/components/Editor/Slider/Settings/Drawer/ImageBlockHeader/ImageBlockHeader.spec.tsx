@@ -17,7 +17,8 @@ describe('ImageBlockHeader', () => {
     blurhash: '',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   it('should render selected image block', () => {

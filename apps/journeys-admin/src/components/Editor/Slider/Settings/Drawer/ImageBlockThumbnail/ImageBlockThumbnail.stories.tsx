@@ -49,7 +49,8 @@ const image: ImageBlock = {
   alt: 'poster',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const Template: StoryObj<typeof ImageBlockThumbnail> = {

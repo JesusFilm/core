@@ -24,7 +24,9 @@ const testQuestion: VideoStudyQuestion = {
   crowdInId: 'QUESTION123',
   value: 'Default question text',
   languageId: '529',
-  primary: true
+  primary: true,
+  createdAt: new Date(),
+  updatedAt: new Date()
 }
 
 describe('importStudyQuestions', () => {

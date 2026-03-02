@@ -18,7 +18,8 @@ describe('CustomImage', () => {
     parentOrder: 0,
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   it('should render custom url image upload', () => {

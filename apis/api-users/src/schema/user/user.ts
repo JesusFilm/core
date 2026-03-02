@@ -6,12 +6,16 @@ import { impersonateUser } from '@core/yoga/firebaseClient'
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import { CreateVerificationRequestInput, MeInput } from './inputs'
-import { User } from './objects'
+import {
+  CreateVerificationRequestInput,
+  MeInput,
+  UpdateMeInput
+} from './inputs'
+import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
-builder.asEntity(User, {
+builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
@@ -46,9 +50,18 @@ builder.asEntity(User, {
   }
 })
 
+builder.asEntity(AnonymousUser, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) => {
+    return await prisma.user.findUnique({
+      where: { userId: id }
+    })
+  }
+})
+
 builder.queryFields((t) => ({
   me: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       input: t.arg({
@@ -60,12 +73,13 @@ builder.queryFields((t) => ({
       return await findOrFetchUser(
         query,
         ctx.currentUser.id,
-        input?.redirect ?? undefined
+        input?.redirect ?? undefined,
+        input?.app ?? 'NextSteps'
       )
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       id: t.arg.id({ required: true })
@@ -77,7 +91,7 @@ builder.queryFields((t) => ({
       })
   }),
   userByEmail: t.withAuth({ isValidInterop: true }).prismaField({
-    type: 'User',
+    type: AuthenticatedUser,
     nullable: true,
     args: {
       email: t.arg.string({ required: true })
@@ -129,13 +143,14 @@ builder.mutationFields((t) => ({
       await verifyUser(
         ctx.currentUser.id,
         ctx.currentUser.email,
-        input?.redirect ?? undefined
+        input?.redirect ?? undefined,
+        input?.app ?? 'NextSteps'
       )
       return true
     }
   }),
   validateEmail: t.field({
-    type: User,
+    type: AuthenticatedUser,
     args: {
       email: t.arg.string({ required: true }),
       token: t.arg.string({ required: true })
@@ -152,7 +167,7 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const validatedEmail = await validateEmail(user.userId, user.email, token)
+      const validatedEmail = await validateEmail(user.userId, email, token)
       if (!validatedEmail)
         throw new GraphQLError('Invalid token', {
           extensions: { code: 'FORBIDDEN' }

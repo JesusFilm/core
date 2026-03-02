@@ -43,6 +43,23 @@ export function JourneyList({
   const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
+    const sortByFromStorage = sessionStorage.getItem(
+      'journeyListSortBy'
+    ) as SortOrder | null
+    const isValidSort =
+      sortByFromStorage != null &&
+      Object.values(SortOrder).includes(sortByFromStorage)
+    if (!isValidSort) return
+
+    setSortOrder(sortByFromStorage)
+  }, [])
+
+  function handleSetSortOrder(order: SortOrder) {
+    setSortOrder(order)
+    sessionStorage.setItem('journeyListSortBy', order)
+  }
+
+  useEffect(() => {
     const handleRouteChange = (url: string) => {
       // for updating journey list cache for shallow loading
       if (url === '/' || url === '/publisher') {
@@ -112,7 +129,7 @@ export function JourneyList({
         <JourneyListView
           renderList={renderList}
           setActiveEvent={handleClick}
-          setSortOrder={setSortOrder}
+          setSortOrder={handleSetSortOrder}
           sortOrder={sortOrder}
         />
       </Box>

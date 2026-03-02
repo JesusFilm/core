@@ -174,7 +174,8 @@ const imageBlock: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 const videoBlock: TreeBlock<VideoBlock> = {
   id: 'videoBlockId',
@@ -201,6 +202,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
   objectFit: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   children: [imageBlock]
 }
 

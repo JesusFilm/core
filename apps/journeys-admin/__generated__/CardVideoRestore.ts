@@ -194,6 +194,7 @@ export interface CardVideoRestore_video_VideoBlock {
   action: CardVideoRestore_video_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export type CardVideoRestore_video = CardVideoRestore_video_ImageBlock | CardVideoRestore_video_VideoBlock;

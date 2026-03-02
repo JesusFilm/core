@@ -1,11 +1,9 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { formatISO } from 'date-fns'
-import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 
 import {
@@ -18,6 +16,7 @@ import { Item } from '../Item/Item'
 interface AnalyticsItemProps {
   variant: ComponentProps<typeof Item>['variant']
   fromJourneyList?: boolean
+  journeyId?: string
 }
 
 export const GET_JOURNEY_PLAUSIBLE_VISITORS = gql`
@@ -36,30 +35,30 @@ export const GET_JOURNEY_PLAUSIBLE_VISITORS = gql`
 
 export function AnalyticsItem({
   variant,
-  fromJourneyList = false
+  fromJourneyList = false,
+  journeyId
 }: AnalyticsItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
 
   const [loadPlausibleVisitors, { data }] = useLazyQuery<
     GetJourneyPlausibleVisitors,
     GetJourneyPlausibleVisitorsVariables
   >(GET_JOURNEY_PLAUSIBLE_VISITORS)
   useEffect(() => {
-    if (journey?.id != null)
+    if (journeyId != null)
       void loadPlausibleVisitors({
         variables: {
           date: `${earliestStatsCollected},${formatISO(new Date(), {
             representation: 'date'
           })}`,
-          id: journey.id
+          id: journeyId
         }
       })
-  }, [journey?.id, loadPlausibleVisitors])
+  }, [journeyId, loadPlausibleVisitors])
 
   const linkHref = fromJourneyList
-    ? `/journeys/${journey?.id}/reports?from=journey-list`
-    : `/journeys/${journey?.id}/reports`
+    ? `/journeys/${journeyId}/reports?from=journey-list`
+    : `/journeys/${journeyId}/reports`
 
   const buttonProps = fromJourneyList
     ? {
