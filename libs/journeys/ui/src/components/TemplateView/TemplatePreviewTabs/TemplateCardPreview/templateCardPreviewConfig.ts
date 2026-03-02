@@ -2,7 +2,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
-export type TemplateCardPreviewVariant = 'preview' | 'media'
+export type TemplateCardPreviewVariant = 'standard' | 'compact'
 
 interface FramePortalConfig {
   width: { xs: number; sm: number }
@@ -35,7 +35,7 @@ const MEDIA_CARD_HEIGHT = 209
 const PREVIEW_CARD_HEIGHT_XS = 295
 const PREVIEW_CARD_HEIGHT_SM = 404
 
-const PREVIEW_VARIANT_CONFIG: VariantConfig = {
+const STANDARD_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 194, sm: 267 },
   cardHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
   swiperHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
@@ -76,7 +76,7 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   modules: [Mousewheel, FreeMode, A11y]
 }
 
-const MEDIA_VARIANT_CONFIG: VariantConfig = {
+const COMPACT_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 120, sm: 120 },
   cardHeight: { xs: MEDIA_CARD_HEIGHT, sm: MEDIA_CARD_HEIGHT },
   swiperHeight: {
@@ -131,6 +131,6 @@ export const VARIANT_CONFIGS: Record<
   TemplateCardPreviewVariant,
   VariantConfig
 > = {
-  preview: PREVIEW_VARIANT_CONFIG,
-  media: MEDIA_VARIANT_CONFIG
+  standard: STANDARD_VARIANT_CONFIG,
+  compact: COMPACT_VARIANT_CONFIG
 }
