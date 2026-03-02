@@ -1077,6 +1077,7 @@ export type Journey = {
   createdAt: Scalars['DateTime']['output'];
   creatorDescription?: Maybe<Scalars['String']['output']>;
   creatorImageBlock?: Maybe<ImageBlock>;
+  /** used to display quick start label on customizable templates */
   customizable?: Maybe<Scalars['Boolean']['output']>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
