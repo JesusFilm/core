@@ -845,6 +845,10 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];
   fromTemplateId: string | null;
   /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
+  /**
    * used in a plausible share link to embed report
    */
   plausibleToken: string | null;

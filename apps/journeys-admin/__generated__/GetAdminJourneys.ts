@@ -100,6 +100,10 @@ export interface GetAdminJourneys_journeys {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneys_journeys_journeyCustomizationFields[];
   website: boolean | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneys {

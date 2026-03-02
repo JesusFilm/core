@@ -114,6 +114,10 @@ export interface GetJourneys_journeys {
   userJourneys: GetJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetJourneys_journeys_primaryImageBlock | null;
   tags: GetJourneys_journeys_tags[];
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetJourneys {
