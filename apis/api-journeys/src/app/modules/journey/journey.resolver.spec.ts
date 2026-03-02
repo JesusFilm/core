@@ -2238,6 +2238,28 @@ describe('JourneyResolver', () => {
       )
     })
 
+    it('sets customizable: false when duplicating a global template', async () => {
+      const customizableGlobalTemplate = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        teamId: 'jfp-team', // global template team
+        template: true,
+        customizable: true
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(customizableGlobalTemplate)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: false })
+        })
+      )
+    })
+
     it('sets customizable: false when duplicating a local template with forceNonTemplate', async () => {
       const customizableJourney = {
         ...journeyWithUserTeamAndCustomizationFields,

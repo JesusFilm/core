@@ -78,7 +78,8 @@ describe('JourneyCustomizationFieldResolver', () => {
     fromTemplateId: null,
     journeyCustomizationDescription: null,
     showAssistant: null,
-    templateSite: null
+    templateSite: null,
+    customizable: null
   }
 
   const mockTeam: Team = {
