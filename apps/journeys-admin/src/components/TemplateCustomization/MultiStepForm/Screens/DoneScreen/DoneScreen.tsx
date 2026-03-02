@@ -127,9 +127,7 @@ export function DoneScreen({
         endIcon={<ArrowRightContained1Icon />}
         sx={{ mt: 4 }}
       >
-        <Typography variant="subtitle2">
-          {t('Go to Dashboard')}
-        </Typography>
+        <Typography variant="subtitle2">{t('Go to Dashboard')}</Typography>
       </Button>
     </Stack>
   )
