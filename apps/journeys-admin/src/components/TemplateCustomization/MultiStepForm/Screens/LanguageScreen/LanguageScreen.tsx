@@ -144,7 +144,7 @@ export function LanguageScreen({
       try {
         await signInAnonymously(getAuth(getApp()))
       } catch {
-        throw new Error('Could not firebase user')
+        throw new Error('Could not create firebase user')
       }
     }
 
@@ -198,14 +198,14 @@ export function LanguageScreen({
       return
     }
 
-    const { teamSelect: teamId } = values
+    const { teamSelect: selectedTeamId } = values
     const {
-      languageSelect: { id: languageId }
+      languageSelect: { id: selectedLanguageId }
     } = values
     const journeyId =
       languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
 
-    if (shouldSkipDuplicate(journey, languageId, teamId)) {
+    if (shouldSkipDuplicate(journey, selectedLanguageId, selectedTeamId)) {
       handleNext()
       return
     } else if (isSignedIn) {
@@ -373,7 +373,11 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={templateCustomizationGuestFlow !== true || loading}
+                  disabled={
+                    templateCustomizationGuestFlow == null ||
+                    !templateCustomizationGuestFlow ||
+                    loading
+                  }
                   ariaLabel={t('Next')}
                 />
               </Stack>
