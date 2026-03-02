@@ -53,6 +53,9 @@ type Journey @key(fields: "id") @shareable {
   used to see if a template has a site created for it
   """
   templateSite: Boolean
+  """
+  used to display quick start label on customizable templates
+  """
   customizable: Boolean
   """
   used in a plausible share link to embed report
