@@ -18,6 +18,7 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
@@ -72,9 +73,11 @@ export function JourneyCard({
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const isNavigating = useNavigationState()
   const { t } = useTranslation('apps-journeys-admin')
+  const { customizableMedia } = useFlags()
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
+  const [hasOpenDialog, setHasOpenDialog] = useState(false)
 
   const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'
@@ -87,6 +90,12 @@ export function JourneyCard({
       })
     }
   }, [duplicatedJourneyId, journey])
+
+  const updateHoverState = (hovered: boolean) => {
+    if (!hasOpenDialog) {
+      setIsCardHovered(hovered)
+    }
+  }
 
   return (
     <Card
@@ -112,8 +121,8 @@ export function JourneyCard({
         boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
+      onMouseEnter={() => updateHoverState(true)}
+      onMouseLeave={() => updateHoverState(false)}
     >
       <>
         <Box
@@ -133,8 +142,9 @@ export function JourneyCard({
             refetch={refetch}
             journey={journey}
             hovered={isCardHovered}
-            onMenuClose={() => setIsCardHovered(false)}
+            onMenuClose={() => updateHoverState(false)}
             template={journey.template ?? false}
+            setHasOpenDialog={setHasOpenDialog}
           />
         </Box>
         <CardActionArea
@@ -203,7 +213,10 @@ export function JourneyCard({
               }}
             >
               {journey.template &&
-                isJourneyCustomizable(journey as unknown as JourneyFields) && (
+                isJourneyCustomizable(
+                  journey as unknown as JourneyFields,
+                  customizableMedia
+                ) && (
                   <Box
                     data-testid="JourneyCardQuickStartBadge"
                     sx={{
@@ -341,6 +354,7 @@ export function JourneyCard({
               />
             )}
             <Box
+              data-testid="JourneyCardOverlayBox"
               aria-hidden
               sx={{
                 position: 'absolute',

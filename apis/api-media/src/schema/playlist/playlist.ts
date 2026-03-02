@@ -6,7 +6,7 @@ import { Prisma, prisma } from '@core/prisma/media/client'
 import { builder } from '../builder'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { NotFoundError } from '../error/NotFoundError'
-import { UserRef } from '../user'
+import { AuthenticatedUserRef } from '../user'
 
 import { PlaylistCreateInput } from './inputs/playlistCreate'
 import { PlaylistUpdateInput } from './inputs/playlistUpdate'
@@ -52,7 +52,7 @@ export const Playlist = builder.prismaObject('Playlist', {
     slug: t.expose('slug', { type: 'String', nullable: false }),
     owner: t.field({
       nullable: false,
-      type: UserRef,
+      type: AuthenticatedUserRef,
       resolve: async (parent) => ({ id: parent.ownerId })
     }),
     items: t.relation('items', {

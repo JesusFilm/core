@@ -2,6 +2,7 @@ import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import FolderIcon from '@mui/icons-material/Folder'
 import LaunchIcon from '@mui/icons-material/Launch'
 import NorthEastIcon from '@mui/icons-material/NorthEast'
+import RefreshIcon from '@mui/icons-material/Refresh'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -83,16 +84,12 @@ const GET_GOOGLE_SHEETS_SYNCS = gql`
 const EXPORT_TO_SHEETS = gql`
   mutation JourneyVisitorExportToGoogleSheet(
     $journeyId: ID!
-    $filter: JourneyEventsFilter
-    $select: JourneyVisitorExportSelect
     $destination: JourneyVisitorGoogleSheetDestinationInput!
     $integrationId: ID!
     $timezone: String
   ) {
     journeyVisitorExportToGoogleSheet(
       journeyId: $journeyId
-      filter: $filter
-      select: $select
       destination: $destination
       integrationId: $integrationId
       timezone: $timezone
@@ -107,6 +104,14 @@ const EXPORT_TO_SHEETS = gql`
 const DELETE_GOOGLE_SHEETS_SYNC = gql`
   mutation GoogleSheetsSyncDialogDelete($id: ID!) {
     googleSheetsSyncDelete(id: $id) {
+      id
+    }
+  }
+`
+
+const BACKFILL_GOOGLE_SHEETS_SYNC = gql`
+  mutation GoogleSheetsSyncDialogBackfill($id: ID!) {
+    googleSheetsSyncBackfill(id: $id) {
       id
     }
   }
@@ -167,14 +172,20 @@ export function GoogleSheetsSyncDialog({
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
   const [getPickerToken] = useLazyQuery(GET_GOOGLE_PICKER_TOKEN)
-  const [loadSyncs, { data: syncsData, loading: syncsLoading }] = useLazyQuery<
-    GoogleSheetsSyncsQueryData,
-    GoogleSheetsSyncsQueryVariables
-  >(GET_GOOGLE_SHEETS_SYNCS)
+  const [
+    loadSyncs,
+    { data: syncsData, loading: syncsLoading, called: syncsCalled }
+  ] = useLazyQuery<GoogleSheetsSyncsQueryData, GoogleSheetsSyncsQueryVariables>(
+    GET_GOOGLE_SHEETS_SYNCS
+  )
   const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
+  const [backfillSync] = useMutation(BACKFILL_GOOGLE_SHEETS_SYNC)
 
   const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
   const [syncIdPendingDelete, setSyncIdPendingDelete] = useState<string | null>(
+    null
+  )
+  const [backfillingSyncId, setBackfillingSyncId] = useState<string | null>(
     null
   )
 
@@ -226,6 +237,8 @@ export function GoogleSheetsSyncDialog({
   // Auto-open "Add Google Sheets Sync" dialog if there are no syncs
   useEffect(() => {
     if (!open) return
+    // Wait until the query has actually been executed at least once
+    if (!syncsCalled) return
     if (syncsLoading) return
     // Skip if we're already handling integration creation return flow
     const integrationCreated = router.query.integrationCreated === 'true'
@@ -237,6 +250,7 @@ export function GoogleSheetsSyncDialog({
     }
   }, [
     open,
+    syncsCalled,
     syncsLoading,
     activeSyncs.length,
     historySyncs.length,
@@ -494,6 +508,23 @@ export function GoogleSheetsSyncDialog({
     setSyncIdPendingDelete(syncId)
   }
 
+  async function handleBackfillSync(syncId: string): Promise<void> {
+    setBackfillingSyncId(syncId)
+    try {
+      await backfillSync({
+        variables: { id: syncId }
+      })
+      enqueueSnackbar(
+        t('Backfill started. Your sheet will be updated shortly.'),
+        { variant: 'success' }
+      )
+    } catch (error) {
+      enqueueSnackbar((error as Error).message, { variant: 'error' })
+    } finally {
+      setBackfillingSyncId(null)
+    }
+  }
+
   const isGoogleActionDisabled = integrationsData == null
 
   const validationSchema = object().shape({
@@ -590,17 +621,35 @@ export function GoogleSheetsSyncDialog({
                 fontWeight: 600
               }}
             />
-            <IconButton
-              onClick={() => handleRequestDeleteSync(sync.id)}
-              disabled={isDeleting}
-              size="small"
-            >
-              {isDeleting ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : (
-                <Trash2Icon />
-              )}
-            </IconButton>
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <Tooltip
+                title={t('Backfill - Replace all data with fresh export')}
+              >
+                <IconButton
+                  onClick={() => handleBackfillSync(sync.id)}
+                  disabled={backfillingSyncId === sync.id || isDeleting}
+                  size="small"
+                  aria-label={t('Backfill sync')}
+                >
+                  {backfillingSyncId === sync.id ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <RefreshIcon />
+                  )}
+                </IconButton>
+              </Tooltip>
+              <IconButton
+                onClick={() => handleRequestDeleteSync(sync.id)}
+                disabled={isDeleting || backfillingSyncId === sync.id}
+                size="small"
+              >
+                {isDeleting ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <Trash2Icon />
+                )}
+              </IconButton>
+            </Box>
           </Box>
         )}
       </Box>
@@ -734,7 +783,7 @@ export function GoogleSheetsSyncDialog({
                     <TableCell sx={{ width: 120 }}>{t('Sync Start')}</TableCell>
                     <TableCell>{t('Started By')}</TableCell>
                     <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
-                    <TableCell sx={{ width: 80 }} align="right">
+                    <TableCell sx={{ width: 100 }} align="right">
                       {t('Actions')}
                     </TableCell>
                   </TableRow>
@@ -810,27 +859,65 @@ export function GoogleSheetsSyncDialog({
                             size="small"
                           />
                         </TableCell>
-                        <TableCell sx={{ width: 80 }} align="right">
-                          <IconButton
-                            aria-label={t('Delete sync')}
-                            color="error"
-                            size="small"
-                            disabled={isDeleting}
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              handleRequestDeleteSync(sync.id)
+                        <TableCell sx={{ width: 100 }} align="right">
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              gap: 0.5,
+                              justifyContent: 'flex-end'
                             }}
                           >
-                            {isDeleting ? (
-                              <CircularProgress
-                                size={18}
-                                color="inherit"
-                                aria-label={t('Deleting sync')}
-                              />
-                            ) : (
-                              <Trash2Icon width={18} height={18} />
-                            )}
-                          </IconButton>
+                            <Tooltip
+                              title={t(
+                                'Backfill - Replace all data with fresh export'
+                              )}
+                            >
+                              <IconButton
+                                aria-label={t('Backfill sync')}
+                                color="primary"
+                                size="small"
+                                disabled={
+                                  backfillingSyncId === sync.id || isDeleting
+                                }
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  void handleBackfillSync(sync.id)
+                                }}
+                              >
+                                {backfillingSyncId === sync.id ? (
+                                  <CircularProgress
+                                    size={18}
+                                    color="inherit"
+                                    aria-label={t('Backfilling sync')}
+                                  />
+                                ) : (
+                                  <RefreshIcon sx={{ fontSize: 18 }} />
+                                )}
+                              </IconButton>
+                            </Tooltip>
+                            <IconButton
+                              aria-label={t('Delete sync')}
+                              color="error"
+                              size="small"
+                              disabled={
+                                isDeleting || backfillingSyncId === sync.id
+                              }
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                handleRequestDeleteSync(sync.id)
+                              }}
+                            >
+                              {isDeleting ? (
+                                <CircularProgress
+                                  size={18}
+                                  color="inherit"
+                                  aria-label={t('Deleting sync')}
+                                />
+                              ) : (
+                                <Trash2Icon width={18} height={18} />
+                              )}
+                            </IconButton>
+                          </Box>
                         </TableCell>
                       </TableRow>
                     )

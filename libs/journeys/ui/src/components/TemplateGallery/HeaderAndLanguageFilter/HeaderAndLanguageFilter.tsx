@@ -223,13 +223,7 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading: loading || selectedLanguageIds == null,
     onClick: () => {
-      const param = 'template-language'
-      void router.push({ query: { ...router.query, param } }, undefined, {
-        shallow: true
-      })
-      router.events.on('routeChangeComplete', () => {
-        setBeaconPageViewed(param)
-      })
+      setBeaconPageViewed('template-language')
       setOpen(!open)
     }
   }

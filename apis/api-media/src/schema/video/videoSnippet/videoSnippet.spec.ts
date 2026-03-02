@@ -29,14 +29,18 @@ describe('videoSnippet', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoSnippet.create.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: '529'
+          languageId: '529',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: CREATE_VIDEO_SNIPPET_MUTATION,
@@ -87,14 +91,18 @@ describe('videoSnippet', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoSnippet.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: UPDATE_VIDEO_SNIPPET_MUTATION,
@@ -141,14 +149,18 @@ describe('videoSnippet', () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
-          roles: ['publisher']
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         prismaMock.videoSnippet.delete.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: DELETE_VIDEO_SNIPPET_MUTATION,

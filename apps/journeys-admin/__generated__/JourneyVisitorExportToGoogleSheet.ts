@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyEventsFilter, JourneyVisitorExportSelect, JourneyVisitorGoogleSheetDestinationInput } from "./globalTypes";
+import { JourneyVisitorGoogleSheetDestinationInput } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: JourneyVisitorExportToGoogleSheet
@@ -22,8 +22,6 @@ export interface JourneyVisitorExportToGoogleSheet {
 
 export interface JourneyVisitorExportToGoogleSheetVariables {
   journeyId: string;
-  filter?: JourneyEventsFilter | null;
-  select?: JourneyVisitorExportSelect | null;
   destination: JourneyVisitorGoogleSheetDestinationInput;
   integrationId: string;
   timezone?: string | null;

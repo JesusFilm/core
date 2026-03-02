@@ -308,3 +308,32 @@ export async function updateRangeValues({
     )
   }
 }
+
+/**
+ * Clear all data from a sheet while preserving the sheet itself.
+ * Used for backfill operations that need to replace all content.
+ */
+export async function clearSheet({
+  accessToken,
+  spreadsheetId,
+  sheetTitle
+}: {
+  accessToken: string
+  spreadsheetId: string
+  sheetTitle: string
+}): Promise<void> {
+  const range = `${sheetTitle}!A:ZZ`
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:clear`
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  if (!res.ok) {
+    throw new Error(
+      `Sheets clearSheet failed: ${res.status} ${await res.text()}`
+    )
+  }
+}

@@ -28,7 +28,9 @@ describe('shortLink', () => {
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',
       userId: 'testUserId',
-      roles: ['publisher']
+      roles: ['publisher'],
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
   })
 
@@ -372,7 +374,9 @@ describe('shortLink', () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
         userId: 'testUserId',
-        roles: ['publisher']
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
     })
 
@@ -742,7 +746,9 @@ describe('shortLink', () => {
           services: ['apiJourneys']
         })
         prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue({
-          hostname: 'example.com'
+          hostname: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,
@@ -934,7 +940,9 @@ describe('shortLink', () => {
 
       it('should return a ZodError if the to URL is on the blocklist', async () => {
         prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue({
-          hostname: 'example.com'
+          hostname: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date()
         })
         const result = await authClient({
           document: SHORT_LINK_UPDATE_MUTATION,

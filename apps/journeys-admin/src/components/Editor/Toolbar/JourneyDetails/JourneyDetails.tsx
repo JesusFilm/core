@@ -52,39 +52,46 @@ export function JourneyDetails(): ReactElement {
               color: 'secondary.light'
             }}
           >
-            <Globe1Icon
+            <Box
               sx={{
-                position: 'relative',
-                top: '3px',
-                mr: 1,
-                fontSize: 16,
-                color: 'secondary.main'
-              }}
-            />
-            <Typography
-              variant="body2"
-              sx={{
-                display: 'inline',
-                color: 'secondary.dark'
+                display: 'inline-flex',
+                alignItems: 'center',
+                verticalAlign: { xs: 'bottom', md: 'unset' }
               }}
             >
-              {localName ?? nativeName}
-            </Typography>
-            {journey.description !== '' && journey.description != null ? (
+              <Globe1Icon
+                sx={{
+                  mr: 1,
+                  fontSize: 16,
+                  color: 'secondary.main'
+                }}
+              />
               <Typography
                 variant="body2"
-                data-testid="DescriptionDot"
                 sx={{
                   display: 'inline',
-                  px: 1,
                   color: 'secondary.dark'
                 }}
               >
-                •
+                {localName ?? nativeName}
               </Typography>
-            ) : null}
+              {journey.description !== '' && journey.description != null ? (
+                <Typography
+                  variant="body2"
+                  data-testid="DescriptionDot"
+                  sx={{
+                    display: 'inline',
+                    px: 1,
+                    color: 'secondary.dark'
+                  }}
+                >
+                  •
+                </Typography>
+              ) : null}
+            </Box>
             <Typography
               variant="body2"
+              data-testid="JourneyDescription"
               sx={{
                 display: { xs: 'inline', md: 'unset' },
                 color: 'secondary.light',

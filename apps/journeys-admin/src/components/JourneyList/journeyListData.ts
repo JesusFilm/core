@@ -20,7 +20,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.owner,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id1',
       firstName: 'Amin',
       lastName: 'One',
@@ -33,7 +33,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.editor,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id2',
       firstName: 'Horace',
       lastName: 'Two',
@@ -46,7 +46,7 @@ const userJourneys: ApiUser[] = [
     role: UserJourneyRole.editor,
     openedAt: null,
     user: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'user-id3',
       firstName: 'Coral',
       lastName: 'Three',
@@ -136,6 +136,33 @@ export const templateJourney: Journey = {
   title: 'Template Journey Heading',
   description: 'a template journey',
   template: true
+}
+
+export const nonCustomizableLocalTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'journeyId',
+  title: 'Local Template Journey Heading',
+  description: 'a local template journey',
+  template: true,
+  team: { __typename: 'Team', id: 'teamId' }
+}
+
+export const nonCustomizableGlobalTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'journeyId',
+  title: 'Global Template Journey Heading',
+  description: 'a global template journey',
+  template: true,
+  team: { __typename: 'Team', id: 'jfp-team' }
+}
+
+export const templateJourneyFromTemplate: Journey = {
+  ...defaultJourney,
+  id: 'template-journey-from-template-id',
+  title: 'Template Journey From Template Heading',
+  description: 'a template journey from template',
+  template: true,
+  fromTemplateId: 'template-journey-id'
 }
 
 export const customizableTemplateJourney: Journey = {
@@ -228,7 +255,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id4',
         firstName: 'Box',
         lastName: 'Four',
@@ -241,7 +268,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id5',
         firstName: 'John',
         lastName: 'Five',
@@ -254,7 +281,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id6',
         firstName: 'Jane',
         lastName: 'Six',
@@ -267,7 +294,7 @@ export const descriptiveJourney: Journey = {
       role: UserJourneyRole.editor,
       openedAt: null,
       user: {
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'user-id7',
         firstName: 'Jannet',
         lastName: 'Seven',

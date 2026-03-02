@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface GetCurrentUser_me {
-  __typename: "User";
+  __typename: "AuthenticatedUser";
   id: string;
   email: string;
 }

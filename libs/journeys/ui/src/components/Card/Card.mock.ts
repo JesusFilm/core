@@ -188,6 +188,7 @@ export const imageBlock: TreeBlock<ImageFields> = {
   scale: null,
   focalLeft: 50,
   focalTop: 50,
+  customizable: null,
   children: []
 }
 
@@ -233,6 +234,7 @@ export const videoBlock: TreeBlock<VideoFields> = {
   showGeneratedSubtitles: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

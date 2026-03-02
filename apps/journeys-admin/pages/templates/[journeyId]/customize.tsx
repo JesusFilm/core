@@ -1,10 +1,6 @@
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import absoluteUrl from 'next-absolute-url'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 
@@ -18,13 +14,14 @@ import {
 import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
+import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const { data } = useJourneyQuery({
+  const { data, loading } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
     options: {
@@ -58,7 +55,8 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   user,
   locale,
   resolvedUrl,
-  params
+  params,
+  req
 }) => {
   const { apolloClient, flags, translations } = await initAndAuthApp({
     user,
@@ -66,6 +64,22 @@ export const getServerSideProps = withUserTokenSSR()(async ({
     resolvedUrl,
     makeAccountOnAnonymous: true
   })
+
+  const templateCustomizationGuestFlow =
+    flags?.templateCustomizationGuestFlow ?? false
+  if (user?.id == null && !templateCustomizationGuestFlow) {
+    const { origin } = absoluteUrl(req)
+    const redirectUrl = new URL(
+      resolvedUrl ?? req?.url ?? '/',
+      origin
+    ).toString()
+    return {
+      redirect: {
+        destination: `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`,
+        permanent: false
+      }
+    }
+  }
 
   const journeyId = params?.journeyId
   if (journeyId == null) {
@@ -92,7 +106,7 @@ export const getServerSideProps = withUserTokenSSR()(async ({
     if (error.message === 'journey not found') {
       return {
         redirect: {
-          destination: '/templates',
+          destination: `/templates?error=${JOURNEY_NOT_FOUND_ERROR}`,
           permanent: false
         }
       }
@@ -109,7 +123,4 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   }
 })
 
-export default withUser({
-  // TODO: remove this after anon user is implemented
-  whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN
-})(CustomizePage)
+export default withUser()(CustomizePage)

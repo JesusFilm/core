@@ -7,6 +7,8 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
+import { logger } from '../logger'
+
 // Queue for visitor interaction emails
 let emailQueue: any
 try {
@@ -239,17 +241,26 @@ export async function resetEventsEmailDelay(
 }
 
 /**
- * Queue an event to be synced to Google Sheets.
- * This function adds a job to the worker queue which processes events one at a time
- * to avoid race conditions when multiple events are created simultaneously.
+ * Queue backfill jobs to sync events to Google Sheets.
+ * Schedules backfill jobs to run at the top of each minute (:00 seconds).
+ * Multiple events throughout the minute (seconds 1-59) will batch into a single
+ * backfill job via deterministic job IDs (backfill-${syncId}).
+ *
+ * This approach:
+ * - Reduces API calls: backfill makes only 1 read request vs 3-4 for append
+ * - Prevents quota errors: batches events over a full minute before syncing
+ * - Uses BullMQ's automatic deduplication via deterministic job IDs
+ * - Ensures predictable sync timing: all sheets sync at :00 each minute
  *
  * Jobs are configured with:
+ * - Delay to next minute boundary (:00 seconds)
+ * - Deterministic job IDs to prevent duplicates
  * - 3 retry attempts on failure
  * - Immediate expiration on success (removeOnComplete: true)
  * - 1 hour expiration on failure (removeOnFail: { age: ONE_HOUR })
  *
  * Note: No job is created if there are no active syncs for the journey.
- * Syncs are fetched here and passed to the worker to minimize database calls.
+ * Syncs without integrationId or sheetName are skipped with a warning.
  */
 export async function appendEventToGoogleSheets({
   journeyId,
@@ -264,37 +275,81 @@ export async function appendEventToGoogleSheets({
 }): Promise<void> {
   if (process.env.NODE_ENV === 'test' || googleSheetsSyncQueue == null) return
 
-  // Fetch syncs upfront to pass to the worker
+  // Fetch syncs with integrationId needed for backfill jobs
   const syncs = await prisma.googleSheetsSync.findMany({
     where: { journeyId, teamId, deletedAt: null },
     select: {
       id: true,
       spreadsheetId: true,
       sheetName: true,
-      timezone: true
+      timezone: true,
+      integrationId: true
     }
   })
 
   // No syncs configured - skip job creation
   if (syncs.length === 0) return
 
-  await googleSheetsSyncQueue.add(
-    'google-sheets-sync',
-    {
-      journeyId,
-      teamId,
-      row,
-      sheetName,
-      syncs
-    },
-    {
-      attempts: 3,
-      backoff: {
-        type: 'exponential',
-        delay: 1000
-      },
-      removeOnComplete: true,
-      removeOnFail: { age: ONE_HOUR }
+  // Calculate target timestamp for next minute boundary (:00 seconds) once
+  // All jobs will target this exact timestamp for consistent batching
+  const now = new Date()
+  const nextMinuteBoundary = new Date(now)
+  nextMinuteBoundary.setSeconds(0)
+  nextMinuteBoundary.setMilliseconds(0)
+  nextMinuteBoundary.setMinutes(nextMinuteBoundary.getMinutes() + 1)
+  const targetTimestamp = nextMinuteBoundary.getTime()
+
+  // Queue backfill jobs instead of append jobs
+  // Use deterministic job IDs to prevent duplicates - BullMQ handles deduplication automatically
+  // Multiple events will batch into a single backfill job per sync
+  for (const sync of syncs) {
+    // Skip syncs without required fields for backfill
+    if (sync.integrationId == null) {
+      logger.warn(
+        { syncId: sync.id, journeyId, teamId },
+        'Skipping Google Sheets sync: missing integrationId'
+      )
+      continue
     }
-  )
+
+    if (sync.sheetName == null) {
+      logger.warn(
+        { syncId: sync.id, journeyId, teamId },
+        'Skipping Google Sheets sync: missing sheetName'
+      )
+      continue
+    }
+
+    // Calculate delay to target timestamp right before adding
+    // This accounts for any time spent in the loop (await calls, etc.)
+    // Ensures all jobs target the exact same minute boundary
+    const delayMs = targetTimestamp - Date.now()
+
+    // BullMQ silently ignores duplicate job IDs - no error thrown
+    // If a job with this ID already exists, it will be ignored and not added
+    await googleSheetsSyncQueue.add(
+      'google-sheets-sync-backfill',
+      {
+        type: 'backfill',
+        journeyId,
+        teamId,
+        syncId: sync.id,
+        spreadsheetId: sync.spreadsheetId,
+        sheetName: sync.sheetName,
+        timezone: sync.timezone ?? 'UTC',
+        integrationId: sync.integrationId
+      },
+      {
+        jobId: `backfill-${sync.id}`,
+        delay: delayMs,
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 1000
+        },
+        removeOnComplete: true,
+        removeOnFail: { age: ONE_HOUR }
+      }
+    )
+  }
 }

@@ -1,3 +1,4 @@
+import Fab from '@mui/material/Fab'
 import IconButton from '@mui/material/IconButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
@@ -12,9 +13,14 @@ import HelpCircleContained from '@core/shared/ui/icons/HelpCircleContained'
 import XCircleContained from '@core/shared/ui/icons/XCircleContained'
 
 import { BeaconInit } from './BeaconInit'
+import {
+  MOBILE_HELPSCOUT_FAB_HEIGHT,
+  MOBILE_HELPSCOUT_FAB_WIDTH,
+  MOBILE_HELPSCOUT_FAB_Z_INDEX
+} from './constants'
 
 interface HelpScoutBeaconProps {
-  variant?: 'iconButton' | 'menuItem'
+  variant?: 'iconButton' | 'menuItem' | 'fab'
   iconButtonColor?: 'primary' | 'secondary'
   handleClick?: () => void
   userInfo?: FormObject
@@ -95,6 +101,23 @@ export function HelpScoutBeacon({
           </ListItemIcon>
           <ListItemText>{t('Help')}</ListItemText>
         </MenuItem>
+      )}
+      {variant === 'fab' && (
+        <Fab
+          variant="extended"
+          size="large"
+          color="primary"
+          sx={{
+            height: MOBILE_HELPSCOUT_FAB_HEIGHT,
+            width: MOBILE_HELPSCOUT_FAB_WIDTH,
+            zIndex: MOBILE_HELPSCOUT_FAB_Z_INDEX,
+            display: { xs: 'flex', md: 'none' }
+          }}
+          data-testid="HelpScoutBeaconFab"
+          onClick={handleBeaconClick}
+        >
+          {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
+        </Fab>
       )}
     </>
   )

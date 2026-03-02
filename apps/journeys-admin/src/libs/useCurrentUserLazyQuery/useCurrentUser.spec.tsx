@@ -70,7 +70,7 @@ describe('useCurrentUserLazyQuery', () => {
     })
 
     expect(result.current.data).toEqual({
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '',
       email: ''
     })

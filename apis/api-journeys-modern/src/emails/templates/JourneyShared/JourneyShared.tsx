@@ -16,8 +16,8 @@ import {
   ActionSender,
   BodyWrapper,
   EmailContainer,
-  Footer,
   Header,
+  NextStepsFooter,
   UnsubscribeLink
 } from '@core/yoga/email/components'
 import { JourneyForEmails } from '@core/yoga/email/types'
@@ -82,7 +82,7 @@ export const JourneySharedEmail = ({
             />
           </ActionCard>
         </BodyWrapper>
-        <Footer />
+        <NextStepsFooter />
         <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
       </EmailContainer>
     </>
