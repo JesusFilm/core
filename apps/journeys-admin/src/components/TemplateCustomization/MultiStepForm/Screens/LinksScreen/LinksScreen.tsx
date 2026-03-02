@@ -205,7 +205,6 @@ export function LinksScreen({
         mobileSubtitle={t(
           'Buttons here point to external sites. Check and update the links.'
         )}
-        headerSx={{ pb: 1 }}
       >
         <CardsPreview steps={treeBlocks} />
       </ScreenWrapper>

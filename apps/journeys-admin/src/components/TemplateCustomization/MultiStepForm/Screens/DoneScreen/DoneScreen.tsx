@@ -44,7 +44,6 @@ export function DoneScreen({
       <ScreenWrapper
         title={t('Ready to Share!')}
         subtitle={t('Share your unique link on any platform.')}
-        headerSx={{ pb: { xs: 4, sm: 6 } }}
       >
         {steps.length > 0 && (
           <TemplateCardPreviewItem step={steps[0]} variant="preview" />

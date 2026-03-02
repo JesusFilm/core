@@ -176,7 +176,6 @@ export function LanguageScreen({
           'A few quick edits and your template will be ready to share.'
         )}
         mobileSubtitle={t("A few quick edits and it's ready to share!")}
-        headerSx={{ pb: { xs: 6, sm: 10 } }}
       >
         <Typography
           variant="subtitle2"

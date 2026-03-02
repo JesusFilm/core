@@ -1,5 +1,4 @@
 import Stack from '@mui/material/Stack'
-import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
 
@@ -8,7 +7,6 @@ interface ScreenWrapperProps {
   mobileTitle?: string
   subtitle: string
   mobileSubtitle?: string
-  headerSx?: SxProps<Theme>
   footer?: ReactNode
   children: ReactNode
 }
@@ -18,15 +16,14 @@ export function ScreenWrapper({
   mobileTitle,
   subtitle,
   mobileSubtitle,
-  headerSx,
   footer,
   children
 }: ScreenWrapperProps): ReactElement {
   return (
-    <>
-      <Stack alignItems="center" sx={headerSx}>
+    <Stack alignItems="center" data-testid="ScreenWrapper">
+      <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
         <Typography
-          variant="h4"
+          variant="h3"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{ mb: { xs: 0, sm: 2 } }}
@@ -60,6 +57,6 @@ export function ScreenWrapper({
       </Stack>
       {children}
       {footer}
-    </>
+    </Stack>
   )
 }
