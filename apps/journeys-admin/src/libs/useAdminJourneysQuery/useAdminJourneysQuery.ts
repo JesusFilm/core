@@ -73,6 +73,7 @@ export const GET_ADMIN_JOURNEYS = gql`
         defaultValue
       }
       website
+      customizable
     }
   }
 `

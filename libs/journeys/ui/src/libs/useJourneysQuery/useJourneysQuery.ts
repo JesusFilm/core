@@ -74,6 +74,7 @@ export const GET_JOURNEYS = gql`
           primary
         }
       }
+      customizable
     }
   }
 `
