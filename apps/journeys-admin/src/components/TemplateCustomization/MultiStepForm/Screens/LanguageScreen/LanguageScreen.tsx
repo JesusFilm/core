@@ -141,11 +141,15 @@ export function LanguageScreen({
     const teamName = t('My Team')
     const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
     if (!isAnonymous) {
-      await signInAnonymously(getAuth(getApp()))
+      try {
+        await signInAnonymously(getAuth(getApp()))
+      } catch {
+        throw new Error('Could not firebase user')
+      }
     }
 
     const [, teamResult] = await Promise.all([
-      loadUser().catch(() => null),
+      loadUser(),
       teamCreate({
         variables: {
           input: { title: teamName, publicTitle: teamName }
@@ -184,29 +188,22 @@ export function LanguageScreen({
   }
 
   async function handleSubmit(values: FormikValues) {
-    if (journey == null) return
+    setLoading(true)
+    if (journey == null) {
+      setLoading(false)
+      enqueueSnackbar(
+        t('Journey failed to load. Please refresh the page and try again.'),
+        { variant: 'error' }
+      )
+      return
+    }
 
     const { teamSelect: teamId } = values
     const {
       languageSelect: { id: languageId }
     } = values
-
-    setLoading(true)
-    if (journey == null) {
-      setLoading(false)
-      return
-    }
-
     const journeyId =
       languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
-    if (journeyId == null) {
-      enqueueSnackbar(
-        t('Unable to continue as guest. Please try again or sign in.'),
-        { variant: 'error' }
-      )
-      setLoading(false)
-      return
-    }
 
     if (shouldSkipDuplicate(journey, languageId, teamId)) {
       handleNext()
@@ -242,7 +239,7 @@ export function LanguageScreen({
         const guestResult = await createGuestUser()
         if (guestResult == null) {
           enqueueSnackbar(
-            t('Unable to continue as guest. Please try again or sign in.'),
+            t('Unable to create guest user. Please try again or sign in.'),
             { variant: 'error' }
           )
           setLoading(false)
@@ -269,8 +266,6 @@ export function LanguageScreen({
           t('Unable to continue as guest. Please try again or sign in.'),
           { variant: 'error' }
         )
-      } finally {
-        setLoading(false)
       }
     }
     setLoading(false)
