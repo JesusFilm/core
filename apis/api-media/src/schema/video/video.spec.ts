@@ -3419,5 +3419,176 @@ describe('video', () => {
         id: 'testId'
       })
     })
+
+    describe('resolveReference', () => {
+      const VIDEO_WITH_VARIANT = graphql(`
+        query CoreVideoWithVariant {
+          _entities(
+            representations: [
+              {
+                __typename: "Video"
+                id: "testId"
+                primaryLanguageId: "spanishId"
+              }
+            ]
+          ) {
+            ... on Video {
+              id
+              variant {
+                id
+              }
+            }
+          }
+        }
+      `)
+
+      const mockVideo: Video = {
+        id: 'testId',
+        label: VideoLabel.behindTheScenes,
+        primaryLanguageId: 'englishId',
+        slug: null,
+        noIndex: null,
+        published: true,
+        childIds: [],
+        availableLanguages: [],
+        locked: false,
+        originId: null,
+        restrictDownloadPlatforms: [],
+        restrictViewPlatforms: [],
+        publishedAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      it('should use primaryLanguageId from entity reference for variant lookup', async () => {
+        prismaMock.video.findUniqueOrThrow.mockResolvedValue(mockVideo)
+        prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+          id: 'spanishVariantId'
+        } as unknown as VideoVariant)
+
+        const data = await client({ document: VIDEO_WITH_VARIANT })
+
+        expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              languageId_videoId: {
+                videoId: 'testId',
+                languageId: 'spanishId'
+              }
+            })
+          })
+        )
+        expect(data).toHaveProperty('data._entities[0]', {
+          id: 'testId',
+          variant: { id: 'spanishVariantId' }
+        })
+      })
+
+      it('should resolve different languages for the same video in a batch', async () => {
+        const VIDEO_BATCH = graphql(`
+          query CoreVideoBatch {
+            _entities(
+              representations: [
+                {
+                  __typename: "Video"
+                  id: "testId"
+                  primaryLanguageId: "lang1"
+                }
+                {
+                  __typename: "Video"
+                  id: "testId"
+                  primaryLanguageId: "lang2"
+                }
+              ]
+            ) {
+              ... on Video {
+                id
+                variant {
+                  id
+                }
+              }
+            }
+          }
+        `)
+
+        prismaMock.video.findUniqueOrThrow.mockResolvedValue(mockVideo)
+        prismaMock.videoVariant.findUnique
+          .mockResolvedValueOnce({
+            id: 'variant-lang1'
+          } as unknown as VideoVariant)
+          .mockResolvedValueOnce({
+            id: 'variant-lang2'
+          } as unknown as VideoVariant)
+
+        const data = await client({ document: VIDEO_BATCH })
+
+        expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledTimes(2)
+        expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              languageId_videoId: {
+                videoId: 'testId',
+                languageId: 'lang1'
+              }
+            })
+          })
+        )
+        expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              languageId_videoId: {
+                videoId: 'testId',
+                languageId: 'lang2'
+              }
+            })
+          })
+        )
+        expect(data).toHaveProperty('data._entities[0]', {
+          id: 'testId',
+          variant: { id: 'variant-lang1' }
+        })
+        expect(data).toHaveProperty('data._entities[1]', {
+          id: 'testId',
+          variant: { id: 'variant-lang2' }
+        })
+      })
+
+      it('should fall back to default language when primaryLanguageId is null', async () => {
+        const VIDEO_NULL_LANG = graphql(`
+          query CoreVideoNullLang {
+            _entities(
+              representations: [
+                { __typename: "Video", id: "testId", primaryLanguageId: null }
+              ]
+            ) {
+              ... on Video {
+                id
+                variant {
+                  id
+                }
+              }
+            }
+          }
+        `)
+
+        prismaMock.video.findUniqueOrThrow.mockResolvedValue(mockVideo)
+        prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+          id: 'defaultVariantId'
+        } as unknown as VideoVariant)
+
+        await client({ document: VIDEO_NULL_LANG })
+
+        expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: expect.objectContaining({
+              languageId_videoId: {
+                videoId: 'testId',
+                languageId: '529'
+              }
+            })
+          })
+        )
+      })
+    })
   })
 })

@@ -1,10 +1,23 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
   gtmEventName: String
   parentBlock: Block!
+}
+
+type AnonymousUser implements User
+  @shareable
+{
+  id: ID!
+}
+
+type AuthenticatedUser implements User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
 }
 
 interface Block {
@@ -639,6 +652,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -665,6 +679,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -682,6 +697,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -697,7 +713,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: User
+  user: AuthenticatedUser
 }
 
 input IntegrationGoogleCreateInput {
@@ -1374,6 +1390,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1702,6 +1719,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  getJourneyProfile: JourneyProfile
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -2250,11 +2268,8 @@ enum TypographyVariant {
   overline
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
+interface User {
+  id: ID!
 }
 
 type UserAgent
@@ -2290,7 +2305,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: User
+  user: AuthenticatedUser
   journeyNotification: JourneyNotification
 }
 
@@ -2316,7 +2331,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: User!
+  user: AuthenticatedUser!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 
@@ -2387,6 +2402,7 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
 }
 
 input VideoBlockCreateInput {
@@ -2416,6 +2432,7 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 enum VideoBlockObjectFit {
@@ -2456,6 +2473,7 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 type VideoCollapseEvent implements Event

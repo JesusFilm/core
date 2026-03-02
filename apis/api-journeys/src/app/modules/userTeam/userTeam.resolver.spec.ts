@@ -303,7 +303,7 @@ describe('UserTeamResolver', () => {
           userId: 'userId'
         } as unknown as UserTeam)
       ).resolves.toEqual({
-        __typename: 'User',
+        __typename: 'AuthenticatedUser',
         id: 'userId'
       })
     })

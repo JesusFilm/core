@@ -16,14 +16,15 @@ locals {
     "SMTP_URL"
   ]
   service_config = {
-    name           = "api-users"
-    is_public      = false
-    container_port = local.port
-    host_port      = local.port
-    cpu            = 512
-    memory         = 1024
-    desired_count  = var.env == "stage" ? 1 : 1
-    zone_id        = var.ecs_config.zone_id
+    name                              = "api-users"
+    is_public                         = false
+    container_port                    = local.port
+    host_port                         = local.port
+    cpu                               = 512
+    memory                            = 1024
+    desired_count                     = var.env == "stage" ? 1 : 1
+    zone_id                           = var.ecs_config.zone_id
+    health_check_grace_period_seconds = 60
     alb_target_group = merge(var.ecs_config.alb_target_group, {
       port = local.port
     })

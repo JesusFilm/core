@@ -157,8 +157,7 @@ describe('TemplateGallery', () => {
         expect(push).toHaveBeenCalledWith(
           {
             query: {
-              languageIds: [],
-              param: 'template-language'
+              languageIds: ['496']
             }
           },
           undefined,
