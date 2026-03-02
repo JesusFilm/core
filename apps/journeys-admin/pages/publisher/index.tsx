@@ -17,7 +17,11 @@ import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { TemplateList } from '../../src/components/TemplateList'
 import { useAuth } from '../../src/libs/auth'
-import { getAuthTokens, redirectToLogin, toUser } from '../../src/libs/auth/getAuthTokens'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEYS } from '../../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 

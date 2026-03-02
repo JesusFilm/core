@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from '../../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
 
@@ -9,6 +8,7 @@ import {
   Role,
   UserJourneyRole
 } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth/authContext'
 
 import { UserNavigation } from '.'
 

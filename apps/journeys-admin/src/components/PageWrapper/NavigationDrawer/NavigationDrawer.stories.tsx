@@ -1,6 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { User } from '../../../libs/auth/authContext'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
@@ -19,6 +18,7 @@ import {
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
 import { cache } from '../../../libs/apolloClient/cache'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 import { GET_ME } from './UserNavigation'

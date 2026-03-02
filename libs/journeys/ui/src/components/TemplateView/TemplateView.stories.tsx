@@ -1,12 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { AuthUser as User } from '../../libs/auth/types'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Role } from '../../../__generated__/globalTypes'
+import { AuthUser as User } from '../../libs/auth/types'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,

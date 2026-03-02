@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from '../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -16,6 +15,7 @@ import { JourneyDuplicate } from '../../../__generated__/JourneyDuplicate'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TeamCreate } from '../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+import { User } from '../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { ONBOARDING_TEMPLATE_ID } from '../Team/TeamOnboarding/TeamOnboarding'
 

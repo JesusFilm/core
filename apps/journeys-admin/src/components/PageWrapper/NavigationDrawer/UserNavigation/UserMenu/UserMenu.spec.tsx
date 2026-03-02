@@ -2,7 +2,6 @@ import { ApolloClient, useApolloClient } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from '../../../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -10,6 +9,8 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+
+import { User } from '../../../../../libs/auth/authContext'
 
 import { UserMenu } from '.'
 

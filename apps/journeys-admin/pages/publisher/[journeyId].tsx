@@ -14,7 +14,11 @@ import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
 import { Editor } from '../../src/components/Editor'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
-import { getAuthTokens, redirectToLogin, toUser } from '../../src/libs/auth/getAuthTokens'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 

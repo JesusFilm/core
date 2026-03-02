@@ -8,10 +8,7 @@ import i18nConfig from '../../next-i18next.config'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { SignIn } from '../../src/components/SignIn'
 import { useAuth } from '../../src/libs/auth'
-import {
-  getAuthTokens,
-  redirectToApp
-} from '../../src/libs/auth/getAuthTokens'
+import { getAuthTokens, redirectToApp } from '../../src/libs/auth/getAuthTokens'
 
 export default function SignInPage(): ReactElement {
   const { user } = useAuth()

@@ -15,7 +15,11 @@ import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { useAuth } from '../../../src/libs/auth'
-import { getAuthTokens, redirectToLogin, toUser } from '../../../src/libs/auth/getAuthTokens'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 
 function CustomizePage() {

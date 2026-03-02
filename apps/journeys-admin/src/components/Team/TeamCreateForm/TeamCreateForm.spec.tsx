@@ -4,7 +4,6 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Form } from 'formik'
-import { User } from '../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -17,6 +16,7 @@ import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__ge
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { User } from '../../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { TeamCreateForm } from '.'

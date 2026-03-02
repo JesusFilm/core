@@ -4,7 +4,6 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { useAuth } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
@@ -12,6 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit3 from '@core/shared/ui/icons/Edit3'
 
+import { useAuth } from '../../../libs/auth'
 import {
   CUSTOMIZE_SCREEN_QUERY_KEY,
   buildCustomizeUrl,

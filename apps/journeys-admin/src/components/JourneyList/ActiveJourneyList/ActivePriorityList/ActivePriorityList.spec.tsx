@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
-import { User } from '../../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
+import { User } from '../../../../libs/auth/authContext'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { SortOrder } from '../../JourneySort'
 

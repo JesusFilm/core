@@ -6,11 +6,11 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { User } from '../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { User } from '../../libs/auth'
 import { HelpScoutBeacon } from '../HelpScoutBeacon'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 

@@ -5,7 +5,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form } from 'formik'
 import { useRouter } from 'next/router'
-import { User } from '../../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -16,6 +15,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { User } from '../../../libs/auth'
 import { TeamCreateForm } from '../TeamCreateForm'
 
 export const ONBOARDING_TEMPLATE_ID = '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457'

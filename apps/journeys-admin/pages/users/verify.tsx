@@ -24,12 +24,12 @@ import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerificat
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { useAuth } from '../../src/libs/auth'
+import { logout } from '../../src/libs/auth/firebase'
 import {
   getAuthTokens,
   redirectToLogin,
   toUser
 } from '../../src/libs/auth/getAuthTokens'
-import { logout } from '../../src/libs/auth/firebase'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
@@ -222,9 +222,7 @@ function ValidateEmail({
   )
 }
 
-export const getServerSideProps = async (
-  ctx: GetServerSidePropsContext
-) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
   if (tokens == null) return redirectToLogin(ctx)
 
@@ -248,8 +246,7 @@ export const getServerSideProps = async (
     }
   }
 
-  const rawEmail =
-    typeof ctx.query?.email === 'string' ? ctx.query.email : null
+  const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null
   const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
   const token = typeof ctx.query?.token === 'string' ? ctx.query.token : null
 
@@ -260,8 +257,7 @@ export const getServerSideProps = async (
         variables: { email, token }
       })
       const redirectParam =
-        typeof ctx.query.redirect === 'string' &&
-        ctx.query.redirect.length > 0
+        typeof ctx.query.redirect === 'string' && ctx.query.redirect.length > 0
           ? `/?redirect=${ctx.query.redirect}`
           : '/'
       return {

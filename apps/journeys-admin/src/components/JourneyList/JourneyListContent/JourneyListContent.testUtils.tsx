@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { RenderResult, render } from '@testing-library/react'
-import { User } from '../../../libs/auth/authContext'
 import { SnackbarProvider } from 'notistack'
 
+import { User } from '../../../libs/auth/authContext'
 import { ThemeProvider } from '../../ThemeProvider'
 import type { JourneyListEvent } from '../JourneyList'
 import type { ContentType, JourneyStatusFilter } from '../JourneyListView'

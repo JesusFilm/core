@@ -2,7 +2,6 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
-import { User } from '../auth/authContext'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
@@ -10,6 +9,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
+import { User } from '../auth/authContext'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'

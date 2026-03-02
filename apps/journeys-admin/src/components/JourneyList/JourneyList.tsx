@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
-import { User } from '../../libs/auth/authContext'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { User } from '../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 
@@ -45,7 +45,7 @@ export function JourneyList({
   useEffect(() => {
     const sortByFromStorage = sessionStorage.getItem(
       'journeyListSortBy'
-    ) as SortOrder | null
+    )
     const isValidSort =
       sortByFromStorage != null &&
       Object.values(SortOrder).includes(sortByFromStorage)

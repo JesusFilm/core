@@ -1,6 +1,5 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Grid from '@mui/material/Grid'
-import { User } from '../../../../libs/auth/authContext'
 import { ReactElement, useMemo } from 'react'
 
 import {
@@ -8,6 +7,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth/authContext'
 import { JourneyCard } from '../../JourneyCard'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 import { SortOrder } from '../../JourneySort'

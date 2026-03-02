@@ -152,65 +152,66 @@ export default function EmailPreferencesPage({
   )
 }
 
-export const getServerSideProps: GetServerSideProps<EmailPreferencesPageProps> =
-  async (ctx: GetServerSidePropsContext) => {
-    const tokens = await getAuthTokens(ctx)
-    const user = tokens != null ? toUser(tokens) : undefined
+export const getServerSideProps: GetServerSideProps<
+  EmailPreferencesPageProps
+> = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : undefined
 
-    const { apolloClient, translations } = await initAndAuthApp({
-      user,
-      locale: ctx.locale,
-      resolvedUrl: ctx.resolvedUrl
-    })
+  const { apolloClient, translations } = await initAndAuthApp({
+    user,
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
+  })
 
-    let updatePrefs: UpdateJourneysEmailPreference | null | undefined
+  let updatePrefs: UpdateJourneysEmailPreference | null | undefined
 
-    // TemplateDetailsPage
-    let { data: journeysEmailPreferenceData } = await apolloClient.query<
-      JourneysEmailPreference,
-      JourneysEmailPreferenceVariables
-    >({
-      query: GET_EMAIL_PREFERENCE,
-      variables: {
-        email: ctx.query?.email as string
-      }
-    })
-
-    if (journeysEmailPreferenceData.journeysEmailPreference == null) {
-      journeysEmailPreferenceData = {
-        journeysEmailPreference: {
-          email: ctx.query?.email as string,
-          unsubscribeAll: false,
-          accountNotifications: true,
-          __typename: 'JourneysEmailPreference'
-        }
-      }
+  // TemplateDetailsPage
+  let { data: journeysEmailPreferenceData } = await apolloClient.query<
+    JourneysEmailPreference,
+    JourneysEmailPreferenceVariables
+  >({
+    query: GET_EMAIL_PREFERENCE,
+    variables: {
+      email: ctx.query?.email as string
     }
+  })
 
-    if (ctx.query?.unsubscribeAll != null) {
-      const { data: updatePrefsData } = await apolloClient.mutate<
-        UpdateJourneysEmailPreference,
-        UpdateJourneysEmailPreferenceVariables
-      >({
-        mutation: UPDATE_EMAIL_PREFERENCE,
-        variables: {
-          input: {
-            email: journeysEmailPreferenceData?.journeysEmailPreference
-              ?.email as string,
-            preference: 'accountNotifications',
-            value: false
-          }
-        }
-      })
-      if (updatePrefsData != null) updatePrefs = updatePrefsData
-    }
-    return {
-      props: {
-        ...translations,
-        initialApolloState: apolloClient.cache.extract(),
-        journeysEmailPreferenceData,
-        updatePrefs: updatePrefs ?? undefined,
-        ...(user != null ? { userSerialized: JSON.stringify(user) } : {})
+  if (journeysEmailPreferenceData.journeysEmailPreference == null) {
+    journeysEmailPreferenceData = {
+      journeysEmailPreference: {
+        email: ctx.query?.email as string,
+        unsubscribeAll: false,
+        accountNotifications: true,
+        __typename: 'JourneysEmailPreference'
       }
     }
   }
+
+  if (ctx.query?.unsubscribeAll != null) {
+    const { data: updatePrefsData } = await apolloClient.mutate<
+      UpdateJourneysEmailPreference,
+      UpdateJourneysEmailPreferenceVariables
+    >({
+      mutation: UPDATE_EMAIL_PREFERENCE,
+      variables: {
+        input: {
+          email: journeysEmailPreferenceData?.journeysEmailPreference
+            ?.email as string,
+          preference: 'accountNotifications',
+          value: false
+        }
+      }
+    })
+    if (updatePrefsData != null) updatePrefs = updatePrefsData
+  }
+  return {
+    props: {
+      ...translations,
+      initialApolloState: apolloClient.cache.extract(),
+      journeysEmailPreferenceData,
+      updatePrefs: updatePrefs ?? undefined,
+      ...(user != null ? { userSerialized: JSON.stringify(user) } : {})
+    }
+  }
+}

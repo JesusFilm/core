@@ -54,7 +54,9 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
       ) : (
         <JourneyProvider value={{ journey: data?.journey, variant: 'admin' }}>
           <EditorProvider>
-            <JourneyQuickSettings displayName={user?.displayName ?? undefined} />
+            <JourneyQuickSettings
+              displayName={user?.displayName ?? undefined}
+            />
           </EditorProvider>
         </JourneyProvider>
       )}
@@ -62,9 +64,7 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
   )
 }
 
-export const getServerSideProps = async (
-  ctx: GetServerSidePropsContext
-) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
   if (tokens == null) return redirectToLogin(ctx)
 

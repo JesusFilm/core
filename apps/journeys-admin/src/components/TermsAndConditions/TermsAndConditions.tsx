@@ -9,7 +9,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useAuth } from '../../libs/auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -23,6 +22,7 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+import { useAuth } from '../../libs/auth'
 import { useTeamCreateMutation } from '../../libs/useTeamCreateMutation'
 import { ONBOARDING_TEMPLATE_ID } from '../Team/TeamOnboarding/TeamOnboarding'
 

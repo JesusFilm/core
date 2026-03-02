@@ -6,9 +6,7 @@ import { allowedHost } from '@core/journeys/ui/allowedHost'
 import { User } from './authContext'
 import { authConfig } from './config'
 
-function createCookiesAdapter(
-  cookies: Partial<{ [key: string]: string }>
-): {
+function createCookiesAdapter(cookies: Partial<{ [key: string]: string }>): {
   get(name: string): { name: string; value: string } | undefined
   getAll(): Array<{ name: string; value: string }>
   has(name: string): boolean

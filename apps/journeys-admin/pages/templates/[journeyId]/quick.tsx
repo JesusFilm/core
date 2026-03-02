@@ -14,7 +14,11 @@ import {
   JourneyNotificationUpdate,
   JourneyNotificationUpdateVariables
 } from '../../../__generated__/JourneyNotificationUpdate'
-import { getAuthTokens, redirectToLogin, toUser } from '../../../src/libs/auth/getAuthTokens'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { JOURNEY_NOTIFICATION_UPDATE } from '../../../src/libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate'
 

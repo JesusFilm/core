@@ -35,9 +35,7 @@ function TermsAndConditionsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = async (
-  ctx: GetServerSidePropsContext
-) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
   if (tokens == null) return redirectToLogin(ctx)
 

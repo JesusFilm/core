@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { User } from '../../../libs/auth/authContext'
 
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { defaultJourney, oldJourney } from '../journeyListData'
 
