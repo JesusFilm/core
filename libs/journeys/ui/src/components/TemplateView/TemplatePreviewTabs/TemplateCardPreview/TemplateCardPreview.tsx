@@ -27,6 +27,7 @@ interface TemplateCardPreviewProps {
   variant?: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
+  initialStepId?: string | null
 }
 
 interface TemplateCardPreviewPlaceholderProps {
@@ -86,7 +87,8 @@ export function TemplateCardPreview({
   authUser,
   variant = 'standard',
   onClick,
-  selectedStep
+  selectedStep,
+  initialStepId
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -110,7 +112,21 @@ export function TemplateCardPreview({
   }
 
   const slidesToRender =
-    steps != null ? (variant === 'compact' ? steps : take(steps, 7)) : []
+    steps != null
+      ? variant === 'guestPreviewDesktop'
+        ? steps
+        : variant === 'compact'
+          ? steps
+          : take(steps, 7)
+      : []
+
+  const initialSlide =
+    initialStepId != null && slidesToRender.length > 0
+      ? Math.max(
+          0,
+          slidesToRender.findIndex((s) => s.id === initialStepId)
+        )
+      : 0
 
   useEffect(() => {
     if (variant !== 'compact' || swiper == null || selectedStep == null) return
@@ -126,9 +142,13 @@ export function TemplateCardPreview({
 
   return steps != null ? (
     <StyledSwiper
+      key={variant === 'guestPreviewDesktop' ? `guestPreviewDesktop-${initialStepId ?? 'none'}` : undefined}
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
+      initialSlide={
+        variant === 'guestPreviewDesktop' ? initialSlide : undefined
+      }
       {...swiperProps}
       sx={{
         ...swiperSx,

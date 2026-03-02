@@ -30,10 +30,12 @@ import {
 
 interface CardsPreviewProps {
   steps: Array<TreeBlock<StepBlock>>
+  onCardClick?: (step: TreeBlock<StepBlock>) => void
 }
 
 interface CardsPreviewItemProps {
   step: TreeBlock<StepBlock>
+  onClick?: (step: TreeBlock<StepBlock>) => void
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
@@ -53,7 +55,7 @@ const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 // Spacing and offsets
 const EDGE_FADE_PX = 16
 
-function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
+function CardsPreviewItem({ step, onClick }: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const cardBlock = step.children.find(
@@ -62,12 +64,14 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
 
   return (
     <Box
+      onClick={onClick != null ? () => onClick(step) : undefined}
       sx={{
         position: 'relative',
         width: CONTAINER_WIDTH,
         height: CONTAINER_HEIGHT,
         backgroundColor: 'background.default',
-        borderRadius: 3
+        borderRadius: 3,
+        cursor: onClick != null ? 'pointer' : undefined
       }}
       data-testid="CardsPreviewItem"
     >
@@ -84,7 +88,7 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
             width: FRAME_WIDTH,
             height: FRAME_HEIGHT,
             zIndex: 2,
-            cursor: 'grab'
+            cursor: onClick != null ? 'pointer' : 'grab'
           }}
         />
         <FramePortal
@@ -122,7 +126,10 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
   )
 }
 
-export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
+export function CardsPreview({
+  steps,
+  onCardClick
+}: CardsPreviewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const slidesToRender: Array<TreeBlock<StepBlock>> = take(steps, 7)
@@ -180,7 +187,10 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
             width: 'unset !important'
           }}
         >
-          <CardsPreviewItem step={step} />
+          <CardsPreviewItem
+            step={step}
+            onClick={onCardClick}
+          />
         </StyledSwiperSlide>
       ))}
       {steps.length > slidesToRender.length && (

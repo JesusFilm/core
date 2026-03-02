@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -61,5 +61,19 @@ describe('CardsPreview', () => {
     expect(screen.getByTestId('CardsPreviewPlaceholder')).toBeInTheDocument()
     expect(screen.getByTestId('CardsPreviewSkeleton')).toBeInTheDocument()
     expect(screen.queryByTestId('CardsSwiperSlide')).toBeNull()
+  })
+
+  it('should call onCardClick with the step when a card is clicked', () => {
+    const steps = buildSteps(3)
+    const handleCardClick = jest.fn()
+    render(
+      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+        <CardsPreview steps={steps} onCardClick={handleCardClick} />
+      </JourneyProvider>
+    )
+    const cards = screen.getAllByTestId('CardsPreviewItem')
+    fireEvent.click(cards[0])
+    expect(handleCardClick).toHaveBeenCalledTimes(1)
+    expect(handleCardClick).toHaveBeenCalledWith(steps[0])
   })
 })
