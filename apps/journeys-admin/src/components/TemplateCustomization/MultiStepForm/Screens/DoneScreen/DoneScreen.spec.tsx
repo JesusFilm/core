@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
-import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName
@@ -129,89 +128,19 @@ describe('DoneScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByText("It's Ready!")).toHaveLength(2)
+    expect(screen.getAllByText('Ready to Share!')).toHaveLength(2)
   })
 
-  it('renders journey preview card with title and description', () => {
-    const journeyWithContent = {
-      ...journey,
-      seoTitle: 'Test Journey Title',
-      seoDescription: 'This is a test journey description for testing purposes',
-      title: 'Display Title'
-    }
-
+  it('renders first card of journey as preview', async () => {
     render(
       <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithContent, variant: 'admin' }}
-        >
+        <JourneyProvider value={{ journey: journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    expect(screen.getByText('Test Journey Title')).toBeInTheDocument()
-    expect(
-      screen.getByText(
-        'This is a test journey description for testing purposes'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('renders GridEmptyIcon when no primary image is available', () => {
-    const journeyWithoutImage = {
-      ...journey,
-      primaryImageBlock: null
-    }
-
-    render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithoutImage, variant: 'admin' }}
-        >
-          <DoneScreen />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
-  })
-
-  it('renders journey image when primary image is available', async () => {
-    const journeyWithImage = {
-      ...journey,
-      primaryImageBlock: {
-        __typename: 'ImageBlock' as const,
-        id: 'image-block-id',
-        src: 'https://example.com/test-image.jpg',
-        alt: 'Test Image Alt',
-        width: 300,
-        height: 200,
-        parentBlockId: null,
-        parentOrder: 0,
-        blurhash: 'test-blurhash',
-        scale: 1,
-        focalTop: null,
-        focalLeft: null,
-        customizable: null
-      } satisfies ImageBlock
-    }
-
-    render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
-        <JourneyProvider
-          value={{ journey: journeyWithImage, variant: 'admin' }}
-        >
-          <DoneScreen />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() => {
-      const image = screen.getByRole('img', { name: 'Test Image Alt' })
-      expect(image).toBeInTheDocument()
-      expect(image).toHaveAttribute('src', 'https://example.com/test-image.jpg')
-    })
+    expect(screen.getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
   it('renders all action buttons', () => {
@@ -224,10 +153,10 @@ describe('DoneScreen', () => {
     )
 
     expect(screen.getByTestId('DoneScreenPreviewButton')).toBeInTheDocument()
+    expect(screen.getByTestId('ShareItem')).toBeInTheDocument()
     expect(
       screen.getByTestId('DoneScreenGoToDashboardButton')
     ).toBeInTheDocument()
-    expect(screen.getByTestId('ShareItem')).toBeInTheDocument()
   })
 
   it('renders preview button as link when journey has slug', () => {

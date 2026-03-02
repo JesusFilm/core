@@ -33,7 +33,7 @@ import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 
 interface LinksScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
@@ -225,7 +225,7 @@ export function LinksScreen({
           align="center"
         >
           {t(
-            'This invite contains buttons linking to external sites. Check them and update the links below.'
+            'This content contains buttons linking to external sites. Check them and update the links below.'
           )}
         </Typography>
         <Typography
@@ -235,7 +235,7 @@ export function LinksScreen({
           align="center"
         >
           {t(
-            'This invite contains buttons linking to external sites. Check them and update the links below.'
+            'Buttons here point to external sites. Check and update the links.'
           )}
         </Typography>
       </Stack>
