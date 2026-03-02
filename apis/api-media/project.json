@@ -155,10 +155,64 @@
         "command": "pnpm exec ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
       }
     },
+    "fix-arcgt-hls-from-mux": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/fix-arcgt-hls-from-mux.ts"
+      }
+    },
     "mux-videos": {
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec ts-node apis/api-media/src/scripts/mux-videos.ts"
+      }
+    },
+    "retry-mux-uploads": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/retry-mux-uploads.ts"
+      }
+    },
+    "retry-mux-uploads-meta": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/retry-mux-uploads-meta.ts"
+      }
+    },
+    "export-mux-retry-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/export-mux-retry-csv.ts"
+      }
+    },
+    "process-mux-retry-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/process-mux-retry-csv.ts"
+      }
+    },
+    "finalize-mux-retry-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/finalize-mux-retry-csv.ts"
+      }
+    },
+    "audit-r2-video-metadata": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/audit-r2-video-metadata.ts"
+      }
+    },
+    "summarize-mux-retry-results": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/summarize-mux-retry-results.ts"
+      }
+    },
+    "fix-zero-duration-from-english": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/fix-zero-duration-from-english.ts"
       }
     },
     "populate-crowdin-ids": {

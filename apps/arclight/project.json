@@ -135,6 +135,36 @@
         ]
       }
     },
+    "export-brightcove-content-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apps/arclight/src/scripts/export-brightcove-content-csv.ts dotenv_config_path=apps/arclight/.env"
+      }
+    },
+    "postprocess-brightcove-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apps/arclight/src/scripts/postprocess-brightcove-csv.ts dotenv_config_path=apps/arclight/.env"
+      }
+    },
+    "finalize-brightcove-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apps/arclight/src/scripts/finalize-brightcove-csv.ts dotenv_config_path=apps/arclight/.env"
+      }
+    },
+    "finalize-brightcove-wess-film-csv": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apps/arclight/src/scripts/finalize-brightcove-wess-film-csv.ts dotenv_config_path=apps/arclight/.env"
+      }
+    },
+    "stale-media-language-cache": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node -r dotenv/config apps/arclight/src/scripts/stale-media-language-cache.ts dotenv_config_path=apps/arclight/.env"
+      }
+    },
     "extract-translations": {
       "executor": "nx:run-commands",
       "options": {

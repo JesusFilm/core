@@ -96,6 +96,18 @@
       "options": {
         "command": "pnpm exec ts-node apis/api-languages/src/scripts/data-import.ts"
       }
+    },
+    "fix-audio-preview-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-languages/src/scripts/fix-audio-preview-urls.ts"
+      }
+    },
+    "verify-audio-preview-urls": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-languages/src/scripts/verify-audio-preview-urls.ts"
+      }
     }
   }
 }

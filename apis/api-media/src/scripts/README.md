@@ -190,3 +190,23 @@ The script includes comprehensive error handling for:
 - Network connectivity issues
 
 If any error occurs, the script will log the error and continue processing other items when possible.
+
+## Fix Arc.gt HLS From Mux Script
+
+This script fixes `VideoVariant.hls` values that still point to `arc.gt` when a `muxVideoId` already exists.
+
+### Usage
+
+```bash
+nx run api-media:fix-arcgt-hls-from-mux
+```
+
+### Process
+
+The script will:
+
+1. Query `VideoVariant` rows where `hls` contains `arc.gt` and `muxVideoId` is not null
+2. Resolve playback ID from `MuxVideo.playbackId` or by retrieving the Mux asset when needed
+3. Build the correct HLS URL using `https://stream.mux.com/{playbackId}.m3u8` (or `MUX_STREAM_BASE_URL`)
+4. Update `VideoVariant.hls` to the Mux playback URL
+5. Backfill `MuxVideo.playbackId` and `readyToStream` when discovered from Mux
