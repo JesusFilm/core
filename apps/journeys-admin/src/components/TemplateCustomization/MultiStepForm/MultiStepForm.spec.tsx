@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import React from 'react'
 
@@ -786,90 +786,6 @@ describe('MultiStepForm', () => {
 
         expect(screen.queryByTestId('text-screen')).not.toBeInTheDocument()
         expect(screen.queryByTestId('links-screen')).not.toBeInTheDocument()
-      })
-    })
-
-    describe('Edit Manually button', () => {
-      it('should hide edit manually button when on the language screen', () => {
-        const journey = {
-          id: 'test-journey-id'
-        } as unknown as Journey
-
-        setRouterQuery({ journeyId: 'test-journey-id' })
-
-        render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-
-        const editButton = screen.getByText('Edit Manually')
-        expect(editButton).toHaveStyle('visibility: hidden')
-      })
-
-      it('should show edit manually button when on any screen after the first screen', () => {
-        const journey = {
-          id: 'test-journey-id'
-        } as unknown as Journey
-
-        setRouterQuery({ journeyId: 'test-journey-id' })
-
-        const { rerender } = render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey: journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-
-        const editButton = screen.getByText('Edit Manually')
-        expect(editButton).toHaveStyle('visibility: hidden')
-
-        fireEvent.click(screen.getByTestId('language-next'))
-        setRouterQuery({ journeyId: 'test-journey-id', screen: 'social' })
-        rerender(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey: journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-        const editButtonAfterRerender = screen.getByText('Edit Manually')
-        expect(editButtonAfterRerender).toHaveStyle('visibility: visible')
-        expect(editButtonAfterRerender).toHaveAttribute(
-          'href',
-          '/journeys/test-journey-id'
-        )
-      })
-
-      it('should disable edit manually button if journey is not found', () => {
-        const journey = {
-          id: null
-        } as unknown as Journey
-
-        setRouterQuery({ journeyId: 'test-journey-id' })
-
-        render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-        expect(screen.getByText('Edit Manually')).toHaveAttribute(
-          'aria-disabled',
-          'true'
-        )
       })
     })
 

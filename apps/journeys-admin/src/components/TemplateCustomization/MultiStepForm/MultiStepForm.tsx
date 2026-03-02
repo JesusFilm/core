@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -10,7 +8,6 @@ import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Edit3 from '@core/shared/ui/icons/Edit3'
 
 import {
   CUSTOMIZE_SCREEN_QUERY_KEY,
@@ -87,7 +84,6 @@ export function MultiStepForm(): ReactElement {
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
   const journeyId = journey?.id ?? ''
-  const link = `/journeys/${journeyId}`
 
   const {
     screens,
@@ -150,26 +146,6 @@ export function MultiStepForm(): ReactElement {
         }}
       >
         <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
-          <NextLink href={link} passHref legacyBehavior>
-            <Button
-              variant="text"
-              color="primary"
-              startIcon={<Edit3 />}
-              sx={{
-                alignSelf: 'flex-end',
-                mr: '4px',
-                fontWeight: 'bold',
-                visibility: activeScreen === 'language' ? 'hidden' : 'visible',
-                '& .MuiButton-startIcon': {
-                  marginRight: 0.3,
-                  marginTop: 1
-                }
-              }}
-              disabled={journey?.id == null}
-            >
-              {t('Edit Manually')}
-            </Button>
-          </NextLink>
           {(hasEditableText ||
             hasCustomizableLinks ||
             hasCustomizableMedia) && (
