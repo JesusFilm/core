@@ -47,55 +47,59 @@ export function DoneScreen({
         headerSx={{ pb: { xs: 4, sm: 6 } }}
       >
         {steps.length > 0 && (
-        <TemplateCardPreviewItem step={steps[0]} variant="preview" />
-      )}
+          <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+        )}
 
-      <Stack
-        gap={4}
-        direction={{ xs: 'column', sm: 'row' }}
-        sx={{
-          width: { xs: '100%', sm: 300 },
-          mt: 6
-        }}
-      >
-        <Box sx={{ flex: 1, minWidth: 0 }}>
-          <Button
-            data-testid="DoneScreenPreviewButton"
-            fullWidth
-            variant="outlined"
-            color="secondary"
-            href={href}
-            component={href != null ? 'a' : 'button'}
-            target={href != null ? '_blank' : undefined}
-            startIcon={<Play3Icon />}
-            sx={{
-              borderRadius: 3,
-              height: '41px'
-            }}
-          >
-            <Typography variant="subtitle2">{t('Preview')}</Typography>
-          </Button>
-        </Box>
-        <Box
+        <Stack
+          gap={4}
+          direction={{ xs: 'column', sm: 'row' }}
           sx={{
-            flex: 1,
-            minWidth: 0,
-            '& button': { width: '100% !important' }
+            width: { xs: '100%', sm: 300 },
+            mt: 6
           }}
         >
-          <ShareItem variant="button" journey={journey} buttonVariant="icon" />
-        </Box>
-      </Stack>
-      <Button
-        data-testid="ProjectsDashboardButton"
-        onClick={handleGoToProjectsDashboard}
-        endIcon={<ArrowRightContained1Icon />}
-        sx={{ mt: 4 }}
-      >
-        <Typography variant="subtitle2">
-          {t('Go To Projects Dashboard')}
-        </Typography>
-      </Button>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Button
+              data-testid="DoneScreenPreviewButton"
+              fullWidth
+              variant="outlined"
+              color="secondary"
+              href={href}
+              component={href != null ? 'a' : 'button'}
+              target={href != null ? '_blank' : undefined}
+              startIcon={<Play3Icon />}
+              sx={{
+                borderRadius: 3,
+                height: '41px'
+              }}
+            >
+              <Typography variant="subtitle2">{t('Preview')}</Typography>
+            </Button>
+          </Box>
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              '& button': { width: '100% !important' }
+            }}
+          >
+            <ShareItem
+              variant="button"
+              journey={journey}
+              buttonVariant="icon"
+            />
+          </Box>
+        </Stack>
+        <Button
+          data-testid="ProjectsDashboardButton"
+          onClick={handleGoToProjectsDashboard}
+          endIcon={<ArrowRightContained1Icon />}
+          sx={{ mt: 4 }}
+        >
+          <Typography variant="subtitle2">
+            {t('Go To Projects Dashboard')}
+          </Typography>
+        </Button>
       </ScreenWrapper>
     </Stack>
   )

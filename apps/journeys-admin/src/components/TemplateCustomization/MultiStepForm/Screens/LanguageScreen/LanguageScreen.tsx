@@ -222,9 +222,7 @@ export function LanguageScreen({
                       name: language?.name,
                       slug: language?.slug
                     }))}
-                    onChange={(value) =>
-                      setFieldValue('languageSelect', value)
-                    }
+                    onChange={(value) => setFieldValue('languageSelect', value)}
                   />
                   {isSignedIn && (
                     <>

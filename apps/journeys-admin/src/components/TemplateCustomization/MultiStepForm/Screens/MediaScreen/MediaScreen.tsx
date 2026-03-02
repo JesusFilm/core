@@ -101,7 +101,10 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
             handleStepClick={handleStepClick}
           />
           {showImages && (
-            <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+            <ImagesSection
+              journey={journey}
+              cardBlockId={selectedCardBlockId}
+            />
           )}
           {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
         </ScreenWrapper>

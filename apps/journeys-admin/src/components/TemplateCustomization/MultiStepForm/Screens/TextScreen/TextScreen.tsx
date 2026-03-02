@@ -207,9 +207,7 @@ export function TextScreen({
         subtitle={t(
           "Fill out the blue fields and we'll customize the content with your information."
         )}
-        mobileSubtitle={t(
-          'Fill in the blue fields to customize the content.'
-        )}
+        mobileSubtitle={t('Fill in the blue fields to customize the content.')}
         headerSx={{ pb: 4 }}
         footer={
           <CustomizeFlowNextButton
