@@ -378,9 +378,7 @@ export function LanguageScreen({
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={
-                    (templateCustomizationGuestFlow && !isSignedIn) || loading
-                  }
+                  disabled={!templateCustomizationGuestFlow || loading}
                   ariaLabel={t('Next')}
                 />
               </Stack>

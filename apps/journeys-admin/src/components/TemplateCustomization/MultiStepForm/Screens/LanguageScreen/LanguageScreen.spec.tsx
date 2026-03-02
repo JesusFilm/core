@@ -201,16 +201,18 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: nonTemplateJourney, variant: 'customize' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider
+              value={{ journey: nonTemplateJourney, variant: 'customize' }}
+            >
+              <TeamProvider>
+                <LanguageScreen
+                  handleNext={handleNext}
+                  handleScreenNavigation={handleScreenNavigation}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -248,7 +250,7 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen
@@ -349,7 +351,7 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider
               value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
             >
@@ -465,7 +467,7 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen
@@ -518,7 +520,7 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen
@@ -577,7 +579,7 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider
               value={{ journey: journeyWithImage, variant: 'admin' }}
             >
@@ -606,7 +608,7 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
                 <LanguageScreen
