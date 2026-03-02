@@ -213,9 +213,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    expect(
-      screen.getByText('Choose where responses go:')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
     expect(screen.getByText('Send to my email')).toBeInTheDocument()
   })
 
