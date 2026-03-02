@@ -1,6 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
 import {
   JourneyStatus,
   ThemeMode,
@@ -381,6 +383,58 @@ describe('TemplateSections', () => {
       expect(
         queryByRole('heading', { name: 'Featured & New' })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('customizableMedia flag and QA-only template slugs', () => {
+    const qaOnlyJourney: Journey = {
+      ...defaultTemplate,
+      id: 'qaOnlyId',
+      title: 'QA Customizable Media Test',
+      slug: 'qa-customizable-media-test',
+      featuredAt: null
+    }
+    const journeysWithQaOnly = [...journeys, qaOnlyJourney]
+    const getJourneysWithQaOnlyMock: MockedResponse<GetJourneys> = {
+      ...getJourneysMock,
+      result: {
+        data: {
+          journeys: journeysWithQaOnly
+        }
+      }
+    }
+
+    it('hides QA-only slug template when customizableMedia is false', async () => {
+      const { queryByRole } = render(
+        <FlagsProvider flags={{ customizableMedia: false }}>
+          <MockedProvider mocks={[getJourneysWithQaOnlyMock]}>
+            <TemplateSections languageIds={['529']} />
+          </MockedProvider>
+        </FlagsProvider>
+      )
+      await waitFor(() =>
+        expect(
+          queryByRole('heading', { name: 'Featured & New' })
+        ).toBeInTheDocument()
+      )
+      expect(
+        queryByRole('heading', { name: 'QA Customizable Media Test' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('shows QA-only slug template when customizableMedia is true', async () => {
+      const { getByRole } = render(
+        <FlagsProvider flags={{ customizableMedia: true }}>
+          <MockedProvider mocks={[getJourneysWithQaOnlyMock]}>
+            <TemplateSections languageIds={['529']} />
+          </MockedProvider>
+        </FlagsProvider>
+      )
+      await waitFor(() =>
+        expect(
+          getByRole('heading', { name: 'QA Customizable Media Test' })
+        ).toBeInTheDocument()
+      )
     })
   })
 })

@@ -100,7 +100,7 @@ function TemplateIndexPage(): ReactElement {
 }
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const { apolloClient, translations } = await initAndAuthApp({
+  const { apolloClient, translations, flags } = await initAndAuthApp({
     locale
   })
 
@@ -164,6 +164,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   return {
     props: {
       ...translations,
+      flags,
       initialApolloState: apolloClient.cache.extract()
     },
     revalidate: 60
