@@ -14,6 +14,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
+import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -99,6 +100,21 @@ export function DoneScreen({
             {t('Go To Projects Dashboard')}
           </Typography>
         </Button>
+        <Stack gap={2} sx={{ width: '100%', mt: 4 }}>
+          <Typography variant="subtitle1">
+            {t('Choose where responses go:')}
+          </Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="body2">
+              {t('Send to my email')}
+            </Typography>
+            <NotificationSwitch journeyId={journey?.id} />
+          </Stack>
+        </Stack>
       </ScreenWrapper>
     </Stack>
   )
