@@ -879,6 +879,10 @@ export interface Integration {
     type: IntegrationType;
 }
 
+export interface User {
+    id: string;
+}
+
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
@@ -1020,8 +1024,6 @@ export abstract class IQuery {
     abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
-
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
@@ -2030,11 +2032,11 @@ export class ShortLink {
     id: string;
 }
 
-export class AuthenticatedUser {
+export class AuthenticatedUser implements User {
     id: string;
 }
 
-export class AnonymousUser {
+export class AnonymousUser implements User {
     id: string;
 }
 

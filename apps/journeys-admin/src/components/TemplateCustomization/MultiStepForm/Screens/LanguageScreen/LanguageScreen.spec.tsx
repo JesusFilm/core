@@ -115,19 +115,73 @@ const mockJourneyDuplicate: MockedResponse<
 }
 
 describe('LanguageScreen', () => {
-  const handleNext = jest.fn()
+  let handleNext: jest.Mock
   const handleScreenNavigation = jest.fn()
-
   let push: jest.Mock
 
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()
+    handleNext = jest.fn((overrideJourneyId?: string) => {
+      const id = overrideJourneyId ?? 'journeyId'
+      push(`/templates/${id}/customize`, undefined, { shallow: true })
+    })
 
     mockUseRouter.mockReturnValue({
       push,
       query: { redirect: null }
     } as unknown as NextRouter)
+  })
+
+  it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
+    const nonTemplateJourney = {
+      ...journey,
+      id: 'journeyId',
+      template: false,
+      language: {
+        ...journey.language,
+        id: '529'
+      },
+      team: {
+        __typename: 'Team' as const,
+        id: 'teamId1',
+        title: 'Team One',
+        publicTitle: 'Team 1'
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: nonTemplateJourney, variant: 'customize' }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() => expect(handleNext).toHaveBeenCalledTimes(1))
+    expect(handleNext).toHaveBeenCalledWith()
   })
 
   it('duplicates journey to selected team and navigates to customize', async () => {
@@ -340,7 +394,7 @@ describe('LanguageScreen', () => {
     )
   })
 
-  it('renders the correct social media image', async () => {
+  it('renders the journey preview', async () => {
     const journeyWithImage = {
       ...journey,
       primaryImageBlock: {
@@ -383,14 +437,10 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    await waitFor(() => {
-      const img = screen.getByRole('img')
-      expect(img).toHaveAttribute('alt', 'journey social image')
-    })
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
   })
 
-  it('renders all required components correctly', async () => {
+  it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
         mocks={[
@@ -412,14 +462,19 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
+    expect(screen.getByText("Let's Get Started!")).toBeInTheDocument()
+    expect(screen.getByText('Get Started')).toBeInTheDocument()
     expect(
       screen.getByText(
         'A few quick edits and your template will be ready to share.'
       )
     ).toBeInTheDocument()
-    expect(screen.getAllByText(journey.title)).toHaveLength(1)
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    expect(
+      screen.getByText("A few quick edits and it's ready to share!")
+    ).toBeInTheDocument()
+
+    expect(screen.getByText(`'${journey.title}'`)).toBeInTheDocument()
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
@@ -432,38 +487,5 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
       'Next'
     )
-  })
-
-  it('renders skeleton when no journey image is provided', () => {
-    const journeyWithoutImage = {
-      ...journey,
-      primaryImageBlock: null
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: journeyWithoutImage, variant: 'admin' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
 })

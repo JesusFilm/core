@@ -1,8 +1,17 @@
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
+import ChatBubbleRoundedIcon from '@mui/icons-material/ChatBubbleRounded'
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
+import ThumbUpOffAltRoundedIcon from '@mui/icons-material/ThumbUpOffAltRounded'
+import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import CardMedia from '@mui/material/CardMedia'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
-import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
@@ -23,10 +32,11 @@ interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
 }
 
-const WIDE_ASPECT_RATIO = {
-  width: { xs: 223, sm: 278 },
-  height: { xs: 139, sm: 194 }
-}
+const MEDIA_MOBILE_WIDTH = 223
+const MEDIA_MOBILE_HEIGHT = 139
+const MEDIA_DESKTOP_WIDTH = 284
+const MEDIA_DESKTOP_HEIGHT = 194
+const CARD_SPACING = 12
 
 const StyledInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -117,92 +127,188 @@ export function SocialScreenSocialImage({
   }
 
   return (
-    <Stack
+    <Card
       sx={{
-        position: 'relative',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: journey != null ? 'background.default' : 'transparent',
-        overflow: 'hidden',
         borderRadius: 3,
-        borderBottomRightRadius: {
-          xs: 12,
-          sm: hasCreatorDescription ? 0 : 12
-        },
-        borderBottomLeftRadius: {
-          xs: 12,
-          sm: hasCreatorDescription ? 0 : 12
-        },
-        ...WIDE_ASPECT_RATIO
+        p: `${CARD_SPACING}px`,
+        width: {
+          xs: `calc(${MEDIA_MOBILE_WIDTH}px + calc(${CARD_SPACING}px*2))`,
+          sm: `calc(${MEDIA_DESKTOP_WIDTH}px + calc(${CARD_SPACING}px*2))`
+        }
       }}
-      data-testid="SocialScreenSocialImage"
     >
-      {journey != null && !loading && (
-        <>
-          {journey?.primaryImageBlock?.src != null && (
-            <NextImage
-              src={journey.primaryImageBlock.src}
-              alt={journey?.primaryImageBlock.alt}
-              placeholder="blur"
-              blurDataURL={journey?.primaryImageBlock.blurhash}
-              layout="fill"
-              objectFit="cover"
-              priority
-            />
-          )}
-          {journey?.primaryImageBlock?.src == null && !loading && (
-            <GridEmptyIcon fontSize="large" />
-          )}
-          <IconButton
-            component="label"
-            sx={{
-              position: 'absolute',
-              bottom: 10,
-              right: 10,
-              color: 'secondary.dark',
-              backgroundColor: 'background.default',
-              borderRadius: 999,
-              '&:hover': {
-                backgroundColor: 'divider'
-              }
-            }}
-          >
-            <Edit2Icon />
-            <StyledInput
-              onChange={(event) => handleImageChange(event.target.files?.[0])}
-              data-testid="SocialScreenSocialImageInput"
-              type="file"
-              accept="image/*"
+      <CardHeader
+        avatar={<AccountCircleRoundedIcon sx={{ color: 'divider' }} />}
+        title={
+          <Skeleton variant="text" width={85} height={20} animation={false} />
+        }
+        action={
+          <IconButton disabled>
+            <Skeleton
+              variant="circular"
+              width={12}
+              height={12}
+              animation={false}
             />
           </IconButton>
-        </>
-      )}
-      {loading && (
-        <>
-          <Skeleton
-            data-testid="SocialScreenSocialImageSkeleton"
-            variant="rectangular"
-            sx={{
-              width: '100%',
-              height: '100%'
-            }}
-          />
-          {loading && (
-            <CircularProgress
-              data-testid="SocialScreenSocialImageCircularProgress"
-              size={30}
+        }
+        sx={{
+          px: 0,
+          pt: 0,
+          pb: 3,
+          '& .MuiCardHeader-action': {
+            alignSelf: 'center'
+          }
+        }}
+      />
+
+      <CardMedia
+        sx={{
+          display: 'flex',
+          position: 'relative',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor:
+            journey != null ? 'background.default' : 'transparent',
+          overflow: 'hidden',
+          borderRadius: 3,
+          borderBottomRightRadius: {
+            xs: 12,
+            sm: hasCreatorDescription ? 0 : 12
+          },
+          borderBottomLeftRadius: {
+            xs: 12,
+            sm: hasCreatorDescription ? 0 : 12
+          },
+          width: {
+            xs: `${MEDIA_MOBILE_WIDTH}px`,
+            sm: `${MEDIA_DESKTOP_WIDTH}px`
+          },
+          height: {
+            xs: `${MEDIA_MOBILE_HEIGHT}px`,
+            sm: `${MEDIA_DESKTOP_HEIGHT}px`
+          }
+        }}
+        data-testid="SocialScreenSocialImage"
+      >
+        {journey != null && !loading && (
+          <>
+            {journey?.primaryImageBlock?.src != null && (
+              <NextImage
+                src={journey.primaryImageBlock.src}
+                alt={journey?.primaryImageBlock.alt}
+                placeholder="blur"
+                blurDataURL={journey?.primaryImageBlock.blurhash}
+                layout="fill"
+                objectFit="cover"
+                priority
+              />
+            )}
+            {journey?.primaryImageBlock?.src == null && !loading && (
+              <GridEmptyIcon fontSize="large" />
+            )}
+            <IconButton
+              component="label"
+              aria-label="Edit social image"
               sx={{
                 position: 'absolute',
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 0,
-                margin: 'auto'
+                bottom: 10,
+                right: 10,
+                color: 'secondary.dark',
+                backgroundColor: 'background.default',
+                borderRadius: 999,
+                '&:hover': {
+                  backgroundColor: 'divider'
+                }
+              }}
+            >
+              <Edit2Icon />
+              <StyledInput
+                onChange={(event) => handleImageChange(event.target.files?.[0])}
+                data-testid="SocialScreenSocialImageInput"
+                type="file"
+                accept="image/*"
+              />
+            </IconButton>
+          </>
+        )}
+        {loading && (
+          <>
+            <Skeleton
+              data-testid="SocialScreenSocialImageSkeleton"
+              variant="rectangular"
+              sx={{
+                width: '100%',
+                height: '100%'
               }}
             />
-          )}
-        </>
-      )}
-    </Stack>
+            {loading && (
+              <CircularProgress
+                data-testid="SocialScreenSocialImageCircularProgress"
+                size={30}
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: 0,
+                  margin: 'auto'
+                }}
+              />
+            )}
+          </>
+        )}
+      </CardMedia>
+
+      <CardContent sx={{ px: 0, pb: 1, pt: `${CARD_SPACING}px` }}>
+        <Typography
+          variant="body2"
+          color="secondary"
+          sx={{
+            fontWeight: 600,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {journey?.seoTitle ?? ''}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{
+            mb: 1,
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical'
+          }}
+        >
+          {journey?.seoDescription ?? ''}
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ fontWeight: 600 }}
+        >
+          {t('your.nextstep.is')}
+        </Typography>
+      </CardContent>
+
+      <CardActions sx={{ justifyContent: 'space-around', p: 0 }}>
+        <IconButton disabled>
+          <ThumbUpOffAltRoundedIcon
+            fontSize="small"
+            sx={{ color: 'divider' }}
+          />
+        </IconButton>
+        <IconButton disabled>
+          <ChatBubbleRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
+        </IconButton>
+        <IconButton disabled>
+          <ShareRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
+        </IconButton>
+      </CardActions>
+    </Card>
   )
 }
