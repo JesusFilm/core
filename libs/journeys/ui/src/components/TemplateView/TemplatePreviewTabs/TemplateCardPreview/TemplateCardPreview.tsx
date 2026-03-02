@@ -106,14 +106,21 @@ export function TemplateCardPreview({
     modules
   } = config
 
-  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: VARIANT_CONFIGS[variant].breakpoints.xs,
-    [breakpoints.values.sm]: VARIANT_CONFIGS[variant].breakpoints.sm
-  }
+  const isGuestPreviewVariant =
+    variant === 'guestPreviewDesktop' || variant === 'guestPreviewMobile'
+
+  const variantBreakpoints = VARIANT_CONFIGS[variant].breakpoints
+  const swiperBreakpoints: SwiperOptions['breakpoints'] | undefined =
+    variantBreakpoints != null
+      ? {
+          [breakpoints.values.xs]: variantBreakpoints.xs,
+          [breakpoints.values.sm]: variantBreakpoints.sm
+        }
+      : undefined
 
   const slidesToRender =
     steps != null
-      ? variant === 'guestPreviewDesktop'
+      ? isGuestPreviewVariant
         ? steps
         : variant === 'compact'
           ? steps
@@ -142,13 +149,10 @@ export function TemplateCardPreview({
 
   return steps != null ? (
     <StyledSwiper
-      key={variant === 'guestPreviewDesktop' ? `guestPreviewDesktop-${initialStepId ?? 'none'}` : undefined}
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
-      initialSlide={
-        variant === 'guestPreviewDesktop' ? initialSlide : undefined
-      }
+      initialSlide={isGuestPreviewVariant ? initialSlide : undefined}
       {...swiperProps}
       sx={{
         ...swiperSx,

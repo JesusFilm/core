@@ -69,6 +69,7 @@ export function TemplateCardPreviewDialog({
       >
         <Box
           sx={{
+            display: { xs: 'none', sm: 'block' },
             width: '100%',
             py: 8,
             px: 2
@@ -77,6 +78,17 @@ export function TemplateCardPreviewDialog({
           <TemplateCardPreview
             steps={steps}
             variant="guestPreviewDesktop"
+            initialStepId={initialStepId}
+          />
+        </Box>
+        <Box
+          sx={{
+            display: { xs: 'block', sm: 'none' }
+          }}
+        >
+          <TemplateCardPreview
+            steps={steps}
+            variant="guestPreviewMobile"
             initialStepId={initialStepId}
           />
         </Box>
