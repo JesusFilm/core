@@ -672,6 +672,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   used to see if a template has a site created for it
   """
   templateSite: Boolean
+  customizable: Boolean
   """
   used in a plausible share link to embed report
   """
@@ -4538,6 +4539,7 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  customizable: Boolean
 }
 
 input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

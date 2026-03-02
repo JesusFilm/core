@@ -607,7 +607,8 @@ export class JourneyResolver {
                   'menuStepBlockId',
                   'journeyCustomizationFields',
                   'journeyTheme',
-                  'templateSite'
+                  'templateSite',
+                  'customizable'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -619,6 +620,9 @@ export class JourneyResolver {
                 trashedAt: null,
                 deletedAt: null,
                 template: duplicateAsTemplate,
+                customizable: duplicateAsTemplate
+                  ? (journey.customizable ?? false)
+                  : false,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),

@@ -53,6 +53,7 @@ type Journey @key(fields: "id") @shareable {
   used to see if a template has a site created for it
   """
   templateSite: Boolean
+  customizable: Boolean
   """
   used in a plausible share link to embed report
   """
@@ -227,6 +228,7 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  customizable: Boolean
 }
 
 extend type UserJourney {

@@ -110,7 +110,8 @@ describe('JourneyResolver', () => {
     fromTemplateId: null,
     journeyCustomizationDescription: null,
     showAssistant: null,
-    templateSite: null
+    templateSite: null,
+    customizable: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1307,7 +1308,8 @@ describe('JourneyResolver', () => {
             'strategySlug',
             'logoImageBlockId',
             'menuStepBlockId',
-            'templateSite'
+            'templateSite',
+            'customizable'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1316,6 +1318,7 @@ describe('JourneyResolver', () => {
           title: `${journey.title} copy`,
           template: false,
           featuredAt: null,
+          customizable: false,
           team: {
             connect: { id: 'teamId' }
           },
@@ -1383,7 +1386,8 @@ describe('JourneyResolver', () => {
             'strategySlug',
             'logoImageBlockId',
             'menuStepBlockId',
-            'templateSite'
+            'templateSite',
+            'customizable'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1393,6 +1397,7 @@ describe('JourneyResolver', () => {
           template: false,
           featuredAt: null,
           archivedAt: null,
+          customizable: false,
           team: {
             connect: { id: 'teamId' }
           },
@@ -1459,7 +1464,8 @@ describe('JourneyResolver', () => {
           'strategySlug',
           'logoImageBlockId',
           'menuStepBlockId',
-          'templateSite'
+          'templateSite',
+          'customizable'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1469,6 +1475,7 @@ describe('JourneyResolver', () => {
         featuredAt: null,
         fromTemplateId: 'journeyId',
         template: false, // journey being duplicated for customization should be false
+        customizable: false,
         team: {
           connect: { id: 'teamId' }
         },
@@ -1553,7 +1560,8 @@ describe('JourneyResolver', () => {
           'strategySlug',
           'logoImageBlockId',
           'menuStepBlockId',
-          'templateSite'
+          'templateSite',
+          'customizable'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1563,6 +1571,7 @@ describe('JourneyResolver', () => {
         featuredAt: null,
         fromTemplateId: 'journeyId',
         template: true,
+        customizable: false,
         team: {
           connect: { id: 'teamId' }
         },
@@ -1688,7 +1697,8 @@ describe('JourneyResolver', () => {
             'strategySlug',
             'logoImageBlockId',
             'menuStepBlockId',
-            'templateSite'
+            'templateSite',
+            'customizable'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1697,6 +1707,7 @@ describe('JourneyResolver', () => {
           title: `${journey.title} copy 2`,
           featuredAt: null,
           template: false,
+          customizable: false,
           team: {
             connect: { id: 'teamId' }
           },
@@ -2195,6 +2206,54 @@ describe('JourneyResolver', () => {
         resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
       ).rejects.toThrow('journey not found')
     })
+
+    it('carries customizable: true forward when duplicating a local template', async () => {
+      const customizableJourney = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        template: true,
+        customizable: true
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(customizableJourney)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: true })
+        })
+      )
+    })
+
+    it('sets customizable: false when duplicating a local template with forceNonTemplate', async () => {
+      const customizableJourney = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        template: true,
+        customizable: true
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(customizableJourney)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+      await resolver.journeyDuplicate(
+        ability,
+        'journeyId',
+        'userId',
+        'teamId',
+        true
+      )
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: false })
+        })
+      )
+    })
   })
 
   describe('journeyUpdate', () => {
@@ -2380,6 +2439,36 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journeyUpdate(ability, 'journeyId', { title: 'new title' })
       ).rejects.toThrow('journey not found')
+    })
+
+    it('updates customizable to true', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        customizable: true
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: true })
+        })
+      )
+    })
+
+    it('updates customizable to false', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        customizable: false
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: false })
+        })
+      )
     })
   })
 

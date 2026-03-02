@@ -809,6 +809,7 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   showAssistant: Boolean
+  customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -1058,6 +1059,7 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  customizable: Boolean
 }
 
 type JourneyViewEvent implements Event
