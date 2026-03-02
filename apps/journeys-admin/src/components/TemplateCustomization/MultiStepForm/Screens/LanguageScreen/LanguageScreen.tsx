@@ -8,10 +8,14 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { object, string } from 'yup'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
+import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
+import { transformer } from '@core/journeys/ui/transformer'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
@@ -19,6 +23,7 @@ import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetC
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
@@ -38,6 +43,9 @@ export function LanguageScreen({
   const { enqueueSnackbar } = useSnackbar()
 
   const { journey } = useJourney()
+  const steps = transformer(journey?.blocks ?? []) as Array<
+    TreeBlock<StepBlock>
+  >
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
   const { query } = useTeam()
@@ -160,21 +168,21 @@ export function LanguageScreen({
 
   return (
     <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
+      <Stack alignItems="center" sx={{ pb: { xs: 6, sm: 10 } }}>
         <Typography
           variant="h4"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{ mb: 2 }}
         >
-          {t("Let's get started!")}
+          {t("Let's Get Started!")}
         </Typography>
         <Typography
           variant="h6"
           display={{ xs: 'block', sm: 'none' }}
           gutterBottom
         >
-          {t("Let's get started!")}
+          {t('Get Started')}
         </Typography>
         <Typography
           variant="subtitle2"
@@ -184,15 +192,26 @@ export function LanguageScreen({
         >
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          align="center"
+          display={{ xs: 'block', sm: 'none' }}
+        >
+          {t("A few quick edits and it's ready to share!")}
+        </Typography>
       </Stack>
-      <SocialImage />
+
       <Typography
         variant="subtitle2"
         gutterBottom
         sx={{ mb: { xs: 0, sm: 2 } }}
       >
-        {journey?.title ?? ''}
+        {`'${journey?.title ?? ''}'`}
       </Typography>
+
+      {steps.length > 0 && <CardsPreview steps={steps} />}
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

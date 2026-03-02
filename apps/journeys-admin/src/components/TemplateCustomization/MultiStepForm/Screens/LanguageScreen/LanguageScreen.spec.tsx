@@ -394,7 +394,7 @@ describe('LanguageScreen', () => {
     )
   })
 
-  it('renders the correct social media image', async () => {
+  it('renders the journey preview', async () => {
     const journeyWithImage = {
       ...journey,
       primaryImageBlock: {
@@ -437,14 +437,10 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    await waitFor(() => {
-      const img = screen.getByRole('img')
-      expect(img).toHaveAttribute('alt', 'journey social image')
-    })
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
   })
 
-  it('renders all required components correctly', async () => {
+  it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
         mocks={[
@@ -466,14 +462,19 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
+    expect(screen.getByText("Let's Get Started!")).toBeInTheDocument()
+    expect(screen.getByText('Get Started')).toBeInTheDocument()
     expect(
       screen.getByText(
         'A few quick edits and your template will be ready to share.'
       )
     ).toBeInTheDocument()
-    expect(screen.getAllByText(journey.title)).toHaveLength(1)
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    expect(
+      screen.getByText("A few quick edits and it's ready to share!")
+    ).toBeInTheDocument()
+
+    expect(screen.getByText(`'${journey.title}'`)).toBeInTheDocument()
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
@@ -486,38 +487,5 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
       'Next'
     )
-  })
-
-  it('renders skeleton when no journey image is provided', () => {
-    const journeyWithoutImage = {
-      ...journey,
-      primaryImageBlock: null
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: journeyWithoutImage, variant: 'admin' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
 })
