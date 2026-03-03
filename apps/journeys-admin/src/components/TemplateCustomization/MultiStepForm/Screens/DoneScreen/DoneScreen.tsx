@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -49,6 +49,15 @@ export function DoneScreen({
   const { journey } = useJourney()
   const router = useRouter()
   const [syncDialogOpen, setSyncDialogOpen] = useState(false)
+
+  // Auto-open sync dialog when returning from OAuth flow
+  useEffect(() => {
+    if (journey?.id == null) return
+    const openSyncDialog = router.query.openSyncDialog === 'true'
+    if (openSyncDialog) {
+      setSyncDialogOpen(true)
+    }
+  }, [journey?.id, router.query.openSyncDialog])
 
   const { data: syncsData, refetch: refetchSyncs } = useQuery<
     GoogleSheetsSyncsForDoneScreenData,
