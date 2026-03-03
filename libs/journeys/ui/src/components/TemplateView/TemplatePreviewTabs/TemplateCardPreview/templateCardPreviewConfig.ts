@@ -174,7 +174,6 @@ const GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG: VariantConfig = {
       xs: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT,
       sm: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT
     },
-    transform: { xs: 'scale(1)', sm: 'scale(1)' },
     borderRadius: 4
   },
   breakpoints: {
@@ -218,7 +217,7 @@ const GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG: VariantConfig = {
     observeParents: true,
     pagination: { clickable: true }
   },
-  modules: [Mousewheel, FreeMode, A11y, Pagination]
+  modules: [Mousewheel, A11y, Pagination]
 }
 
 const GUEST_PREVIEW_MOBILE_CARD_WIDTH = 300
@@ -285,7 +284,7 @@ const GUEST_PREVIEW_MOBILE_VARIANT_CONFIG: VariantConfig = {
     observeParents: true,
     pagination: { clickable: true }
   },
-  modules: [Mousewheel, FreeMode, A11y, Pagination]
+  modules: [Mousewheel, A11y, Pagination]
 }
 
 export const VARIANT_CONFIGS: Record<
