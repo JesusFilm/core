@@ -1,5 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { formatISO } from 'date-fns'
 
@@ -9,8 +15,8 @@ import { getJourneyAnalytics } from '@core/journeys/ui/useJourneyAnalyticsQuery/
 
 import { GetJourney_journey } from '../../../../../../__generated__/GetJourney'
 
-import { earliestStatsCollected } from './AnalyticsOverlaySwitch'
 import { buildPlausibleDateRange } from './buildPlausibleDateRange'
+import { earliestStatsCollected } from './buildPresetDateRange'
 
 import { AnalyticsOverlaySwitch } from '.'
 
@@ -143,5 +149,105 @@ describe('AnalyticsOverlaySwitch', () => {
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
     })
+  })
+
+  it('shows filter button and date range select only when analytics are enabled', async () => {
+    mockBuildPlausibleDateRange.mockReturnValue(
+      `${earliestStatsCollected},${mockCurrentDate}`
+    )
+
+    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+    const request = {
+      ...getJourneyAnalytics.request,
+      variables: {
+        ...getJourneyAnalytics.request.variables,
+        period: 'custom',
+        date: `${earliestStatsCollected},${mockCurrentDate}`
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider>{() => <AnalyticsOverlaySwitch />}</EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.queryByRole('button', { name: 'Filter' })
+    ).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('checkbox'))
+
+    const filterButton = await screen.findByRole('button', { name: 'Filter' })
+
+    expect(filterButton).toBeInTheDocument()
+    expect(screen.queryByLabelText('Date range preset')).not.toBeInTheDocument()
+
+    fireEvent.click(filterButton)
+
+    expect(screen.getByLabelText('Date range preset')).toBeInTheDocument()
+  })
+
+  it('shows custom date range picker when custom range is selected', async () => {
+    mockBuildPlausibleDateRange.mockReturnValue(
+      `${earliestStatsCollected},${mockCurrentDate}`
+    )
+
+    const result = jest.fn().mockReturnValue(getJourneyAnalytics.result)
+    const journey = { id: 'journeyId' } as unknown as GetJourney_journey
+    const request = {
+      ...getJourneyAnalytics.request,
+      variables: {
+        ...getJourneyAnalytics.request.variables,
+        period: 'custom',
+        date: `${earliestStatsCollected},${mockCurrentDate}`
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request,
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <EditorProvider>{() => <AnalyticsOverlaySwitch />}</EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('checkbox'))
+
+    const filterButton = await screen.findByRole('button', { name: 'Filter' })
+
+    fireEvent.click(filterButton)
+    const dateRangeSelectRoot = screen.getByLabelText('Date range preset')
+    const dateRangeCombobox = within(dateRangeSelectRoot).getByRole('combobox')
+
+    fireEvent.mouseDown(dateRangeCombobox)
+
+    const customRangeOption = await screen.findByRole('option', {
+      name: 'Custom Range'
+    })
+
+    fireEvent.click(customRangeOption)
+
+    expect(
+      screen.getAllByRole('group', { name: 'From' })[0]
+    ).toBeInTheDocument()
+    expect(screen.getAllByRole('group', { name: 'To' })[0]).toBeInTheDocument()
   })
 })

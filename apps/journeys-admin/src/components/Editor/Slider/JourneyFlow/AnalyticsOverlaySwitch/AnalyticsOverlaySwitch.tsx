@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
@@ -9,13 +10,17 @@ import { ReactElement, useState } from 'react'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyAnalyticsQuery } from '@core/journeys/ui/useJourneyAnalyticsQuery'
+import FilterIcon from '@core/shared/ui/icons/Filter'
 
 import { DateRangePicker } from '../../../../JourneyVisitorsList/FilterDrawer/ExportDialog/DateRangePicker'
 
+import { AnalyticsOverlayDateRangeSelect } from './AnalyticsOverlayDateRangeSelect'
 import { buildPlausibleDateRange } from './buildPlausibleDateRange'
-
-// Used to for filter all time stats
-export const earliestStatsCollected = '2024-06-01'
+import {
+  DateRangePresetId,
+  earliestStatsCollected,
+  buildPresetDateRange
+} from './buildPresetDateRange'
 
 export function AnalyticsOverlaySwitch(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -28,7 +33,10 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   const [startDate, setStartDate] = useState<Date | null>(
     new Date(earliestStatsCollected)
   )
+  const [showFilter, setShowFilter] = useState<boolean>(false)
   const [endDate, setEndDate] = useState<Date | null>(new Date())
+  const [selectedPreset, setSelectedPreset] =
+    useState<DateRangePresetId>('allTime')
 
   const isDateRangeValid =
     startDate != null && endDate != null && startDate <= endDate
@@ -71,6 +79,17 @@ export function AnalyticsOverlaySwitch(): ReactElement {
     }
   })
 
+  function handlePresetChange(preset: DateRangePresetId): void {
+    setSelectedPreset(preset)
+
+    if (preset !== 'customRange') {
+      const { startDate: newStartDate, endDate: newEndDate } =
+        buildPresetDateRange(preset)
+      setStartDate(newStartDate)
+      setEndDate(newEndDate)
+    }
+  }
+
   function handleSwitchAnalytics(): void {
     dispatch({
       type: 'SetShowAnalyticsAction',
@@ -80,19 +99,55 @@ export function AnalyticsOverlaySwitch(): ReactElement {
 
   return (
     <Stack direction="column" spacing={2} alignItems="flex-start">
-      <FormControlLabel
-        control={
-          <Switch
-            checked={showAnalytics === true}
-            onChange={handleSwitchAnalytics}
+      <Stack direction="row" spacing={2} alignItems="center">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showAnalytics === true}
+              onChange={handleSwitchAnalytics}
+            />
+          }
+          label={
+            <Typography variant="subtitle2">
+              {t('Analytics Overlay')}
+            </Typography>
+          }
+          labelPlacement="start"
+        />
+        {showAnalytics === true && <FilterIcon />}
+        {showAnalytics === true && !showFilter && (
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={() => setShowFilter(true)}
+            sx={{
+              minWidth: 80
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              component="span"
+              sx={{
+                display: 'inline-block',
+                maxWidth: 200,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                verticalAlign: 'bottom'
+              }}
+            >
+              {t('Filter')}
+            </Typography>
+          </Button>
+        )}
+        {showAnalytics === true && showFilter && (
+          <AnalyticsOverlayDateRangeSelect
+            value={selectedPreset}
+            onChange={handlePresetChange}
           />
-        }
-        label={
-          <Typography variant="subtitle2">{t('Analytics Overlay')}</Typography>
-        }
-        labelPlacement="start"
-      />
-      {showAnalytics && (
+        )}
+      </Stack>
+      {showAnalytics === true && selectedPreset === 'customRange' && (
         <DateRangePicker
           startDate={startDate}
           endDate={endDate}
