@@ -23,44 +23,32 @@ export function TemplateCardPreviewDialog({
   steps,
   initialStepId
 }: TemplateCardPreviewDialogProps): ReactElement {
-  const dialogProps = {
-    open,
-    onClose,
-    'data-testid': 'TemplateCardPreviewDialog' as const,
-    fullWidth: true,
-    maxWidth: false as const,
-    PaperProps: {
-      sx: {
-        background: 'transparent',
-        boxShadow: 'none',
-        m: 0,
-        maxWidth: '100vw',
-        width: '100%',
-        height: '100%',
-        minHeight: '100vh',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }
-    },
-    slotProps: {
-      backdrop: {
-        sx: { backgroundColor: 'rgba(0, 0, 0, 0.7)' }
-      }
-    }
-  }
-
-  if (steps.length === 0) {
-    return (
-      <Dialog {...dialogProps}>
-        <Box />
-      </Dialog>
-    )
-  }
-
   return (
-    <Dialog {...dialogProps}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      data-testid="TemplateCardPreviewDialog"
+      fullWidth
+      maxWidth={false}
+      slotProps={{
+        backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.7)' } },
+        paper: {
+          sx: {
+            background: 'transparent',
+            boxShadow: 'none',
+            m: 0,
+            maxWidth: '100vw',
+            width: '100%',
+            height: '100%',
+            minHeight: '100vh',
+            pointerEvents: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }
+        }
+      }}
+    >
       <Box
         sx={{
           pointerEvents: 'auto',
