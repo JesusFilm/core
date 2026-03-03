@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -184,5 +184,187 @@ describe('AboutTabPanel', () => {
     )
 
     expect(getByTestId('CustomizeTemplateSection')).toBeInTheDocument()
+  })
+
+  describe('Quick Start toggle', () => {
+    const journey = publishedGlobalTemplate as unknown as Journey
+
+    it('should render the Quick Start toggle section', () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: false },
+                  setFieldValue: jest.fn()
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        screen.getByTestId('QuickStartToggleSection')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText('Show Quick Start label')
+      ).toBeInTheDocument()
+    })
+
+    it('should render the Quick Start toggle as unchecked when customizable is false', () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: false },
+                  setFieldValue: jest.fn()
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        within(screen.getByTestId('CustomizableToggle')).getByRole('checkbox')
+      ).not.toBeChecked()
+    })
+
+    it('should render the Quick Start toggle as checked when customizable is true', () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: true },
+                  setFieldValue: jest.fn()
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        within(screen.getByTestId('CustomizableToggle')).getByRole('checkbox')
+      ).toBeChecked()
+    })
+
+    it('should call setFieldValue with true when toggle is switched on', async () => {
+      const setFieldValue = jest.fn()
+
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: false },
+                  setFieldValue
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        within(screen.getByTestId('CustomizableToggle')).getByRole('checkbox')
+      )
+
+      await waitFor(() =>
+        expect(setFieldValue).toHaveBeenCalledWith('customizable', true)
+      )
+    })
+
+    it('should call setFieldValue with false when toggle is switched off', async () => {
+      const setFieldValue = jest.fn()
+
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: true },
+                  setFieldValue
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        within(screen.getByTestId('CustomizableToggle')).getByRole('checkbox')
+      )
+
+      await waitFor(() =>
+        expect(setFieldValue).toHaveBeenCalledWith('customizable', false)
+      )
+    })
+
+    it('should show badge preview with reduced opacity when toggle is off', () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: false },
+                  setFieldValue: jest.fn()
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const previewBox = screen
+        .getByText('Preview')
+        .parentElement as HTMLElement
+      expect(previewBox).toHaveStyle({ opacity: '0.3' })
+    })
+
+    it('should show badge preview at full opacity when toggle is on', () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey }}>
+            <FormikProvider
+              value={
+                {
+                  values: { creatorDescription: '', customizable: true },
+                  setFieldValue: jest.fn()
+                } as unknown as FormikContextType<TemplateSettingsFormValues>
+              }
+            >
+              <AboutTabPanel />
+            </FormikProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const previewBox = screen
+        .getByText('Preview')
+        .parentElement as HTMLElement
+      expect(previewBox).toHaveStyle({ opacity: '1' })
+    })
   })
 })

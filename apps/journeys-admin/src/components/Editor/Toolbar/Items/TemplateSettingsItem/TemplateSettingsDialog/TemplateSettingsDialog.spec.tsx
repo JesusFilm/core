@@ -185,7 +185,8 @@ describe('TemplateSettingsDialog', () => {
                   ...updatedJourney,
                   tagIds: ['tagId'],
                   creatorDescription: '',
-                  languageId: '529'
+                  languageId: '529',
+                  customizable: false
                 }
               }
             },
@@ -387,7 +388,8 @@ describe('TemplateSettingsDialog', () => {
                   strategySlug: null,
                   tagIds: [],
                   creatorDescription: null,
-                  languageId: '496'
+                  languageId: '496',
+                  customizable: false
                 }
               }
             },
@@ -426,7 +428,8 @@ describe('TemplateSettingsDialog', () => {
         'https://docs.google.com/presentation/d/e/2PACX-1vR9RRy1myecVCtOG06olCS7M4h2eEsVDrNdp_17Z1KjRpY0HieSnK5SFEWjDaE6LZR9kBbVm4hQOsr7/pub?start=false&loop=false&delayms=3000',
       tagIds: [],
       creatorDescription: null,
-      languageId: '529'
+      languageId: '529',
+      customizable: false
     }
 
     const result = jest.fn(() => ({

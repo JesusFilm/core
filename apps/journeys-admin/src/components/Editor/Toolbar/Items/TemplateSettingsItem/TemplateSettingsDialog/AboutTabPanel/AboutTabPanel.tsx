@@ -1,10 +1,14 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { QuickStartBadge } from '@core/journeys/ui/QuickStartBadge'
 import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
@@ -20,7 +24,8 @@ interface AboutTabPanelProps {
 export function AboutTabPanel({
   showStrategySection = false
 }: AboutTabPanelProps): ReactElement {
-  const { values, handleChange, errors } = useTemplateSettingsForm()
+  const { values, handleChange, errors, setFieldValue } =
+    useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -51,6 +56,54 @@ export function AboutTabPanel({
       </Stack>
       <Divider />
       <CustomizeTemplate />
+      <Divider />
+      <Box data-testid="QuickStartToggleSection">
+        <Stack
+          direction="row"
+          alignItems="flex-start"
+          justifyContent="space-between"
+        >
+          <Box>
+            <Typography variant="subtitle1">
+              {t('Show Quick Start label')}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              {t(
+                'Display a Quick Start badge on this template in the template gallery'
+              )}
+            </Typography>
+          </Box>
+          <FormControlLabel
+            control={
+              <Switch
+                data-testid="CustomizableToggle"
+                checked={values.customizable ?? false}
+                onChange={async (_event, checked) => {
+                  await setFieldValue('customizable', checked)
+                }}
+              />
+            }
+            label=""
+            sx={{ mr: 0 }}
+          />
+        </Stack>
+        <Box
+          sx={{
+            mt: 4,
+            opacity: values.customizable === true ? 1 : 0.3,
+            transition: 'opacity 0.3s ease'
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: 'block', mb: 1 }}
+          >
+            {t('Preview')}
+          </Typography>
+          <QuickStartBadge />
+        </Box>
+      </Box>
       {showStrategySection && (
         <>
           <TextField

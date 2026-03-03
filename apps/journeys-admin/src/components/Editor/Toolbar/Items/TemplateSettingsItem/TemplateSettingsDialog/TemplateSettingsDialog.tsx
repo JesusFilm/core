@@ -101,6 +101,7 @@ export function TemplateSettingsDialog({
     tagIds: journey?.tags.map(({ id }) => id),
     creatorDescription: journey?.creatorDescription,
     languageId: journey?.language?.id,
+    customizable: journey?.customizable ?? false,
     journeyCustomizationDescription:
       journey?.journeyCustomizationDescription ??
       formatTemplateCustomizationString(getTemplateCustomizationFields(journey))
