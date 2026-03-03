@@ -109,7 +109,7 @@ export function GuestPreviewScreen({
       <Typography variant="subtitle2" color="text.secondary">
         &quot;{journey?.title ?? ''}&quot;
       </Typography>
-      <CardsPreview steps={steps} onCardClick={handleCardClick} />
+      <CardsPreview steps={steps} onCardClick={handleCardClick} showTitle />
       {overlayOpen && (
         <TemplateCardPreviewDialog
           open={overlayOpen}

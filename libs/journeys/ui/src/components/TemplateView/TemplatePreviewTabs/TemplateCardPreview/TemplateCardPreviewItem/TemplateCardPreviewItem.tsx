@@ -1,4 +1,6 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -17,6 +19,7 @@ import {
 import { BlockRenderer } from '../../../../BlockRenderer'
 import { CardWrapper } from '../../../../CardWrapper'
 import { FramePortal } from '../../../../FramePortal'
+import { InformationButton } from '../../../../StepHeader/InformationButton'
 import { VideoWrapper } from '../../../../VideoWrapper'
 import {
   SELECTED_SCALE,
@@ -29,6 +32,8 @@ export interface TemplateCardPreviewItemProps {
   variant: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
+  stepIndex?: number
+  stepsCount?: number
 }
 
 /**
@@ -42,7 +47,9 @@ export function TemplateCardPreviewItem({
   step,
   variant,
   onClick,
-  selectedStep
+  selectedStep,
+  stepIndex,
+  stepsCount
 }: TemplateCardPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -53,7 +60,6 @@ export function TemplateCardPreviewItem({
   const config = VARIANT_CONFIGS[variant]
   const { cardWidth, cardHeight, framePortal, cardSx } = config
   const isSelected = selectedStep?.id === step.id
-
   return (
     <Box
       sx={{
@@ -131,6 +137,62 @@ export function TemplateCardPreviewItem({
             rtl={rtl}
             locale={locale}
           >
+            {stepIndex != null && stepsCount != null && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    width: '100%',
+                    zIndex: 1
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{
+                      position: 'absolute',
+                      top: 13,
+                      width: '100%'
+                    }}
+                  >
+                    {Array.from({ length: stepsCount }).map((_, i) => {
+                      const distance = Math.abs(i - stepIndex)
+                      const size =
+                        distance === 0
+                          ? 8
+                          : distance === 1
+                            ? 6
+                            : distance === 2
+                              ? 4
+                              : 3
+                      const opacity =
+                        distance === 0
+                          ? 1
+                          : distance === 1
+                            ? 0.6
+                            : distance === 2
+                              ? 0.4
+                              : 0.25
+                      return (
+                        <Box
+                          key={i}
+                          sx={{
+                            width: size,
+                            height: size,
+                            borderRadius: '50%',
+                            mx: '3px',
+                            backgroundColor: 'primary.main',
+                            opacity,
+                            transition: 'width 0.2s, height 0.2s, opacity 0.2s'
+                          }}
+                        />
+                      )
+                    })}
+                  </Stack>
+                  <InformationButton sx={{ px: 6, float: 'right' }} />
+                </Box>
+              )}
             <Box
               sx={{
                 height: '100%',
@@ -145,6 +207,36 @@ export function TemplateCardPreviewItem({
                 }}
               />
             </Box>
+            {journey?.title != null && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  zIndex: 1,
+                  pl: 4,
+                  pr: 6,
+                  py: 2
+                }}
+              >
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: 'primary.main',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: 'block',
+                    fontSize: '7px',
+                    lineHeight: 1.4,
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {journey.title}
+                </Typography>
+              </Box>
+            )}
           </ThemeProvider>
         </FramePortal>
       </Box>

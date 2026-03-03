@@ -147,6 +147,7 @@ export function TemplateCardPreview({
     swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
+
   return steps != null ? (
     <StyledSwiper
       modules={modules}
@@ -159,7 +160,7 @@ export function TemplateCardPreview({
         height: swiperHeight
       }}
     >
-      {slidesToRender.map((step) => {
+      {slidesToRender.map((step, index) => {
         const isSelected = selectedStep?.id === step.id
         const selectedSlideSx =
           variant === 'compact' && isSelected
@@ -185,6 +186,8 @@ export function TemplateCardPreview({
               variant={variant}
               onClick={onClick}
               selectedStep={selectedStep}
+              stepIndex={index}
+              stepsCount={slidesToRender.length}
             />
           </StyledSwiperSlide>
         )

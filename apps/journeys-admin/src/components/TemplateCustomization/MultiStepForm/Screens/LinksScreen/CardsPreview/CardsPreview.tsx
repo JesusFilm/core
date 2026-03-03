@@ -15,7 +15,7 @@ import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { InformationButton } from '@core/journeys/ui/StepHeader/InformationButton'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -31,11 +31,15 @@ import {
 interface CardsPreviewProps {
   steps: Array<TreeBlock<StepBlock>>
   onCardClick?: (step: TreeBlock<StepBlock>) => void
+  showTitle?: boolean
 }
 
 interface CardsPreviewItemProps {
   step: TreeBlock<StepBlock>
   onClick?: (step: TreeBlock<StepBlock>) => void
+  stepIndex: number
+  stepsCount: number
+  showTitle?: boolean
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
@@ -55,7 +59,13 @@ const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 // Spacing and offsets
 const EDGE_FADE_PX = 16
 
-function CardsPreviewItem({ step, onClick }: CardsPreviewItemProps): ReactElement {
+function CardsPreviewItem({
+  step,
+  onClick,
+  stepIndex,
+  stepsCount,
+  showTitle
+}: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const cardBlock = step.children.find(
@@ -106,6 +116,60 @@ function CardsPreviewItem({ step, onClick }: CardsPreviewItemProps): ReactElemen
           >
             <Box
               sx={{
+                position: 'absolute',
+                top: 0,
+                width: '100%',
+                zIndex: 1
+              }}
+            >
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  position: 'absolute',
+                  top: 13,
+                  width: '100%'
+                }}
+              >
+                {Array.from({ length: stepsCount }).map((_, i) => {
+                  const distance = Math.abs(i - stepIndex)
+                  const size =
+                    distance === 0
+                      ? 8
+                      : distance === 1
+                        ? 6
+                        : distance === 2
+                          ? 4
+                          : 3
+                  const opacity =
+                    distance === 0
+                      ? 1
+                      : distance === 1
+                        ? 0.6
+                        : distance === 2
+                          ? 0.4
+                          : 0.25
+                  return (
+                    <Box
+                      key={i}
+                      sx={{
+                        width: size,
+                        height: size,
+                        borderRadius: '50%',
+                        mx: '3px',
+                        backgroundColor: 'primary.main',
+                        opacity,
+                        transition: 'width 0.2s, height 0.2s, opacity 0.2s'
+                      }}
+                    />
+                  )
+                })}
+              </Stack>
+              <InformationButton sx={{ px: 6, float: 'right' }} />
+            </Box>
+            <Box
+              sx={{
                 height: '100%',
                 borderRadius: 4
               }}
@@ -118,7 +182,36 @@ function CardsPreviewItem({ step, onClick }: CardsPreviewItemProps): ReactElemen
                 }}
               />
             </Box>
-            <StepFooter />
+            {showTitle === true && journey?.title != null && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  zIndex: 1,
+                  pl: 4,
+                  pr: 6,
+                  py: 2
+                }}
+              >
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: 'primary.main',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    display: 'block',
+                    fontSize: '7px',
+                    lineHeight: 1.4,
+                    letterSpacing: '0.5px'
+                  }}
+                >
+                  {journey.title}
+                </Typography>
+              </Box>
+            )}
           </ThemeProvider>
         </FramePortal>
       </Box>
@@ -128,7 +221,8 @@ function CardsPreviewItem({ step, onClick }: CardsPreviewItemProps): ReactElemen
 
 export function CardsPreview({
   steps,
-  onCardClick
+  onCardClick,
+  showTitle
 }: CardsPreviewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -178,7 +272,7 @@ export function CardsPreview({
         WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
       }}
     >
-      {slidesToRender.map((step) => (
+      {slidesToRender.map((step, index) => (
         <StyledSwiperSlide
           data-testid="CardsSwiperSlide"
           key={step.id}
@@ -190,6 +284,9 @@ export function CardsPreview({
           <CardsPreviewItem
             step={step}
             onClick={onCardClick}
+            stepIndex={index}
+            stepsCount={slidesToRender.length}
+            showTitle={showTitle}
           />
         </StyledSwiperSlide>
       ))}
