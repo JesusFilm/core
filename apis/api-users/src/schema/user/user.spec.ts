@@ -459,6 +459,15 @@ describe('api-users', () => {
     })
 
     it('should throw when user not found', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce({
+        id: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: null,
+        emailVerified: false,
+        imageUrl: null
+      })
+
       prismaMock.user.findUnique
         .mockResolvedValueOnce({ ...user, email: null })
         .mockResolvedValueOnce(null)
