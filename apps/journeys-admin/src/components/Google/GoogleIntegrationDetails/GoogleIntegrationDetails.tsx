@@ -62,7 +62,7 @@ interface GoogleSheetsSyncsByIntegrationQuery {
   }>
 }
 
-export function GoogleIntegrationDetails(): ReactElement {
+export function GoogleIntegrationDetails(): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const integrationId = router.query.integrationId
@@ -116,7 +116,10 @@ export function GoogleIntegrationDetails(): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const currentUserId = currentUser?.id
+  const currentUserId =
+    currentUser.__typename === 'AuthenticatedUser' ? currentUser.id : undefined
+
+  if (currentUserId == null) return null
 
   const integrationOwner = data?.integrations.find(
     (integration) => integration.id === integrationId
