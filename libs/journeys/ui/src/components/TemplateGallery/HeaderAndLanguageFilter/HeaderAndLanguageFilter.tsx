@@ -198,6 +198,7 @@ export function HeaderAndLanguageFilter({
         '3804', // Korean
         '1927', // Malay
         '1370', // Nepali
+        '139081', // Bengali, Indian
         '1254' // Myanmar (Burmese)
       ]
     }
