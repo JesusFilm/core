@@ -18,12 +18,15 @@ jest.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
   useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
-      __typename: 'User',
       ...user1
     }
   })
 }))
-const user1 = { id: 'userId', email: 'miguelohara@example.com' }
+const user1 = {
+  id: 'userId',
+  email: 'miguelohara@example.com',
+  __typename: 'AuthenticatedUser'
+}
 
 describe('TeamMembersList', () => {
   const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {

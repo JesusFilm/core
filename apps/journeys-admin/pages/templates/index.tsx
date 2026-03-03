@@ -37,7 +37,11 @@ function TemplateIndexPage(): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
-  if (data?.me?.id != null && !data?.me?.emailVerified) {
+  if (
+    data?.me?.__typename === 'AuthenticatedUser' &&
+    data.me.id != null &&
+    data.me.emailVerified === false
+  ) {
     void router.push('/users/verify?redirect=/templates')
   }
 

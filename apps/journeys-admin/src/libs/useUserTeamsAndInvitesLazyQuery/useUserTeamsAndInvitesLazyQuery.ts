@@ -21,7 +21,13 @@ export function useUserTeamsAndInvitesLazyQuery(): {
   >(GET_USER_TEAMS_AND_INVITES, {
     onCompleted: ({ userTeams, userTeamInvites }) => {
       setEmails([
-        ...userTeams.map(({ user: { email } }) => email.toLowerCase()),
+        ...userTeams
+          .filter(({ user }) => user.__typename === 'AuthenticatedUser')
+          .map(({ user }) =>
+            user.__typename === 'AuthenticatedUser'
+              ? user.email.toLowerCase()
+              : ''
+          ),
         ...userTeamInvites.map(({ email }) => email.toLowerCase())
       ])
     }
