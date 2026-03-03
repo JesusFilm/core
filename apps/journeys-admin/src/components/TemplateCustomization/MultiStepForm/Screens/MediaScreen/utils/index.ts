@@ -4,7 +4,8 @@ export {
   showVideosSection,
   getCustomizableCardVideoBlock,
   getVideoBlockDisplayTitle,
-  getVideoPoster
+  getVideoPoster,
+  extractYouTubeVideoId
 } from './videoSectionUtils'
 export {
   getCustomizableMediaSteps,

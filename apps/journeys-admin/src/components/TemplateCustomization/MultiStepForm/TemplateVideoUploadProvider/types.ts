@@ -18,6 +18,7 @@ export interface VideoUploadState {
 
 export interface TemplateVideoUploadContextType {
   startUpload: (videoBlockId: string, file: File) => void
+  startYouTubeLink: (videoBlockId: string, youtubeVideoId: string) => Promise<void>
   getUploadStatus: (videoBlockId: string) => VideoUploadState | null
   hasActiveUploads: boolean
 }

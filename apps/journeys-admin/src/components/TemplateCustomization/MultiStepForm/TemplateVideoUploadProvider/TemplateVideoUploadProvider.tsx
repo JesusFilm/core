@@ -16,6 +16,7 @@ import type { TemplateVideoUploadContextType } from './types'
 import { MAX_VIDEO_SIZE, createInitialTask } from './types'
 import { useMuxVideoProcessing } from './useMuxVideoProcessing'
 import { useUploadTaskMap } from './useUploadTaskMap'
+import { useYouTubeVideoLinking } from './useYouTubeVideoLinking'
 
 const TemplateVideoUploadContext = createContext<
   TemplateVideoUploadContextType | undefined
@@ -51,6 +52,13 @@ export function TemplateVideoUploadProvider({
   } = useUploadTaskMap()
 
   const { startPolling } = useMuxVideoProcessing({
+    updateTask,
+    removeTask,
+    activeBlocksRef
+  })
+
+  const { linkYouTubeVideo } = useYouTubeVideoLinking({
+    setUploadTasks,
     updateTask,
     removeTask,
     activeBlocksRef
@@ -167,10 +175,11 @@ export function TemplateVideoUploadProvider({
   const value = useMemo<TemplateVideoUploadContextType>(
     () => ({
       startUpload,
+      startYouTubeLink: linkYouTubeVideo,
       getUploadStatus,
       hasActiveUploads
     }),
-    [startUpload, getUploadStatus, hasActiveUploads]
+    [startUpload, linkYouTubeVideo, getUploadStatus, hasActiveUploads]
   )
 
   return (

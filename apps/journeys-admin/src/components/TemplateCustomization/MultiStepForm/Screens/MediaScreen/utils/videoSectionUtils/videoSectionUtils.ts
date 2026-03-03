@@ -5,6 +5,18 @@ import {
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { getJourneyMedia } from '../../../../../utils/getJourneyMedia'
 
+const YOUTUBE_ID_REGEX = /(\/|%3D|vi=|v=)([0-9A-Za-z-_]{11})([%#?&/]|$)/
+
+/**
+ * Extracts an 11-character YouTube video ID from a URL.
+ *
+ * Supports standard watch URLs, youtu.be short links, shorts, and embed URLs.
+ * Returns null when no valid ID can be found.
+ */
+export function extractYouTubeVideoId(url: string): string | null {
+  return url.match(YOUTUBE_ID_REGEX)?.[2] ?? null
+}
+
 /**
  * Returns the first customizable video block that belongs to the given card.
  *
