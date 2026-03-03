@@ -66,12 +66,14 @@ const journey: Journey = {
   featuredAt: '2023-08-14T04:24:24.392Z',
   updatedAt: '2021-11-19T12:34:56.647Z',
   website: false,
+  customizable: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: []
 }
 
 const customizableTemplateJourney: Journey = {
   ...journey,
+  customizable: true,
   journeyCustomizationDescription: 'Customize this template',
   journeyCustomizationFields: [
     {
@@ -93,6 +95,7 @@ const websiteJourney: Journey = {
 const customizableWebsiteTemplateJourney: Journey = {
   ...journey,
   website: true,
+  customizable: true,
   journeyCustomizationDescription: 'Customize this template',
   journeyCustomizationFields: [
     {
