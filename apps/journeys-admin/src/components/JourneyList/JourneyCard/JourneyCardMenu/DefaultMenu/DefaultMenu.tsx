@@ -126,9 +126,11 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  const isAnonymousUser = currentUser?.__typename !== 'AuthenticatedUser'
+  const hasCurrentUser = currentUser != null
+  const isAnonymousUser =
+    hasCurrentUser && currentUser.__typename !== 'AuthenticatedUser'
   const currentUserEmail =
-    currentUser?.__typename === 'AuthenticatedUser'
+    hasCurrentUser && currentUser.__typename === 'AuthenticatedUser'
       ? currentUser.email
       : undefined
 
@@ -194,7 +196,7 @@ export function DefaultMenu({
   const isLocalTemplate =
     journey?.template === true && journey?.team?.id !== 'jfp-team'
 
-  if (isAnonymousUser) {
+  if (hasCurrentUser && isAnonymousUser) {
     return <></>
   }
 

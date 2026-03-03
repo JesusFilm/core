@@ -162,10 +162,9 @@ export function UserListItem({
               journeyId={journeyIdFromParent}
               checked={listItem?.journeyNotification?.visitorInteractionEmail}
               disabled={
-                userId !==
-                (currentUser?.user?.__typename === 'AuthenticatedUser'
-                  ? currentUser.user.id
-                  : undefined)
+                userId == null ||
+                currentUser?.user?.__typename !== 'AuthenticatedUser' ||
+                userId !== currentUser.user.id
               }
             />
           )}

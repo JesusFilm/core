@@ -39,7 +39,8 @@ export function UserTeamList({
     return (
       sortBy(data?.userTeams ?? [], ({ user }) =>
         user.__typename === 'AuthenticatedUser' &&
-        user.id === currentUserTeam?.id
+        currentUserTeam?.user?.__typename === 'AuthenticatedUser' &&
+        user.id === currentUserTeam.user.id
           ? 0
           : 1
       ) ?? []

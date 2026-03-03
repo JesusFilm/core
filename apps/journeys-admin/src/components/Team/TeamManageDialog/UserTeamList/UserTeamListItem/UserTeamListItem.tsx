@@ -130,9 +130,9 @@ export function UserTeamListItem({
                 journeyId={journeyId}
                 checked={checked}
                 disabled={
-                  (currentUserTeam?.user?.__typename === 'AuthenticatedUser'
-                    ? currentUserTeam.user.id
-                    : undefined) !== userId
+                  userId == null ||
+                  currentUserTeam?.user?.__typename !== 'AuthenticatedUser' ||
+                  currentUserTeam.user.id !== userId
                 }
               />
             )}

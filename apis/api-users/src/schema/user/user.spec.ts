@@ -59,8 +59,8 @@ describe('api-users', () => {
 
   describe('me', () => {
     const ME_QUERY = graphql(`
-      query Me {
-        me {
+      query Me($input: MeInput) {
+        me(input: $input) {
           ... on AuthenticatedUser {
             id
             firstName
@@ -386,6 +386,15 @@ describe('api-users', () => {
     })
 
     it('should update firstName, lastName, and email', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce({
+        id: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: null,
+        emailVerified: false,
+        imageUrl: null
+      })
+
       const existingUser = {
         ...user,
         email: null,
