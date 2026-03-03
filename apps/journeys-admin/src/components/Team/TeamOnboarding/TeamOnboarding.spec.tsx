@@ -30,7 +30,7 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       email: 'siyangguccigang@example.com'
     }

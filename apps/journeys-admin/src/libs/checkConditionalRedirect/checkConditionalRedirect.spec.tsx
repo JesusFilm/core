@@ -9,6 +9,7 @@ import { checkConditionalRedirect } from '.'
 
 const meData = {
   me: {
+    __typename: 'AuthenticatedUser',
     emailVerified: true
   }
 }
@@ -38,7 +39,11 @@ describe('checkConditionalRedirect', () => {
       query: jest
         .fn()
         .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: { me: { emailVerified: false } } })
+        .mockResolvedValueOnce({
+          data: {
+            me: { emailVerified: false, __typename: 'AuthenticatedUser' }
+          }
+        })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({
@@ -57,7 +62,11 @@ describe('checkConditionalRedirect', () => {
       query: jest
         .fn()
         .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: { me: { emailVerified: false } } })
+        .mockResolvedValueOnce({
+          data: {
+            me: { emailVerified: false, __typename: 'AuthenticatedUser' }
+          }
+        })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
