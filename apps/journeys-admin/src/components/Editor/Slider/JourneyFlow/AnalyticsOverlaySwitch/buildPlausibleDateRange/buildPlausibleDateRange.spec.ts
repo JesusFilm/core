@@ -48,7 +48,7 @@ describe('buildPlausibleDateRange', () => {
     )
 
     expect(result).toBe(
-      `${formatISO(fallbackStart, { representation: 'date' })},${formatISO(fallbackEnd, { representation: 'date' })}`
+      `${fallbackStart},${formatISO(fallbackEnd, { representation: 'date' })}`
     )
   })
 })
