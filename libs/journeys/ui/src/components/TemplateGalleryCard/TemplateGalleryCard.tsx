@@ -15,9 +15,9 @@ import { ReactElement, useState } from 'react'
 import Globe from '@core/shared/ui/icons/Globe'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-import { QuickStartBadge } from '../QuickStartBadge'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { useNavigationState } from '../../libs/useNavigationState'
+import { QuickStartBadge } from '../QuickStartBadge'
 
 interface HoverLayerProps {
   className?: string

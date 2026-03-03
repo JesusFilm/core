@@ -1,5 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { FormikContextType, FormikProvider } from 'formik'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -207,12 +213,8 @@ describe('AboutTabPanel', () => {
         </MockedProvider>
       )
 
-      expect(
-        screen.getByTestId('QuickStartToggleSection')
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText('Show Quick Start label')
-      ).toBeInTheDocument()
+      expect(screen.getByTestId('QuickStartToggleSection')).toBeInTheDocument()
+      expect(screen.getByText('Show Quick Start label')).toBeInTheDocument()
     })
 
     it('should render the Quick Start toggle as unchecked when customizable is false', () => {
@@ -337,8 +339,7 @@ describe('AboutTabPanel', () => {
         </MockedProvider>
       )
 
-      const previewBox = screen
-        .getByText('Preview')
+      const previewBox = screen.getByText('Preview')
         .parentElement as HTMLElement
       expect(previewBox).toHaveStyle({ opacity: '0.3' })
     })
@@ -361,8 +362,7 @@ describe('AboutTabPanel', () => {
         </MockedProvider>
       )
 
-      const previewBox = screen
-        .getByText('Preview')
+      const previewBox = screen.getByText('Preview')
         .parentElement as HTMLElement
       expect(previewBox).toHaveStyle({ opacity: '1' })
     })
