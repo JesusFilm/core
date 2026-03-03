@@ -248,7 +248,8 @@ describe('TemplateVideoUploadProvider', () => {
         )
       })
 
-      const listenerRegistrationCallCountBefore = mockUpload.on.mock.calls.length
+      const listenerRegistrationCallCountBefore =
+        mockUpload.on.mock.calls.length
 
       await act(async () => {
         await result.current.startUpload('video-block-1', file)
