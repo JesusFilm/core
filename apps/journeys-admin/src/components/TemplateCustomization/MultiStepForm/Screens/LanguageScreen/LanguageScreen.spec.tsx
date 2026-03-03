@@ -348,6 +348,163 @@ describe('LanguageScreen', () => {
     expect(handleNext).toHaveBeenCalled()
   })
 
+  it('should use the current journey when multiple child journeys share the same language id', async () => {
+    const journeyWithFromTemplateIdAndLanguage = {
+      ...journey,
+      id: 'current-child-id',
+      fromTemplateId: 'template-duplicate',
+      language: {
+        ...journey.language,
+        id: 'language-duplicate',
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            primary: true,
+            value: 'Spanish'
+          }
+        ]
+      }
+    }
+
+    const mockChildJourneysWithDuplicateLanguage: MockedResponse<
+      GetChildJourneysFromTemplateId,
+      GetChildJourneysFromTemplateIdVariables
+    > = {
+      request: {
+        query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            fromTemplateId: 'template-duplicate'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            {
+              __typename: 'Journey' as const,
+              id: 'sibling-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            },
+            {
+              __typename: 'Journey' as const,
+              id: 'other-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-other',
+                slug: 'fr',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'French'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    const mockParentJourneysForDuplicateLanguage: MockedResponse<
+      GetParentJourneysFromTemplateId,
+      GetParentJourneysFromTemplateIdVariables
+    > = {
+      ...mockGetParentJourneysFromTemplateId,
+      request: {
+        query: GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            ids: ['template-duplicate']
+          }
+        }
+      }
+    }
+
+    const mockJourneyDuplicateForDuplicateLanguage: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'current-child-id',
+          teamId: 'teamId1',
+          forceNonTemplate: true
+        }
+      },
+      result: mockJourneyDuplicate.result
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockChildJourneysWithDuplicateLanguage,
+          mockParentJourneysForDuplicateLanguage,
+          mockJourneyDuplicateForDuplicateLanguage
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: journeyWithFromTemplateIdAndLanguage,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+
+    fireEvent.focus(screen.getByTestId('LanguageAutocompleteInput'))
+    fireEvent.keyDown(screen.getByTestId('LanguageAutocompleteInput'), {
+      key: 'ArrowDown'
+    })
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+    )
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
   it('shows error snackbar when duplicate fails', async () => {
     const mockJourneyDuplicateMockResult = jest.fn().mockReturnValue({
       ...mockJourneyDuplicate.result,

@@ -26,6 +26,7 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import { uniqBy } from 'lodash'
 
 interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
@@ -78,28 +79,46 @@ export function LanguageScreen({
     skip: isParentTemplate
   })
 
-  const languages = isParentTemplate
-    ? [
-        ...parentJourneyLanguages,
-        ...childJourneyLanguages,
-        {
-          id: journey?.language?.id ?? '',
-          name: journey?.language?.name ?? [],
-          slug: null
-        }
-      ]
-    : [...parentJourneyLanguages, ...childJourneyLanguages]
-
-  const languagesJourneyMap = isParentTemplate
+  const currentJourneyLanguage = isParentTemplate
     ? {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap,
-        [journey?.language?.id as string]: journey?.id
+        id: journey?.language?.id ?? '',
+        name: journey?.language?.name ?? [],
+        slug: null
       }
-    : {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap
-      }
+    : null
+
+  const filteredChildJourneyLanguages = uniqBy(
+    currentJourneyLanguage != null
+      ? [...childJourneyLanguages, currentJourneyLanguage]
+      : childJourneyLanguages,
+    (lang) => lang.id
+  )
+
+  const currentLanguageId = journey?.language?.id
+  const currentJourneyId = journey?.id
+  const filteredChildJourneyLanguagesJourneyMap = (() => {
+    const mapArray = Object.entries(
+      childJourneyLanguagesJourneyMap ?? {}
+    ).filter(
+      ([langId, journeyId]) =>
+        langId !== currentLanguageId || journeyId === currentJourneyId
+    )
+    if (isParentTemplate) {
+      mapArray.push([journey?.language?.id as string, journey?.id ?? ''])
+    }
+    const map = Object.fromEntries(mapArray)
+    return map
+  })()
+
+  const languages = [
+    ...parentJourneyLanguages,
+    ...filteredChildJourneyLanguages
+  ]
+
+  const languagesJourneyMap = {
+    ...parentJourneyLanguagesJourneyMap,
+    ...filteredChildJourneyLanguagesJourneyMap
+  }
 
   const validationSchema = object({
     teamSelect: string().required()
