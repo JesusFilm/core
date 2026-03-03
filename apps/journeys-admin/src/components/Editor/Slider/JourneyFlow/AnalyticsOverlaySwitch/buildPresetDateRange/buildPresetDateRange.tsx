@@ -1,4 +1,5 @@
 import {
+  parseISO,
   startOfMonth,
   startOfToday,
   startOfYear,
@@ -83,7 +84,7 @@ export function buildPresetDateRange(preset: DateRangePresetId): DateRange {
       }
     case 'allTime':
       return {
-        startDate: new Date(earliestStatsCollected),
+        startDate: parseISO(earliestStatsCollected),
         endDate: today
       }
     case 'customRange':

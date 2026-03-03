@@ -65,13 +65,6 @@ export function AnalyticsOverlaySwitch(): ReactElement {
       })
     },
     onError: (_) => {
-      if (isDateRangeValid) {
-        enqueueSnackbar(t('Invalid date range'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-        return
-      }
       enqueueSnackbar(t('Error fetching analytics'), {
         variant: 'error',
         preventDuplicate: true
