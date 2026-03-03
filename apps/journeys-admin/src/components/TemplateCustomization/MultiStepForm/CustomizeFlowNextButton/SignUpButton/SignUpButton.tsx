@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { buildCustomizeUrl } from '../../../utils/customizationRoutes'
 import { CustomizeFlowNextButton } from '../CustomizeFlowNextButton'
 
 export function SignUpButton(): ReactElement {
@@ -14,7 +15,7 @@ export function SignUpButton(): ReactElement {
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
     const redirectUrl =
       journeyId != null
-        ? `${domain}/templates/${journeyId}/customize`
+        ? `${domain}${buildCustomizeUrl(journeyId, 'media', undefined)}`
         : `${domain}/`
 
     void router.push(

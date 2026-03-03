@@ -27,6 +27,10 @@ describe('SignUpButton', () => {
     mockPush.mockClear()
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('renders Sign Up button with correct label', () => {
     render(<SignUpButton />)
 
@@ -61,7 +65,7 @@ describe('SignUpButton', () => {
     expect(mockPush).toHaveBeenCalledTimes(1)
     const [firstArg] = mockPush.mock.calls[0]
     expect(firstArg.query.redirect).toContain(
-      '/templates/journey-123/customize'
+      '/templates/journey-123/customize?screen=media'
     )
   })
 

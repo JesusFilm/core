@@ -106,6 +106,10 @@ export function RegisterPage({
     const currentUser = auth.currentUser
     if (currentUser == null || !currentUser.isAnonymous) return
 
+    const credential = EmailAuthProvider.credential(email, password)
+    const userCredential = await linkWithCredential(currentUser, credential)
+    await updateProfile(userCredential.user, { displayName: name })
+
     const nameParts = name.trim().split(/\s+/).filter(Boolean)
     const firstName = nameParts[0] ?? name.trim()
     const lastName =
@@ -120,10 +124,6 @@ export function RegisterPage({
         }
       }
     })
-
-    const credential = EmailAuthProvider.credential(email, password)
-    const userCredential = await linkWithCredential(currentUser, credential)
-    await updateProfile(userCredential.user, { displayName: name })
 
     const journeyId = getJourneyIdFromRedirect(
       router.query.redirect as string | undefined
