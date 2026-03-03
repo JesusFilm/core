@@ -7,10 +7,7 @@ import { AnalyticsOverlayDateRangeSelect } from './AnalyticsOverlayDateRangeSele
 describe('AnalyticsOverlayDateRangeSelect', () => {
   it('renders with the current preset label and aria label', () => {
     render(
-      <AnalyticsOverlayDateRangeSelect
-        value="today"
-        onChange={jest.fn()}
-      />
+      <AnalyticsOverlayDateRangeSelect value="today" onChange={jest.fn()} />
     )
 
     const selectRoot = screen.getByLabelText('Date range preset')
@@ -44,10 +41,7 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
 
   it('renders dividers between preset groups', () => {
     render(
-      <AnalyticsOverlayDateRangeSelect
-        value="today"
-        onChange={jest.fn()}
-      />
+      <AnalyticsOverlayDateRangeSelect value="today" onChange={jest.fn()} />
     )
 
     const selectRoot = screen.getByLabelText('Date range preset')
@@ -63,4 +57,3 @@ describe('AnalyticsOverlayDateRangeSelect', () => {
     expect(dividerOptions).toHaveLength(4)
   })
 })
-
