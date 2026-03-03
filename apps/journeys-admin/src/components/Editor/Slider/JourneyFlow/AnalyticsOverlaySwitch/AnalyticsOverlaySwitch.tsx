@@ -18,8 +18,8 @@ import { AnalyticsOverlayDateRangeSelect } from './AnalyticsOverlayDateRangeSele
 import { buildPlausibleDateRange } from './buildPlausibleDateRange'
 import {
   DateRangePresetId,
-  earliestStatsCollected,
-  buildPresetDateRange
+  buildPresetDateRange,
+  earliestStatsCollected
 } from './buildPresetDateRange'
 
 export function AnalyticsOverlaySwitch(): ReactElement {

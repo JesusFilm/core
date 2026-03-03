@@ -10,8 +10,8 @@ import {
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 } from '../../../../../../__generated__/GetJourneyPlausibleVisitors'
-import { Item } from '../Item/Item'
 import { earliestStatsCollected } from '../../../Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
+import { Item } from '../Item/Item'
 
 interface AnalyticsItemProps {
   variant: ComponentProps<typeof Item>['variant']
