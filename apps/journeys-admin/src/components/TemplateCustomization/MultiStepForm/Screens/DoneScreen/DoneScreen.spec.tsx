@@ -14,7 +14,10 @@ import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/us
 import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
 import { useJourneyNotifcationUpdateMock } from '../../../../../libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate.mock'
 
-import { DoneScreen, GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN } from './DoneScreen'
+import {
+  DoneScreen,
+  GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN
+} from './DoneScreen'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -146,7 +149,9 @@ describe('DoneScreen', () => {
 
   it('renders the completion message', () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -158,7 +163,9 @@ describe('DoneScreen', () => {
 
   it('renders first card of journey as preview', async () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey: journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -170,7 +177,9 @@ describe('DoneScreen', () => {
 
   it('renders all action buttons', () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -189,7 +198,9 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey: journeyWithSlug, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -237,7 +248,9 @@ describe('DoneScreen', () => {
   it('renders notification section heading and label', () => {
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
@@ -245,16 +258,16 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    expect(
-      screen.getByText('Choose where responses go:')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
     expect(screen.getByText('Send to my email')).toBeInTheDocument()
   })
 
   it('renders notification switch unchecked by default', () => {
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
@@ -303,7 +316,13 @@ describe('DoneScreen', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock, journeyForSharingMock]}>
+        <MockedProvider
+          mocks={[
+            getCustomDomainsMock,
+            googleSheetsSyncsNoActiveMock,
+            journeyForSharingMock
+          ]}
+        >
           <JourneyProvider
             value={{ journey: journeyWithTeam, variant: 'admin' }}
           >
@@ -350,7 +369,9 @@ describe('DoneScreen', () => {
   it('renders Sync to Google Sheets row with Sync button when no active syncs', async () => {
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
@@ -369,7 +390,9 @@ describe('DoneScreen', () => {
   it('renders Edit button when active syncs exist', async () => {
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsWithActiveMock]}>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsWithActiveMock]}
+        >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>
@@ -387,7 +410,9 @@ describe('DoneScreen', () => {
   it('opens GoogleSheetsSyncDialog when Sync button is clicked', async () => {
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <DoneScreen />
           </JourneyProvider>

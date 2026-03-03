@@ -159,9 +159,7 @@ export function DoneScreen({
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography variant="body2">
-              {t('Send to my email')}
-            </Typography>
+            <Typography variant="body2">{t('Send to my email')}</Typography>
             <NotificationSwitch journeyId={journey?.id} />
           </Stack>
           <Stack
