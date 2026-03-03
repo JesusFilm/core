@@ -120,6 +120,7 @@ const journey: Journey = {
       defaultValue: '0'
     }
   ],
+  customizable: null,
   fromTemplateId: null,
   socialNodeX: null,
   socialNodeY: null

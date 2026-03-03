@@ -60,6 +60,7 @@ describe('TemplateSections', () => {
     website: false,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
+    customizable: null,
     userJourneys: []
   }
 

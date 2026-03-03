@@ -72,6 +72,7 @@ const defaultTemplate: Journey = {
   website: false,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
+  customizable: null,
   userJourneys: []
 }
 

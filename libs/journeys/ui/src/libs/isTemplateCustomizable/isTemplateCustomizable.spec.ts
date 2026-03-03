@@ -39,6 +39,7 @@ describe('isTemplateCustomizable', () => {
     template: true,
     website: false,
     journeyCustomizationFields: [],
+    customizable: null,
     userJourneys: null,
     primaryImageBlock: null,
     tags: []

@@ -82,6 +82,7 @@ describe('useJourneyQuery', () => {
       journeyTheme: null,
       journeyCustomizationDescription: null,
       journeyCustomizationFields: [],
+      customizable: null,
       fromTemplateId: null,
       socialNodeX: null,
       socialNodeY: null
