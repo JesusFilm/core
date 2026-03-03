@@ -37,7 +37,11 @@ function TemplateIndexPage(): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
-  if (data?.me?.id != null && !data?.me?.emailVerified) {
+  if (
+    data?.me?.__typename === 'AuthenticatedUser' &&
+    data.me.id != null &&
+    data.me.emailVerified === false
+  ) {
     void router.push('/users/verify?redirect=/templates')
   }
 
@@ -137,6 +141,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '3804', // Korean
             '1927', // Malay
             '1370', // Nepali
+            '139081', // Bengali, Indian
             '1254' // Myanmar (Burmese)
           ]
         }
