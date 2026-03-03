@@ -63,8 +63,7 @@ export function UserTeamListItem({
       displayName: isAuthenticated
         ? compact([user.firstName, user.lastName]).join(' ')
         : '',
-      userId:
-        user?.__typename === 'AuthenticatedUser' ? user.id : undefined,
+      userId: user?.__typename === 'AuthenticatedUser' ? user.id : undefined,
       imageUrl: isAuthenticated ? user.imageUrl : undefined,
       role: listItem.role
     }

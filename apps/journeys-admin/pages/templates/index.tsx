@@ -141,6 +141,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
             '3804', // Korean
             '1927', // Malay
             '1370', // Nepali
+            '139081', // Bengali, Indian
             '1254' // Myanmar (Burmese)
           ]
         }
