@@ -70,6 +70,7 @@ jest.mock('../../../../libs/useAdminJourneysSuspenseQuery', () => ({
 
 describe('UserNavigation', () => {
   const user = {
+    __typename: 'AuthenticatedUser',
     id: 'userId',
     displayName: 'Amin One',
     photoURL: 'https://bit.ly/3Gth4Yf',
@@ -84,6 +85,7 @@ describe('UserNavigation', () => {
     mockUseSuspenseQuery.mockReturnValue({
       data: {
         me: {
+          __typename: 'AuthenticatedUser',
           id: 'userId',
           firstName: 'Amin',
           lastName: 'One',
@@ -165,6 +167,7 @@ describe('UserNavigation', () => {
     mockUseSuspenseQuery.mockReturnValueOnce({
       data: {
         me: {
+          __typename: 'AuthenticatedUser',
           id: 'userId',
           firstName: 'Amin',
           lastName: 'One',

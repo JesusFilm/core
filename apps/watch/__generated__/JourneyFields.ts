@@ -670,13 +670,20 @@ export interface JourneyFields_creatorImageBlock {
   customizable: boolean | null;
 }
 
-export interface JourneyFields_userJourneys_user {
+export interface JourneyFields_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export interface JourneyFields_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export type JourneyFields_userJourneys_user = JourneyFields_userJourneys_user_AuthenticatedUser | JourneyFields_userJourneys_user_AnonymousUser;
 
 export interface JourneyFields_userJourneys {
   __typename: "UserJourney";
