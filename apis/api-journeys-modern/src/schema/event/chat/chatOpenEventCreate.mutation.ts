@@ -13,7 +13,7 @@ import { ChatOpenEventRef } from './chatOpenEvent'
 import { ChatOpenEventCreateInput } from './inputs'
 
 builder.mutationField('chatOpenEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: ChatOpenEventRef,
     args: {

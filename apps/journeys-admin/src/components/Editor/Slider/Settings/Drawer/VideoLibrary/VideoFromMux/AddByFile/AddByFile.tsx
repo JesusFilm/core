@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { FileRejection, useDropzone } from 'react-dropzone'
+import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -15,9 +15,16 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
 
+import { getVideoDuration } from './utils/getVideoDuration/getVideoDuration'
+
 interface AddByFileProps {
   onChange: (id: string, shouldCloseDrawer?: boolean) => void
 }
+
+type customErrorCode =
+  | ErrorCode
+  | 'file-duration-too-short'
+  | 'general-upload-error'
 
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -38,10 +45,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const videoBlockId = selectedBlock?.id ?? null
   const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
 
-  const [fileRejected, setFileRejected] = useState(false)
-  const [fileTooLarge, setFileTooLarge] = useState(false)
-  const [tooManyFiles, setTooManyFiles] = useState(false)
-  const [fileInvalidType, setFileInvalidType] = useState(false)
+  const [errorType, setErrorType] = useState<customErrorCode | null>(null)
 
   const uploading = uploadTask?.status === 'uploading'
   const processing = uploadTask?.status === 'processing'
@@ -50,13 +54,20 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const progress = uploadTask?.progress ?? 0
 
   const onDrop = async (): Promise<void> => {
-    setFileRejected(false)
-    setFileTooLarge(false)
-    setTooManyFiles(false)
-    setFileInvalidType(false)
+    setErrorType(null)
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
+    let duration: number | null = null
+    try {
+      duration = await getVideoDuration(files[0])
+    } catch (error) {
+      return setErrorType('general-upload-error')
+    }
+
+    if (duration && duration < 0.5) {
+      return setErrorType('file-duration-too-short')
+    }
     if (files.length > 0 && videoBlockId != null) {
       // Check if task already exists
       if (uploadTask != null) {
@@ -84,18 +95,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const onDropRejected = async (
     fileRejections: FileRejection[]
   ): Promise<void> => {
-    setFileRejected(true)
-    setFileTooLarge(false)
-    setTooManyFiles(false)
-    setFileInvalidType(false)
-
-    fileRejections.forEach(({ errors }) => {
-      errors.forEach((e) => {
-        if (e.code === 'file-invalid-type') setFileInvalidType(true)
-        if (e.code === 'file-too-large') setFileTooLarge(true)
-        if (e.code === 'too-many-files') setTooManyFiles(true)
-      })
-    })
+    setErrorType(fileRejections[0].errors[0].code as customErrorCode)
   }
 
   const { getRootProps, open, getInputProps, isDragAccept } = useDropzone({
@@ -111,7 +111,27 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     disabled: videoBlockId == null || uploadTask != null
   })
 
-  const noBorder = error != null || uploading || fileRejected
+  const noBorder = error != null || uploading || errorType != null || processing
+
+  function getErrorMessage(errorCode: customErrorCode) {
+    switch (errorCode) {
+      case ErrorCode.FileTooLarge: {
+        return t('File is too large. Max size is 1 GB.')
+      }
+      case ErrorCode.FileInvalidType: {
+        return t('Invalid file type.')
+      }
+      case ErrorCode.TooManyFiles: {
+        return t('Only one file upload at once.')
+      }
+      case 'file-duration-too-short': {
+        return t('Video is too short. Minimum duration is 1 second.')
+      }
+      default: {
+        return t('Something went wrong, try again')
+      }
+    }
+  }
 
   return (
     <Stack
@@ -131,7 +151,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           backgroundColor:
             isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
-              : error != null || fileRejected
+              : error != null || errorType != null
                 ? 'rgba(197, 45, 58, 0.08)'
                 : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
@@ -144,7 +164,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         {...getRootProps()}
       >
         <input {...getInputProps()} />
-        {error != null || fileRejected ? (
+        {error != null || errorType != null ? (
           <AlertTriangleIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
           />
@@ -154,18 +174,18 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         <Typography
           variant="body1"
           color={
-            error != null || fileRejected ? 'error.main' : 'secondary.main'
+            error != null || errorType != null ? 'error.main' : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
           {waiting && t('Waiting in queue...')}
           {uploading && t('Uploading...')}
           {processing && t('Processing...')}
-          {(error != null || fileRejected) && t('Upload Failed!')}
+          {(error != null || errorType != null) && t('Upload Failed!')}
           {!waiting &&
             !uploading &&
             !processing &&
-            !fileRejected &&
+            !errorType &&
             error == null &&
             t('Drop a video here')}
         </Typography>
@@ -173,27 +193,31 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       <Stack
         direction="row"
         spacing={1}
-        color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
+        color={
+          error != null || errorType != null ? 'error.main' : 'secondary.light'
+        }
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
         <AlertTriangleIcon
           fontSize="small"
           sx={{
-            display: error != null || fileRejected ? 'flex' : 'none'
+            display: error != null || errorType != null ? 'flex' : 'none'
           }}
         />
         {error != null ? (
           <Typography variant="caption">
             {t('Something went wrong, try again')}
           </Typography>
-        ) : fileRejected ? (
+        ) : errorType != null ? (
           <Typography variant="caption">
-            {fileInvalidType && t('Invalid file type. ')}
-            {tooManyFiles && t('Only one file upload at once. ')}
-            {fileTooLarge && t('File is too large. Max size is 1 GB.')}
+            {getErrorMessage(errorType)}
           </Typography>
         ) : (
-          <Typography variant="caption">{t('Max size is 1 GB')}</Typography>
+          <Typography variant="caption">
+            {t(
+              'Upload a video (MP4 or MOV) at least 1 second long. Maximum file size: 1 GB'
+            )}
+          </Typography>
         )}
       </Stack>
 

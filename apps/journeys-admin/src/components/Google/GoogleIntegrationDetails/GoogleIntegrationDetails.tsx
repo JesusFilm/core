@@ -76,7 +76,7 @@ interface GoogleSheetsSyncsByIntegrationQuery {
   }>
 }
 
-export function GoogleIntegrationDetails(): ReactElement {
+export function GoogleIntegrationDetails(): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
@@ -136,14 +136,18 @@ export function GoogleIntegrationDetails(): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const currentUserId = currentUser?.id
+  const currentUserId =
+    currentUser.__typename === 'AuthenticatedUser' ? currentUser.id : undefined
+
+  if (currentUserId == null) return null
 
   const integrationOwner = data?.integrations.find(
     (integration) => integration.id === integrationId
   )
   const integrationOwnerId =
-    integrationOwner?.__typename === 'IntegrationGoogle'
-      ? integrationOwner.user?.id
+    integrationOwner?.__typename === 'IntegrationGoogle' &&
+    integrationOwner.user?.__typename === 'AuthenticatedUser'
+      ? integrationOwner.user.id
       : undefined
 
   const isIntegrationOwner =
@@ -155,6 +159,7 @@ export function GoogleIntegrationDetails(): ReactElement {
     currentUserId != null &&
     (teamData?.userTeams?.some(
       (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
         userTeam.user.id === currentUserId &&
         userTeam.role === UserTeamRole.manager
     ) ??

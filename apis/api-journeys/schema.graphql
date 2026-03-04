@@ -1,6 +1,6 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable", "@external"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable", "@external", "@interfaceObject"])
 {
   query: Query
   mutation: Mutation
@@ -28,7 +28,7 @@ directive @federation__override(from: String!) on FIELD_DEFINITION
 
 directive @federation__composeDirective(name: String) repeatable on SCHEMA
 
-directive @federation__interfaceObject on OBJECT
+directive @interfaceObject on OBJECT
 
 directive @federation__authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
@@ -253,7 +253,6 @@ extend type Query {
   journeyCollections(teamId: ID!): [JourneyCollection]!
   journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   journeyEventsCount(journeyId: ID!, filter: JourneyEventsFilter): Int!
-  getJourneyProfile: JourneyProfile
   journeyTheme(journeyId: ID!): JourneyTheme
 
   """Get a list of Visitor Information by Journey"""
@@ -826,6 +825,7 @@ type ImageBlock implements Block
   scale: Int @shareable
   focalTop: Int @shareable
   focalLeft: Int @shareable
+  customizable: Boolean @shareable
 }
 
 input ImageBlockCreateInput {
@@ -852,6 +852,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -868,6 +869,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 type MultiselectBlock implements Block
@@ -1322,6 +1324,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit @shareable
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
+  customizable: Boolean @shareable
 }
 
 """
@@ -1589,6 +1592,45 @@ type JourneyViewEvent implements Event
   language: Language
 }
 
+type RadioQuestionSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+
+  """ID of the journey that the radioQuestionBlock belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """label of the selected radioOptionBlock"""
+  value: String
+}
+
+type SignUpSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+
+  """ID of the journey that the block belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """null for signUpSubmissionEvent"""
+  label: String
+
+  """name from the signUpBlock form"""
+  value: String
+
+  """email from the signUpBlock form"""
+  email: String
+}
+
 input StepViewEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -1692,6 +1734,27 @@ type StepPreviousEvent implements Event
 
   """stepName of the previous stepBlock"""
   value: String
+}
+
+type TextResponseSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+
+  """ID of the journey that the TextResponseBlock belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """response from the TextResponseBlock form"""
+  value: String
+
+  """the id of the block this event originates from"""
+  blockId: String
 }
 
 input VideoStartEventCreateInput {
@@ -2634,6 +2697,13 @@ type Translation {
   primary: Boolean!
 }
 
+type User
+  @key(fields: "id")
+  @interfaceObject
+{
+  id: ID!
+}
+
 type UserInvite
   @key(fields: "id")
   @shareable
@@ -2654,12 +2724,6 @@ enum UserJourneyRole {
   inviteRequested
   editor
   owner
-}
-
-extend type User
-  @key(fields: "id")
-{
-  id: ID! @external
 }
 
 type UserRole

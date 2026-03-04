@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -639,6 +639,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -665,6 +666,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -682,6 +684,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -1364,12 +1367,18 @@ type Mutation {
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
+
+  """
+  Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
+  """
+  googleSheetsSyncBackfill(id: ID!): GoogleSheetsSync!
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1698,6 +1707,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  getJourneyProfile: JourneyProfile
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -2248,9 +2258,9 @@ enum TypographyVariant {
 
 type User
   @key(fields: "id")
-  @extends
+  @interfaceObject
 {
-  id: ID! @external
+  id: ID!
 }
 
 type UserAgent
@@ -2383,6 +2393,7 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
 }
 
 input VideoBlockCreateInput {
@@ -2412,6 +2423,7 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 enum VideoBlockObjectFit {
@@ -2452,6 +2464,7 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
 }
 
 type VideoCollapseEvent implements Event

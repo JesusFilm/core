@@ -190,6 +190,7 @@ export interface VideoBlockCreate_videoBlockCreate {
   action: VideoBlockCreate_videoBlockCreate_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface VideoBlockCreate {

@@ -59,15 +59,20 @@ describe('api-users', () => {
 
   describe('me', () => {
     const ME_QUERY = graphql(`
-      query Me {
-        me {
-          id
-          firstName
-          lastName
-          email
-          imageUrl
-          superAdmin
-          emailVerified
+      query Me($input: MeInput) {
+        me(input: $input) {
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            email
+            imageUrl
+            superAdmin
+            emailVerified
+          }
+          ... on AnonymousUser {
+            id
+          }
         }
       }
     `)
@@ -83,7 +88,34 @@ describe('api-users', () => {
       const data = await authClient({
         document: ME_QUERY
       })
-      expect(findOrFetchUser).toHaveBeenCalledWith({}, 'testUserId', undefined)
+      expect(findOrFetchUser).toHaveBeenCalledWith(
+        {},
+        'testUserId',
+        undefined,
+        'NextSteps'
+      )
+      expect(data).toHaveProperty(
+        'data.me',
+        omit(user, ['createdAt', 'userId'])
+      )
+    })
+
+    it('should query me on a per app basis', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(user)
+      const data = await authClient({
+        document: ME_QUERY,
+        variables: {
+          input: {
+            app: 'JesusFilmOne'
+          }
+        }
+      })
+      expect(findOrFetchUser).toHaveBeenCalledWith(
+        {},
+        'testUserId',
+        undefined,
+        'JesusFilmOne'
+      )
       expect(data).toHaveProperty(
         'data.me',
         omit(user, ['createdAt', 'userId'])
@@ -226,8 +258,10 @@ describe('api-users', () => {
 
   describe('createVerificationRequest', () => {
     const CREATE_VERIFICATION_REQUEST_MUTATION = graphql(`
-      mutation CreateVerificationRequest {
-        createVerificationRequest
+      mutation CreateVerificationRequest(
+        $input: CreateVerificationRequestInput
+      ) {
+        createVerificationRequest(input: $input)
       }
     `)
 
@@ -245,7 +279,27 @@ describe('api-users', () => {
       expect(verifyUser).toHaveBeenCalledWith(
         'testUserId',
         'test@example.com',
-        undefined
+        undefined,
+        'NextSteps'
+      )
+      expect(data).toHaveProperty('data.createVerificationRequest', true)
+    })
+
+    it('should create verification request on a per app basis', async () => {
+      prismaMock.user.findUnique.mockResolvedValue(user)
+      const data = await authClient({
+        document: CREATE_VERIFICATION_REQUEST_MUTATION,
+        variables: {
+          input: {
+            app: 'JesusFilmOne'
+          }
+        }
+      })
+      expect(verifyUser).toHaveBeenCalledWith(
+        'testUserId',
+        'test@example.com',
+        undefined,
+        'JesusFilmOne'
       )
       expect(data).toHaveProperty('data.createVerificationRequest', true)
     })
@@ -309,6 +363,128 @@ describe('api-users', () => {
         }
       })
       expect(data).toHaveProperty('data.userImpersonate', null)
+    })
+  })
+
+  describe('updateMe', () => {
+    const UPDATE_ME_MUTATION = graphql(`
+      mutation UpdateMe($input: UpdateMeInput!) {
+        updateMe(input: $input) {
+          id
+          firstName
+          lastName
+          email
+          emailVerified
+        }
+      }
+    `)
+
+    const authClient = getClient({
+      headers: {
+        authorization: '1234'
+      }
+    })
+
+    it('should update firstName, lastName, and email', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce({
+        id: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: null,
+        emailVerified: false,
+        imageUrl: null
+      })
+
+      const existingUser = {
+        ...user,
+        email: null,
+        firstName: '',
+        lastName: null
+      } as unknown as typeof user
+      const updatedUser = {
+        ...existingUser,
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com'
+      }
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(existingUser)
+        .mockResolvedValueOnce(existingUser)
+      prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+
+      const data = (await authClient({
+        document: UPDATE_ME_MUTATION,
+        variables: {
+          input: {
+            firstName: 'Jane',
+            lastName: 'Doe',
+            email: 'jane@example.com'
+          }
+        }
+      })) as { data?: { updateMe?: Record<string, unknown> }; errors?: unknown }
+
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { userId: 'testUserId' },
+        data: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+          email: 'jane@example.com'
+        }
+      })
+      expect(data.data?.updateMe).toMatchObject({
+        id: updatedUser.id,
+        firstName: 'Jane',
+        lastName: 'Doe',
+        email: 'jane@example.com',
+        emailVerified: updatedUser.emailVerified
+      })
+    })
+
+    it('should return null when caller is not anonymous (has email)', async () => {
+      prismaMock.user.findUnique.mockResolvedValueOnce(user)
+
+      const data = (await authClient({
+        document: UPDATE_ME_MUTATION,
+        variables: {
+          input: {
+            firstName: 'Other',
+            lastName: 'Name',
+            email: 'other@example.com'
+          }
+        }
+      })) as { data?: { updateMe?: null }; errors?: unknown }
+
+      expect(prismaMock.user.update).not.toHaveBeenCalled()
+      expect(data.data?.updateMe).toBeNull()
+    })
+
+    it('should throw when user not found', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce({
+        id: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: null,
+        emailVerified: false,
+        imageUrl: null
+      })
+
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce({ ...user, email: null })
+        .mockResolvedValueOnce(null)
+
+      const data = (await authClient({
+        document: UPDATE_ME_MUTATION,
+        variables: {
+          input: {
+            firstName: 'Jane',
+            lastName: null,
+            email: 'jane@example.com'
+          }
+        }
+      })) as { data?: { updateMe?: null }; errors?: unknown[] }
+
+      expect(data.errors).toBeDefined()
+      expect(data.data?.updateMe).toBeNull()
     })
   })
 

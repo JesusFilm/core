@@ -35,11 +35,17 @@ export interface GetIntegration_integrations_IntegrationGoogle_team {
   id: string;
 }
 
-export interface GetIntegration_integrations_IntegrationGoogle_user {
-  __typename: "User";
+export interface GetIntegration_integrations_IntegrationGoogle_user_AnonymousUser {
+  __typename: "AnonymousUser";
+}
+
+export interface GetIntegration_integrations_IntegrationGoogle_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
   id: string;
   email: string;
 }
+
+export type GetIntegration_integrations_IntegrationGoogle_user = GetIntegration_integrations_IntegrationGoogle_user_AnonymousUser | GetIntegration_integrations_IntegrationGoogle_user_AuthenticatedUser;
 
 export interface GetIntegration_integrations_IntegrationGoogle {
   __typename: "IntegrationGoogle";

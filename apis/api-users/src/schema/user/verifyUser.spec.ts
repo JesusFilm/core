@@ -31,7 +31,9 @@ describe('verifyUser', () => {
       {
         email,
         token: expect.any(String),
-        userId
+        userId,
+        redirect: undefined,
+        app: undefined
       },
       {
         jobId: expect.any(String),
@@ -55,7 +57,9 @@ describe('verifyUser', () => {
       {
         email,
         token: expect.any(String),
-        userId
+        userId,
+        redirect: undefined,
+        app: undefined
       },
       {
         jobId: expect.any(String),
@@ -80,7 +84,34 @@ describe('verifyUser', () => {
       {
         email,
         token: '123456',
-        userId
+        userId,
+        redirect: undefined,
+        app: undefined
+      },
+      {
+        jobId: expect.any(String),
+        removeOnComplete: {
+          age: 24 * 3600 // keep up to 24 hours
+        },
+        removeOnFail: {
+          age: 24 * 3600
+        }
+      }
+    )
+  })
+
+  it('should use app if provided', async () => {
+    const email = 'tav@example.com'
+    const userId = 'userId2'
+    await verifyUser(userId, email, undefined, 'JesusFilmOne')
+    expect(queue.add).toHaveBeenCalledWith(
+      'verifyUser',
+      {
+        email,
+        token: expect.any(String),
+        userId,
+        redirect: undefined,
+        app: 'JesusFilmOne'
       },
       {
         jobId: expect.any(String),

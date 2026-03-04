@@ -395,6 +395,7 @@ export class ImageBlockCreateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockUpdateInput {
@@ -407,6 +408,7 @@ export class ImageBlockUpdateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -1019,8 +1021,6 @@ export abstract class IQuery {
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
 
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
@@ -1329,6 +1329,7 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class MultiselectBlock implements Block {
@@ -1465,6 +1466,7 @@ export class VideoBlock implements Block {
     objectFit?: Nullable<VideoBlockObjectFit>;
     subtitleLanguage?: Nullable<Language>;
     showGeneratedSubtitles?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1556,6 +1558,25 @@ export class JourneyViewEvent implements Event {
     language?: Nullable<Language>;
 }
 
+export class RadioQuestionSubmissionEvent implements Event {
+    __typename?: 'RadioQuestionSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
+export class SignUpSubmissionEvent implements Event {
+    __typename?: 'SignUpSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    email?: Nullable<string>;
+}
+
 export class StepViewEvent implements Event {
     __typename?: 'StepViewEvent';
     id: string;
@@ -1581,6 +1602,16 @@ export class StepPreviousEvent implements Event {
     createdAt: DateTime;
     label?: Nullable<string>;
     value?: Nullable<string>;
+}
+
+export class TextResponseSubmissionEvent implements Event {
+    __typename?: 'TextResponseSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    blockId?: Nullable<string>;
 }
 
 export class VideoStartEvent implements Event {
@@ -1887,6 +1918,11 @@ export class Translation {
     primary: boolean;
 }
 
+export class User {
+    __typename?: 'User';
+    id: string;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -1995,10 +2031,6 @@ export class Tag {
 }
 
 export class ShortLink {
-    id: string;
-}
-
-export class User {
     id: string;
 }
 

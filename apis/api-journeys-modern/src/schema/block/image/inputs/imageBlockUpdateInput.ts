@@ -17,7 +17,8 @@ export const ImageBlockUpdateInput = builder.inputType(
       isCover: t.boolean({ required: false }),
       scale: t.int({ required: false }),
       focalTop: t.int({ required: false }),
-      focalLeft: t.int({ required: false })
+      focalLeft: t.int({ required: false }),
+      customizable: t.boolean({ required: false })
     })
   }
 )

@@ -4,6 +4,7 @@ export interface BlockLike {
   parentBlockId: string | null
   parentOrder: number | null
   content?: unknown
+  exportOrder?: number | null
 }
 
 export function getAncestorByType(
@@ -89,6 +90,8 @@ export interface JourneyExportColumn {
   label: string
   blockId: string | null
   typename: string
+  /** Column index for exports - used to map data to the correct column */
+  exportOrder?: number | null
 }
 
 export interface BlockHeaderRecord {
@@ -129,27 +132,54 @@ export function buildJourneyExportColumns({
 }: BuildJourneyExportColumnsOptions): JourneyExportColumn[] {
   const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
 
-  // Sort headers first, then deduplicate by blockId to keep only the first (by order) label per block
-  const sortedHeaders = [...blockHeaders].sort((a, b) =>
-    compareHeaders(a, b, orderIndex)
-  )
-  const deduplicatedHeaders = deduplicateBlockHeadersByBlockId(sortedHeaders)
+  // Separate blocks with exportOrder (fixed positions) from those without
+  const headersWithExportOrder: Array<
+    BlockHeaderRecord & { exportOrder: number }
+  > = []
+  const headersWithoutExportOrder: BlockHeaderRecord[] = []
 
-  const blockColumns = deduplicatedHeaders.map<JourneyExportColumn>((item) => {
+  const deduplicatedHeaders = deduplicateBlockHeadersByBlockId(blockHeaders)
+
+  for (const header of deduplicatedHeaders) {
+    const block = idToBlock.get(header.blockId)
+    if (block?.exportOrder != null) {
+      headersWithExportOrder.push({ ...header, exportOrder: block.exportOrder })
+    } else {
+      headersWithoutExportOrder.push(header)
+    }
+  }
+
+  // Sort blocks with exportOrder by their exportOrder value
+  headersWithExportOrder.sort((a, b) => a.exportOrder - b.exportOrder)
+
+  // Sort blocks without exportOrder by render tree order
+  headersWithoutExportOrder.sort((a, b) =>
+    compareHeadersByRenderOrder(a, b, orderIndex)
+  )
+
+  // Combine: blocks with exportOrder first (maintaining their positions), then new blocks
+  const orderedHeaders = [
+    ...headersWithExportOrder,
+    ...headersWithoutExportOrder
+  ]
+
+  const blockColumns = orderedHeaders.map<JourneyExportColumn>((item) => {
     // Normalize label: replace all newlines/multiple spaces with single space, then trim
     const normalizedLabel = item.label.replace(/\s+/g, ' ').trim()
+    const block = idToBlock.get(item.blockId)
     return {
       key: `${item.blockId}-${normalizedLabel}`,
       label: normalizedLabel,
       blockId: item.blockId,
-      typename: idToBlock.get(item.blockId)?.typename ?? ''
+      typename: block?.typename ?? '',
+      exportOrder: block?.exportOrder ?? null
     }
   })
 
   return [...baseColumns, ...blockColumns]
 }
 
-function compareHeaders(
+function compareHeadersByRenderOrder(
   a: BlockHeaderRecord,
   b: BlockHeaderRecord,
   orderIndex: Map<string, number>

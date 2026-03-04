@@ -75,7 +75,8 @@ describe('Logo', () => {
     height: 1,
     blurhash: '',
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   function getLogoImageBlockCreateMock(): MockedResponse<

@@ -6,6 +6,9 @@ main = "src/index.ts"
 [vars]
 RESOURCES_PROXY_DEST = "localhost:4310"
 WATCH_PROXY_DEST = "localhost:4300"
+IOS_APP_ID = "DQ48D9BF2V.com.InspirationalFilms.JesusFilm"
+ANDROID_PACKAGE_NAME = "com.jesusfilmmedia.android.jesusfilm.debug"
+ANDROID_SHA256_CERT_FINGERPRINT = "F3:9F:C4:4D:42:F5:25:90:CD:4D:75:67:2C:9F:5F:B1:1B:6A:61:9B:C6:ED:65:CA:2E:39:03:82:3C:E8:50:D1"
 
 [env.stage]
 name = "jf-proxy-stage"
@@ -17,12 +20,19 @@ routes = [
   { pattern = "develop.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
-  { pattern = "develop.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
+  { pattern = "develop.jesusfilm.org/.well-known/apple-app-site-association", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/apple-app-site-association", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/.well-known/assetlinks.json", zone_name = "jesusfilm.org" },
+
 ]
 
 [env.stage.vars]
 RESOURCES_PROXY_DEST = "f92c2b4c-6a7f-4d56-9c1b-dc8c1e8e0c37.jesusfilm.org"
 WATCH_PROXY_DEST = "c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org"
+IOS_APP_ID = "DQ48D9BF2V.com.InspirationalFilms.JesusFilm"
+ANDROID_PACKAGE_NAME = "com.jesusfilmmedia.android.jesusfilm.debug"
+ANDROID_SHA256_CERT_FINGERPRINT = "F3:9F:C4:4D:42:F5:25:90:CD:4D:75:67:2C:9F:5F:B1:1B:6A:61:9B:C6:ED:65:CA:2E:39:03:82:3C:E8:50:D1"
+
 
 [env.stage.observability.logs]
 enabled = true
@@ -37,12 +47,18 @@ routes = [
   { pattern = "www.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
-  { pattern = "www.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
+  { pattern = "www.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/.well-known/apple-app-site-association", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/apple-app-site-association", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/.well-known/assetlinks.json", zone_name = "jesusfilm.org" },
 ]
 
 [env.prod.vars]
 RESOURCES_PROXY_DEST = "a3f6b24e-8d57-4c79-b25f-9e2a7d3f421c.jesusfilm.org"
 WATCH_PROXY_DEST = "1ee8fdb1-3cb5-40fd-9258-35d589917b4a.jesusfilm.org"
+IOS_APP_ID = "DQ48D9BF2V.com.InspirationalFilms.JesusFilm"
+ANDROID_PACKAGE_NAME = "com.jesusfilmmedia.android.jesusfilm"
+ANDROID_SHA256_CERT_FINGERPRINT = "4F:C6:5E:9F:18:CC:D3:CF:C1:68:8E:23:CB:4C:B2:9B:84:62:36:84:8F:6A:37:50:02:D9:40:3A:10:62:8B:93"
 
 [env.prod.observability.logs]
 enabled = true
