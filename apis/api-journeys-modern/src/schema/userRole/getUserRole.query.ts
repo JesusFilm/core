@@ -27,6 +27,9 @@ builder.queryField('getUserRole', (t) =>
     .prismaField({
       type: UserRoleRef,
       nullable: true,
+      override: {
+        from: 'api-journeys'
+      },
       resolve: async (query, _parent, _args, context) => {
         return await getUserRoleByUserId(context.user.id)
       }
