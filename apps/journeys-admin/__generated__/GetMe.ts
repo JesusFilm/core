@@ -11,6 +11,7 @@ import { MeInput } from "./globalTypes";
 
 export interface GetMe_me_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface GetMe_me_AuthenticatedUser {
