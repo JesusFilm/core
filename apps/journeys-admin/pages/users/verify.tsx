@@ -234,7 +234,10 @@ export const getServerSideProps = withUserTokenSSR({
     query: GET_ME,
     variables: { input: { redirect: query.redirect ?? undefined } }
   })
-  if (apiUser.data?.me?.emailVerified ?? false) {
+  if (
+    apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
+    (apiUser.data?.me?.emailVerified ?? false)
+  ) {
     return {
       redirect: {
         permanent: false,
