@@ -277,7 +277,15 @@ export function GoogleSheetsSyncDialog({
         variant: 'success'
       })
     }
-  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t, user.clientInitialized])
+  }, [
+    open,
+    journeyId,
+    loadSyncs,
+    router,
+    enqueueSnackbar,
+    t,
+    user.clientInitialized
+  ])
 
   useEffect(() => {
     if (open) return
