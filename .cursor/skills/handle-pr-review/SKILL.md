@@ -9,13 +9,13 @@ When the user asks to check or fix review feedback on a PR (e.g. on JesusFilm/co
 
 ## Steps
 
-1. **Identify PR** — From context (branch, issue number) or ask. Use `mcp_GitHub_pull_request_read` with `method: get_review_comments` and `method: get_reviews`.
+1. **Identify PR** — From context (branch, issue number) or ask. Prefer GitHub API lookup by head branch (`GET /repos/{owner}/{repo}/pulls?head=owner:branch`); fall back to branch-name inference or listing PRs if needed. Use GraphQL `pullRequest.reviewThreads` (includes `isResolved`) for thread resolution state; REST `get_review_comments` and `get_reviews` do not expose it.
 
-2. **Filter actionable** — Ignore resolved threads. Focus on unresolved CodeRabbit, CodeQL, or human comments. Skip nitpicks marked "optional" unless the user wants them.
+2. **Filter actionable** — Focus on unresolved threads (`reviewThreads.nodes[].isResolved === false`). Include CodeRabbit, CodeQL, or human comments. Skip nitpicks marked "optional" unless the user wants them.
 
 3. **Fix** — Apply changes per comment. One commit per logical change (conventional: `fix:`, `chore:`). Atomic commits.
 
-4. **Push** — `git push` to the PR branch.
+4. **Push** — `git push origin HEAD` (or `git push --set-upstream origin HEAD` if needed). Do not use `--force`; if unavoidable, use `--force-with-lease`.
 
 5. **Comment** — Add a PR comment via `mcp_GitHub_add_issue_comment` summarizing:
    - What was fixed (with commit SHA)
@@ -36,6 +36,5 @@ When the user asks to check or fix review feedback on a PR (e.g. on JesusFilm/co
 
 ## Notes
 
-- Workflow-level `permissions: contents: read` satisfies CodeQL; job-level override only if needed.
-- Resolved threads: skip; comment may say "Addressed in commits X to Y".
-- If PR number unknown: infer from `git branch --show-current` (e.g. `chore/3-lint-rollout` → PR for issue #3, or `jacobusbrink/eng-3582-*` → PR for ENG-3582) or list PRs for the branch.
+- Resolved threads: skip; comment may say "Addressed in commits X to Y". Thread resolution requires GraphQL `reviewThreads`; REST does not expose it.
+- If PR number unknown: first query PRs by head branch (`?head=owner:branch`); only use branch-name heuristics as fallback when API lookup is unavailable.
