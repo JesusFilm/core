@@ -90,19 +90,28 @@ export function DoneScreen({
             />
           </Box>
         </Stack>
-        <Button
-          data-testid="ProjectsDashboardButton"
-          onClick={handleGoToProjectsDashboard}
-          endIcon={<ArrowRightContained1Icon />}
-          sx={{ mt: 4 }}
+        <Stack
+          gap={6}
+          sx={{
+            width: '100%',
+            mt: 4,
+            border: 2,
+            borderColor: 'divider',
+            borderRadius: 3,
+            p: 5
+          }}
         >
-          <Typography variant="subtitle2">
-            {t('Go To Projects Dashboard')}
-          </Typography>
-        </Button>
-        <Stack gap={2} sx={{ width: '100%', mt: 4 }}>
-          <Typography variant="subtitle1">
+          <Typography
+            variant="subtitle1"
+            display={{ xs: 'none', sm: 'block' }}
+          >
             {t('Choose where responses go:')}
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            display={{ xs: 'block', sm: 'none' }}
+          >
+            {t('Choose Response Destination:')}
           </Typography>
           <Stack
             direction="row"
@@ -113,6 +122,16 @@ export function DoneScreen({
             <NotificationSwitch journeyId={journey?.id} />
           </Stack>
         </Stack>
+        <Button
+          data-testid="ProjectsDashboardButton"
+          onClick={handleGoToProjectsDashboard}
+          endIcon={<ArrowRightContained1Icon />}
+          sx={{ mt: 4 }}
+        >
+          <Typography variant="subtitle2">
+            {t('Go To Projects Dashboard')}
+          </Typography>
+        </Button>
       </ScreenWrapper>
     </Stack>
   )
