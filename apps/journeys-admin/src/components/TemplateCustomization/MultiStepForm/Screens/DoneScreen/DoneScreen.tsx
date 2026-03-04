@@ -141,7 +141,7 @@ export function DoneScreen({
           </Box>
         </Stack>
         <Stack
-          gap={6}
+          gap={3}
           sx={{
             width: '100%',
             mt: 4,
