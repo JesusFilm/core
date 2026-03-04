@@ -239,20 +239,25 @@ describe('TemplateVideoUploadProvider', () => {
       const file = new File([''], 'video.mp4', { type: 'video/mp4' })
 
       await act(async () => {
-        result.current.startUpload('video-block-1', file)
+        await result.current.startUpload('video-block-1', file)
       })
 
-      const createUploadCallCountBefore = (UpChunk.createUpload as jest.Mock)
-        .mock.calls.length
+      await waitFor(() => {
+        expect(result.current.getUploadStatus('video-block-1')?.status).toBe(
+          'uploading'
+        )
+      })
+
+      const listenerRegistrationCallCountBefore =
+        mockUpload.on.mock.calls.length
 
       await act(async () => {
-        result.current.startUpload('video-block-1', file)
+        await result.current.startUpload('video-block-1', file)
       })
 
-      const createUploadCallCountAfter = (UpChunk.createUpload as jest.Mock)
-        .mock.calls.length
-
-      expect(createUploadCallCountAfter).toBe(createUploadCallCountBefore)
+      expect(mockUpload.on.mock.calls.length).toBe(
+        listenerRegistrationCallCountBefore
+      )
     })
 
     it('allows concurrent uploads for different video blocks', async () => {
