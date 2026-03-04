@@ -43,8 +43,8 @@ const UserMenu = dynamic(
 export const GET_ME = gql`
   query GetMe($input: MeInput) {
     me(input: $input) {
+      id
       ... on AuthenticatedUser {
-        id
         firstName
         lastName
         email

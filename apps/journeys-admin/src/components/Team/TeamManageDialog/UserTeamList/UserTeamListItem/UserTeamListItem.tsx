@@ -35,9 +35,7 @@ export const USER_TEAM_UPDATE = gql`
       role
       id
       user {
-        ... on AuthenticatedUser {
-          id
-        }
+        id
       }
     }
   }
@@ -63,7 +61,7 @@ export function UserTeamListItem({
       displayName: isAuthenticated
         ? compact([user.firstName, user.lastName]).join(' ')
         : '',
-      userId: user?.id,
+      userId: user?.__typename === 'AuthenticatedUser' ? user.id : undefined,
       imageUrl: isAuthenticated ? user.imageUrl : undefined,
       role: listItem.role
     }
@@ -129,7 +127,11 @@ export function UserTeamListItem({
                 }
                 journeyId={journeyId}
                 checked={checked}
-                disabled={currentUserTeam?.user?.id !== userId}
+                disabled={
+                  userId == null ||
+                  currentUserTeam?.user?.__typename !== 'AuthenticatedUser' ||
+                  currentUserTeam.user.id !== userId
+                }
               />
             )}
           </Grid>
