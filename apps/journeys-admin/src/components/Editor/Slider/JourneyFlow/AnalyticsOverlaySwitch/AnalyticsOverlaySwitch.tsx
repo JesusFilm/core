@@ -3,9 +3,10 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import { parseISO, startOfToday } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { enqueueSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -21,6 +22,9 @@ import {
   buildPresetDateRange,
   earliestStatsCollected
 } from './buildPresetDateRange'
+import { getJourneyStartDate } from './getJourneyStartDate'
+
+const earliestStatsDate = parseISO(earliestStatsCollected)
 
 export function AnalyticsOverlaySwitch(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,11 +34,16 @@ export function AnalyticsOverlaySwitch(): ReactElement {
     dispatch
   } = useEditor()
 
-  const [startDate, setStartDate] = useState<Date | null>(
-    new Date(earliestStatsCollected)
-  )
+  const today = useMemo(() => startOfToday(), [])
+  const minSelectableDate = useMemo(() => {
+    const journeyStart = getJourneyStartDate(journey?.createdAt ?? null)
+    if (journeyStart == null) return earliestStatsDate
+    return journeyStart > earliestStatsDate ? journeyStart : earliestStatsDate
+  }, [journey?.createdAt])
+
+  const [startDate, setStartDate] = useState<Date | null>(earliestStatsDate)
   const [showFilter, setShowFilter] = useState<boolean>(false)
-  const [endDate, setEndDate] = useState<Date | null>(new Date())
+  const [endDate, setEndDate] = useState<Date | null>(today)
   const [selectedPreset, setSelectedPreset] =
     useState<DateRangePresetId>('allTime')
 
@@ -45,7 +54,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
     startDate,
     endDate,
     earliestStatsCollected,
-    new Date()
+    today
   )
 
   useJourneyAnalyticsQuery({
@@ -146,6 +155,8 @@ export function AnalyticsOverlaySwitch(): ReactElement {
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
+          minDate={minSelectableDate}
+          maxDate={today}
         />
       )}
     </Stack>

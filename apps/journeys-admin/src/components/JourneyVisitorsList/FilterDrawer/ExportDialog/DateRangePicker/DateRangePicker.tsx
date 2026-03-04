@@ -14,13 +14,19 @@ interface DateRangePickerProps {
   endDate: Date | null
   onStartDateChange: (date: Date | null) => void
   onEndDateChange: (date: Date | null) => void
+  /** Minimum selectable date (dates before this are disabled). */
+  minDate?: Date | null
+  /** Maximum selectable date (dates after this are disabled). */
+  maxDate?: Date | null
 }
 
 export function DateRangePicker({
   startDate,
   endDate,
   onStartDateChange,
-  onEndDateChange
+  onEndDateChange,
+  minDate = null,
+  maxDate = null
 }: DateRangePickerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -47,6 +53,8 @@ export function DateRangePicker({
               value={startDate}
               onChange={onStartDateChange}
               format="dd-MM-yyyy"
+              minDate={minDate ?? undefined}
+              maxDate={maxDate ?? undefined}
               slots={{
                 openPickerIcon: ChevronDown
               }}
@@ -61,6 +69,8 @@ export function DateRangePicker({
               value={endDate}
               onChange={onEndDateChange}
               format="dd-MM-yyyy"
+              minDate={minDate ?? undefined}
+              maxDate={maxDate ?? undefined}
               slots={{
                 openPickerIcon: ChevronDown
               }}
