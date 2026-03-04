@@ -49,7 +49,7 @@ export const Notifications = {
   ...Template,
   args: {
     apiUser: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '3',
       firstName: 'Person',
       lastName: 'Three',

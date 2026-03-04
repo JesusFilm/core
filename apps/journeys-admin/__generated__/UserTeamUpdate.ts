@@ -9,10 +9,16 @@ import { UserTeamUpdateInput, UserTeamRole } from "./globalTypes";
 // GraphQL mutation operation: UserTeamUpdate
 // ====================================================
 
-export interface UserTeamUpdate_userTeamUpdate_user {
+export interface UserTeamUpdate_userTeamUpdate_user_AnonymousUser {
+  __typename: "AnonymousUser";
+}
+
+export interface UserTeamUpdate_userTeamUpdate_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
 }
+
+export type UserTeamUpdate_userTeamUpdate_user = UserTeamUpdate_userTeamUpdate_user_AnonymousUser | UserTeamUpdate_userTeamUpdate_user_AuthenticatedUser;
 
 export interface UserTeamUpdate_userTeamUpdate {
   __typename: "UserTeam";

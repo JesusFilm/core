@@ -21,8 +21,8 @@ export const TEAM_CREATE = gql`
       userTeams {
         id
         user {
+          id
           ... on AuthenticatedUser {
-            id
             firstName
             lastName
             imageUrl

@@ -1,23 +1,10 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@override", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
   gtmEventName: String
   parentBlock: Block!
-}
-
-type AnonymousUser implements User
-  @shareable
-{
-  id: ID!
-}
-
-type AuthenticatedUser implements User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
 }
 
 interface Block {
@@ -713,7 +700,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: AuthenticatedUser
+  user: User
 }
 
 input IntegrationGoogleCreateInput {
@@ -2270,7 +2257,10 @@ enum TypographyVariant {
   overline
 }
 
-interface User {
+type User
+  @key(fields: "id")
+  @interfaceObject
+{
   id: ID!
 }
 
@@ -2307,7 +2297,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: AuthenticatedUser
+  user: User
   journeyNotification: JourneyNotification
 }
 
@@ -2333,7 +2323,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: AuthenticatedUser!
+  user: User!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 
