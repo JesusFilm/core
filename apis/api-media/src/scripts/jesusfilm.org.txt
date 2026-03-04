@@ -1,0 +1,201 @@
+;;
+;; Domain:     jesusfilm.org.
+;; Exported:   2026-03-03 20:47:33
+;;
+;; This file is intended for use for informational and archival
+;; purposes ONLY and MUST be edited before use on a production
+;; DNS server.  In particular, you must:
+;;   -- update the SOA record with the correct authoritative name server
+;;   -- update the SOA record with the contact e-mail address information
+;;   -- update the NS record(s) with the authoritative name servers for this domain.
+;;
+;; For further information, please consult the BIND documentation
+;; located on the following website:
+;;
+;; http://www.isc.org/
+;;
+;; And RFC 1035:
+;;
+;; http://www.ietf.org/rfc/rfc1035.txt
+;;
+;; Please note that we do NOT offer technical support for any use
+;; of this zone data, the BIND name server, or any other third-party
+;; DNS software.
+;;
+;; Use at your own risk.
+;; SOA Record
+jesusfilm.org	3600	IN	SOA	neil.ns.cloudflare.com. dns.cloudflare.com. 2052423745 10000 2400 604800 3600
+
+;; NS Records
+jesusfilm.org.	86400	IN	NS	neil.ns.cloudflare.com.
+jesusfilm.org.	86400	IN	NS	wally.ns.cloudflare.com.
+
+;; A Records
+lweb02.jesusfilm.org.	1	IN	A	34.231.183.73 ; cf_tags=cf-proxied:true
+nextsteps-crm.jesusfilm.org.	1	IN	A	3.87.115.99 ; cf_tags=cf-proxied:false
+playmap.jesusfilm.org.	1	IN	A	54.208.250.217 ; Goes to the login access for the SMK of the JFP Google Maps. cf_tags=cf-proxied:false
+testing.jesusfilm.org.	1	IN	A	192.237.166.205 ; cf_tags=cf-proxied:false
+
+;; CNAME Records
+1ee8fdb1-3cb5-40fd-9258-35d589917b4a.jesusfilm.org.	1	IN	CNAME	46db7fee31108351.vercel-dns-016.com. ; cf_tags=cf-proxied:false
+26bzb662ywhlanq436dy4uwp7yjlfkos._domainkey.jesusfilm.org.	1	IN	CNAME	26bzb662ywhlanq436dy4uwp7yjlfkos.dkim.amazonses.com. ; jesus-film-project aws account ses record cf_tags=cf-proxied:false
+_2abf55b1302633f88720522fccd4323b.jesusfilm.org.	1	IN	CNAME	_67725e115e5e53b6b33a200aba204f30.nhqijqilxf.acm-validations.aws. ; cf_tags=cf-proxied:false
+_46b8f886a311533cbdcd732347a62b43.ark-weave.jesusfilm.org.	1	IN	CNAME	_3a47daba0258e18eaf5a99e73d90ffb3.lkwmzfhcjn.acm-validations.aws. ; cf_tags=cf-proxied:false
+4b7b842f-ffbe-4829-8117-3138356f72f4.jesusfilm.org.	1	IN	CNAME	cruorg-production-alb-1686885518.us-east-1.elb.amazonaws.com. ; cf_tags=cf-proxied:true
+56btfd76vakoxqyrzp2pf3fxluqgyxtl._domainkey.jesusfilm.org.	1	IN	CNAME	56btfd76vakoxqyrzp2pf3fxluqgyxtl.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+59e40060-a429-4e4d-a11f-59b9d8b5d57e.jesusfilm.org.	1	IN	CNAME	7c6fab637203a9fa.vercel-dns-016.com. ; cf_tags=cf-proxied:false
+_5a5e906c9062985dfe660a8aae6eb9e7.wiki.jesusfilm.org.	1	IN	CNAME	_891bbdf9a157f11fee02edccc931d5ef.xlfgrmvvlj.acm-validations.aws. ; cf_tags=cf-proxied:false
+a3f6b24e-8d57-4c79-b25f-9e2a7d3f421c.jesusfilm.org.	1	IN	CNAME	8f0f4077e2b58fd4.vercel-dns-016.com. ; tataihono added this for the resources project on JFP vercel main branch cf_tags=cf-proxied:false
+_acme-challenge.dam.jesusfilm.org.	1	IN	CNAME	dam.jesusfilm.org.5956jq.flydns.net. ; cf_tags=cf-proxied:false
+add676d7-6625-40c5-b9af-ffce74da8884.jesusfilm.org.	1	IN	CNAME	7c6fab637203a9fa.vercel-dns-016.com. ; cf_tags=cf-proxied:false
+afghanistan.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+africa.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+analytics.jesusfilm.org.	1	IN	CNAME	k8s-ingressn-ingressn-f9b5e10220-c520bea139ebe204.elb.us-east-2.amazonaws.com. ; plausible analytics for jfp core cf_tags=cf-proxied:false
+api-media-core.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+app.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+arabiceaster.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+armagdalena.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+arnativity.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+asj.jesusfilm.org.	1	IN	CNAME	asj-jesusfilm.go-vip.net. ; cf_tags=cf-proxied:true
+assetor.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+bctnu323uznwujsc6pxkiusozt47djmw._domainkey.jesusfilm.org.	1	IN	CNAME	bctnu323uznwujsc6pxkiusozt47djmw.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+blog.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+brandedcheckout.jesusfilm.org.	1	IN	CNAME	give-site-production-alb-1251385984.us-east-1.elb.amazonaws.com. ; cf_tags=cf-proxied:false
+c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org.	1	IN	CNAME	46db7fee31108351.vercel-dns-016.com. ; cf_tags=cf-proxied:false
+cep262t7fe727zfujd7glfro4cylay4p._domainkey.jesusfilm.org.	1	IN	CNAME	cep262t7fe727zfujd7glfro4cylay4p.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+children.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+childrens.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+cv-usprod-1._domainkey.jesusfilm.org.	1	IN	CNAME	cv-usprod-1.jesusfilm.org.dkim.cvent-planner.com. ; 3/29/2024 - From Cvent and Jeff Boehlke cf_tags=cf-proxied:false
+cv-usprod-2._domainkey.jesusfilm.org.	1	IN	CNAME	cv-usprod-2.jesusfilm.org.dkim.cvent-planner.com. ; 3/29/2024 - From Cvent and Jeff Boehlke cf_tags=cf-proxied:false
+dam-assets.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+dam.jesusfilm.org.	1	IN	CNAME	assetor.fly.dev. ; cf_tags=cf-proxied:true
+dev-api-media-core.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+develop.jesusfilm.org.	1	IN	CNAME	www-jesusfilm-org-develop.go-vip.net. ; cf_tags=cf-proxied:true
+dev.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+e2ma-k1._domainkey.jesusfilm.org.	1	IN	CNAME	e2ma-k1.dkim.e2ma.net. ; 4/24/2024 - From Chalkline and Jeff Boehlke cf_tags=cf-proxied:false
+e2ma-k2._domainkey.jesusfilm.org.	1	IN	CNAME	e2ma-k2.dkim.e2ma.net. ; 4/24/2024 - From Chalkline and Jeff Boehlke cf_tags=cf-proxied:false
+e2ma-k3._domainkey.jesusfilm.org.	1	IN	CNAME	e2ma-k3.dkim.e2ma.net. ; 4/24/2024 - From Chalkline and Jeff Boehlke cf_tags=cf-proxied:false
+_e525b0d1bb77c4159c6f7e510d6fada6.graphql.jesusfilm.org.	1	IN	CNAME	_d2c327aff514c837ca7430c3c4cf3f78.tjxrvlrcqj.acm-validations.aws. ; cf_tags=cf-proxied:false
+easter.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+em3962.jesusfilm.org.	1	IN	CNAME	u63711.wl212.sendgrid.net. ; 5/23/2024 - From Jeff Boehlke for SendGrid cf_tags=cf-proxied:false
+_f0a44da751d51a6e96a6469a260a5724.graphql-stage.jesusfilm.org.	1	IN	CNAME	_40a946d28b9c2106f8a58d284e2f42f0.tjxrvlrcqj.acm-validations.aws. ; cf_tags=cf-proxied:false
+f92c2b4c-6a7f-4d56-9c1b-dc8c1e8e0c37.jesusfilm.org.	1	IN	CNAME	8f0f4077e2b58fd4.vercel-dns-016.com. ; tataihono added this for the resources project on JFP vercel stage branch cf_tags=cf-proxied:false
+firebase1._domainkey.jesusfilm.org.	1	IN	CNAME	mail-jesusfilm-org.dkim1._domainkey.firebasemail.com. ; added by Tataihono Nikora for the jesus-film firebase app on 25th Aug 2025 cf_tags=cf-proxied:false
+firebase2._domainkey.jesusfilm.org.	1	IN	CNAME	mail-jesusfilm-org.dkim2._domainkey.firebasemail.com. ; added by Tataihono Nikora for the jesus-film firebase app on 25th Aug 2025 cf_tags=cf-proxied:false
+fundraise.jesusfilm.org.	1	IN	CNAME	secure.qgiv.com. ; cf_tags=cf-proxied:false
+giftcatalog.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+givetogether.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+go2.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+go.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; For Netlify redirects Vance Nordman cf_tags=cf-proxied:true
+graphql.jesusfilm.org.	1	IN	CNAME	graphql.core.jesusfilm.org. ; cf_tags=cf-proxied:false
+hindieaster.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+hindi.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+hindinativity.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+ijjfp6qaiebnhjxhdcqunf26h6krk5iw._domainkey.jesusfilm.org.	1	IN	CNAME	ijjfp6qaiebnhjxhdcqunf26h6krk5iw.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+indiaeaster.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+india.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+iraq.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+japan.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+jesusfilm.org.	1	IN	CNAME	www-jesusfilm-org.go-vip.net. ; cf_tags=cf-proxied:true
+jfphelp.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+jfsf1._domainkey.jesusfilm.org.	1	IN	CNAME	jfsf1.jdlsx5.custdkim.salesforce.com. ; 3/27/2024 - From Salesforce and Jeff Boehlke cf_tags=cf-proxied:false
+jfsf2._domainkey.jesusfilm.org.	1	IN	CNAME	jfsf2.rp7oy4.custdkim.salesforce.com. ; 3/27/2024 - From Salesforce and Jeff Boehlke cf_tags=cf-proxied:false
+k1._domainkey.jesusfilm.org.	1	IN	CNAME	dkim.mcsv.net. ; cf_tags=cf-proxied:false
+kcnlv6c7jxqxg4kwcxfkgk4gm46gdsup._domainkey.jesusfilm.org.	1	IN	CNAME	kcnlv6c7jxqxg4kwcxfkgk4gm46gdsup.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+kpa3egeakum4nbzwld6vap4y3x3ktpej._domainkey.jesusfilm.org.	1	IN	CNAME	kpa3egeakum4nbzwld6vap4y3x3ktpej.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+ktree.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+myimpact.jesusfilm.org.	1	IN	CNAME	cf.microsites.imarketsmart.com. ; 1/31/2024 update for MarketSmart, who host this website for JimJ and JFP Development. Changed from A Record to CNAME. cf_tags=cf-proxied:false
+myvpn.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+nativity.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+nexus.jesusfilm.org.	1	IN	CNAME	6f5381f601a1dd95.vercel-dns-016.com. ; added by tataihono.nikora@jesusfilm.org for the yt-uploader project cf_tags=solutions,cf-proxied:false
+nexus-stage.jesusfilm.org.	1	IN	CNAME	cname.vercel-dns.com. ; added by tataihono.nikora@jesusfilm.org for the yt-uploader project cf_tags=solutions,cf-proxied:false
+or3ovsgwprrhwra7dzlrfsgwr4gc0tbm._domainkey.jesusfilm.org.	600	IN	CNAME	or3ovsgwprrhwra7dzlrfsgwr4gc0tbm.jesusfilm.org.dkim.iad1.oracleemaildelivery.com. ; OCI email delivery service requested by Jonathan Weaver cf_tags=cf-proxied:false
+pascua.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+persiaeaster.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+player.jesusfilm.org.	1	IN	CNAME	d5539481d7e6f52a.vercel-dns-016.com. ; player project on vercel for mobile app added by Tataihono Nikora cf_tags=cf-proxied:false
+player-stage.jesusfilm.org.	1	IN	CNAME	d5539481d7e6f52a.vercel-dns-016.com. ; player project on vercel for mobile app added by Tataihono Nikora cf_tags=cf-proxied:false
+resource-assets.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+russia.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+s1._domainkey.jesusfilm.org.	1	IN	CNAME	s1.domainkey.u63711.wl212.sendgrid.net. ; 5/23/2024 - From Jeff Boehlke for SendGrid cf_tags=cf-proxied:false
+s2._domainkey.jesusfilm.org.	1	IN	CNAME	s2.domainkey.u63711.wl212.sendgrid.net. ; 5/23/2024 - From Jeff Boehlke for SendGrid cf_tags=cf-proxied:false
+s4neo3vs2tyqnzwaqfv33fs5tunju65t._domainkey.jesusfilm.org.	1	IN	CNAME	s4neo3vs2tyqnzwaqfv33fs5tunju65t.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+sites.jesusfilm.org.	1	IN	CNAME	vip-wordpress.cru.org. ; cf_tags=cf-proxied:true
+status.jesusfilm.org.	1	IN	CNAME	statuspage.incident.io. ; statuspage incident.io by tataihono.nikora@cru.org cf_tags=cf-proxied:false
+stg-api-media-core.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+strong1._domainkey.jesusfilm.org.	1	IN	CNAME	strong1._domainkey.helpscout.net. ; 5/20/2024 - From Jeff Boehlke for HelpScout cf_tags=cf-proxied:false
+strong2._domainkey.jesusfilm.org.	1	IN	CNAME	strong2._domainkey.helpscout.net. ; 5/20/2024 - From Jeff Boehlke for HelpScout cf_tags=cf-proxied:false
+studio-gen-assets.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+studio-gen-dev.jesusfilm.org.	1	IN	CNAME	public.r2.dev. ; cf_tags=cf-proxied:true
+support.jesusfilm.org.	1	IN	CNAME	jesusfilm.org. ; cf_tags=cf-proxied:true
+vq42pw5nectqhdgg5yutf4ow3yvuiewr._domainkey.jesusfilm.org.	1	IN	CNAME	vq42pw5nectqhdgg5yutf4ow3yvuiewr.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+w3c3u5zxse2cxzuihktw7xndiagnieg5._domainkey.jesusfilm.org.	1	IN	CNAME	w3c3u5zxse2cxzuihktw7xndiagnieg5.dkim.amazonses.com. ; jesus-film-project aws account ses record cf_tags=cf-proxied:false
+wiki.jesusfilm.org.	1	IN	CNAME	bookstack-alb-939403590.us-east-1.elb.amazonaws.com. ; cf_tags=cf-proxied:false
+www.jesusfilm.org.	1	IN	CNAME	www-jesusfilm-org.go-vip.net. ; cf_tags=cf-proxied:true
+xh3btfoedkwyqa4zgjqedbaxfjuprjnf._domainkey.jesusfilm.org.	1	IN	CNAME	xh3btfoedkwyqa4zgjqedbaxfjuprjnf.dkim.amazonses.com. ; jesus-film-project aws account ses record cf_tags=cf-proxied:false
+xqtff7hz7at2qyffb4vnr6f6trfi3kww._domainkey.jesusfilm.org.	1	IN	CNAME	xqtff7hz7at2qyffb4vnr6f6trfi3kww.dkim.amazonses.com. ; cf_tags=cf-proxied:false
+ytdt-claims-console.jesusfilm.org.	1	IN	CNAME	1736416f6e3de299.vercel-dns-016.com. ; tataihono added for edouard carvalho from digital strategies cf_tags=cf-proxied:false
+
+;; MX Records
+jesusfilm.org.	1	IN	MX	10 alt4.aspmx.l.google.com.
+jesusfilm.org.	1	IN	MX	10 alt3.aspmx.l.google.com.
+jesusfilm.org.	1	IN	MX	5 alt2.aspmx.l.google.com.
+jesusfilm.org.	1	IN	MX	1 aspmx.l.google.com.
+jesusfilm.org.	1	IN	MX	5 alt1.aspmx.l.google.com.
+mail.jesusfilm.org.	1	IN	MX	10 feedback-smtp.us-east-2.amazonses.com. ; jesus-film-project aws account ses mailfrom record
+
+;; NS Records
+central.jesusfilm.org.	1	IN	NS	ns-672.awsdns-20.net.
+central.jesusfilm.org.	1	IN	NS	ns-159.awsdns-19.com.
+central.jesusfilm.org.	1	IN	NS	ns-1540.awsdns-00.co.uk.
+central.jesusfilm.org.	1	IN	NS	ns-1264.awsdns-30.org.
+core.jesusfilm.org.	1	IN	NS	ns-819.awsdns-38.net.
+core.jesusfilm.org.	1	IN	NS	ns-62.awsdns-07.com.
+core.jesusfilm.org.	1	IN	NS	ns-2034.awsdns-62.co.uk.
+core.jesusfilm.org.	1	IN	NS	ns-1198.awsdns-21.org.
+e.jesusfilm.org.	1	IN	NS	d.ns.campaign.adobe.com.
+e.jesusfilm.org.	1	IN	NS	c.ns.campaign.adobe.com.
+e.jesusfilm.org.	1	IN	NS	b.ns.campaign.adobe.com.
+e.jesusfilm.org.	1	IN	NS	a.ns.campaign.adobe.com.
+s.jesusfilm.org.	1	IN	NS	ns4.exacttarget.com. ; 7/23/2025 - Salesforce Email Marketing
+s.jesusfilm.org.	1	IN	NS	ns3.exacttarget.com. ; 7/23/2025 - Salesforce Email Marketing
+s.jesusfilm.org.	1	IN	NS	ns2.exacttarget.com. ; 7/23/2025 - Salesforce Email Marketing
+s.jesusfilm.org.	1	IN	NS	ns1.exacttarget.com. ; 7/23/2025 - Salesforce Email Marketing
+te.jesusfilm.org.	1	IN	NS	d.ns.campaign.adobe.com.
+te.jesusfilm.org.	1	IN	NS	c.ns.campaign.adobe.com.
+te.jesusfilm.org.	1	IN	NS	a.ns.campaign.adobe.com.
+te.jesusfilm.org.	1	IN	NS	b.ns.campaign.adobe.com.
+
+;; TXT Records
+_amazonses.jesusfilm.org.	1	IN	TXT	"fjGPD1b/c+zz059KzO6aiOJdNsWDtmINGlxCkIu/Y7Q="
+_amazonses.jesusfilm.org.	1	IN	TXT	"E7d8MphM0ZYk7Zh5o6atb4IsJKJYB8o1WJuG12BOIUo="
+_amazonses.jesusfilm.org.	1	IN	TXT	"WZOVNvYcgZv9wlvPpKKuu1FtpbWpM4krXWifRAoRdjE="
+_dmarc.jesusfilm.org.	1	IN	TXT	"v=DMARC1; p=quarantine; pct=100; rua=mailto:qsijagep@ag.us.dmarcian.com;" ; 1/13/2025 - updated pct=100 per Jeff Boehlke.
+google._domainkey.jesusfilm.org.	1	IN	TXT	"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBqGWh4XI/D+v8ab6LFdm36uxJ2zPxvrhhhvD/cOVVXOR9Su/POIK/AEnPxjgJvk2Dx5HY8fXxmkHNNobsJat+ibmai82Sc3W8eT9iKzDIHEhHUmkqzo+ZADhdkZmsNkaRWGidKllMhEk/yCRP3VhwkU316PsF+GHm/7s17vjAFQIDAQAB"
+jesusfilm.org.	1	IN	TXT	"v=spf1 a ip4:65.182.169.42/32 ip4:204.232.157.137/32 ip4:204.232.157.139/32 ip4:166.78.190.164/32 ip4:50.97.77.226/32 ip4:166.78.101.125/32  ip4:10.0.2.221 ip6:2001:4801:7818:6:6872:4fd1:ff10:22d8 include:_spf.google.com include:helpscoutemail.com include" ":amazonses.com include:rp.oracleemaildelivery.com include:_spf.firebasemail.com ~all" ; 12/17/2024 added oracle Jon Weaver 2/29/2024 - Per Jeff Boehlke, PatrickO removed: mx 2/21/2024 - Per Jeff Boehlke, PatrickO removed:  include:servers.mcsv.net, T Nikora added: firebase
+jesusfilm.org.	1	IN	TXT	"firebase=jesus-film" ; Added by Tataihono Nikora for the jesus-film firebase app
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=icegb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=32bcb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=lcyeb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=wz0eb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=qdocb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=yfacb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	1	IN	TXT	"e2ma-verification=tq7eb" ; 4/24/2024 - Request from Chalkline and Jeff Boehlke
+jesusfilm.org.	3600	IN	TXT	"google-site-verification=S2gzhquK-V5RErwdtqxJT-SeOJRcP9txzGDEt_10cmU"
+jesusfilm.org.	1	IN	TXT	"protonmail-verification=492964c1372f6a4f44a43b73e9b2d9512c1745b1" ; 4/9/2024- Request from Adam Hagen, JFP IT.
+jesusfilm.org.	1	IN	TXT	"ZOOM_verify_jT17BkphEy3k7kvpigCy7J" ; 3/26/2024 - From Andy Kellogg, Cru Platform Adoption Team Leader
+jesusfilm.org.	3600	IN	TXT	"adobe-idp-site-verification=ea78411513b5cf816afe6f0068ae5f89ccfd570274c4671e56ba5c167f0ee52a" ; JF Okta sign in for Cru
+jesusfilm.org.	1	IN	TXT	"canva-site-verification=giO2BLuMCLV1BSQ19UU7gw"
+jesusfilm.org.	1	IN	TXT	"google-site-verification=OvQKaFVvw8PQgkjTGie7DY9oiRg5K1IGsNeY8785iVo"
+jesusfilm.org.	1	IN	TXT	"traction-guest=e4d0778c-2089-4330-ad04-f7fb109c049d"
+jesusfilm.org.	1	IN	TXT	"google-site-verification=9oObHuC-z_CArHwhxDhNUI5WbFq0OsU-kgHNElht4qQ"
+jesusfilm.org.	1	IN	TXT	"google-site-verification=DkTt-drEaU-5c8F3fY9E4qXeosq1zDyHmNcHmzHgvdk"
+jesusfilm.org.	1	IN	TXT	"MS=533F53C90E5408320C424163E3FF3CC719CC6B8E"
+jesusfilm.org.	1	IN	TXT	"MS=ms12334634"
+jesusfilm.org.	1	IN	TXT	"workplace-domain-verification=a2e4cc12-6403-4679-8fe2-75dbedda702a"
+jesusfilm.org.	1	IN	TXT	"ciscocidomainverification=3c2ffc19155b82f4e2c035d02e8f4d156188423f6f80264449e73b5d911feb30"
+jesusfilm.org.	1	IN	TXT	"google-site-verification=Hwtitq02qB4g293BjFsVwYQKXUsY4P2XyIrQwHFIGGs"
+jesusfilm.org.	1	IN	TXT	"google-site-verification=SQFHj1pbOYTqUg1Tc--bd_q7YZnm0vjlMXem2qTYbL4"
+jesusfilm.org.	1	IN	TXT	"google-site-verification=Rw4gHnmU6ybhb1spD-r54TVMCH8vx1wKnvEyhEEZIow"
+mail.jesusfilm.org.	1	IN	TXT	"v=spf1 include:amazonses.com ~all" ; jesus-film-project aws account ses mailfrom record
+mailo._domainkey.myimpact.jesusfilm.org.	1	IN	TXT	"k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtJ6ptx9YwZI6J+D7creYgAMgCfo4P3w9feUvFUkRwnnKVx8b1eKtib1aVHPTsr8uWVS/UagUldCiBwB3vtIdEbOecjFATs55w2K5/WlkeV7B6SxQHgq53fZwpbcdp1Tfmoda97JOV44rzsMy0JvJhr2avZwLMZqRWGvmkBFYJbwIDAQAB" ; Requested by Julian Ventura MarketSmart 4/14/2025
+_vercel.jesusfilm.org.	1	IN	TXT	"vc-domain-verify=status.jesusfilm.org,51c9eab91bd88c41a665" ; statuspage incident.io by tataihono.nikora@cru.org
