@@ -56,7 +56,11 @@ describe('GoogleIntegrationDetails', () => {
       {
         id: 'integrationId',
         accountEmail: 'user@example.com',
-        user: { id: 'userId' }
+        user: {
+          id: 'userId',
+          __typename: 'AuthenticatedUser',
+          email: 'user@example.com'
+        }
       }
     ]
   }: {
@@ -64,7 +68,7 @@ describe('GoogleIntegrationDetails', () => {
     integrations?: Array<{
       id: string
       accountEmail?: string
-      user?: { id: string }
+      user?: { id: string; __typename: 'AuthenticatedUser'; email: string }
     }>
   }): void {
     ;(useRouter as jest.Mock).mockReturnValue({
@@ -82,7 +86,9 @@ describe('GoogleIntegrationDetails', () => {
     ;(useCurrentUserLazyQuery as jest.Mock).mockReturnValue({
       loadUser: jest.fn(),
       data: {
-        id: 'userId'
+        id: 'userId',
+        __typename: 'AuthenticatedUser',
+        email: 'user@example.com'
       }
     })
     ;(useUserTeamsAndInvitesQuery as jest.Mock).mockReturnValue({
@@ -90,7 +96,11 @@ describe('GoogleIntegrationDetails', () => {
         userTeams: canManageSyncs
           ? [
               {
-                user: { id: 'userId' },
+                user: {
+                  id: 'userId',
+                  __typename: 'AuthenticatedUser',
+                  email: 'user@example.com'
+                },
                 role: UserTeamRole.manager
               }
             ]
@@ -99,11 +109,27 @@ describe('GoogleIntegrationDetails', () => {
     })
   }
 
+  function getGoogleSheetsSyncsMock(): MockedResponse {
+    return {
+      request: {
+        query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
+        variables: {
+          filter: { integrationId: 'integrationId' }
+        }
+      },
+      result: {
+        data: {
+          googleSheetsSyncs: []
+        }
+      }
+    }
+  }
+
   it('renders integration information and actions', () => {
     setupMocks({})
 
     const { getByText, getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[getGoogleSheetsSyncsMock()]} addTypename={false}>
         <SnackbarProvider>
           <GoogleIntegrationDetails />
         </SnackbarProvider>
@@ -119,7 +145,7 @@ describe('GoogleIntegrationDetails', () => {
     setupMocks({ canManageSyncs: false })
 
     const { getByRole } = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={[getGoogleSheetsSyncsMock()]} addTypename={false}>
         <SnackbarProvider>
           <GoogleIntegrationDetails />
         </SnackbarProvider>
