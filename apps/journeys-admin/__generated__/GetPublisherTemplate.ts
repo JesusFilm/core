@@ -670,6 +670,11 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
   customizable: boolean | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
@@ -678,12 +683,7 @@ export interface GetPublisherTemplate_publisherTemplate_userJourneys_user_Authen
   imageUrl: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_userJourneys_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type GetPublisherTemplate_publisherTemplate_userJourneys_user = GetPublisherTemplate_publisherTemplate_userJourneys_user_AuthenticatedUser | GetPublisherTemplate_publisherTemplate_userJourneys_user_AnonymousUser;
+export type GetPublisherTemplate_publisherTemplate_userJourneys_user = GetPublisherTemplate_publisherTemplate_userJourneys_user_AnonymousUser | GetPublisherTemplate_publisherTemplate_userJourneys_user_AuthenticatedUser;
 
 export interface GetPublisherTemplate_publisherTemplate_userJourneys {
   __typename: "UserJourney";

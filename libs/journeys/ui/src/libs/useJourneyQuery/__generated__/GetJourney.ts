@@ -670,6 +670,11 @@ export interface GetJourney_journey_creatorImageBlock {
   customizable: boolean | null;
 }
 
+export interface GetJourney_journey_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
 export interface GetJourney_journey_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
@@ -678,12 +683,7 @@ export interface GetJourney_journey_userJourneys_user_AuthenticatedUser {
   imageUrl: string | null;
 }
 
-export interface GetJourney_journey_userJourneys_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type GetJourney_journey_userJourneys_user = GetJourney_journey_userJourneys_user_AuthenticatedUser | GetJourney_journey_userJourneys_user_AnonymousUser;
+export type GetJourney_journey_userJourneys_user = GetJourney_journey_userJourneys_user_AnonymousUser | GetJourney_journey_userJourneys_user_AuthenticatedUser;
 
 export interface GetJourney_journey_userJourneys {
   __typename: "UserJourney";
