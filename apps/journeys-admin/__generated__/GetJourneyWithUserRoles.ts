@@ -11,6 +11,7 @@ import { UserJourneyRole } from "./globalTypes";
 
 export interface GetJourneyWithUserRoles_adminJourney_userJourneys_user_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface GetJourneyWithUserRoles_adminJourney_userJourneys_user_AuthenticatedUser {
