@@ -21,6 +21,11 @@ export interface CreateJourney_journeyCreate_language {
   name: CreateJourney_journeyCreate_language_name[];
 }
 
+export interface CreateJourney_journeyCreate_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
 export interface CreateJourney_journeyCreate_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
@@ -29,12 +34,7 @@ export interface CreateJourney_journeyCreate_userJourneys_user_AuthenticatedUser
   imageUrl: string | null;
 }
 
-export interface CreateJourney_journeyCreate_userJourneys_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type CreateJourney_journeyCreate_userJourneys_user = CreateJourney_journeyCreate_userJourneys_user_AuthenticatedUser | CreateJourney_journeyCreate_userJourneys_user_AnonymousUser;
+export type CreateJourney_journeyCreate_userJourneys_user = CreateJourney_journeyCreate_userJourneys_user_AnonymousUser | CreateJourney_journeyCreate_userJourneys_user_AuthenticatedUser;
 
 export interface CreateJourney_journeyCreate_userJourneys {
   __typename: "UserJourney";

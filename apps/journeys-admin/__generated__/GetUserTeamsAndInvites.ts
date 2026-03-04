@@ -11,13 +11,14 @@ import { UserTeamFilterInput, UserTeamRole } from "./globalTypes";
 
 export interface GetUserTeamsAndInvites_userTeams_user_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface GetUserTeamsAndInvites_userTeams_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
+  id: string;
   email: string;
   firstName: string;
-  id: string;
   imageUrl: string | null;
   lastName: string | null;
 }
