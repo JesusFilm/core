@@ -86,11 +86,13 @@ export function LanguageScreen({
         slug: null
       }
     : null
-
-  const filteredChildJourneyLanguages = uniqBy(
-    currentJourneyLanguage != null
-      ? [...childJourneyLanguages, currentJourneyLanguage]
-      : childJourneyLanguages,
+  const languages = uniqBy(
+    [
+      ...parentJourneyLanguages,
+      ...(currentJourneyLanguage != null
+        ? [...childJourneyLanguages, currentJourneyLanguage]
+        : childJourneyLanguages)
+    ],
     (lang) => lang.id
   )
 
@@ -109,12 +111,6 @@ export function LanguageScreen({
     const map = Object.fromEntries(mapArray)
     return map
   })()
-
-  const languages = [
-    ...parentJourneyLanguages,
-    ...filteredChildJourneyLanguages
-  ]
-
   const languagesJourneyMap = {
     ...parentJourneyLanguagesJourneyMap,
     ...filteredChildJourneyLanguagesJourneyMap

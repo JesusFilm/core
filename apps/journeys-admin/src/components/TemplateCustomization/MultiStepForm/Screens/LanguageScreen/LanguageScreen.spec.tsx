@@ -415,6 +415,23 @@ describe('LanguageScreen', () => {
                   }
                 ]
               }
+            },
+            {
+              __typename: 'Journey' as const,
+              id: 'current-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
             }
           ]
         }
@@ -425,7 +442,6 @@ describe('LanguageScreen', () => {
       GetParentJourneysFromTemplateId,
       GetParentJourneysFromTemplateIdVariables
     > = {
-      ...mockGetParentJourneysFromTemplateId,
       request: {
         query: GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID,
         variables: {
@@ -433,6 +449,29 @@ describe('LanguageScreen', () => {
             template: true,
             ids: ['template-duplicate']
           }
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            {
+              __typename: 'Journey' as const,
+              id: 'template-duplicate',
+              fromTemplateId: null,
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            }
+          ]
         }
       }
     }
@@ -489,9 +528,11 @@ describe('LanguageScreen', () => {
     fireEvent.keyDown(screen.getByTestId('LanguageAutocompleteInput'), {
       key: 'ArrowDown'
     })
-    await waitFor(() =>
-      fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
-    )
+    await waitFor(() => {
+      const spanishOptions = screen.getAllByRole('option', { name: 'Spanish' })
+      expect(spanishOptions).toHaveLength(1)
+    })
+    fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
 
