@@ -6,15 +6,10 @@ import { prisma as prismaUsers } from '@core/prisma/users/client'
 
 const CLEANUP_DAYS = 5
 
-export async function service(
-  job: Job,
-  logger?: Logger
-): Promise<void> {
+export async function service(job: Job, logger?: Logger): Promise<void> {
   logger?.info('Starting anonymous journey cleanup')
 
-  const cutoffDate = new Date(
-    Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000
-  )
+  const cutoffDate = new Date(Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000)
   let deletedCount = 0
 
   try {
