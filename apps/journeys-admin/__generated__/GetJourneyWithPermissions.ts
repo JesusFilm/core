@@ -11,13 +11,14 @@ import { UserTeamRole, UserJourneyRole } from "./globalTypes";
 
 export interface GetJourneyWithPermissions_journey_team_userTeams_user_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface GetJourneyWithPermissions_journey_team_userTeams_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
+  id: string;
   email: string;
   firstName: string;
-  id: string;
   imageUrl: string | null;
   lastName: string | null;
 }

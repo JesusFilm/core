@@ -11,6 +11,7 @@ import { TeamCreateInput, UserTeamRole } from "./globalTypes";
 
 export interface TeamCreate_teamCreate_userTeams_user_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface TeamCreate_teamCreate_userTeams_user_AuthenticatedUser {

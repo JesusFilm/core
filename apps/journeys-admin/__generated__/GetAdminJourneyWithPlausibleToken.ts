@@ -670,6 +670,11 @@ export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
   customizable: boolean | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
@@ -678,12 +683,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_Aut
   imageUrl: string | null;
 }
 
-export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type GetAdminJourneyWithPlausibleToken_journey_userJourneys_user = GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser | GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser;
+export type GetAdminJourneyWithPlausibleToken_journey_userJourneys_user = GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser | GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser;
 
 export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys {
   __typename: "UserJourney";
