@@ -14,8 +14,8 @@ import {
 export const GET_CURRENT_USER = gql`
   query GetCurrentUser {
     me {
+      id
       ... on AuthenticatedUser {
-        id
         email
       }
     }

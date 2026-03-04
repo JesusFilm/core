@@ -48,8 +48,8 @@ export const GET_JOURNEY_WITH_USER_ROLES = gql`
         id
         role
         user {
+          id
           ... on AuthenticatedUser {
-            id
             email
           }
         }

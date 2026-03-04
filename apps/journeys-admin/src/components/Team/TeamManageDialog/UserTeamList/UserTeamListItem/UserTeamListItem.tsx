@@ -35,9 +35,7 @@ export const USER_TEAM_UPDATE = gql`
       role
       id
       user {
-        ... on AuthenticatedUser {
-          id
-        }
+        id
       }
     }
   }

@@ -27,8 +27,8 @@ export const GET_INTEGRATION = gql`
         id
         type
         user {
+          id
           ... on AuthenticatedUser {
-            id
             email
           }
         }

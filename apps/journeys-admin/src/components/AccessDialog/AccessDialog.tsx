@@ -36,10 +36,10 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
           id
           role
           user {
+            id
             ... on AuthenticatedUser {
               email
               firstName
-              id
               imageUrl
               lastName
             }
