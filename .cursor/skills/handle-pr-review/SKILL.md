@@ -39,7 +39,3 @@ When the user asks to check or fix review feedback on a PR (e.g. on JesusFilm/co
 - Workflow-level `permissions: contents: read` satisfies CodeQL; job-level override only if needed.
 - Resolved threads: skip; comment may say "Addressed in commits X to Y".
 - If PR number unknown: infer from `git branch --show-current` (e.g. `chore/3-lint-rollout` → PR for issue #3, or `jacobusbrink/eng-3582-*` → PR for ENG-3582) or list PRs for the branch.
-
----
-
-*Adapted from [Forge handle-pr-review](https://github.com/JesusFilm/forge/blob/main/.cursor/skills/handle-pr-review/SKILL.md) for Next Steps (JesusFilm/core).*
