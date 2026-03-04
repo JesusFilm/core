@@ -762,13 +762,6 @@ export class JourneyNotificationUpdateInput {
     visitorInteractionEmail: boolean;
 }
 
-export class JourneyProfileUpdateInput {
-    lastActiveTeamId?: Nullable<string>;
-    journeyFlowBackButtonClicked?: Nullable<boolean>;
-    plausibleJourneyFlowViewed?: Nullable<boolean>;
-    plausibleDashboardViewed?: Nullable<boolean>;
-}
-
 export class JourneyThemeCreateInput {
     journeyId: string;
     headerFont?: Nullable<string>;
@@ -1190,8 +1183,6 @@ export abstract class IMutation {
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
-
-    abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyThemeCreate(input: JourneyThemeCreateInput): JourneyTheme | Promise<JourneyTheme>;
 
