@@ -1,6 +1,6 @@
 schema
   @link(url: "https://specs.apollo.dev/link/v1.0")
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable", "@external"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable", "@external", "@interfaceObject"])
 {
   query: Query
   mutation: Mutation
@@ -28,7 +28,7 @@ directive @federation__override(from: String!) on FIELD_DEFINITION
 
 directive @federation__composeDirective(name: String) repeatable on SCHEMA
 
-directive @federation__interfaceObject on OBJECT
+directive @interfaceObject on OBJECT
 
 directive @federation__authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM
 
@@ -2109,7 +2109,7 @@ type IntegrationGoogle implements Integration
   id: ID!
   team: Team!
   type: IntegrationType!
-  user: AuthenticatedUser
+  user: User
   accountEmail: String
 }
 
@@ -2305,7 +2305,7 @@ type UserJourney
   userId: ID!
   journeyId: ID!
   role: UserJourneyRole!
-  user: AuthenticatedUser
+  user: User
 
   """Date time of when the journey was first opened"""
   openedAt: DateTime
@@ -2429,7 +2429,7 @@ type UserTeam
 {
   journeyNotification(journeyId: ID!): JourneyNotification
   id: ID!
-  user: AuthenticatedUser!
+  user: User!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -2697,18 +2697,9 @@ type Translation {
   primary: Boolean!
 }
 
-interface User {
-  id: ID!
-}
-
-extend type AuthenticatedUser implements User
+type User
   @key(fields: "id")
-{
-  id: ID! @external
-}
-
-extend type AnonymousUser implements User
-  @key(fields: "id")
+  @interfaceObject
 {
   id: ID!
 }
@@ -3061,4 +3052,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = AnonymousUser | AuthenticatedUser | Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | VideoBlock | Visitor

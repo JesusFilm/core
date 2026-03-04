@@ -44,7 +44,7 @@ export const CustomizeFlowNextButton = ({
       aria-label={ariaLabel}
       data-testid="CustomizeFlowNextButton"
       sx={{
-        width: BUTTON_NEXT_STEP_WIDTH,
+        width: { xs: '100%', sm: BUTTON_NEXT_STEP_WIDTH },
         height: BUTTON_NEXT_STEP_HEIGHT,
         alignSelf: 'center',
         mt: { xs: 6, sm: 4 },

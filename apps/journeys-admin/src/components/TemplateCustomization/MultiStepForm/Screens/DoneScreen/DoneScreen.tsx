@@ -2,13 +2,17 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import NextImage from 'next/image'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
+import { transformer } from '@core/journeys/ui/transformer'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
@@ -26,8 +30,12 @@ export function DoneScreen({
   const journeyPath = `/api/preview?slug=${journey?.slug}`
   const href = journey?.slug != null ? journeyPath : undefined
 
-  function handleContinueEditing(): void {
-    if (journey?.id != null) void router.push(`/journeys/${journey.id}`)
+  const steps = transformer(journey?.blocks ?? []) as Array<
+    TreeBlock<StepBlock>
+  >
+
+  function handleGoToProjectsDashboard(): void {
+    if (journey?.id != null) void router.push('/')
   }
 
   return (
@@ -38,7 +46,7 @@ export function DoneScreen({
         display={{ xs: 'none', sm: 'block' }}
         sx={{ mb: { xs: 0, sm: 2 } }}
       >
-        {t("It's Ready!")}
+        {t('Ready to Share!')}
       </Typography>
       <Typography
         variant="h6"
@@ -46,7 +54,7 @@ export function DoneScreen({
         gutterBottom
         sx={{ mb: { xs: 0, sm: 2 } }}
       >
-        {t("It's Ready!")}
+        {t('Ready to Share!')}
       </Typography>
       <Typography
         color="text.secondary"
@@ -54,12 +62,11 @@ export function DoneScreen({
         variant="subtitle2"
         display={{ xs: 'none', sm: 'block' }}
         sx={{
-          maxWidth: { xs: '100%', sm: '90%' }
+          maxWidth: { xs: '100%', sm: '90%' },
+          pb: 6
         }}
       >
-        {t(
-          'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
-        )}
+        {t('Share your unique link on any platform.')}
       </Typography>
       <Typography
         color="text.secondary"
@@ -67,118 +74,63 @@ export function DoneScreen({
         variant="body2"
         display={{ xs: 'block', sm: 'none' }}
         sx={{
-          maxWidth: { xs: '100%', sm: '90%' }
+          maxWidth: { xs: '100%', sm: '90%' },
+          pb: 4
         }}
       >
-        {t(
-          'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
-        )}
+        {t('Share your unique link on any platform.')}
       </Typography>
-      <Box
-        sx={{
-          width: 300,
-          height: 300,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          boxShadow: 3,
-          p: 2,
-          mt: 6
-        }}
-      >
-        <Stack
-          justifyContent="center"
-          alignItems="center"
-          sx={{
-            height: { xs: 185, sm: 210 },
-            position: 'relative',
-            overflow: 'hidden'
-          }}
-        >
-          {journey?.primaryImageBlock?.src != null ? (
-            <NextImage
-              src={journey?.primaryImageBlock?.src ?? ''}
-              alt={journey?.primaryImageBlock.alt ?? ''}
-              fill
-              objectFit="cover"
-              style={{
-                borderRadius: '8px',
-                padding: 3
-              }}
-            />
-          ) : (
-            <GridEmptyIcon fontSize="large" />
-          )}
-        </Stack>
-        <Stack gap={2} sx={{ mt: { xs: 8, sm: 4 } }}>
-          <Typography variant="subtitle1" noWrap>
-            {journey?.seoTitle ?? journey?.title ?? ''}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            noWrap
-            sx={{
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
-            }}
-          >
-            {journey?.seoDescription ?? journey?.description ?? ''}
-          </Typography>
-        </Stack>
-      </Box>
+
+      {steps.length > 0 && (
+        <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+      )}
 
       <Stack
         gap={4}
+        direction={{ xs: 'column', sm: 'row' }}
         sx={{
           width: { xs: '100%', sm: 300 },
           mt: 6
         }}
       >
-        <Button
-          data-testid="DoneScreenPreviewButton"
-          fullWidth
-          variant="contained"
-          href={href}
-          component={href != null ? 'a' : 'button'}
-          target={href != null ? '_blank' : undefined}
-          sx={{
-            borderRadius: 3,
-            backgroundColor: 'secondary.main',
-            height: '41px'
-          }}
-        >
-          <Typography variant="subtitle2">{t('Preview in New Tab')}</Typography>
-        </Button>
-
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Button
+            data-testid="DoneScreenPreviewButton"
+            fullWidth
+            variant="outlined"
+            color="secondary"
+            href={href}
+            component={href != null ? 'a' : 'button'}
+            target={href != null ? '_blank' : undefined}
+            startIcon={<Play3Icon />}
+            sx={{
+              borderRadius: 3,
+              height: '41px'
+            }}
+          >
+            <Typography variant="subtitle2">{t('Preview')}</Typography>
+          </Button>
+        </Box>
         <Box
           sx={{
-            width: '100%',
+            flex: 1,
+            minWidth: 0,
             '& button': { width: '100% !important' }
           }}
         >
-          <ShareItem
-            variant="button"
-            journey={journey}
-            buttonVariant="default"
-          />
+          <ShareItem variant="button" journey={journey} buttonVariant="icon" />
         </Box>
-
-        <Button
-          data-testid="DoneScreenContinueEditingButton"
-          fullWidth
-          variant="contained"
-          onClick={handleContinueEditing}
-          sx={{
-            borderRadius: 3,
-            backgroundColor: 'secondary.main',
-            height: '41px'
-          }}
-        >
-          <Typography variant="subtitle2">{t('Keep Editing')}</Typography>
-        </Button>
       </Stack>
+      <Button
+        data-testid="ProjectsDashboardButton"
+        onClick={handleGoToProjectsDashboard}
+        endIcon={<ArrowRightContained1Icon />}
+        sx={{ mt: 4 }}
+      >
+        <Typography variant="subtitle2">
+          {t('Go To Projects Dashboard')}
+        </Typography>
+      </Button>
     </Stack>
   )
 }

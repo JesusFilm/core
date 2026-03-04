@@ -872,10 +872,6 @@ export interface Integration {
     type: IntegrationType;
 }
 
-export interface User {
-    id: string;
-}
-
 export class NavigateToBlockAction implements Action {
     __typename?: 'NavigateToBlockAction';
     parentBlockId: string;
@@ -1702,7 +1698,7 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    user?: Nullable<AuthenticatedUser>;
+    user?: Nullable<User>;
     accountEmail?: Nullable<string>;
 }
 
@@ -1739,7 +1735,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
-    user?: Nullable<AuthenticatedUser>;
+    user?: Nullable<User>;
     openedAt?: Nullable<DateTime>;
 }
 
@@ -1811,7 +1807,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: AuthenticatedUser;
+    user: User;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -1910,6 +1906,11 @@ export class Translation {
     value: string;
     language: Language;
     primary: boolean;
+}
+
+export class User {
+    __typename?: 'User';
+    id: string;
 }
 
 export class UserInvite {
@@ -2020,14 +2021,6 @@ export class Tag {
 }
 
 export class ShortLink {
-    id: string;
-}
-
-export class AuthenticatedUser implements User {
-    id: string;
-}
-
-export class AnonymousUser implements User {
     id: string;
 }
 

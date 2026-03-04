@@ -12,7 +12,9 @@ export const cache = {
      these relationships, we need to pass a possibleTypes option when
      initializing InMemoryCache.
    */
-  possibleTypes: {},
+  possibleTypes: {
+    User: ['AuthenticatedUser', 'AnonymousUser']
+  },
   typePolicies: {
     Query: {
       fields: {
