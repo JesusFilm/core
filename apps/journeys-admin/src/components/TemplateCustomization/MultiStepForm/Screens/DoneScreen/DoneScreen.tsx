@@ -151,10 +151,16 @@ export function DoneScreen({
             p: 5
           }}
         >
-          <Typography variant="subtitle1" display={{ xs: 'none', sm: 'block' }}>
+          <Typography
+            variant="subtitle1"
+            display={{ xs: 'none', sm: 'block' }}
+          >
             {t('Choose where responses go:')}
           </Typography>
-          <Typography variant="subtitle1" display={{ xs: 'block', sm: 'none' }}>
+          <Typography
+            variant="subtitle1"
+            display={{ xs: 'block', sm: 'none' }}
+          >
             {t('Choose Response Destination:')}
           </Typography>
           <Stack
