@@ -29,6 +29,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { format } from 'date-fns'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
+import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
@@ -164,6 +165,7 @@ export function GoogleSheetsSyncDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
+  const user = useUser()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
@@ -250,10 +252,12 @@ export function GoogleSheetsSyncDialog({
 
     const openSyncDialog = router.query.openSyncDialog === 'true'
 
-    // New flow: handle OAuth code exchange directly
+    // New flow: handle OAuth code exchange directly (wait for auth to settle)
     const authCode = router.query.code as string | undefined
     if (authCode != null && openSyncDialog) {
-      void handleIntegrationCreate(authCode)
+      if (user.clientInitialized) {
+        void handleIntegrationCreate(authCode)
+      }
       return
     }
 
@@ -273,7 +277,7 @@ export function GoogleSheetsSyncDialog({
         variant: 'success'
       })
     }
-  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t])
+  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t, user.clientInitialized])
 
   useEffect(() => {
     if (open) return
