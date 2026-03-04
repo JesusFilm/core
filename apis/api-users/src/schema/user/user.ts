@@ -15,20 +15,45 @@ import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
+builder.asEntity(User, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) => {
+    try {
+      const user = await findOrFetchUser({}, id, undefined)
+
+      if (user == null) {
+        return { id }
+      }
+
+      if (user.firstName == null || user.firstName.trim() === '') {
+        return {
+          ...user,
+          firstName: 'Unknown User'
+        }
+      }
+
+      return user
+    } catch (error) {
+      console.error(
+        `Federation: Error resolving User entity for userId: ${id}`,
+        error
+      )
+      return { id }
+    }
+  }
+})
+
 builder.asEntity(AuthenticatedUser, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
     try {
-      const user = await prisma.user.findUnique({ where: { userId: id } })
+      const user = await findOrFetchUser({}, id, undefined)
 
-      // Handle cases where user doesn't exist
       if (user == null) {
         console.warn(`Federation: User not found for userId: ${id}`)
         return null
       }
 
-      // Handle cases where firstName is null or empty (data integrity issue)
-      // This provides a fallback to prevent GraphQL federation errors
       if (user.firstName == null || user.firstName.trim() === '') {
         console.warn(
           `Federation: User ${id} has null/empty firstName, using fallback`
@@ -60,8 +85,8 @@ builder.asEntity(AnonymousUser, {
 })
 
 builder.queryFields((t) => ({
-  me: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: AuthenticatedUser,
+  me: t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
+    type: User,
     nullable: true,
     args: {
       input: t.arg({
@@ -69,13 +94,21 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    resolve: async (query, _parent, { input }, ctx) => {
-      return await findOrFetchUser(
-        query,
+    resolve: async (_parent, { input }, ctx) => {
+      const user = await findOrFetchUser(
+        {},
         ctx.currentUser.id,
         input?.redirect ?? undefined,
         input?.app ?? 'NextSteps'
       )
+      if (user == null) return null
+
+      // Return appropriate type based on whether user has email
+      if (user.email != null) {
+        return user
+      }
+      // Anonymous user - only return id
+      return { id: user.id }
     }
   }),
   user: t.withAuth({ isValidInterop: true }).prismaField({
@@ -147,6 +180,35 @@ builder.mutationFields((t) => ({
         input?.app ?? 'NextSteps'
       )
       return true
+    }
+  }),
+  updateMe: t.withAuth({ isAnonymous: true }).field({
+    description:
+      "Updates the current user's firstName, lastName, and email. Only callable by anonymous users.",
+    type: AuthenticatedUser,
+    args: {
+      input: t.arg({ type: UpdateMeInput, required: true })
+    },
+    nullable: true,
+    resolve: async (_parent, { input }, ctx) => {
+      const existingUser = await prisma.user.findUnique({
+        where: { userId: ctx.currentUser.id }
+      })
+      if (existingUser == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+
+      return await prisma.user.update({
+        where: { userId: ctx.currentUser.id },
+        data: {
+          firstName: input.firstName.trim(),
+          email: input.email.trim().toLowerCase(),
+          ...(input.lastName != null && {
+            lastName: input.lastName.trim() || null
+          })
+        }
+      })
     }
   }),
   validateEmail: t.field({

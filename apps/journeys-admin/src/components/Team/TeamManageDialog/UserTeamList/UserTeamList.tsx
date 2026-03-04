@@ -37,8 +37,12 @@ export function UserTeamList({
   const sortedUserTeams: JourneyTeamUserTeam[] | UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []
     return (
-      sortBy(data?.userTeams ?? [], ({ user: { id } }) =>
-        id === currentUserTeam?.id ? 0 : 1
+      sortBy(data?.userTeams ?? [], ({ user }) =>
+        user.__typename === 'AuthenticatedUser' &&
+        currentUserTeam?.user?.__typename === 'AuthenticatedUser' &&
+        user.id === currentUserTeam.user.id
+          ? 0
+          : 1
       ) ?? []
     )
   }, [data, currentUserTeam, variant])
