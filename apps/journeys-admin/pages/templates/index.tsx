@@ -17,7 +17,6 @@ import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetJourneys,
@@ -39,13 +38,6 @@ function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
-  const flags = useFlags()
-  console.log(
-    '[/templates] userId:',
-    user?.id ?? 'anonymous',
-    '| flags:',
-    JSON.stringify(flags)
-  )
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
