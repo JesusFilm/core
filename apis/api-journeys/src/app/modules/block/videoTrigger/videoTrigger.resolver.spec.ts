@@ -4,7 +4,6 @@ import { mockDeep } from 'jest-mock-extended'
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { JourneyCustomizableService } from '../../journey/journeyCustomizable.service'
-import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockService } from '../block.service'
 
 import { VideoTriggerResolver } from './videoTrigger.resolver'
@@ -48,7 +47,6 @@ describe('VideoTriggerBlockResolver', () => {
       providers: [
         BlockService,
         VideoTriggerResolver,
-        UserRoleService,
         PrismaService,
         {
           provide: JourneyCustomizableService,
