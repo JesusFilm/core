@@ -2396,6 +2396,9 @@ type VideoBlock implements Block
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
   customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 input VideoBlockCreateInput {
@@ -2426,6 +2429,7 @@ input VideoBlockCreateInput {
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  notes: String
 }
 
 enum VideoBlockObjectFit {
@@ -2467,6 +2471,7 @@ input VideoBlockUpdateInput {
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  notes: String
 }
 
 type VideoCollapseEvent implements Event

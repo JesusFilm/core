@@ -281,7 +281,6 @@ extend type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
   userTeamInvites(teamId: ID!): [UserTeamInvite!]!
@@ -492,7 +491,6 @@ type Mutation {
   journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
   journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
   journeyThemeDelete(id: ID!): JourneyTheme!
@@ -2451,13 +2449,6 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
-  lastActiveTeamId: String
-  journeyFlowBackButtonClicked: Boolean
-  plausibleJourneyFlowViewed: Boolean
-  plausibleDashboardViewed: Boolean
-}
-
-input JourneyProfileUpdateInput {
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
