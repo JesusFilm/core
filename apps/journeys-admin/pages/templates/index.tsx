@@ -40,7 +40,12 @@ function TemplateIndexPage(): ReactElement {
   const user = useUser()
   const router = useRouter()
   const flags = useFlags()
-  console.log('[/templates] userId:', user?.id ?? 'anonymous', '| flags:', JSON.stringify(flags))
+  console.log(
+    '[/templates] userId:',
+    user?.id ?? 'anonymous',
+    '| flags:',
+    JSON.stringify(flags)
+  )
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
   const { query } = useTeam()
