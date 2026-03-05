@@ -41,7 +41,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
     return journeyStart > earliestStatsDate ? journeyStart : earliestStatsDate
   }, [journey?.createdAt])
 
-  const [startDate, setStartDate] = useState<Date | null>(earliestStatsDate)
+  const [startDate, setStartDate] = useState<Date | null>(minSelectableDate)
   const [showFilter, setShowFilter] = useState<boolean>(false)
   const [endDate, setEndDate] = useState<Date | null>(today)
   const [selectedPreset, setSelectedPreset] =
