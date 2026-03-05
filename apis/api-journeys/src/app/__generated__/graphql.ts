@@ -761,13 +761,6 @@ export class JourneyNotificationUpdateInput {
     visitorInteractionEmail: boolean;
 }
 
-export class JourneyProfileUpdateInput {
-    lastActiveTeamId?: Nullable<string>;
-    journeyFlowBackButtonClicked?: Nullable<boolean>;
-    plausibleJourneyFlowViewed?: Nullable<boolean>;
-    plausibleDashboardViewed?: Nullable<boolean>;
-}
-
 export class JourneyThemeCreateInput {
     journeyId: string;
     headerFont?: Nullable<string>;
@@ -877,10 +870,6 @@ export interface Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-}
-
-export interface User {
-    id: string;
 }
 
 export class NavigateToBlockAction implements Action {
@@ -1161,7 +1150,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>, duplicateAsDraft?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1192,8 +1181,6 @@ export abstract class IMutation {
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
-
-    abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyThemeCreate(input: JourneyThemeCreateInput): JourneyTheme | Promise<JourneyTheme>;
 
@@ -1711,7 +1698,7 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    user?: Nullable<AuthenticatedUser>;
+    user?: Nullable<User>;
     accountEmail?: Nullable<string>;
 }
 
@@ -1748,7 +1735,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
-    user?: Nullable<AuthenticatedUser>;
+    user?: Nullable<User>;
     openedAt?: Nullable<DateTime>;
 }
 
@@ -1820,7 +1807,7 @@ export class UserTeam {
     __typename?: 'UserTeam';
     journeyNotification?: Nullable<JourneyNotification>;
     id: string;
-    user: AuthenticatedUser;
+    user: User;
     role: UserTeamRole;
     createdAt: DateTime;
     updatedAt: DateTime;
@@ -1919,6 +1906,11 @@ export class Translation {
     value: string;
     language: Language;
     primary: boolean;
+}
+
+export class User {
+    __typename?: 'User';
+    id: string;
 }
 
 export class UserInvite {
@@ -2029,14 +2021,6 @@ export class Tag {
 }
 
 export class ShortLink {
-    id: string;
-}
-
-export class AuthenticatedUser implements User {
-    id: string;
-}
-
-export class AnonymousUser implements User {
     id: string;
 }
 

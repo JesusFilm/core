@@ -12,10 +12,10 @@ export const GET_USER_TEAMS_AND_INVITES = gql`
       id
       role
       user {
+        id
         ... on AuthenticatedUser {
           email
           firstName
-          id
           imageUrl
           lastName
         }
