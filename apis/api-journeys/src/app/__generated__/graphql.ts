@@ -1032,8 +1032,6 @@ export abstract class IQuery {
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
 
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
-
     abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
     abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
@@ -1150,7 +1148,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>, duplicateAsDraft?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
