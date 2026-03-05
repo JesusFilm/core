@@ -14,14 +14,6 @@ export function getJourneyStartDate(
   const d =
     typeof createdAt === 'string' ? parseISO(createdAt) : new Date(createdAt)
   return new Date(
-    Date.UTC(
-      d.getUTCFullYear(),
-      d.getUTCMonth(),
-      d.getUTCDate(),
-      0,
-      0,
-      0,
-      0
-    )
+    Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0)
   )
 }
