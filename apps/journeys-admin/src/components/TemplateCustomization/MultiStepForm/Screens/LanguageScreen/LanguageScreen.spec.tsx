@@ -92,6 +92,21 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
+const mockGetLastActiveTeamIdAndTeamsEmptyTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        getJourneyProfile: {
+          id: 'profile-id',
+          lastActiveTeamId: null,
+          __typename: 'JourneyProfile'
+        },
+        teams: []
+      }
+    }
+  }
+
 const mockGetChildJourneysFromTemplateId: MockedResponse<
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
@@ -460,7 +475,7 @@ describe('LanguageScreen', () => {
     render(
       <MockedProvider
         mocks={[
-          mockGetLastActiveTeamIdAndTeams,
+          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
           mockGetCurrentUser,
@@ -493,6 +508,106 @@ describe('LanguageScreen', () => {
       expect(mockJourneyDuplicateForGuestResult).toHaveBeenCalled()
     )
 
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('for anonymous user with existing team: reuses existing team and does not create a new one', async () => {
+    mockUser = {
+      id: null,
+      email: null,
+      firebaseUser: { isAnonymous: true }
+    }
+
+    const existingGuestTeamId = 'teamId1'
+    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+      request: { query: GET_CURRENT_USER },
+      result: {
+        data: {
+          me: {
+            __typename: 'AuthenticatedUser',
+            id: 'anon-user-id',
+            email: ''
+          }
+        }
+      }
+    }
+    const mockJourneyDuplicateForExistingGuest: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: existingGuestTeamId,
+          forceNonTemplate: true,
+          duplicateAsDraft: true
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockJourneyDuplicateForExistingGuestResult = jest.fn(() => ({
+      ...mockJourneyDuplicateForExistingGuest.result
+    }))
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          mockGetCurrentUser,
+          {
+            ...mockJourneyDuplicateForExistingGuest,
+            result: mockJourneyDuplicateForExistingGuestResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen
+                  handleNext={handleNext}
+                  handleScreenNavigation={handleScreenNavigation}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(mockJourneyDuplicateForExistingGuestResult).toHaveBeenCalled()
+    )
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/templates/new-journey-id/customize',

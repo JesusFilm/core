@@ -165,14 +165,20 @@ export function LanguageScreen({
       }
     }
 
-    const [, teamResult] = await Promise.all([
-      loadUser(),
-      teamCreate({
-        variables: {
-          input: { title: teamName, publicTitle: teamName }
-        }
-      })
-    ])
+    await loadUser()
+
+    const existingTeams = query?.data?.teams ?? []
+    if (existingTeams.length > 0) {
+      const teamId =
+        query?.data?.getJourneyProfile?.lastActiveTeamId ?? existingTeams[0].id
+      return { teamId }
+    }
+
+    const teamResult = await teamCreate({
+      variables: {
+        input: { title: teamName, publicTitle: teamName }
+      }
+    })
 
     if (teamResult?.data?.teamCreate == null) {
       throw new Error('Guest team creation returned no team')
