@@ -37,6 +37,7 @@ export interface GetIntegration_integrations_IntegrationGoogle_team {
 
 export interface GetIntegration_integrations_IntegrationGoogle_user_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface GetIntegration_integrations_IntegrationGoogle_user_AuthenticatedUser {

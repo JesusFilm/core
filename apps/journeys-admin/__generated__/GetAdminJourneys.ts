@@ -21,6 +21,11 @@ export interface GetAdminJourneys_journeys_language {
   name: GetAdminJourneys_journeys_language_name[];
 }
 
+export interface GetAdminJourneys_journeys_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
 export interface GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
@@ -29,12 +34,7 @@ export interface GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser {
   imageUrl: string | null;
 }
 
-export interface GetAdminJourneys_journeys_userJourneys_user_AnonymousUser {
-  __typename: "AnonymousUser";
-  id: string;
-}
-
-export type GetAdminJourneys_journeys_userJourneys_user = GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser | GetAdminJourneys_journeys_userJourneys_user_AnonymousUser;
+export type GetAdminJourneys_journeys_userJourneys_user = GetAdminJourneys_journeys_userJourneys_user_AnonymousUser | GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser;
 
 export interface GetAdminJourneys_journeys_userJourneys {
   __typename: "UserJourney";
