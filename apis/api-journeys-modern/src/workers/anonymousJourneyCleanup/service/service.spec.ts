@@ -156,7 +156,9 @@ describe('anonymousJourneyCleanup service', () => {
     ] as any)
     prismaMock.journey.delete.mockResolvedValue({} as any)
     prismaMock.journey.count.mockResolvedValue(0)
-    mockPrismaUsers.user.delete.mockRejectedValue(new Error('user delete failed'))
+    mockPrismaUsers.user.delete.mockRejectedValue(
+      new Error('user delete failed')
+    )
 
     await service(mockJob, mockLogger)
 
@@ -175,9 +177,7 @@ describe('anonymousJourneyCleanup service', () => {
       .mockResolvedValueOnce([{ id: 'journey-1', title: 'J1' }] as any)
       .mockResolvedValueOnce([{ id: 'journey-2', title: 'J2' }] as any)
     prismaMock.journey.delete.mockResolvedValue({} as any)
-    prismaMock.journey.count
-      .mockResolvedValueOnce(0)
-      .mockResolvedValueOnce(3)
+    prismaMock.journey.count.mockResolvedValueOnce(0).mockResolvedValueOnce(3)
     mockPrismaUsers.user.delete.mockResolvedValue({})
 
     await service(mockJob, mockLogger)
