@@ -1,8 +1,12 @@
 import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
-import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { useUser, withUser } from 'next-firebase-auth'
+import {
+  AuthAction,
+  useUser,
+  withUser,
+  withUserTokenSSR
+} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useSnackbar } from 'notistack'
@@ -103,10 +107,16 @@ function TemplateIndexPage(): ReactElement {
   )
 }
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  const { apolloClient, translations, flags } = await initAndAuthApp({
-    locale
+export const getServerSideProps = withUserTokenSSR({
+  whenUnauthed: AuthAction.RENDER
+})(async ({ user, locale, resolvedUrl }) => {
+  const { apolloClient, translations, flags, redirect } = await initAndAuthApp({
+    user: user ?? undefined,
+    locale,
+    resolvedUrl
   })
+
+  if (redirect != null) return { redirect }
 
   await Promise.all([
     apolloClient.query<GetLanguages, GetLanguagesVariables>({
@@ -171,9 +181,10 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       ...translations,
       flags,
       initialApolloState: apolloClient.cache.extract()
-    },
-    revalidate: 60
+    }
   }
-}
+})
 
-export default withUser()(TemplateIndexPage)
+export default withUser({
+  whenUnauthedAfterInit: AuthAction.RENDER
+})(TemplateIndexPage)
