@@ -58,6 +58,8 @@ import { BlockService } from '../block/block.service'
 import { PlausibleJob } from '../plausible/plausible.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
+import { JourneyCustomizableService } from './journeyCustomizable.service'
+
 type BlockWithAction = Block & { action: BlockAction | null }
 
 const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
@@ -71,7 +73,8 @@ export class JourneyResolver {
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService,
-    private readonly qrCodeService: QrCodeService
+    private readonly qrCodeService: QrCodeService,
+    private readonly journeyCustomizableService: JourneyCustomizableService
   ) {}
 
   @Query()
@@ -833,7 +836,7 @@ export class JourneyResolver {
         )
     }
     try {
-      return await this.prismaService.$transaction(async (tx) => {
+      const result = await this.prismaService.$transaction(async (tx) => {
         // Delete all tags and create with new input tags
         if (input.tagIds != null) {
           await tx.journeyTag.deleteMany({
@@ -885,6 +888,10 @@ export class JourneyResolver {
 
         return updatedJourney
       })
+      if (input.website !== undefined) {
+        await this.journeyCustomizableService.recalculate(id)
+      }
+      return result
     } catch (err) {
       if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED)
         throw new GraphQLError('slug is not unique', {
@@ -1104,10 +1111,12 @@ export class JourneyResolver {
       )
     }
 
-    return await this.prismaService.journey.update({
+    const updatedJourney = await this.prismaService.journey.update({
       where: { id },
       data: input
     })
+    await this.journeyCustomizableService.recalculate(id)
+    return updatedJourney
   }
 
   @ResolveField()

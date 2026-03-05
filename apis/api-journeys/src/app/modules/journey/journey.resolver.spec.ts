@@ -39,6 +39,7 @@ import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
 import { JourneyResolver } from './journey.resolver'
+import { JourneyCustomizableService } from './journeyCustomizable.service'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -60,6 +61,7 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
+    journeyCustomizableService: DeepMockProxy<JourneyCustomizableService>,
     ability: AppAbility,
     abilityWithPublisher: AppAbility,
     plausibleQueue: { add: jest.Mock },
@@ -164,6 +166,10 @@ describe('JourneyResolver', () => {
           provide: QrCodeService,
           useValue: mockDeep<QrCodeService>()
         },
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
+        },
         BlockResolver,
         UserRoleResolver,
         UserRoleService,
@@ -185,6 +191,9 @@ describe('JourneyResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    journeyCustomizableService = module.get<JourneyCustomizableService>(
+      JourneyCustomizableService
+    ) as DeepMockProxy<JourneyCustomizableService>
     ability = await new AppCaslFactory().createAbility({
       id: 'userId'
     })
@@ -2463,6 +2472,32 @@ describe('JourneyResolver', () => {
       ).rejects.toThrow('journey not found')
     })
 
+    it('should call recalculate when website is defined', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        website: true
+      })
+      expect(
+        journeyCustomizableService.recalculate
+      ).toHaveBeenCalledWith('journeyId')
+    })
+
+    it('should not call recalculate when website is not in input', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        title: 'new title'
+      })
+      expect(
+        journeyCustomizableService.recalculate
+      ).not.toHaveBeenCalled()
+    })
+
     it('updates customizable to true', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
@@ -2801,6 +2836,16 @@ describe('JourneyResolver', () => {
         where: { id: 'journeyId' },
         data: { template: true }
       })
+    })
+
+    it('should call recalculate after updating template', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+      expect(
+        journeyCustomizableService.recalculate
+      ).toHaveBeenCalledWith('journeyId')
     })
 
     describe('when user is publisher', () => {

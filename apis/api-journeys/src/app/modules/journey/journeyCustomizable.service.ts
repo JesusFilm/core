@@ -55,7 +55,7 @@ export class JourneyCustomizableService {
         CUSTOMIZABLE_LINK_BLOCK_TYPES.includes(block.typename) &&
         block.action != null &&
         block.action.customizable === true &&
-        block.action.blockId == null
+        block.action.blockId == null // excludes NavigateToBlockAction
     )
 
     const hasCustomizableLogo =
@@ -63,8 +63,7 @@ export class JourneyCustomizableService {
       journey.logoImageBlockId != null &&
       blocks.some(
         (block) =>
-          block.id === journey.logoImageBlockId &&
-          block.customizable === true
+          block.id === journey.logoImageBlockId && block.customizable === true
       )
 
     const hasCustomizableMedia =
