@@ -324,10 +324,7 @@ export class JourneyResolver {
         }
       }
     }
-    if (
-      options.status != null &&
-      options.status.length > 0
-    ) {
+    if (options.status != null && options.status.length > 0) {
       filter.status = { in: options.status }
     }
     const journey = await this.prismaService.journey.findUnique({

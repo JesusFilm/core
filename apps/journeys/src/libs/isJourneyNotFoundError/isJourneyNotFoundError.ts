@@ -16,8 +16,7 @@ export function isJourneyNotFoundError(error: unknown): boolean {
   if (err.message === 'journey not found') return true
   const firstGqlMessage = err.graphQLErrors?.[0]?.message
   if (firstGqlMessage === 'journey not found') return true
-  const firstNetworkMessage =
-    err.networkError?.result?.errors?.[0]?.message
+  const firstNetworkMessage = err.networkError?.result?.errors?.[0]?.message
   if (firstNetworkMessage === 'journey not found') return true
   // Gateway may return 400 when journey is not found (e.g. draft filtered out)
   if (err.networkError?.statusCode === 400) return true
