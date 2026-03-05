@@ -103,7 +103,7 @@ export function getCustomizeFlowConfig(
     const socialIndex = screens.indexOf('social')
     screens.splice(socialIndex, 0, 'guestPreview')
   }
-  
+
   if (hasCustomizableMedia && customizableMediaFlag) {
     // Insert media screen before social screen
     const socialIndex = screens.indexOf('social')
