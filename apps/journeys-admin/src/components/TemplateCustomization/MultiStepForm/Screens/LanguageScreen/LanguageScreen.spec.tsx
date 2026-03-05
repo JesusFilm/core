@@ -120,7 +120,12 @@ const mockJourneyDuplicate: MockedResponse<
 > = {
   request: {
     query: JOURNEY_DUPLICATE,
-    variables: { id: 'journeyId', teamId: 'teamId1', forceNonTemplate: true }
+    variables: {
+      id: 'journeyId',
+      teamId: 'teamId1',
+      forceNonTemplate: true,
+      duplicateAsDraft: false
+    }
   },
   result: {
     data: {
@@ -335,7 +340,8 @@ describe('LanguageScreen', () => {
               variables: {
                 id: 'journey-2', // This should match the Spanish language journey ID
                 teamId: 'teamId1',
-                forceNonTemplate: true
+                forceNonTemplate: true,
+                duplicateAsDraft: false
               }
             },
             result: mockJourneyDuplicateMockResult
@@ -634,7 +640,8 @@ describe('LanguageScreen', () => {
         variables: {
           id: 'current-child-id',
           teamId: 'teamId1',
-          forceNonTemplate: true
+          forceNonTemplate: true,
+          duplicateAsDraft: false
         }
       },
       result: mockJourneyDuplicate.result

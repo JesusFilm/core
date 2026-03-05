@@ -143,9 +143,13 @@ export function LanguageScreen({
       language?: { id: string } | null
       team?: { id: string } | null
     },
-    selectedLanguageId: string,
-    selectedTeamId: string
+    values: FormikValues
   ): boolean {
+    const { teamSelect: selectedTeamId } = values
+    const {
+      languageSelect: { id: selectedLanguageId }
+    } = values
+
     const isNotTemplate = journey.template === false
     const languageMatches = journey.language?.id === selectedLanguageId
     const teamMatches = journey.team?.id === selectedTeamId
@@ -179,27 +183,58 @@ export function LanguageScreen({
     return { teamId: teamResult.data.teamCreate.id }
   }
 
-  async function duplicateJourneyAndRedirect(
-    journeyId: string,
-    teamId: string,
-    duplicateAsDraft?: boolean
-  ): Promise<boolean> {
+  async function handleJourneyDuplication(
+    type: 'signedIn' | 'guest',
+    journeyId: string
+  ): Promise<string | null> {
+    let teamId
+    if (type === 'signedIn') {
+      const teams = query?.data?.teams ?? []
+      teamId = query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
+    } else {
+      const guestResult = await createGuestUser()
+      if (guestResult == null) {
+        enqueueSnackbar(
+          t('Unable to create guest user. Please try again or sign in.'),
+          { variant: 'error' }
+        )
+        setLoading(false)
+        return null
+      }
+      teamId = guestResult.teamId
+    }
+
     const { data } = await journeyDuplicate({
       variables: {
         id: journeyId,
         teamId,
         forceNonTemplate: true,
-        duplicateAsDraft
+        duplicateAsDraft: type === 'guest'
       }
     })
-    if (data?.journeyDuplicate == null) return false
 
-    void router.push(
-      `/templates/${data.journeyDuplicate.id}/customize`,
-      undefined,
-      { shallow: true }
-    )
-    return true
+    if (data?.journeyDuplicate == null) {
+      switch (type) {
+        case 'signedIn':
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          return null
+        case 'guest':
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          return null
+      }
+    }
+
+    return data?.journeyDuplicate?.id ?? null
   }
 
   async function handleSubmit(values: FormikValues) {
@@ -213,77 +248,35 @@ export function LanguageScreen({
       return
     }
 
-    const { teamSelect: selectedTeamId } = values
-    const {
-      languageSelect: { id: selectedLanguageId }
-    } = values
     const journeyId =
       languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
 
-    if (shouldSkipDuplicate(journey, selectedLanguageId, selectedTeamId)) {
+    if (shouldSkipDuplicate(journey, values)) {
+      // Skips journey duplicate
       handleNext()
-      return
     } else if (isSignedIn) {
       // Duplicates journey for a signed in user
-      const teams = query?.data?.teams ?? []
-      const teamId =
-        query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
-      if (teamId == null) {
-        enqueueSnackbar(t('No team available. Please create a team first.'), {
-          variant: 'error'
-        })
-        setLoading(false)
-        return
+      const duplicatedJourneyId = await handleJourneyDuplication(
+        'signedIn',
+        journeyId
+      )
+
+      if (duplicatedJourneyId != null) {
+        handleNext(duplicatedJourneyId)
       }
-      const success = await duplicateJourneyAndRedirect(journeyId, teamId)
-      if (!success) {
-        enqueueSnackbar(
-          t(
-            'Failed to duplicate journey to team, please refresh the page and try again'
-          ),
-          { variant: 'error' }
-        )
-      } else {
-        handleNext()
-      }
-      setLoading(false)
-      return
     } else {
       // Creates a guest user and duplicates the journey for them
-      try {
-        const guestResult = await createGuestUser()
-        if (guestResult == null) {
-          enqueueSnackbar(
-            t('Unable to create guest user. Please try again or sign in.'),
-            { variant: 'error' }
-          )
-          setLoading(false)
-          return
-        }
+      const duplicatedJourneyId = await handleJourneyDuplication(
+        'guest',
+        journeyId
+      )
 
-        const journeyDuplicateSuccess = await duplicateJourneyAndRedirect(
-          journeyId,
-          guestResult.teamId,
-          true
-        )
-        if (!journeyDuplicateSuccess) {
-          enqueueSnackbar(
-            t(
-              'Failed to duplicate journey to team, please refresh the page and try again'
-            ),
-            { variant: 'error' }
-          )
-        } else {
-          handleNext()
-        }
-      } catch {
-        enqueueSnackbar(
-          t('Unable to continue as guest. Please try again or sign in.'),
-          { variant: 'error' }
-        )
+      if (duplicatedJourneyId != null) {
+        handleNext(duplicatedJourneyId)
       }
     }
     setLoading(false)
+    return
   }
 
   return (
