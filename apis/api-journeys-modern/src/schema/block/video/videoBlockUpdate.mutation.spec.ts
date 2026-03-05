@@ -192,9 +192,9 @@ describe('videoBlockUpdate', () => {
       variables: { id, input: { ...input, ...notesInput } }
     })
 
-    expect((result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes).toBe(
-      'test trailer note'
-    )
+    expect(
+      (result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes
+    ).toBe('test trailer note')
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id },
@@ -231,9 +231,9 @@ describe('videoBlockUpdate', () => {
       variables: { id, input: { ...input, notes: '' } }
     })
 
-    expect((result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes).toBe(
-      ''
-    )
+    expect(
+      (result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes
+    ).toBe('')
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id },
