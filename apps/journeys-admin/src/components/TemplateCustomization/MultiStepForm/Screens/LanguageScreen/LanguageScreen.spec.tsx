@@ -348,6 +348,204 @@ describe('LanguageScreen', () => {
     expect(handleNext).toHaveBeenCalled()
   })
 
+  it('should use the current journey when multiple child journeys share the same language id', async () => {
+    const journeyWithFromTemplateIdAndLanguage = {
+      ...journey,
+      id: 'current-child-id',
+      fromTemplateId: 'template-duplicate',
+      language: {
+        ...journey.language,
+        id: 'language-duplicate',
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            primary: true,
+            value: 'Spanish'
+          }
+        ]
+      }
+    }
+
+    const mockChildJourneysWithDuplicateLanguage: MockedResponse<
+      GetChildJourneysFromTemplateId,
+      GetChildJourneysFromTemplateIdVariables
+    > = {
+      request: {
+        query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            fromTemplateId: 'template-duplicate'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            {
+              __typename: 'Journey' as const,
+              id: 'sibling-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            },
+            {
+              __typename: 'Journey' as const,
+              id: 'other-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-other',
+                slug: 'fr',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'French'
+                  }
+                ]
+              }
+            },
+            {
+              __typename: 'Journey' as const,
+              id: 'current-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    const mockParentJourneysForDuplicateLanguage: MockedResponse<
+      GetParentJourneysFromTemplateId,
+      GetParentJourneysFromTemplateIdVariables
+    > = {
+      request: {
+        query: GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            ids: ['template-duplicate']
+          }
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            {
+              __typename: 'Journey' as const,
+              id: 'template-duplicate',
+              fromTemplateId: null,
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    const mockJourneyDuplicateForDuplicateLanguage: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'current-child-id',
+          teamId: 'teamId1',
+          forceNonTemplate: true
+        }
+      },
+      result: mockJourneyDuplicate.result
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockChildJourneysWithDuplicateLanguage,
+          mockParentJourneysForDuplicateLanguage,
+          mockJourneyDuplicateForDuplicateLanguage
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: journeyWithFromTemplateIdAndLanguage,
+              variant: 'admin'
+            }}
+          >
+            <TeamProvider>
+              <LanguageScreen
+                handleNext={handleNext}
+                handleScreenNavigation={handleScreenNavigation}
+              />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+
+    fireEvent.focus(screen.getByTestId('LanguageAutocompleteInput'))
+    fireEvent.keyDown(screen.getByTestId('LanguageAutocompleteInput'), {
+      key: 'ArrowDown'
+    })
+    await waitFor(() => {
+      const spanishOptions = screen.getAllByRole('option', { name: 'Spanish' })
+      expect(spanishOptions).toHaveLength(1)
+    })
+    fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
   it('shows error snackbar when duplicate fails', async () => {
     const mockJourneyDuplicateMockResult = jest.fn().mockReturnValue({
       ...mockJourneyDuplicate.result,
@@ -394,7 +592,7 @@ describe('LanguageScreen', () => {
     )
   })
 
-  it('renders the correct social media image', async () => {
+  it('renders the journey preview', async () => {
     const journeyWithImage = {
       ...journey,
       primaryImageBlock: {
@@ -437,14 +635,10 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    await waitFor(() => {
-      const img = screen.getByRole('img')
-      expect(img).toHaveAttribute('alt', 'journey social image')
-    })
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
   })
 
-  it('renders all required components correctly', async () => {
+  it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
         mocks={[
@@ -466,14 +660,19 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByText("Let's get started!")).toHaveLength(2)
+    expect(screen.getByText("Let's Get Started!")).toBeInTheDocument()
+    expect(screen.getByText('Get Started')).toBeInTheDocument()
     expect(
       screen.getByText(
         'A few quick edits and your template will be ready to share.'
       )
     ).toBeInTheDocument()
-    expect(screen.getAllByText(journey.title)).toHaveLength(1)
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
+    expect(
+      screen.getByText("A few quick edits and it's ready to share!")
+    ).toBeInTheDocument()
+
+    expect(screen.getByText(`'${journey.title}'`)).toBeInTheDocument()
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
@@ -486,38 +685,5 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(
       'Next'
     )
-  })
-
-  it('renders skeleton when no journey image is provided', () => {
-    const journeyWithoutImage = {
-      ...journey,
-      primaryImageBlock: null
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: journeyWithoutImage, variant: 'admin' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('SocialImage')).toBeInTheDocument()
-    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
 })

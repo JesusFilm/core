@@ -107,8 +107,10 @@ describe('UserListItem', () => {
       </SnackbarProvider>
     )
 
+    const ownerUser =
+      owner.user?.__typename === 'AuthenticatedUser' ? owner.user : undefined
     expect(getByRole('img').getAttribute('alt')).toBe(
-      `${owner.user?.firstName ?? ''} ${owner.user?.lastName ?? ''}`
+      `${ownerUser?.firstName ?? ''} ${ownerUser?.lastName ?? ''}`
     )
     expect(getByRole('img').getAttribute('src')).toBe('imageSrc')
   })

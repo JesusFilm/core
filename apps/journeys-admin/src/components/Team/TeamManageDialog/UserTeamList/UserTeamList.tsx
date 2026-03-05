@@ -37,8 +37,12 @@ export function UserTeamList({
   const sortedUserTeams: JourneyTeamUserTeam[] | UserTeam[] = useMemo(() => {
     if (variant === 'readonly') return data?.userTeams ?? []
     return (
-      sortBy(data?.userTeams ?? [], ({ user: { id } }) =>
-        id === currentUserTeam?.id ? 0 : 1
+      sortBy(data?.userTeams ?? [], ({ user }) =>
+        user.__typename === 'AuthenticatedUser' &&
+        currentUserTeam?.user?.__typename === 'AuthenticatedUser' &&
+        user.id === currentUserTeam.user.id
+          ? 0
+          : 1
       ) ?? []
     )
   }, [data, currentUserTeam, variant])
@@ -73,13 +77,22 @@ export function UserTeamList({
           {sortedUserTeams.length > 0 && currentUserTeam != null && (
             <>
               {sortedUserTeams.map((userTeam) => {
+                const currentUserEmail =
+                  currentUserTeam.user.__typename === 'AuthenticatedUser'
+                    ? currentUserTeam.user.email
+                    : undefined
+                const userTeamEmail =
+                  userTeam.user.__typename === 'AuthenticatedUser'
+                    ? userTeam.user.email
+                    : undefined
                 return (
                   <UserTeamListItem
                     key={userTeam.id}
                     user={userTeam}
                     disabled={
                       currentUserTeam.role !== UserTeamRole.manager ||
-                      currentUserTeam.user.email === userTeam.user.email ||
+                      (currentUserEmail != null &&
+                        currentUserEmail === userTeamEmail) ||
                       variant === 'readonly'
                     }
                     variant={variant}

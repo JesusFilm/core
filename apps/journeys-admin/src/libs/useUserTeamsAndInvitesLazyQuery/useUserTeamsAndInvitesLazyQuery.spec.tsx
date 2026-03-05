@@ -16,7 +16,7 @@ describe('useUserTeamsAndInvitesLazyQuery', () => {
             id: 'ut1',
             role: UserTeamRole.manager,
             user: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               email: 'userTeam1@example.com',
               firstName: 'User',
               lastName: 'One',
@@ -29,7 +29,7 @@ describe('useUserTeamsAndInvitesLazyQuery', () => {
             id: 'ut2',
             role: UserTeamRole.member,
             user: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               email: 'userTeam2@example.com',
               firstName: 'User',
               lastName: 'Two',

@@ -6,7 +6,7 @@ import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { GetAdminJourneys_journeys_userJourneys_user as ApiUser } from '../../../__generated__/GetAdminJourneys'
+import { GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser as ApiUser } from '../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../__generated__/globalTypes'
 
 export interface AvatarProps {
