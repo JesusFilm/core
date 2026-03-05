@@ -9,6 +9,7 @@
 
 export interface GetCurrentUser_me_AnonymousUser {
   __typename: "AnonymousUser";
+  id: string;
 }
 
 export interface GetCurrentUser_me_AuthenticatedUser {
