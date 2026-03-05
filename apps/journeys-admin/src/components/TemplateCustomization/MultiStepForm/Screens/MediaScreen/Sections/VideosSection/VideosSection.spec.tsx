@@ -215,9 +215,26 @@ describe('VideosSection', () => {
     expect(screen.getByText('trailer')).toBeInTheDocument()
   })
 
-  it('does not show adapter note when notes is empty or null', () => {
+  it('does not show adapter note when notes is null', () => {
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+    expect(screen.queryByText('trailer')).not.toBeInTheDocument()
+  })
+
+  it('does not show adapter note when notes is empty or whitespace', () => {
+    const journeyWithEmptyNotes: Journey = {
+      ...journeyWithMatchingVideoBlock,
+      blocks: [
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          notes: '   '
+        }
+      ]
+    }
+    renderVideosSection({
+      journey: journeyWithEmptyNotes,
       cardBlockId
     })
     expect(screen.queryByText('trailer')).not.toBeInTheDocument()

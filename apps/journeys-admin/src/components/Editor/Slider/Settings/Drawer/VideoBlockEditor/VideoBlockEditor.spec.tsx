@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -636,8 +636,51 @@ describe('VideoBlockEditor', () => {
         </ThemeProvider>
       )
 
-      const notesInput = screen.getByLabelText('Template Adapter Notes')
-      expect(notesInput).not.toBeVisible()
+      expect(
+        screen.queryByLabelText('Template Adapter Notes')
+      ).not.toBeInTheDocument()
+    })
+
+    it('commits trimmed adapter notes on blur', async () => {
+      const onChange = jest.fn().mockResolvedValue(undefined)
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true,
+        notes: null
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={onChange}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      const input = screen.getByLabelText('Template Adapter Notes')
+      fireEvent.change(input, { target: { value: '  trailer  ' } })
+      fireEvent.blur(input)
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith({ notes: 'trailer' })
+      )
     })
   })
 })
