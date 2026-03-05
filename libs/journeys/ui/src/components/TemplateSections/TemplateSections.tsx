@@ -35,6 +35,8 @@ export function TemplateSections({
   const { breakpoints } = useTheme()
   const { customizableMedia } = useFlags()
 
+  console.log('[TemplateSections] customizableMedia flag:', customizableMedia)
+
   const { data, loading } = useJourneysQuery({
     variables: {
       where: {
