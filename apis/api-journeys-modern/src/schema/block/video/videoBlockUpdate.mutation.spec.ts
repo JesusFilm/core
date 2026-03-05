@@ -20,6 +20,10 @@ jest.mock('./service', () => {
   }
 })
 
+type VideoBlockUpdateResult = {
+  data?: { videoBlockUpdate: { notes: string | null } }
+}
+
 describe('videoBlockUpdate', () => {
   const mockUser = { id: 'userId' }
   const authClient = getClient({
@@ -188,10 +192,9 @@ describe('videoBlockUpdate', () => {
       variables: { id, input: { ...input, ...notesInput } }
     })
 
-    expect(
-      (result as { data?: { videoBlockUpdate: { notes: string } } }).data
-        ?.videoBlockUpdate.notes
-    ).toBe('test trailer note')
+    expect((result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes).toBe(
+      'test trailer note'
+    )
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id },
@@ -228,10 +231,9 @@ describe('videoBlockUpdate', () => {
       variables: { id, input: { ...input, notes: '' } }
     })
 
-    expect(
-      (result as { data?: { videoBlockUpdate: { notes: string } } }).data
-        ?.videoBlockUpdate.notes
-    ).toBe('')
+    expect((result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes).toBe(
+      ''
+    )
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id },
