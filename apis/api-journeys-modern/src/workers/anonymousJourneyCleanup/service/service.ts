@@ -10,7 +10,8 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
   logger?.info('Starting anonymous journey cleanup')
 
   const cutoffDate = new Date(Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000)
-  let deletedCount = 0
+  let deletedJourneyCount = 0
+  let deletedUserCount = 0
 
   try {
     const anonymousUsers = await prismaUsers.user.findMany({
@@ -49,7 +50,7 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
       for (const journey of journeys) {
         try {
           await prisma.journey.delete({ where: { id: journey.id } })
-          deletedCount++
+          deletedJourneyCount++
           logger?.info(
             { journeyId: journey.id },
             `Deleted journey "${journey.title}"`
@@ -61,11 +62,38 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
           )
         }
       }
+
+      const remainingJourneys = await prisma.journey.count({
+        where: {
+          userJourneys: {
+            some: {
+              userId: user.userId,
+              role: UserJourneyRole.owner
+            }
+          }
+        }
+      })
+
+      if (remainingJourneys === 0) {
+        try {
+          await prismaUsers.user.delete({ where: { id: user.id } })
+          deletedUserCount++
+          logger?.info(
+            { userId: user.userId },
+            'Deleted anonymous user with no remaining journeys'
+          )
+        } catch (error) {
+          logger?.warn(
+            { userId: user.userId, error },
+            'Failed to delete anonymous user'
+          )
+        }
+      }
     }
 
     logger?.info(
-      { deletedCount },
-      `Anonymous journey cleanup completed: deleted ${deletedCount} journeys`
+      { deletedJourneyCount, deletedUserCount },
+      `Anonymous journey cleanup completed: deleted ${deletedJourneyCount} journeys and ${deletedUserCount} users`
     )
   } catch (error) {
     logger?.error({ error }, 'Anonymous journey cleanup failed')
