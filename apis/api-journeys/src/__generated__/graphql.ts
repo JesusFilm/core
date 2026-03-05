@@ -34,7 +34,7 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
-export type AnonymousUser = {
+export type AnonymousUser = User & {
   __typename?: 'AnonymousUser';
   id: Scalars['ID']['output'];
 };
@@ -62,7 +62,7 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
-export type AuthenticatedUser = {
+export type AuthenticatedUser = User & {
   __typename?: 'AuthenticatedUser';
   email: Scalars['String']['output'];
   emailVerified: Scalars['Boolean']['output'];
@@ -1021,7 +1021,7 @@ export type IntegrationGoogle = Integration & {
   id: Scalars['ID']['output'];
   team: Team;
   type: IntegrationType;
-  user?: Maybe<AuthenticatedUser>;
+  user?: Maybe<User>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1952,6 +1952,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  /** Updates the current user's firstName, lastName, and email. Only callable by anonymous users. */
+  updateMe?: Maybe<AuthenticatedUser>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
@@ -1965,12 +1967,13 @@ export type Mutation = {
   /** Removes all userJourneys associated with a journeyId */
   userJourneyRemoveAll: Array<UserJourney>;
   userJourneyRequest: UserJourney;
+  userMediaProfileUpdate: UserMediaProfile;
   userTeamDelete: UserTeam;
   userTeamInviteAcceptAll: Array<UserTeamInvite>;
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
-  validateEmail?: Maybe<User>;
+  validateEmail?: Maybe<AuthenticatedUser>;
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -2445,6 +2448,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  duplicateAsDraft?: InputMaybe<Scalars['Boolean']['input']>;
   forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
@@ -2805,6 +2809,11 @@ export type MutationUpdateJourneysEmailPreferenceArgs = {
 };
 
 
+export type MutationUpdateMeArgs = {
+  input: UpdateMeInput;
+};
+
+
 export type MutationUpdateVideoAlgoliaIndexArgs = {
   videoId: Scalars['ID']['input'];
 };
@@ -2860,6 +2869,11 @@ export type MutationUserJourneyRemoveAllArgs = {
 export type MutationUserJourneyRequestArgs = {
   idType?: InputMaybe<IdType>;
   journeyId: Scalars['ID']['input'];
+};
+
+
+export type MutationUserMediaProfileUpdateArgs = {
+  input: UserMediaProfileUpdateInput;
 };
 
 
@@ -3605,7 +3619,7 @@ export type Playlist = {
   note?: Maybe<Scalars['String']['output']>;
   noteSharedAt?: Maybe<Scalars['DateTime']['output']>;
   noteUpdatedAt?: Maybe<Scalars['DateTime']['output']>;
-  owner: User;
+  owner: AuthenticatedUser;
   sharedAt?: Maybe<Scalars['DateTime']['output']>;
   slug: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
@@ -3802,9 +3816,10 @@ export type Query = {
   teams: Array<Team>;
   templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
-  user?: Maybe<User>;
-  userByEmail?: Maybe<User>;
+  user?: Maybe<AuthenticatedUser>;
+  userByEmail?: Maybe<AuthenticatedUser>;
   userInvites?: Maybe<Array<UserInvite>>;
+  userMediaProfile?: Maybe<UserMediaProfile>;
   userTeam: UserTeam;
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
@@ -5129,16 +5144,14 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
+export type UpdateMeInput = {
+  email: Scalars['String']['input'];
+  firstName: Scalars['String']['input'];
+  lastName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type User = {
-  __typename?: 'User';
-  email: Scalars['String']['output'];
-  emailVerified: Scalars['Boolean']['output'];
-  firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  lastName?: Maybe<Scalars['String']['output']>;
-  mediaUserRoles: Array<MediaRole>;
-  superAdmin?: Maybe<Scalars['Boolean']['output']>;
 };
 
 /** These types are a subset provided by the @types/ua-parser-js library. */
@@ -5172,7 +5185,7 @@ export type UserJourney = {
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
-  user?: Maybe<AuthenticatedUser>;
+  user?: Maybe<User>;
   userId: Scalars['ID']['output'];
 };
 
@@ -5181,6 +5194,26 @@ export enum UserJourneyRole {
   InviteRequested = 'inviteRequested',
   Owner = 'owner'
 }
+
+export type UserMediaProfile = {
+  __typename?: 'UserMediaProfile';
+  /** Country IDs array */
+  countryInterests?: Maybe<Array<Scalars['ID']['output']>>;
+  /** The database UUID */
+  id: Scalars['ID']['output'];
+  /** Language IDs array related to IDs in api-languages */
+  languageInterests?: Maybe<Array<Language>>;
+  /** The Firebase user ID */
+  userId: Scalars['ID']['output'];
+  /** IDs of video collections the user is interested in */
+  userInterests?: Maybe<Array<Video>>;
+};
+
+export type UserMediaProfileUpdateInput = {
+  countryInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  languageInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  userInterestIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
 
 export type UserRole = {
   __typename?: 'UserRole';
@@ -5196,7 +5229,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: AuthenticatedUser;
+  user: User;
 };
 
 

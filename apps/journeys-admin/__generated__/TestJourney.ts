@@ -21,3 +21,7 @@ export interface TestJourney_journey {
 export interface TestJourney {
   journey: TestJourney_journey;
 }
+
+export interface TestJourneyVariables {
+  id: string;
+}

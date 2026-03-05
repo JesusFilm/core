@@ -1,5 +1,6 @@
 export { getCustomizeFlowConfig } from './getCustomizeFlowConfig'
 export type {
   CustomizationScreen,
-  CustomizeFlowConfig
+  CustomizeFlowConfig,
+  CustomizeFlowOptions
 } from './getCustomizeFlowConfig'

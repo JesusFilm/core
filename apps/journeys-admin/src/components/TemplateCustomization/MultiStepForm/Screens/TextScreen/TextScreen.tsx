@@ -125,7 +125,7 @@ const renderEditableText = (
 }
 
 interface TextScreenProps {
-  handleNext: () => void
+  handleNext: (overrideJourneyId?: string) => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
@@ -233,7 +233,7 @@ export function TextScreen({
           }}
         >
           {t(
-            "Fill out the blue fields and we'll customise the content with your information."
+            "Fill out the blue fields and we'll customize the content with your information."
           )}
         </Typography>
         <Typography
@@ -245,9 +245,7 @@ export function TextScreen({
             maxWidth: { xs: '100%', sm: '90%' }
           }}
         >
-          {t(
-            "Fill out the blue fields and we'll customise the content with your information."
-          )}
+          {t('Fill in the blue fields to customize the content.')}
         </Typography>
       </Stack>
       <Box sx={{ position: 'relative', width: '100%' }}>

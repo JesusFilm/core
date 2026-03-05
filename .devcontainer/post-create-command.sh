@@ -23,7 +23,7 @@ psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || e
 
 # install pnpm
 echo "Installing pnpm..."
-corepack enable && corepack prepare pnpm --activate
+corepack enable && corepack prepare pnpm@10.15.1 --activate
 
 # install global CLIs
 echo "Installing global CLIs..."

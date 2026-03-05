@@ -45,6 +45,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   showGeneratedSubtitles: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   children: []
 }
 

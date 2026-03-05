@@ -374,14 +374,12 @@ export class IconBlockCreateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockCreateInput {
@@ -763,13 +761,6 @@ export class JourneyNotificationUpdateInput {
     visitorInteractionEmail: boolean;
 }
 
-export class JourneyProfileUpdateInput {
-    lastActiveTeamId?: Nullable<string>;
-    journeyFlowBackButtonClicked?: Nullable<boolean>;
-    plausibleJourneyFlowViewed?: Nullable<boolean>;
-    plausibleDashboardViewed?: Nullable<boolean>;
-}
-
 export class JourneyThemeCreateInput {
     journeyId: string;
     headerFont?: Nullable<string>;
@@ -1023,8 +1014,6 @@ export abstract class IQuery {
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
 
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
     abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
@@ -1042,8 +1031,6 @@ export abstract class IQuery {
     abstract team(id: string): Team | Promise<Team>;
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
     abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
@@ -1161,7 +1148,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>, duplicateAsDraft?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1192,8 +1179,6 @@ export abstract class IMutation {
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
-
-    abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyThemeCreate(input: JourneyThemeCreateInput): JourneyTheme | Promise<JourneyTheme>;
 
@@ -1317,7 +1302,6 @@ export class IconBlock implements Block {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
     size?: Nullable<IconSize>;
-    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlock implements Block {
@@ -1712,7 +1696,7 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    user?: Nullable<AuthenticatedUser>;
+    user?: Nullable<User>;
     accountEmail?: Nullable<string>;
 }
 
@@ -1749,7 +1733,7 @@ export class UserJourney {
     userId: string;
     journeyId: string;
     role: UserJourneyRole;
-    user?: Nullable<AuthenticatedUser>;
+    user?: Nullable<User>;
     openedAt?: Nullable<DateTime>;
 }
 
@@ -1922,6 +1906,11 @@ export class Translation {
     primary: boolean;
 }
 
+export class User {
+    __typename?: 'User';
+    id: string;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -2030,14 +2019,6 @@ export class Tag {
 }
 
 export class ShortLink {
-    id: string;
-}
-
-export class AuthenticatedUser {
-    id: string;
-}
-
-export class User {
     id: string;
 }
 

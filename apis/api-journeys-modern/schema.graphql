@@ -1,17 +1,10 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
   gtmEventName: String
   parentBlock: Block!
-}
-
-type AuthenticatedUser
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
 }
 
 interface Block {
@@ -707,7 +700,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
-  user: AuthenticatedUser
+  user: User
 }
 
 input IntegrationGoogleCreateInput {
@@ -1384,6 +1377,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1712,6 +1706,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  getJourneyProfile: JourneyProfile
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -1770,6 +1765,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  getUserRole: UserRole @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -2262,9 +2258,9 @@ enum TypographyVariant {
 
 type User
   @key(fields: "id")
-  @extends
+  @interfaceObject
 {
-  id: ID! @external
+  id: ID!
 }
 
 type UserAgent
@@ -2300,7 +2296,7 @@ type UserJourney
   role: UserJourneyRole!
   openedAt: DateTime
   journey: Journey
-  user: AuthenticatedUser
+  user: User
   journeyNotification: JourneyNotification
 }
 
@@ -2326,7 +2322,7 @@ type UserTeam
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!
-  user: AuthenticatedUser!
+  user: User!
   journeyNotification(journeyId: ID!): JourneyNotification
 }
 

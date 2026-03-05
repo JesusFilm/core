@@ -26,6 +26,7 @@ export interface CoverImageBlockUpdate_imageBlockUpdate {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CoverImageBlockUpdate {
