@@ -66,6 +66,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   },
   posterBlockId: null,
   customizable: null,
+  notes: null,
   children: []
 }
 
@@ -131,6 +132,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   endEventLabel: null,
   posterBlockId: 'poster1.id',
   customizable: null,
+  notes: null,
   children: []
 }
 
@@ -563,6 +565,79 @@ describe('VideoBlockEditor', () => {
       )
 
       expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('shows Template Adapter Notes input when customizable is true', () => {
+      const videoWithCustomizable = {
+        ...videoInternal,
+        customizable: true
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizable}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        screen.getByLabelText('Template Adapter Notes')
+      ).toBeInTheDocument()
+    })
+
+    it('hides Template Adapter Notes input when customizable is false', () => {
+      const videoWithCustomizableFalse = {
+        ...videoInternal,
+        customizable: false
+      } as TreeBlock<VideoBlock>
+
+      render(
+        <ThemeProvider>
+          <MockedProvider mocks={mocks}>
+            <SnackbarProvider>
+              <FlagsProvider flags={{ customizableMedia: true }}>
+                <JourneyProvider
+                  value={{
+                    journey: { template: true } as unknown as JourneyFields,
+                    variant: 'admin'
+                  }}
+                >
+                  <CommandProvider>
+                    <EditorProvider>
+                      <VideoBlockEditor
+                        selectedBlock={videoWithCustomizableFalse}
+                        onChange={jest.fn()}
+                      />
+                    </EditorProvider>
+                  </CommandProvider>
+                </JourneyProvider>
+              </FlagsProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      const notesInput = screen.getByLabelText('Template Adapter Notes')
+      expect(notesInput).not.toBeVisible()
     })
   })
 })
