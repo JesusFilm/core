@@ -6,9 +6,7 @@ import { getJourneyStartDate } from './getJourneyStartDate'
 
 describe('getJourneyStartDate', () => {
   it('returns earliest stats date when createdAt is null', () => {
-    expect(getJourneyStartDate(null)).toEqual(
-      parseISO(earliestStatsCollected)
-    )
+    expect(getJourneyStartDate(null)).toEqual(parseISO(earliestStatsCollected))
   })
 
   it('returns earliest stats date when createdAt is undefined', () => {
