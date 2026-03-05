@@ -391,7 +391,7 @@ describe('TemplateSections', () => {
       ...defaultTemplate,
       id: 'qaOnlyId',
       title: 'QA Customizable Media Test',
-      slug: 'qa-customizable-media-test',
+      slug: 'qa-customizable-media-test-001',
       featuredAt: null
     }
     const journeysWithQaOnly = [...journeys, qaOnlyJourney]

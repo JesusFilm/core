@@ -15,8 +15,8 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
-/** Slugs of QA-only templates hidden from /templates when customizableMedia flag is false */
-const QA_ONLY_TEMPLATE_SLUGS = ['qa-customizable-media-test']
+/** Slug prefix for QA-only templates hidden from /templates when customizableMedia flag is false */
+const QA_ONLY_TEMPLATE_SLUG_PREFIX = 'qa-customizable-media-test'
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }
@@ -57,7 +57,7 @@ export function TemplateSections({
         customizableMedia === true
           ? data.journeys
           : data.journeys.filter(
-              (j) => !QA_ONLY_TEMPLATE_SLUGS.includes(j.slug)
+              (j) => !j.slug.startsWith(QA_ONLY_TEMPLATE_SLUG_PREFIX)
             )
       const featuredAndNew = [
         ...visibleJourneys.filter(({ featuredAt }) => featuredAt != null),
