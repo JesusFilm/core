@@ -1765,6 +1765,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  getUserRole: UserRole @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
