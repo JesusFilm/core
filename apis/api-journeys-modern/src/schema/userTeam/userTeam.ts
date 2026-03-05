@@ -1,6 +1,6 @@
 import { builder } from '../builder'
 import { JourneyNotificationRef } from '../journeyNotification'
-import { AuthenticatedUserRef } from '../user'
+import { UserRef } from '../user'
 
 import { UserTeamRole } from './enums'
 
@@ -17,7 +17,7 @@ export const UserTeamRef = builder.prismaObject('UserTeam', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     user: t.field({
       nullable: false,
-      type: AuthenticatedUserRef,
+      type: UserRef,
       resolve: (userTeam) => ({
         id: userTeam.userId
       })

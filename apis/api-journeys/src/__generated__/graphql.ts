@@ -1021,7 +1021,7 @@ export type IntegrationGoogle = Integration & {
   id: Scalars['ID']['output'];
   team: Team;
   type: IntegrationType;
-  user?: Maybe<AuthenticatedUser>;
+  user?: Maybe<User>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1955,6 +1955,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  /** Updates the current user's firstName, lastName, and email. Only callable by anonymous users. */
+  updateMe?: Maybe<AuthenticatedUser>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
@@ -2806,6 +2808,11 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateMeArgs = {
+  input: UpdateMeInput;
 };
 
 
@@ -3787,7 +3794,7 @@ export type Query = {
   languages: Array<Language>;
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
-  me?: Maybe<AuthenticatedUser>;
+  me?: Maybe<User>;
   node?: Maybe<Node>;
   nodes: Array<Maybe<Node>>;
   playlist?: Maybe<QueryPlaylistResult>;
@@ -5180,7 +5187,7 @@ export type UserJourney = {
   /** Date time of when the journey was first opened */
   openedAt?: Maybe<Scalars['DateTime']['output']>;
   role: UserJourneyRole;
-  user?: Maybe<AuthenticatedUser>;
+  user?: Maybe<User>;
   userId: Scalars['ID']['output'];
 };
 
@@ -5224,7 +5231,7 @@ export type UserTeam = {
   journeyNotification?: Maybe<JourneyNotification>;
   role: UserTeamRole;
   updatedAt: Scalars['DateTime']['output'];
-  user: AuthenticatedUser;
+  user: User;
 };
 
 

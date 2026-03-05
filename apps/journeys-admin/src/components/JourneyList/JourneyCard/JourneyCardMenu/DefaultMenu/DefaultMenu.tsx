@@ -49,7 +49,9 @@ export const GET_JOURNEY_WITH_USER_ROLES = gql`
         role
         user {
           id
-          email
+          ... on AuthenticatedUser {
+            email
+          }
         }
       }
     }
@@ -124,9 +126,11 @@ export function DefaultMenu({
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  const isAnonymousUser = currentUser?.__typename !== 'AuthenticatedUser'
+  const hasCurrentUser = currentUser != null
+  const isAnonymousUser =
+    hasCurrentUser && currentUser.__typename !== 'AuthenticatedUser'
   const currentUserEmail =
-    currentUser?.__typename === 'AuthenticatedUser'
+    hasCurrentUser && currentUser.__typename === 'AuthenticatedUser'
       ? currentUser.email
       : undefined
 
@@ -148,9 +152,13 @@ export function DefaultMenu({
       ),
     [journeyWithUserRoles?.journey?.userJourneys]
   )
+  const ownerEmail =
+    owner?.user?.__typename === 'AuthenticatedUser'
+      ? owner.user.email
+      : undefined
   const isOwner = useMemo(
-    () => owner?.user?.email === currentUserEmail,
-    [currentUserEmail, owner?.user?.email]
+    () => ownerEmail === currentUserEmail,
+    [currentUserEmail, ownerEmail]
   )
 
   useEffect(() => {
@@ -188,7 +196,7 @@ export function DefaultMenu({
   const isLocalTemplate =
     journey?.template === true && journey?.team?.id !== 'jfp-team'
 
-  if (isAnonymousUser) {
+  if (hasCurrentUser && isAnonymousUser) {
     return <></>
   }
 
