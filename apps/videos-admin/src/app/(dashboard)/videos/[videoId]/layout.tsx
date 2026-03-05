@@ -169,7 +169,7 @@ export default function VideoViewLayout({
           <PublishedChip published={video.published} />
         </Stack>
         <Stack direction="row" spacing={1}>
-          {hasChildren && unpublishedChildren.length > 0 && (
+          {hasChildren && (
             <Button
               variant="outlined"
               startIcon={<PublishIcon />}
