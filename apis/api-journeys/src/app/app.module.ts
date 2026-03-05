@@ -33,7 +33,6 @@ import { QrCodeModule } from './modules/qrCode/qrCode.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
-import { UserRoleModule } from './modules/userRole/userRole.module'
 import { UserTeamModule } from './modules/userTeam/userTeam.module'
 import { UserTeamInviteModule } from './modules/userTeamInvite/userTeamInvite.module'
 import { VisitorModule } from './modules/visitor/visitor.module'
@@ -62,7 +61,6 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     TeamModule,
     UserJourneyModule,
     UserInviteModule,
-    UserRoleModule,
     UserTeamModule,
     UserTeamInviteModule,
     VisitorModule,
