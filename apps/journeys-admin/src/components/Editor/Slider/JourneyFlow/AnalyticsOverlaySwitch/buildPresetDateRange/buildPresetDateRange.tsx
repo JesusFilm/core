@@ -40,7 +40,10 @@ interface DateRange {
   endDate: Date | null
 }
 
-export function buildPresetDateRange(preset: DateRangePresetId): DateRange {
+export function buildPresetDateRange(
+  preset: DateRangePresetId,
+  minDate: Date | null
+): DateRange {
   const today = startOfToday()
 
   switch (preset) {
@@ -84,7 +87,7 @@ export function buildPresetDateRange(preset: DateRangePresetId): DateRange {
       }
     case 'allTime':
       return {
-        startDate: parseISO(earliestStatsCollected),
+        startDate: minDate ?? parseISO(earliestStatsCollected),
         endDate: today
       }
     case 'customRange':

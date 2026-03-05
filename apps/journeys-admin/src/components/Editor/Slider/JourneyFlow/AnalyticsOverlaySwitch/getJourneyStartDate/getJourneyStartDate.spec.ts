@@ -1,4 +1,4 @@
-import { parseISO, startOfDay } from 'date-fns'
+import { parseISO } from 'date-fns'
 
 import { earliestStatsCollected } from '../buildPresetDateRange'
 
@@ -15,28 +15,29 @@ describe('getJourneyStartDate', () => {
     )
   })
 
-  it('returns start of day when createdAt is an ISO date string', () => {
+  it('returns start of day in UTC when createdAt is an ISO date string', () => {
     const result = getJourneyStartDate('2024-06-15T14:30:00.000Z')
-    expect(result).toEqual(startOfDay(new Date('2024-06-15T14:30:00.000Z')))
+    expect(result).toEqual(new Date('2024-06-15T00:00:00.000Z'))
   })
 
-  it('returns start of day when createdAt is date-only string', () => {
+  it('returns start of day in UTC when createdAt is date-only string', () => {
     const result = getJourneyStartDate('2024-06-15')
-    expect(result).toEqual(startOfDay(new Date('2024-06-15')))
+    expect(result).toEqual(new Date('2024-06-15T00:00:00.000Z'))
   })
 
-  it('returns start of day when createdAt is a Date object', () => {
+  it('returns start of day in UTC when createdAt is a Date object', () => {
     const date = new Date('2024-06-15T18:45:00.000Z')
-    expect(getJourneyStartDate(date)).toEqual(startOfDay(date))
+    expect(getJourneyStartDate(date)).toEqual(
+      new Date('2024-06-15T00:00:00.000Z')
+    )
   })
 
-  it('strips time component to midnight local', () => {
+  it('strips time component to midnight UTC', () => {
     const result = getJourneyStartDate('2024-06-15T23:59:59.999Z')
-    const start = startOfDay(new Date('2024-06-15T23:59:59.999Z'))
-    expect(result.getHours()).toBe(0)
-    expect(result.getMinutes()).toBe(0)
-    expect(result.getSeconds()).toBe(0)
-    expect(result.getMilliseconds()).toBe(0)
-    expect(result).toEqual(start)
+    expect(result.getUTCHours()).toBe(0)
+    expect(result.getUTCMinutes()).toBe(0)
+    expect(result.getUTCSeconds()).toBe(0)
+    expect(result.getUTCMilliseconds()).toBe(0)
+    expect(result).toEqual(new Date('2024-06-15T00:00:00.000Z'))
   })
 })

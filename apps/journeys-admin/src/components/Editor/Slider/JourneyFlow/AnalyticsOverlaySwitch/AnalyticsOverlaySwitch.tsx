@@ -86,7 +86,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
 
     if (preset !== 'customRange') {
       const { startDate: newStartDate, endDate: newEndDate } =
-        buildPresetDateRange(preset)
+        buildPresetDateRange(preset, minSelectableDate)
       setStartDate(newStartDate)
       setEndDate(newEndDate)
     }
