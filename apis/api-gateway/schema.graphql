@@ -5037,6 +5037,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  notes: String
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {

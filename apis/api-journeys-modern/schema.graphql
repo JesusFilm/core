@@ -2427,6 +2427,7 @@ input VideoBlockCreateInput {
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  notes: String
 }
 
 enum VideoBlockObjectFit {
