@@ -87,7 +87,8 @@ const journeyWithMatchingVideoBlock: Journey = {
       action: null,
       eventLabel: null,
       endEventLabel: null,
-      customizable: true
+      customizable: true,
+      notes: null
     }
   ],
   primaryImageBlock: null,
@@ -120,12 +121,12 @@ const journeyWithNoMatchingVideoBlock: Journey = {
   blocks: []
 }
 
-const journeyWithVideoBlockWithDisplayTitle: Journey = {
+const journeyWithVideoBlockWithAdapterNote: Journey = {
   ...journeyWithMatchingVideoBlock,
   blocks: [
     {
       ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
-      title: 'My Video Display Title'
+      notes: 'trailer'
     }
   ]
 }
@@ -214,20 +215,20 @@ describe('VideosSection', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('shows video display title when video block has a non-empty display title', () => {
+  it('shows adapter note when video block has a non-empty notes field', () => {
     renderVideosSection({
-      journey: journeyWithVideoBlockWithDisplayTitle,
+      journey: journeyWithVideoBlockWithAdapterNote,
       cardBlockId
     })
-    expect(screen.getByText('My Video Display Title')).toBeInTheDocument()
+    expect(screen.getByText('trailer')).toBeInTheDocument()
   })
 
-  it('does not show video title when display title is empty', () => {
+  it('does not show adapter note when notes is empty or null', () => {
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.queryByText('My Video Display Title')).not.toBeInTheDocument()
+    expect(screen.queryByText('trailer')).not.toBeInTheDocument()
   })
 
   it('disables upload button when loading', () => {
