@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import { VideoTriggerBlock } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
+import { JourneyCustomizableService } from '../../journey/journeyCustomizable.service'
 import { UserRoleService } from '../../userRole/userRole.service'
 import { BlockService } from '../block.service'
 
@@ -47,7 +49,11 @@ describe('VideoTriggerBlockResolver', () => {
         BlockService,
         VideoTriggerResolver,
         UserRoleService,
-        PrismaService
+        PrismaService,
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
+        }
       ]
     }).compile()
     resolver = module.get<VideoTriggerResolver>(VideoTriggerResolver)

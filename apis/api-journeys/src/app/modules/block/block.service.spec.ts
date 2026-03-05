@@ -11,6 +11,7 @@ import {
   ThemeName
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { BlockService } from './block.service'
 
@@ -23,7 +24,9 @@ const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 type BlockWithAction = Block & { action: Action | null }
 
 describe('BlockService', () => {
-  let service: BlockService, prismaService: DeepMockProxy<PrismaService>
+  let service: BlockService,
+    prismaService: DeepMockProxy<PrismaService>,
+    journeyCustomizableService: DeepMockProxy<JourneyCustomizableService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,6 +35,10 @@ describe('BlockService', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
         }
       ]
     }).compile()
@@ -40,6 +47,9 @@ describe('BlockService', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    journeyCustomizableService = module.get<JourneyCustomizableService>(
+      JourneyCustomizableService
+    ) as DeepMockProxy<JourneyCustomizableService>
     prismaService.$transaction.mockImplementation(
       async (callback) => await callback(prismaService)
     )
@@ -235,6 +245,14 @@ describe('BlockService', () => {
           id: '1'
         }
       })
+    })
+
+    it('should call recalculate after update', async () => {
+      prismaService.block.update.mockResolvedValueOnce(block)
+      await service.update(block.id, { title: 'test' })
+      expect(
+        journeyCustomizableService.recalculate
+      ).toHaveBeenCalledWith(block.journeyId)
     })
 
     it('should not update deletedAt prop', async () => {
@@ -534,6 +552,33 @@ describe('BlockService', () => {
       ])
     })
 
+    it('should reset block customizable to false on duplication', async () => {
+      const customizableBlock = {
+        ...block,
+        customizable: true
+      } as unknown as BlockWithAction
+
+      service.getDuplicateBlockAndChildren = jest
+        .fn()
+        .mockReturnValue([{ ...customizableBlock, id: 'duplicated' }])
+
+      prismaService.block.update
+        .mockResolvedValueOnce({ ...customizableBlock, id: 'duplicated' })
+        .mockResolvedValueOnce(block)
+
+      service.reorderSiblings = jest.fn().mockReturnValue([])
+
+      await service.duplicateBlock(customizableBlock, false)
+
+      expect(prismaService.block.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            customizable: false
+          })
+        })
+      )
+    })
+
     it('should set customizable to false and parentStepId to null for duplicated actions', async () => {
       const blockWithActionCustomizable = {
         ...block,
@@ -809,6 +854,16 @@ describe('BlockService', () => {
         data: { deletedAt: '2024-10-22T03:39:39.268Z' },
         where: { id: '1' }
       })
+    })
+
+    it('should call recalculate after removing block', async () => {
+      prismaService.block.update.mockResolvedValueOnce(block)
+      service.getSiblingsInternal = jest.fn().mockResolvedValue([])
+      service.reorderSiblings = jest.fn().mockResolvedValue([])
+      await service.removeBlockAndChildren(block)
+      expect(
+        journeyCustomizableService.recalculate
+      ).toHaveBeenCalledWith(block.journeyId)
     })
   })
 
