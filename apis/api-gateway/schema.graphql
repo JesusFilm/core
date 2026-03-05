@@ -1328,6 +1328,10 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   showGeneratedSubtitles: Boolean
   customizable: Boolean
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Publisher notes for template adapters (e.g. trailer, intro).
+  """
+  notes: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -5060,6 +5064,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  notes: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
