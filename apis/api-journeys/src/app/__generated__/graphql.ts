@@ -682,6 +682,7 @@ export class JourneysQueryOptions {
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
     skipRoutingFilter?: Nullable<boolean>;
+    status?: Nullable<JourneyStatus[]>;
 }
 
 export class JourneyCreateInput {
