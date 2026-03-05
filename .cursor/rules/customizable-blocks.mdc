@@ -1,0 +1,12 @@
+---
+description: Guardrail for adding customizable fields to block or action types
+globs: apis/api-journeys/src/app/modules/block/**/*.ts,apis/api-journeys/src/app/modules/action/**/*.ts
+alwaysApply: false
+---
+
+# Customizable Block/Action Guardrail
+
+When adding a `customizable` field to a new block type or action type, you must also:
+
+1. **Update the detection logic** in `JourneyCustomizableService.recalculate()` in `apis/api-journeys/src/app/modules/journey/journeyCustomizable.service.ts`. This service keeps `journey.customizable` in sync by scanning blocks, actions, and customization fields.
+2. **Ensure the block's update mutation triggers recalculation.** `BlockService.update()` already calls `recalculate()` after the transaction — so mutations that delegate to it (e.g. `imageBlockUpdate`, `buttonBlockUpdate`, `radioOptionBlockUpdate`) are covered automatically. If the new block uses a custom update path that bypasses `BlockService.update()`, add a direct call to `this.journeyCustomizableService.recalculate(journeyId)` from that path.
