@@ -145,10 +145,8 @@ export function LanguageScreen({
     },
     values: FormikValues
   ): boolean {
-    const { teamSelect: selectedTeamId } = values
-    const {
-      languageSelect: { id: selectedLanguageId }
-    } = values
+    const selectedTeamId = values.teamSelect ?? ''
+    const selectedLanguageId = values.languageSelect?.id ?? ''
 
     const isNotTemplate = journey.template === false
     const languageMatches = journey.language?.id === selectedLanguageId
@@ -253,6 +251,7 @@ export function LanguageScreen({
 
     if (shouldSkipDuplicate(journey, values)) {
       // Skips journey duplicate
+      setLoading(false)
       handleNext()
     } else if (isSignedIn) {
       // Duplicates journey for a signed in user
@@ -262,6 +261,7 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
+        setLoading(false)
         handleNext(duplicatedJourneyId)
       }
     } else {
@@ -272,10 +272,10 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
+        setLoading(false)
         handleNext(duplicatedJourneyId)
       }
     }
-    setLoading(false)
     return
   }
 
