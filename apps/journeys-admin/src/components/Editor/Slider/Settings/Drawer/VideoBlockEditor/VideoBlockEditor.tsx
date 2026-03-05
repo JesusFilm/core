@@ -79,7 +79,7 @@ export function VideoBlockEditor({
               block={selectedBlock ?? undefined}
               mediaTypeWhenEmpty="video"
             />
-            <Collapse in={videoBlock?.customizable ?? false}>
+            <Collapse in={videoBlock?.customizable ?? false} unmountOnExit>
               <TextField
                 fullWidth
                 size="small"
