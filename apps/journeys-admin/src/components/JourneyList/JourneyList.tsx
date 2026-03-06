@@ -43,9 +43,7 @@ export function JourneyList({
   const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
-    const sortByFromStorage = sessionStorage.getItem(
-      'journeyListSortBy'
-    )
+    const sortByFromStorage = sessionStorage.getItem('journeyListSortBy')
     const isValidSort =
       sortByFromStorage != null &&
       Object.values(SortOrder).includes(sortByFromStorage as SortOrder)
