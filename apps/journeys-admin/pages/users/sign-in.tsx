@@ -1,13 +1,11 @@
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import absoluteUrl from 'next-absolute-url'
+import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
+
+import { getAppRedirectDestination } from '../../src/libs/firebaseClient/initAuth'
 
 import i18nConfig from '../../next-i18next.config'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
@@ -30,9 +28,23 @@ function SignInPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenAuthed: AuthAction.REDIRECT_TO_APP
-})(async ({ locale }) => {
+export const getServerSideProps = withUserTokenSSR()(async ({
+  user,
+  locale,
+  req
+}) => {
+  // Don't redirect anonymous users; they should see the sign-in page.
+  const firebaseClaim = user?.claims?.firebase as { sign_in_provider?: string } | undefined
+  const signInProvider = firebaseClaim?.sign_in_provider
+  const isAnonymous =
+    user?.firebaseUser?.isAnonymous ?? (signInProvider == null || signInProvider === 'anonymous')
+  if (user?.id != null && !isAnonymous) {
+    const origin = absoluteUrl(req).origin
+    const searchParams = new URL(req.url ?? '', origin).searchParams
+    const destination = getAppRedirectDestination(searchParams)
+    return { redirect: { destination, permanent: false } }
+  }
+
   return {
     props: {
       ...(await serverSideTranslations(
@@ -44,6 +56,4 @@ export const getServerSideProps = withUserTokenSSR({
   }
 })
 
-export default withUser({
-  whenAuthed: AuthAction.REDIRECT_TO_APP
-})(SignInPage)
+export default withUser()(SignInPage)

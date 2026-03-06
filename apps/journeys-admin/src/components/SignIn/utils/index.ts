@@ -1,0 +1,1 @@
+export { getJourneyIdFromRedirect } from './getJourneyIdFromRedirect'

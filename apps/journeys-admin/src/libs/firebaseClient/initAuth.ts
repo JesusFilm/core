@@ -3,6 +3,35 @@ import { init } from 'next-firebase-auth'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
 
+/**
+ * Resolves the post-auth redirect destination from the current request.
+ * Used by appPageURL (REDIRECT_TO_APP) and the sign-in page when redirecting signed-in users.
+ * Returns the validated redirect URL or '/' if missing/invalid.
+ */
+export function getAppRedirectDestination(
+  searchParams: URLSearchParams
+): string {
+  const encodedRedirectUrl = searchParams.get('redirect')
+  const redirectUrl =
+    encodedRedirectUrl != null
+      ? decodeURIComponent(encodedRedirectUrl)
+      : undefined
+
+  if (redirectUrl != null) {
+    // Verify the redirect URL host is allowed.
+    // https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/11-Client_Side_Testing/04-Testing_for_Client_Side_URL_Redirect
+    const ALLOWED_REDIRECT_HOSTS = [
+      'localhost:4200',
+      'admin.nextstep.is',
+      'admin-stage.nextstep.is'
+    ]
+    if (allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)) {
+      return redirectUrl
+    }
+  }
+  return '/'
+}
+
 export function initAuth(): void {
   init({
     loginAPIEndpoint: '/api/login',
@@ -55,28 +84,10 @@ export function initAuth(): void {
       const origin = isServerSide
         ? absoluteUrl(ctx?.req).origin
         : window.location.origin
-      const params = isServerSide
+      const searchParams = isServerSide
         ? new URL(ctx?.req.url ?? '', origin).searchParams
         : new URLSearchParams(window.location.search)
-      const encodedRedirectUrl = params.get('redirect')
-      const redirectUrl =
-        encodedRedirectUrl != null
-          ? decodeURIComponent(encodedRedirectUrl)
-          : undefined
-
-      if (redirectUrl != null) {
-        // Verify the redirect URL host is allowed.
-        // https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/11-Client_Side_Testing/04-Testing_for_Client_Side_URL_Redirect
-        const tests = [
-          'localhost:4200',
-          'admin.nextstep.is',
-          'admin-stage.nextstep.is'
-        ]
-        if (allowedHost(new URL(redirectUrl).host, tests)) {
-          return redirectUrl
-        }
-      }
-      return '/'
+      return getAppRedirectDestination(searchParams)
     }
   })
 }
