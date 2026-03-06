@@ -4,7 +4,6 @@ import {
   Prisma,
   JourneyStatus as PrismaJourneyStatus,
   UserJourneyRole,
-  UserTeamRole,
   prisma
 } from '@core/prisma/journeys/client'
 
@@ -12,11 +11,15 @@ import { builder } from '../builder'
 
 import { JourneyStatus } from './enums/journeyStatus'
 import { JourneyRef } from './journey'
+import { journeyReadAccessWhere } from './journey.acl'
 
 builder.queryField('adminJourneys', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: [JourneyRef],
     nullable: false,
+    override: {
+      from: 'api-journeys'
+    },
     args: {
       status: t.arg({ type: [JourneyStatus], required: false }),
       template: t.arg.boolean({ required: false }),
@@ -28,7 +31,6 @@ builder.queryField('adminJourneys', (t) =>
       const currentUser = context.user as typeof context.user & {
         roles?: string[]
       }
-      const isPublisher = currentUser.roles?.includes('publisher') === true
       const filter: Prisma.JourneyWhereInput = {}
       let lastActiveApplied = false
 
@@ -53,9 +55,6 @@ builder.queryField('adminJourneys', (t) =>
         filter.teamId == null &&
         !lastActiveApplied
       ) {
-        // if not looking for templates then only return journeys where:
-        //   1. the user is an owner or editor
-        //   2. not a member of the team
         filter.userJourneys = {
           some: {
             userId,
@@ -76,57 +75,7 @@ builder.queryField('adminJourneys', (t) =>
         filter.status = { in: args.status as PrismaJourneyStatus[] }
       }
 
-      // ACL: only return journeys the user has access to
-      const accessibleJourneys: Prisma.JourneyWhereInput = {
-        OR: [
-          // user is a team manager
-          {
-            team: {
-              userTeams: {
-                some: {
-                  userId,
-                  role: UserTeamRole.manager
-                }
-              }
-            }
-          },
-          // user is a team member
-          {
-            team: {
-              userTeams: {
-                some: {
-                  userId,
-                  role: UserTeamRole.member
-                }
-              }
-            }
-          },
-          // user is a journey owner
-          {
-            userJourneys: {
-              some: {
-                userId,
-                role: UserJourneyRole.owner
-              }
-            }
-          },
-          // user is a journey editor
-          {
-            userJourneys: {
-              some: {
-                userId,
-                role: UserJourneyRole.editor
-              }
-            }
-          },
-          // published templates are readable by everyone
-          {
-            template: true,
-            status: PrismaJourneyStatus.published
-          },
-          ...(isPublisher ? [{ template: true }] : [])
-        ]
-      }
+      const accessibleJourneys = journeyReadAccessWhere(userId, currentUser)
 
       return await prisma.journey.findMany({
         ...query,
