@@ -1,4 +1,3 @@
-import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -67,21 +66,6 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
-    <Stack
-      alignItems="center"
-      sx={{
-        width: '100%',
-        px: { xs: 0, sm: 3.5 }
-      }}
-    >
-      <Stack
-        gap={4}
-        sx={{
-          width: '100%',
-          px: { xs: 0, sm: 10 },
-          overflow: { xs: 'visible', sm: 'hidden' }
-        }}
-      >
         <ScreenWrapper
           title={t('Media')}
           subtitle={t('Personalize and manage your media assets')}
@@ -108,7 +92,5 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           )}
           {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
         </ScreenWrapper>
-      </Stack>
-    </Stack>
   )
 }

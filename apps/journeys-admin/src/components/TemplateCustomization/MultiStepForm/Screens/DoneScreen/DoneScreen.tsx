@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -16,16 +15,9 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { ScreenWrapper } from '../ScreenWrapper'
 
-interface DoneScreenProps {
-  handleScreenNavigation?: (screen: CustomizationScreen) => void
-}
-
-export function DoneScreen({
-  handleScreenNavigation
-}: DoneScreenProps): ReactElement {
+export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
@@ -41,87 +33,10 @@ export function DoneScreen({
   }
 
   return (
-    <Stack alignItems="center" sx={{ pb: 4, px: { xs: 4, sm: 18 } }}>
-      <ScreenWrapper
-        title={t('Ready to Share!')}
-        subtitle={t('Share your unique link on any platform.')}
-      >
-        {steps.length > 0 && (
-          <TemplateCardPreviewItem step={steps[0]} variant="preview" />
-        )}
-
-        <Stack
-          gap={4}
-          direction={{ xs: 'column', sm: 'row' }}
-          sx={{
-            width: { xs: '100%', sm: 300 },
-            mt: 6
-          }}
-        >
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Button
-              data-testid="DoneScreenPreviewButton"
-              fullWidth
-              variant="outlined"
-              color="secondary"
-              href={href}
-              component={href != null ? 'a' : 'button'}
-              target={href != null ? '_blank' : undefined}
-              startIcon={<Play3Icon />}
-              sx={{
-                borderRadius: 3,
-                height: '41px'
-              }}
-            >
-              <Typography variant="subtitle2">{t('Preview')}</Typography>
-            </Button>
-          </Box>
-          <Box
-            sx={{
-              flex: 1,
-              minWidth: 0,
-              '& button': { width: '100% !important' }
-            }}
-          >
-            <ShareItem
-              variant="button"
-              journey={journey}
-              buttonVariant="icon"
-            />
-          </Box>
-        </Stack>
-        <Stack
-          gap={3}
-          sx={{
-            width: '100%',
-            mt: 4,
-            border: 2,
-            borderColor: 'divider',
-            borderRadius: 3,
-            p: 5
-          }}
-        >
-          <Typography
-            variant="subtitle1"
-            display={{ xs: 'none', sm: 'block' }}
-          >
-            {t('Choose where responses go:')}
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            display={{ xs: 'block', sm: 'none' }}
-          >
-            {t('Choose Response Destination:')}
-          </Typography>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="body2">{t('Send to my email')}</Typography>
-            <NotificationSwitch journeyId={journey?.id} />
-          </Stack>
-        </Stack>
+    <ScreenWrapper
+      title={t('Ready to share!')}
+      subtitle={t('Share your unique link on any platform.')}
+      footer={
         <Button
           data-testid="ProjectsDashboardButton"
           onClick={handleGoToProjectsDashboard}
@@ -132,7 +47,53 @@ export function DoneScreen({
             {t('Go To Projects Dashboard')}
           </Typography>
         </Button>
-      </ScreenWrapper>
-    </Stack>
+      }
+    >
+      {steps.length > 0 && (
+        <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+      )}
+
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        sx={{
+          width: '100%',
+          mt: 6,
+          alignItems: { xs: 'stretch', sm: 'center' },
+          justifyContent: 'center',
+          gap: { xs: 3, sm: 2 }
+        }}
+      >
+        <Button
+          data-testid="DoneScreenPreviewButton"
+          variant="outlined"
+          color="secondary"
+          href={href}
+          component={href != null ? 'a' : 'button'}
+          target={href != null ? '_blank' : undefined}
+          startIcon={<Play3Icon />}
+          sx={{
+            borderWidth: 2,
+            borderRadius: 2,
+            height: 48,
+            width: { xs: '100%', sm: 216 },
+            borderColor: 'secondary.light'
+          }}
+        >
+          <Typography variant="subtitle2">{t('Preview')}</Typography>
+        </Button>
+        <ShareItem
+          variant="button"
+          journey={journey}
+          buttonVariant="icon"
+          buttonProps={{
+            sx: {
+              width: { xs: '100%', sm: 216 },
+              height: 48,
+              borderRadius: 2
+            }
+          }}
+        />
+      </Stack>
+    </ScreenWrapper>
   )
 }

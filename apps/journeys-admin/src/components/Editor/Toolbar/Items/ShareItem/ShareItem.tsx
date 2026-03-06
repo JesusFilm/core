@@ -17,6 +17,7 @@ import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../.
 import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
+import { SxProps, Theme } from '@mui/material/styles'
 
 const EmbedJourneyDialog = dynamic(
   async () =>
@@ -50,7 +51,9 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
+  buttonSx?: SxProps<Theme>
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
+  buttonProps?: ComponentProps<typeof Button>
 }
 
 /**
@@ -70,7 +73,8 @@ export function ShareItem({
   handleCloseMenu,
   handleKeepMounted,
   buttonVariant = 'icon',
-  setHasOpenDialog
+  setHasOpenDialog,
+  buttonProps
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -124,7 +128,7 @@ export function ShareItem({
         variant={variant}
         label={t('Share')}
         onClick={handleShowMenu}
-        ButtonProps={{ variant: 'contained' }}
+        ButtonProps={{ variant: 'contained', ...buttonProps }}
         icon={buttonVariant === 'icon' ? <ShareIcon /> : undefined}
       />
       <Dialog

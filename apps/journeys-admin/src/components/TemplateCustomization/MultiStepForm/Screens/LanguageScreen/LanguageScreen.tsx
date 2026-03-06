@@ -2,6 +2,7 @@ import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
+import uniqBy from 'lodash/uniqBy'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -11,8 +12,6 @@ import { object, string } from 'yup'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
-import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
 import { transformer } from '@core/journeys/ui/transformer'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
@@ -21,21 +20,19 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { CardsPreview } from '../LinksScreen/CardsPreview'
+import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
+import Box from '@mui/material/Box'
 
 interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
 export function LanguageScreen({
   handleNext,
-  handleScreenNavigation
 }: LanguageScreenProps): ReactElement {
   const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
@@ -79,28 +76,42 @@ export function LanguageScreen({
     skip: isParentTemplate
   })
 
-  const languages = isParentTemplate
-    ? [
-        ...parentJourneyLanguages,
-        ...childJourneyLanguages,
-        {
-          id: journey?.language?.id ?? '',
-          name: journey?.language?.name ?? [],
-          slug: null
-        }
-      ]
-    : [...parentJourneyLanguages, ...childJourneyLanguages]
-
-  const languagesJourneyMap = isParentTemplate
+  const currentJourneyLanguage = isParentTemplate
     ? {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap,
-        [journey?.language?.id as string]: journey?.id
+        id: journey?.language?.id ?? '',
+        name: journey?.language?.name ?? [],
+        slug: null
       }
-    : {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap
-      }
+    : null
+  const languages = uniqBy(
+    [
+      ...parentJourneyLanguages,
+      ...(currentJourneyLanguage != null
+        ? [...childJourneyLanguages, currentJourneyLanguage]
+        : childJourneyLanguages)
+    ],
+    (lang) => lang.id
+  )
+
+  const currentLanguageId = journey?.language?.id
+  const currentJourneyId = journey?.id
+  const filteredChildJourneyLanguagesJourneyMap = (() => {
+    const mapArray = Object.entries(
+      childJourneyLanguagesJourneyMap ?? {}
+    ).filter(
+      ([langId, journeyId]) =>
+        langId !== currentLanguageId || journeyId === currentJourneyId
+    )
+    if (isParentTemplate) {
+      mapArray.push([journey?.language?.id as string, journey?.id ?? ''])
+    }
+    const map = Object.fromEntries(mapArray)
+    return map
+  })()
+  const languagesJourneyMap = {
+    ...parentJourneyLanguagesJourneyMap,
+    ...filteredChildJourneyLanguagesJourneyMap
+  }
 
   const validationSchema = object({
     teamSelect: string().required()
@@ -116,8 +127,6 @@ export function LanguageScreen({
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
-
-  const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
   function shouldSkipDuplicate(
     journey: {
@@ -168,40 +177,61 @@ export function LanguageScreen({
   }
 
   return (
-    <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <ScreenWrapper
-        title={t("Let's Get Started!")}
-        mobileTitle={t('Get Started')}
-        subtitle={t(
-          'A few quick edits and your template will be ready to share.'
-        )}
-        mobileSubtitle={t("A few quick edits and it's ready to share!")}
-      >
-        <Typography
-          variant="subtitle2"
-          gutterBottom
-          sx={{ mb: { xs: 0, sm: 2 } }}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={handleSubmit}
+    >
+      {({ handleSubmit: formikHandleSubmit, setFieldValue, values }) => (
+        <ScreenWrapper
+          title={t("Let's Get Started!")}
+          mobileTitle={t('Get Started')}
+          subtitle={t(
+            'A few quick edits and your template will be ready to share.'
+          )}
+          mobileSubtitle={t("A few quick edits and it's ready to share!")}
+          footer={
+            <CustomizeFlowNextButton
+              label={t('Next')}
+              onClick={() => formikHandleSubmit()}
+              disabled={
+                (templateCustomizationGuestFlow && !isSignedIn) || loading
+              }
+              ariaLabel={t('Next')}
+            />
+          }
         >
-          {`'${journey?.title ?? ''}'`}
-        </Typography>
-
-        {steps.length > 0 && <CardsPreview steps={steps} />}
-
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          enableReinitialize
-          onSubmit={handleSubmit}
-        >
-          {({ handleSubmit, setFieldValue, values }) => (
+          <Stack
+            sx={{
+              width: '100%',
+              alignItems: 'center',
+              gap: { xs: 3, sm: 4 }
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              gutterBottom
+              sx={{ mb: { xs: 0, sm: 2 } }}
+            >
+              {`'${journey?.title ?? ''}'`}
+            </Typography>
+            <Box
+              sx={{
+                mx: `-${EDGE_FADE_PX}px`,
+                width: `calc(100% + ${EDGE_FADE_PX * 2}px)`
+              }}
+            >
+              {steps.length > 0 && <CardsPreview steps={steps} />}
+            </Box>
             <Form style={{ width: '100%' }}>
               <FormControl
                 sx={{
-                  width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH },
+                  width: { xs: '100%' },
                   alignSelf: 'center'
                 }}
               >
-                <Stack gap={2}>
+                <Stack gap={2} sx={{ px: { xs: 0 } }}>
                   <Typography
                     variant="h6"
                     display={{ xs: 'none', sm: 'block' }}
@@ -221,7 +251,9 @@ export function LanguageScreen({
                       name: language?.name,
                       slug: language?.slug
                     }))}
-                    onChange={(value) => setFieldValue('languageSelect', value)}
+                    onChange={(value) =>
+                      setFieldValue('languageSelect', value)
+                    }
                   />
                   {isSignedIn && (
                     <>
@@ -243,20 +275,12 @@ export function LanguageScreen({
                       <JourneyCustomizeTeamSelect />
                     </>
                   )}
-                  <CustomizeFlowNextButton
-                    label={t('Next')}
-                    onClick={() => handleSubmit()}
-                    disabled={
-                      (templateCustomizationGuestFlow && !isSignedIn) || loading
-                    }
-                    ariaLabel={t('Next')}
-                  />
                 </Stack>
               </FormControl>
             </Form>
-          )}
-        </Formik>
-      </ScreenWrapper>
-    </Stack>
+          </Stack>
+        </ScreenWrapper>
+      )}
+    </Formik>
   )
 }

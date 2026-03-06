@@ -36,11 +36,13 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
           id
           role
           user {
-            email
-            firstName
             id
-            imageUrl
-            lastName
+            ... on AuthenticatedUser {
+              email
+              firstName
+              imageUrl
+              lastName
+            }
           }
           journeyNotification(journeyId: $id) {
             id
@@ -52,11 +54,13 @@ export const GET_JOURNEY_WITH_PERMISSIONS = gql`
         id
         role
         user {
-          id
-          firstName
-          lastName
-          email
-          imageUrl
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            email
+            imageUrl
+          }
         }
         journeyNotification {
           id
@@ -93,19 +97,29 @@ export function AccessDialog({
 
   const currentUserJourney = useMemo(() => {
     return data?.journey?.userJourneys?.find(
-      (userJourney) => userJourney.user?.email === user.email
+      (userJourney) =>
+        userJourney.user?.__typename === 'AuthenticatedUser' &&
+        user?.__typename === 'AuthenticatedUser' &&
+        userJourney.user?.email === user.email
     )
   }, [data?.journey?.userJourneys, user])
 
   const currentUserTeam: UserTeam | undefined = useMemo(() => {
-    return data?.journey?.team?.userTeams.find(({ user: { email } }) => {
-      return email === user?.email
+    return data?.journey?.team?.userTeams.find(({ user: teamUser }) => {
+      return (
+        user?.__typename === 'AuthenticatedUser' &&
+        teamUser.__typename === 'AuthenticatedUser' &&
+        teamUser.email === user.email
+      )
     })
   }, [data?.journey?.team?.userTeams, user])
 
   const userTeamsMap = useMemo(() => {
     return new Map(
-      data?.journey.team?.userTeams.map((obj) => [obj.user.id, obj])
+      data?.journey.team?.userTeams.map((obj) => [
+        obj.user.__typename === 'AuthenticatedUser' ? obj.user.id : '',
+        obj
+      ])
     )
   }, [data?.journey?.team?.userTeams])
 
@@ -119,10 +133,20 @@ export function AccessDialog({
         requests.push(userJourney)
       } else {
         // if user is already part of user team, don't display their user journey
-        if (userTeamsMap.get(userJourney?.user?.id ?? '') == null)
+        if (
+          userTeamsMap.get(
+            userJourney?.user?.__typename === 'AuthenticatedUser'
+              ? userJourney.user.id
+              : ''
+          ) == null
+        )
           users.push(userJourney)
       }
-      if (userJourney.user != null) emails.push(userJourney.user.email)
+      if (
+        userJourney.user != null &&
+        userJourney.user.__typename === 'AuthenticatedUser'
+      )
+        emails.push(userJourney.user.email)
     })
 
     const invites =

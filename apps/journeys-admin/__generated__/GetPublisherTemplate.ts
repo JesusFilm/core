@@ -670,13 +670,20 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
   customizable: boolean | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_userJourneys_user {
+export interface GetPublisherTemplate_publisherTemplate_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type GetPublisherTemplate_publisherTemplate_userJourneys_user = GetPublisherTemplate_publisherTemplate_userJourneys_user_AnonymousUser | GetPublisherTemplate_publisherTemplate_userJourneys_user_AuthenticatedUser;
 
 export interface GetPublisherTemplate_publisherTemplate_userJourneys {
   __typename: "UserJourney";

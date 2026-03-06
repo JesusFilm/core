@@ -129,7 +129,7 @@ describe('DoneScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByText('Ready to Share!')).toHaveLength(2)
+    expect(screen.getAllByText('Ready to share!')).toHaveLength(2)
   })
 
   it('renders first card of journey as preview', async () => {

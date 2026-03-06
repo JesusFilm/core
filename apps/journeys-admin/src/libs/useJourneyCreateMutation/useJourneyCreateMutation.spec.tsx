@@ -53,7 +53,7 @@ const data = {
         __typename: 'UserJourney',
         id: 'user-journey-id',
         user: {
-          __typename: 'User',
+          __typename: 'AuthenticatedUser',
           id: 'user-id1',
           firstName: 'Admin',
           lastName: 'One',
