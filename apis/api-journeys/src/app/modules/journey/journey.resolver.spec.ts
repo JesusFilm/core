@@ -875,6 +875,31 @@ describe('JourneyResolver', () => {
         resolver.journey('unknownId', IdType.databaseId)
       ).rejects.toThrow('journey not found')
     })
+
+    it('returns journey when status filter includes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.published]
+        })
+      ).toEqual(journey)
+    })
+
+    it('throws journey not found when status filter excludes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.draft]
+        })
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('returns journey when no status filter is provided (default behaviour)', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(await resolver.journey('journey-slug', IdType.slug)).toEqual(
+        journey
+      )
+    })
   })
 
   describe('journeyCreate', () => {
@@ -2486,9 +2511,9 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', {
         website: true
       })
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith('journeyId')
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        'journeyId'
+      )
     })
 
     it('should not call recalculate when website is not in input', async () => {
@@ -2499,9 +2524,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', {
         title: 'new title'
       })
-      expect(
-        journeyCustomizableService.recalculate
-      ).not.toHaveBeenCalled()
+      expect(journeyCustomizableService.recalculate).not.toHaveBeenCalled()
     })
 
     it('updates customizable to true', async () => {
@@ -2849,9 +2872,9 @@ describe('JourneyResolver', () => {
         journeyWithUserTeam
       )
       await resolver.journeyTemplate(ability, 'journeyId', { template: true })
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith('journeyId')
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        'journeyId'
+      )
     })
 
     describe('when user is publisher', () => {

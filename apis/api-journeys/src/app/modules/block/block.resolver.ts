@@ -254,7 +254,10 @@ export class BlockResolver {
         },
         data: { updatedAt: new Date().toISOString() }
       })
-      return { blocks: [...siblings, ...children], journeyId: updatedBlock.journeyId }
+      return {
+        blocks: [...siblings, ...children],
+        journeyId: updatedBlock.journeyId
+      }
     })
     await this.journeyCustomizableService.recalculate(result.journeyId)
     return result.blocks
