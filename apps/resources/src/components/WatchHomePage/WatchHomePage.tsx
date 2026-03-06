@@ -7,8 +7,8 @@ import { type ReactElement } from 'react'
 import { Configure, Index } from 'react-instantsearch'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { WATCH_HOME_CONFIGURE } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
