@@ -865,6 +865,31 @@ describe('JourneyResolver', () => {
         resolver.journey('unknownId', IdType.databaseId)
       ).rejects.toThrow('journey not found')
     })
+
+    it('returns journey when status filter includes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.published]
+        })
+      ).toEqual(journey)
+    })
+
+    it('throws journey not found when status filter excludes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.draft]
+        })
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('returns journey when no status filter is provided (default behaviour)', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(await resolver.journey('journey-slug', IdType.slug)).toEqual(
+        journey
+      )
+    })
   })
 
   describe('journeyCreate', () => {
