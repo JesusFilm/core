@@ -24,6 +24,9 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# IDE - Cursor
+.codex/
+
 # misc
 /.sass-cache
 /connect.lock
