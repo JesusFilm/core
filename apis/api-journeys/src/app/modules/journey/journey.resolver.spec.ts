@@ -2486,9 +2486,9 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', {
         website: true
       })
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith('journeyId')
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        'journeyId'
+      )
     })
 
     it('should not call recalculate when website is not in input', async () => {
@@ -2499,9 +2499,7 @@ describe('JourneyResolver', () => {
       await resolver.journeyUpdate(ability, 'journeyId', {
         title: 'new title'
       })
-      expect(
-        journeyCustomizableService.recalculate
-      ).not.toHaveBeenCalled()
+      expect(journeyCustomizableService.recalculate).not.toHaveBeenCalled()
     })
 
     it('updates customizable to true', async () => {
@@ -2849,9 +2847,9 @@ describe('JourneyResolver', () => {
         journeyWithUserTeam
       )
       await resolver.journeyTemplate(ability, 'journeyId', { template: true })
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith('journeyId')
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        'journeyId'
+      )
     })
 
     describe('when user is publisher', () => {

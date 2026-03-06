@@ -250,9 +250,9 @@ describe('BlockService', () => {
     it('should call recalculate after update', async () => {
       prismaService.block.update.mockResolvedValueOnce(block)
       await service.update(block.id, { title: 'test' })
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith(block.journeyId)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        block.journeyId
+      )
     })
 
     it('should not update deletedAt prop', async () => {
@@ -861,9 +861,9 @@ describe('BlockService', () => {
       service.getSiblingsInternal = jest.fn().mockResolvedValue([])
       service.reorderSiblings = jest.fn().mockResolvedValue([])
       await service.removeBlockAndChildren(block)
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith(block.journeyId)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        block.journeyId
+      )
     })
   })
 

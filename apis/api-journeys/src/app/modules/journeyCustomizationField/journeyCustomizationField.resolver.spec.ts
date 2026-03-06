@@ -277,9 +277,9 @@ describe('JourneyCustomizationFieldResolver', () => {
         string
       )
 
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith(journeyId)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        journeyId
+      )
     })
 
     it('should throw error if journey not found', async () => {

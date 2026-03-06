@@ -20,9 +20,7 @@ describe('JourneyCustomizableService', () => {
       ]
     }).compile()
 
-    service = module.get<JourneyCustomizableService>(
-      JourneyCustomizableService
-    )
+    service = module.get<JourneyCustomizableService>(JourneyCustomizableService)
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -97,9 +95,7 @@ describe('JourneyCustomizableService', () => {
     })
 
     it('should set customizable to true when has customizable link action', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        baseJourney as any
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
       prismaService.block.findMany.mockResolvedValueOnce([
         {
           id: 'buttonId',
@@ -124,9 +120,7 @@ describe('JourneyCustomizableService', () => {
     })
 
     it('should not count NavigateToBlockAction as customizable link', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        baseJourney as any
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
       prismaService.block.findMany.mockResolvedValueOnce([
         {
           id: 'buttonId',
@@ -148,9 +142,7 @@ describe('JourneyCustomizableService', () => {
     })
 
     it('should set customizable to true when has customizable ImageBlock', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        baseJourney as any
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
       prismaService.block.findMany.mockResolvedValueOnce([
         {
           id: 'imageId',
@@ -170,9 +162,7 @@ describe('JourneyCustomizableService', () => {
     })
 
     it('should set customizable to true when has customizable VideoBlock', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        baseJourney as any
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
       prismaService.block.findMany.mockResolvedValueOnce([
         {
           id: 'videoId',
@@ -296,9 +286,7 @@ describe('JourneyCustomizableService', () => {
     })
 
     it('should detect customizable RadioOptionBlock action', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        baseJourney as any
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
       prismaService.block.findMany.mockResolvedValueOnce([
         {
           id: 'radioId',
@@ -323,9 +311,7 @@ describe('JourneyCustomizableService', () => {
     })
 
     it('should detect customizable VideoTriggerBlock action', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        baseJourney as any
-      )
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
       prismaService.block.findMany.mockResolvedValueOnce([
         {
           id: 'triggerId',

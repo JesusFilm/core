@@ -216,9 +216,9 @@ describe('BlockResolver', () => {
     it('should call recalculate after block duplication', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       await resolver.blockDuplicate(ability, 'blockId', 2)
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith(blockWithUserTeam.journeyId)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        blockWithUserTeam.journeyId
+      )
     })
 
     it('throws error if not found', async () => {
@@ -413,9 +413,9 @@ describe('BlockResolver', () => {
       prismaService.block.update.mockResolvedValue(block)
       prismaService.block.findMany.mockResolvedValue([block, block])
       await resolver.blockRestore('1', ability)
-      expect(
-        journeyCustomizableService.recalculate
-      ).toHaveBeenCalledWith(block.journeyId)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        block.journeyId
+      )
     })
 
     it('should throw error if block not found', async () => {
