@@ -20,8 +20,15 @@ export function ScreenWrapper({
   children
 }: ScreenWrapperProps): ReactElement {
   return (
-    <Stack alignItems="center" data-testid="ScreenWrapper">
-      <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
+    <Stack
+      alignItems="center"
+      data-testid="ScreenWrapper"
+      sx={{ border: '1px solid red',
+        px: { xs: 6, sm: 20 },
+         overflow: 'visible'
+       }}
+    >
+      <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 }}}>
         <Typography
           variant="h3"
           display={{ xs: 'none', sm: 'block' }}
@@ -39,7 +46,7 @@ export function ScreenWrapper({
           {mobileTitle ?? title}
         </Typography>
         <Typography
-          variant="subtitle2"
+          variant="body1"
           display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"

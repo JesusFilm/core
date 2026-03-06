@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -10,7 +8,6 @@ import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Edit3 from '@core/shared/ui/icons/Edit3'
 
 import {
   CUSTOMIZE_SCREEN_QUERY_KEY,
@@ -39,28 +36,24 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 function renderScreen(
   screen: CustomizationScreen,
   handleNext: (overrideJourneyId?: string) => void,
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 ): ReactElement {
   switch (screen) {
     case 'language':
       return (
         <LanguageScreen
           handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
         />
       )
     case 'text':
       return (
         <TextScreen
           handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
         />
       )
     case 'links':
       return (
         <LinksScreen
           handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
         />
       )
     case 'media':
@@ -69,11 +62,10 @@ function renderScreen(
       return (
         <SocialScreen
           handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
         />
       )
     case 'done':
-      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+      return <DoneScreen />
     default:
       return <></>
   }
@@ -128,16 +120,11 @@ export function MultiStepForm(): ReactElement {
     )
   }
 
-  async function handleScreenNavigation(
-    screen: CustomizationScreen
-  ): Promise<void> {
-    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
-  }
-
   return (
     <TemplateVideoUploadProvider>
       <Container
         maxWidth="sm"
+        disableGutters
         sx={{
           width: '100%',
           minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
@@ -149,27 +136,10 @@ export function MultiStepForm(): ReactElement {
           overflow: 'hidden'
         }}
       >
-        <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
-          <NextLink href={link} passHref legacyBehavior>
-            <Button
-              variant="text"
-              color="primary"
-              startIcon={<Edit3 />}
-              sx={{
-                alignSelf: 'flex-end',
-                mr: '4px',
-                fontWeight: 'bold',
-                visibility: activeScreen === 'language' ? 'hidden' : 'visible',
-                '& .MuiButton-startIcon': {
-                  marginRight: 0.3,
-                  marginTop: 1
-                }
-              }}
-              disabled={journey?.id == null}
-            >
-              {t('Edit Manually')}
-            </Button>
-          </NextLink>
+        <Stack
+          gap={{ xs: 8, sm: 17 }}
+          data-testid="MultiStepForm"
+        >
           {(hasEditableText ||
             hasCustomizableLinks ||
             hasCustomizableMedia) && (
@@ -180,17 +150,7 @@ export function MultiStepForm(): ReactElement {
               />
             </Box>
           )}
-
-          <Box
-            sx={{
-              alignSelf: 'center',
-              width: '100%',
-              px: '14px',
-              py: { xs: '10px', sm: '24px' }
-            }}
-          >
-            {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
-          </Box>
+          {renderScreen(activeScreen, handleNext)}
         </Stack>
       </Container>
     </TemplateVideoUploadProvider>

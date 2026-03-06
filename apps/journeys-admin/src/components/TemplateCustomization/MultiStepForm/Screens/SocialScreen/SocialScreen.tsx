@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { ScreenWrapper } from '../ScreenWrapper'
 
@@ -12,29 +11,18 @@ import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
   handleNext: (overrideJourneyId?: string) => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
 export function SocialScreen({
   handleNext,
-  handleScreenNavigation
 }: SocialScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack
-      alignItems="center"
-      sx={{
-        px: { xs: 5, sm: 20 }
-      }}
-    >
       <ScreenWrapper
-        title={t('Final Details')}
+        title={t('Social Media')}
         subtitle={t(
-          'Customize how your invite appears when shared on social media.'
-        )}
-        mobileSubtitle={t(
-          'This is how your content will appear when shared on social media.'
+          'This is how your content will look on social media.'
         )}
         footer={
           <CustomizeFlowNextButton
@@ -58,6 +46,5 @@ export function SocialScreen({
           <DescriptionEdit />
         </Stack>
       </ScreenWrapper>
-    </Stack>
   )
 }
