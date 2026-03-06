@@ -28,7 +28,6 @@ import { JourneyCustomizableService } from './journeyCustomizable.service'
     ChatButtonResolver,
     PrismaService,
     QrCodeService
-  ],
-  exports: [JourneyCustomizableService]
+  ]
 })
 export class JourneyModule {}
