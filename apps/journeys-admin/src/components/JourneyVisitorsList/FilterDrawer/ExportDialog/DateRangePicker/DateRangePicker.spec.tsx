@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { DateRangePicker } from './DateRangePicker'
 
@@ -65,5 +65,30 @@ describe('DateRangePicker', () => {
 
     expect(fromInputs.length).toBeGreaterThan(0)
     expect(toInputs.length).toBeGreaterThan(0)
+  })
+
+  it('opens calendar when minDate and maxDate if provided', () => {
+    const minDate = new Date(2024, 5, 15) // Jun 15, 2024
+    const maxDate = new Date(2024, 5, 20) // Jun 20, 2024
+
+    render(
+      <DateRangePicker
+        startDate={null}
+        endDate={null}
+        onStartDateChange={mockStartDateChange}
+        onEndDateChange={mockEndDateChange}
+        minDate={minDate}
+        maxDate={maxDate}
+      />
+    )
+
+    const calendarButtons = screen.getAllByRole('button', {
+      name: 'Choose date'
+    })
+    fireEvent.click(calendarButtons[0])
+
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toBeInTheDocument()
+    expect(within(dialog).getAllByRole('grid').length).toBeGreaterThan(0)
   })
 })

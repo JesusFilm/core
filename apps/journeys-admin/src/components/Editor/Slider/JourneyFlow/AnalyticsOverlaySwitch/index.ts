@@ -1,4 +1,1 @@
-export {
-  AnalyticsOverlaySwitch,
-  earliestStatsCollected
-} from './AnalyticsOverlaySwitch'
+export { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
