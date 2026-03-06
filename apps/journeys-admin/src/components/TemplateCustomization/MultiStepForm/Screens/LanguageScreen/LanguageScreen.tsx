@@ -145,12 +145,17 @@ export function LanguageScreen({
     },
     values: FormikValues
   ): boolean {
-    const selectedTeamId = values.teamSelect ?? ''
+    const selectedTeamId =
+      values.teamSelect != null && values.teamSelect !== ''
+        ? values.teamSelect
+        : null
     const selectedLanguageId = values.languageSelect?.id ?? ''
 
     const isNotTemplate = journey.template === false
     const languageMatches = journey.language?.id === selectedLanguageId
-    const teamMatches = journey.team?.id === selectedTeamId
+    const teamMatches =
+      selectedTeamId != null ? journey.team?.id === selectedTeamId : true
+
     return Boolean(isNotTemplate && languageMatches && teamMatches)
   }
 
