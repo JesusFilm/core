@@ -682,6 +682,7 @@ export class JourneysQueryOptions {
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
     skipRoutingFilter?: Nullable<boolean>;
+    status?: Nullable<JourneyStatus[]>;
 }
 
 export class JourneyCreateInput {
@@ -1031,8 +1032,6 @@ export abstract class IQuery {
     abstract team(id: string): Team | Promise<Team>;
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
     abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 

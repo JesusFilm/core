@@ -320,7 +320,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!) : [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!) : JourneyNotification! @join__field(graph: API_JOURNEYS) 
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeyThemeCreate(input: JourneyThemeCreateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
   journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
   journeyThemeDelete(id: ID!) : JourneyTheme! @join__field(graph: API_JOURNEYS) 
@@ -414,6 +413,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -771,7 +771,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   teams: [Team!]! @join__field(graph: API_JOURNEYS) 
   team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
   userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
-  getUserRole: UserRole @join__field(graph: API_JOURNEYS) 
   userTeams(teamId: ID!, where: UserTeamFilterInput) : [UserTeam!]! @join__field(graph: API_JOURNEYS) 
   userTeam(id: ID!) : UserTeam! @join__field(graph: API_JOURNEYS) 
   userTeamInvites(teamId: ID!) : [UserTeamInvite!]! @join__field(graph: API_JOURNEYS) 
@@ -854,6 +853,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  getUserRole: UserRole @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -4488,6 +4488,11 @@ input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   skip custom domain routing filter (for admin template customization)
   """
   skipRoutingFilter: Boolean
+  """
+  when provided, filter the journey to only return if its status is in this list.
+  when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 input JourneyCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4576,13 +4581,6 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   visitorInteractionEmail: Boolean!
-}
-
-input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  lastActiveTeamId: String
-  journeyFlowBackButtonClicked: Boolean
-  plausibleJourneyFlowViewed: Boolean
-  plausibleDashboardViewed: Boolean
 }
 
 input JourneyThemeCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4818,6 +4816,13 @@ input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
   eventsFilter: [EventType!]!
   dateRangeStart: DateTimeISO
   dateRangeEnd: DateTimeISO
+}
+
+input JourneyProfileUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  lastActiveTeamId: String
+  journeyFlowBackButtonClicked: Boolean
+  plausibleJourneyFlowViewed: Boolean
+  plausibleDashboardViewed: Boolean
 }
 
 input JourneyVisitorExportSelect @join__type(graph: API_JOURNEYS_MODERN)  {

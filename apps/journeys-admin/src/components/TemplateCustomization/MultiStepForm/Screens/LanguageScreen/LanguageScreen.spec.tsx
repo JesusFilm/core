@@ -92,6 +92,21 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
+const mockGetLastActiveTeamIdAndTeamsEmptyTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        getJourneyProfile: {
+          id: 'profile-id',
+          lastActiveTeamId: null,
+          __typename: 'JourneyProfile'
+        },
+        teams: []
+      }
+    }
+  }
+
 const mockGetChildJourneysFromTemplateId: MockedResponse<
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
@@ -120,7 +135,12 @@ const mockJourneyDuplicate: MockedResponse<
 > = {
   request: {
     query: JOURNEY_DUPLICATE,
-    variables: { id: 'journeyId', teamId: 'teamId1', forceNonTemplate: true }
+    variables: {
+      id: 'journeyId',
+      teamId: 'teamId1',
+      forceNonTemplate: true,
+      duplicateAsDraft: false
+    }
   },
   result: {
     data: {
@@ -335,7 +355,8 @@ describe('LanguageScreen', () => {
               variables: {
                 id: 'journey-2', // This should match the Spanish language journey ID
                 teamId: 'teamId1',
-                forceNonTemplate: true
+                forceNonTemplate: true,
+                duplicateAsDraft: false
               }
             },
             result: mockJourneyDuplicateMockResult
@@ -420,7 +441,6 @@ describe('LanguageScreen', () => {
         }
       }
     }
-
     const mockJourneyDuplicateForGuest: MockedResponse<
       JourneyDuplicate,
       JourneyDuplicateVariables
@@ -455,7 +475,7 @@ describe('LanguageScreen', () => {
     render(
       <MockedProvider
         mocks={[
-          mockGetLastActiveTeamIdAndTeams,
+          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
           mockGetCurrentUser,
@@ -487,6 +507,308 @@ describe('LanguageScreen', () => {
     await waitFor(() =>
       expect(mockJourneyDuplicateForGuestResult).toHaveBeenCalled()
     )
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('for anonymous user with existing team: reuses existing team and does not create a new one', async () => {
+    mockUser = {
+      id: null,
+      email: null,
+      firebaseUser: { isAnonymous: true }
+    }
+
+    const existingGuestTeamId = 'teamId1'
+    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+      request: { query: GET_CURRENT_USER },
+      result: {
+        data: {
+          me: {
+            __typename: 'AuthenticatedUser',
+            id: 'anon-user-id',
+            email: ''
+          }
+        }
+      }
+    }
+    const mockJourneyDuplicateForExistingGuest: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: existingGuestTeamId,
+          forceNonTemplate: true,
+          duplicateAsDraft: true
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockJourneyDuplicateForExistingGuestResult = jest.fn(() => ({
+      ...mockJourneyDuplicateForExistingGuest.result
+    }))
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          mockGetCurrentUser,
+          {
+            ...mockJourneyDuplicateForExistingGuest,
+            result: mockJourneyDuplicateForExistingGuestResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen
+                  handleNext={handleNext}
+                  handleScreenNavigation={handleScreenNavigation}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(mockJourneyDuplicateForExistingGuestResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('should use the current journey when multiple child journeys share the same language id', async () => {
+    const journeyWithFromTemplateIdAndLanguage = {
+      ...journey,
+      id: 'current-child-id',
+      fromTemplateId: 'template-duplicate',
+      language: {
+        ...journey.language,
+        id: 'language-duplicate',
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            primary: true,
+            value: 'Spanish'
+          }
+        ]
+      }
+    }
+
+    const mockChildJourneysWithDuplicateLanguage: MockedResponse<
+      GetChildJourneysFromTemplateId,
+      GetChildJourneysFromTemplateIdVariables
+    > = {
+      request: {
+        query: GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            fromTemplateId: 'template-duplicate'
+          }
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            {
+              __typename: 'Journey' as const,
+              id: 'sibling-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            },
+            {
+              __typename: 'Journey' as const,
+              id: 'other-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-other',
+                slug: 'fr',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'French'
+                  }
+                ]
+              }
+            },
+            {
+              __typename: 'Journey' as const,
+              id: 'current-child-id',
+              fromTemplateId: 'template-duplicate',
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    const mockParentJourneysForDuplicateLanguage: MockedResponse<
+      GetParentJourneysFromTemplateId,
+      GetParentJourneysFromTemplateIdVariables
+    > = {
+      request: {
+        query: GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID,
+        variables: {
+          where: {
+            template: true,
+            ids: ['template-duplicate']
+          }
+        }
+      },
+      result: {
+        data: {
+          journeys: [
+            {
+              __typename: 'Journey' as const,
+              id: 'template-duplicate',
+              fromTemplateId: null,
+              language: {
+                __typename: 'Language' as const,
+                id: 'language-duplicate',
+                slug: 'es',
+                name: [
+                  {
+                    __typename: 'LanguageName' as const,
+                    primary: true,
+                    value: 'Spanish'
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+
+    const mockJourneyDuplicateForDuplicateLanguage: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'current-child-id',
+          teamId: 'teamId1',
+          forceNonTemplate: true,
+          duplicateAsDraft: false
+        }
+      },
+      result: mockJourneyDuplicate.result
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockChildJourneysWithDuplicateLanguage,
+          mockParentJourneysForDuplicateLanguage,
+          mockJourneyDuplicateForDuplicateLanguage
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider
+              value={{
+                journey: journeyWithFromTemplateIdAndLanguage,
+                variant: 'admin'
+              }}
+            >
+              <TeamProvider>
+                <LanguageScreen
+                  handleNext={handleNext}
+                  handleScreenNavigation={handleScreenNavigation}
+                />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+
+    fireEvent.focus(screen.getByTestId('LanguageAutocompleteInput'))
+    fireEvent.keyDown(screen.getByTestId('LanguageAutocompleteInput'), {
+      key: 'ArrowDown'
+    })
+    await waitFor(() => {
+      const spanishOptions = screen.getAllByRole('option', { name: 'Spanish' })
+      expect(spanishOptions).toHaveLength(1)
+    })
+    fireEvent.click(screen.getByRole('option', { name: 'Spanish' }))
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
         '/templates/new-journey-id/customize',
