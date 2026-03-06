@@ -85,7 +85,6 @@ describe('LinksScreen', () => {
   //         <JourneyProvider value={{ journey, variant: 'admin' }}>
   //           <LinksScreen
   //             handleNext={jest.fn()}
-  //             handleScreenNavigation={jest.fn()}
   //           />
   //         </JourneyProvider>
   //       </MockedProvider>
@@ -135,7 +134,6 @@ describe('LinksScreen', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <LinksScreen
               handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -294,7 +292,6 @@ describe('LinksScreen', () => {
           >
             <LinksScreen
               handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -403,7 +400,6 @@ describe('LinksScreen', () => {
           >
             <LinksScreen
               handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
             />
           </JourneyProvider>
         </MockedProvider>
@@ -473,7 +469,6 @@ describe('LinksScreen', () => {
           >
             <LinksScreen
               handleNext={jest.fn()}
-              handleScreenNavigation={jest.fn()}
             />
           </JourneyProvider>
         </MockedProvider>

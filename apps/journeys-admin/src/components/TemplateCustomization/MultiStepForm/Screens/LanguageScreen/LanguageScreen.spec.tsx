@@ -116,7 +116,6 @@ const mockJourneyDuplicate: MockedResponse<
 
 describe('LanguageScreen', () => {
   let handleNext: jest.Mock
-  const handleScreenNavigation = jest.fn()
   let push: jest.Mock
 
   beforeEach(() => {
@@ -165,7 +164,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
@@ -203,7 +201,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
@@ -306,7 +303,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
@@ -510,7 +506,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
@@ -566,7 +561,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
@@ -627,7 +621,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
@@ -652,7 +645,6 @@ describe('LanguageScreen', () => {
             <TeamProvider>
               <LanguageScreen
                 handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
               />
             </TeamProvider>
           </JourneyProvider>
