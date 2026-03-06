@@ -4,9 +4,6 @@ import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-
-import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
@@ -16,13 +13,8 @@ import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
 
-jest.mock('../../../libs/isJourneyCustomizable', () => ({
-  isJourneyCustomizable: jest.fn()
-}))
-
-const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
-  typeof isJourneyCustomizable
->
+const customizableJourney = { ...journey, customizable: true }
+const nonCustomizableJourney = { ...journey, customizable: false }
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -339,11 +331,9 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should push signed in user to customization flow page if template is customizable', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(true)
-
     const { getAllByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey: customizableJourney }}>
           <TemplateViewHeader
             isPublisher
             authUser={{ id: '123' } as unknown as User}
@@ -364,11 +354,9 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should open legacy copy to team dialog if journey is not customizable', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(false)
-
     const { getAllByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey: nonCustomizableJourney }}>
           <TemplateViewHeader
             isPublisher
             authUser={{ id: '123' } as unknown as User}
@@ -385,8 +373,6 @@ describe('TemplateViewHeader', () => {
   })
 
   it('should show use this template loading skeleton if journey is undefined', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(false)
-
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: undefined }}>
