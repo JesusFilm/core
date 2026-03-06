@@ -16,6 +16,7 @@ const defaultUser: MockUser = { id: 'test-user-id' }
 const guestUser: MockUser = { id: null, email: null }
 const mockUseUser = jest.fn<MockUser, []>(() => defaultUser)
 jest.mock('next-firebase-auth', () => ({
+  //useUser: () => ({ id: 'test-user-id', email: 'test@example.com' })
   useUser: () => mockUseUser()
 }))
 
@@ -117,6 +118,15 @@ jest.mock('./Screens', () => ({
       <button onClick={() => handleNext()} data-testid="media-next">
         Next
       </button>
+    </div>
+  ),
+  GuestPreviewScreen: ({
+    handleScreenNavigation
+  }: {
+    handleScreenNavigation: (screen: string) => void
+  }) => (
+    <div data-testid="guest-preview-screen">
+      <h2>Guest Preview Screen</h2>
     </div>
   ),
   SocialScreen: ({

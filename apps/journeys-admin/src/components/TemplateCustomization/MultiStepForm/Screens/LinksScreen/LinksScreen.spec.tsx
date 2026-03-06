@@ -7,6 +7,7 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import { User, useUser } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -39,6 +40,22 @@ import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/C
 import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
+
+jest.mock('next-firebase-auth', () => ({
+  useUser: jest.fn(() => ({
+    id: 'test-user-id',
+    email: 'test-user-email@example.com'
+  }))
+}))
+
+const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
+
+jest.mock('next/router', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    query: {}
+  })
+}))
 
 describe('LinksScreen', () => {
   const journey = {
@@ -144,6 +161,28 @@ describe('LinksScreen', () => {
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
+  })
+
+  it('calls handleScreenNavigation with guestPreview when user is not signed in and submits', async () => {
+    const handleScreenNavigation = jest.fn()
+    mockUseUser.mockReturnValueOnce({ id: null, email: null } as User)
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <LinksScreen
+              handleNext={jest.fn()}
+              handleScreenNavigation={handleScreenNavigation}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    await waitFor(() =>
+      expect(handleScreenNavigation).toHaveBeenCalledWith('guestPreview')
+    )
   })
 
   it('calls correct mutations for changed url, email', async () => {

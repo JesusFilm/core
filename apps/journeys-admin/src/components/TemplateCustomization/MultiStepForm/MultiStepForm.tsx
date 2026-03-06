@@ -26,6 +26,7 @@ import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizat
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
   MediaScreen,
@@ -63,6 +64,10 @@ function renderScreen(
           handleScreenNavigation={handleScreenNavigation}
         />
       )
+    case 'guestPreview':
+      return (
+        <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
+      )
     case 'media':
       return <MediaScreen handleNext={handleNext} />
     case 'social':
@@ -74,6 +79,7 @@ function renderScreen(
       )
     case 'done':
       return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+
     default:
       return <></>
   }
@@ -134,6 +140,11 @@ export function MultiStepForm(): ReactElement {
     void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
   }
 
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? screens.indexOf('guestPreview') - 1
+      : screens.indexOf(activeScreen)
+
   return (
     <TemplateVideoUploadProvider>
       <Container
@@ -175,7 +186,7 @@ export function MultiStepForm(): ReactElement {
             hasCustomizableMedia) && (
             <Box sx={{ mt: { xs: 3, sm: 6 } }}>
               <ProgressStepper
-                activeStepNumber={screens.indexOf(activeScreen)}
+                activeStepNumber={activeStepForStepper}
                 totalSteps={totalSteps}
               />
             </Box>
