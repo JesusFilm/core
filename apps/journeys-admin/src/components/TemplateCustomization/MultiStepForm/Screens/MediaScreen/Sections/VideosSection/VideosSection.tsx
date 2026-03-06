@@ -1,16 +1,19 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { KeyboardEvent, ReactElement, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useTemplateVideoUpload } from '../../../../TemplateVideoUploadProvider'
 import {
+  extractYouTubeVideoId,
   getCustomizableCardVideoBlock,
   getVideoBlockDisplayTitle
 } from '../../utils'
@@ -102,7 +105,13 @@ export function VideosSection({
 }: VideosSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { startUpload, getUploadStatus } = useTemplateVideoUpload()
+  const { startUpload, startYouTubeLink, getUploadStatus } =
+    useTemplateVideoUpload()
+
+  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [youtubeUrlError, setYoutubeUrlError] = useState<string | undefined>(
+    undefined
+  )
 
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
   const videoBlockDisplayTitle =
@@ -129,6 +138,25 @@ export function VideosSection({
     accept: { 'video/*': [] },
     disabled: loading
   })
+
+  async function handleYouTubeSubmit(): Promise<void> {
+    const extractedId = extractYouTubeVideoId(youtubeUrl.trim())
+    if (extractedId == null) {
+      setYoutubeUrlError(t('Please enter a valid YouTube URL'))
+      return
+    }
+    if (videoBlock == null) return
+
+    setYoutubeUrlError(undefined)
+    setYoutubeUrl('')
+    await startYouTubeLink(videoBlock.id, extractedId)
+  }
+
+  function handleYouTubeKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
+    if (event.key === 'Enter') {
+      void handleYouTubeSubmit()
+    }
+  }
 
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
@@ -167,6 +195,44 @@ export function VideosSection({
         defaultMessage={t('Max size is 1 GB')}
         errorMessage={errorMessage}
       />
+      <Divider>
+        <Typography variant="caption" color="text.secondary">
+          {t('or')}
+        </Typography>
+      </Divider>
+      <Stack gap={1}>
+        <Stack direction="row" gap={1} alignItems="flex-start">
+          <TextField
+            size="small"
+            label={t('YouTube URL')}
+            value={youtubeUrl}
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+            onKeyDown={handleYouTubeKeyDown}
+            disabled={loading}
+            error={youtubeUrlError != null}
+            helperText={youtubeUrlError}
+            inputProps={{ 'aria-label': t('YouTube URL') }}
+            sx={{ flex: 1 }}
+          />
+          <Button
+            size="small"
+            color="secondary"
+            variant="outlined"
+            disabled={loading || youtubeUrl.trim() === ''}
+            onClick={() => void handleYouTubeSubmit()}
+            aria-label={t('Set YouTube video')}
+            sx={{
+              height: 40,
+              borderRadius: 2,
+              flexShrink: 0
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+              {t('Set')}
+            </Typography>
+          </Button>
+        </Stack>
+      </Stack>
     </Stack>
   )
 }
