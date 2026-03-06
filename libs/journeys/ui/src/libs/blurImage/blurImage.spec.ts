@@ -2,7 +2,7 @@ import { blurImage } from './blurImage'
 
 // Mock blurhash decode function
 jest.mock('blurhash', () => ({
-  decode: () => new Uint8ClampedArray(32 * 32 * 4).fill(128)
+  decode: jest.fn()
 }))
 
 describe('blurImage', () => {
@@ -48,6 +48,9 @@ describe('blurImage', () => {
   }
 
   it('returns url of blurred image', () => {
+    const { decode } = require('blurhash')
+    decode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+
     expect(
       blurImage(image.blurhash, '#000000')?.startsWith('data:image/png;base64,')
     ).toBeTruthy()
@@ -65,10 +68,52 @@ describe('blurImage', () => {
       return {} as HTMLElement
     })
 
+    const { decode } = require('blurhash')
+    decode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+
     expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
   })
 
   it('returns undefined if blurhash is empty string', () => {
     expect(blurImage('', '#00000088')).toBeUndefined()
+  })
+
+  it('handles decode errors gracefully', () => {
+    const { decode } = require('blurhash')
+    decode.mockImplementation(() => {
+      throw new Error('Invalid blurhash')
+    })
+
+    expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
+  })
+
+  it('pads small pixel arrays with background color', () => {
+    const { decode } = require('blurhash')
+    // Return array smaller than expected
+    decode.mockReturnValue(new Uint8ClampedArray(16 * 16 * 4).fill(128))
+
+    expect(
+      blurImage(image.blurhash, '#FF0000')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
+  })
+
+  it('crops large pixel arrays to fit', () => {
+    const { decode } = require('blurhash')
+    // Return array larger than expected
+    decode.mockReturnValue(new Uint8ClampedArray(64 * 64 * 4).fill(128))
+
+    expect(
+      blurImage(image.blurhash, '#00FF00')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
+  })
+
+  it('handles exact size pixel arrays', () => {
+    const { decode } = require('blurhash')
+    // Return array of exact expected size
+    decode.mockReturnValue(new Uint8ClampedArray(32 * 32 * 4).fill(128))
+
+    expect(
+      blurImage(image.blurhash, '#0000FF')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
   })
 })
