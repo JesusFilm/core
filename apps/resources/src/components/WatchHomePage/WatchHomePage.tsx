@@ -4,10 +4,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
-import { Index } from 'react-instantsearch'
+import { Configure, Index } from 'react-instantsearch'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { SearchBar } from '@core/journeys/ui/SearchBar'
+import { WATCH_HOME_CONFIGURE } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
@@ -48,6 +49,7 @@ export function WatchHomePage({
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
             <Index indexName={indexName}>
+              <Configure {...WATCH_HOME_CONFIGURE} />
               <Box sx={{ pb: 10 }}>
                 <SearchBarProvider>
                   <SearchBar showDropdown showLanguageButton />

@@ -16,6 +16,7 @@ import {
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
+import { WATCH_ALL_VIDEOS_CONFIGURE } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import i18nConfig from '../next-i18next.config'
@@ -88,10 +89,7 @@ function VideosPage({
           insights
           routing={nextRouter}
         >
-          <Configure
-            ruleContexts={['all_videos_page']}
-            filters="NOT restrictViewPlatforms:watch AND published:true AND videoPublished:true"
-          />
+          <Configure {...WATCH_ALL_VIDEOS_CONFIGURE} />
           <Videos />
         </InstantSearch>
       </ApolloProvider>
