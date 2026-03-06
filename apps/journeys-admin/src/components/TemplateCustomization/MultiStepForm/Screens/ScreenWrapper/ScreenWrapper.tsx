@@ -11,6 +11,16 @@ interface ScreenWrapperProps {
   children: ReactNode
 }
 
+/**
+ * Wraps a multi-step form screen with a responsive title, subtitle, and optional footer.
+ *
+ * @param title - The heading displayed on desktop viewports.
+ * @param mobileTitle - Optional heading override for mobile viewports. Falls back to `title`.
+ * @param subtitle - The subheading displayed on desktop viewports.
+ * @param mobileSubtitle - Optional subheading override for mobile viewports. Falls back to `subtitle`.
+ * @param footer - Optional content rendered below the children.
+ * @param children - The main screen content.
+ */
 export function ScreenWrapper({
   title,
   mobileTitle,

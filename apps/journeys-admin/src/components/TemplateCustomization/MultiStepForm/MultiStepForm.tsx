@@ -79,7 +79,6 @@ export function MultiStepForm(): ReactElement {
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
   const journeyId = journey?.id ?? ''
-  const link = `/journeys/${journeyId}`
 
   const {
     screens,
