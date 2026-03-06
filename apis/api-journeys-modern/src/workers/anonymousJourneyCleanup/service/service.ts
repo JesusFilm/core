@@ -1,0 +1,102 @@
+import { Job } from 'bullmq'
+import { Logger } from 'pino'
+
+import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
+import { prisma as prismaUsers } from '@core/prisma/users/client'
+
+const CLEANUP_DAYS = 5
+
+export async function service(job: Job, logger?: Logger): Promise<void> {
+  logger?.info('Starting anonymous journey cleanup')
+
+  const cutoffDate = new Date(Date.now() - CLEANUP_DAYS * 24 * 60 * 60 * 1000)
+  let deletedJourneyCount = 0
+  let deletedUserCount = 0
+
+  try {
+    const anonymousUsers = await prismaUsers.user.findMany({
+      where: { email: null },
+      select: { id: true, userId: true }
+    })
+
+    if (anonymousUsers.length === 0) {
+      logger?.info('No anonymous users found')
+      return
+    }
+
+    logger?.info(`Found ${anonymousUsers.length} anonymous users`)
+
+    for (const user of anonymousUsers) {
+      const journeys = await prisma.journey.findMany({
+        where: {
+          createdAt: { lt: cutoffDate },
+          userJourneys: {
+            some: {
+              userId: user.userId,
+              role: UserJourneyRole.owner
+            }
+          }
+        },
+        select: { id: true, title: true }
+      })
+
+      if (journeys.length === 0) continue
+
+      logger?.info(
+        { userId: user.userId },
+        `Found ${journeys.length} journeys older than ${CLEANUP_DAYS} days`
+      )
+
+      for (const journey of journeys) {
+        try {
+          await prisma.journey.delete({ where: { id: journey.id } })
+          deletedJourneyCount++
+          logger?.info(
+            { journeyId: journey.id },
+            `Deleted journey "${journey.title}"`
+          )
+        } catch (error) {
+          logger?.warn(
+            { journeyId: journey.id, error },
+            `Failed to delete journey "${journey.title}"`
+          )
+        }
+      }
+
+      const remainingJourneys = await prisma.journey.count({
+        where: {
+          userJourneys: {
+            some: {
+              userId: user.userId,
+              role: UserJourneyRole.owner
+            }
+          }
+        }
+      })
+
+      if (remainingJourneys === 0) {
+        try {
+          await prismaUsers.user.delete({ where: { id: user.id } })
+          deletedUserCount++
+          logger?.info(
+            { userId: user.userId },
+            'Deleted anonymous user with no remaining journeys'
+          )
+        } catch (error) {
+          logger?.warn(
+            { userId: user.userId, error },
+            'Failed to delete anonymous user'
+          )
+        }
+      }
+    }
+
+    logger?.info(
+      { deletedJourneyCount, deletedUserCount },
+      `Anonymous journey cleanup completed: deleted ${deletedJourneyCount} journeys and ${deletedUserCount} users`
+    )
+  } catch (error) {
+    logger?.error({ error }, 'Anonymous journey cleanup failed')
+    throw error
+  }
+}
