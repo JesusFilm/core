@@ -13,38 +13,34 @@ interface SocialScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
-export function SocialScreen({
-  handleNext,
-}: SocialScreenProps): ReactElement {
+export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-      <ScreenWrapper
-        title={t('Social Media')}
-        subtitle={t(
-          'This is how your content will look on social media.'
-        )}
-        footer={
-          <CustomizeFlowNextButton
-            label={t('Done')}
-            onClick={() => handleNext()}
-            ariaLabel={t('Done')}
-          />
-        }
+    <ScreenWrapper
+      title={t('Social Media')}
+      subtitle={t('This is how your content will look on social media.')}
+      footer={
+        <CustomizeFlowNextButton
+          label={t('Done')}
+          onClick={() => handleNext()}
+          ariaLabel={t('Done')}
+        />
+      }
+    >
+      <Stack
+        alignItems="center"
+        gap={6}
+        data-testid="SocialShareAppearance"
+        sx={{
+          width: '100%',
+          py: 5
+        }}
       >
-        <Stack
-          alignItems="center"
-          gap={6}
-          data-testid="SocialShareAppearance"
-          sx={{
-            width: '100%',
-            py: 5
-          }}
-        >
-          <SocialScreenSocialImage />
-          <TitleEdit />
-          <DescriptionEdit />
-        </Stack>
-      </ScreenWrapper>
+        <SocialScreenSocialImage />
+        <TitleEdit />
+        <DescriptionEdit />
+      </Stack>
+    </ScreenWrapper>
   )
 }

@@ -210,35 +210,32 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
         return acc
       }, {})}
       validationSchema={object().shape(
-        links.reduce<Record<string, ReturnType<typeof string>>>(
-          (acc, link) => {
-            if (link.linkType === 'email') {
-              acc[link.id] = string().email(t('Enter a valid email'))
-            } else if (link.linkType === 'phone') {
-              acc[`${link.id}__cc`] = string().test(
-                'valid-cc',
-                t('Enter a valid calling code'),
-                (val) => {
-                  if (val == null || val.trim() === '') return false
-                  const normalized = val.startsWith('+') ? val : `+${val}`
-                  return countries.some((c) => c.callingCode === normalized)
-                }
-              )
-              acc[`${link.id}__local`] = string().test(
-                'valid-local',
-                t('Enter a valid phone number'),
-                (val) =>
-                  val == null ||
-                  val.trim() === '' ||
-                  /^[0-9\s\-()]+$/.test(val.trim())
-              )
-            } else {
-              acc[link.id] = string().url(t('Enter a valid URL'))
-            }
-            return acc
-          },
-          {}
-        )
+        links.reduce<Record<string, ReturnType<typeof string>>>((acc, link) => {
+          if (link.linkType === 'email') {
+            acc[link.id] = string().email(t('Enter a valid email'))
+          } else if (link.linkType === 'phone') {
+            acc[`${link.id}__cc`] = string().test(
+              'valid-cc',
+              t('Enter a valid calling code'),
+              (val) => {
+                if (val == null || val.trim() === '') return false
+                const normalized = val.startsWith('+') ? val : `+${val}`
+                return countries.some((c) => c.callingCode === normalized)
+              }
+            )
+            acc[`${link.id}__local`] = string().test(
+              'valid-local',
+              t('Enter a valid phone number'),
+              (val) =>
+                val == null ||
+                val.trim() === '' ||
+                /^[0-9\s\-()]+$/.test(val.trim())
+            )
+          } else {
+            acc[link.id] = string().url(t('Enter a valid URL'))
+          }
+          return acc
+        }, {})
       )}
       validateOnSubmit={false}
       onSubmit={handleFormSubmit}

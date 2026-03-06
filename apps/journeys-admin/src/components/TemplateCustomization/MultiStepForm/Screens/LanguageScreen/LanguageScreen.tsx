@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -25,14 +26,13 @@ import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
-import Box from '@mui/material/Box'
 
 interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
 export function LanguageScreen({
-  handleNext,
+  handleNext
 }: LanguageScreenProps): ReactElement {
   const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
@@ -251,9 +251,7 @@ export function LanguageScreen({
                       name: language?.name,
                       slug: language?.slug
                     }))}
-                    onChange={(value) =>
-                      setFieldValue('languageSelect', value)
-                    }
+                    onChange={(value) => setFieldValue('languageSelect', value)}
                   />
                   {isSignedIn && (
                     <>

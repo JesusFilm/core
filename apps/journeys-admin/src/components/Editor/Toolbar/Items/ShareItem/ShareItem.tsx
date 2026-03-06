@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import { SxProps, Theme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -17,7 +18,6 @@ import { GetJourneyForSharing_journey as JourneyFromLazyQuery } from '../../../.
 import { JourneyFields as JourneyFromContext } from '../../../../../../__generated__/JourneyFields'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
-import { SxProps, Theme } from '@mui/material/styles'
 
 const EmbedJourneyDialog = dynamic(
   async () =>

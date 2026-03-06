@@ -183,7 +183,7 @@ export function TemplateCardPreview({
             width: {
               xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
               sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
-            },
+            }
           }}
         />
       )}

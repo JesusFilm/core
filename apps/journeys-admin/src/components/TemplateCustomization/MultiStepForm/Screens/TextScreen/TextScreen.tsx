@@ -126,9 +126,7 @@ interface TextScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
-export function TextScreen({
-  handleNext,
-}: TextScreenProps): ReactElement {
+export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
