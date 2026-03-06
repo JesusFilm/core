@@ -23,12 +23,12 @@ export function ScreenWrapper({
     <Stack
       alignItems="center"
       data-testid="ScreenWrapper"
-      sx={{ border: '1px solid red',
+      sx={{
         px: { xs: 6, sm: 20 },
-         overflow: 'visible'
-       }}
+        overflow: 'visible'
+      }}
     >
-      <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 }}}>
+      <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
         <Typography
           variant="h3"
           display={{ xs: 'none', sm: 'block' }}
