@@ -237,7 +237,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     query: GET_ME,
     variables: { input: { redirect: ctx.query.redirect ?? undefined } }
   })
-  if (apiUser.data?.me?.emailVerified ?? false) {
+  if (
+    apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
+    (apiUser.data?.me?.emailVerified ?? false)
+  ) {
     return {
       redirect: {
         permanent: false,

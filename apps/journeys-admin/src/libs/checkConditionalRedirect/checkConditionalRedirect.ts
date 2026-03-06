@@ -52,11 +52,13 @@ export async function checkConditionalRedirect({
     variables: { input: { redirect } }
   })
 
-  if (!(me.me?.emailVerified ?? false)) {
-    if (resolvedUrl.startsWith('/users/verify')) return
-    return {
-      destination: `/users/verify${redirect}`,
-      permanent: false
+  if (me.me?.__typename === 'AuthenticatedUser') {
+    if (!(me.me?.emailVerified ?? false)) {
+      if (resolvedUrl.startsWith('/users/verify')) return
+      return {
+        destination: `/users/verify${redirect}`,
+        permanent: false
+      }
     }
   }
 

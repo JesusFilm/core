@@ -33,8 +33,8 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 const TEST_JOURNEY_QUERY = gql`
-  query TestJourney {
-    journey {
+  query TestJourney($id: ID!) {
+    journey(id: $id) {
       id
       blocks {
         id
