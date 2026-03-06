@@ -677,6 +677,10 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   """
   templateSite: Boolean
   """
+  used to display quick start label on customizable templates
+  """
+  customizable: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -4547,6 +4551,7 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  customizable: Boolean
 }
 
 input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

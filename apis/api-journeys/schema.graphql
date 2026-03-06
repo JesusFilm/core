@@ -182,6 +182,9 @@ type Journey
   """used to see if a template has a site created for it"""
   templateSite: Boolean
 
+  """used to display quick start label on customizable templates"""
+  customizable: Boolean
+
   """used in a plausible share link to embed report"""
   plausibleToken: String
   website: Boolean
@@ -2297,6 +2300,7 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
+  customizable: Boolean
 }
 
 type UserJourney
