@@ -1,0 +1,28 @@
+{
+  "name": "@core/api-journeys",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "express": "5.0.1",
+    "@nestjs/apollo": "13.0.4",
+    "@nestjs/bullmq": "11.0.3",
+    "@nestjs/cache-manager": "3.0.1",
+    "@nestjs/common": "11.0.16",
+    "@nestjs/core": "11.0.12",
+    "@nestjs/graphql": "13.0.4",
+    "@nestjs/platform-express": "11.0.12",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.1",
+    "file-type": "^20.4.1",
+    "nestjs-ddtrace": "6.0.0",
+    "nestjs-pino": "4.4.0",
+    "adal-node": "0.2.4",
+    "@casl/ability": "6.7.3",
+    "@casl/prisma": "1.5.2",
+    "firebase-admin": "11.11.1"
+  },
+  "devDependencies": {
+    "@nestjs/schematics": "11.0.5",
+    "@nestjs/testing": "11.0.12"
+  }
+}

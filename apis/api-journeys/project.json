@@ -49,7 +49,7 @@
     "watcher": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node tools/scripts/generate-typings.ts api-journeys --transpileOnly"
+        "command": "pnpm exec ts-node apis/api-journeys/scripts/generate-typings.ts --transpileOnly"
       }
     },
     "lint": {
