@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
@@ -28,6 +27,7 @@ import { countries } from '../../../../Editor/Slider/Settings/CanvasDetails/Prop
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
@@ -197,49 +197,17 @@ export function LinksScreen({
         width: '100%'
       }}
     >
-      <Stack alignItems="center" sx={{ pb: 1 }}>
-        <Typography
-          variant="h4"
-          display={{ xs: 'none', sm: 'block' }}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Links')}
-        </Typography>
-        <Typography
-          variant="h6"
-          display={{ xs: 'block', sm: 'none' }}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Links')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          display={{ xs: 'none', sm: 'block' }}
-          color="text.secondary"
-          align="center"
-        >
-          {t(
-            'This content contains buttons linking to external sites. Check them and update the links below.'
-          )}
-        </Typography>
-        <Typography
-          variant="body2"
-          display={{ xs: 'block', sm: 'none' }}
-          color="text.secondary"
-          align="center"
-        >
-          {t(
-            'Buttons here point to external sites. Check and update the links.'
-          )}
-        </Typography>
-      </Stack>
-      <CardsPreview steps={treeBlocks} />
+      <ScreenWrapper
+        title={t('Links')}
+        subtitle={t(
+          'This content contains buttons linking to external sites. Check them and update the links below.'
+        )}
+        mobileSubtitle={t(
+          'Buttons here point to external sites. Check and update the links.'
+        )}
+      >
+        <CardsPreview steps={treeBlocks} />
+      </ScreenWrapper>
       <Formik
         enableReinitialize
         initialValues={links.reduce<Record<string, string>>((acc, link) => {

@@ -112,7 +112,7 @@ export function MultiStepForm(): ReactElement {
     journeyId,
     screens,
     activeScreen,
-    isGuest: user?.id == null,
+    isGuest: user?.clientInitialized === true && user?.id == null,
     guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 

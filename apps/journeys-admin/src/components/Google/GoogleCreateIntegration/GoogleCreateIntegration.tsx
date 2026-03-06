@@ -112,6 +112,11 @@ export function GoogleCreateIntegration(): ReactElement {
           preventDuplicate: true
         })
       }
+      const fallbackPath =
+        returnTo != null && returnTo !== ''
+          ? returnTo
+          : `/teams/${teamId}/integrations`
+      await router.push(fallbackPath)
     } finally {
       setLoading(false)
     }

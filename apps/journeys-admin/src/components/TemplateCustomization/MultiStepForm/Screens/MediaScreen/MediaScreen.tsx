@@ -1,6 +1,4 @@
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -12,6 +10,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { useTemplateVideoUpload } from '../../TemplateVideoUploadProvider'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 import {
   CardsSection,
@@ -83,30 +82,32 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
           overflow: { xs: 'visible', sm: 'hidden' }
         }}
       >
-        <Stack gap={3} alignItems="center">
-          <Typography variant="h4" color="text.primary">
-            {t('Media')}
-          </Typography>
-          <Typography variant="body1" color="text.">
-            {t('Personalize and manage your media assets')}
-          </Typography>
-        </Stack>
-        {showLogo && <LogoSection />}
-        <CardsSection
-          customizableSteps={customizableSteps}
-          selectedStep={selectedStep}
-          handleStepClick={handleStepClick}
-        />
-        {showImages && (
-          <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
-        )}
-        {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
-        <CustomizeFlowNextButton
-          label={t('Next')}
-          onClick={() => handleNext()}
-          ariaLabel={t('Next')}
-          loading={hasActiveUploads}
-        />
+        <ScreenWrapper
+          title={t('Media')}
+          subtitle={t('Personalize and manage your media assets')}
+          footer={
+            <CustomizeFlowNextButton
+              label={t('Next')}
+              onClick={() => handleNext()}
+              ariaLabel={t('Next')}
+              loading={hasActiveUploads}
+            />
+          }
+        >
+          {showLogo && <LogoSection />}
+          <CardsSection
+            customizableSteps={customizableSteps}
+            selectedStep={selectedStep}
+            handleStepClick={handleStepClick}
+          />
+          {showImages && (
+            <ImagesSection
+              journey={journey}
+              cardBlockId={selectedCardBlockId}
+            />
+          )}
+          {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+        </ScreenWrapper>
       </Stack>
     </Stack>
   )
