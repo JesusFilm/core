@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import { SxProps, Theme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -50,7 +51,9 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
+  buttonSx?: SxProps<Theme>
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
+  buttonProps?: ComponentProps<typeof Button>
 }
 
 /**
@@ -70,7 +73,8 @@ export function ShareItem({
   handleCloseMenu,
   handleKeepMounted,
   buttonVariant = 'icon',
-  setHasOpenDialog
+  setHasOpenDialog,
+  buttonProps
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -124,7 +128,7 @@ export function ShareItem({
         variant={variant}
         label={t('Share')}
         onClick={handleShowMenu}
-        ButtonProps={{ variant: 'contained' }}
+        ButtonProps={{ variant: 'contained', ...buttonProps }}
         icon={buttonVariant === 'icon' ? <ShareIcon /> : undefined}
       />
       <Dialog

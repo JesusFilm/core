@@ -116,7 +116,6 @@ const mockJourneyDuplicate: MockedResponse<
 
 describe('LanguageScreen', () => {
   let handleNext: jest.Mock
-  const handleScreenNavigation = jest.fn()
   let push: jest.Mock
 
   beforeEach(() => {
@@ -163,10 +162,7 @@ describe('LanguageScreen', () => {
             value={{ journey: nonTemplateJourney, variant: 'customize' }}
           >
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -201,10 +197,7 @@ describe('LanguageScreen', () => {
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -304,10 +297,7 @@ describe('LanguageScreen', () => {
             value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
           >
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -508,10 +498,7 @@ describe('LanguageScreen', () => {
             }}
           >
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -564,10 +551,7 @@ describe('LanguageScreen', () => {
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -625,10 +609,7 @@ describe('LanguageScreen', () => {
             value={{ journey: journeyWithImage, variant: 'admin' }}
           >
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -650,10 +631,7 @@ describe('LanguageScreen', () => {
         <SnackbarProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
