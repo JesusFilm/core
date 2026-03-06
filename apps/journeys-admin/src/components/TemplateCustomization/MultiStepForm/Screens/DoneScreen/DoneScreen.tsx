@@ -13,6 +13,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
+import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { ScreenWrapper } from '../ScreenWrapper'
 
