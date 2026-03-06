@@ -5,7 +5,7 @@ enum UserTeamRole {
 
 type UserTeam @key(fields: "id") @shareable {
   id: ID!
-  user: AuthenticatedUser!
+  user: User!
   role: UserTeamRole!
   createdAt: DateTime!
   updatedAt: DateTime!

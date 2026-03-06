@@ -121,6 +121,11 @@ input JourneysQueryOptions {
   skip custom domain routing filter (for admin template customization)
   """
   skipRoutingFilter: Boolean
+  """
+  when provided, filter the journey to only return if its status is in this list.
+  when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 enum JourneysReportType {
@@ -239,7 +244,12 @@ input JourneyTemplateInput {
 
 extend type Mutation {
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean): Journey!
+  journeyDuplicate(
+    id: ID!
+    teamId: ID!
+    forceNonTemplate: Boolean
+    duplicateAsDraft: Boolean
+  ): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
   """
   Sets journey status to published

@@ -2,6 +2,7 @@ import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
+import uniqBy from 'lodash/uniqBy'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -75,28 +76,42 @@ export function LanguageScreen({
     skip: isParentTemplate
   })
 
-  const languages = isParentTemplate
-    ? [
-        ...parentJourneyLanguages,
-        ...childJourneyLanguages,
-        {
-          id: journey?.language?.id ?? '',
-          name: journey?.language?.name ?? [],
-          slug: null
-        }
-      ]
-    : [...parentJourneyLanguages, ...childJourneyLanguages]
-
-  const languagesJourneyMap = isParentTemplate
+  const currentJourneyLanguage = isParentTemplate
     ? {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap,
-        [journey?.language?.id as string]: journey?.id
+        id: journey?.language?.id ?? '',
+        name: journey?.language?.name ?? [],
+        slug: null
       }
-    : {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap
-      }
+    : null
+  const languages = uniqBy(
+    [
+      ...parentJourneyLanguages,
+      ...(currentJourneyLanguage != null
+        ? [...childJourneyLanguages, currentJourneyLanguage]
+        : childJourneyLanguages)
+    ],
+    (lang) => lang.id
+  )
+
+  const currentLanguageId = journey?.language?.id
+  const currentJourneyId = journey?.id
+  const filteredChildJourneyLanguagesJourneyMap = (() => {
+    const mapArray = Object.entries(
+      childJourneyLanguagesJourneyMap ?? {}
+    ).filter(
+      ([langId, journeyId]) =>
+        langId !== currentLanguageId || journeyId === currentJourneyId
+    )
+    if (isParentTemplate) {
+      mapArray.push([journey?.language?.id as string, journey?.id ?? ''])
+    }
+    const map = Object.fromEntries(mapArray)
+    return map
+  })()
+  const languagesJourneyMap = {
+    ...parentJourneyLanguagesJourneyMap,
+    ...filteredChildJourneyLanguagesJourneyMap
+  }
 
   const validationSchema = object({
     teamSelect: string().required()

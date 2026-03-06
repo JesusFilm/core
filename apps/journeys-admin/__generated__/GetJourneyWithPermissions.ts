@@ -9,14 +9,21 @@ import { UserTeamRole, UserJourneyRole } from "./globalTypes";
 // GraphQL query operation: GetJourneyWithPermissions
 // ====================================================
 
-export interface GetJourneyWithPermissions_journey_team_userTeams_user {
+export interface GetJourneyWithPermissions_journey_team_userTeams_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetJourneyWithPermissions_journey_team_userTeams_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
+  id: string;
   email: string;
   firstName: string;
-  id: string;
   imageUrl: string | null;
   lastName: string | null;
 }
+
+export type GetJourneyWithPermissions_journey_team_userTeams_user = GetJourneyWithPermissions_journey_team_userTeams_user_AnonymousUser | GetJourneyWithPermissions_journey_team_userTeams_user_AuthenticatedUser;
 
 export interface GetJourneyWithPermissions_journey_team_userTeams_journeyNotification {
   __typename: "JourneyNotification";
@@ -38,7 +45,11 @@ export interface GetJourneyWithPermissions_journey_team {
   userTeams: GetJourneyWithPermissions_journey_team_userTeams[];
 }
 
-export interface GetJourneyWithPermissions_journey_userJourneys_user {
+export interface GetJourneyWithPermissions_journey_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+}
+
+export interface GetJourneyWithPermissions_journey_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
@@ -46,6 +57,8 @@ export interface GetJourneyWithPermissions_journey_userJourneys_user {
   email: string;
   imageUrl: string | null;
 }
+
+export type GetJourneyWithPermissions_journey_userJourneys_user = GetJourneyWithPermissions_journey_userJourneys_user_AnonymousUser | GetJourneyWithPermissions_journey_userJourneys_user_AuthenticatedUser;
 
 export interface GetJourneyWithPermissions_journey_userJourneys_journeyNotification {
   __typename: "JourneyNotification";
