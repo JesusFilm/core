@@ -48,10 +48,10 @@ export function JourneyList({
     )
     const isValidSort =
       sortByFromStorage != null &&
-      Object.values(SortOrder).includes(sortByFromStorage)
+      Object.values(SortOrder).includes(sortByFromStorage as SortOrder)
     if (!isValidSort) return
 
-    setSortOrder(sortByFromStorage)
+    setSortOrder(sortByFromStorage as SortOrder)
   }, [])
 
   function handleSetSortOrder(order: SortOrder) {
