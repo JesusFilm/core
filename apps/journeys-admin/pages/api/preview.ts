@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getTokens } from 'next-firebase-auth-edge'
+import { getApiRequestTokens } from 'next-firebase-auth-edge'
 import fetch from 'node-fetch'
 
 import { authConfig } from '../../src/libs/auth/config'
@@ -20,17 +20,8 @@ export default async function handler(
   )
     return res.status(500).json({ error: 'Missing Environment Variables' })
 
-  const cookies = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get(name: string): any {
-      const value = req.cookies[name]
-      return value != null ? { name, value } : undefined
-    }
-  }
-
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tokens = await getTokens(cookies as any, authConfig)
+    const tokens = await getApiRequestTokens(req, authConfig)
     if (tokens == null) {
       return res.status(403).json({ error: 'Not authorized' })
     }

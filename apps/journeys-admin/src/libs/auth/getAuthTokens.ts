@@ -1,31 +1,10 @@
 import { GetServerSidePropsContext } from 'next'
-import { Tokens, getTokens } from 'next-firebase-auth-edge'
+import { Tokens, getTokensFromObject } from 'next-firebase-auth-edge'
 
 import { allowedHost } from '@core/journeys/ui/allowedHost'
 
 import { User } from './authContext'
 import { authConfig } from './config'
-
-function createCookiesAdapter(cookies: Partial<{ [key: string]: string }>): {
-  get(name: string): { name: string; value: string } | undefined
-  getAll(): Array<{ name: string; value: string }>
-  has(name: string): boolean
-} {
-  return {
-    get(name: string) {
-      const value = cookies[name]
-      return value != null ? { name, value } : undefined
-    },
-    getAll() {
-      return Object.entries(cookies)
-        .filter(([, value]) => value != null)
-        .map(([name, value]) => ({ name, value: value! }))
-    },
-    has(name: string) {
-      return cookies[name] != null
-    }
-  }
-}
 
 export function toUser(tokens: Tokens): User {
   const {
@@ -51,9 +30,7 @@ export function toUser(tokens: Tokens): User {
 export async function getAuthTokens(
   ctx: GetServerSidePropsContext
 ): Promise<Tokens | null> {
-  const cookies = createCookiesAdapter(ctx.req.cookies)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return getTokens(cookies as any, authConfig)
+  return getTokensFromObject(ctx.req.cookies, authConfig)
 }
 
 export function redirectToLogin(ctx: GetServerSidePropsContext): {
@@ -83,6 +60,11 @@ export function redirectToApp(ctx: GetServerSidePropsContext): {
   if (redirectParam != null) {
     try {
       const redirectUrl = decodeURIComponent(redirectParam)
+      if (redirectUrl.startsWith('/')) {
+        return {
+          redirect: { permanent: false, destination: redirectUrl }
+        }
+      }
       if (allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)) {
         return {
           redirect: { permanent: false, destination: redirectUrl }

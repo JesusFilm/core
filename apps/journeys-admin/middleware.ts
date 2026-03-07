@@ -163,10 +163,7 @@ export default async function middleware(
     cookieSerializeOptions: {
       path: '/',
       httpOnly: true,
-      secure:
-        process.env.NEXT_PUBLIC_VERCEL_ENV === 'prod' ||
-        process.env.NEXT_PUBLIC_VERCEL_ENV === 'stage' ||
-        process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview',
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict' as const,
       maxAge: 12 * 60 * 60 * 24
     },

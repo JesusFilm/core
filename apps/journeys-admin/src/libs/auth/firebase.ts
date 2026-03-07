@@ -19,6 +19,10 @@ export async function logout(): Promise<void> {
   } catch {
     // Firebase may not be initialized
   }
-  await fetch('/api/logout', { method: 'GET' })
+  try {
+    await fetch('/api/logout', { method: 'GET' })
+  } catch {
+    // Redirect regardless of network errors
+  }
   window.location.href = '/users/sign-in'
 }

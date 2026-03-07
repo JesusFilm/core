@@ -27,6 +27,7 @@ export function AuthProvider({
   children
 }: AuthProviderProps): ReactNode {
   const [clientUser, setClientUser] = useState<User | null>(null)
+  const previousUidRef = useRef<string | null>(null)
   const initializedRef = useRef(false)
 
   useEffect(() => {
@@ -42,7 +43,9 @@ export function AuthProvider({
         const token = await firebaseUser.getIdToken()
         setClientUser(toClientUser(firebaseUser, token))
 
-        if (initializedRef.current) {
+        const isNewSignIn =
+          initializedRef.current && previousUidRef.current == null
+        if (isNewSignIn) {
           await fetch('/api/login', {
             method: 'GET',
             headers: { Authorization: `Bearer ${token}` }
@@ -53,6 +56,7 @@ export function AuthProvider({
         setClientUser(null)
       }
 
+      previousUidRef.current = firebaseUser?.uid ?? null
       initializedRef.current = true
     })
   }, [])

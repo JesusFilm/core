@@ -65,6 +65,12 @@ function JourneyQuickSettingsPage({ status }): ReactElement {
 }
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const journeyId = Array.isArray(ctx.query?.journeyId)
+    ? ctx.query.journeyId[0]
+    : ctx.query?.journeyId
+
+  if (journeyId == null) return { notFound: true as const }
+
   const tokens = await getAuthTokens(ctx)
   if (tokens == null) return redirectToLogin(ctx)
 
@@ -81,7 +87,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const { data } = await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
       variables: {
-        id: ctx.query?.journeyId
+        id: journeyId
       }
     })
 
