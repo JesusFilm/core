@@ -1,5 +1,7 @@
 import { type ReactElement } from 'react'
-import { Index } from 'react-instantsearch'
+import { Configure, Index } from 'react-instantsearch'
+
+import { WATCH_HOME_CONFIGURE } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
@@ -44,6 +46,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
   return (
     <div>
       <Index indexName={indexName}>
+        <Configure {...WATCH_HOME_CONFIGURE} />
         <SearchComponent languageId={languageId} />
       </Index>
       <ContainerWithMedia
