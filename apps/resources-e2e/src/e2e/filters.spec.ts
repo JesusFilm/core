@@ -33,9 +33,8 @@ test('Filters', async ({ page }) => {
   // Choose subtitles language
   await subtitlesSection.getByLabel('Open').click()
   const subtitlesSearchInput = subtitlesSection.getByLabel('Search Languages')
-  await subtitlesSearchInput.fill('eng')
-  await subtitlesSearchInput.press('ArrowDown')
-  await subtitlesSearchInput.press('Enter')
+  await subtitlesSearchInput.fill('English')
+  await page.getByRole('option', { name: 'English', exact: true }).click()
 
   await page.press('body', 'Tab')
 
