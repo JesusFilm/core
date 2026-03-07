@@ -4,12 +4,12 @@ import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
+import { AuthUser as User } from '../../../../libs/auth/types'
 import { TreeBlock } from '../../../../libs/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { TemplateActionButton } from '../../TemplateViewHeader/TemplateActionButton/TemplateActionButton'
@@ -23,7 +23,7 @@ import { TemplateCardPreviewItem } from './TemplateCardPreviewItem'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
-  authUser?: User
+  authUser?: User | null
   variant?: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null

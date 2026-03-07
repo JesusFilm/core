@@ -2,7 +2,6 @@ import { ApolloClient, NormalizedCacheObject, gql } from '@apollo/client'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Redirect } from 'next'
-import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { v4 as uuidv4 } from 'uuid'
@@ -12,10 +11,11 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 import { AcceptAllInvites } from '../../../__generated__/AcceptAllInvites'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
+import { User } from '../auth/authContext'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 interface InitAndAuthAppProps {
-  user?: User
+  user?: User | null
   locale: string | undefined
   resolvedUrl?: string
   makeAccountOnAnonymous?: boolean
@@ -63,15 +63,15 @@ export async function initAndAuthApp({
           anonymous: true
         }
 
-  // run independent tasks (getting user's ID token, and server-side translations) concurrently
-  const [translations, launchDarklyClient, token] = await Promise.all([
+  const token = user?.token ?? null
+
+  const [translations, launchDarklyClient] = await Promise.all([
     serverSideTranslations(
       locale ?? 'en',
       ['apps-journeys-admin', 'libs-journeys-ui'],
       i18nConfig
     ),
-    getLaunchDarklyClient(ldUser),
-    user?.id != null ? user.getIdToken() : null
+    getLaunchDarklyClient(ldUser)
   ])
 
   const flags = (await launchDarklyClient.allFlagsState(ldUser)).toJSON() as {
