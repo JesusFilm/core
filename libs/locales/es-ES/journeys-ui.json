@@ -1,5 +1,8 @@
 {
+  "My Team": "Mi equipo",
+  "Unable to create guest user. Please try again or sign in.": "No se puede crear un usuario invitado. Por favor, inténtalo de nuevo o inicia sesión.",
   "Failed to duplicate journey to team, please refresh the page and try again": "No se ha podido duplicar el viaje al equipo, actualiza la página e inténtalo de nuevo",
+  "Journey failed to load. Please refresh the page and try again.": "El viaje no se ha cargado. Actualiza la página e inténtalo de nuevo.",
   "Let's Get Started!": "¡Empecemos!",
   "Get Started": "Empieza",
   "A few quick edits and your template will be ready to share.": "Unas cuantas ediciones rápidas y tu plantilla estará lista para compartir.",
