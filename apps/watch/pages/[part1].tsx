@@ -4,7 +4,6 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import {
-  Configure,
   InstantSearch,
   InstantSearchSSRProvider,
   type InstantSearchServerState,
@@ -70,10 +69,6 @@ function HomeLanguagePage({
               }
             })}
           >
-            <Configure
-              ruleContexts={['home_page']}
-              filters="NOT restrictViewPlatforms:watch AND published:true AND videoPublished:true"
-            />
             <VideoHomePage languageId={languageId} />
           </InstantSearch>
         </WatchProvider>
