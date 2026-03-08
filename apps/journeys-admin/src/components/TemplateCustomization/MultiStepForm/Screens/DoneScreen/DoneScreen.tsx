@@ -54,46 +54,66 @@ export function DoneScreen(): ReactElement {
       )}
 
       <Stack
-        direction={{ xs: 'column', sm: 'row' }}
-        sx={{
-          width: '100%',
-          mt: 6,
-          alignItems: { xs: 'stretch', sm: 'center' },
-          justifyContent: 'center',
-          gap: { xs: 3, sm: 2 }
-        }}
+        spacing={4}
+        sx={{ direction: { xs: 'column', sm: 'row' }, mt: 6, width: '100%' }}
       >
-        <Button
-          data-testid="DoneScreenPreviewButton"
-          variant="outlined"
-          color="secondary"
-          href={href}
-          component={href != null ? 'a' : 'button'}
-          target={href != null ? '_blank' : undefined}
-          startIcon={<Play3Icon />}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
           sx={{
-            borderWidth: 2,
-            borderRadius: 2,
-            height: 48,
-            width: { xs: '100%', sm: 216 },
-            borderColor: 'secondary.light'
+            width: '100%',
+            alignItems: { xs: 'stretch', sm: 'center' },
+            justifyContent: 'center',
+            gap: { xs: 3, sm: 2 }
           }}
         >
-          <Typography variant="subtitle2">{t('Preview')}</Typography>
-        </Button>
-        <ShareItem
-          variant="button"
-          journey={journey}
-          buttonVariant="icon"
-          buttonProps={{
-            sx: {
-              width: { xs: '100%', sm: 216 },
+          <Button
+            data-testid="DoneScreenPreviewButton"
+            variant="outlined"
+            color="secondary"
+            href={href}
+            component={href != null ? 'a' : 'button'}
+            target={href != null ? '_blank' : undefined}
+            startIcon={<Play3Icon />}
+            sx={{
+              borderWidth: 2,
+              borderRadius: 2,
               height: 48,
-              borderRadius: 2
-            }
+              width: { xs: '100%', sm: 216 },
+              borderColor: 'secondary.light'
+            }}
+          >
+            <Typography variant="subtitle2">{t('Preview')}</Typography>
+          </Button>
+          <ShareItem
+            variant="button"
+            journey={journey}
+            buttonVariant="icon"
+            buttonProps={{
+              sx: {
+                width: { xs: '100%', sm: 216 },
+                height: 48,
+                borderRadius: 2
+              }
+            }}
+          />
+        </Stack>
+        <Stack
+          spacing={6}
+          sx={{
+            border: '2px solid',
+            borderColor: 'divider',
+            borderRadius: 2,
+            p: 5
           }}
-        />
-       <NotificationSwitch journeyId={journey?.id} />
+        >
+          <Typography variant="subtitle1">
+            {t('Choose where responses go:')}
+          </Typography>
+          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
+            <Typography variant="body2">{t('Send to my email')}</Typography>
+            <NotificationSwitch journeyId={journey?.id} />
+          </Stack>
+        </Stack>
       </Stack>
     </ScreenWrapper>
   )
