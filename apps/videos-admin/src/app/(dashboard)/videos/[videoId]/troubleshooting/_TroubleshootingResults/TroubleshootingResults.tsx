@@ -114,7 +114,8 @@ export function TroubleshootingResults({
                         fontFamily: 'monospace'
                       }}
                     >
-                      {field}: expected {expected ?? 'null'}, got {actual ?? 'null'}
+                      {field}: expected {expected ?? 'null'}, got{' '}
+                      {actual ?? 'null'}
                     </Typography>
                   ))}
                 </Stack>
@@ -170,7 +171,8 @@ export function TroubleshootingResults({
                 </Typography>
               ) : (
                 <Typography variant="body1" color="error.main">
-                  Missing variants: {algoliaVariantsResult.missingVariants.join(', ')}
+                  Missing variants:{' '}
+                  {algoliaVariantsResult.missingVariants.join(', ')}
                 </Typography>
               )}
               {algoliaVariantsResult.browseUrl != null && (

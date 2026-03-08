@@ -87,7 +87,9 @@ export function TroubleshootingFeedback({
       {checkingAlgoliaVariants && (
         <LoadingRow message="Checking variants in Algolia..." />
       )}
-      {updatingAlgoliaVideo && <LoadingRow message="Updating video in Algolia..." />}
+      {updatingAlgoliaVideo && (
+        <LoadingRow message="Updating video in Algolia..." />
+      )}
       {updatingAlgoliaVariants && (
         <LoadingRow message="Updating variants in Algolia..." />
       )}
@@ -99,7 +101,9 @@ export function TroubleshootingFeedback({
         <ErrorAlert message={`Fix Error: ${fixLanguagesErrorMessage}`} />
       )}
       {algoliaVideoErrorMessage != null && (
-        <ErrorAlert message={`Algolia Video Error: ${algoliaVideoErrorMessage}`} />
+        <ErrorAlert
+          message={`Algolia Video Error: ${algoliaVideoErrorMessage}`}
+        />
       )}
       {algoliaVariantsErrorMessage != null && (
         <ErrorAlert
@@ -107,10 +111,14 @@ export function TroubleshootingFeedback({
         />
       )}
       {updateVideoErrorMessage != null && (
-        <ErrorAlert message={`Update Video Error: ${updateVideoErrorMessage}`} />
+        <ErrorAlert
+          message={`Update Video Error: ${updateVideoErrorMessage}`}
+        />
       )}
       {updateVariantsErrorMessage != null && (
-        <ErrorAlert message={`Update Variants Error: ${updateVariantsErrorMessage}`} />
+        <ErrorAlert
+          message={`Update Variants Error: ${updateVariantsErrorMessage}`}
+        />
       )}
 
       {showFixSuccess && (
