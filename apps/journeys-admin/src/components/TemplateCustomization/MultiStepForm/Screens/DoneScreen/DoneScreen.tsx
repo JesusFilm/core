@@ -93,6 +93,7 @@ export function DoneScreen(): ReactElement {
             }
           }}
         />
+       <NotificationSwitch journeyId={journey?.id} />
       </Stack>
     </ScreenWrapper>
   )
