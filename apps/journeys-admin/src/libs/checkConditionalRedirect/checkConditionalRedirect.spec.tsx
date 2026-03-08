@@ -76,6 +76,21 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
+  it('does not redirect when user is AnonymousUser and allowGuest is true', async () => {
+    const apolloClient = {
+      query: jest.fn().mockResolvedValueOnce({
+        data: { me: { __typename: 'AnonymousUser' } }
+      })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    const result = await checkConditionalRedirect({
+      apolloClient,
+      resolvedUrl: '/',
+      allowGuest: true
+    })
+    expect(result).toBeUndefined()
+    expect(apolloClient.query).toHaveBeenCalledTimes(1)
+  })
+
   it('does not redirect to terms and conditions when resolvedUrl', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: null,
