@@ -143,7 +143,6 @@ jest.mock('./Screens', () => ({
   DoneScreen: () => (
     <div data-testid="done-screen">
       <h2>Done Screen</h2>
-      <button data-testid="done-screen-go-to-language">Go to language</button>
     </div>
   )
 }))
