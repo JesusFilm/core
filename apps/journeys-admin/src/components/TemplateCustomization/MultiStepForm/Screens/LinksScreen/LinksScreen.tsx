@@ -237,7 +237,6 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
           return acc
         }, {})
       )}
-      validateOnSubmit={false}
       onSubmit={handleFormSubmit}
       validateOnMount
     >
