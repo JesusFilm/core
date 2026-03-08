@@ -67,7 +67,7 @@ describe('DateRangePicker', () => {
     expect(toInputs.length).toBeGreaterThan(0)
   })
 
-  it('opens calendar when minDate and maxDate if provided', () => {
+  it('opens calendar when minDate and maxDate are provided', () => {
     const minDate = new Date(2024, 5, 15) // Jun 15, 2024
     const maxDate = new Date(2024, 5, 20) // Jun 20, 2024
 
