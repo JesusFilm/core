@@ -53,15 +53,16 @@ export function UserTeamListItem({
   const [userTeamUpdate] = useMutation<UserTeamUpdate>(USER_TEAM_UPDATE)
 
   const { id, email, displayName, imageUrl, role, userId } = useMemo(() => {
+    const user = listItem?.user
+    const isAuthenticated = user?.__typename === 'AuthenticatedUser'
     return {
       id: listItem.id,
-      email: listItem?.user?.email,
-      displayName: compact([
-        listItem?.user?.firstName,
-        listItem?.user?.lastName
-      ]).join(' '),
-      userId: listItem?.user?.id,
-      imageUrl: listItem?.user?.imageUrl,
+      email: isAuthenticated ? user.email : undefined,
+      displayName: isAuthenticated
+        ? compact([user.firstName, user.lastName]).join(' ')
+        : '',
+      userId: user?.__typename === 'AuthenticatedUser' ? user.id : undefined,
+      imageUrl: isAuthenticated ? user.imageUrl : undefined,
       role: listItem.role
     }
   }, [listItem])
@@ -91,10 +92,10 @@ export function UserTeamListItem({
     <>
       <Grid container spacing={1} alignItems="center">
         <Grid xs={2} sm={1}>
-          <Avatar src={imageUrl ?? undefined} alt={displayName ?? email}>
-            {displayName != null
+          <Avatar src={imageUrl ?? undefined} alt={displayName || email}>
+            {displayName != null && displayName !== ''
               ? displayName.charAt(0)?.toUpperCase()
-              : email.charAt(0).toUpperCase()}
+              : (email?.charAt(0)?.toUpperCase() ?? '?')}
           </Avatar>
         </Grid>
         <Grid xs={journeyId != null ? 5 : 7} sm={journeyId != null ? 7 : 9}>
@@ -119,10 +120,18 @@ export function UserTeamListItem({
           <Grid xs={2} sm={2}>
             {journeyId != null && (
               <NotificationSwitch
-                name={listItem?.user?.firstName}
+                name={
+                  listItem?.user?.__typename === 'AuthenticatedUser'
+                    ? listItem.user.firstName
+                    : undefined
+                }
                 journeyId={journeyId}
                 checked={checked}
-                disabled={currentUserTeam?.user?.id !== userId}
+                disabled={
+                  userId == null ||
+                  currentUserTeam?.user?.__typename !== 'AuthenticatedUser' ||
+                  currentUserTeam.user.id !== userId
+                }
               />
             )}
           </Grid>
