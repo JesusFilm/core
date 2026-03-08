@@ -66,31 +66,28 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
-        <ScreenWrapper
-          title={t('Media')}
-          subtitle={t('Personalize and manage your media assets')}
-          footer={
-            <CustomizeFlowNextButton
-              label={t('Next')}
-              onClick={() => handleNext()}
-              ariaLabel={t('Next')}
-              loading={hasActiveUploads}
-            />
-          }
-        >
-          {showLogo && <LogoSection />}
-          <CardsSection
-            customizableSteps={customizableSteps}
-            selectedStep={selectedStep}
-            handleStepClick={handleStepClick}
-          />
-          {showImages && (
-            <ImagesSection
-              journey={journey}
-              cardBlockId={selectedCardBlockId}
-            />
-          )}
-          {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
-        </ScreenWrapper>
+    <ScreenWrapper
+      title={t('Media')}
+      subtitle={t('Personalize and manage your media assets')}
+      footer={
+        <CustomizeFlowNextButton
+          label={t('Next')}
+          onClick={() => handleNext()}
+          ariaLabel={t('Next')}
+          loading={hasActiveUploads}
+        />
+      }
+    >
+      {showLogo && <LogoSection />}
+      <CardsSection
+        customizableSteps={customizableSteps}
+        selectedStep={selectedStep}
+        handleStepClick={handleStepClick}
+      />
+      {showImages && (
+        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+      )}
+      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+    </ScreenWrapper>
   )
 }

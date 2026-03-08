@@ -35,35 +35,19 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
-  handleNext: (overrideJourneyId?: string) => void,
+  handleNext: (overrideJourneyId?: string) => void
 ): ReactElement {
   switch (screen) {
     case 'language':
-      return (
-        <LanguageScreen
-          handleNext={handleNext}
-        />
-      )
+      return <LanguageScreen handleNext={handleNext} />
     case 'text':
-      return (
-        <TextScreen
-          handleNext={handleNext}
-        />
-      )
+      return <TextScreen handleNext={handleNext} />
     case 'links':
-      return (
-        <LinksScreen
-          handleNext={handleNext}
-        />
-      )
+      return <LinksScreen handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
     case 'social':
-      return (
-        <SocialScreen
-          handleNext={handleNext}
-        />
-      )
+      return <SocialScreen handleNext={handleNext} />
     case 'done':
       return <DoneScreen />
     default:
@@ -135,10 +119,7 @@ export function MultiStepForm(): ReactElement {
           overflow: 'hidden'
         }}
       >
-        <Stack
-          gap={{ xs: 8, sm: 17 }}
-          data-testid="MultiStepForm"
-        >
+        <Stack gap={{ xs: 8, sm: 17 }} data-testid="MultiStepForm">
           {(hasEditableText ||
             hasCustomizableLinks ||
             hasCustomizableMedia) && (

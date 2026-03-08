@@ -6,8 +6,8 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { OVERFLOW_PX } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/templateCardPreviewConfig'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 interface CardsSectionProps {
   customizableSteps: Array<TreeBlock<StepBlock>>
