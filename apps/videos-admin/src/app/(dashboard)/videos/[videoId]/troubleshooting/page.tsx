@@ -1,15 +1,19 @@
 'use client'
 
 import { useLazyQuery, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
+
+import { TroubleshootingActions } from './_TroubleshootingActions/TroubleshootingActions'
+import { TroubleshootingFeedback } from './_TroubleshootingFeedback/TroubleshootingFeedback'
+import {
+  CheckVideoInAlgoliaResult,
+  CheckVideoVariantsInAlgoliaResult,
+  TroubleshootingResults
+} from './_TroubleshootingResults/TroubleshootingResults'
 
 const GET_VIDEO_LANGUAGES = graphql(`
   query GetVideoLanguages($videoId: ID!) {
@@ -65,25 +69,6 @@ const UPDATE_VIDEO_VARIANT_ALGOLIA_INDEX = graphql(`
     updateVideoVariantAlgoliaIndex(videoId: $videoId)
   }
 `)
-
-type CheckVideoInAlgoliaMismatch = {
-  field: string
-  expected: string | null
-  actual: string | null
-}
-
-type CheckVideoInAlgoliaResult = {
-  ok: boolean
-  error: string | null
-  mismatches: CheckVideoInAlgoliaMismatch[]
-  recordUrl: string | null
-}
-
-type CheckVideoVariantsInAlgoliaResult = {
-  ok: boolean
-  missingVariants: string[]
-  browseUrl: string | null
-}
 
 export default function TroubleshootingPage(): ReactElement {
   const { videoId } = useParams<{ videoId: string }>()
@@ -202,456 +187,66 @@ export default function TroubleshootingPage(): ReactElement {
 
   const algoliaVideoResult = (algoliaVideoData?.checkVideoInAlgolia ??
     null) as unknown as CheckVideoInAlgoliaResult | null
-  const algoliaVideoMismatches = algoliaVideoResult?.mismatches ?? []
-  const algoliaVideoLookupError = algoliaVideoResult?.error ?? null
-  const hasAlgoliaVideoLookupError =
-    algoliaVideoLookupError != null && algoliaVideoLookupError !== ''
-  const hasAlgoliaVideoMismatches = algoliaVideoMismatches.length > 0
-  const isAlgoliaVideoOk = algoliaVideoResult?.ok === true
+  const algoliaVariantsResult =
+    (algoliaVariantsData?.checkVideoVariantsInAlgolia ??
+      null) as unknown as CheckVideoVariantsInAlgoliaResult | null
 
-  const algoliaVideoStatusText = hasAlgoliaVideoLookupError
-    ? 'Lookup Failed ✗'
-    : isAlgoliaVideoOk
-      ? 'OK ✓'
-      : hasAlgoliaVideoMismatches
-        ? 'Mismatch ✗'
-        : 'Not Found ✗'
-
-  const algoliaVideoStatusColor = hasAlgoliaVideoLookupError
-    ? 'error.main'
-    : isAlgoliaVideoOk
-      ? 'success.main'
-      : 'error.main'
+  const videoTitle =
+    (data?.adminVideo.title as Array<{ value: string }> | undefined)?.[0]
+      ?.value ?? 'N/A'
+  const availableLanguages =
+    (data?.adminVideo.availableLanguages as string[] | undefined) ?? []
 
   return (
     <Stack spacing={4}>
-      <Box>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Language Troubleshooting
-        </Typography>
-        <Stack direction="row" spacing={2}>
-          <Button
-            variant="contained"
-            onClick={handleFetchLanguages}
-            disabled={loading}
-          >
-            Fetch Available Languages
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleFixLanguages}
-            disabled={fixLoading}
-          >
-            Fix Available Languages
-          </Button>
-        </Stack>
-      </Box>
+      <TroubleshootingActions
+        loadingLanguages={loading}
+        fixingLanguages={fixLoading}
+        checkingAlgoliaVideo={algoliaVideoLoading}
+        checkingAlgoliaVariants={algoliaVariantsLoading}
+        updatingAlgoliaVideo={updateVideoAlgoliaLoading}
+        updatingAlgoliaVariants={updateVariantsAlgoliaLoading}
+        handleFetchLanguages={handleFetchLanguages}
+        handleFixLanguages={handleFixLanguages}
+        handleCheckAlgoliaVideo={handleCheckAlgoliaVideo}
+        handleCheckAlgoliaVariants={handleCheckAlgoliaVariants}
+        handleUpdateVideoAlgolia={handleUpdateVideoAlgolia}
+        handleUpdateVariantsAlgolia={handleUpdateVariantsAlgolia}
+      />
 
-      <Box>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Algolia Troubleshooting
-        </Typography>
-        <Stack spacing={2}>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              onClick={handleCheckAlgoliaVideo}
-              disabled={algoliaVideoLoading}
-            >
-              Check Video in Algolia
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleCheckAlgoliaVariants}
-              disabled={algoliaVariantsLoading}
-            >
-              Check Variants in Algolia
-            </Button>
-          </Stack>
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleUpdateVideoAlgolia}
-              disabled={updateVideoAlgoliaLoading}
-            >
-              Update Video Index
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleUpdateVariantsAlgolia}
-              disabled={updateVariantsAlgoliaLoading}
-            >
-              Update Variants Index
-            </Button>
-          </Stack>
-        </Stack>
-      </Box>
+      <TroubleshootingFeedback
+        loadingLanguages={loading}
+        fixingLanguages={fixLoading}
+        checkingAlgoliaVideo={algoliaVideoLoading}
+        checkingAlgoliaVariants={algoliaVariantsLoading}
+        updatingAlgoliaVideo={updateVideoAlgoliaLoading}
+        updatingAlgoliaVariants={updateVariantsAlgoliaLoading}
+        languagesErrorMessage={error?.message}
+        fixLanguagesErrorMessage={fixError?.message}
+        algoliaVideoErrorMessage={algoliaVideoError?.message}
+        algoliaVariantsErrorMessage={algoliaVariantsError?.message}
+        updateVideoErrorMessage={updateVideoAlgoliaError?.message}
+        updateVariantsErrorMessage={updateVariantsAlgoliaError?.message}
+        showFixSuccess={fixData != null}
+        showUpdateVideoSuccess={
+          lastUpdateVideoAlgoliaSucceeded === true &&
+          updateVideoAlgoliaError == null
+        }
+        showUpdateVariantsSuccess={
+          lastUpdateVariantsAlgoliaSucceeded === true &&
+          updateVariantsAlgoliaError == null
+        }
+      />
 
-      {loading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Loading languages...</Typography>
-        </Box>
-      )}
-
-      {fixLoading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Fixing languages...</Typography>
-        </Box>
-      )}
-
-      {error != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'error.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="text.primary">Error: {error.message}</Typography>
-        </Box>
-      )}
-
-      {fixError != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'error.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="text.primary">
-            Fix Error: {fixError.message}
-          </Typography>
-        </Box>
-      )}
-
-      {fixData != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'success.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="success.main">
-            Languages fixed successfully!
-          </Typography>
-        </Box>
-      )}
-
-      {algoliaVideoLoading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Checking video in Algolia...</Typography>
-        </Box>
-      )}
-
-      {algoliaVariantsLoading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Checking variants in Algolia...</Typography>
-        </Box>
-      )}
-
-      {updateVideoAlgoliaLoading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Updating video in Algolia...</Typography>
-        </Box>
-      )}
-
-      {updateVariantsAlgoliaLoading && (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <CircularProgress size={24} />
-          <Typography>Updating variants in Algolia...</Typography>
-        </Box>
-      )}
-
-      {algoliaVideoError != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'error.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="text.primary">
-            Algolia Video Error: {algoliaVideoError.message}
-          </Typography>
-        </Box>
-      )}
-
-      {algoliaVariantsError != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'error.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="text.primary">
-            Algolia Variants Error: {algoliaVariantsError.message}
-          </Typography>
-        </Box>
-      )}
-
-      {updateVideoAlgoliaError != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'error.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="text.primary">
-            Update Video Error: {updateVideoAlgoliaError.message}
-          </Typography>
-        </Box>
-      )}
-
-      {updateVariantsAlgoliaError != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'error.light',
-            borderRadius: 1
-          }}
-        >
-          <Typography color="text.primary">
-            Update Variants Error: {updateVariantsAlgoliaError.message}
-          </Typography>
-        </Box>
-      )}
-
-      {lastUpdateVideoAlgoliaSucceeded === true &&
-        updateVideoAlgoliaError == null && (
-          <Box
-            sx={{
-              p: 2,
-              bgcolor: 'success.light',
-              borderRadius: 1
-            }}
-          >
-            <Typography color="success.main">
-              Video index updated successfully!
-            </Typography>
-          </Box>
-        )}
-
-      {lastUpdateVariantsAlgoliaSucceeded === true &&
-        updateVariantsAlgoliaError == null && (
-          <Box
-            sx={{
-              p: 2,
-              bgcolor: 'success.light',
-              borderRadius: 1
-            }}
-          >
-            <Typography color="success.main">
-              Video variants index updated successfully!
-            </Typography>
-          </Box>
-        )}
-
-      {algoliaVideoData != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1
-          }}
-        >
-          <Stack spacing={2}>
-            <Typography variant="h6">Algolia Video Status</Typography>
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                Video record:
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{
-                  color: algoliaVideoStatusColor,
-                  fontWeight: 'bold'
-                }}
-              >
-                {algoliaVideoStatusText}
-              </Typography>
-              {hasAlgoliaVideoLookupError && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="body2" color="text.primary">
-                    Algolia error: {algoliaVideoLookupError}
-                  </Typography>
-                </Box>
-              )}
-
-              {hasAlgoliaVideoMismatches && (
-                <Stack spacing={1} sx={{ mt: 1 }}>
-                  {algoliaVideoMismatches.map(({ field, expected, actual }) => (
-                    <Typography
-                      key={field}
-                      variant="body2"
-                      sx={{
-                        px: 2,
-                        py: 1,
-                        bgcolor: 'warning.light',
-                        borderRadius: 1,
-                        fontFamily: 'monospace'
-                      }}
-                    >
-                      {field}: expected {expected ?? 'null'}, got{' '}
-                      {actual ?? 'null'}
-                    </Typography>
-                  ))}
-                </Stack>
-              )}
-
-              {algoliaVideoResult?.recordUrl != null && (
-                <Button
-                  variant="text"
-                  size="small"
-                  href={algoliaVideoResult.recordUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  sx={{ mt: 1, alignSelf: 'flex-start' }}
-                >
-                  Open in Algolia
-                </Button>
-              )}
-            </Box>
-          </Stack>
-        </Box>
-      )}
-
-      {algoliaVariantsData != null &&
-        (() => {
-          const algoliaVariantsResult =
-            (algoliaVariantsData.checkVideoVariantsInAlgolia ??
-              null) as unknown as CheckVideoVariantsInAlgoliaResult | null
-
-          if (algoliaVariantsResult == null) {
-            return null
-          }
-
-          return (
-            <Box
-              sx={{
-                p: 2,
-                bgcolor: 'background.paper',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 1
-              }}
-            >
-              <Stack spacing={2}>
-                <Typography variant="h6">
-                  Algolia Video Variants Status
-                </Typography>
-                <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    Variants in Index:
-                  </Typography>
-                  {(algoliaVariantsResult.missingVariants ?? []).length ===
-                  0 ? (
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        px: 2,
-                        py: 1,
-                        bgcolor: 'success.light',
-                        borderRadius: 1,
-                        fontFamily: 'monospace',
-                        color: 'success.main',
-                        mt: 1
-                      }}
-                    >
-                      All variants found ✓
-                    </Typography>
-                  ) : (
-                    <Typography variant="body1" color="error.main">
-                      Missing variants:{' '}
-                      {(algoliaVariantsResult.missingVariants ?? []).join(', ')}
-                    </Typography>
-                  )}
-                  {algoliaVariantsResult.browseUrl != null && (
-                    <Button
-                      variant="text"
-                      size="small"
-                      href={algoliaVariantsResult.browseUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      sx={{ mt: 1, alignSelf: 'flex-start' }}
-                    >
-                      Open variants in Algolia
-                    </Button>
-                  )}
-                </Box>
-              </Stack>
-            </Box>
-          )
-        })()}
-
-      {data != null && (
-        <Box
-          sx={{
-            p: 2,
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
-            borderRadius: 1
-          }}
-        >
-          <Stack spacing={2}>
-            <Typography variant="h6">Video Information</Typography>
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                Title:
-              </Typography>
-              <Typography variant="body1">
-                {(data.adminVideo.title as Array<{ value: string }>)[0]
-                  ?.value ?? 'N/A'}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="body2" color="text.secondary">
-                Available Languages:
-              </Typography>
-              {((data.adminVideo.availableLanguages as string[]) ?? []).length >
-              0 ? (
-                <Stack spacing={1} sx={{ mt: 1 }}>
-                  {(data.adminVideo.availableLanguages as string[]).map(
-                    (languageId) => (
-                      <Typography
-                        key={languageId}
-                        variant="body1"
-                        sx={{
-                          px: 2,
-                          py: 1,
-                          bgcolor: 'action.hover',
-                          borderRadius: 1,
-                          fontFamily: 'monospace'
-                        }}
-                      >
-                        {languageId}
-                      </Typography>
-                    )
-                  )}
-                </Stack>
-              ) : (
-                <Typography variant="body1" color="text.secondary">
-                  No languages available
-                </Typography>
-              )}
-            </Box>
-          </Stack>
-        </Box>
-      )}
+      <TroubleshootingResults
+        showAlgoliaVideoStatus={algoliaVideoData != null}
+        algoliaVideoResult={algoliaVideoResult}
+        showAlgoliaVariantsStatus={algoliaVariantsData != null}
+        algoliaVariantsResult={algoliaVariantsResult}
+        showVideoInformation={data != null}
+        videoTitle={videoTitle}
+        availableLanguages={availableLanguages}
+      />
     </Stack>
   )
 }
