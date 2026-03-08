@@ -310,7 +310,9 @@ export function LanguageScreen({
               label={t('Next')}
               onClick={() => formikHandleSubmit()}
               disabled={
-                (templateCustomizationGuestFlow && !isSignedIn) || loading
+                templateCustomizationGuestFlow == null ||
+                !templateCustomizationGuestFlow ||
+                loading
               }
               ariaLabel={t('Next')}
             />
