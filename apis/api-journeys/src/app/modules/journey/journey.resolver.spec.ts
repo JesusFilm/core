@@ -2526,36 +2526,6 @@ describe('JourneyResolver', () => {
       })
       expect(journeyCustomizableService.recalculate).not.toHaveBeenCalled()
     })
-
-    it('updates customizable to true', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      prismaService.journey.update.mockResolvedValueOnce(journey)
-      await resolver.journeyUpdate(ability, 'journeyId', {
-        customizable: true
-      })
-      expect(prismaService.journey.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({ customizable: true })
-        })
-      )
-    })
-
-    it('updates customizable to false', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(
-        journeyWithUserTeam
-      )
-      prismaService.journey.update.mockResolvedValueOnce(journey)
-      await resolver.journeyUpdate(ability, 'journeyId', {
-        customizable: false
-      })
-      expect(prismaService.journey.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          data: expect.objectContaining({ customizable: false })
-        })
-      )
-    })
   })
 
   describe('journeyPublish', () => {

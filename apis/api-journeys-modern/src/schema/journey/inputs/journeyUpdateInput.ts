@@ -40,7 +40,6 @@ export const JourneyUpdateInput = builder.inputType('JourneyUpdateInput', {
     menuStepBlockId: t.id({ required: false }),
     logoImageBlockId: t.id({ required: false }),
     socialNodeX: t.int({ required: false }),
-    socialNodeY: t.int({ required: false }),
-    customizable: t.boolean({ required: false })
+    socialNodeY: t.int({ required: false })
   })
 })
