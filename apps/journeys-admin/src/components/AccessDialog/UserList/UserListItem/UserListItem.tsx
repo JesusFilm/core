@@ -54,16 +54,24 @@ export function UserListItem({
           role: UserJourneyRole.inviteRequested
         }
       }
+      const user = listItem.user
+      if (user != null && user.__typename === 'AuthenticatedUser') {
+        return {
+          id: listItem.id,
+          role: listItem.role,
+          displayName: compact([user.firstName, user.lastName]).join(' '),
+          userId: user.id,
+          email: user.email,
+          imageUrl: user.imageUrl ?? ''
+        }
+      }
       return {
         id: listItem.id,
         role: listItem.role,
-        displayName: compact([
-          listItem.user?.firstName,
-          listItem.user?.lastName
-        ]).join(' '),
-        userId: listItem.user?.id,
-        email: listItem.user?.email ?? '',
-        imageUrl: listItem.user?.imageUrl ?? ''
+        displayName: '',
+        userId: undefined,
+        email: '',
+        imageUrl: ''
       }
     }, [listItem])
 
@@ -82,7 +90,12 @@ export function UserListItem({
 
   const disableAction = useMemo((): boolean => {
     if (listItem.__typename === 'UserInvite') return false
-    if (listItem.user?.id === currentUser?.user?.id) return true
+    if (
+      listItem.user?.__typename === 'AuthenticatedUser' &&
+      currentUser?.user?.__typename === 'AuthenticatedUser' &&
+      listItem.user.id === currentUser.user.id
+    )
+      return true
     if (currentUser?.role === UserJourneyRole.owner) return false
     if (
       currentUser?.role === UserJourneyRole.editor &&
@@ -141,10 +154,18 @@ export function UserListItem({
         <Grid xs={2} sm={2}>
           {listItem.__typename !== 'UserInvite' && (
             <NotificationSwitch
-              name={listItem?.user?.firstName}
+              name={
+                listItem?.user?.__typename === 'AuthenticatedUser'
+                  ? listItem.user.firstName
+                  : undefined
+              }
               journeyId={journeyIdFromParent}
               checked={listItem?.journeyNotification?.visitorInteractionEmail}
-              disabled={userId !== currentUser?.user?.id}
+              disabled={
+                userId == null ||
+                currentUser?.user?.__typename !== 'AuthenticatedUser' ||
+                userId !== currentUser.user.id
+              }
             />
           )}
         </Grid>
