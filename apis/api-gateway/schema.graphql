@@ -4551,7 +4551,6 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: AP
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
-  customizable: Boolean
 }
 
 input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

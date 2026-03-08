@@ -1046,7 +1046,6 @@ input JourneyUpdateInput {
   logoImageBlockId: ID
   socialNodeX: Int
   socialNodeY: Int
-  customizable: Boolean
 }
 
 type JourneyViewEvent implements Event
@@ -1186,8 +1185,7 @@ input JourneysQueryOptions {
   skipRoutingFilter: Boolean
 
   """
-  when provided, filter the journey to only return if its status is in this list.
-  when not provided, no status filter is applied (current behaviour).
+  when provided, filter the journey to only return if its status is in this list. when not provided, no status filter is applied (current behaviour).
   """
   status: [JourneyStatus!]
 }
