@@ -2526,7 +2526,6 @@ describe('JourneyResolver', () => {
       })
       expect(journeyCustomizableService.recalculate).not.toHaveBeenCalled()
     })
-
   })
 
   describe('journeyPublish', () => {
