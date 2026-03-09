@@ -28,7 +28,7 @@ export function SignIn(): ReactElement {
     if (user.firebaseUser.isAnonymous === true) return
 
     const search = getSearchFromAsPath(router.asPath)
-    router.replace(`/users/verify${search}`)
+    void router.replace(`/users/verify${search}`)
   }, [router, user.clientInitialized, user.id, user.firebaseUser?.isAnonymous])
 
   let page: ReactElement<PageProps>
