@@ -155,94 +155,16 @@
         "command": "pnpm exec ts-node apis/api-media/src/scripts/update-arcgt-urls.ts"
       }
     },
-    "fix-arcgt-hls-from-mux": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/scripts/fix-arcgt-hls-from-mux.ts"
-      }
-    },
     "mux-videos": {
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec ts-node apis/api-media/src/scripts/mux-videos.ts"
       }
     },
-    "retry-mux-uploads": {
+    "bc-migration-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/retry-mux-uploads.ts"
-      }
-    },
-    "retry-mux-uploads-meta": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/retry-mux-uploads-meta.ts"
-      }
-    },
-    "export-mux-retry-csv": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/export-mux-retry-csv.ts"
-      }
-    },
-    "process-mux-retry-csv": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/process-mux-retry-csv.ts"
-      }
-    },
-    "finalize-mux-retry-csv": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/finalize-mux-retry-csv.ts"
-      }
-    },
-    "audit-r2-video-metadata": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/scripts/audit-r2-video-metadata.ts"
-      }
-    },
-    "summarize-mux-retry-results": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/scripts/summarize-mux-retry-results.ts"
-      }
-    },
-    "fix-zero-duration-from-english": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/scripts/fix-zero-duration-from-english.ts"
-      }
-    },
-    "rerun-mux-single-r2": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/rerun-mux-single-r2.ts"
-      }
-    },
-    "find-correct-r2-for-broken": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/find-correct-r2-for-broken.ts"
-      }
-    },
-    "mux-create-playback-id": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/mux-create-playback-id.ts"
-      }
-    },
-    "reset-video-cache-for-reuploaded": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -r dotenv/config apis/api-media/src/scripts/reset-video-cache-for-reuploaded.ts"
-      }
-    },
-    "reset-video-and-watch-cache": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node -P apis/api-media/tsconfig.app.json -r tsconfig-paths/register -r dotenv/config apis/api-media/src/scripts/reset-video-and-watch-cache.ts"
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/bc-migration-helpers/migration-summarry.ts"
       }
     },
     "populate-crowdin-ids": {
