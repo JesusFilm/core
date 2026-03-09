@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import { OVERFLOW_PX } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/templateCardPreviewConfig'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 
 interface CardsSectionProps {
@@ -37,13 +38,19 @@ export function CardsSection({
       gap={4}
       data-testid="CardsSection"
       sx={{
-        width: '100%'
+        width: '100%',
+        overflow: 'visible'
       }}
     >
       <Typography variant="h6" sx={{ color: 'text.primary' }}>
         {t('Cards')}
       </Typography>
-      <Box sx={{ width: '100%', px: { xs: 0, sm: 5 } }}>
+      <Box
+        sx={{
+          width: { xs: '100%', sm: `calc(100% + ${OVERFLOW_PX * 2}px)` },
+          mx: { xs: 0, sm: `-${OVERFLOW_PX}px` }
+        }}
+      >
         <TemplateCardPreview
           steps={customizableSteps}
           variant="media"
