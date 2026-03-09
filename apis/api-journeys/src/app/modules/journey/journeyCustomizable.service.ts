@@ -30,7 +30,8 @@ export class JourneyCustomizableService {
         customizable: true,
         journeyCustomizationDescription: true,
         logoImageBlockId: true,
-        website: true
+        website: true,
+        _count: { select: { journeyCustomizationFields: true } }
       }
     })
     if (journey == null) return
@@ -41,10 +42,7 @@ export class JourneyCustomizableService {
       include: { action: true }
     })
 
-    const fieldsCount =
-      await this.prismaService.journeyCustomizationField.count({
-        where: { journeyId }
-      })
+    const fieldsCount = journey._count.journeyCustomizationFields
 
     const hasEditableText =
       (journey.journeyCustomizationDescription ?? '').trim().length > 0 &&

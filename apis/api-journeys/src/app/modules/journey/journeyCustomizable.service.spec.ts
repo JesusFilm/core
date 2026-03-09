@@ -31,7 +31,8 @@ describe('JourneyCustomizableService', () => {
     customizable: false,
     journeyCustomizationDescription: null,
     logoImageBlockId: null,
-    website: null
+    website: null,
+    _count: { journeyCustomizationFields: 0 }
   }
 
   describe('recalculate', () => {
@@ -55,10 +56,10 @@ describe('JourneyCustomizableService', () => {
     it('should set customizable to true when has editable text fields', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce({
         ...baseJourney,
-        journeyCustomizationDescription: 'Hello {{ name: John }}!'
+        journeyCustomizationDescription: 'Hello {{ name: John }}!',
+        _count: { journeyCustomizationFields: 1 }
       } as any)
       prismaService.block.findMany.mockResolvedValueOnce([])
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(1)
 
       await service.recalculate('journeyId')
 
@@ -71,10 +72,10 @@ describe('JourneyCustomizableService', () => {
     it('should not count editable text when description is empty', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce({
         ...baseJourney,
-        journeyCustomizationDescription: ''
+        journeyCustomizationDescription: '',
+        _count: { journeyCustomizationFields: 1 }
       } as any)
       prismaService.block.findMany.mockResolvedValueOnce([])
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(1)
 
       await service.recalculate('journeyId')
 
@@ -87,7 +88,6 @@ describe('JourneyCustomizableService', () => {
         journeyCustomizationDescription: 'Has description'
       } as any)
       prismaService.block.findMany.mockResolvedValueOnce([])
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -109,7 +109,6 @@ describe('JourneyCustomizableService', () => {
           }
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -134,7 +133,6 @@ describe('JourneyCustomizableService', () => {
           }
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -151,7 +149,6 @@ describe('JourneyCustomizableService', () => {
           action: null
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -171,7 +168,6 @@ describe('JourneyCustomizableService', () => {
           action: null
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -195,7 +191,6 @@ describe('JourneyCustomizableService', () => {
           action: null
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -219,7 +214,6 @@ describe('JourneyCustomizableService', () => {
           action: null
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -240,7 +234,6 @@ describe('JourneyCustomizableService', () => {
           action: null
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -262,7 +255,6 @@ describe('JourneyCustomizableService', () => {
           action: null
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -278,7 +270,6 @@ describe('JourneyCustomizableService', () => {
         customizable: false
       } as any)
       prismaService.block.findMany.mockResolvedValueOnce([])
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -300,7 +291,6 @@ describe('JourneyCustomizableService', () => {
           }
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -325,7 +315,6 @@ describe('JourneyCustomizableService', () => {
           }
         }
       ] as any)
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
@@ -341,7 +330,6 @@ describe('JourneyCustomizableService', () => {
         customizable: null
       } as any)
       prismaService.block.findMany.mockResolvedValueOnce([])
-      prismaService.journeyCustomizationField.count.mockResolvedValueOnce(0)
 
       await service.recalculate('journeyId')
 
