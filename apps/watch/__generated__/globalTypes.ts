@@ -319,6 +319,7 @@ export interface JourneysQueryOptions {
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
   skipRoutingFilter?: boolean | null;
+  status?: JourneyStatus[] | null;
 }
 
 export interface LanguagesFilter {

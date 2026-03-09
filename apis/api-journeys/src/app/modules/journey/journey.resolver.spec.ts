@@ -35,8 +35,6 @@ import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService, BlockWithAction } from '../block/block.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
-import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { UserRoleService } from '../userRole/userRole.service'
 
 import { JourneyResolver } from './journey.resolver'
 
@@ -164,8 +162,6 @@ describe('JourneyResolver', () => {
           useValue: mockDeep<QrCodeService>()
         },
         BlockResolver,
-        UserRoleResolver,
-        UserRoleService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -868,6 +864,31 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journey('unknownId', IdType.databaseId)
       ).rejects.toThrow('journey not found')
+    })
+
+    it('returns journey when status filter includes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.published]
+        })
+      ).toEqual(journey)
+    })
+
+    it('throws journey not found when status filter excludes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.draft]
+        })
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('returns journey when no status filter is provided (default behaviour)', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(await resolver.journey('journey-slug', IdType.slug)).toEqual(
+        journey
+      )
     })
   })
 
