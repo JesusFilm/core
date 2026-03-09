@@ -47,6 +47,8 @@ export function ChatOption({
         chatButtonId={chatButton?.id}
         currentPlatform={currentPlatform}
         currentLink={currentLink}
+        currentCustomizable={chatButton?.customizable ?? null}
+        active={active}
         setCurrentPlatform={setCurrentPlatform}
         setCurrentLink={setCurrentLink}
         helperInfo={helperInfo}
