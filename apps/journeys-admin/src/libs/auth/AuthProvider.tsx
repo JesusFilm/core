@@ -5,6 +5,8 @@ import { ReactNode, useEffect, useRef, useState } from 'react'
 
 import { AuthContext, User } from './authContext'
 
+const SESSION_REESTABLISH_UID_KEY = 'journeys-admin:session-reestablish-uid'
+
 export interface AuthProviderProps {
   user: User | null
   children: ReactNode
@@ -42,6 +44,7 @@ export function AuthProvider({
     return onIdTokenChanged(auth, async (firebaseUser) => {
       try {
         if (firebaseUser == null) {
+          window.sessionStorage.removeItem(SESSION_REESTABLISH_UID_KEY)
           setClientUser(null)
           return
         }
@@ -49,11 +52,18 @@ export function AuthProvider({
         const token = await firebaseUser.getIdToken()
         setClientUser(toClientUser(firebaseUser, token))
 
+        const reestablishedUid = window.sessionStorage.getItem(
+          SESSION_REESTABLISH_UID_KEY
+        )
+        const hasAlreadyReestablishedSessionForUid =
+          reestablishedUid === firebaseUser.uid
         const isFirstClientUser = previousUidRef.current == null
         const isServerSessionMissingOrMismatched =
           serverUser == null || serverUser.id !== firebaseUser.uid
         const shouldReestablishServerSession =
-          isFirstClientUser && isServerSessionMissingOrMismatched
+          isFirstClientUser &&
+          isServerSessionMissingOrMismatched &&
+          !hasAlreadyReestablishedSessionForUid
 
         if (!shouldReestablishServerSession) {
           return
@@ -65,6 +75,10 @@ export function AuthProvider({
         })
 
         if (loginResponse.ok) {
+          window.sessionStorage.setItem(
+            SESSION_REESTABLISH_UID_KEY,
+            firebaseUser.uid
+          )
           window.location.reload()
           return
         }
