@@ -12,14 +12,16 @@ describe('ChatButtonResolver', () => {
     journeyId: 'journeyId',
     id: '1',
     link: 'm.me./user',
-    platform: 'facebook'
+    platform: 'facebook',
+    customizable: null
   }
 
   const chatButton2 = {
     journeyId: 'journeyId',
     id: '2',
     link: 'm.me./user2',
-    platform: 'facebook'
+    platform: 'facebook',
+    customizable: null
   }
 
   beforeEach(async () => {
@@ -89,9 +91,25 @@ describe('ChatButtonResolver', () => {
         id: '1',
         journeyId: 'journeyId',
         link: 'm.me/username',
-        platform: 'viber'
+        platform: 'viber',
+        customizable: null
       }
     ])
+  })
+
+  it('should update customizable field on a ChatButton', async () => {
+    prismaService.chatButton.findMany = jest.fn().mockReturnValue([chatButton])
+    prismaService.chatButton.update = jest
+      .fn()
+      .mockReturnValue({ ...chatButton, customizable: true })
+
+    const result = await resolver.chatButtonUpdate('1', 'journeyId', {
+      customizable: true
+    })
+    expect(result).toEqual({
+      ...chatButton,
+      customizable: true
+    })
   })
 
   it('should delete an existing ChatButton', async () => {

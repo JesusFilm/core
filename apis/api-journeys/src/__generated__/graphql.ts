@@ -376,6 +376,7 @@ export type ChatActionInput = {
 
 export type ChatButton = {
   __typename?: 'ChatButton';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   link?: Maybe<Scalars['String']['output']>;
   platform?: Maybe<MessagePlatform>;
@@ -387,6 +388,7 @@ export type ChatButtonCreateInput = {
 };
 
 export type ChatButtonUpdateInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   link?: InputMaybe<Scalars['String']['input']>;
   platform?: InputMaybe<MessagePlatform>;
 };
