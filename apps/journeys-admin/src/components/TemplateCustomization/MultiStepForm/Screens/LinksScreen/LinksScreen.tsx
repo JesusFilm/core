@@ -47,7 +47,11 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const [updatePhoneAction, { loading: phoneLoading }] =
     useBlockActionPhoneUpdateMutation()
 
-  const treeBlocks = transformer(journey?.blocks ?? []).filter((block) =>
+  const allSteps = transformer(journey?.blocks ?? []).filter(
+    (block) => block.__typename === 'StepBlock'
+  ) as Array<TreeBlock<StepBlock>>
+
+  const stepsWithLinks = allSteps.filter((block) =>
     links?.some(
       (link) =>
         (link.linkType === 'url' ||
@@ -55,7 +59,20 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
           link.linkType === 'phone') &&
         link.parentStepId === block.id
     )
-  ) as Array<TreeBlock<StepBlock>>
+  )
+
+  const hasChatButtonLinks = links.some(
+    (link) => link.linkType === 'chatButtons'
+  )
+
+  // Show first step as fallback when only chat button links exist,
+  // so the user can see the chat widget in the card footer
+  const previewSteps =
+    stepsWithLinks.length > 0
+      ? stepsWithLinks
+      : hasChatButtonLinks
+        ? allSteps.slice(0, 1)
+        : []
 
   async function handleFormSubmit(
     values: Record<string, string>,
@@ -121,7 +138,8 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
               __typename: 'ChatButton',
               id: chatButton.id,
               link: normalizedLink,
-              platform: chatButton.platform
+              platform: chatButton.platform,
+              customizable: chatButton.customizable ?? null
             }
           }
         })
@@ -266,7 +284,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
               />
             }
           >
-            <CardsPreview steps={treeBlocks} />
+            <CardsPreview steps={previewSteps} />
             <LinksForm links={links} />
           </ScreenWrapper>
         </FormikProvider>

@@ -2,7 +2,10 @@
 import { TFunction } from 'i18next'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { ContactActionType } from '../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../__generated__/globalTypes'
 
 import { getJourneyLinks } from './getJourneyLinks'
 
@@ -16,6 +19,99 @@ describe('getJourneyLinks', () => {
   it('returns empty array if journey has no blocks', () => {
     const journey = { chatButtons: [], blocks: [] } as unknown as Journey
     expect(getJourneyLinks(t, journey)).toEqual([])
+  })
+
+  describe('chatButtons', () => {
+    it('includes chatButtons with customizable: true', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.whatsApp,
+            customizable: true
+          },
+          {
+            id: 'chat-2',
+            link: 'https://t.me/test',
+            platform: MessagePlatform.telegram,
+            customizable: true
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links).toEqual([
+        {
+          id: 'chat-1',
+          linkType: 'chatButtons',
+          url: 'https://wa.me/123',
+          label: 'Chat: WhatsApp'
+        },
+        {
+          id: 'chat-2',
+          linkType: 'chatButtons',
+          url: 'https://t.me/test',
+          label: 'Chat: Telegram'
+        }
+      ])
+    })
+
+    it('excludes chatButtons with customizable: false', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.whatsApp,
+            customizable: false
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links).toEqual([])
+    })
+
+    it('excludes chatButtons with customizable: null', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.whatsApp,
+            customizable: null
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links).toEqual([])
+    })
+
+    it('uses human-readable platform label (e.g. "TikTok" not "tikTok")', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://tiktok.com/@test',
+            platform: MessagePlatform.tikTok,
+            customizable: true
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links[0].label).toBe('Chat: TikTok')
+    })
   })
 
   it('should extract customizable links and use default label when missing', () => {
