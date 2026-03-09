@@ -1581,6 +1581,11 @@ export type JourneysQueryOptions = {
   journeyCollection?: InputMaybe<Scalars['Boolean']['input']>;
   /** skip custom domain routing filter (for admin template customization) */
   skipRoutingFilter?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * when provided, filter the journey to only return if its status is in this list.
+   * when not provided, no status filter is applied (current behaviour).
+   */
+  status?: InputMaybe<Array<JourneyStatus>>;
 };
 
 export enum JourneysReportType {
@@ -2448,6 +2453,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  duplicateAsDraft?: InputMaybe<Scalars['Boolean']['input']>;
   forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];

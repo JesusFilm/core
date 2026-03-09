@@ -11,6 +11,16 @@ interface ScreenWrapperProps {
   children: ReactNode
 }
 
+/**
+ * Wraps a multi-step form screen with a responsive title, subtitle, and optional footer.
+ *
+ * @param title - The heading displayed on desktop viewports.
+ * @param mobileTitle - Optional heading override for mobile viewports. Falls back to `title`.
+ * @param subtitle - The subheading displayed on desktop viewports.
+ * @param mobileSubtitle - Optional subheading override for mobile viewports. Falls back to `subtitle`.
+ * @param footer - Optional content rendered below the children.
+ * @param children - The main screen content.
+ */
 export function ScreenWrapper({
   title,
   mobileTitle,
@@ -20,7 +30,14 @@ export function ScreenWrapper({
   children
 }: ScreenWrapperProps): ReactElement {
   return (
-    <Stack alignItems="center" data-testid="ScreenWrapper">
+    <Stack
+      alignItems="center"
+      data-testid="ScreenWrapper"
+      sx={{
+        px: { xs: 6, sm: 20 },
+        overflow: 'visible'
+      }}
+    >
       <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
         <Typography
           variant="h3"
@@ -39,7 +56,7 @@ export function ScreenWrapper({
           {mobileTitle ?? title}
         </Typography>
         <Typography
-          variant="subtitle2"
+          variant="body1"
           display={{ xs: 'none', sm: 'block' }}
           color="text.secondary"
           align="center"

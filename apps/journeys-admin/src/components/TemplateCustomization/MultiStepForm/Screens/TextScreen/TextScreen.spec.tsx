@@ -38,10 +38,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={jest.fn()}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -55,10 +52,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={jest.fn()}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -115,10 +109,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={handleNext}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -147,10 +138,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={handleNext}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )

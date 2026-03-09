@@ -18,7 +18,6 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
 import { GoogleSheetsSyncDialog } from '../../../../JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 export const GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN = gql`
@@ -38,13 +37,7 @@ interface GoogleSheetsSyncsForDoneScreenVariables {
   filter: { journeyId: string }
 }
 
-interface DoneScreenProps {
-  handleScreenNavigation?: (screen: CustomizationScreen) => void
-}
-
-export function DoneScreen({
-  handleScreenNavigation
-}: DoneScreenProps): ReactElement {
+export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
@@ -91,77 +84,83 @@ export function DoneScreen({
   }
 
   return (
-    <Stack alignItems="center" sx={{ pb: 4, px: { xs: 4, sm: 18 } }}>
-      <ScreenWrapper
-        title={t('Ready to Share!')}
-        subtitle={t('Share your unique link on any platform.')}
-      >
-        {steps.length > 0 && (
-          <TemplateCardPreviewItem step={steps[0]} variant="preview" />
-        )}
+    <ScreenWrapper
+      title={t('Ready to share!')}
+      subtitle={t('Share your unique link on any platform.')}
+      footer={
+        <Button
+          data-testid="ProjectsDashboardButton"
+          onClick={handleGoToProjectsDashboard}
+          endIcon={<ArrowRightContained1Icon />}
+          sx={{ mt: 4 }}
+        >
+          <Typography variant="subtitle2">
+            {t('Go To Projects Dashboard')}
+          </Typography>
+        </Button>
+      }
+    >
+      {steps.length > 0 && (
+        <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+      )}
 
+      <Stack
+        spacing={4}
+        sx={{ direction: { xs: 'column', sm: 'row' }, mt: 6, width: '100%' }}
+      >
         <Stack
-          gap={4}
           direction={{ xs: 'column', sm: 'row' }}
           sx={{
-            width: { xs: '100%', sm: 300 },
-            mt: 6
+            width: '100%',
+            alignItems: { xs: 'stretch', sm: 'center' },
+            justifyContent: 'center',
+            gap: { xs: 3, sm: 2 }
           }}
         >
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Button
-              data-testid="DoneScreenPreviewButton"
-              fullWidth
-              variant="outlined"
-              color="secondary"
-              href={href}
-              component={href != null ? 'a' : 'button'}
-              target={href != null ? '_blank' : undefined}
-              startIcon={<Play3Icon />}
-              sx={{
-                borderRadius: 3,
-                height: '41px'
-              }}
-            >
-              <Typography variant="subtitle2">{t('Preview')}</Typography>
-            </Button>
-          </Box>
-          <Box
+          <Button
+            data-testid="DoneScreenPreviewButton"
+            variant="outlined"
+            color="secondary"
+            href={href}
+            component={href != null ? 'a' : 'button'}
+            target={href != null ? '_blank' : undefined}
+            startIcon={<Play3Icon />}
             sx={{
-              flex: 1,
-              minWidth: 0,
-              '& button': { width: '100% !important' }
+              borderWidth: 2,
+              borderRadius: 2,
+              height: 48,
+              width: { xs: '100%', sm: 216 },
+              borderColor: 'secondary.light'
             }}
           >
-            <ShareItem
-              variant="button"
-              journey={journey}
-              buttonVariant="icon"
-            />
-          </Box>
+            <Typography variant="subtitle2">{t('Preview')}</Typography>
+          </Button>
+          <ShareItem
+            variant="button"
+            journey={journey}
+            buttonVariant="icon"
+            buttonProps={{
+              sx: {
+                width: { xs: '100%', sm: 216 },
+                height: 48,
+                borderRadius: 2
+              }
+            }}
+          />
         </Stack>
         <Stack
-          gap={3}
+          spacing={6}
           sx={{
-            width: '100%',
-            mt: 4,
-            border: 2,
+            border: '2px solid',
             borderColor: 'divider',
-            borderRadius: 3,
+            borderRadius: 2,
             p: 5
           }}
         >
-          <Typography variant="subtitle1" display={{ xs: 'none', sm: 'block' }}>
+          <Typography variant="subtitle1">
             {t('Choose where responses go:')}
           </Typography>
-          <Typography variant="subtitle1" display={{ xs: 'block', sm: 'none' }}>
-            {t('Choose Response Destination:')}
-          </Typography>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
+          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
             <Typography variant="body2">{t('Send to my email')}</Typography>
             <NotificationSwitch journeyId={journey?.id} />
           </Stack>
@@ -189,16 +188,7 @@ export function DoneScreen({
             </Button>
           </Stack>
         </Stack>
-        <Button
-          data-testid="ProjectsDashboardButton"
-          onClick={handleGoToProjectsDashboard}
-          endIcon={<ArrowRightContained1Icon />}
-          sx={{ mt: 4 }}
-        >
-          <Typography variant="subtitle2">
-            {t('Go To Projects Dashboard')}
-          </Typography>
-        </Button>
+      </Stack>
         {journey?.id != null && (
           <GoogleSheetsSyncDialog
             open={syncDialogOpen}
@@ -206,7 +196,6 @@ export function DoneScreen({
             journeyId={journey.id}
           />
         )}
-      </ScreenWrapper>
-    </Stack>
+    </ScreenWrapper>
   )
 }

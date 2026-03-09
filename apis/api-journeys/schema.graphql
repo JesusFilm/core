@@ -278,7 +278,6 @@ extend type Query {
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
-  getUserRole: UserRole
   userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
   userTeam(id: ID!): UserTeam!
   userTeamInvites(teamId: ID!): [UserTeamInvite!]!
@@ -459,7 +458,7 @@ type Mutation {
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean, duplicateAsDraft: Boolean): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -489,7 +488,6 @@ type Mutation {
   journeyCustomizationFieldUserUpdate(journeyId: ID!, input: [JourneyCustomizationFieldInput!]!): [JourneyCustomizationField!]!
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyThemeCreate(input: JourneyThemeCreateInput!): JourneyTheme!
   journeyThemeUpdate(id: ID!, input: JourneyThemeUpdateInput!): JourneyTheme!
   journeyThemeDelete(id: ID!): JourneyTheme!
@@ -2212,6 +2210,12 @@ input JourneysQueryOptions {
 
   """skip custom domain routing filter (for admin template customization)"""
   skipRoutingFilter: Boolean
+
+  """
+  when provided, filter the journey to only return if its status is in this list.
+  when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 enum JourneysReportType {
@@ -2447,13 +2451,6 @@ type JourneyProfile
   id: ID!
   userId: ID!
   acceptedTermsAt: DateTime
-  lastActiveTeamId: String
-  journeyFlowBackButtonClicked: Boolean
-  plausibleJourneyFlowViewed: Boolean
-  plausibleDashboardViewed: Boolean
-}
-
-input JourneyProfileUpdateInput {
   lastActiveTeamId: String
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean

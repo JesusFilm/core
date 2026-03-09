@@ -4,7 +4,6 @@ import { ReactElement } from 'react'
 
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { ScreenWrapper } from '../ScreenWrapper'
 
@@ -12,52 +11,36 @@ import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
   handleNext: (overrideJourneyId?: string) => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
-export function SocialScreen({
-  handleNext,
-  handleScreenNavigation
-}: SocialScreenProps): ReactElement {
+export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack
-      alignItems="center"
-      sx={{
-        px: { xs: 5, sm: 20 }
-      }}
+    <ScreenWrapper
+      title={t('Social Media')}
+      subtitle={t('This is how your content will look on social media.')}
+      footer={
+        <CustomizeFlowNextButton
+          label={t('Done')}
+          onClick={() => handleNext()}
+          ariaLabel={t('Done')}
+        />
+      }
     >
-      <ScreenWrapper
-        title={t('Final Details')}
-        subtitle={t(
-          'Customize how your invite appears when shared on social media.'
-        )}
-        mobileSubtitle={t(
-          'This is how your content will appear when shared on social media.'
-        )}
-        footer={
-          <CustomizeFlowNextButton
-            label={t('Done')}
-            onClick={() => handleNext()}
-            ariaLabel={t('Done')}
-          />
-        }
+      <Stack
+        alignItems="center"
+        gap={6}
+        data-testid="SocialShareAppearance"
+        sx={{
+          width: '100%',
+          py: 5
+        }}
       >
-        <Stack
-          alignItems="center"
-          gap={6}
-          data-testid="SocialShareAppearance"
-          sx={{
-            width: '100%',
-            py: 5
-          }}
-        >
-          <SocialScreenSocialImage />
-          <TitleEdit />
-          <DescriptionEdit />
-        </Stack>
-      </ScreenWrapper>
-    </Stack>
+        <SocialScreenSocialImage />
+        <TitleEdit />
+        <DescriptionEdit />
+      </Stack>
+    </ScreenWrapper>
   )
 }

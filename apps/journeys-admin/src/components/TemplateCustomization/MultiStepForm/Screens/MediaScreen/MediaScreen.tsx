@@ -1,4 +1,3 @@
-import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -67,48 +66,28 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
-    <Stack
-      alignItems="center"
-      sx={{
-        width: '100%',
-        px: { xs: 0, sm: 3.5 }
-      }}
+    <ScreenWrapper
+      title={t('Media')}
+      subtitle={t('Personalize and manage your media assets')}
+      footer={
+        <CustomizeFlowNextButton
+          label={t('Next')}
+          onClick={() => handleNext()}
+          ariaLabel={t('Next')}
+          loading={hasActiveUploads}
+        />
+      }
     >
-      <Stack
-        gap={4}
-        sx={{
-          width: '100%',
-          px: { xs: 0, sm: 10 },
-          overflow: { xs: 'visible', sm: 'hidden' }
-        }}
-      >
-        <ScreenWrapper
-          title={t('Media')}
-          subtitle={t('Personalize and manage your media assets')}
-          footer={
-            <CustomizeFlowNextButton
-              label={t('Next')}
-              onClick={() => handleNext()}
-              ariaLabel={t('Next')}
-              loading={hasActiveUploads}
-            />
-          }
-        >
-          {showLogo && <LogoSection />}
-          <CardsSection
-            customizableSteps={customizableSteps}
-            selectedStep={selectedStep}
-            handleStepClick={handleStepClick}
-          />
-          {showImages && (
-            <ImagesSection
-              journey={journey}
-              cardBlockId={selectedCardBlockId}
-            />
-          )}
-          {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
-        </ScreenWrapper>
-      </Stack>
-    </Stack>
+      {showLogo && <LogoSection />}
+      <CardsSection
+        customizableSteps={customizableSteps}
+        selectedStep={selectedStep}
+        handleStepClick={handleStepClick}
+      />
+      {showImages && (
+        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+      )}
+      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+    </ScreenWrapper>
   )
 }

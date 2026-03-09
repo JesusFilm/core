@@ -1,6 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -8,7 +7,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { ScreenWrapper } from '../ScreenWrapper'
 
@@ -126,13 +124,9 @@ const renderEditableText = (
 
 interface TextScreenProps {
   handleNext: (overrideJourneyId?: string) => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
-export function TextScreen({
-  handleNext,
-  handleScreenNavigation
-}: TextScreenProps): ReactElement {
+export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
@@ -194,76 +188,67 @@ export function TextScreen({
   }
 
   return (
-    <Stack
-      alignItems="center"
-      gap={{ xs: 0, sm: 2 }}
-      sx={{
-        px: { xs: 2, md: 8 },
-        width: '100%'
-      }}
+    <ScreenWrapper
+      title={t('Text')}
+      subtitle={t(
+        "Fill out the blue fields and we'll customize the content with your information."
+      )}
+      mobileSubtitle={t('Fill in the blue fields to customize the content.')}
+      footer={
+        <CustomizeFlowNextButton
+          label={t('Next')}
+          onClick={handleSubmit}
+          loading={isSubmitting}
+          ariaLabel={t('Save and continue')}
+        />
+      }
     >
-      <ScreenWrapper
-        title={t('Text')}
-        subtitle={t(
-          "Fill out the blue fields and we'll customize the content with your information."
-        )}
-        mobileSubtitle={t('Fill in the blue fields to customize the content.')}
-        footer={
-          <CustomizeFlowNextButton
-            label={t('Next')}
-            onClick={handleSubmit}
-            loading={isSubmitting}
-            ariaLabel={t('Save and continue')}
-          />
-        }
-      >
-        <Box sx={{ position: 'relative', width: '100%' }}>
-          <Box
-            sx={{
-              border: '2px solid',
-              borderColor: '#CCCCCC',
-              borderRadius: 3,
-              p: { xs: 4, sm: 5 },
-              minHeight: 150,
-              width: '100%',
-              whiteSpace: 'pre-wrap',
-              overflowY: 'auto',
-              maxHeight: {
-                xs: 'calc(100vh - 323px)',
-                sm: 'calc(100vh - 370px)'
-              },
-              '&::-webkit-scrollbar': {
-                display: 'none'
-              },
-              '-ms-overflow-style': 'none',
-              'scrollbar-width': 'none'
-            }}
-          >
-            {renderEditableText(
-              journey?.journeyCustomizationDescription ?? '',
-              replacementItems,
-              handleValueChange
-            )}
-          </Box>
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: '30px',
-              background:
-                'linear-gradient(to bottom, transparent 0%, white 100%)',
-              pointerEvents: 'none',
-              borderBottomLeftRadius: 12,
-              borderBottomRightRadius: 12,
-              borderLeft: '2px solid #CCCCCC',
-              borderRight: '2px solid #CCCCCC',
-              borderBottom: '2px solid #CCCCCC'
-            }}
-          />
+      <Box sx={{ position: 'relative', width: '100%' }}>
+        <Box
+          sx={{
+            border: '2px solid',
+            borderColor: '#CCCCCC',
+            borderRadius: 3,
+            p: { xs: 4, sm: 5 },
+            minHeight: 150,
+            width: '100%',
+            whiteSpace: 'pre-wrap',
+            overflowY: 'auto',
+            maxHeight: {
+              xs: 'calc(100vh - 323px)',
+              sm: 'calc(100vh - 370px)'
+            },
+            '&::-webkit-scrollbar': {
+              display: 'none'
+            },
+            '-ms-overflow-style': 'none',
+            'scrollbar-width': 'none'
+          }}
+        >
+          {renderEditableText(
+            journey?.journeyCustomizationDescription ?? '',
+            replacementItems,
+            handleValueChange
+          )}
         </Box>
-      </ScreenWrapper>
-    </Stack>
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '30px',
+            background:
+              'linear-gradient(to bottom, transparent 0%, white 100%)',
+            pointerEvents: 'none',
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+            borderLeft: '2px solid #CCCCCC',
+            borderRight: '2px solid #CCCCCC',
+            borderBottom: '2px solid #CCCCCC'
+          }}
+        />
+      </Box>
+    </ScreenWrapper>
   )
 }
