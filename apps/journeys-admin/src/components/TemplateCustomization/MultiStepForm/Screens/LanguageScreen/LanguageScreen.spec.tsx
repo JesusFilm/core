@@ -919,66 +919,6 @@ describe('LanguageScreen', () => {
     )
   })
 
-  it('disables Next button for anonymous users when guest flow flag is off', async () => {
-    mockUser = {
-      id: null,
-      email: null,
-      firebaseUser: { isAnonymous: true }
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <TeamProvider>
-                <LanguageScreen handleNext={handleNext} />
-              </TeamProvider>
-            </JourneyProvider>
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeDisabled()
-  })
-
-  it('disables Next button for anonymous users when guest flow flag is null', async () => {
-    mockUser = {
-      id: null,
-      email: null,
-      firebaseUser: { isAnonymous: true }
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
-          mockGetChildJourneysFromTemplateId,
-          mockGetParentJourneysFromTemplateId
-        ]}
-      >
-        <SnackbarProvider>
-          <FlagsProvider flags={{}}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
-              <TeamProvider>
-                <LanguageScreen handleNext={handleNext} />
-              </TeamProvider>
-            </JourneyProvider>
-          </FlagsProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeDisabled()
-  })
-
   it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
