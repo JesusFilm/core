@@ -12,6 +12,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { useJourneyNotifcationUpdateMock } from '../../../../../libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate.mock'
 
 import { DoneScreen } from './DoneScreen'
 
@@ -199,6 +200,59 @@ describe('DoneScreen', () => {
     fireEvent.click(dashboardButton)
 
     expect(push).toHaveBeenCalledWith('/')
+  })
+
+  it('renders notification section heading and label', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[getCustomDomainsMock]}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
+    expect(screen.getByText('Send to my email')).toBeInTheDocument()
+  })
+
+  it('renders notification switch unchecked by default', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider mocks={[getCustomDomainsMock]}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const checkbox = screen.getByRole('checkbox')
+    expect(checkbox).not.toBeChecked()
+  })
+
+  it('fires notification update mutation when switch is toggled', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getCustomDomainsMock,
+            { ...useJourneyNotifcationUpdateMock, result }
+          ]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('checkbox'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('opens the share dialog when clicked', async () => {
