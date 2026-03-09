@@ -450,9 +450,7 @@ describe('LinksForm', () => {
         </Formik>
       )
 
-      expect(
-        screen.getByLabelText('Select chat icon')
-      ).toBeInTheDocument()
+      expect(screen.getByLabelText('Select chat icon')).toBeInTheDocument()
     })
 
     it('should render Chat URL placeholder for chat button links', () => {
@@ -492,9 +490,7 @@ describe('LinksForm', () => {
       await waitFor(() => {
         expect(screen.getByRole('listbox')).toBeInTheDocument()
       })
-      fireEvent.click(
-        within(screen.getByRole('listbox')).getByText('Telegram')
-      )
+      fireEvent.click(within(screen.getByRole('listbox')).getByText('Telegram'))
 
       expect(onPlatformChange).toHaveBeenCalledWith(
         'chat-1',

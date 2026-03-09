@@ -521,9 +521,7 @@ describe('LinksScreen', () => {
     await waitFor(() => {
       expect(screen.getByRole('listbox')).toBeInTheDocument()
     })
-    fireEvent.click(
-      within(screen.getByRole('listbox')).getByText('Telegram')
-    )
+    fireEvent.click(within(screen.getByRole('listbox')).getByText('Telegram'))
 
     await waitFor(() => {
       expect(platformUpdateMock.result).toHaveBeenCalled()
