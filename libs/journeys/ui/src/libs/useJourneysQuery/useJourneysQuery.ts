@@ -48,9 +48,11 @@ export const GET_JOURNEYS = gql`
         openedAt
         user {
           id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            firstName
+            lastName
+            imageUrl
+          }
         }
       }
       primaryImageBlock {

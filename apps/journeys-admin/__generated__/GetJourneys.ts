@@ -30,13 +30,20 @@ export interface GetJourneys_journeys_journeyCustomizationFields {
   defaultValue: string | null;
 }
 
-export interface GetJourneys_journeys_userJourneys_user {
+export interface GetJourneys_journeys_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetJourneys_journeys_userJourneys_user_AuthenticatedUser {
   __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type GetJourneys_journeys_userJourneys_user = GetJourneys_journeys_userJourneys_user_AnonymousUser | GetJourneys_journeys_userJourneys_user_AuthenticatedUser;
 
 export interface GetJourneys_journeys_userJourneys {
   __typename: "UserJourney";

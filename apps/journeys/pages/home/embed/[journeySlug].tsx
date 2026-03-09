@@ -21,6 +21,8 @@ import i18nConfig from '../../../next-i18next.config'
 import { EmbeddedPreview } from '../../../src/components/EmbeddedPreview'
 import { JourneyPageWrapper } from '../../../src/components/JourneyPageWrapper'
 import { createApolloClient } from '../../../src/libs/apolloClient'
+import { isJourneyNotFoundError } from '../../../src/libs/isJourneyNotFoundError'
+import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../../src/libs/journeyQueryOptions'
 
 interface JourneyPageProps {
   journey: Journey
@@ -108,7 +110,8 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
         id: context.params?.journeySlug?.toString() ?? '',
         idType: IdType.slug,
         options: {
-          embedded: true
+          embedded: true,
+          status: JOURNEY_STATUS_EXCLUDE_DRAFT
         }
       }
     })
@@ -128,7 +131,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
       revalidate: 60
     }
   } catch (e) {
-    if (e.message === 'journey not found') {
+    if (isJourneyNotFoundError(e)) {
       return {
         props: {
           ...(await serverSideTranslations(
