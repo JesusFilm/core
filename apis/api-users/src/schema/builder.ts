@@ -73,9 +73,13 @@ export const builder = new SchemaBuilder<{
           const user = await prisma.user.findUnique({
             where: { userId: context.currentUser.id }
           })
+          const email = context.currentUser?.email ?? null
+          const isAnonymous =
+            (context.currentUser != null && email == null) ||
+            user?.email == null
           return {
-            isAuthenticated: context.currentUser?.email != null,
-            isAnonymous: user?.email == null,
+            isAuthenticated: email != null,
+            isAnonymous,
             isSuperAdmin: user?.superAdmin ?? false,
             isValidInterop: false
           }
