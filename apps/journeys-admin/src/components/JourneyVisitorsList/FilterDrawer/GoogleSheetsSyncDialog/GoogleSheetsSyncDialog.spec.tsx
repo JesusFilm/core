@@ -9,6 +9,13 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
+jest.mock('next-firebase-auth', () => ({
+  useUser: () => ({
+    clientInitialized: true,
+    id: 'user1'
+  })
+}))
+
 const mockEnqueueSnackbar = jest.fn()
 
 jest.mock('notistack', () => ({
