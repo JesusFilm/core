@@ -17,10 +17,7 @@ import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
 
-import {
-  JOURNEY_PUBLISH,
-  UPDATE_ME
-} from '../RegisterPage/RegisterPage'
+import { JOURNEY_PUBLISH, UPDATE_ME } from '../RegisterPage/RegisterPage'
 import { getJourneyIdFromRedirect } from '../utils'
 
 interface SignInServiceButtonProps {

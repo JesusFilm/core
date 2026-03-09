@@ -33,10 +33,13 @@ export const getServerSideProps = withUserTokenSSR()(async ({
   req
 }) => {
   // Don't redirect anonymous users; they should see the sign-in page.
-  const firebaseClaim = user?.claims?.firebase as { sign_in_provider?: string } | undefined
+  const firebaseClaim = user?.claims?.firebase as
+    | { sign_in_provider?: string }
+    | undefined
   const signInProvider = firebaseClaim?.sign_in_provider
   const isAnonymous =
-    user?.firebaseUser?.isAnonymous ?? (signInProvider == null || signInProvider === 'anonymous')
+    user?.firebaseUser?.isAnonymous ??
+    (signInProvider == null || signInProvider === 'anonymous')
   if (user?.id != null && !isAnonymous) {
     const origin = absoluteUrl(req).origin
     const searchParams = new URL(req.url ?? '', origin).searchParams
