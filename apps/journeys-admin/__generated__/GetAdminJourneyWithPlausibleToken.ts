@@ -701,6 +701,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_host {

@@ -74,7 +74,8 @@ const journey: Journey = {
       __typename: 'ChatButton',
       id: 'chatButtonId',
       link: 'http://me.com',
-      platform: MessagePlatform.facebook
+      platform: MessagePlatform.facebook,
+      customizable: null
     }
   ],
   host: {

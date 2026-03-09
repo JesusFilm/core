@@ -65,6 +65,7 @@ export const JOURNEY_FIELDS = gql`
       id
       link
       platform
+      customizable
     }
     host {
       id
