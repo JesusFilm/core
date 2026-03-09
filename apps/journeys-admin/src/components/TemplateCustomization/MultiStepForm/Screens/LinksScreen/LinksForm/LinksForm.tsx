@@ -21,7 +21,10 @@ import {
 import { PhoneField } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/PhoneField/PhoneField'
 import { getFullPhoneNumber } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/getFullPhoneNumber'
 import { normalizeCallingCode } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/normalizeCallingCode'
-import { JourneyLink , messagePlatformDisplayNames } from '../../../../utils/getJourneyLinks/getJourneyLinks'
+import {
+  JourneyLink,
+  messagePlatformDisplayNames
+} from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 interface LinksFormProps {
   links: JourneyLink[]
