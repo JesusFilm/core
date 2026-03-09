@@ -73,7 +73,10 @@ export function AuthProvider({
           status: loginResponse.status
         })
       } catch (error) {
-        console.error('Failed to hydrate auth state from onIdTokenChanged', error)
+        console.error(
+          'Failed to hydrate auth state from onIdTokenChanged',
+          error
+        )
       } finally {
         previousUidRef.current = firebaseUser?.uid ?? null
         setHasHydratedAuth(true)
