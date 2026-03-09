@@ -147,7 +147,8 @@ describe('initAndAuthApp', () => {
         mutate: expect.any(Function)
       },
       resolvedUrl: '/templates',
-      teamName: 'My Team'
+      teamName: 'My Team',
+      allowGuest: false
     })
   })
 
@@ -176,7 +177,8 @@ describe('initAndAuthApp', () => {
         mutate: expect.any(Function)
       },
       resolvedUrl: '/templates',
-      teamName: 'My Team'
+      teamName: 'My Team',
+      allowGuest: false
     })
   })
 
@@ -205,7 +207,8 @@ describe('initAndAuthApp', () => {
         mutate: expect.any(Function)
       },
       resolvedUrl: '/templates',
-      teamName: 'My Team'
+      teamName: 'My Team',
+      allowGuest: false
     })
   })
 
@@ -236,7 +239,8 @@ describe('initAndAuthApp', () => {
         mutate: expect.any(Function)
       },
       resolvedUrl: '/templates',
-      teamName: "test's Team"
+      teamName: "test's Team",
+      allowGuest: false
     })
   })
 

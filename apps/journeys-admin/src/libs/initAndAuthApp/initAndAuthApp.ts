@@ -19,6 +19,7 @@ interface InitAndAuthAppProps {
   locale: string | undefined
   resolvedUrl?: string
   makeAccountOnAnonymous?: boolean
+  allowGuest?: boolean
 }
 
 interface InitAndAuth {
@@ -45,7 +46,8 @@ export async function initAndAuthApp({
   user,
   locale,
   resolvedUrl,
-  makeAccountOnAnonymous = false
+  makeAccountOnAnonymous = false,
+  allowGuest = false
 }: InitAndAuthAppProps): Promise<InitAndAuth> {
   if (user == null && makeAccountOnAnonymous) {
     await signInAnonymously(getAuth(getApp()))
@@ -104,7 +106,8 @@ export async function initAndAuthApp({
       ? await checkConditionalRedirect({
           apolloClient,
           resolvedUrl,
-          teamName
+          teamName,
+          allowGuest
         })
       : undefined
 

@@ -127,7 +127,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
     user,
     locale: ctx.locale,
-    resolvedUrl: ctx.resolvedUrl
+    resolvedUrl: ctx.resolvedUrl,
+    allowGuest: true
   })
 
   if (ctx.params?.journeyId == null) {

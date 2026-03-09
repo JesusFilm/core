@@ -140,9 +140,9 @@ describe('MediaScreen', () => {
   it('should render the MediaScreen', () => {
     renderMediaScreen()
 
-    expect(screen.getByText('Media')).toBeInTheDocument()
+    expect(screen.getAllByText('Media')[0]).toBeInTheDocument()
     expect(
-      screen.getByText('Personalize and manage your media assets')
+      screen.getAllByText('Personalize and manage your media assets')[0]
     ).toBeInTheDocument()
     expect(screen.getByTestId('ImagesSection')).toBeInTheDocument()
     expect(screen.getByTestId('VideosSection')).toBeInTheDocument()

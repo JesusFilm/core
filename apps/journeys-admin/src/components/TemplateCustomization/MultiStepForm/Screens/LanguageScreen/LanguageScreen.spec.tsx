@@ -10,11 +10,13 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetChildJourneysFromTemplateId'
+import { GetCurrentUser } from '../../../../../../__generated__/GetCurrentUser'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GetParentJourneysFromTemplateId,
@@ -24,6 +26,11 @@ import {
   JourneyDuplicate,
   JourneyDuplicateVariables
 } from '../../../../../../__generated__/JourneyDuplicate'
+import {
+  TeamCreate,
+  TeamCreateVariables
+} from '../../../../../../__generated__/TeamCreate'
+import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import {
   mockChildJourneys,
@@ -34,22 +41,35 @@ import {
   mockParentJourneys,
   mockParentVariables
 } from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
+import { TEAM_CREATE } from '../../../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { LanguageScreen } from './LanguageScreen'
 
+const defaultMockUser = {
+  id: 'user-id',
+  email: 'urim@thumim.example.io',
+  displayName: null,
+  photoURL: null,
+  phoneNumber: null,
+  emailVerified: false,
+  token: 'mock-token',
+  isAnonymous: false
+}
+
+let mockUser: {
+  id: string | null
+  email: string | null
+  displayName: string | null
+  photoURL: string | null
+  phoneNumber: string | null
+  emailVerified: boolean
+  token: string
+  isAnonymous?: boolean
+} = defaultMockUser
+
 jest.mock('../../../../../libs/auth', () => ({
   __esModule: true,
-  useAuth: () => ({
-    user: {
-      id: 'user-id',
-      email: 'urim@thumim.example.io',
-      displayName: null,
-      photoURL: null,
-      phoneNumber: null,
-      emailVerified: false,
-      token: 'mock-token'
-    }
-  })
+  useAuth: () => ({ user: mockUser })
 }))
 
 jest.mock('next/router', () => ({
@@ -83,6 +103,21 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
+const mockGetLastActiveTeamIdAndTeamsEmptyTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        getJourneyProfile: {
+          id: 'profile-id',
+          lastActiveTeamId: null,
+          __typename: 'JourneyProfile'
+        },
+        teams: []
+      }
+    }
+  }
+
 const mockGetChildJourneysFromTemplateId: MockedResponse<
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
@@ -111,7 +146,12 @@ const mockJourneyDuplicate: MockedResponse<
 > = {
   request: {
     query: JOURNEY_DUPLICATE,
-    variables: { id: 'journeyId', teamId: 'teamId1', forceNonTemplate: true }
+    variables: {
+      id: 'journeyId',
+      teamId: 'teamId1',
+      forceNonTemplate: true,
+      duplicateAsDraft: false
+    }
   },
   result: {
     data: {
@@ -124,14 +164,36 @@ const mockJourneyDuplicate: MockedResponse<
   }
 }
 
+const guestTeamIdFromCreate = 'guest-team-id'
+const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
+  request: {
+    query: TEAM_CREATE,
+    variables: {
+      input: { title: 'My Team', publicTitle: 'My Team' }
+    }
+  },
+  result: {
+    data: {
+      teamCreate: {
+        __typename: 'Team',
+        id: guestTeamIdFromCreate,
+        title: 'My Team',
+        publicTitle: 'My Team',
+        userTeams: [],
+        customDomains: []
+      }
+    }
+  }
+}
+
 describe('LanguageScreen', () => {
   let handleNext: jest.Mock
-  const handleScreenNavigation = jest.fn()
   let push: jest.Mock
 
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()
+    mockUser = defaultMockUser
     handleNext = jest.fn((overrideJourneyId?: string) => {
       const id = overrideJourneyId ?? 'journeyId'
       push(`/templates/${id}/customize`, undefined, { shallow: true })
@@ -143,23 +205,23 @@ describe('LanguageScreen', () => {
     } as unknown as NextRouter)
   })
 
-  it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
-    const nonTemplateJourney = {
-      ...journey,
-      id: 'journeyId',
-      template: false,
-      language: {
-        ...journey.language,
-        id: '529'
-      },
-      team: {
-        __typename: 'Team' as const,
-        id: 'teamId1',
-        title: 'Team One',
-        publicTitle: 'Team 1'
-      }
+  const nonTemplateJourney = {
+    ...journey,
+    id: 'journeyId',
+    template: false,
+    language: {
+      ...journey.language,
+      id: '529'
+    },
+    team: {
+      __typename: 'Team' as const,
+      id: 'teamId1',
+      title: 'Team One',
+      publicTitle: 'Team 1'
     }
+  }
 
+  it('skips duplicate and navigates to next screen when journey is not a template and language and team match', async () => {
     render(
       <MockedProvider
         mocks={[
@@ -169,16 +231,15 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: nonTemplateJourney, variant: 'customize' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider
+              value={{ journey: nonTemplateJourney, variant: 'customize' }}
+            >
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -199,32 +260,36 @@ describe('LanguageScreen', () => {
       .fn()
       .mockReturnValue({ ...mockJourneyDuplicate.result })
 
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
     render(
       <MockedProvider
         mocks={[
-          mockGetLastActiveTeamIdAndTeams,
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
           { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult }
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
     await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
-        'Team One'
-      )
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
     )
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
@@ -294,7 +359,8 @@ describe('LanguageScreen', () => {
               variables: {
                 id: 'journey-2', // This should match the Spanish language journey ID
                 teamId: 'teamId1',
-                forceNonTemplate: true
+                forceNonTemplate: true,
+                duplicateAsDraft: false
               }
             },
             result: mockJourneyDuplicateMockResult
@@ -310,16 +376,15 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider
+              value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
+            >
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -347,6 +412,188 @@ describe('LanguageScreen', () => {
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
       expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('for anonymous user: creates guest team, duplicates journey and redirects to customize', async () => {
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
+
+    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+      request: { query: GET_CURRENT_USER },
+      result: {
+        data: {
+          me: {
+            __typename: 'AuthenticatedUser',
+            id: 'anon-user-id',
+            email: ''
+          }
+        }
+      }
+    }
+    const mockJourneyDuplicateForGuest: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: guestTeamIdFromCreate,
+          forceNonTemplate: true,
+          duplicateAsDraft: true
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockTeamCreateResult = jest.fn(() => ({
+      ...mockTeamCreate.result
+    }))
+    const mockJourneyDuplicateForGuestResult = jest.fn(() => ({
+      ...mockJourneyDuplicateForGuest.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          mockGetCurrentUser,
+          { ...mockTeamCreate, result: mockTeamCreateResult },
+          {
+            ...mockJourneyDuplicateForGuest,
+            result: mockJourneyDuplicateForGuestResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() => expect(mockTeamCreateResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockJourneyDuplicateForGuestResult).toHaveBeenCalled()
+    )
+
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('for anonymous user with existing team: reuses existing team and does not create a new one', async () => {
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
+
+    const existingGuestTeamId = 'teamId1'
+    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+      request: { query: GET_CURRENT_USER },
+      result: {
+        data: {
+          me: {
+            __typename: 'AuthenticatedUser',
+            id: 'anon-user-id',
+            email: ''
+          }
+        }
+      }
+    }
+    const mockJourneyDuplicateForExistingGuest: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: existingGuestTeamId,
+          forceNonTemplate: true,
+          duplicateAsDraft: true
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockJourneyDuplicateForExistingGuestResult = jest.fn(() => ({
+      ...mockJourneyDuplicateForExistingGuest.result
+    }))
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          mockGetCurrentUser,
+          {
+            ...mockJourneyDuplicateForExistingGuest,
+            result: mockJourneyDuplicateForExistingGuestResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(mockJourneyDuplicateForExistingGuestResult).toHaveBeenCalled()
     )
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith(
@@ -495,7 +742,8 @@ describe('LanguageScreen', () => {
         variables: {
           id: 'current-child-id',
           teamId: 'teamId1',
-          forceNonTemplate: true
+          forceNonTemplate: true,
+          duplicateAsDraft: false
         }
       },
       result: mockJourneyDuplicate.result
@@ -511,19 +759,18 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              journey: journeyWithFromTemplateIdAndLanguage,
-              variant: 'admin'
-            }}
-          >
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider
+              value={{
+                journey: journeyWithFromTemplateIdAndLanguage,
+                variant: 'admin'
+              }}
+            >
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -562,31 +809,35 @@ describe('LanguageScreen', () => {
       data: { journeyDuplicate: null }
     })
 
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
     const { getByText } = render(
       <MockedProvider
         mocks={[
-          mockGetLastActiveTeamIdAndTeams,
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
           { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult }
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
-        'Team One'
-      )
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
     )
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
@@ -635,10 +886,7 @@ describe('LanguageScreen', () => {
             value={{ journey: journeyWithImage, variant: 'admin' }}
           >
             <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
+              <LanguageScreen handleNext={handleNext} />
             </TeamProvider>
           </JourneyProvider>
         </SnackbarProvider>
@@ -658,14 +906,13 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TeamProvider>
-              <LanguageScreen
-                handleNext={handleNext}
-                handleScreenNavigation={handleScreenNavigation}
-              />
-            </TeamProvider>
-          </JourneyProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
