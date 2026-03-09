@@ -2,8 +2,11 @@ import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { getApp } from 'firebase/app'
+import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik, FormikValues } from 'formik'
 import uniqBy from 'lodash/uniqBy'
+import { useRouter } from 'next/router'
 import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -19,8 +22,11 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
+import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -31,24 +37,29 @@ interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
+const FORM_SM_BREAKPOINT_WIDTH = '390px'
+
 export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
-  const { templateCustomizationGuestFlow } = useFlags()
   const { t } = useTranslation('journeys-ui')
-  const user = useUser()
-  const [loading, setLoading] = useState(false)
+  const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
-
+  const router = useRouter()
+  const user = useUser()
   const { journey } = useJourney()
+  const { query } = useTeam()
+  const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const { loadUser } = useCurrentUserLazyQuery()
+  const [teamCreate] = useTeamCreateMutation()
+  const [loading, setLoading] = useState(false)
+
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
   >
+  const isParentTemplate = journey?.fromTemplateId == null
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
-  const { query } = useTeam()
-
-  const isParentTemplate = journey?.fromTemplateId == null
 
   const {
     languages: childJourneyLanguages,
@@ -114,7 +125,7 @@ export function LanguageScreen({
   }
 
   const validationSchema = object({
-    teamSelect: string().required()
+    teamSelect: isSignedIn ? string().required() : string()
   })
 
   const initialValues = {
@@ -126,54 +137,157 @@ export function LanguageScreen({
     }
   }
 
-  const [journeyDuplicate] = useJourneyDuplicateMutation()
-
   function shouldSkipDuplicate(
     journey: {
       template?: boolean | null
       language?: { id: string } | null
       team?: { id: string } | null
     },
-    selectedLanguageId: string,
-    selectedTeamId: string
+    values: FormikValues
   ): boolean {
+    const selectedTeamId =
+      values.teamSelect != null && values.teamSelect !== ''
+        ? values.teamSelect
+        : null
+    const selectedLanguageId = values.languageSelect?.id ?? ''
+
     const isNotTemplate = journey.template === false
     const languageMatches = journey.language?.id === selectedLanguageId
-    const teamMatches = journey.team?.id === selectedTeamId
+    const teamMatches =
+      selectedTeamId != null ? journey.team?.id === selectedTeamId : true
+
     return Boolean(isNotTemplate && languageMatches && teamMatches)
   }
 
-  async function handleSubmit(values: FormikValues) {
-    if (journey == null) return
+  async function createGuestUser(): Promise<{ teamId: string }> {
+    const teamName = t('My Team')
+    const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
+    if (!isAnonymous) {
+      try {
+        await signInAnonymously(getAuth(getApp()))
+      } catch {
+        throw new Error('Could not create firebase user')
+      }
+    }
 
-    const { teamSelect: teamId } = values
-    const {
-      languageSelect: { id: languageId }
-    } = values
+    await loadUser()
 
-    setLoading(true)
-    if (shouldSkipDuplicate(journey, languageId, teamId)) {
-      handleNext()
-    } else if (isSignedIn) {
-      const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
-      const { data: duplicateData } = await journeyDuplicate({
-        variables: { id: journeyId, teamId, forceNonTemplate: true }
-      })
-      if (duplicateData?.journeyDuplicate == null) {
+    const existingTeams = query?.data?.teams ?? []
+    if (existingTeams.length > 0) {
+      const teamId =
+        query?.data?.getJourneyProfile?.lastActiveTeamId ?? existingTeams[0].id
+      return { teamId }
+    }
+
+    const teamResult = await teamCreate({
+      variables: {
+        input: { title: teamName, publicTitle: teamName }
+      }
+    })
+
+    if (teamResult?.data?.teamCreate == null) {
+      throw new Error('Guest team creation returned no team')
+    }
+
+    return { teamId: teamResult.data.teamCreate.id }
+  }
+
+  async function handleJourneyDuplication(
+    type: 'signedIn' | 'guest',
+    journeyId: string
+  ): Promise<string | null> {
+    let teamId
+    if (type === 'signedIn') {
+      const teams = query?.data?.teams ?? []
+      teamId = query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
+    } else {
+      const guestResult = await createGuestUser()
+      if (guestResult == null) {
         enqueueSnackbar(
-          t(
-            'Failed to duplicate journey to team, please refresh the page and try again'
-          ),
-          {
-            variant: 'error'
-          }
+          t('Unable to create guest user. Please try again or sign in.'),
+          { variant: 'error' }
         )
         setLoading(false)
-        return
+        return null
       }
-      handleNext(duplicateData.journeyDuplicate.id)
+      teamId = guestResult.teamId
     }
-    setLoading(false)
+
+    const { data } = await journeyDuplicate({
+      variables: {
+        id: journeyId,
+        teamId,
+        forceNonTemplate: true,
+        duplicateAsDraft: type === 'guest'
+      }
+    })
+
+    if (data?.journeyDuplicate == null) {
+      switch (type) {
+        case 'signedIn':
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          return null
+        case 'guest':
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          return null
+      }
+    }
+
+    return data?.journeyDuplicate?.id ?? null
+  }
+
+  async function handleSubmit(values: FormikValues) {
+    setLoading(true)
+    if (journey == null) {
+      setLoading(false)
+      enqueueSnackbar(
+        t('Journey failed to load. Please refresh the page and try again.'),
+        { variant: 'error' }
+      )
+      return
+    }
+
+    const journeyId =
+      languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
+
+    if (shouldSkipDuplicate(journey, values)) {
+      // Skips journey duplicate
+      setLoading(false)
+      handleNext()
+    } else if (isSignedIn) {
+      // Duplicates journey for a signed in user
+      const duplicatedJourneyId = await handleJourneyDuplication(
+        'signedIn',
+        journeyId
+      )
+
+      if (duplicatedJourneyId != null) {
+        setLoading(false)
+        handleNext(duplicatedJourneyId)
+      }
+    } else {
+      // Creates a guest user and duplicates the journey for them
+      const duplicatedJourneyId = await handleJourneyDuplication(
+        'guest',
+        journeyId
+      )
+
+      if (duplicatedJourneyId != null) {
+        setLoading(false)
+        handleNext(duplicatedJourneyId)
+      }
+    }
+    return
   }
 
   return (
@@ -196,7 +310,9 @@ export function LanguageScreen({
               label={t('Next')}
               onClick={() => formikHandleSubmit()}
               disabled={
-                (templateCustomizationGuestFlow && !isSignedIn) || loading
+                templateCustomizationGuestFlow == null ||
+                !templateCustomizationGuestFlow ||
+                loading
               }
               ariaLabel={t('Next')}
             />

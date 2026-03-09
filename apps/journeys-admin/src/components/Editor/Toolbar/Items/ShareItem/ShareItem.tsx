@@ -51,7 +51,6 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
-  buttonSx?: SxProps<Theme>
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
   buttonProps?: ComponentProps<typeof Button>
 }

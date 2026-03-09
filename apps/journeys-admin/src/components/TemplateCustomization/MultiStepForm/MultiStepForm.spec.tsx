@@ -10,10 +10,19 @@ import { JourneyFields as Journey } from '../../../../__generated__/JourneyField
 
 import { MultiStepForm } from './MultiStepForm'
 
-// Mock complex dependencies that the screens use (User.id can be null when unauthenticated)
-type MockUser = { id: string | null; email?: string | null }
-const defaultUser: MockUser = { id: 'test-user-id' }
-const guestUser: MockUser = { id: null, email: null }
+// Mock complex dependencies that the screens use (User.id can be null when unauthenticated).
+// MultiStepForm treats as guest only when user.firebaseUser != null && user.firebaseUser.isAnonymous.
+type MockUser = {
+  id: string | null
+  email?: string | null
+  firebaseUser?: { isAnonymous: boolean } | null
+}
+const defaultUser: MockUser = { id: 'test-user-id', firebaseUser: null }
+const guestUser: MockUser = {
+  id: null,
+  email: null,
+  firebaseUser: { isAnonymous: true }
+}
 const mockUseUser = jest.fn<MockUser, []>(() => defaultUser)
 jest.mock('next-firebase-auth', () => ({
   useUser: () => mockUseUser()
@@ -134,7 +143,6 @@ jest.mock('./Screens', () => ({
   DoneScreen: () => (
     <div data-testid="done-screen">
       <h2>Done Screen</h2>
-      <button data-testid="done-screen-go-to-language">Go to language</button>
     </div>
   )
 }))

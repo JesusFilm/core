@@ -128,7 +128,8 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
   const { redirect, apolloClient, translations, flags } = await initAndAuthApp({
     user,
     locale,
-    resolvedUrl
+    resolvedUrl,
+    allowGuest: true
   })
 
   if (params?.journeyId == null) {
