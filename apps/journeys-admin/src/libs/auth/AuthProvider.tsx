@@ -40,7 +40,12 @@ export function AuthProvider({
     }
 
     return onIdTokenChanged(auth, async (firebaseUser) => {
-      if (firebaseUser != null) {
+      try {
+        if (firebaseUser == null) {
+          setClientUser(null)
+          return
+        }
+
         const token = await firebaseUser.getIdToken()
         setClientUser(toClientUser(firebaseUser, token))
 
@@ -50,19 +55,29 @@ export function AuthProvider({
         const shouldReestablishServerSession =
           isFirstClientUser && isServerSessionMissingOrMismatched
 
-        if (shouldReestablishServerSession) {
-          await fetch('/api/login', {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}` }
-          })
-          window.location.reload()
+        if (!shouldReestablishServerSession) {
+          return
         }
-      } else {
-        setClientUser(null)
-      }
 
-      previousUidRef.current = firebaseUser?.uid ?? null
-      setHasHydratedAuth(true)
+        const loginResponse = await fetch('/api/login', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` }
+        })
+
+        if (loginResponse.ok) {
+          window.location.reload()
+          return
+        }
+
+        console.error('Failed to reestablish server session via /api/login', {
+          status: loginResponse.status
+        })
+      } catch (error) {
+        console.error('Failed to hydrate auth state from onIdTokenChanged', error)
+      } finally {
+        previousUidRef.current = firebaseUser?.uid ?? null
+        setHasHydratedAuth(true)
+      }
     })
   }, [])
 
