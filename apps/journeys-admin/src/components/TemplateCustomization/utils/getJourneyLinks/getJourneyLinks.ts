@@ -14,7 +14,7 @@ import {
   MessagePlatform
 } from '../../../../../__generated__/globalTypes'
 
-const messagePlatformDisplayNames: Record<MessagePlatform, string> = {
+export const messagePlatformDisplayNames: Record<MessagePlatform, string> = {
   [MessagePlatform.custom]: 'Chat',
   [MessagePlatform.facebook]: 'Facebook Messenger',
   [MessagePlatform.instagram]: 'Instagram',
@@ -57,6 +57,7 @@ export type JourneyLink =
       linkType: 'chatButtons'
       url: string
       label: string
+      platform: MessagePlatform
       parentStepId?: never
     }
   | {
@@ -88,7 +89,8 @@ export function getJourneyLinks(
       id: chatButton.id,
       linkType: 'chatButtons',
       url: chatButton.link ?? '',
-      label: `${t('Chat')}: ${platformLabel}`
+      label: `${t('Chat Widget')}: ${platformLabel}`,
+      platform: chatButton.platform ?? MessagePlatform.custom
     })
   })
 

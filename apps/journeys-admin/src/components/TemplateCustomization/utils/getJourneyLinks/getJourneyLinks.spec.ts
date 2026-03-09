@@ -48,13 +48,15 @@ describe('getJourneyLinks', () => {
           id: 'chat-1',
           linkType: 'chatButtons',
           url: 'https://wa.me/123',
-          label: 'Chat: WhatsApp'
+          label: 'Chat Widget: WhatsApp',
+          platform: MessagePlatform.whatsApp
         },
         {
           id: 'chat-2',
           linkType: 'chatButtons',
           url: 'https://t.me/test',
-          label: 'Chat: Telegram'
+          label: 'Chat Widget: Telegram',
+          platform: MessagePlatform.telegram
         }
       ])
     })
@@ -110,7 +112,7 @@ describe('getJourneyLinks', () => {
       } as unknown as Journey
 
       const links = getJourneyLinks(t, journey)
-      expect(links[0].label).toBe('Chat: TikTok')
+      expect(links[0].label).toBe('Chat Widget: TikTok')
     })
   })
 

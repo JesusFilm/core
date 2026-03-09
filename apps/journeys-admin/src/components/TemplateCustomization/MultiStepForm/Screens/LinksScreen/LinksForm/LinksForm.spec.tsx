@@ -2,7 +2,10 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Formik, FormikProvider } from 'formik'
 
-import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../../../__generated__/globalTypes'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
@@ -30,7 +33,8 @@ describe('LinksForm', () => {
         id: 'chat-1',
         linkType: 'chatButtons',
         url: 'wa.me/123',
-        label: 'Chat Link'
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
       }
     ]
 
@@ -239,7 +243,8 @@ describe('LinksForm', () => {
         id: 'chat-1',
         linkType: 'chatButtons',
         url: '',
-        label: 'Chat Link'
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
       }
     ]
     const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
