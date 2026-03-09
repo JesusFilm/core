@@ -1,0 +1,1 @@
+export { MobileSyncCard } from './MobileSyncCard'
