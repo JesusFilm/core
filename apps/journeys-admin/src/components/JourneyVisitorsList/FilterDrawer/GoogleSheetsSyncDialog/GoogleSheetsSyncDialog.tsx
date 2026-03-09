@@ -299,6 +299,11 @@ export function GoogleSheetsSyncDialog({
     (sync) => sync.deletedAt != null
   )
 
+  const syncsResolved = syncsCalled && !syncsLoading
+  const hasNoSyncs =
+    syncsResolved && activeSyncs.length === 0 && historySyncs.length === 0
+  const hideMainDialog = !syncsResolved || hasNoSyncs
+
   // Auto-open "Add Google Sheets Sync" dialog if there are no syncs
   useEffect(() => {
     if (!open) return
@@ -533,6 +538,7 @@ export function GoogleSheetsSyncDialog({
           ? `https://docs.google.com/spreadsheets/d/${syncResult.spreadsheetId}`
           : null)
       setGoogleDialogOpen(false)
+      if (hideMainDialog) onClose()
       actions.resetForm()
       if (typeof window !== 'undefined' && spreadsheetUrl != null) {
         window.open(spreadsheetUrl, '_blank', 'noopener,noreferrer')
@@ -725,7 +731,7 @@ export function GoogleSheetsSyncDialog({
   return (
     <>
       <Dialog
-        open={open}
+        open={open && !hideMainDialog}
         onClose={onClose}
         dialogTitle={{
           title: t('Sync to Google Sheets'),
@@ -1134,6 +1140,7 @@ export function GoogleSheetsSyncDialog({
             open={googleDialogOpen}
             onClose={() => {
               setGoogleDialogOpen(false)
+              if (hideMainDialog) onClose()
               resetForm()
             }}
             dialogTitle={{
@@ -1152,6 +1159,7 @@ export function GoogleSheetsSyncDialog({
                   color="primary"
                   onClick={() => {
                     setGoogleDialogOpen(false)
+                    if (hideMainDialog) onClose()
                     resetForm()
                   }}
                   sx={{
