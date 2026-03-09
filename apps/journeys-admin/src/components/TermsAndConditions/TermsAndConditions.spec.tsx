@@ -140,7 +140,8 @@ describe('TermsAndConditions', () => {
     photoURL: null,
     phoneNumber: null,
     emailVerified: true,
-    token: 'mock-token'
+    token: 'mock-token',
+    isAnonymous: false
   }
 
   beforeEach(() => {

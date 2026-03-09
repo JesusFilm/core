@@ -141,7 +141,8 @@ describe('TeamOnboarding', () => {
       photoURL: null,
       phoneNumber: null,
       emailVerified: false,
-      token: 'mock-token'
+      token: 'mock-token',
+      isAnonymous: false
     }
 
     const cache = new InMemoryCache()

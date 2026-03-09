@@ -173,7 +173,8 @@ describe('TeamCreateForm', () => {
       photoURL: null,
       phoneNumber: null,
       emailVerified: false,
-      token: 'mock-token'
+      token: 'mock-token',
+      isAnonymous: false
     }
 
     const { getByRole } = render(
