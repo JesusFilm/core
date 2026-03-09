@@ -1,5 +1,10 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
 
 import {
@@ -420,5 +425,102 @@ describe('LinksForm', () => {
 
     const phoneNumberInput = screen.getByLabelText('Phone Number')
     expect(document.activeElement).toBe(phoneNumberInput)
+  })
+
+  describe('chat button icon dropdown', () => {
+    const chatLink: JourneyLink = {
+      id: 'chat-1',
+      linkType: 'chatButtons',
+      url: 'https://wa.me/123',
+      label: 'Chat Widget: WhatsApp',
+      platform: MessagePlatform.whatsApp
+    }
+
+    it('should render icon select dropdown for chat button links', () => {
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(
+        screen.getByLabelText('Select chat icon')
+      ).toBeInTheDocument()
+    })
+
+    it('should render Chat URL placeholder for chat button links', () => {
+      render(
+        <Formik initialValues={{ 'chat-1': '' }} onSubmit={jest.fn()}>
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByPlaceholderText('Chat URL')).toBeInTheDocument()
+    })
+
+    it('should call onPlatformChange when a new platform is selected', async () => {
+      const onPlatformChange = jest.fn()
+
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm
+                links={[chatLink]}
+                onPlatformChange={onPlatformChange}
+              />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      fireEvent.mouseDown(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument()
+      })
+      fireEvent.click(
+        within(screen.getByRole('listbox')).getByText('Telegram')
+      )
+
+      expect(onPlatformChange).toHaveBeenCalledWith(
+        'chat-1',
+        MessagePlatform.telegram
+      )
+    })
+
+    it('should not call onPlatformChange when prop is not provided', () => {
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      fireEvent.mouseDown(screen.getByRole('combobox'))
+      const listbox = screen.getByRole('listbox')
+      expect(() =>
+        fireEvent.click(within(listbox).getByText('Telegram'))
+      ).not.toThrow()
+    })
   })
 })

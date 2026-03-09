@@ -93,7 +93,7 @@ describe('LinksScreen', () => {
     expect(
       screen.queryByTestId('CardsPreviewPlaceholder')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Chat: WhatsApp')).toBeInTheDocument()
+    expect(screen.getByText('Chat Widget: WhatsApp')).toBeInTheDocument()
   })
 
   it('shows validation error for invalid chat URL on submit', async () => {
@@ -108,7 +108,7 @@ describe('LinksScreen', () => {
       )
     })
 
-    const chatGroup = screen.getByLabelText('Edit Chat: WhatsApp')
+    const chatGroup = screen.getByLabelText('Edit Chat Widget: WhatsApp')
     const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
 
@@ -297,7 +297,7 @@ describe('LinksScreen', () => {
     const emailInput = within(emailGroup).getByRole('textbox')
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
-    const chatGroup = screen.getByLabelText('Edit Chat: WhatsApp')
+    const chatGroup = screen.getByLabelText('Edit Chat Widget: WhatsApp')
     const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
@@ -474,5 +474,59 @@ describe('LinksScreen', () => {
         screen.getByText('Phone number must use valid digits.')
       ).toBeInTheDocument()
     )
+  })
+
+  it('calls chatButtonUpdate mutation when platform icon is changed', async () => {
+    const handleNext = jest.fn()
+
+    const platformUpdateMock: MockedResponse<
+      JourneyChatButtonUpdate,
+      JourneyChatButtonUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_UPDATE,
+        variables: {
+          chatButtonUpdateId: 'chat-1',
+          journeyId: journey.id,
+          input: {
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.telegram
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.telegram,
+            customizable: true
+          }
+        }
+      }))
+    }
+
+    await act(async () => {
+      render(
+        <MockedProvider mocks={[platformUpdateMock]}>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <LinksScreen handleNext={handleNext} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    fireEvent.mouseDown(screen.getByRole('combobox'))
+    await waitFor(() => {
+      expect(screen.getByRole('listbox')).toBeInTheDocument()
+    })
+    fireEvent.click(
+      within(screen.getByRole('listbox')).getByText('Telegram')
+    )
+
+    await waitFor(() => {
+      expect(platformUpdateMock.result).toHaveBeenCalled()
+    })
   })
 })

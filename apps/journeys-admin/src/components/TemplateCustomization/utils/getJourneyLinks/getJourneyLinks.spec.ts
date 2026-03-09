@@ -97,6 +97,28 @@ describe('getJourneyLinks', () => {
       expect(links).toEqual([])
     })
 
+    it('defaults platform to custom when chatButton.platform is null', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://example.com',
+            platform: null,
+            customizable: true
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links[0].linkType).toBe('chatButtons')
+      if (links[0].linkType === 'chatButtons') {
+        expect(links[0].platform).toBe(MessagePlatform.custom)
+      }
+      expect(links[0].label).toBe('Chat Widget: ')
+    })
+
     it('uses human-readable platform label (e.g. "TikTok" not "tikTok")', () => {
       const journey = {
         journeyCustomizationFields: [],
