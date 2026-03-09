@@ -1,5 +1,5 @@
-import Button from '@mui/material/Button'
 import { useMutation } from '@apollo/client'
+import Button from '@mui/material/Button'
 import type { AuthProvider, User } from 'firebase/auth'
 import {
   FacebookAuthProvider,
@@ -16,6 +16,7 @@ import { ReactElement } from 'react'
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
+
 import {
   JOURNEY_PUBLISH,
   UPDATE_ME

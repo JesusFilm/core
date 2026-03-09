@@ -25,11 +25,11 @@ import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/C
 import { countries } from '../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/countriesList'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { SignUpButton } from '../../CustomizeFlowNextButton/SignUpButton/SignUpButton'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
-import { SignUpButton } from '../../CustomizeFlowNextButton/SignUpButton/SignUpButton'
 
 interface LinksScreenProps {
   handleNext: (overrideJourneyId?: string) => void
@@ -267,6 +267,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
               />
             }
           >
+            <SignUpButton />
             <CardsPreview steps={treeBlocks} />
             <LinksForm links={links} />
           </ScreenWrapper>

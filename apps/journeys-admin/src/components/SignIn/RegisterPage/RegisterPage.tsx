@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Button from '@mui/material/Button'
@@ -6,10 +7,9 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { gql, useMutation } from '@apollo/client'
 import {
-  createUserWithEmailAndPassword,
   EmailAuthProvider,
+  createUserWithEmailAndPassword,
   getAuth,
   linkWithCredential,
   signInWithEmailAndPassword,

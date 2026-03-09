@@ -966,6 +966,12 @@ export interface TypographyBlockUpdateInput {
   settings?: TypographyBlockSettingsInput | null;
 }
 
+export interface UpdateMeInput {
+  firstName: string;
+  lastName?: string | null;
+  email: string;
+}
+
 export interface UserInviteCreateInput {
   email: string;
 }

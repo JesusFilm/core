@@ -5,11 +5,10 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { getAppRedirectDestination } from '../../src/libs/firebaseClient/initAuth'
-
 import i18nConfig from '../../next-i18next.config'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { SignIn } from '../../src/components/SignIn'
+import { getAppRedirectDestination } from '../../src/libs/firebaseClient/initAuth'
 
 function SignInPage(): ReactElement {
   const user = useUser()

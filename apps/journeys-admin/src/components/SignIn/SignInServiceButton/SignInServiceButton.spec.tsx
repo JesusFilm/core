@@ -93,6 +93,7 @@ describe('SignInServiceButton', () => {
       await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
     })
   })
+
   describe('guest user', () => {
     const anonymousUser = { isAnonymous: true, uid: 'anon-123' }
     const linkedUserCredential = {
@@ -137,7 +138,7 @@ describe('SignInServiceButton', () => {
         result: jest.fn(() => ({
           data: {
             updateMe: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'user-1',
               firstName: 'First',
               lastName: 'name last name',
@@ -201,7 +202,7 @@ describe('SignInServiceButton', () => {
         result: jest.fn(() => ({
           data: {
             updateMe: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'user-1',
               firstName: 'First',
               lastName: 'name last name',
@@ -263,7 +264,7 @@ describe('SignInServiceButton', () => {
         result: jest.fn(() => ({
           data: {
             updateMe: {
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'user-1',
               firstName: 'First',
               lastName: 'name last name',

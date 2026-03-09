@@ -17,7 +17,7 @@ import {
 } from '../../../../__generated__/JourneyPublish'
 import { UpdateMe, UpdateMeVariables } from '../../../../__generated__/UpdateMe'
 
-import { RegisterPage, JOURNEY_PUBLISH, UPDATE_ME } from './RegisterPage'
+import { JOURNEY_PUBLISH, RegisterPage, UPDATE_ME } from './RegisterPage'
 
 jest.mock('firebase/auth', () => ({
   getAuth: jest.fn(() => ({ currentUser: null })),
@@ -167,7 +167,7 @@ describe('PasswordPage', () => {
       result: jest.fn(() => ({
         data: {
           updateMe: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user-1',
             firstName: 'First',
             lastName: 'name last name',
