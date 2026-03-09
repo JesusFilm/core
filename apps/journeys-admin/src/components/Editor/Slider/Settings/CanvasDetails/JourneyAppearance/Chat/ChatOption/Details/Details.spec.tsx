@@ -246,9 +246,7 @@ describe('Details', () => {
       expect(
         screen.queryByRole('checkbox', { name: 'Toggle customizable' })
       ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Needs Customization')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
     })
 
     it('does not render toggle when active is false', () => {
@@ -279,7 +277,7 @@ describe('Details', () => {
       const result = jest.fn(() => ({
         data: {
           chatButtonUpdate: {
-            __typename: 'ChatButton',
+            __typename: 'ChatButton' as const,
             id: 'chat.id',
             link: 'https://example.com',
             platform: MessagePlatform.whatsApp,
