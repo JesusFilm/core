@@ -59,13 +59,14 @@ builder.mutationFields((t) => ({
       }
 
       const allChildIds = parent.children.map((c) => c.id)
+      const videoIdsForVariantPublish = [parent.id, ...allChildIds]
       const childIdsToPublish = parent.children
         .filter((c) => !c.published)
         .map((c) => c.id)
 
-      // Get unpublished variants across all children
+      // Get unpublished variants across the parent and all children
       const unpublishedVariants = await prisma.videoVariant.findMany({
-        where: { videoId: { in: allChildIds }, published: false },
+        where: { videoId: { in: videoIdsForVariantPublish }, published: false },
         select: { id: true, videoId: true, languageId: true }
       })
 

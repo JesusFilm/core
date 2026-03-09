@@ -42,12 +42,13 @@ describe('videoPublishChildrenAndLanguages', () => {
       ]
     } as any)
     prismaMock.videoVariant.findMany.mockResolvedValue([
+      { id: 'vp', videoId: 'parent', languageId: '529' },
       { id: 'v1', videoId: 'c1', languageId: '529' },
       { id: 'v2', videoId: 'c2', languageId: '987' }
     ] as any)
     prismaMock.video.update.mockResolvedValue({} as any)
     prismaMock.video.updateMany.mockResolvedValue({ count: 2 } as any)
-    prismaMock.videoVariant.updateMany.mockResolvedValue({ count: 2 } as any)
+    prismaMock.videoVariant.updateMany.mockResolvedValue({ count: 3 } as any)
 
     const res = await authClient({
       document: VIDEO_PUBLISH_CHILDREN_LANG,
@@ -64,7 +65,7 @@ describe('videoPublishChildrenAndLanguages', () => {
     )
     expect(res).toHaveProperty(
       'data.videoPublishChildrenAndLanguages.publishedVariantsCount',
-      2
+      3
     )
     expect(
       (
@@ -75,6 +76,6 @@ describe('videoPublishChildrenAndLanguages', () => {
       (
         res as any
       ).data.videoPublishChildrenAndLanguages.publishedVariantIds.sort()
-    ).toEqual(['v1', 'v2'])
+    ).toEqual(['v1', 'v2', 'vp'])
   })
 })
