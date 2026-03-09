@@ -156,7 +156,7 @@ export const getServerSideProps: GetServerSideProps<
   EmailPreferencesPageProps
 > = async (ctx: GetServerSidePropsContext) => {
   const rawEmail = ctx.query?.email
-  const email = Array.isArray(rawEmail) ? rawEmail[0] : rawEmail ?? null
+  const email = Array.isArray(rawEmail) ? rawEmail[0] : (rawEmail ?? null)
   if (!email) return { notFound: true }
 
   const tokens = await getAuthTokens(ctx)

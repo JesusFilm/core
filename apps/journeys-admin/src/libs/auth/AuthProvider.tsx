@@ -66,7 +66,7 @@ export function AuthProvider({
     })
   }, [])
 
-  const user = hasHydratedAuth ? clientUser : serverUser ?? clientUser
+  const user = hasHydratedAuth ? clientUser : (serverUser ?? clientUser)
 
   return (
     <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
