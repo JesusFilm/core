@@ -60,8 +60,7 @@ export function LanguageScreen({
   const isParentTemplate = journey?.fromTemplateId == null
   //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
-  const isGuestFlowEnabled =
-    templateCustomizationGuestFlow != null && templateCustomizationGuestFlow
+  const isGuestFlowEnabled = templateCustomizationGuestFlow === true
   const isNextDisabled = (!isSignedIn && !isGuestFlowEnabled) || loading
 
   const {
