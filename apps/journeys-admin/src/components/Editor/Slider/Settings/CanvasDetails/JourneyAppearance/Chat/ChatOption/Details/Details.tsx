@@ -12,7 +12,6 @@ import { ReactElement, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -404,9 +403,7 @@ export function Details({
               onChange={handleCustomizableChange}
               inputProps={{ 'aria-label': t('Toggle customizable') }}
             />
-            <Typography variant="body1">
-              {t('Needs Customization')}
-            </Typography>
+            <Typography variant="body1">{t('Needs Customization')}</Typography>
           </Stack>
         )}
       </Stack>

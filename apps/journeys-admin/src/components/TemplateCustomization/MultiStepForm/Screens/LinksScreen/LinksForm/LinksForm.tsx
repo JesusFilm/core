@@ -18,11 +18,10 @@ import {
   ContactActionType,
   MessagePlatform
 } from '../../../../../../../__generated__/globalTypes'
-import { messagePlatformDisplayNames } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 import { PhoneField } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/PhoneField/PhoneField'
 import { getFullPhoneNumber } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/getFullPhoneNumber'
 import { normalizeCallingCode } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/normalizeCallingCode'
-import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
+import { JourneyLink , messagePlatformDisplayNames } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 interface LinksFormProps {
   links: JourneyLink[]
@@ -221,7 +220,11 @@ export function LinksForm({
                       error={hasError}
                       aria-label={`${t('Edit')} ${link.label}`}
                       InputProps={{ disableUnderline: true }}
-                      sx={{ px: 2, alignSelf: 'stretch', justifyContent: 'center' }}
+                      sx={{
+                        px: 2,
+                        alignSelf: 'stretch',
+                        justifyContent: 'center'
+                      }}
                     />
                   </Box>
                   <Typography
@@ -229,9 +232,7 @@ export function LinksForm({
                     color={hasError ? 'error' : 'transparent'}
                     sx={{ mt: 0.5, mx: 3.5 }}
                   >
-                    {hasError
-                      ? (errors?.[fieldName] as string)
-                      : '\u00A0'}
+                    {hasError ? (errors?.[fieldName] as string) : '\u00A0'}
                   </Typography>
                 </>
               ) : link.linkType === 'phone' ? (

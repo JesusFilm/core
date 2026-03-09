@@ -109,9 +109,7 @@ describe('LinksScreen', () => {
     })
 
     const chatGroup = screen.getByLabelText('Edit Chat: WhatsApp')
-    const chatInput = within(chatGroup).getByRole(
-      'textbox'
-    ) as HTMLInputElement
+    const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
@@ -300,9 +298,7 @@ describe('LinksScreen', () => {
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
     const chatGroup = screen.getByLabelText('Edit Chat: WhatsApp')
-    const chatInput = within(chatGroup).getByRole(
-      'textbox'
-    ) as HTMLInputElement
+    const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
