@@ -18,7 +18,8 @@ function toClientUser(firebaseUser: FirebaseUser, token: string): User {
     photoURL: firebaseUser.photoURL,
     phoneNumber: firebaseUser.phoneNumber,
     emailVerified: firebaseUser.emailVerified,
-    token
+    token,
+    isAnonymous: firebaseUser.isAnonymous
   }
 }
 
@@ -29,7 +30,6 @@ export function AuthProvider({
   const [clientUser, setClientUser] = useState<User | null>(null)
   const [hasHydratedAuth, setHasHydratedAuth] = useState(false)
   const previousUidRef = useRef<string | null>(null)
-  const initializedRef = useRef(false)
 
   useEffect(() => {
     let auth
@@ -44,9 +44,13 @@ export function AuthProvider({
         const token = await firebaseUser.getIdToken()
         setClientUser(toClientUser(firebaseUser, token))
 
-        initializedRef.current = true
-        const isNewSignIn = previousUidRef.current == null
-        if (isNewSignIn) {
+        const isFirstClientUser = previousUidRef.current == null
+        const isServerSessionMissingOrMismatched =
+          serverUser == null || serverUser.id !== firebaseUser.uid
+        const shouldReestablishServerSession =
+          isFirstClientUser && isServerSessionMissingOrMismatched
+
+        if (shouldReestablishServerSession) {
           await fetch('/api/login', {
             method: 'GET',
             headers: { Authorization: `Bearer ${token}` }

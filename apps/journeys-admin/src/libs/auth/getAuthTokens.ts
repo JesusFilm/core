@@ -23,7 +23,8 @@ export function toUser(tokens: Tokens): User {
     photoURL: photoURL ?? null,
     phoneNumber: phoneNumber ?? null,
     emailVerified: emailVerified ?? false,
-    token: tokens.token
+    token: tokens.token,
+    isAnonymous: false
   }
 }
 

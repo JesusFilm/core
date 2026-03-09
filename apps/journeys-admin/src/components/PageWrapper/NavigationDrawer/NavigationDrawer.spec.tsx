@@ -82,7 +82,7 @@ describe('NavigationDrawer', () => {
       phoneNumber: null,
       emailVerified: true,
       token: 'mock-token',
-      firebaseUser: { isAnonymous: false }
+      isAnonymous: false
     } as unknown as User
 
     const getMeMock: MockedResponse<GetMe> = {
@@ -177,7 +177,7 @@ describe('NavigationDrawer', () => {
     it('should hide user if anonymous', async () => {
       const anonymousUser = {
         ...user,
-        firebaseUser: { isAnonymous: true }
+        isAnonymous: true
       } as unknown as User
       render(
         <MockedProvider

@@ -62,8 +62,7 @@ export function MultiStepForm(): ReactElement {
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
-  const firebaseUserLoaded = user?.firebaseUser != null
-  const isAnon = user?.firebaseUser?.isAnonymous ?? false
+  const isAnon = user?.isAnonymous ?? false
   const journeyId = journey?.id ?? ''
 
   const {
@@ -89,7 +88,7 @@ export function MultiStepForm(): ReactElement {
     journeyId,
     screens,
     activeScreen,
-    isGuest: firebaseUserLoaded && isAnon,
+    isGuest: isAnon,
     guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 

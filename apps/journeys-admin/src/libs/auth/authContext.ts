@@ -8,6 +8,7 @@ export interface User {
   phoneNumber: string | null
   emailVerified: boolean
   token: string
+  isAnonymous: boolean
 }
 
 export interface AuthContextValue {

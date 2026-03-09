@@ -13,14 +13,14 @@ import { MultiStepForm } from './MultiStepForm'
 // Mock complex dependencies that the screens use (user is null when unauthenticated)
 const defaultAuth: {
   user: {
-    id: string
+    id: string | null
     email: string | null
     displayName: string | null
     photoURL: string | null
     phoneNumber: string | null
     emailVerified: boolean
     token: string
-    firebaseUser?: { isAnonymous: boolean } | null
+    isAnonymous: boolean
   } | null
 } = {
   user: {
@@ -30,14 +30,20 @@ const defaultAuth: {
     photoURL: null,
     phoneNumber: null,
     emailVerified: false,
-    token: 'mock-token'
+    token: 'mock-token',
+    isAnonymous: false
   }
 }
 const guestAuth = {
   user: {
     id: null,
     email: null,
-    firebaseUser: { isAnonymous: true }
+    displayName: null,
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: false,
+    token: 'mock-token',
+    isAnonymous: true
   }
 }
 const mockUseAuth = jest.fn(() => defaultAuth)
@@ -1075,7 +1081,8 @@ describe('MultiStepForm', () => {
             photoURL: null,
             phoneNumber: null,
             emailVerified: false,
-            token: 'mock-token'
+            token: 'mock-token',
+            isAnonymous: false
           }
         })
 

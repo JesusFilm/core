@@ -49,8 +49,7 @@ export function NavigationDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const [tooltip, setTooltip] = useState<string | undefined>()
 
-  const firebaseUserLoaded = user?.firebaseUser != null
-  const isAnon = user?.firebaseUser?.isAnonymous
+  const isAnon = user?.isAnonymous ?? false
 
   function handleClose(): void {
     onClose?.(open !== true)
@@ -174,7 +173,7 @@ export function NavigationDrawer({
             primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
           />
         </ListItemButton>
-        {user?.id != null && firebaseUserLoaded && !isAnon && (
+        {user?.id != null && !isAnon && (
           <NoSsr>
             <Suspense>
               <UserNavigation
