@@ -51,7 +51,7 @@ const IFRAME_SCALE = CONTAINER_WIDTH / FRAME_WIDTH
 const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 
 // Spacing and offsets
-const EDGE_FADE_PX = 16
+export const EDGE_FADE_PX = 40
 
 function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
@@ -159,6 +159,7 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
       slidesPerView="auto"
       spaceBetween={12}
       slidesOffsetBefore={EDGE_FADE_PX}
+      slidesOffsetAfter={EDGE_FADE_PX}
       observer
       observeParents
       sx={{
