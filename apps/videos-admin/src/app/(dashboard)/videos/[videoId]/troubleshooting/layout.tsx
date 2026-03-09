@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import { ReactNode } from 'react'
 
 import { Section } from '../../../../../components/Section'
+
 import { AlgoliaTroubleshooting } from './_AlgoliaTroubleshooting/AlgoliaTroubleshooting'
 import { AvailableLanguagesTroubleshooting } from './_AvailableLanguagesTroubleshooting/AvailableLanguagesTroubleshooting'
 

@@ -251,7 +251,9 @@ export function AlgoliaTroubleshooting(): ReactElement {
         </Stack>
       </Stack>
 
-      {algoliaVideoLoading && <LoadingRow message="Checking video in Algolia..." />}
+      {algoliaVideoLoading && (
+        <LoadingRow message="Checking video in Algolia..." />
+      )}
       {algoliaVariantsLoading && (
         <LoadingRow message="Checking variants in Algolia..." />
       )}
@@ -289,7 +291,10 @@ export function AlgoliaTroubleshooting(): ReactElement {
 
       {lastUpdateVideoAlgoliaSucceeded === true &&
         updateVideoAlgoliaError == null && (
-          <Alert message="Video index updated successfully!" variant="success" />
+          <Alert
+            message="Video index updated successfully!"
+            variant="success"
+          />
         )}
       {lastUpdateVariantsAlgoliaSucceeded === true &&
         updateVariantsAlgoliaError == null && (
@@ -346,7 +351,8 @@ export function AlgoliaTroubleshooting(): ReactElement {
                         fontFamily: 'monospace'
                       }}
                     >
-                      {field}: expected {expected ?? 'null'}, got {actual ?? 'null'}
+                      {field}: expected {expected ?? 'null'}, got{' '}
+                      {actual ?? 'null'}
                     </Typography>
                   ))}
                 </Stack>
@@ -402,7 +408,8 @@ export function AlgoliaTroubleshooting(): ReactElement {
                 </Typography>
               ) : (
                 <Typography variant="body1" color="error.main">
-                  Missing variants: {algoliaVariantsResult.missingVariants.join(', ')}
+                  Missing variants:{' '}
+                  {algoliaVariantsResult.missingVariants.join(', ')}
                 </Typography>
               )}
               {algoliaVariantsResult.browseUrl != null && (
