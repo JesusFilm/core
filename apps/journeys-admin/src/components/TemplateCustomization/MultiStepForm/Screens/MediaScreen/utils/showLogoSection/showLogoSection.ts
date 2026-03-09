@@ -10,7 +10,6 @@ import { GetJourney_journey as Journey } from '../../../../../../../../__generat
  */
 export function showLogoSection(journey?: Journey): boolean {
   return (
-    journey?.website === true &&
-    journey?.logoImageBlock?.customizable === true
+    journey?.website === true && journey?.logoImageBlock?.customizable === true
   )
 }
