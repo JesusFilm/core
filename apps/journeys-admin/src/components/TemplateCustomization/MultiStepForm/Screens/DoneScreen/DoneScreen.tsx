@@ -160,42 +160,48 @@ export function DoneScreen(): ReactElement {
           <Typography variant="subtitle1">
             {t('Choose where responses go:')}
           </Typography>
-          <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-            <Typography variant="body2">{t('Send to my email')}</Typography>
-            <NotificationSwitch journeyId={journey?.id} />
-          </Stack>
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography variant="body2">
-              {t('Sync to Google Sheets')}
-            </Typography>
-            <Button
-              data-testid="GoogleSheetsSyncButton"
-              onClick={handleSyncDialogOpen}
-              color="error"
-              aria-label={
-                hasActiveSyncs
-                  ? t('Edit Google Sheets sync')
-                  : t('Sync to Google Sheets')
-              }
+          <Stack spacing={2}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <Typography variant="subtitle2">
-                {hasActiveSyncs ? t('Edit') : t('Sync')}
+              <Typography variant="body2">{t('Send to my email')}</Typography>
+              <NotificationSwitch journeyId={journey?.id} />
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography variant="body2">
+                {t('Sync to Google Sheets')}
               </Typography>
-            </Button>
+              <Button
+                data-testid="GoogleSheetsSyncButton"
+                onClick={handleSyncDialogOpen}
+                color="error"
+                aria-label={
+                  hasActiveSyncs
+                    ? t('Edit Google Sheets sync')
+                    : t('Sync to Google Sheets')
+                }
+              >
+                <Typography variant="subtitle2">
+                  {hasActiveSyncs ? t('Edit') : t('Sync')}
+                </Typography>
+              </Button>
+            </Stack>
           </Stack>
         </Stack>
       </Stack>
-        {journey?.id != null && (
-          <GoogleSheetsSyncDialog
-            open={syncDialogOpen}
-            onClose={handleSyncDialogClose}
-            journeyId={journey.id}
-          />
-        )}
+      {journey?.id != null && (
+        <GoogleSheetsSyncDialog
+          open={syncDialogOpen}
+          onClose={handleSyncDialogClose}
+          journeyId={journey.id}
+        />
+      )}
     </ScreenWrapper>
   )
 }

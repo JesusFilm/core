@@ -26,7 +26,6 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -378,7 +377,6 @@ export function LanguageScreen({
                       >
                         {t('Select a team')}
                       </Typography>
-
                       <Typography
                         variant="body2"
                         display={{ xs: 'block', sm: 'none' }}
