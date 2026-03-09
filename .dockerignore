@@ -1,0 +1,4 @@
+# Exclude node_modules from build context (installed in-container).
+# Applies to any image built with context from repo root.
+node_modules
+**/node_modules
