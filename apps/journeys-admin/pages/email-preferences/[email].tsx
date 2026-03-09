@@ -155,6 +155,10 @@ export default function EmailPreferencesPage({
 export const getServerSideProps: GetServerSideProps<
   EmailPreferencesPageProps
 > = async (ctx: GetServerSidePropsContext) => {
+  const rawEmail = ctx.query?.email
+  const email = Array.isArray(rawEmail) ? rawEmail[0] : rawEmail ?? null
+  if (!email) return { notFound: true }
+
   const tokens = await getAuthTokens(ctx)
   const user = tokens != null ? toUser(tokens) : undefined
 
@@ -173,14 +177,14 @@ export const getServerSideProps: GetServerSideProps<
   >({
     query: GET_EMAIL_PREFERENCE,
     variables: {
-      email: ctx.query?.email as string
+      email
     }
   })
 
   if (journeysEmailPreferenceData.journeysEmailPreference == null) {
     journeysEmailPreferenceData = {
       journeysEmailPreference: {
-        email: ctx.query?.email as string,
+        email,
         unsubscribeAll: false,
         accountNotifications: true,
         __typename: 'JourneysEmailPreference'

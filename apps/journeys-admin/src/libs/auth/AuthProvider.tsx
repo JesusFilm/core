@@ -27,6 +27,7 @@ export function AuthProvider({
   children
 }: AuthProviderProps): ReactNode {
   const [clientUser, setClientUser] = useState<User | null>(null)
+  const [hasHydratedAuth, setHasHydratedAuth] = useState(false)
   const previousUidRef = useRef<string | null>(null)
   const initializedRef = useRef(false)
 
@@ -43,8 +44,8 @@ export function AuthProvider({
         const token = await firebaseUser.getIdToken()
         setClientUser(toClientUser(firebaseUser, token))
 
-        const isNewSignIn =
-          initializedRef.current && previousUidRef.current == null
+        initializedRef.current = true
+        const isNewSignIn = previousUidRef.current == null
         if (isNewSignIn) {
           await fetch('/api/login', {
             method: 'GET',
@@ -57,11 +58,11 @@ export function AuthProvider({
       }
 
       previousUidRef.current = firebaseUser?.uid ?? null
-      initializedRef.current = true
+      setHasHydratedAuth(true)
     })
   }, [])
 
-  const user = serverUser ?? clientUser
+  const user = hasHydratedAuth ? clientUser : serverUser ?? clientUser
 
   return (
     <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>

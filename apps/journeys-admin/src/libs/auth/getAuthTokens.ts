@@ -60,7 +60,7 @@ export function redirectToApp(ctx: GetServerSidePropsContext): {
   if (redirectParam != null) {
     try {
       const redirectUrl = decodeURIComponent(redirectParam)
-      if (redirectUrl.startsWith('/')) {
+      if (redirectUrl.startsWith('/') && !redirectUrl.startsWith('//')) {
         return {
           redirect: { permanent: false, destination: redirectUrl }
         }
