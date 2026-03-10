@@ -33,14 +33,17 @@ export function SubtitlesSelect({
     )
   }, [allLanguages])
 
-  const selectedOption = useMemo(
-    () =>
-      languages.find((language) => language.id === subtitleLanguageId) ?? null,
-    [languages, subtitleLanguageId]
-  )
+  const selectedOption = useMemo(() => {
+    const languageList =
+      videoSubtitleLanguageIds == null ? languages : allLanguages
+    return (
+      languageList.find((language) => language.id === subtitleLanguageId) ??
+      null
+    )
+  }, [languages, subtitleLanguageId])
   const options = useMemo(() => {
     if (videoSubtitleLanguageIds == null) return languages
-    return languages.filter((language) =>
+    return allLanguages.filter((language) =>
       videoSubtitleLanguageIds.includes(language.id)
     )
   }, [languages, videoSubtitleLanguageIds])

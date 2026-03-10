@@ -273,4 +273,35 @@ describe('SubtitlesSelect', () => {
       })
     })
   })
+
+  describe('languages list', () => {
+    it('should show all languages when videoSubtitleLanguageIds is not null', async () => {
+      render(
+        <SubtitlesSelect
+          subtitleOn
+          subtitleLanguageId="529"
+          videoSubtitleLanguageIds={[
+            english.id,
+            french.id,
+            spanish.id,
+            nonSubtitleLanguage.id
+          ]}
+        />
+      )
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(4)
+    })
+
+    it('should show filtered languages when videoSubtitleLanguageIds is null', async () => {
+      render(<SubtitlesSelect subtitleOn subtitleLanguageId="529" />)
+
+      await userEvent.click(screen.getByRole('combobox'))
+
+      const options = await screen.findAllByRole('option')
+      expect(options).toHaveLength(3)
+    })
+  })
 })
