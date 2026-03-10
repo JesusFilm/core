@@ -10,6 +10,7 @@ import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 import { JourneyResolver } from './journey.resolver'
+import { JourneyCustomizableService } from './journeyCustomizable.service'
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JourneyResolver } from './journey.resolver'
   ],
   providers: [
     JourneyResolver,
+    JourneyCustomizableService,
     BlockService,
     DateTimeScalar,
     ChatButtonResolver,
