@@ -186,7 +186,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     if (isSignedIn) {
       handleNext()
     } else {
-      handleScreenNavigation('guestPreview')
+      handleNext('guestPreview')
     }
   }
 
