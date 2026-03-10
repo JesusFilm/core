@@ -1,6 +1,4 @@
 import { useMutation } from '@apollo/client'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
@@ -25,22 +23,18 @@ import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockAc
 import { useBlockActionPhoneUpdateMutation } from '../../../../../libs/useBlockActionPhoneUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { countries } from '../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/countriesList'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 
 interface LinksScreenProps {
   handleNext: (overrideJourneyId?: string) => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
-export function LinksScreen({
-  handleNext,
-  handleScreenNavigation
-}: LinksScreenProps): ReactElement {
+export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const links = useMemo(() => getJourneyLinks(t, journey), [journey])
@@ -189,137 +183,94 @@ export function LinksScreen({
   }
 
   return (
-    <Stack
-      alignItems="center"
-      gap={6}
-      sx={{
-        px: { xs: 2, sm: 18 },
-        width: '100%'
-      }}
-    >
-      <Stack alignItems="center" sx={{ pb: 1 }}>
-        <Typography
-          variant="h4"
-          display={{ xs: 'none', sm: 'block' }}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Links')}
-        </Typography>
-        <Typography
-          variant="h6"
-          display={{ xs: 'block', sm: 'none' }}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Links')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          display={{ xs: 'none', sm: 'block' }}
-          color="text.secondary"
-          align="center"
-        >
-          {t(
-            'This content contains buttons linking to external sites. Check them and update the links below.'
-          )}
-        </Typography>
-        <Typography
-          variant="body2"
-          display={{ xs: 'block', sm: 'none' }}
-          color="text.secondary"
-          align="center"
-        >
-          {t(
-            'Buttons here point to external sites. Check and update the links.'
-          )}
-        </Typography>
-      </Stack>
-      <CardsPreview steps={treeBlocks} />
-      <Formik
-        enableReinitialize
-        initialValues={links.reduce<Record<string, string>>((acc, link) => {
-          if (link.linkType === 'phone') {
-            const block = journey?.blocks?.find((b) => b.id === link.id)
-            const action =
-              (block as any)?.action?.__typename === 'PhoneAction'
-                ? ((block as any).action as JourneyPhoneAction)
-                : undefined
-            const country =
-              action?.countryCode != null
-                ? countries.find((c) => c.countryCode === action.countryCode)
-                : undefined
-            const callingCode = country?.callingCode ?? '+'
-            const ccDigits = callingCode.replace(/[^\d]/g, '')
-            const prefix = ccDigits === '' ? '' : `+${ccDigits}`
-            const local = (action?.phone ?? '').startsWith(prefix)
-              ? (action?.phone ?? '').slice(prefix.length)
-              : (action?.phone ?? '').replace(/^\+/, '')
-            acc[`${link.id}__cc`] = callingCode
-            acc[`${link.id}__local`] = local
+    <Formik
+      enableReinitialize
+      initialValues={links.reduce<Record<string, string>>((acc, link) => {
+        if (link.linkType === 'phone') {
+          const block = journey?.blocks?.find((b) => b.id === link.id)
+          const action =
+            (block as any)?.action?.__typename === 'PhoneAction'
+              ? ((block as any).action as JourneyPhoneAction)
+              : undefined
+          const country =
+            action?.countryCode != null
+              ? countries.find((c) => c.countryCode === action.countryCode)
+              : undefined
+          const callingCode = country?.callingCode ?? '+'
+          const ccDigits = callingCode.replace(/[^\d]/g, '')
+          const prefix = ccDigits === '' ? '' : `+${ccDigits}`
+          const local = (action?.phone ?? '').startsWith(prefix)
+            ? (action?.phone ?? '').slice(prefix.length)
+            : (action?.phone ?? '').replace(/^\+/, '')
+          acc[`${link.id}__cc`] = callingCode
+          acc[`${link.id}__local`] = local
+        } else {
+          acc[link.id] = link.url ?? ''
+        }
+        return acc
+      }, {})}
+      validationSchema={object().shape(
+        links.reduce<Record<string, ReturnType<typeof string>>>((acc, link) => {
+          if (link.linkType === 'email') {
+            acc[link.id] = string().email(t('Enter a valid email'))
+          } else if (link.linkType === 'phone') {
+            acc[`${link.id}__cc`] = string().test(
+              'valid-cc',
+              t('Enter a valid calling code'),
+              (val) => {
+                if (val == null || val.trim() === '') return false
+                const normalized = val.startsWith('+') ? val : `+${val}`
+                return countries.some((c) => c.callingCode === normalized)
+              }
+            )
+            acc[`${link.id}__local`] = string().test(
+              'valid-local',
+              t('Enter a valid phone number'),
+              (val) =>
+                val == null ||
+                val.trim() === '' ||
+                /^[0-9\s\-()]+$/.test(val.trim())
+            )
           } else {
-            acc[link.id] = link.url ?? ''
+            acc[link.id] = string().url(t('Enter a valid URL'))
           }
           return acc
-        }, {})}
-        validationSchema={object().shape(
-          links.reduce<Record<string, ReturnType<typeof string>>>(
-            (acc, link) => {
-              if (link.linkType === 'email') {
-                acc[link.id] = string().email(t('Enter a valid email'))
-              } else if (link.linkType === 'phone') {
-                acc[`${link.id}__cc`] = string().test(
-                  'valid-cc',
-                  t('Enter a valid calling code'),
-                  (val) => {
-                    if (val == null || val.trim() === '') return false
-                    const normalized = val.startsWith('+') ? val : `+${val}`
-                    return countries.some((c) => c.callingCode === normalized)
-                  }
-                )
-                acc[`${link.id}__local`] = string().test(
-                  'valid-local',
-                  t('Enter a valid phone number'),
-                  (val) =>
-                    val == null ||
-                    val.trim() === '' ||
-                    /^[0-9\s\-()]+$/.test(val.trim())
-                )
-              } else {
-                acc[link.id] = string().url(t('Enter a valid URL'))
-              }
-              return acc
-            },
-            {}
-          )
-        )}
-        validateOnSubmit={false}
-        onSubmit={handleFormSubmit}
-        validateOnMount
-      >
-        {(formik) => (
-          <FormikProvider value={formik}>
+        }, {})
+      )}
+      onSubmit={handleFormSubmit}
+      validateOnMount
+    >
+      {(formik) => (
+        <FormikProvider value={formik}>
+          <ScreenWrapper
+            title={t('Links')}
+            subtitle={t(
+              'This content contains buttons linking to external sites. Check them and update the links below.'
+            )}
+            mobileSubtitle={t(
+              'Buttons here point to external sites. Check and update the links.'
+            )}
+            footer={
+              <CustomizeFlowNextButton
+                label={t('Next')}
+                type="submit"
+                form="linksForm"
+                loading={
+                  formik.isSubmitting ||
+                  chatLoading ||
+                  linkLoading ||
+                  emailLoading ||
+                  phoneLoading
+                }
+                ariaLabel={t('Replace the links')}
+              />
+            }
+          >
+            <CardsPreview steps={treeBlocks} />
             <LinksForm links={links} />
-            <CustomizeFlowNextButton
-              label={t('Next')}
-              type="submit"
-              form="linksForm"
-              loading={
-                formik.isSubmitting ||
-                chatLoading ||
-                linkLoading ||
-                emailLoading ||
-                phoneLoading
-              }
-              ariaLabel={t('Replace the links')}
-            />
-          </FormikProvider>
-        )}
-      </Formik>
-    </Stack>
+          </ScreenWrapper>
+        </FormikProvider>
+      )}
+    </Formik>
   )
 }
