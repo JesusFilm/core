@@ -53,6 +53,9 @@ export function TemplateSections({
     const contents: Contents = {}
     let collection: Journey[] = []
     if (data != null) {
+      // TODO ENG-3584: Once the customizableMedia flag is enabled for all users,
+      // delete the QA test template (slug prefix: QA_ONLY_TEMPLATE_SLUG_PREFIX)
+      // from the JFP team and remove this filter along with QA_ONLY_TEMPLATE_SLUG_PREFIX.
       const visibleJourneys =
         customizableMedia === true
           ? data.journeys
