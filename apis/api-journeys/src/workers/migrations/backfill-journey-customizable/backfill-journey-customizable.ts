@@ -118,6 +118,7 @@ async function backfillJourneyCustomizable(): Promise<BackfillStats> {
       select: {
         id: true,
         customizable: true,
+        updatedAt: true,
         journeyCustomizationDescription: true,
         logoImageBlockId: true,
         website: true,
@@ -143,7 +144,7 @@ async function backfillJourneyCustomizable(): Promise<BackfillStats> {
         if (newCustomizable !== currentCustomizable) {
           await prisma.journey.update({
             where: { id: journey.id },
-            data: { customizable: newCustomizable }
+            data: { customizable: newCustomizable, updatedAt: journey.updatedAt }
           })
           stats.updated++
           console.log(
