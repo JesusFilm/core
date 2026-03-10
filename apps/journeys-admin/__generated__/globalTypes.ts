@@ -1006,6 +1006,7 @@ export interface VideoBlockCreateInput {
   subtitleLanguageId?: string | null;
   showGeneratedSubtitles?: boolean | null;
   customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
