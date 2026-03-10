@@ -2,7 +2,6 @@ import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
-import { useUser, withUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useSnackbar } from 'notistack'
@@ -28,11 +27,12 @@ import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
+import { useAuth } from '../../src/libs/auth'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 function TemplateIndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useQuery<GetMe>(GET_ME)
@@ -47,7 +47,7 @@ function TemplateIndexPage(): ReactElement {
 
   useEffect(() => {
     void query.refetch()
-  }, [user.id, query])
+  }, [user?.id, query])
 
   useEffect(() => {
     if (!router.isReady || router.query.error !== JOURNEY_NOT_FOUND_ERROR)
@@ -175,4 +175,4 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   }
 }
 
-export default withUser()(TemplateIndexPage)
+export default TemplateIndexPage

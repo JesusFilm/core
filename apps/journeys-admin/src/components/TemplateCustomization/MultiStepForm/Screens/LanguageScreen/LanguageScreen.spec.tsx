@@ -47,18 +47,33 @@ import { LanguageScreen } from './LanguageScreen'
 
 const defaultMockUser = {
   id: 'user-id',
-  email: 'urim@thumim.example.io'
+  uid: 'user-id',
+  email: 'urim@thumim.example.io',
+  displayName: null,
+  photoURL: null,
+  phoneNumber: null,
+  emailVerified: false,
+  token: 'mock-token',
+  isAnonymous: false,
+  providerId: ''
 }
 
 let mockUser: {
   id: string | null
+  uid: string | null
   email: string | null
-  firebaseUser?: { isAnonymous: boolean }
+  displayName: string | null
+  photoURL: string | null
+  phoneNumber: string | null
+  emailVerified: boolean
+  token: string
+  isAnonymous?: boolean
+  providerId: string
 } = defaultMockUser
 
-jest.mock('next-firebase-auth', () => ({
+jest.mock('../../../../../libs/auth', () => ({
   __esModule: true,
-  useUser: () => mockUser
+  useAuth: () => ({ user: mockUser })
 }))
 
 jest.mock('next/router', () => ({
@@ -177,7 +192,6 @@ const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
 
 describe('LanguageScreen', () => {
   let handleNext: jest.Mock
-  const handleScreenNavigation = jest.fn()
   let push: jest.Mock
 
   beforeEach(() => {
@@ -226,10 +240,7 @@ describe('LanguageScreen', () => {
               value={{ journey: nonTemplateJourney, variant: 'customize' }}
             >
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -273,10 +284,7 @@ describe('LanguageScreen', () => {
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -377,10 +385,7 @@ describe('LanguageScreen', () => {
               value={{ journey: journeyWithFromTemplateId, variant: 'admin' }}
             >
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -423,11 +428,7 @@ describe('LanguageScreen', () => {
   })
 
   it('for anonymous user: creates guest team, duplicates journey and redirects to customize', async () => {
-    mockUser = {
-      id: null,
-      email: null,
-      firebaseUser: { isAnonymous: true }
-    }
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
     const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
       request: { query: GET_CURRENT_USER },
@@ -490,10 +491,7 @@ describe('LanguageScreen', () => {
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -519,11 +517,7 @@ describe('LanguageScreen', () => {
   })
 
   it('for anonymous user with existing team: reuses existing team and does not create a new one', async () => {
-    mockUser = {
-      id: null,
-      email: null,
-      firebaseUser: { isAnonymous: true }
-    }
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
     const existingGuestTeamId = 'teamId1'
     const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
@@ -589,10 +583,7 @@ describe('LanguageScreen', () => {
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -780,10 +771,7 @@ describe('LanguageScreen', () => {
               }}
             >
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -845,10 +833,7 @@ describe('LanguageScreen', () => {
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -901,15 +886,34 @@ describe('LanguageScreen', () => {
         ]}
       >
         <SnackbarProvider>
-          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
-            <JourneyProvider
-              value={{ journey: journeyWithImage, variant: 'admin' }}
-            >
+          <JourneyProvider
+            value={{ journey: journeyWithImage, variant: 'admin' }}
+          >
+            <TeamProvider>
+              <LanguageScreen handleNext={handleNext} />
+            </TeamProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
+  })
+
+  it('enables Next button for signed-in users when guest flow flag is off', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>
@@ -917,7 +921,46 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('CustomizeFlowNextButton')).not.toBeDisabled()
+    )
+  })
+
+  it('disables Next button when user is not signed in and guest flow flag is off', () => {
+    mockUser = {
+      id: null,
+      uid: null,
+      email: null,
+      displayName: null,
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: false,
+      token: '',
+      isAnonymous: false,
+      providerId: ''
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeDisabled()
   })
 
   it('renders all required components correctly for desktop', async () => {
@@ -933,10 +976,7 @@ describe('LanguageScreen', () => {
           <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
             <JourneyProvider value={{ journey, variant: 'admin' }}>
               <TeamProvider>
-                <LanguageScreen
-                  handleNext={handleNext}
-                  handleScreenNavigation={handleScreenNavigation}
-                />
+                <LanguageScreen handleNext={handleNext} />
               </TeamProvider>
             </JourneyProvider>
           </FlagsProvider>

@@ -1,4 +1,3 @@
-import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 
@@ -9,6 +8,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { User } from '../../libs/auth'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
 import { Fab } from './Fab'
@@ -21,7 +21,7 @@ interface EditorProps {
   journey?: Journey
   selectedStepId?: string
   initialState?: Partial<EditorState>
-  user?: User
+  user?: User | null
 }
 
 /**

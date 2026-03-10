@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -5,8 +6,6 @@ import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik, FormikValues } from 'formik'
 import uniqBy from 'lodash/uniqBy'
-import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -21,32 +20,28 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { CardsPreview } from '../LinksScreen/CardsPreview'
+import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
 }
 
-const FORM_SM_BREAKPOINT_WIDTH = '390px'
-
 export function LanguageScreen({
-  handleNext,
-  handleScreenNavigation
+  handleNext
 }: LanguageScreenProps): ReactElement {
   const { t } = useTranslation('journeys-ui')
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
-  const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const { journey } = useJourney()
   const { query } = useTeam()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -57,9 +52,11 @@ export function LanguageScreen({
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
   >
+  // If the user is not authenticated, useAuth returns { user: null }
   const isParentTemplate = journey?.fromTemplateId == null
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
+  const isGuestFlowEnabled = templateCustomizationGuestFlow === true
+  const isNextDisabled = (!isSignedIn && !isGuestFlowEnabled) || loading
 
   const {
     languages: childJourneyLanguages,
@@ -161,7 +158,7 @@ export function LanguageScreen({
 
   async function createGuestUser(): Promise<{ teamId: string }> {
     const teamName = t('My Team')
-    const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
+    const isAnonymous = user?.isAnonymous ?? false
     if (!isAnonymous) {
       try {
         await signInAnonymously(getAuth(getApp()))
@@ -291,119 +288,106 @@ export function LanguageScreen({
   }
 
   return (
-    <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <Stack alignItems="center" sx={{ pb: { xs: 6, sm: 10 } }}>
-        <Typography
-          variant="h4"
-          display={{ xs: 'none', sm: 'block' }}
-          gutterBottom
-          sx={{ mb: 2 }}
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={handleSubmit}
+    >
+      {({ handleSubmit: formikHandleSubmit, setFieldValue, values }) => (
+        <ScreenWrapper
+          title={t("Let's Get Started!")}
+          mobileTitle={t('Get Started')}
+          subtitle={t(
+            'A few quick edits and your template will be ready to share.'
+          )}
+          mobileSubtitle={t("A few quick edits and it's ready to share!")}
+          footer={
+            <CustomizeFlowNextButton
+              label={t('Next')}
+              onClick={() => formikHandleSubmit()}
+              disabled={isNextDisabled}
+              ariaLabel={t('Next')}
+            />
+          }
         >
-          {t("Let's Get Started!")}
-        </Typography>
-        <Typography
-          variant="h6"
-          display={{ xs: 'block', sm: 'none' }}
-          gutterBottom
-        >
-          {t('Get Started')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          align="center"
-          display={{ xs: 'none', sm: 'block' }}
-        >
-          {t('A few quick edits and your template will be ready to share.')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          color="text.secondary"
-          align="center"
-          display={{ xs: 'block', sm: 'none' }}
-        >
-          {t("A few quick edits and it's ready to share!")}
-        </Typography>
-      </Stack>
-
-      <Typography
-        variant="subtitle2"
-        gutterBottom
-        sx={{ mb: { xs: 0, sm: 2 } }}
-      >
-        {`'${journey?.title ?? ''}'`}
-      </Typography>
-
-      {steps.length > 0 && <CardsPreview steps={steps} />}
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit, setFieldValue, values }) => (
-          <Form style={{ width: '100%' }}>
-            <FormControl
+          <Stack
+            sx={{
+              width: '100%',
+              alignItems: 'center',
+              gap: { xs: 3, sm: 4 }
+            }}
+          >
+            <Typography
+              variant="subtitle2"
+              gutterBottom
+              sx={{ mb: { xs: 0, sm: 2 } }}
+            >
+              {`'${journey?.title ?? ''}'`}
+            </Typography>
+            <Box
               sx={{
-                width: { xs: '100%', sm: FORM_SM_BREAKPOINT_WIDTH },
-                alignSelf: 'center'
+                mx: `-${EDGE_FADE_PX}px`,
+                width: `calc(100% + ${EDGE_FADE_PX * 2}px)`
               }}
             >
-              <Stack gap={2}>
-                <Typography variant="h6" display={{ xs: 'none', sm: 'block' }}>
-                  {t('Select a language')}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  display={{ xs: 'block', sm: 'none' }}
-                >
-                  {t('Select a language')}
-                </Typography>
-                <LanguageAutocomplete
-                  value={values.languageSelect}
-                  languages={languages.map((language) => ({
-                    id: language?.id,
-                    name: language?.name,
-                    slug: language?.slug
-                  }))}
-                  onChange={(value) => setFieldValue('languageSelect', value)}
-                />
-                {isSignedIn && (
-                  <>
-                    <Typography
-                      variant="h6"
-                      display={{ xs: 'none', sm: 'block' }}
-                      sx={{ mt: 4 }}
-                    >
-                      {t('Select a team')}
-                    </Typography>
+              {steps.length > 0 && <CardsPreview steps={steps} />}
+            </Box>
+            <Form style={{ width: '100%' }}>
+              <FormControl
+                sx={{
+                  width: { xs: '100%' },
+                  alignSelf: 'center'
+                }}
+              >
+                <Stack gap={2} sx={{ px: { xs: 0 } }}>
+                  <Typography
+                    variant="h6"
+                    display={{ xs: 'none', sm: 'block' }}
+                  >
+                    {t('Select a language')}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    display={{ xs: 'block', sm: 'none' }}
+                  >
+                    {t('Select a language')}
+                  </Typography>
+                  <LanguageAutocomplete
+                    value={values.languageSelect}
+                    languages={languages.map((language) => ({
+                      id: language?.id,
+                      name: language?.name,
+                      slug: language?.slug
+                    }))}
+                    onChange={(value) => setFieldValue('languageSelect', value)}
+                  />
+                  {isSignedIn && (
+                    <>
+                      <Typography
+                        variant="h6"
+                        display={{ xs: 'none', sm: 'block' }}
+                        sx={{ mt: 4 }}
+                      >
+                        {t('Select a team')}
+                      </Typography>
 
-                    <Typography
-                      variant="body2"
-                      display={{ xs: 'block', sm: 'none' }}
-                      sx={{ mt: 4 }}
-                    >
-                      {t('Select a team')}
-                    </Typography>
-                    <JourneyCustomizeTeamSelect />
-                  </>
-                )}
-                <CustomizeFlowNextButton
-                  label={t('Next')}
-                  onClick={() => handleSubmit()}
-                  disabled={
-                    templateCustomizationGuestFlow == null ||
-                    !templateCustomizationGuestFlow ||
-                    loading
-                  }
-                  ariaLabel={t('Next')}
-                />
-              </Stack>
-            </FormControl>
-          </Form>
-        )}
-      </Formik>
-    </Stack>
+                      <Typography
+                        variant="body2"
+                        display={{ xs: 'block', sm: 'none' }}
+                        sx={{ mt: 4 }}
+                      >
+                        {t('Select a team')}
+                      </Typography>
+                      <JourneyCustomizeTeamSelect />
+                    </>
+                  )}
+                </Stack>
+              </FormControl>
+            </Form>
+          </Stack>
+        </ScreenWrapper>
+      )}
+    </Formik>
   )
 }

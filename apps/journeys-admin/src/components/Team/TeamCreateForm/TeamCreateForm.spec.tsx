@@ -4,7 +4,6 @@ import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { Form } from 'formik'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -17,6 +16,7 @@ import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__ge
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
+import { User } from '../../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { TeamCreateForm } from '.'
@@ -167,20 +167,16 @@ describe('TeamCreateForm', () => {
 
   it('fills textbox when on onboarding', async () => {
     const user: User = {
-      id: null,
+      id: 'userId',
+      uid: 'userId',
       email: null,
-      emailVerified: false,
-      phoneNumber: null,
       displayName: 'User Name',
       photoURL: null,
-      claims: {},
-      tenantId: null,
-      getIdToken: async (forceRefresh?: boolean) => null,
-      clientInitialized: false,
-      firebaseUser: null,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      signOut: async () => {},
-      serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
+      phoneNumber: null,
+      emailVerified: false,
+      token: 'mock-token',
+      isAnonymous: false,
+      providerId: ''
     }
 
     const { getByRole } = render(
