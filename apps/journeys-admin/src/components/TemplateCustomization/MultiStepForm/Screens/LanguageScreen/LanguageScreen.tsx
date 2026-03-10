@@ -55,6 +55,8 @@ export function LanguageScreen({
   // If the user is not authenticated, useAuth returns { user: null }
   const isParentTemplate = journey?.fromTemplateId == null
   const isSignedIn = user?.email != null && user?.id != null
+  const isGuestFlowEnabled = templateCustomizationGuestFlow === true
+  const isNextDisabled = (!isSignedIn && !isGuestFlowEnabled) || loading
 
   const {
     languages: childJourneyLanguages,
@@ -304,11 +306,7 @@ export function LanguageScreen({
             <CustomizeFlowNextButton
               label={t('Next')}
               onClick={() => formikHandleSubmit()}
-              disabled={
-                templateCustomizationGuestFlow == null ||
-                !templateCustomizationGuestFlow ||
-                loading
-              }
+              disabled={isNextDisabled}
               ariaLabel={t('Next')}
             />
           }

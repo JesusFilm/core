@@ -896,6 +896,58 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
   })
 
+  it('enables Next button for signed-in users when guest flow flag is off', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CustomizeFlowNextButton')).not.toBeDisabled()
+    )
+  })
+
+  it('disables Next button when user is not signed in and guest flow flag is off', () => {
+    mockUser = { id: null, email: null }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeamsEmptyTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: false }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CustomizeFlowNextButton')).toBeDisabled()
+  })
+
   it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
