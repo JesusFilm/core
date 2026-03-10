@@ -4,12 +4,12 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { Role } from '../../../__generated__/globalTypes'
+import { AuthUser as User } from '../../libs/auth/types'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
 import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
@@ -24,7 +24,7 @@ import { TemplateViewHeader } from './TemplateViewHeader'
 import { TemplateCreatorDetails } from './TemplateViewHeader/TemplateCreatorDetails'
 
 interface TemplateViewProps {
-  authUser?: User
+  authUser?: User | null
   hideOverflow?: boolean
 }
 
