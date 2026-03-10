@@ -41,7 +41,7 @@ export function useIntegrationGoogleCreate({
   const onErrorRef = useRef(onError)
   onSuccessRef.current = onSuccess
   onErrorRef.current = onError
-  
+
   const redirectUri = useMemo(() => {
     if (typeof window === 'undefined') return undefined
     return `${window.location.origin}/api/integrations/google/callback`
@@ -78,9 +78,7 @@ export function useIntegrationGoogleCreate({
         if (integrationId != null) {
           await onSuccessRef.current?.(integrationId)
         } else {
-          onErrorRef.current?.(
-            new Error('Integration creation returned no ID')
-          )
+          onErrorRef.current?.(new Error('Integration creation returned no ID'))
         }
       } catch (error) {
         onErrorRef.current?.(
@@ -92,7 +90,13 @@ export function useIntegrationGoogleCreate({
     }
 
     void exchangeCode()
-  }, [router, teamId, redirectUri, integrationGoogleCreate, user.clientInitialized])
+  }, [
+    router,
+    teamId,
+    redirectUri,
+    integrationGoogleCreate,
+    user.clientInitialized
+  ])
 
   return { loading }
 }
