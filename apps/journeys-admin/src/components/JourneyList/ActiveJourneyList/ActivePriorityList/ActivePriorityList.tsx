@@ -1,6 +1,5 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Grid from '@mui/material/Grid'
-import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
 
 import {
@@ -8,6 +7,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth/authContext'
 import { JourneyCard } from '../../JourneyCard'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 import { SortOrder } from '../../JourneySort'
@@ -19,7 +19,7 @@ interface ActivePriorityListProps {
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<GetAdminJourneys>>
-  user?: User
+  user?: User | null
 }
 
 export function ActivePriorityList({

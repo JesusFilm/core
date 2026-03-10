@@ -7,12 +7,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -100,7 +100,7 @@ export const DELETE_TRASHED_JOURNEYS = gql`
 export interface JourneyListContentProps {
   contentType: ContentType
   status: JourneyStatusFilter
-  user?: User
+  user?: User | null
   sortOrder?: SortOrder
   event?: JourneyListEvent
 }

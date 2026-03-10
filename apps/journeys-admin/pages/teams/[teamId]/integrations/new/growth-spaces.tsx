@@ -1,10 +1,5 @@
 import Stack from '@mui/material/Stack'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { GetServerSidePropsContext } from 'next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 // eslint-disable-next-line no-restricted-imports
@@ -13,18 +8,24 @@ import { useTranslation } from 'react-i18next'
 import { GrowthSpacesCreateIntegration } from '../../../../../src/components/GrowthSpaces'
 import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'
+import { useAuth } from '../../../../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
 
-function GrowthSpacesConfigPage(): ReactElement {
+export default function GrowthSpacesConfigPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
 
   return (
     <>
       <NextSeo title={t('Growth Spaces')} />
       <PageWrapper
         title={t('Growth Spaces')}
-        user={user}
+        user={user ?? undefined}
         backHrefHistory
         mainHeaderChildren={
           <Stack
@@ -55,16 +56,15 @@ function GrowthSpacesConfigPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+  const user = toUser(tokens)
 
   const { redirect, translations, flags } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -76,17 +76,15 @@ export const getServerSideProps = withUserTokenSSR({
         permanent: false
       },
       props: {
+        userSerialized: JSON.stringify(user),
         ...translations
       }
     }
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       ...translations
     }
   }
-})
-
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(GrowthSpacesConfigPage)
+}
