@@ -277,16 +277,20 @@ describe('SubtitlesSelect', () => {
   describe('languages list', () => {
     it('should show all languages when videoSubtitleLanguageIds is not null', async () => {
       render(
-        <SubtitlesSelect
-          subtitleOn
-          subtitleLanguageId="529"
-          videoSubtitleLanguageIds={[
-            english.id,
-            french.id,
-            spanish.id,
-            nonSubtitleLanguage.id
-          ]}
-        />
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect
+              subtitleOn
+              subtitleLanguageId="529"
+              videoSubtitleLanguageIds={[
+                english.id,
+                french.id,
+                spanish.id,
+                nonSubtitleLanguage.id
+              ]}
+            />
+          </WatchProvider>
+        </MockedProvider>
       )
 
       await userEvent.click(screen.getByRole('combobox'))
@@ -296,7 +300,13 @@ describe('SubtitlesSelect', () => {
     })
 
     it('should show filtered languages when videoSubtitleLanguageIds is null', async () => {
-      render(<SubtitlesSelect subtitleOn subtitleLanguageId="529" />)
+      render(
+        <MockedProvider mocks={[]} addTypename={false}>
+          <WatchProvider>
+            <SubtitlesSelect subtitleOn subtitleLanguageId="529" />
+          </WatchProvider>
+        </MockedProvider>
+      )
 
       await userEvent.click(screen.getByRole('combobox'))
 
