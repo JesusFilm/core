@@ -183,11 +183,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     })
 
     await Promise.allSettled(updatePromises)
-    if (isSignedIn) {
-      handleNext()
-    } else {
-      handleNext('guestPreview')
-    }
+    handleNext()
   }
 
   return (

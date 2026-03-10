@@ -159,23 +159,6 @@ describe('LinksScreen', () => {
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
   })
 
-  it('calls handleScreenNavigation with guestPreview when user is not signed in and submits', async () => {
-    const handleNext = jest.fn()
-    mockUseUser.mockReturnValueOnce({ id: null, email: null } as User)
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
-
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
-    await waitFor(() => expect(handleNext).toHaveBeenCalledWith('guestPreview'))
-  })
-
   it('calls correct mutations for changed url, email', async () => {
     const handleNext = jest.fn()
 
