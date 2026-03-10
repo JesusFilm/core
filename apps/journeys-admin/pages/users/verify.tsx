@@ -9,13 +9,8 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { GraphQLError } from 'graphql'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
@@ -28,6 +23,13 @@ import { GetMe } from '../../__generated__/GetMe'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
+import { useAuth } from '../../src/libs/auth'
+import { logout } from '../../src/libs/auth/firebase'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
@@ -53,8 +55,8 @@ function ValidateEmail({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const client = useApolloClient()
-  const user = useUser()
-  const email = user.email ?? ''
+  const { user } = useAuth()
+  const email = user?.email ?? ''
   const { setActiveTeam } = useTeam()
   const [error, setError] = useState<GraphQLError | ApolloError | null>(
     initialError
@@ -106,10 +108,9 @@ function ValidateEmail({
   }
 
   const handleLogout = async (): Promise<void> => {
-    await user.signOut()
     await client.resetStore()
     setActiveTeam(null)
-    await router.push('/users/sign-in')
+    await logout()
   }
 
   return (
@@ -118,7 +119,7 @@ function ValidateEmail({
       <OnboardingPageWrapper
         title={t('Verify Your Email')}
         emailSubject={t('Validate NextStep Email')}
-        user={user}
+        user={user ?? undefined}
       >
         <Formik
           initialValues={{ token }}
@@ -221,18 +222,20 @@ function ValidateEmail({
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, query, locale }) => {
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+
+  const user = toUser(tokens)
   const { translations, apolloClient } = await initAndAuthApp({
     user,
-    locale
+    locale: ctx.locale
   })
 
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
-    variables: { input: { redirect: query.redirect ?? undefined } }
+    variables: { input: { redirect: ctx.query.redirect ?? undefined } }
   })
   if (
     apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
@@ -246,9 +249,9 @@ export const getServerSideProps = withUserTokenSSR({
     }
   }
 
-  const rawEmail = typeof query?.email === 'string' ? query.email : null
+  const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null
   const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
-  const token = typeof query?.token === 'string' ? query.token : null
+  const token = typeof ctx.query?.token === 'string' ? ctx.query.token : null
 
   if (email != null && token != null) {
     try {
@@ -257,8 +260,8 @@ export const getServerSideProps = withUserTokenSSR({
         variables: { email, token }
       })
       const redirectParam =
-        typeof query.redirect === 'string' && query.redirect.length > 0
-          ? `/?redirect=${query.redirect}`
+        typeof ctx.query.redirect === 'string' && ctx.query.redirect.length > 0
+          ? `/?redirect=${ctx.query.redirect}`
           : '/'
       return {
         redirect: {
@@ -272,6 +275,7 @@ export const getServerSideProps = withUserTokenSSR({
           email,
           token,
           initialError: null,
+          userSerialized: JSON.stringify(user),
           ...translations,
           initialApolloState: apolloClient.cache.extract()
         }
@@ -282,12 +286,11 @@ export const getServerSideProps = withUserTokenSSR({
     props: {
       email,
       token,
+      userSerialized: JSON.stringify(user),
       ...translations,
       initialApolloState: apolloClient.cache.extract()
     }
   }
-})
+}
 
-export default withUser<ValidateEmailProps>({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(ValidateEmail)
+export default ValidateEmail

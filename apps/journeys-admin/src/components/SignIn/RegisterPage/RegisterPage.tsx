@@ -8,7 +8,6 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import {
   createUserWithEmailAndPassword,
-  getAuth,
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth'
@@ -18,6 +17,7 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 
@@ -60,7 +60,7 @@ export function RegisterPage({
     name: string,
     password: string
   ): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -69,7 +69,8 @@ export function RegisterPage({
     await updateProfile(userCredential.user, {
       displayName: name
     })
-    await signInWithEmailAndPassword(auth, email, password)
+    const credential = await signInWithEmailAndPassword(auth, email, password)
+    await loginWithCredential(credential)
   }
 
   async function handleCreateAccount(
