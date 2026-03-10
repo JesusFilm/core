@@ -229,6 +229,11 @@ export const getServerSideProps = withUserTokenSSR({
     locale
   })
 
+  const destination =
+    typeof query.redirect === 'string' && query.redirect.length > 0
+      ? `/?redirect=${encodeURIComponent(query.redirect)}`
+      : '/'
+
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
@@ -241,7 +246,7 @@ export const getServerSideProps = withUserTokenSSR({
     return {
       redirect: {
         permanent: false,
-        destination: `/`
+        destination
       }
     }
   }
@@ -256,14 +261,10 @@ export const getServerSideProps = withUserTokenSSR({
         mutation: VALIDATE_EMAIL,
         variables: { email, token }
       })
-      const redirectParam =
-        typeof query.redirect === 'string' && query.redirect.length > 0
-          ? `/?redirect=${query.redirect}`
-          : '/'
       return {
         redirect: {
           permanent: false,
-          destination: redirectParam
+          destination
         }
       }
     } catch (_err) {

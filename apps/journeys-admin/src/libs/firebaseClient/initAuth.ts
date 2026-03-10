@@ -18,15 +18,22 @@ export function getAppRedirectDestination(
       : undefined
 
   if (redirectUrl != null) {
+    // Relative paths are same-origin by definition — always safe.
+    if (redirectUrl.startsWith('/')) return redirectUrl
+
     // Verify the redirect URL host is allowed.
     // https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/11-Client_Side_Testing/04-Testing_for_Client_Side_URL_Redirect
-    const ALLOWED_REDIRECT_HOSTS = [
-      'localhost:4200',
-      'admin.nextstep.is',
-      'admin-stage.nextstep.is'
-    ]
-    if (allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)) {
-      return redirectUrl
+    try {
+      const ALLOWED_REDIRECT_HOSTS = [
+        'localhost:4200',
+        'admin.nextstep.is',
+        'admin-stage.nextstep.is'
+      ]
+      if (allowedHost(new URL(redirectUrl).host, ALLOWED_REDIRECT_HOSTS)) {
+        return redirectUrl
+      }
+    } catch {
+      // Malformed URL — fall through to return '/'
     }
   }
   return '/'
@@ -72,11 +79,16 @@ export function initAuth(): void {
       const origin = isServerSide
         ? absoluteUrl(ctx?.req).origin
         : window.location.origin
-      const redirectPath =
-        typeof window === 'undefined' ? ctx?.resolvedUrl : window.location.href
+      // Use path-only (pathname + search) rather than the full href so that
+      // the origin is never included in the redirect param. This prevents
+      // redirect nesting when REDIRECT_TO_LOGIN fires on an auth page that
+      // already has a redirect param (e.g. /users/verify?redirect=...).
+      const redirectPath = isServerSide
+        ? ctx?.resolvedUrl
+        : window.location.pathname + window.location.search
       const redirectUrl = new URL(redirectPath ?? '', origin)
       return `/users/sign-in?redirect=${encodeURIComponent(
-        redirectUrl.toString()
+        redirectUrl.pathname + redirectUrl.search
       )}`
     },
     appPageURL: ({ ctx }) => {

@@ -45,12 +45,15 @@ describe('SignUpButton', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }))
 
     expect(mockPush).toHaveBeenCalledTimes(1)
+    // Should be called with exactly one argument (no shallow option)
+    expect(mockPush.mock.calls[0]).toHaveLength(1)
     const [firstArg] = mockPush.mock.calls[0]
     expect(firstArg).toMatchObject({
-      pathname: expect.stringContaining('/users/sign-in'),
+      pathname: '/users/sign-in',
       query: { redirect: expect.any(String) }
     })
-    expect(firstArg.query.redirect).toBeTruthy()
+    // redirect must be a relative path (no origin prefix)
+    expect(firstArg.query.redirect).toMatch(/^\//)
   })
 
   it('includes journey customize URL in redirect when journeyId is in query', () => {
@@ -64,7 +67,8 @@ describe('SignUpButton', () => {
 
     expect(mockPush).toHaveBeenCalledTimes(1)
     const [firstArg] = mockPush.mock.calls[0]
-    expect(firstArg.query.redirect).toContain(
+    // redirect should be a relative path (no domain prefix)
+    expect(firstArg.query.redirect).toBe(
       '/templates/journey-123/customize?screen=media'
     )
   })
@@ -75,6 +79,6 @@ describe('SignUpButton', () => {
 
     expect(mockPush).toHaveBeenCalledTimes(1)
     const [firstArg] = mockPush.mock.calls[0]
-    expect(firstArg.query.redirect).toMatch(/\/$/)
+    expect(firstArg.query.redirect).toBe('/')
   })
 })

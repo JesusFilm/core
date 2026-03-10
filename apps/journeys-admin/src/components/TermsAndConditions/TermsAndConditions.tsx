@@ -97,7 +97,8 @@ export function TermsAndConditions(): ReactElement {
         router.push(
           router.query.redirect != null
             ? new URL(
-                `${window.location.origin}${router.query.redirect as string}`
+                router.query.redirect as string,
+                window.location.origin
               )
             : '/?onboarding=true'
         ),

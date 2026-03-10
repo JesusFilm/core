@@ -11,21 +11,15 @@ export function SignUpButton(): ReactElement {
   const journeyId = router.query.journeyId as string | undefined
 
   function handleClick(): void {
-    const domain =
-      process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
     const redirectUrl =
       journeyId != null
-        ? `${domain}${buildCustomizeUrl(journeyId, 'media', undefined)}`
-        : `${domain}/`
+        ? buildCustomizeUrl(journeyId, 'media', undefined)
+        : '/'
 
-    void router.push(
-      {
-        pathname: `${domain}/users/sign-in`,
-        query: { redirect: redirectUrl }
-      },
-      undefined,
-      { shallow: true }
-    )
+    void router.push({
+      pathname: '/users/sign-in',
+      query: { redirect: redirectUrl }
+    })
   }
 
   return (
