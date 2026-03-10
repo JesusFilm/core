@@ -1,6 +1,5 @@
 import { ApolloError, useMutation } from '@apollo/client'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -11,6 +10,7 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiv
 import { TeamCreateInput } from '../../../../__generated__/globalTypes'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { User } from '../../../libs/auth'
 import { useTeamCreateMutation } from '../../../libs/useTeamCreateMutation'
 
 interface TeamCreateFormProps {
@@ -21,7 +21,7 @@ interface TeamCreateFormProps {
   ) => void
   children?: FormikConfig<TeamCreateInput>['children']
   onboarding?: boolean
-  user?: User
+  user?: User | null
 }
 
 export function TeamCreateForm({

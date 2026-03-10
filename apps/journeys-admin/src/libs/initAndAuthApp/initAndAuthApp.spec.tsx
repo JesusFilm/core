@@ -2,7 +2,6 @@ import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 import { LDClient } from '@launchdarkly/node-server-sdk'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
-import { User } from 'next-firebase-auth'
 import { SSRConfig } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
@@ -10,6 +9,7 @@ import { getLaunchDarklyClient } from '@core/shared/ui/getLaunchDarklyClient'
 
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../apolloClient'
+import { User } from '../auth/authContext'
 import { checkConditionalRedirect } from '../checkConditionalRedirect'
 
 import { ACCEPT_ALL_INVITES, initAndAuthApp } from './initAndAuthApp'
@@ -44,7 +44,10 @@ describe('initAndAuthApp', () => {
     id: '1',
     displayName: 'test',
     email: 'test@test.com',
-    getIdToken: jest.fn().mockResolvedValue('token')
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: true,
+    token: 'mock-token'
   } as unknown as User
 
   const mockSSRConfig: SSRConfig = {
@@ -110,9 +113,7 @@ describe('initAndAuthApp', () => {
 
   it('should return with apolloClient, flags, redirect, and translations when anonymous user', async () => {
     const result = await initAndAuthApp({
-      user: {
-        id: null
-      } as unknown as User,
+      user: undefined,
       locale: 'en',
       resolvedUrl: '/templates'
     })
@@ -130,7 +131,13 @@ describe('initAndAuthApp', () => {
   it('should call checkConditionalRedirect with default teamName', async () => {
     await initAndAuthApp({
       user: {
-        id: null
+        id: '1',
+        email: null,
+        displayName: null,
+        photoURL: null,
+        phoneNumber: null,
+        emailVerified: false,
+        token: 'mock-token'
       } as unknown as User,
       locale: 'en',
       resolvedUrl: '/templates'
