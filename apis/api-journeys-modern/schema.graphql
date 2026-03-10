@@ -2433,6 +2433,10 @@ input VideoBlockCreateInput {
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+
+  """
+  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
+  """
   notes: String
 }
 
@@ -2475,6 +2479,10 @@ input VideoBlockUpdateInput {
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+
+  """
+  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
+  """
   notes: String
 }
 
