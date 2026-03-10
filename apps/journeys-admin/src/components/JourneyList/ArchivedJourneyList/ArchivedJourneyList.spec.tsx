@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -8,6 +7,7 @@ import {
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ThemeProvider } from '../../ThemeProvider'
@@ -220,7 +220,17 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="restoreAllArchived"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -246,7 +256,17 @@ describe('ArchivedJourneyList', () => {
               <SnackbarProvider>
                 <ArchivedJourneyList
                   event="restoreAllArchived"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={
+                    {
+                      id: 'user-id1',
+                      email: null,
+                      displayName: null,
+                      photoURL: null,
+                      phoneNumber: null,
+                      emailVerified: false,
+                      token: 'mock-token'
+                    } as unknown as User
+                  }
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -269,7 +289,17 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="restoreAllArchived"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -341,7 +371,17 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="trashAllArchived"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -367,7 +407,17 @@ describe('ArchivedJourneyList', () => {
               <SnackbarProvider>
                 <ArchivedJourneyList
                   event="trashAllArchived"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={
+                    {
+                      id: 'user-id1',
+                      email: null,
+                      displayName: null,
+                      photoURL: null,
+                      phoneNumber: null,
+                      emailVerified: false,
+                      token: 'mock-token'
+                    } as unknown as User
+                  }
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -390,7 +440,17 @@ describe('ArchivedJourneyList', () => {
             <SnackbarProvider>
               <ArchivedJourneyList
                 event="trashAllArchived"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
