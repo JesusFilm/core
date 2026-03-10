@@ -1,13 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useMemo, useState } from 'react'
@@ -35,6 +30,12 @@ import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/Fil
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
+import { useAuth } from '../../../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
 import { useUserTeamsAndInvitesQuery } from '../../../../src/libs/useUserTeamsAndInvitesQuery'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../../[journeyId]'
@@ -99,7 +100,7 @@ function JourneyVisitorsPage({
   journey
 }: JourneyVisitorsPageProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const router = useRouter()
   const journeyId = router.query.journeyId as string
   const from = router.query.from
@@ -200,9 +201,9 @@ function JourneyVisitorsPage({
       !!userTeamsData?.userTeams?.some(
         (userTeam) =>
           userTeam.user.__typename === 'AuthenticatedUser' &&
-          userTeam.user.email === user.email
+          userTeam.user.email === user?.email
       ),
-    [journey?.team, userTeamsData?.userTeams, user.email]
+    [journey?.team, userTeamsData?.userTeams, user?.email]
   )
 
   const enableExportButton = journey.template
@@ -253,7 +254,7 @@ function JourneyVisitorsPage({
       <NextSeo title={t('Visitors')} />
       <PageWrapper
         title={t('Visitors')}
-        user={user}
+        user={user ?? undefined}
         backHref={
           from === 'journey-list'
             ? `/journeys/${journeyId}/reports?from=journey-list`
@@ -331,16 +332,15 @@ function JourneyVisitorsPage({
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, query, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+  const user = toUser(tokens)
 
   const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -351,7 +351,7 @@ export const getServerSideProps = withUserTokenSSR({
     const { data } = await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
       variables: {
-        id: query?.journeyId
+        id: ctx.query?.journeyId
       }
     })
 
@@ -360,24 +360,23 @@ export const getServerSideProps = withUserTokenSSR({
     return {
       redirect: {
         permanent: false,
-        destination: `/journeys/${query?.journeyId as string}`
+        destination: `/journeys/${ctx.query?.journeyId as string}`
       }
     }
   }
 
   await apolloClient.mutate<UserJourneyOpen>({
     mutation: USER_JOURNEY_OPEN,
-    variables: { id: query?.journeyId }
+    variables: { id: ctx.query?.journeyId }
   })
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       ...translations,
       journey
     }
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneyVisitorsPage)
+export default JourneyVisitorsPage
