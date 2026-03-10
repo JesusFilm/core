@@ -109,14 +109,11 @@ function TemplateIndexPage(): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.RENDER
-})(async ({ user, locale, resolvedUrl }) => {
-  const { apolloClient, translations, flags, redirect } = await initAndAuthApp({
+})(async ({ user, locale }) => {
+  const { apolloClient, translations, flags } = await initAndAuthApp({
     user: user ?? undefined,
-    locale,
-    resolvedUrl
+    locale
   })
-
-  if (redirect != null) return { redirect }
 
   await Promise.all([
     apolloClient.query<GetLanguages, GetLanguagesVariables>({
