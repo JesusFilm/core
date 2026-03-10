@@ -2837,7 +2837,7 @@ describe('JourneyResolver', () => {
       })
     })
 
-    it('should call recalculate after updating template', async () => {
+    it('should call recalculate after calling jouneyTemplate', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )

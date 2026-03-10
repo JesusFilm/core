@@ -1,13 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useRef, useState } from 'react'
@@ -28,6 +23,12 @@ import { NotificationPopover } from '../../../src/components/NotificationPopover
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { PlausibleEmbedDashboard } from '../../../src/components/PlausibleEmbedDashboard'
 import { ReportsNavigation } from '../../../src/components/ReportsNavigation'
+import { useAuth } from '../../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
 import { GET_ADMIN_JOURNEY, USER_JOURNEY_OPEN } from '../[journeyId]'
 
@@ -51,7 +52,7 @@ export const UPDATE_PLAUSIBLE_DASHBOARD_VIEWED = gql`
 
 function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const router = useRouter()
 
   const ref = useRef(null)
@@ -78,7 +79,7 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
       <NextSeo title={t('Journey Analytics')} />
       <PageWrapper
         title={t('Journey Analytics')}
-        user={user}
+        user={user ?? undefined}
         backHref={from === 'journey-list' ? '/' : `/journeys/${journeyId}`}
         mainHeaderChildren={
           <Stack
@@ -136,16 +137,15 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, query, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+  const user = toUser(tokens)
 
   const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -154,14 +154,14 @@ export const getServerSideProps = withUserTokenSSR({
     await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
       variables: {
-        id: query?.journeyId
+        id: ctx.query?.journeyId
       }
     })
   } catch (_) {
     return {
       redirect: {
         permanent: false,
-        destination: `/journeys/${query?.journeyId as string}`
+        destination: `/journeys/${ctx.query?.journeyId as string}`
       }
     }
   }
@@ -170,18 +170,17 @@ export const getServerSideProps = withUserTokenSSR({
   })
   await apolloClient.mutate<UserJourneyOpen>({
     mutation: USER_JOURNEY_OPEN,
-    variables: { id: query?.journeyId }
+    variables: { id: ctx.query?.journeyId }
   })
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       ...translations,
       flags,
       plausibleDashboardViewed: data.getJourneyProfile?.plausibleDashboardViewed
     }
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(JourneyReportsPage)
+export default JourneyReportsPage

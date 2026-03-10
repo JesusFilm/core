@@ -20,11 +20,6 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
-}))
-
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {

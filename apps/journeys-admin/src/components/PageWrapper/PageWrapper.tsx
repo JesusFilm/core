@@ -3,10 +3,10 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { User } from '../../libs/auth'
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
 import { HelpScoutBeacon } from '../HelpScoutBeacon'
 
@@ -37,7 +37,7 @@ interface PageWrapperProps {
   // Either render default SidePanel with sidePanelChildren
   // Or render customSidePanel
   customSidePanel?: ReactNode
-  user?: User
+  user?: User | null
   initialState?: Partial<PageState>
   background?: string
   backgroundColor?: string
