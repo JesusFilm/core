@@ -13,50 +13,46 @@ test('Filters', async ({ page }) => {
 
   await page.getByTestId('SeeAllVideos').click()
 
+  const filterList = page.getByTestId('FilterList')
+
+  const languageSection = filterList.locator('div').filter({
+    hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
+  })
+
+  const subtitlesSection = filterList.locator('div').filter({
+    hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
+  })
+
   // Choose audio language
-  await page
-    .getByTestId('FilterList')
-    .locator('div')
-    .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
-    })
-    .getByLabel('Open')
-    .click()
-  await page
-    .getByTestId('FilterList')
-    .locator('div')
-    .filter({
-      hasText: 'LanguagesSearch LanguagesSearch Languages2000+ languages'
-    })
-    .getByLabel('Search Languages')
-    .fill('telu')
-  await page.getByRole('option', { name: 'Telugu తెలుగు' }).click()
+  await languageSection.getByLabel('Open').click()
+  const languageSearchInput = languageSection.getByLabel('Search Languages')
+  await languageSearchInput.fill('telu')
+  await languageSearchInput.press('ArrowDown')
+  await languageSearchInput.press('Enter')
 
   // Choose subtitles language
-  await page
-    .getByTestId('FilterList')
-    .locator('div')
-    .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
-    })
-    .getByLabel('Open')
-    .click()
-  await page
-    .getByTestId('FilterList')
-    .locator('div')
-    .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
-    })
-    .getByLabel('Search Languages')
-    .fill('eng')
-  await page.getByRole('option', { name: 'English' }).click()
+  await subtitlesSection.getByLabel('Open').click()
+  const subtitlesSearchInput = subtitlesSection.getByLabel('Search Languages')
+  await subtitlesSearchInput.fill('English')
+  await page.getByRole('option', { name: 'English', exact: true }).click()
 
   await page.press('body', 'Tab')
 
-  // Wait for the URL to be updated with filter parameters
-  await page.waitForURL(/configure.*languageId.*subtitles/, { timeout: 20000 })
-
-  await expect(page).toHaveURL(
-    '/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'
-  )
+  await expect
+    .poll(() => {
+      const url = new URL(page.url())
+      return {
+        ruleContext: url.searchParams.get('configure[ruleContexts][0]'),
+        filters: url.searchParams.get('configure[filters]'),
+        languageId: url.searchParams.get('menu[languageId]'),
+        subtitles: url.searchParams.get('menu[subtitles]')
+      }
+    })
+    .toEqual({
+      ruleContext: 'all_videos_page',
+      filters:
+        'NOT restrictViewPlatforms:watch AND published:true AND videoPublished:true',
+      languageId: '5848',
+      subtitles: '529'
+    })
 })
