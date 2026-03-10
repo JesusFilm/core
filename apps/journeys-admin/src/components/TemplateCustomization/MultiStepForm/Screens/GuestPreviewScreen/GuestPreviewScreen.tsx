@@ -3,24 +3,22 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { AccountCheckDialog } from '@core/journeys/ui/TemplateView/AccountCheckDialog'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 interface GuestPreviewScreenProps {
-  handleScreenNavigation?: (screen: CustomizationScreen) => void
+  handleNext?: (overrideJourneyId?: string) => void
 }
 
 export function GuestPreviewScreen({
-  handleScreenNavigation
+  handleNext
 }: GuestPreviewScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()

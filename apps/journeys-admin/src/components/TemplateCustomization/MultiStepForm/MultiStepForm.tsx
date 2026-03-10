@@ -44,9 +44,8 @@ function renderScreen(
     case 'text':
       return <TextScreen handleNext={handleNext} />
     case 'guestPreview':
-      return (
-        <GuestPreviewScreen handleScreenNavigation={handleScreenNavigation} />
-      )
+      return <GuestPreviewScreen handleNext={handleNext} />
+    case 'links':
       return <LinksScreen handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
