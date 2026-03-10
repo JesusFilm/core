@@ -29,7 +29,6 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { format } from 'date-fns'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
@@ -118,14 +117,6 @@ const BACKFILL_GOOGLE_SHEETS_SYNC = gql`
   }
 `
 
-const INTEGRATION_GOOGLE_CREATE = gql`
-  mutation IntegrationGoogleCreate($input: IntegrationGoogleCreateInput!) {
-    integrationGoogleCreate(input: $input) {
-      id
-    }
-  }
-`
-
 interface GoogleSheetsSyncItem {
   id: string
   spreadsheetId: string | null
@@ -165,7 +156,6 @@ export function GoogleSheetsSyncDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
-  const user = useUser()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
@@ -191,7 +181,6 @@ export function GoogleSheetsSyncDialog({
   )
   const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
   const [backfillSync] = useMutation(BACKFILL_GOOGLE_SHEETS_SYNC)
-  const [integrationGoogleCreate] = useMutation(INTEGRATION_GOOGLE_CREATE)
 
   const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
   const [syncIdPendingDelete, setSyncIdPendingDelete] = useState<string | null>(
@@ -201,48 +190,6 @@ export function GoogleSheetsSyncDialog({
     null
   )
 
-  async function handleIntegrationCreate(authCode: string): Promise<void> {
-    const teamId = journeyData?.journey?.team?.id
-    if (teamId == null || typeof window === 'undefined') return
-
-    const redirectUri = `${window.location.origin}/api/integrations/google/callback`
-
-    // Clean URL params immediately to prevent re-triggering
-    const newQuery = { ...router.query }
-    delete newQuery.code
-    delete newQuery.openSyncDialog
-    void router.replace(
-      { pathname: router.pathname, query: newQuery },
-      undefined,
-      { shallow: true }
-    )
-
-    try {
-      const { data } = await integrationGoogleCreate({
-        variables: {
-          input: { teamId, code: authCode, redirectUri }
-        }
-      })
-
-      if (data?.integrationGoogleCreate?.id != null) {
-        await refetchIntegrations()
-        enqueueSnackbar(t('Google integration created successfully'), {
-          variant: 'success'
-        })
-        setGoogleDialogOpen(true)
-      } else {
-        enqueueSnackbar(
-          t('Google settings failed. Reload the page or try again.'),
-          { variant: 'error' }
-        )
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, { variant: 'error' })
-      }
-    }
-  }
-
   useEffect(() => {
     if (!open) return
     void loadSyncs({
@@ -250,19 +197,10 @@ export function GoogleSheetsSyncDialog({
       fetchPolicy: 'network-only'
     })
 
+    // Check if returning from Google integration creation
+    const integrationCreated = router.query.integrationCreated === 'true'
     const openSyncDialog = router.query.openSyncDialog === 'true'
 
-    // New flow: handle OAuth code exchange directly (wait for auth to settle)
-    const authCode = router.query.code as string | undefined
-    if (authCode != null && openSyncDialog) {
-      if (user.clientInitialized) {
-        void handleIntegrationCreate(authCode)
-      }
-      return
-    }
-
-    // Backwards compat: old flow via GoogleCreateIntegration page
-    const integrationCreated = router.query.integrationCreated === 'true'
     if (integrationCreated && openSyncDialog) {
       const newQuery = { ...router.query }
       delete newQuery.integrationCreated
@@ -277,15 +215,7 @@ export function GoogleSheetsSyncDialog({
         variant: 'success'
       })
     }
-  }, [
-    open,
-    journeyId,
-    loadSyncs,
-    router,
-    enqueueSnackbar,
-    t,
-    user.clientInitialized
-  ])
+  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t])
 
   useEffect(() => {
     if (open) return
@@ -312,8 +242,7 @@ export function GoogleSheetsSyncDialog({
     if (syncsLoading) return
     // Skip if we're already handling integration creation return flow
     const integrationCreated = router.query.integrationCreated === 'true'
-    const hasAuthCode = router.query.code != null
-    if (integrationCreated || hasAuthCode) return
+    if (integrationCreated) return
 
     // If there are no active or history syncs, open the add dialog directly
     if (activeSyncs.length === 0 && historySyncs.length === 0) {

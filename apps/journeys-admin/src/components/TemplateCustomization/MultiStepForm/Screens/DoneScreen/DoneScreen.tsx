@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -16,6 +17,7 @@ import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
+import { useIntegrationGoogleCreate } from '../../../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate'
 import { GoogleSheetsSyncDialog } from '../../../../JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog'
 import { ScreenWrapper } from '../ScreenWrapper'
 
@@ -38,18 +40,32 @@ interface GoogleSheetsSyncsForDoneScreenVariables {
 
 export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
   const router = useRouter()
   const [syncDialogOpen, setSyncDialogOpen] = useState(false)
 
-  // Auto-open sync dialog when returning from OAuth flow
+  useIntegrationGoogleCreate({
+    teamId: journey?.team?.id ?? undefined,
+    onSuccess: () => {
+      enqueueSnackbar(t('Google integration created successfully'), {
+        variant: 'success'
+      })
+      setSyncDialogOpen(true)
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+  })
+
   useEffect(() => {
     if (journey?.id == null) return
     const openSyncDialog = router.query.openSyncDialog === 'true'
-    if (openSyncDialog) {
+    const hasCode = router.query.code != null
+    if (openSyncDialog && !hasCode) {
       setSyncDialogOpen(true)
     }
-  }, [journey?.id, router.query.openSyncDialog])
+  }, [journey?.id, router.query.openSyncDialog, router.query.code])
 
   const { data: syncsData, refetch: refetchSyncs } = useQuery<
     GoogleSheetsSyncsForDoneScreenData,
