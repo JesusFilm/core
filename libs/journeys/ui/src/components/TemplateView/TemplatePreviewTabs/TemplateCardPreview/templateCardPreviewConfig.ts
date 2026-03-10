@@ -11,9 +11,9 @@ interface FramePortalConfig {
   borderRadius?: number | string
 }
 
-type BreakpointSwiperOptions = Pick<
+export type BreakpointSwiperOptions = Pick<
   SwiperOptions,
-  'spaceBetween' | 'slidesOffsetAfter'
+  'spaceBetween' | 'slidesOffsetBefore'
 >
 
 export interface VariantConfig {
@@ -31,6 +31,7 @@ export interface VariantConfig {
 }
 
 export const SELECTED_SCALE = 1.07
+export const OVERFLOW_PX = 40
 const MEDIA_CARD_HEIGHT = 209
 const PREVIEW_CARD_HEIGHT_XS = 295
 const PREVIEW_CARD_HEIGHT_SM = 404
@@ -47,8 +48,8 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
     borderRadius: 4
   },
   breakpoints: {
-    xs: { spaceBetween: 12, slidesOffsetAfter: 0 },
-    sm: { spaceBetween: 28, slidesOffsetAfter: 0 }
+    xs: { spaceBetween: 12 },
+    sm: { spaceBetween: 28 }
   },
   cardSx: {
     position: 'relative',
@@ -91,8 +92,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '24px'
   },
   breakpoints: {
-    xs: { spaceBetween: 12, slidesOffsetAfter: 265 },
-    sm: { spaceBetween: 12, slidesOffsetAfter: 260 }
+    xs: { spaceBetween: 12, slidesOffsetBefore: 0 },
+    sm: { spaceBetween: 12, slidesOffsetBefore: OVERFLOW_PX }
   },
   swiperProps: {
     mousewheel: { forceToAxis: true },
@@ -118,7 +119,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '12px'
   },
   swiperSx: {
-    overflow: 'visible',
+    width: '100%',
+    overflow: { xs: 'visible', sm: 'hidden' },
     zIndex: 2,
     '& .swiper-wrapper': {
       alignItems: 'center'

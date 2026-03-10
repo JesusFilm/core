@@ -5,6 +5,8 @@ import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 import { GetJourney } from '../../__generated__/GetJourney'
 import { IdType } from '../../__generated__/globalTypes'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
+import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 
 const apolloClient = createApolloClient()
 
@@ -18,7 +20,10 @@ export default async function Handler(
       query: GET_JOURNEY,
       variables: {
         id: journeySlug,
-        idType: IdType.slug
+        idType: IdType.slug,
+        options: {
+          status: JOURNEY_STATUS_EXCLUDE_DRAFT
+        }
       }
     })
 
@@ -48,7 +53,7 @@ export default async function Handler(
 
     res.status(200).send(oembed)
   } catch (error) {
-    if (error.message === 'journey not found') {
+    if (isJourneyNotFoundError(error)) {
       res.status(404).send('journey not found')
     } else {
       res.status(500).send('server error')

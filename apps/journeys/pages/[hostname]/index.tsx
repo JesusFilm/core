@@ -13,6 +13,7 @@ import {
 import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
 import ImportedHostJourneyPage from './[journeySlug]'
@@ -95,7 +96,8 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           id: data.journeys[0].slug.toString(),
           idType: IdType.slug,
           options: {
-            hostname: context.params?.hostname?.toString() ?? ''
+            hostname: context.params?.hostname?.toString() ?? '',
+            status: JOURNEY_STATUS_EXCLUDE_DRAFT
           }
         }
       })
