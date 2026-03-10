@@ -76,6 +76,32 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
 
       if (remainingJourneys === 0) {
         try {
+          const userTeams = await prisma.userTeam.findMany({
+            where: { userId: user.userId },
+            select: { teamId: true }
+          })
+          const teamIds = userTeams.map((ut) => ut.teamId)
+
+          const { count: deletedUserTeams } =
+            await prisma.userTeam.deleteMany({
+              where: { userId: user.userId }
+            })
+          if (deletedUserTeams > 0) {
+            logger?.info(
+              { userId: user.userId, deletedUserTeams },
+              `Deleted ${deletedUserTeams} userTeam(s) for anonymous user`
+            )
+          }
+
+          for (const teamId of teamIds) {
+            const remainingMembers = await prisma.userTeam.count({
+              where: { teamId }
+            })
+            if (remainingMembers === 0) {
+              await prisma.team.delete({ where: { id: teamId } })
+              logger?.info({ teamId }, 'Deleted empty team')
+            }
+          }
           await prismaUsers.user.delete({ where: { id: user.id } })
           deletedUserCount++
           logger?.info(
