@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { User } from '../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 
@@ -16,7 +16,7 @@ import { SortOrder } from './JourneySort'
 export interface JourneyListProps {
   sortOrder?: SortOrder
   event?: JourneyListEvent
-  user?: User
+  user?: User | null
 }
 
 export type JourneyListEvent =
@@ -43,15 +43,13 @@ export function JourneyList({
   const { navbar, sidePanel } = usePageWrapperStyles()
 
   useEffect(() => {
-    const sortByFromStorage = sessionStorage.getItem(
-      'journeyListSortBy'
-    ) as SortOrder | null
+    const sortByFromStorage = sessionStorage.getItem('journeyListSortBy')
     const isValidSort =
       sortByFromStorage != null &&
-      Object.values(SortOrder).includes(sortByFromStorage)
+      Object.values(SortOrder).includes(sortByFromStorage as SortOrder)
     if (!isValidSort) return
 
-    setSortOrder(sortByFromStorage)
+    setSortOrder(sortByFromStorage as SortOrder)
   }, [])
 
   function handleSetSortOrder(order: SortOrder) {
