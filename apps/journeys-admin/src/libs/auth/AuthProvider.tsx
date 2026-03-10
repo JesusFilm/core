@@ -1,6 +1,7 @@
 'use client'
 
-import * as React from 'react'
+import { FunctionComponent } from 'react'
+
 import { AuthContext, User } from './authContext'
 
 export interface AuthProviderProps {
@@ -8,7 +9,7 @@ export interface AuthProviderProps {
   children: React.ReactNode
 }
 
-export const AuthProvider: React.FunctionComponent<AuthProviderProps> = ({
+export const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   user,
   children
 }) => {
