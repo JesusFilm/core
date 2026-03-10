@@ -21,8 +21,7 @@ jest.mock('firebase/auth', () => ({
 
 jest.mock('../../../libs/auth', () => ({
   getFirebaseAuth: jest.fn(),
-  loginWithCredential: (...args: unknown[]) =>
-    mockLoginWithCredential(...args)
+  loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
 const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<

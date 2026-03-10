@@ -19,8 +19,7 @@ jest.mock('firebase/auth', () => ({
 
 jest.mock('../../../libs/auth', () => ({
   getFirebaseAuth: jest.fn(),
-  loginWithCredential: (...args: unknown[]) =>
-    mockLoginWithCredential(...args)
+  loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
 jest.mock('next/router', () => ({
