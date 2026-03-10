@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 import { object, string } from 'yup'
@@ -37,11 +36,8 @@ interface LinksScreenProps {
 
 export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
   const { journey } = useJourney()
   const links = useMemo(() => getJourneyLinks(t, journey), [journey])
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
-  const isSignedIn = user?.email != null && user?.id != null
   const [journeyChatButtonUpdate, { loading: chatLoading }] =
     useMutation<JourneyChatButtonUpdate>(JOURNEY_CHAT_BUTTON_UPDATE)
   const [updateLinkAction, { loading: linkLoading }] =
