@@ -125,9 +125,7 @@ async function backfillJourneyCustomizable(): Promise<BackfillStats> {
         title: true
       },
       take: BATCH_SIZE,
-      ...(cursor != null
-        ? { skip: 1, cursor: { id: cursor } }
-        : {}),
+      ...(cursor != null ? { skip: 1, cursor: { id: cursor } } : {}),
       orderBy: { id: 'asc' }
     })
 
@@ -144,7 +142,10 @@ async function backfillJourneyCustomizable(): Promise<BackfillStats> {
         if (newCustomizable !== currentCustomizable) {
           await prisma.journey.update({
             where: { id: journey.id },
-            data: { customizable: newCustomizable, updatedAt: journey.updatedAt }
+            data: {
+              customizable: newCustomizable,
+              updatedAt: journey.updatedAt // preserve the original updatedAt timestamp
+            }
           })
           stats.updated++
           console.log(
@@ -175,7 +176,9 @@ async function backfillJourneyCustomizable(): Promise<BackfillStats> {
 
 async function main(): Promise<void> {
   try {
-    console.log('Starting backfill of journey.customizable for template journeys...')
+    console.log(
+      'Starting backfill of journey.customizable for template journeys...'
+    )
     console.log('---')
 
     const stats = await backfillJourneyCustomizable()
