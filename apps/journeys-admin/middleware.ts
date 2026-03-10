@@ -160,11 +160,12 @@ export default async function middleware(
     ...authConfig,
     loginPath: '/api/login',
     logoutPath: '/api/logout',
+    refreshTokenPath: '/api/refresh-token',
     cookieSerializeOptions: {
       path: '/',
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
+      sameSite: 'lax' as const,
       maxAge: 12 * 60 * 60 * 24
     },
     handleValidToken: async (_tokens, headers) => {
@@ -180,5 +181,10 @@ export default async function middleware(
 }
 
 export const config = {
-  matcher: ['/api/login', '/api/logout', '/((?!_next|favicon.ico|__nextjs).*)']
+  matcher: [
+    '/api/login',
+    '/api/logout',
+    '/api/refresh-token',
+    '/((?!_next|favicon.ico|__nextjs).*)'
+  ]
 }

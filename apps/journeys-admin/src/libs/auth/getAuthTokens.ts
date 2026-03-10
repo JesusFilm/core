@@ -13,25 +13,32 @@ export function toUser(tokens: Tokens): User {
     name: displayName,
     picture: photoURL,
     email_verified: emailVerified,
-    phone_number: phoneNumber
+    phone_number: phoneNumber,
+    provider_id: providerId
   } = tokens.decodedToken
 
   return {
     id: uid,
+    uid,
     email: email ?? null,
     displayName: displayName ?? null,
     photoURL: photoURL ?? null,
     phoneNumber: phoneNumber ?? null,
     emailVerified: emailVerified ?? false,
     token: tokens.token,
-    isAnonymous: false
+    isAnonymous: false,
+    providerId: typeof providerId === 'string' ? providerId : ''
   }
 }
 
 export async function getAuthTokens(
   ctx: GetServerSidePropsContext
 ): Promise<Tokens | null> {
-  return getTokensFromObject(ctx.req.cookies, authConfig)
+  try {
+    return await getTokensFromObject(ctx.req.cookies, authConfig)
+  } catch {
+    return null
+  }
 }
 
 export function redirectToLogin(ctx: GetServerSidePropsContext): {

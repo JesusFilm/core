@@ -4,9 +4,9 @@ import { UserCredential, signInWithPopup } from 'firebase/auth'
 import { SignInServiceButton } from './SignInServiceButton'
 
 const mockSetCustomParameters = jest.fn()
+const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
 
 jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
   signInWithPopup: jest.fn(),
   GoogleAuthProvider: jest.fn().mockImplementation(() => {
     return { setCustomParameters: mockSetCustomParameters }
@@ -19,11 +19,27 @@ jest.mock('firebase/auth', () => ({
   })
 }))
 
+jest.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: jest.fn(),
+  loginWithCredential: (...args: unknown[]) =>
+    mockLoginWithCredential(...args)
+}))
+
 const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<
   typeof signInWithPopup
 >
 
+const mockReload = jest.fn()
+Object.defineProperty(window, 'location', {
+  value: { ...window.location, reload: mockReload },
+  writable: true
+})
+
 describe('SignInServiceButton', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should handle Google sign-in correctly', async () => {
     mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
@@ -31,6 +47,8 @@ describe('SignInServiceButton', () => {
 
     fireEvent.click(getByRole('button', { name: 'Continue with Google' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
+    expect(mockReload).toHaveBeenCalled()
   })
 
   it('should handle Facebook sign-in correctly', async () => {
@@ -40,6 +58,8 @@ describe('SignInServiceButton', () => {
 
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
+    expect(mockReload).toHaveBeenCalled()
   })
 
   it('should handle Okta sign-in correctly', async () => {
@@ -49,5 +69,7 @@ describe('SignInServiceButton', () => {
 
     fireEvent.click(getByRole('button', { name: 'Continue with Okta' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
+    expect(mockReload).toHaveBeenCalled()
   })
 })

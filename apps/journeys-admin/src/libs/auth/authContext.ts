@@ -1,11 +1,8 @@
+import { UserInfo as FirebaseUserInfo } from 'firebase/auth'
 import { createContext, useContext } from 'react'
 
-export interface User {
+export interface User extends FirebaseUserInfo {
   id: string
-  email: string | null
-  displayName: string | null
-  photoURL: string | null
-  phoneNumber: string | null
   emailVerified: boolean
   token: string
   isAnonymous: boolean

@@ -9,12 +9,25 @@ import { NextRouter, useRouter } from 'next/router'
 
 import { RegisterPage } from './RegisterPage'
 
+const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+
 jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
   createUserWithEmailAndPassword: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   updateProfile: jest.fn()
 }))
+
+jest.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: jest.fn(),
+  loginWithCredential: (...args: unknown[]) =>
+    mockLoginWithCredential(...args)
+}))
+
+const mockReload = jest.fn()
+Object.defineProperty(window, 'location', {
+  value: { ...window.location, reload: mockReload },
+  writable: true
+})
 
 jest.mock('next/router', () => ({
   __esModule: true,

@@ -1,5 +1,10 @@
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app'
-import { Auth, signOut as firebaseSignOut, getAuth } from 'firebase/auth'
+import {
+  Auth,
+  UserCredential,
+  signOut as firebaseSignOut,
+  getAuth
+} from 'firebase/auth'
 
 import { clientConfig } from './config'
 
@@ -10,6 +15,21 @@ function getFirebaseApp(): FirebaseApp {
 
 export function getFirebaseAuth(): Auth {
   return getAuth(getFirebaseApp())
+}
+
+export async function login(token: string): Promise<void> {
+  await fetch('/api/login', {
+    method: 'GET',
+    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store'
+  })
+}
+
+export async function loginWithCredential(
+  credential: UserCredential
+): Promise<void> {
+  const idToken = await credential.user.getIdToken()
+  await login(idToken)
 }
 
 export async function logout(): Promise<void> {

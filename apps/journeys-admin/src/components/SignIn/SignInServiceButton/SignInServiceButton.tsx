@@ -3,7 +3,6 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   OAuthProvider,
-  getAuth,
   signInWithPopup
 } from 'firebase/auth'
 import { useTranslation } from 'next-i18next'
@@ -12,6 +11,8 @@ import { ReactElement } from 'react'
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
+
+import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
 
 interface SignInServiceButtonProps {
   service: 'google.com' | 'facebook.com' | 'oidc.okta'
@@ -23,7 +24,7 @@ export function SignInServiceButton({
   const { t } = useTranslation('apps-journeys-admin')
 
   async function handleSignIn(): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const authProvider =
       service === 'google.com'
         ? new GoogleAuthProvider()
@@ -32,7 +33,9 @@ export function SignInServiceButton({
           : new OAuthProvider('oidc.okta')
     authProvider.setCustomParameters({ prompt: 'select_account' })
     try {
-      await signInWithPopup(auth, authProvider)
+      const credential = await signInWithPopup(auth, authProvider)
+      await loginWithCredential(credential)
+      window.location.reload()
     } catch (err) {
       console.error(err)
     }

@@ -4,10 +4,23 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 
 import { PasswordPage } from './PasswordPage'
 
+const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+
 jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
   signInWithEmailAndPassword: jest.fn()
 }))
+
+jest.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: jest.fn(),
+  loginWithCredential: (...args: unknown[]) =>
+    mockLoginWithCredential(...args)
+}))
+
+const mockReload = jest.fn()
+Object.defineProperty(window, 'location', {
+  value: { ...window.location, reload: mockReload },
+  writable: true
+})
 
 describe('PasswordPage', () => {
   it('should render password page', () => {
