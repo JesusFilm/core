@@ -33,7 +33,11 @@ export const VideoBlockCreateInput = builder.inputType(
       subtitleLanguageId: t.id({ required: false }),
       showGeneratedSubtitles: t.boolean({ required: false }),
       customizable: t.boolean({ required: false }),
-      notes: t.string({ required: false })
+      notes: t.string({
+        required: false,
+        description:
+          'Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.'
+      })
     })
   }
 )
