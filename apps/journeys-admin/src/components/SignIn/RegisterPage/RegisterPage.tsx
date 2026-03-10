@@ -79,7 +79,6 @@ export function RegisterPage({
   ): Promise<void> {
     try {
       await createAccountAndSignIn(values.email, values.name, values.password)
-      window.location.reload()
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(

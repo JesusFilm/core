@@ -47,17 +47,20 @@ import { LanguageScreen } from './LanguageScreen'
 
 const defaultMockUser = {
   id: 'user-id',
+  uid: 'user-id',
   email: 'urim@thumim.example.io',
   displayName: null,
   photoURL: null,
   phoneNumber: null,
   emailVerified: false,
   token: 'mock-token',
-  isAnonymous: false
+  isAnonymous: false,
+  providerId: ''
 }
 
 let mockUser: {
   id: string | null
+  uid: string | null
   email: string | null
   displayName: string | null
   photoURL: string | null
@@ -65,6 +68,7 @@ let mockUser: {
   emailVerified: boolean
   token: string
   isAnonymous?: boolean
+  providerId: string
 } = defaultMockUser
 
 jest.mock('../../../../../libs/auth', () => ({
@@ -923,7 +927,18 @@ describe('LanguageScreen', () => {
   })
 
   it('disables Next button when user is not signed in and guest flow flag is off', () => {
-    mockUser = { id: null, email: null }
+    mockUser = {
+      id: null,
+      uid: null,
+      email: null,
+      displayName: null,
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: false,
+      token: '',
+      isAnonymous: false,
+      providerId: ''
+    }
 
     render(
       <MockedProvider

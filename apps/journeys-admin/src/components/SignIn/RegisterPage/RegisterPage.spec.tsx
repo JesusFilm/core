@@ -23,12 +23,6 @@ jest.mock('../../../libs/auth', () => ({
     mockLoginWithCredential(...args)
 }))
 
-const mockReload = jest.fn()
-Object.defineProperty(window, 'location', {
-  value: { ...window.location, reload: mockReload },
-  writable: true
-})
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

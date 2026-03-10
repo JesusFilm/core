@@ -135,13 +135,15 @@ describe('TermsAndConditions', () => {
 
   const mockUser: User = {
     id: 'userId',
+    uid: 'userId',
     email: 'test@example.com',
     displayName: 'Test User',
     photoURL: null,
     phoneNumber: null,
     emailVerified: true,
     token: 'mock-token',
-    isAnonymous: false
+    isAnonymous: false,
+    providerId: ''
   }
 
   beforeEach(() => {

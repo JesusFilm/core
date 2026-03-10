@@ -48,7 +48,6 @@ export function PasswordPage({
         values.password
       )
       await loginWithCredential(credential)
-      window.location.reload()
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         setFieldError(

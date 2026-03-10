@@ -29,12 +29,6 @@ const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<
   typeof signInWithPopup
 >
 
-const mockReload = jest.fn()
-Object.defineProperty(window, 'location', {
-  value: { ...window.location, reload: mockReload },
-  writable: true
-})
-
 describe('SignInServiceButton', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -48,7 +42,6 @@ describe('SignInServiceButton', () => {
     fireEvent.click(getByRole('button', { name: 'Continue with Google' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
     await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
-    expect(mockReload).toHaveBeenCalled()
   })
 
   it('should handle Facebook sign-in correctly', async () => {
@@ -59,7 +52,6 @@ describe('SignInServiceButton', () => {
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
     await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
-    expect(mockReload).toHaveBeenCalled()
   })
 
   it('should handle Okta sign-in correctly', async () => {
@@ -70,6 +62,5 @@ describe('SignInServiceButton', () => {
     fireEvent.click(getByRole('button', { name: 'Continue with Okta' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
     await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
-    expect(mockReload).toHaveBeenCalled()
   })
 })

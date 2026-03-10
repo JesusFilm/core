@@ -136,13 +136,15 @@ describe('TeamOnboarding', () => {
   it('creates new team and sets it as active', async () => {
     const user: User = {
       id: 'userId',
+      uid: 'userId',
       email: null,
       displayName: 'User Name',
       photoURL: null,
       phoneNumber: null,
       emailVerified: false,
       token: 'mock-token',
-      isAnonymous: false
+      isAnonymous: false,
+      providerId: ''
     }
 
     const cache = new InMemoryCache()

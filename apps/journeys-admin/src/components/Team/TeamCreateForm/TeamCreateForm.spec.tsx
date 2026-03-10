@@ -168,13 +168,15 @@ describe('TeamCreateForm', () => {
   it('fills textbox when on onboarding', async () => {
     const user: User = {
       id: 'userId',
+      uid: 'userId',
       email: null,
       displayName: 'User Name',
       photoURL: null,
       phoneNumber: null,
       emailVerified: false,
       token: 'mock-token',
-      isAnonymous: false
+      isAnonymous: false,
+      providerId: ''
     }
 
     const { getByRole } = render(

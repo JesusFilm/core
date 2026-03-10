@@ -16,12 +16,6 @@ jest.mock('../../../libs/auth', () => ({
     mockLoginWithCredential(...args)
 }))
 
-const mockReload = jest.fn()
-Object.defineProperty(window, 'location', {
-  value: { ...window.location, reload: mockReload },
-  writable: true
-})
-
 describe('PasswordPage', () => {
   it('should render password page', () => {
     const { getByText, getByLabelText } = render(

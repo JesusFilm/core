@@ -35,7 +35,6 @@ export function SignInServiceButton({
     try {
       const credential = await signInWithPopup(auth, authProvider)
       await loginWithCredential(credential)
-      window.location.reload()
     } catch (err) {
       console.error(err)
     }

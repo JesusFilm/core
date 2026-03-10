@@ -30,6 +30,7 @@ export async function loginWithCredential(
 ): Promise<void> {
   const idToken = await credential.user.getIdToken()
   await login(idToken)
+  window.location.reload()
 }
 
 export async function logout(): Promise<void> {
