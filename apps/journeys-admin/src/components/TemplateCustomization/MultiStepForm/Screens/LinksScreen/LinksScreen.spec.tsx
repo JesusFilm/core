@@ -102,7 +102,6 @@ describe('LinksScreen', () => {
   //         <JourneyProvider value={{ journey, variant: 'admin' }}>
   //           <LinksScreen
   //             handleNext={jest.fn()}
-  //             handleScreenNavigation={jest.fn()}
   //           />
   //         </JourneyProvider>
   //       </MockedProvider>
@@ -150,10 +149,7 @@ describe('LinksScreen', () => {
       render(
         <MockedProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen
-              handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
-            />
+            <LinksScreen handleNext={handleNext} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -331,10 +327,7 @@ describe('LinksScreen', () => {
           <JourneyProvider
             value={{ journey: journeyWithLinks, variant: 'admin' }}
           >
-            <LinksScreen
-              handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
-            />
+            <LinksScreen handleNext={handleNext} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -440,10 +433,7 @@ describe('LinksScreen', () => {
           <JourneyProvider
             value={{ journey: journeyWithPhone, variant: 'admin' }}
           >
-            <LinksScreen
-              handleNext={handleNext}
-              handleScreenNavigation={jest.fn()}
-            />
+            <LinksScreen handleNext={handleNext} />
           </JourneyProvider>
         </MockedProvider>
       )
@@ -510,10 +500,7 @@ describe('LinksScreen', () => {
               variant: 'admin'
             }}
           >
-            <LinksScreen
-              handleNext={jest.fn()}
-              handleScreenNavigation={jest.fn()}
-            />
+            <LinksScreen handleNext={jest.fn()} />
           </JourneyProvider>
         </MockedProvider>
       )
