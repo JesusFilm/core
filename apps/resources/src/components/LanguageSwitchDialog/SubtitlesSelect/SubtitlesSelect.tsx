@@ -25,8 +25,9 @@ export function SubtitlesSelect({
   const { t } = useTranslation()
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
   const { languages: allLanguages, isLoading } = useLanguages()
+  const hasVideo = videoSubtitleLanguageIds != null
   const languages = useMemo(() => {
-    if (videoSubtitleLanguageIds == null) return allLanguages
+    if (hasVideo) return allLanguages
     return allLanguages.filter((language) =>
       SUBTITLE_LANGUAGE_IDS.includes(language.id)
     )
@@ -38,10 +39,11 @@ export function SubtitlesSelect({
     [languages, subtitleLanguageId]
   )
   const options = useMemo(() => {
-    if (videoSubtitleLanguageIds == null) return languages
-    return languages.filter((language) =>
-      videoSubtitleLanguageIds.includes(language.id)
-    )
+    if (hasVideo)
+      return languages.filter((language) =>
+        videoSubtitleLanguageIds.includes(language.id)
+      )
+    return languages
   }, [languages, videoSubtitleLanguageIds])
   const helperText = useMemo(() => {
     if (isLoading) return t('Loading...')
