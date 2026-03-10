@@ -166,9 +166,7 @@ describe('LinksScreen', () => {
       render(
         <MockedProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen
-              handleNext={handleNext}
-            />
+            <LinksScreen handleNext={handleNext} />
           </JourneyProvider>
         </MockedProvider>
       )
