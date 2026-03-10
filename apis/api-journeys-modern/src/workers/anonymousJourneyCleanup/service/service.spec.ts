@@ -89,9 +89,7 @@ describe('anonymousJourneyCleanup service', () => {
       { teamId: 'team-2' }
     ] as any)
     prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 2 })
-    prismaMock.userTeam.count
-      .mockResolvedValueOnce(0)
-      .mockResolvedValueOnce(3)
+    prismaMock.userTeam.count.mockResolvedValueOnce(0).mockResolvedValueOnce(3)
     prismaMock.team.delete.mockResolvedValue({} as any)
     mockPrismaUsers.user.delete.mockResolvedValue({})
 

@@ -82,10 +82,9 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
           })
           const teamIds = userTeams.map((ut) => ut.teamId)
 
-          const { count: deletedUserTeams } =
-            await prisma.userTeam.deleteMany({
-              where: { userId: user.userId }
-            })
+          const { count: deletedUserTeams } = await prisma.userTeam.deleteMany({
+            where: { userId: user.userId }
+          })
           if (deletedUserTeams > 0) {
             logger?.info(
               { userId: user.userId, deletedUserTeams },
