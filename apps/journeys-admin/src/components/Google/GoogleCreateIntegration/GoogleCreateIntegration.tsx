@@ -9,8 +9,6 @@ import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
 
 import { useIntegrationGoogleCreate } from './libs/useIntegrationGoogleCreate'
 
-export { INTEGRATION_GOOGLE_CREATE } from './libs/useIntegrationGoogleCreate'
-
 export function GoogleCreateIntegration(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
