@@ -28,22 +28,20 @@ export function SubtitlesSelect({
   const { languages: allLanguages, isLoading } = useLanguages()
   const comboboxId = useId()
   const languages = useMemo(() => {
+    if (videoSubtitleLanguageIds == null) return allLanguages
     return allLanguages.filter((language) =>
       SUBTITLE_LANGUAGE_IDS.includes(language.id)
     )
   }, [allLanguages])
 
-  const selectedOption = useMemo(() => {
-    const languageList =
-      videoSubtitleLanguageIds == null ? languages : allLanguages
-    return (
-      languageList.find((language) => language.id === subtitleLanguageId) ??
-      null
-    )
-  }, [languages, subtitleLanguageId])
+  const selectedOption = useMemo(
+    () =>
+      languages.find((language) => language.id === subtitleLanguageId) ?? null,
+    [languages, subtitleLanguageId]
+  )
   const options = useMemo(() => {
     if (videoSubtitleLanguageIds == null) return languages
-    return allLanguages.filter((language) =>
+    return languages.filter((language) =>
       videoSubtitleLanguageIds.includes(language.id)
     )
   }, [languages, videoSubtitleLanguageIds])
