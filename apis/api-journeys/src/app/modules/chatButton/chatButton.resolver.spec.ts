@@ -90,13 +90,11 @@ describe('ChatButtonResolver', () => {
 
   it('should update an existing ChatButton', async () => {
     prismaService.chatButton.findMany = jest.fn().mockReturnValue([chatButton])
-    prismaService.chatButton.update = jest
-      .fn()
-      .mockReturnValue({
-        ...chatButton,
-        link: 'm.me/username',
-        platform: 'viber'
-      })
+    prismaService.chatButton.update = jest.fn().mockReturnValue({
+      ...chatButton,
+      link: 'm.me/username',
+      platform: 'viber'
+    })
 
     const result = await resolver.chatButtonUpdate('1', 'journeyId', {
       link: 'm.me/username',
