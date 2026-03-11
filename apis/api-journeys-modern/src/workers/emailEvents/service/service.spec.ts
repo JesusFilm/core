@@ -141,7 +141,8 @@ const journey: JourneyWithTeamAndUserJourney = {
   fromTemplateId: null,
   journeyCustomizationDescription: null,
   showAssistant: null,
-  templateSite: null
+  templateSite: null,
+  customizable: null
 }
 
 const event: Event = {

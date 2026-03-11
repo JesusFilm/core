@@ -183,8 +183,6 @@
     "nestjs-ddtrace": "6.0.0",
     "nestjs-pino": "^4.0.0",
     "next": "^15.5.7",
-    "next-absolute-url": "^1.2.2",
-    "next-firebase-auth": "^1.0.1",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
     "next-i18n-router": "^5.5.5",
     "next-i18next": "15.4.2",

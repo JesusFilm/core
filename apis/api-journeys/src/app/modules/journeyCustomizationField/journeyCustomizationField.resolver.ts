@@ -11,10 +11,14 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { CaslAbility } from '../../lib/CaslAuthModule'
 import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 @Resolver('JourneyCustomizationField')
 export class JourneyCustomizationFieldResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly journeyCustomizableService: JourneyCustomizableService
+  ) {}
 
   @Mutation()
   @UseGuards(AppCaslGuard)
@@ -66,6 +70,7 @@ export class JourneyCustomizationFieldResolver {
         data: customizationFields
       })
     })
+    await this.journeyCustomizableService.recalculate(journeyId)
 
     return this.prismaService.journeyCustomizationField.findMany({
       where: { journeyId: journey.id }

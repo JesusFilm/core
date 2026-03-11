@@ -416,6 +416,7 @@ model Journey {
   creatorDescription              String?
   template                        Boolean?                    @default(false)
   templateSite                    Boolean?                    @default(false)
+  customizable                    Boolean?                    @default(false)
   teamId                          String
   hostId                          String?
   themeMode                       ThemeMode?                  @default(light)
