@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 9
+- **task-number**: 10
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: pass
-- **next-task**: none
-- **tasks-since-checkpoint**: 8
+- **last-result**: investigated
+- **next-task**: "Change Upload button in UploadButton component from size=small with height 32 to size=medium with height 40 in VideosSection.tsx and update unit tests"
+- **tasks-since-checkpoint**: 9
 
 ## next-task values
 
@@ -39,3 +39,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 6 | 2026-03-11T22:45:41Z | Create e2e test file youtube-video.spec.ts with smoke test | pass | Uses authedPage fixture, test.use({ video: 'on' }), navigates to Media screen, verifies VideosSection visible |
 | 7 | 2026-03-11T22:46:22Z | Investigate — queue remove Max size helper text | investigated | Feature task 4 from function.md (original task 3); simplest feature change, pure removal |
 | 8 | 2026-03-11T22:49:09Z | Remove Max size is 1 GB helper text from UploadButton | pass | Removed defaultMessage prop, caption only shows on error now, updated 2 unit tests |
+| 9 | 2026-03-11T22:49:51Z | Investigate — queue resize Upload button to medium | investigated | Feature task 5 from function.md (original task 7); change size=small/height:32 to size=medium/height:40 |
