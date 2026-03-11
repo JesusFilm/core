@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 12
+- **task-number**: 13
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: investigated
-- **next-task**: "Change YouTube URL TextField from default outlined variant to variant='filled' with hiddenLabel in VideosSection.tsx to match LinksForm.tsx grey input style, and update unit tests"
-- **tasks-since-checkpoint**: 1
+- **last-result**: pass
+- **next-task**: none
+- **tasks-since-checkpoint**: 2
 
 ## next-task values
 
@@ -42,3 +42,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 9 | 2026-03-11T22:49:51Z | Investigate — queue resize Upload button to medium | investigated | Feature task 5 from function.md (original task 7); change size=small/height:32 to size=medium/height:40 |
 | 10 | 2026-03-11T22:52:53Z | Change Upload button from size=small/height:32 to size=medium/height:40 | pass | Changed in UploadButton component; all 546 test suites pass |
 | 11 | 2026-03-11T22:56:20Z | Investigate — queue change TextField to filled variant | investigated | Feature task 6 from function.md (original task 5); match LinksForm.tsx pattern with variant="filled" hiddenLabel |
+| 12 | 2026-03-11T22:59:07Z | Change YouTube URL TextField to variant="filled" with hiddenLabel | pass | Added variant="filled" and hiddenLabel, removed label prop; all 2847 tests pass |
