@@ -40,10 +40,6 @@ export class CustomizationMediaPage {
     return this.page.getByTestId('VideosSection-youtube-input')
   }
 
-  async getYouTubeSetButton() {
-    return this.page.getByTestId('VideosSection-youtube-set')
-  }
-
   async getUploadButton() {
     return this.page.getByTestId('VideosSection-upload-button')
   }
@@ -55,8 +51,9 @@ export class CustomizationMediaPage {
     await input.fill(url)
   }
 
-  async clickSetYouTube(): Promise<void> {
-    await this.page.getByTestId('VideosSection-youtube-set').click()
+  async waitForAutoSubmit(): Promise<void> {
+    // Auto-submit fires after 800ms debounce; wait a bit longer for network
+    await this.page.waitForTimeout(1500)
   }
 
   async verifyVideosSectionVisible(): Promise<void> {
