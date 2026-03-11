@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 19
+- **task-number**: 20
 - **phase**: youtube-ui-fixes
-- **phase-complete**: false
+- **phase-complete**: true
 - **status**: running
-- **last-result**: pass
+- **last-result**: investigated
 - **next-task**: none
-- **tasks-since-checkpoint**: 8
+- **tasks-since-checkpoint**: 9
 
 ## next-task values
 
@@ -49,3 +49,5 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 16 | 2026-03-11T23:07:03Z | Remove setYoutubeUrl('') to keep URL visible after submit | pass | Removed one line in handleYouTubeSubmit; all 2849 tests pass |
 | 17 | 2026-03-11T23:08:20Z | Investigate — queue auto-submit with debounce | investigated | Last feature task 10 from function.md (original task 6); add useEffect debounce, remove Set button |
 | 18 | 2026-03-11T23:12:04Z | Implement auto-submit with 800ms debounce, remove Set button | pass | Added useEffect+useRef debounce, removed Set button/handleYouTubeKeyDown, 3 new tests; 2852 tests pass |
+| 19 | 2026-03-11T23:14:20Z | Update e2e tests for all feature changes, remove Set button refs | pass | 6 e2e tests covering placeholder, helper text, auto-submit, invalid URL, upload size, filled variant |
+| 20 | 2026-03-11T23:14:20Z | Phase complete — all 7 feature tasks + e2e tests done | investigated | All features implemented, 2852 unit tests pass, e2e tests scaffolded with video recording |
