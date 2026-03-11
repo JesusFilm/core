@@ -30,7 +30,7 @@ export interface VariantConfig {
   modules?: SwiperModule[]
 }
 
-export const SELECTED_SCALE = 1.07
+export const SELECTED_SCALE = 1.5
 export const OVERFLOW_PX = 40
 const MEDIA_CARD_HEIGHT = 209
 const PREVIEW_CARD_HEIGHT_XS = 295
