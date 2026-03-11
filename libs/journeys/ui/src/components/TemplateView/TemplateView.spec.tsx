@@ -408,7 +408,7 @@ describe('TemplateView', () => {
         slug: `${QA_ONLY_TEMPLATE_SLUG_PREFIX}-some-variant`
       }
 
-      const { queryByRole, getByRole } = render(
+      const { queryByRole, findByRole } = render(
         <MockedProvider
           mocks={[buildRelatedJourneysMock([relatedJourneyBase, qaJourney])]}
         >
@@ -420,11 +420,9 @@ describe('TemplateView', () => {
         </MockedProvider>
       )
 
-      await waitFor(() =>
-        expect(
-          getByRole('heading', { name: 'Related Templates' })
-        ).toBeInTheDocument()
-      )
+      expect(
+        await findByRole('heading', { name: 'Related Template' })
+      ).toBeInTheDocument()
       expect(
         queryByRole('heading', { name: 'QA Test Journey' })
       ).not.toBeInTheDocument()
