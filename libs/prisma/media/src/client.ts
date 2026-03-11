@@ -9,4 +9,6 @@ const adapter = new PrismaPg({
 })
 
 export * from './__generated__/client/client'
-export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter })
+export const prisma =
+  globalForPrisma.prisma ??
+  (globalForPrisma.prisma = new PrismaClient({ adapter }))
