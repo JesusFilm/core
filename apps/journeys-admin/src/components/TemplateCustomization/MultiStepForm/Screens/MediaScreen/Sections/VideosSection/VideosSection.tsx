@@ -146,7 +146,6 @@ export function VideosSection({
     if (videoBlock == null) return
 
     setYoutubeUrlError(undefined)
-    setYoutubeUrl('')
     await startYouTubeLink(videoBlock.id, extractedId)
   }
 
