@@ -68,6 +68,8 @@ export function MultiStepForm(): ReactElement {
   const isAnon = user?.isAnonymous ?? false
   const journeyId = journey?.id ?? ''
 
+  const isNotSignedIn = user?.email == null
+
   const {
     screens,
     totalSteps,
@@ -77,9 +79,10 @@ export function MultiStepForm(): ReactElement {
   } = useMemo(
     () =>
       getCustomizeFlowConfig(journey, t, {
-        customizableMedia: customizableMedia ?? false
+        customizableMedia: customizableMedia ?? false,
+        isNotSignedIn
       }),
-    [journey, t, customizableMedia]
+    [journey, t, customizableMedia, isNotSignedIn]
   )
 
   const activeScreen = getActiveScreenFromQuery(

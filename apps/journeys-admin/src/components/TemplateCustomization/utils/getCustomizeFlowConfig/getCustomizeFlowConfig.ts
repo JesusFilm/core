@@ -1,5 +1,4 @@
 import { TFunction } from 'i18next'
-import { useUser } from 'next-firebase-auth'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
 import { JourneyLink, getJourneyLinks } from '../getJourneyLinks'
@@ -25,6 +24,8 @@ export interface CustomizeFlowConfig {
 
 export interface CustomizeFlowOptions {
   customizableMedia?: boolean
+  /** When true, the guestPreview screen is included (e.g. user not signed in). Pass from useAuth().user. */
+  isNotSignedIn?: boolean
 }
 
 /**
@@ -58,7 +59,8 @@ export function getCustomizeFlowConfig(
   options: CustomizeFlowOptions = {}
 ): CustomizeFlowConfig {
   // Default false: outage-safe; when flag is missing/undefined, hide media step (new feature off).
-  const { customizableMedia: customizableMediaFlag = false } = options
+  const { customizableMedia: customizableMediaFlag = false, isNotSignedIn = false } =
+    options
 
   // Always include language, social, and done screens
   const baseScreens: CustomizationScreen[] = ['language', 'social', 'done']
@@ -73,9 +75,6 @@ export function getCustomizeFlowConfig(
       journey?.journeyCustomizationFields &&
       journey.journeyCustomizationFields.length > 0
   )
-
-  // Check to see if the user is not signed in
-  const isNotSignedIn = useUser()?.email == null
 
   // Check for customizable links
   const hasCustomizableLinks = links.length > 0

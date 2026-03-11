@@ -4,11 +4,6 @@ import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJ
 
 import { getCustomizeFlowConfig } from './getCustomizeFlowConfig'
 
-// Mock complex dependencies that the screens use
-jest.mock('next-firebase-auth', () => ({
-  useUser: () => ({ id: 'test-user-id', email: 'test@example.com' })
-}))
-
 const t = ((key: string) => key) as unknown as TFunction
 
 describe('getCustomizeFlowConfig', () => {
@@ -310,6 +305,39 @@ describe('getCustomizeFlowConfig', () => {
     expect(result.hasEditableText).toBe(false)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])
+  })
+
+  it('should include guestPreview screen when isNotSignedIn is true', () => {
+    const journey = {
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: []
+    } as unknown as Journey
+
+    const result = getCustomizeFlowConfig(journey, t, { isNotSignedIn: true })
+
+    expect(result.screens).toEqual([
+      'language',
+      'guestPreview',
+      'social',
+      'done'
+    ])
+    expect(result.totalSteps).toBe(4)
+  })
+
+  it('should not include guestPreview screen when isNotSignedIn is false', () => {
+    const journey = {
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: []
+    } as unknown as Journey
+
+    const result = getCustomizeFlowConfig(journey, t, { isNotSignedIn: false })
+
+    expect(result.screens).toEqual(['language', 'social', 'done'])
+    expect(result.totalSteps).toBe(3)
   })
 
   it('should always include social screen before done screen', () => {
