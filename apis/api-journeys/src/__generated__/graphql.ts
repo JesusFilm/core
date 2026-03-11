@@ -1362,7 +1362,6 @@ export type JourneyThemeUpdateInput = {
 export type JourneyUpdateInput = {
   creatorDescription?: InputMaybe<Scalars['String']['input']>;
   creatorImageBlockId?: InputMaybe<Scalars['ID']['input']>;
-  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayTitle?: InputMaybe<Scalars['String']['input']>;
   hostId?: InputMaybe<Scalars['String']['input']>;
