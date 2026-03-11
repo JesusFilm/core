@@ -13,10 +13,6 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
-// QA-only templates use this slug prefix. They are intentionally always hidden
-// from the public gallery so real users never see them. QA testers access them
-// directly via their template URL. Remove this constant and the filter below
-// once the customizableMedia feature is stable and the QA template is deleted.
 /**
  * QA-only templates use this slug prefix. They are intentionally always hidden
  * from the public gallery so real users never see them. QA testers access them
