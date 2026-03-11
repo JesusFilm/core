@@ -35,7 +35,7 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
+      hasText: 'SubtitlesSearch LanguagesSearch Languages61 languages'
     })
     .getByLabel('Open')
     .click()
@@ -43,7 +43,7 @@ test('Filters', async ({ page }) => {
     .getByTestId('FilterList')
     .locator('div')
     .filter({
-      hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
+      hasText: 'SubtitlesSearch LanguagesSearch Languages61 languages'
     })
     .getByLabel('Search Languages')
     .fill('eng')
