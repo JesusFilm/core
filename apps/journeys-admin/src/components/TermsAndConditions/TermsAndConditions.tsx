@@ -66,32 +66,47 @@ export function TermsAndConditions(): ReactElement {
     setLoading(true)
     await journeyProfileCreate()
 
-    const { data: teamCreateData } = await teamCreate({
-      variables: {
-        input: {
-          title: t('{{ displayName }} & Team', {
-            displayName
-          }),
-          publicTitle: t('{{ displayName }} Team', {
-            displayName: displayName.charAt(0)
-          })
-        }
-      }
-    })
+    const existingTeam = query.data?.teams?.[0]
+    const hasExistingTeam = existingTeam != null
+    let teamId: string | undefined
+    let team: typeof existingTeam | undefined
 
-    if (teamCreateData?.teamCreate != null) {
-      await Promise.allSettled([
-        journeyDuplicate({
+    if (hasExistingTeam) {
+      teamId = existingTeam.id
+      team = existingTeam
+    } else {
+      const { data: teamCreateData } = await teamCreate({
+        variables: {
+          input: {
+            title: t('{{ displayName }} & Team', {
+              displayName
+            }),
+            publicTitle: t('{{ displayName }} Team', {
+              displayName: displayName.charAt(0)
+            })
+          }
+        }
+      })
+
+      const newTeam = teamCreateData?.teamCreate
+      if (newTeam != null) {
+        teamId = newTeam.id
+        team = newTeam
+
+        await journeyDuplicate({
           variables: {
             id: ONBOARDING_TEMPLATE_ID,
-            teamId: teamCreateData.teamCreate.id
+            teamId: newTeam.id
           }
-        }),
+        })
+      }
+    }
+
+    if (teamId != null && team != null) {
+      await Promise.allSettled([
         updateLastActiveTeamId({
           variables: {
-            input: {
-              lastActiveTeamId: teamCreateData.teamCreate.id
-            }
+            input: { lastActiveTeamId: teamId }
           }
         }),
         router.push(
@@ -100,7 +115,9 @@ export function TermsAndConditions(): ReactElement {
                 router.query.redirect as string,
                 window.location.origin
               )
-            : '/?onboarding=true'
+            : hasExistingTeam
+              ? '/'
+              : '/?onboarding=true'
         ),
         query
           .refetch()
@@ -109,7 +126,7 @@ export function TermsAndConditions(): ReactElement {
           )
       ])
 
-      setActiveTeam(teamCreateData.teamCreate)
+      setActiveTeam(team)
     }
     setLoading(false)
   }
