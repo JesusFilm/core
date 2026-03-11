@@ -44,6 +44,7 @@ function UploadButton({
     <Box sx={{ py: 2 }}>
       <input {...getInputProps()} />
       <Button
+        data-testid="VideosSection-upload-button"
         size="small"
         color="secondary"
         variant="outlined"
@@ -203,6 +204,7 @@ export function VideosSection({
       <Stack gap={1}>
         <Stack direction="row" gap={1} alignItems="flex-start">
           <TextField
+            data-testid="VideosSection-youtube-input"
             size="small"
             label={t('YouTube URL')}
             value={youtubeUrl}
@@ -215,6 +217,7 @@ export function VideosSection({
             sx={{ flex: 1 }}
           />
           <Button
+            data-testid="VideosSection-youtube-set"
             size="small"
             color="secondary"
             variant="outlined"
