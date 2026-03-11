@@ -120,9 +120,28 @@ describe('ChatButtonResolver', () => {
     const result = await resolver.chatButtonUpdate('1', 'journeyId', {
       customizable: true
     })
+    expect(prismaService.chatButton.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: { journeyId: 'journeyId', customizable: true }
+    })
     expect(result).toEqual({
       ...chatButton,
       customizable: true
+    })
+  })
+
+  it('should forward customizable null to prisma update', async () => {
+    prismaService.chatButton.findMany = jest.fn().mockReturnValue([chatButton])
+    prismaService.chatButton.update = jest
+      .fn()
+      .mockReturnValue({ ...chatButton, customizable: null })
+
+    await resolver.chatButtonUpdate('1', 'journeyId', {
+      customizable: null
+    })
+    expect(prismaService.chatButton.update).toHaveBeenCalledWith({
+      where: { id: '1' },
+      data: { journeyId: 'journeyId', customizable: null }
     })
   })
 
