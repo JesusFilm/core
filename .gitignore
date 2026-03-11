@@ -90,6 +90,7 @@ terraform.tfstate.backup
 # personal claude rules
 .claude/rules/preferences.md
 .claude/rules/workflows.md
+.claude/rules/*.dev.md
 
 # ignore exports
 /exports/*
