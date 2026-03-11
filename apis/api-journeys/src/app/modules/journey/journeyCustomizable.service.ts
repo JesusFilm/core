@@ -29,10 +29,10 @@ function removeOrphanedBlocks<
   let length = filteredBlocks.length
   do {
     length = filteredBlocks.length
-    const ids: string[] = filteredBlocks.map((b) => b.id)
+    const idsSet = new Set(filteredBlocks.map((b) => b.id))
 
     filteredBlocks = filteredBlocks.filter(
-      (b) => b.parentBlockId == null || ids.includes(b.parentBlockId)
+      (b) => b.parentBlockId == null || idsSet.has(b.parentBlockId)
     )
   } while (length !== filteredBlocks.length)
   return filteredBlocks
