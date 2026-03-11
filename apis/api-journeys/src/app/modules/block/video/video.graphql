@@ -120,5 +120,5 @@ type VideoBlock implements Block @key(fields: "id") @shareable {
   """
   Publisher notes for template adapters (e.g. trailer, intro).
   """
-  notes: String @shareable
+  notes: String
 }

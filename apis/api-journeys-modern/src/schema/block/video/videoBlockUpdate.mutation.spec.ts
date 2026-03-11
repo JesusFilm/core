@@ -225,7 +225,7 @@ describe('videoBlockUpdate', () => {
           journeyId: 'journeyId',
           typename: 'VideoBlock',
           subtitleLanguage: null,
-          notes: '',
+          notes: null,
           ...input
         })
       },
@@ -238,13 +238,13 @@ describe('videoBlockUpdate', () => {
       variables: { id, input: { ...input, notes: '' } }
     })
 
-    expect((result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes).toBe(
-      ''
-    )
+    expect(
+      (result as VideoBlockUpdateResult).data?.videoBlockUpdate.notes
+    ).toBeNull()
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id },
-        data: expect.objectContaining({ notes: '' })
+        data: expect.objectContaining({ notes: null })
       })
     )
   })
