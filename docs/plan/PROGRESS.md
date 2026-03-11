@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 6
+- **task-number**: 7
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: investigated
-- **next-task**: "Create e2e test file at apps/journeys-admin-e2e/src/e2e/customization/youtube-video.spec.ts with test.use({ video: 'on' }) and a smoke test that navigates to the Media screen and verifies VideosSection is visible"
-- **tasks-since-checkpoint**: 5
+- **last-result**: pass
+- **next-task**: none
+- **tasks-since-checkpoint**: 6
 
 ## next-task values
 
@@ -36,3 +36,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 3 | 2026-03-11T22:41:39Z | Investigate — queue create e2e page object | investigated | Setup task 2 from function.md; unblocks all e2e tests |
 | 4 | 2026-03-11T22:43:13Z | Create e2e page object customization-media-page.ts | pass | Page Object Model with selectors for Next button, YouTube input, Set button, Upload button, video preview |
 | 5 | 2026-03-11T22:43:55Z | Investigate — queue create e2e test file | investigated | Setup task 3 from function.md; scaffold e2e spec with video recording and smoke test |
+| 6 | 2026-03-11T22:45:41Z | Create e2e test file youtube-video.spec.ts with smoke test | pass | Uses authedPage fixture, test.use({ video: 'on' }), navigates to Media screen, verifies VideosSection visible |
