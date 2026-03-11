@@ -51,8 +51,7 @@ export function TemplateCardPreviewItem({
   ) as TreeBlock<CardBlock>
 
   const config = VARIANT_CONFIGS[variant]
-  const { cardWidth, cardHeight, framePortal, cardSx, nonSelectedOpacity } =
-    config
+  const { cardWidth, cardHeight, framePortal, cardSx, opacity } = config
   const isSelected = selectedStep?.id === step.id
 
   return (
@@ -76,8 +75,8 @@ export function TemplateCardPreviewItem({
              0px 3px 3px 0px rgba(0, 0, 0, 0.12),
              0px 3px 4px 0px rgba(0, 0, 0, 0.14)`
           : 'none',
-        ...(nonSelectedOpacity != null && {
-          opacity: isSelected ? 1 : nonSelectedOpacity
+        ...(opacity != null && {
+          opacity: isSelected ? 1 : opacity
         })
       }}
       onClick={() => onClick?.(step)}
