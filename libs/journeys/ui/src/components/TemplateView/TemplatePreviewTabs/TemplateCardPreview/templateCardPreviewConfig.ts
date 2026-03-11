@@ -28,6 +28,7 @@ export interface VariantConfig {
   slideSx: SxProps<Theme>
   swiperSx: SxProps<Theme>
   modules?: SwiperModule[]
+  nonSelectedOpacity?: number
 }
 
 export const SELECTED_SCALE = 1.25
@@ -128,7 +129,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
       alignItems: 'center'
     }
   },
-  modules: [Mousewheel, A11y]
+  modules: [Mousewheel, A11y],
+  nonSelectedOpacity: 0.75
 }
 
 export const VARIANT_CONFIGS: Record<
