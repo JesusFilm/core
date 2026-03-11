@@ -201,8 +201,9 @@ export function VideosSection({
         <Stack direction="row" gap={1} alignItems="flex-start">
           <TextField
             data-testid="VideosSection-youtube-input"
+            variant="filled"
+            hiddenLabel
             size="small"
-            label={t('YouTube URL')}
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
             onKeyDown={handleYouTubeKeyDown}
