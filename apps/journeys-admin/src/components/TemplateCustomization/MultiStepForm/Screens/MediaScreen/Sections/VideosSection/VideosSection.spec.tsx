@@ -270,7 +270,7 @@ describe('VideosSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows default message when upload status is uploading', () => {
+  it('does not show max size helper text when upload status is uploading', () => {
     mockGetUploadStatus.mockReturnValue({
       status: 'uploading',
       progress: 50
@@ -279,18 +279,18 @@ describe('VideosSection', () => {
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+    expect(screen.queryByText('Max size is 1 GB')).not.toBeInTheDocument()
     expect(
       screen.queryByText('Upload failed. Please try again')
     ).not.toBeInTheDocument()
   })
 
-  it('shows default message when no upload status', () => {
+  it('does not show max size helper text when no upload status', () => {
     mockGetUploadStatus.mockReturnValue(null)
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+    expect(screen.queryByText('Max size is 1 GB')).not.toBeInTheDocument()
   })
 })

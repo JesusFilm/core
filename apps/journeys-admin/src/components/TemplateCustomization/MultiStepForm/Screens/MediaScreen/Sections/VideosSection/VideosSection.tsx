@@ -25,7 +25,6 @@ interface UploadButtonProps {
   open: () => void
   getInputProps: () => Record<string, unknown>
   label: string
-  defaultMessage: string
   errorMessage?: string
 }
 
@@ -34,12 +33,8 @@ function UploadButton({
   open,
   getInputProps,
   label,
-  defaultMessage,
   errorMessage
 }: UploadButtonProps): ReactElement {
-  const displayMessage = errorMessage ?? defaultMessage
-  const isError = errorMessage != null
-
   return (
     <Box sx={{ py: 2 }}>
       <input {...getInputProps()} />
@@ -60,15 +55,17 @@ function UploadButton({
           {label}
         </Typography>
       </Button>
-      <Typography
-        variant="caption"
-        sx={{
-          color: isError ? 'error.main' : 'text.secondary',
-          mt: 0.5
-        }}
-      >
-        {displayMessage}
-      </Typography>
+      {errorMessage != null && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'error.main',
+            mt: 0.5
+          }}
+        >
+          {errorMessage}
+        </Typography>
+      )}
     </Box>
   )
 }
@@ -193,7 +190,6 @@ export function VideosSection({
         open={open}
         getInputProps={getInputProps}
         label={t('Upload File')}
-        defaultMessage={t('Max size is 1 GB')}
         errorMessage={errorMessage}
       />
       <Divider>
