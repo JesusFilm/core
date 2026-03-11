@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { ReactElement, useEffect, useState } from 'react'
+
+import { useAuth } from '../../libs/auth'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
@@ -12,7 +13,7 @@ import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
   const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPassword, setUserPassword] = useState<string>('')
@@ -23,13 +24,12 @@ export function SignIn(): ReactElement {
   }
 
   useEffect(() => {
-    if (!user.clientInitialized) return
-    if (user.id == null || user.firebaseUser == null) return
-    if (user.firebaseUser.isAnonymous === true) return
+    if (user == null) return
+    if (user.isAnonymous === true) return
 
     const search = getSearchFromAsPath(router.asPath)
     void router.replace(`/users/verify${search}`)
-  }, [router, user.clientInitialized, user.id, user.firebaseUser?.isAnonymous])
+  }, [router, user?.id, user?.isAnonymous])
 
   let page: ReactElement<PageProps>
   const props: PageProps = {
