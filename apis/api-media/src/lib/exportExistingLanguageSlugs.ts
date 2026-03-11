@@ -1,8 +1,6 @@
 import { writeFileSync } from 'node:fs'
 
-import { PrismaClient } from '@core/prisma/media/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '@core/prisma/media/client'
 
 async function main(): Promise<void> {
   await importLanguageSlugs()

@@ -9,7 +9,7 @@ import {
   UserJourneyRole,
   UserTeam,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '@core/prisma/journeys/client'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'

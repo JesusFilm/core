@@ -1,5 +1,5 @@
-import type { PrismaClient } from '.prisma/api-analytics-client'
-import { Prisma } from '.prisma/api-analytics-client'
+import type { PrismaClient } from '../../../../../libs/prisma/analytics/src/client'
+import { Prisma } from '../../../../../libs/prisma/analytics/src/client'
 
 export interface AddGoalsToSitesResult {
   totalAdded: number

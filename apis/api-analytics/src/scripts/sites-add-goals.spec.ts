@@ -1,10 +1,10 @@
-import { PrismaClient } from '.prisma/api-analytics-client'
+import { PrismaClient } from '../../../../libs/prisma/analytics/src/client'
 
 import { addGoalsToAllSites } from '../lib/site/addGoalsToSites'
 
 import main from './sites-add-goals'
 
-jest.mock('.prisma/api-analytics-client', () => ({
+jest.mock('../../../../libs/prisma/analytics/src/client', () => ({
   __esModule: true,
   PrismaClient: (() => {
     const prismaInstance = { $disconnect: jest.fn() }

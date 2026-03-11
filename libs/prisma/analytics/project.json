@@ -33,7 +33,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm exec prisma db pull --schema libs/prisma/analytics/db/schema.prisma"
+          "pnpm exec prisma db pull --config libs/prisma/analytics/prisma.config.ts"
         ]
       }
     },
@@ -41,7 +41,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm exec prisma studio --schema libs/prisma/analytics/db/schema.prisma"
+          "pnpm exec prisma studio --config libs/prisma/analytics/prisma.config.ts"
         ]
       }
     },
@@ -57,7 +57,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"pnpm exec prisma migrate reset --schema libs/prisma/analytics/db/schema.prisma --force\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_ANALYTICS=postgresql://postgres:postgres@db:5432/analytics?schema=public \"pnpm exec prisma migrate reset --config libs/prisma/analytics/prisma.config.ts --force\""
         ]
       }
     },

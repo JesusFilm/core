@@ -1,6 +1,12 @@
-import { Prisma, PrismaClient } from '.prisma/api-languages-client'
+import { PrismaPg } from '@prisma/adapter-pg'
+
+import { PrismaClient } from './__generated__/client/client'
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
-export * from '.prisma/api-languages-client'
-export const prisma = globalForPrisma.prisma || new PrismaClient()
+const adapter = new PrismaPg({
+  connectionString: process.env['PG_DATABASE_URL_LANGUAGES']!
+})
+
+export * from './__generated__/client/client'
+export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter })

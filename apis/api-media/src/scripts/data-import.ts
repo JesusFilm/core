@@ -11,9 +11,8 @@ import { pipeline } from 'stream/promises'
 import { TransformStream } from 'stream/web'
 import { createGunzip } from 'zlib'
 
-import { PrismaClient } from '.prisma/api-media-client'
-
-const prisma = new PrismaClient()
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { prisma } from '../../../../libs/prisma/media/src/client'
 
 // Constants
 const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'

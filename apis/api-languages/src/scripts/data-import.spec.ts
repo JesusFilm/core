@@ -59,7 +59,7 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock prisma client
-jest.mock('.prisma/api-languages-client', () => {
+jest.mock('../../../../libs/prisma/languages/src/client', () => {
   const upsert = jest.fn().mockResolvedValue({ id: 1 })
   return {
     PrismaClient: jest.fn().mockImplementation(() => ({

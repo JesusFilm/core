@@ -1,14 +1,12 @@
 import Mux from '@mux/mux-node'
 
-import { PrismaClient } from '.prisma/api-media-client'
-
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { prisma } from '../../../../libs/prisma/media/src/client'
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
 import { getVideo } from '../schema/mux/video/service'
-
-const prisma = new PrismaClient()
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)

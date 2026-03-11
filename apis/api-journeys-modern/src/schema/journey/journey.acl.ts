@@ -5,7 +5,6 @@ import {
   UserTeamRole
 } from '@core/prisma/journeys/client'
 import { User as BaseUser } from '@core/yoga/firebaseClient'
-import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action } from '../../lib/auth/ability'
 
@@ -25,7 +24,7 @@ export type Journey = Prisma.JourneyGetPayload<{
   }
 }>
 
-export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
+export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude = {
   journey: {
     include: {
       team: { include: { userTeams: true } },
