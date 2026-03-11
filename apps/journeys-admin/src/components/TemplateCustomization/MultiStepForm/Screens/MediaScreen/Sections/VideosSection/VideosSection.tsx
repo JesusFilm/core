@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { KeyboardEvent, ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -137,23 +137,26 @@ export function VideosSection({
     disabled: loading
   })
 
-  async function handleYouTubeSubmit(): Promise<void> {
-    const extractedId = extractYouTubeVideoId(youtubeUrl.trim())
-    if (extractedId == null) {
-      setYoutubeUrlError(t('Please enter a valid YouTube URL'))
-      return
-    }
-    if (videoBlock == null) return
+  const lastSubmittedUrl = useRef('')
 
-    setYoutubeUrlError(undefined)
-    await startYouTubeLink(videoBlock.id, extractedId)
-  }
+  useEffect(() => {
+    const trimmedUrl = youtubeUrl.trim()
+    if (trimmedUrl === '' || loading || videoBlock == null) return
+    if (trimmedUrl === lastSubmittedUrl.current) return
 
-  function handleYouTubeKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
-    if (event.key === 'Enter') {
-      void handleYouTubeSubmit()
-    }
-  }
+    const timer = setTimeout(() => {
+      const extractedId = extractYouTubeVideoId(trimmedUrl)
+      if (extractedId == null) {
+        setYoutubeUrlError(t('Please enter a valid YouTube URL'))
+        return
+      }
+      setYoutubeUrlError(undefined)
+      lastSubmittedUrl.current = trimmedUrl
+      void startYouTubeLink(videoBlock.id, extractedId)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [youtubeUrl, loading, videoBlock, startYouTubeLink, t])
 
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
@@ -196,46 +199,23 @@ export function VideosSection({
           {t('or')}
         </Typography>
       </Divider>
-      <Stack gap={1}>
-        <Stack direction="row" gap={1} alignItems="flex-start">
-          <TextField
-            data-testid="VideosSection-youtube-input"
-            variant="filled"
-            hiddenLabel
-            size="small"
-            placeholder={t('Paste a YouTube link...')}
-            value={youtubeUrl}
-            onChange={(e) => setYoutubeUrl(e.target.value)}
-            onKeyDown={handleYouTubeKeyDown}
-            disabled={loading}
-            error={youtubeUrlError != null}
-            helperText={
-              youtubeUrlError ??
-              t('youtube.com, youtu.be and shorts links supported')
-            }
-            inputProps={{ 'aria-label': t('YouTube URL') }}
-            sx={{ flex: 1 }}
-          />
-          <Button
-            data-testid="VideosSection-youtube-set"
-            size="small"
-            color="secondary"
-            variant="outlined"
-            disabled={loading || youtubeUrl.trim() === ''}
-            onClick={() => void handleYouTubeSubmit()}
-            aria-label={t('Set YouTube video')}
-            sx={{
-              height: 40,
-              borderRadius: 2,
-              flexShrink: 0
-            }}
-          >
-            <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-              {t('Set')}
-            </Typography>
-          </Button>
-        </Stack>
-      </Stack>
+      <TextField
+        data-testid="VideosSection-youtube-input"
+        variant="filled"
+        hiddenLabel
+        size="small"
+        fullWidth
+        placeholder={t('Paste a YouTube link...')}
+        value={youtubeUrl}
+        onChange={(e) => setYoutubeUrl(e.target.value)}
+        disabled={loading}
+        error={youtubeUrlError != null}
+        helperText={
+          youtubeUrlError ??
+          t('youtube.com, youtu.be and shorts links supported')
+        }
+        inputProps={{ 'aria-label': t('YouTube URL') }}
+      />
     </Stack>
   )
 }

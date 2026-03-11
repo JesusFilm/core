@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -26,11 +27,13 @@ jest.mock('./VideoPreviewPlayer', () => ({
 }))
 
 const mockStartUpload = jest.fn()
+const mockStartYouTubeLink = jest.fn()
 const mockGetUploadStatus = jest.fn()
 jest.mock('../../../../TemplateVideoUploadProvider', () => ({
   ...jest.requireActual('../../../../TemplateVideoUploadProvider'),
   useTemplateVideoUpload: () => ({
     startUpload: mockStartUpload,
+    startYouTubeLink: mockStartYouTubeLink,
     getUploadStatus: mockGetUploadStatus
   })
 }))
@@ -306,5 +309,54 @@ describe('VideosSection', () => {
     expect(
       screen.getByText('youtube.com, youtu.be and shorts links supported')
     ).toBeInTheDocument()
+  })
+
+  it('does not render a Set button', () => {
+    renderVideosSection()
+    expect(screen.queryByTestId('VideosSection-youtube-set')).not.toBeInTheDocument()
+  })
+
+  it('auto-submits valid YouTube URL after 800ms debounce', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(mockStartYouTubeLink).toHaveBeenCalledWith(
+      'video-block-1',
+      'dQw4w9WgXcQ'
+    )
+    jest.useRealTimers()
+  })
+
+  it('shows error for invalid YouTube URL after debounce', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'not-a-valid-url')
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(
+      screen.getByText('Please enter a valid YouTube URL')
+    ).toBeInTheDocument()
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
+    jest.useRealTimers()
   })
 })
