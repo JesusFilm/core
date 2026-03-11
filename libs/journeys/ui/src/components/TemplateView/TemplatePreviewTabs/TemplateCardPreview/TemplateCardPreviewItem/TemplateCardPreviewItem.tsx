@@ -76,7 +76,7 @@ export function TemplateCardPreviewItem({
              0px 3px 4px 0px rgba(0, 0, 0, 0.14)`
           : 'none',
         ...(variant === 'media' && {
-          opacity: isSelected ? 1 : 0.8
+          opacity: isSelected ? 1 : 0.75
         })
       }}
       onClick={() => onClick?.(step)}

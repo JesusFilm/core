@@ -30,7 +30,7 @@ export interface VariantConfig {
   modules?: SwiperModule[]
 }
 
-export const SELECTED_SCALE = 1.5
+export const SELECTED_SCALE = 1.25
 export const OVERFLOW_PX = 40
 const MEDIA_CARD_HEIGHT = 209
 const PREVIEW_CARD_HEIGHT_XS = 295
@@ -107,7 +107,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   cardSx: {
     position: 'relative',
     backgroundColor: 'background.default',
-    borderRadius: '12px'
+    borderRadius: '12px',
+    transition: 'all 0.3s ease'
   },
   slideSx: {
     height: 209,
@@ -116,7 +117,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '12px'
+    borderRadius: '12px',
+    transition: 'all 0.3s ease'
   },
   swiperSx: {
     width: '100%',
