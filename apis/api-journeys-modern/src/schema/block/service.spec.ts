@@ -16,6 +16,7 @@ jest.mock('../../lib/auth/fetchJourneyWithAclIncludes', () => ({
 const {
   fetchJourneyWithAclIncludes
 } = require('../../lib/auth/fetchJourneyWithAclIncludes')
+
 const mockAbility = ability as jest.MockedFunction<typeof ability>
 
 describe('authorizeBlockCreate', () => {

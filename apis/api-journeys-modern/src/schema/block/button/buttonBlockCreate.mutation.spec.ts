@@ -113,7 +113,6 @@ describe('buttonBlockCreate', () => {
   })
 
   it('creates button block with all optional fields', async () => {
-
     const tx = {
       block: {
         create: jest.fn().mockResolvedValue({

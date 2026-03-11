@@ -19,9 +19,7 @@ export async function authorizeBlockCreate(
   user: User
 ): Promise<void> {
   const journey = await fetchJourneyWithAclIncludes(journeyId)
-  if (
-    !ability(AuthAction.Update, abilitySubject('Journey', journey), user)
-  ) {
+  if (!ability(AuthAction.Update, abilitySubject('Journey', journey), user)) {
     throw new GraphQLError('user is not allowed to create block', {
       extensions: { code: 'FORBIDDEN' }
     })
