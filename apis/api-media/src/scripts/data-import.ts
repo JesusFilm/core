@@ -11,7 +11,6 @@ import { pipeline } from 'stream/promises'
 import { TransformStream } from 'stream/web'
 import { createGunzip } from 'zlib'
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { prisma } from '../../../../libs/prisma/media/src/client'
 
 // Constants

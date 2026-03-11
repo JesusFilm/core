@@ -1,5 +1,4 @@
 import { prisma } from '../../../../libs/prisma/journeys/src/client'
-
 import {
   JourneyStatus,
   ThemeMode,

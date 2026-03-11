@@ -1,4 +1,3 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Service, prisma } from '../../../../libs/prisma/media/src/client'
 import { addVercelDomain } from '../../src/schema/shortLink/shortLinkDomain/shortLinkDomain.service'
 

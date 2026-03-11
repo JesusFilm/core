@@ -1,4 +1,3 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { Prisma, prisma } from '../../../../../libs/prisma/journeys/src/client'
 
 async function upsertTeam(tx: Prisma.TransactionClient, teamData) {

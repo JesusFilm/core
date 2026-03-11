@@ -10,7 +10,6 @@ import {
 import { Upload } from '@aws-sdk/lib-storage'
 import fetch from 'node-fetch'
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import {
   VideoVariantDownloadQuality,
   prisma

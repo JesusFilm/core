@@ -1,6 +1,5 @@
 import Mux from '@mux/mux-node'
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { prisma } from '../../../../libs/prisma/media/src/client'
 import {
   createDownloadsFromMuxAsset,

@@ -5,7 +5,6 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { createGunzip } from 'zlib'
 
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import { prisma } from '../../../../libs/prisma/languages/src/client'
 
 const GZIPPED_BACKUP_FILE_NAME = 'languages-backup.sql.gz'
