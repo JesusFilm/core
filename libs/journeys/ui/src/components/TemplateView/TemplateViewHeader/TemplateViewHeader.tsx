@@ -4,9 +4,9 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
-import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
+import { AuthUser as User } from '../../../libs/auth/types'
 import { useJourney } from '../../../libs/JourneyProvider'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
@@ -17,7 +17,7 @@ import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
-  authUser: User | undefined
+  authUser?: User | null
 }
 
 export function TemplateViewHeader({

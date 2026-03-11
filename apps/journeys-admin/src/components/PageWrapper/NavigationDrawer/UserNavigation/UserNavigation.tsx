@@ -8,7 +8,6 @@ import compact from 'lodash/compact'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 
@@ -17,6 +16,7 @@ import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { GetMe } from '../../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth'
 import { useAdminJourneysSuspenseQuery } from '../../../../libs/useAdminJourneysSuspenseQuery'
 import { useUserRoleSuspenseQuery } from '../../../../libs/useUserRoleSuspenseQuery'
 import { getJourneyTooltip } from '../../utils/getJourneyTooltip'
@@ -57,7 +57,7 @@ export const GET_ME = gql`
 `
 
 interface UserNavigationProps {
-  user: User
+  user: User | null
   selectedPage?: string
   setTooltip?: (value: string | undefined) => void
 }
@@ -85,7 +85,7 @@ export function UserNavigation({
 
   useEffect(() => {
     switch (
-      user.id != null
+      user?.id != null
         ? getJourneyTooltip(journeysData.journeys, user.id)
         : undefined
     ) {
@@ -96,7 +96,7 @@ export function UserNavigation({
         setTooltip?.(t('New Journey'))
         break
     }
-  }, [journeysData.journeys, user.id, t, setTooltip])
+  }, [journeysData.journeys, user?.id, t, setTooltip])
   function handleImpersonateClick(): void {
     setImpersonateOpen(true)
   }
@@ -113,7 +113,7 @@ export function UserNavigation({
     setProfileAnchorEl(null)
   }
 
-  return user.id != null && data.me != null ? (
+  return user?.id != null && data.me != null ? (
     <>
       <Divider sx={{ mb: 0.5, mx: 6, borderColor: 'secondary.main' }} />
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (

@@ -796,6 +796,7 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   showAssistant: Boolean
+  customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
