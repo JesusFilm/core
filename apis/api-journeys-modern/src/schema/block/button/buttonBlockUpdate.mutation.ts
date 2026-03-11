@@ -26,67 +26,65 @@ async function validateBlock(
 }
 
 builder.mutationField('buttonBlockUpdate', (t) =>
-  t
-    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
-    .field({
-      type: ButtonBlock,
-      nullable: true,
-      override: {
-        from: 'api-journeys'
-      },
-      args: {
-        id: t.arg({ type: 'ID', required: true }),
-        input: t.arg({ type: ButtonBlockUpdateInput, required: true }),
-        journeyId: t.arg({
-          type: 'ID',
-          required: false,
-          description: 'drop this parameter after merging teams'
-        })
-      },
-      resolve: async (_parent, args, context) => {
-        const { id, input: initialInput } = args
-        const input = { ...initialInput }
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
+    type: ButtonBlock,
+    nullable: true,
+    override: {
+      from: 'api-journeys'
+    },
+    args: {
+      id: t.arg({ type: 'ID', required: true }),
+      input: t.arg({ type: ButtonBlockUpdateInput, required: true }),
+      journeyId: t.arg({
+        type: 'ID',
+        required: false,
+        description: 'drop this parameter after merging teams'
+      })
+    },
+    resolve: async (_parent, args, context) => {
+      const { id, input: initialInput } = args
+      const input = { ...initialInput }
 
-        const block = await fetchBlockWithJourneyAcl(id)
+      const block = await fetchBlockWithJourneyAcl(id)
 
-        if (
-          !ability(
-            Action.Update,
-            abilitySubject('Journey', block.journey),
-            context.user
-          )
-        ) {
-          throw new GraphQLError('user is not allowed to update block', {
-            extensions: { code: 'FORBIDDEN' }
-          })
-        }
-
-        if (input.startIconId != null) {
-          if (!(await validateBlock(input.startIconId, id))) {
-            throw new GraphQLError('Start icon does not exist', {
-              extensions: { code: 'BAD_USER_INPUT' }
-            })
-          }
-        }
-
-        if (input.endIconId != null) {
-          if (!(await validateBlock(input.endIconId, id))) {
-            throw new GraphQLError('End icon does not exist', {
-              extensions: { code: 'BAD_USER_INPUT' }
-            })
-          }
-        }
-
-        return await update(id, {
-          ...input,
-          settings:
-            input.settings != null
-              ? {
-                  ...((block.settings ?? {}) as Prisma.JsonObject),
-                  ...(input.settings as Prisma.JsonObject)
-                }
-              : undefined
+      if (
+        !ability(
+          Action.Update,
+          abilitySubject('Journey', block.journey),
+          context.user
+        )
+      ) {
+        throw new GraphQLError('user is not allowed to update block', {
+          extensions: { code: 'FORBIDDEN' }
         })
       }
-    })
+
+      if (input.startIconId != null) {
+        if (!(await validateBlock(input.startIconId, id))) {
+          throw new GraphQLError('Start icon does not exist', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
+        }
+      }
+
+      if (input.endIconId != null) {
+        if (!(await validateBlock(input.endIconId, id))) {
+          throw new GraphQLError('End icon does not exist', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
+        }
+      }
+
+      return await update(id, {
+        ...input,
+        settings:
+          input.settings != null
+            ? {
+                ...((block.settings ?? {}) as Prisma.JsonObject),
+                ...(input.settings as Prisma.JsonObject)
+              }
+            : undefined
+      })
+    }
+  })
 )
