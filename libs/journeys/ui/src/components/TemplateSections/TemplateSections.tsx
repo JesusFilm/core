@@ -13,6 +13,16 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
+/**
+ * QA-only templates use this slug prefix. They are intentionally always hidden
+ * from the public gallery so real users never see them. QA testers access them
+ * directly via their template URL.
+ * Remove this constant and the filter below once the customizableMedia feature
+ * is stable and the QA template is deleted.
+ * See TODO ENG-3584
+ */
+export const QA_ONLY_TEMPLATE_SLUG_PREFIX = 'qa-customizable-media-test'
+
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }
 }
@@ -47,18 +57,21 @@ export function TemplateSections({
     const contents: Contents = {}
     let collection: Journey[] = []
     if (data != null) {
+      const visibleJourneys = data.journeys.filter(
+        ({ slug }) => !slug.startsWith(QA_ONLY_TEMPLATE_SLUG_PREFIX)
+      )
       const featuredAndNew = [
-        ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
+        ...visibleJourneys.filter(({ featuredAt }) => featuredAt != null),
         ...take(
-          data.journeys.filter(({ featuredAt }) => featuredAt == null),
+          visibleJourneys.filter(({ featuredAt }) => featuredAt == null),
           10
         )
       ]
-      const mostRelevant = data.journeys.filter(({ tags }) =>
+      const mostRelevant = visibleJourneys.filter(({ tags }) =>
         tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
       )
       collection = tagIds == null ? featuredAndNew : mostRelevant
-      data.journeys.forEach((journey) => {
+      visibleJourneys.forEach((journey) => {
         journey.tags.forEach((tag) => {
           if (contents[tag.id] == null)
             contents[tag.id] = {
