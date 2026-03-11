@@ -18,7 +18,7 @@ export default function prismaConfig(tsconfigRootDir) {
       }
     },
     {
-      files: ['**/client.ts', '**/generated.ts'],
+      files: ['**/client.ts'],
       rules: {
         'import/no-useless-path-segments': 'off'
       }
