@@ -4,7 +4,6 @@ import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -14,6 +13,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
 import { Role } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth'
 import { HelpScoutBeacon } from '../../../HelpScoutBeacon'
 import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
@@ -36,7 +36,7 @@ export const GET_ROLE = gql`
 `
 
 interface MenuProps {
-  user?: User
+  user?: User | null
 }
 
 export function Menu({ user }: MenuProps): ReactElement {

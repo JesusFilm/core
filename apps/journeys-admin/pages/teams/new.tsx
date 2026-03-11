@@ -1,9 +1,4 @@
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { GetServerSidePropsContext } from 'next'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -13,13 +8,19 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiv
 
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
+import { useAuth } from '../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CURRENT_USER } from '../../src/libs/useCurrentUserLazyQuery'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
-function TeamsNewPage(): ReactElement {
+export default function TeamsNewPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
 
   useHandleNewAccountRedirect()
 
@@ -29,24 +30,23 @@ function TeamsNewPage(): ReactElement {
       <OnboardingPageWrapper
         title={t('Create Your Workspace')}
         emailSubject={t('A question about creating a team for the first time.')}
-        user={user}
+        user={user ?? undefined}
       >
-        <TeamOnboarding user={user} />
+        <TeamOnboarding user={user ?? undefined} />
       </OnboardingPageWrapper>
     </>
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+  const user = toUser(tokens)
 
   const { apolloClient, redirect, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
@@ -76,6 +76,7 @@ export const getServerSideProps = withUserTokenSSR({
         destination: '/?onboarding=true'
       },
       props: {
+        userSerialized: JSON.stringify(user),
         initialApolloState: apolloClient.cache.extract(),
         ...translations
       }
@@ -84,12 +85,9 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       initialApolloState: apolloClient.cache.extract(),
       ...translations
     }
   }
-})
-
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TeamsNewPage)
+}
