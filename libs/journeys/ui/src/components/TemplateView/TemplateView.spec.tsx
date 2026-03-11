@@ -15,7 +15,6 @@ import {
 } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
-
 import { QA_ONLY_TEMPLATE_SLUG_PREFIX } from '../TemplateSections'
 
 import { defaultJourney } from './data'
@@ -410,15 +409,21 @@ describe('TemplateView', () => {
       }
 
       const { queryByRole, getByRole } = render(
-        <MockedProvider mocks={[buildRelatedJourneysMock([relatedJourneyBase, qaJourney])]}>
-          <JourneyProvider value={{ journey: journeyWithTags, variant: 'admin' }}>
+        <MockedProvider
+          mocks={[buildRelatedJourneysMock([relatedJourneyBase, qaJourney])]}
+        >
+          <JourneyProvider
+            value={{ journey: journeyWithTags, variant: 'admin' }}
+          >
             <TemplateView authUser={{} as unknown as User} />
           </JourneyProvider>
         </MockedProvider>
       )
 
       await waitFor(() =>
-        expect(getByRole('heading', { name: 'Related Templates' })).toBeInTheDocument()
+        expect(
+          getByRole('heading', { name: 'Related Templates' })
+        ).toBeInTheDocument()
       )
       expect(
         queryByRole('heading', { name: 'QA Test Journey' })
@@ -427,15 +432,21 @@ describe('TemplateView', () => {
 
     it('should show a non-QA template in Related Templates', async () => {
       const { getByRole } = render(
-        <MockedProvider mocks={[buildRelatedJourneysMock([relatedJourneyBase])]}>
-          <JourneyProvider value={{ journey: journeyWithTags, variant: 'admin' }}>
+        <MockedProvider
+          mocks={[buildRelatedJourneysMock([relatedJourneyBase])]}
+        >
+          <JourneyProvider
+            value={{ journey: journeyWithTags, variant: 'admin' }}
+          >
             <TemplateView authUser={{} as unknown as User} />
           </JourneyProvider>
         </MockedProvider>
       )
 
       await waitFor(() =>
-        expect(getByRole('heading', { name: 'Related Templates' })).toBeInTheDocument()
+        expect(
+          getByRole('heading', { name: 'Related Templates' })
+        ).toBeInTheDocument()
       )
       expect(
         getByRole('heading', { name: 'Related Template' })
