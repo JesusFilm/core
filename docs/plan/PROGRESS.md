@@ -13,10 +13,10 @@
 - **task-number**: 11
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
-- **status**: running
+- **status**: checkpoint
 - **last-result**: pass
 - **next-task**: none
-- **tasks-since-checkpoint**: 10
+- **tasks-since-checkpoint**: 0
 
 ## next-task values
 
@@ -41,3 +41,36 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 8 | 2026-03-11T22:49:09Z | Remove Max size is 1 GB helper text from UploadButton | pass | Removed defaultMessage prop, caption only shows on error now, updated 2 unit tests |
 | 9 | 2026-03-11T22:49:51Z | Investigate — queue resize Upload button to medium | investigated | Feature task 5 from function.md (original task 7); change size=small/height:32 to size=medium/height:40 |
 | 10 | 2026-03-11T22:52:53Z | Change Upload button from size=small/height:32 to size=medium/height:40 | pass | Changed in UploadButton component; all 546 test suites pass |
+
+## Checkpoint — 2026-03-11T22:52:53Z
+
+Tasks completed since last checkpoint: 10
+Last task: Change Upload button from size=small/height:32 to size=medium/height:40
+Last result: pass
+Tests: 546 suites passed, 2847 tests passed, 0 failures
+Status: paused for review
+
+### Progress summary
+
+**Setup tasks completed (3):**
+- Added data-testid attributes to YouTube TextField, Set button, Upload button
+- Created e2e page object (customization-media-page.ts) with Page Object Model
+- Created e2e test file (youtube-video.spec.ts) with video recording and smoke test
+
+**Feature tasks completed (2 of 7):**
+- Removed "Max size is 1 GB" helper text from UploadButton
+- Resized Upload button from small/32px to medium/40px
+
+**Remaining feature tasks (5 of 7):**
+- Change YouTube URL TextField to variant="filled" with hiddenLabel
+- Remove custom error-like focus styling on YouTube TextField
+- Add placeholder "Paste a YouTube link..." and helper caption
+- Remove setYoutubeUrl('') so URL stays visible after submit
+- Implement auto-submit with 800ms debounce, remove "Set" button
+
+**Remaining e2e tasks (~5):**
+- YouTube paste e2e, invalid URL e2e, upload button size e2e, filled variant e2e, final verification
+
+To resume: run `/build-loop project=/workspaces/core action=resume`
+To override next task: edit `next-task` in PROGRESS.md, then resume.
+To skip to next phase: set `phase-complete: true` in PROGRESS.md, then resume.
