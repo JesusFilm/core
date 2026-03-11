@@ -4,9 +4,15 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 
 import { PasswordPage } from './PasswordPage'
 
+const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+
 jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
   signInWithEmailAndPassword: jest.fn()
+}))
+
+jest.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: jest.fn(),
+  loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
 describe('PasswordPage', () => {

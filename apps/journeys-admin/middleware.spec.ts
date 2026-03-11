@@ -1,6 +1,17 @@
 import { NextRequest } from 'next/server'
 
-import { COOKIE_FINGERPRINT, middleware } from './middleware'
+import middleware, { COOKIE_FINGERPRINT } from './middleware'
+
+jest.mock('next-firebase-auth-edge', () => ({
+  authMiddleware: jest.fn(
+    async (
+      _req: NextRequest,
+      options: { handleInvalidToken: () => Promise<Response> }
+    ) => {
+      return options.handleInvalidToken()
+    }
+  )
+}))
 
 describe('middleware', () => {
   const url = 'http://localhost:4200/'
