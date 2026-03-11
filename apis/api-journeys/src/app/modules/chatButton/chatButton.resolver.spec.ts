@@ -92,23 +92,23 @@ describe('ChatButtonResolver', () => {
     prismaService.chatButton.findMany = jest.fn().mockReturnValue([chatButton])
     prismaService.chatButton.update = jest
       .fn()
-      .mockReturnValue([
-        { ...chatButton, link: 'm.me/username', platform: 'viber' }
-      ])
+      .mockReturnValue({
+        ...chatButton,
+        link: 'm.me/username',
+        platform: 'viber'
+      })
 
     const result = await resolver.chatButtonUpdate('1', 'journeyId', {
       link: 'm.me/username',
       platform: MessagePlatform.viber
     })
-    expect(result).toEqual([
-      {
-        id: '1',
-        journeyId: 'journeyId',
-        link: 'm.me/username',
-        platform: 'viber',
-        customizable: null
-      }
-    ])
+    expect(result).toEqual({
+      id: '1',
+      journeyId: 'journeyId',
+      link: 'm.me/username',
+      platform: 'viber',
+      customizable: null
+    })
   })
 
   it('should update customizable field on a ChatButton', async () => {
