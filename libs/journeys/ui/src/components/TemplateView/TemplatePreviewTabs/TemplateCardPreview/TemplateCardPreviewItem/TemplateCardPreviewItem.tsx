@@ -58,18 +58,9 @@ export function TemplateCardPreviewItem({
     <Box
       sx={{
         ...cardSx,
-        width: isSelected
-          ? {
-              xs: cardWidth.xs * SELECTED_SCALE,
-              sm: cardWidth.sm * SELECTED_SCALE
-            }
-          : cardWidth,
-        height: isSelected
-          ? {
-              xs: cardHeight.xs * SELECTED_SCALE,
-              sm: cardHeight.sm * SELECTED_SCALE
-            }
-          : cardHeight,
+        width: cardWidth,
+        height: cardHeight,
+        transform: isSelected ? `scale(${SELECTED_SCALE})` : 'scale(1)',
         boxShadow: isSelected
           ? `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
              0px 3px 3px 0px rgba(0, 0, 0, 0.12),
@@ -91,18 +82,8 @@ export function TemplateCardPreviewItem({
           sx={{
             position: 'absolute',
             display: 'block',
-            width: isSelected
-              ? {
-                  xs: framePortal.width.xs * SELECTED_SCALE,
-                  sm: framePortal.width.sm * SELECTED_SCALE
-                }
-              : framePortal.width,
-            height: isSelected
-              ? {
-                  xs: framePortal.height.xs * SELECTED_SCALE,
-                  sm: framePortal.height.sm * SELECTED_SCALE
-                }
-              : framePortal.height,
+            width: framePortal.width,
+            height: framePortal.height,
             zIndex: 2,
             cursor: 'grab',
             borderRadius: framePortal.borderRadius
@@ -110,18 +91,8 @@ export function TemplateCardPreviewItem({
         />
         <FramePortal
           sx={{
-            width: isSelected
-              ? {
-                  xs: framePortal.width.xs * SELECTED_SCALE,
-                  sm: framePortal.width.sm * SELECTED_SCALE
-                }
-              : framePortal.width,
-            height: isSelected
-              ? {
-                  xs: framePortal.height.xs * SELECTED_SCALE,
-                  sm: framePortal.height.sm * SELECTED_SCALE
-                }
-              : framePortal.height,
+            width: framePortal.width,
+            height: framePortal.height,
             borderRadius: framePortal.borderRadius
           }}
           dir={rtl ? 'rtl' : 'ltr'}
