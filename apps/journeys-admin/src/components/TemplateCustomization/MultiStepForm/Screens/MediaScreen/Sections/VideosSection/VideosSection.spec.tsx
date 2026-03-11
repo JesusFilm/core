@@ -293,4 +293,18 @@ describe('VideosSection', () => {
     })
     expect(screen.queryByText('Max size is 1 GB')).not.toBeInTheDocument()
   })
+
+  it('renders YouTube input with placeholder text', () => {
+    renderVideosSection()
+    expect(
+      screen.getByPlaceholderText('Paste a YouTube link...')
+    ).toBeInTheDocument()
+  })
+
+  it('renders helper caption for supported YouTube link formats', () => {
+    renderVideosSection()
+    expect(
+      screen.getByText('youtube.com, youtu.be and shorts links supported')
+    ).toBeInTheDocument()
+  })
 })

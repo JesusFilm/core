@@ -204,12 +204,16 @@ export function VideosSection({
             variant="filled"
             hiddenLabel
             size="small"
+            placeholder={t('Paste a YouTube link...')}
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
             onKeyDown={handleYouTubeKeyDown}
             disabled={loading}
             error={youtubeUrlError != null}
-            helperText={youtubeUrlError}
+            helperText={
+              youtubeUrlError ??
+              t('youtube.com, youtu.be and shorts links supported')
+            }
             inputProps={{ 'aria-label': t('YouTube URL') }}
             sx={{ flex: 1 }}
           />
