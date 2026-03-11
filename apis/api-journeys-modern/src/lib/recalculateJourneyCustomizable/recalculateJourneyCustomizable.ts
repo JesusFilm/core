@@ -10,6 +10,32 @@ const CUSTOMIZABLE_LINK_BLOCK_TYPES = [
 const CUSTOMIZABLE_MEDIA_BLOCK_TYPES = ['ImageBlock', 'VideoBlock']
 
 /**
+ * Iteratively removes blocks whose parentBlockId references a block not in the
+ * set. This handles children of soft-deleted parents: the parent is excluded by
+ * the `deletedAt: null` query, so its children become orphans and must also be
+ * excluded.
+ *
+ * e.g. A StepBlock is deleted (soft-deleted), but its child CardBlock and
+ * grandchild ImageBlock remain with `deletedAt: null`. This filter ensures
+ * those orphaned descendants are not considered when checking for customizable
+ * content.
+ */
+function removeOrphanedBlocks<
+  T extends { id: string; parentBlockId: string | null }
+>(blocks: T[]): T[] {
+  let filteredBlocks = blocks
+  let length = filteredBlocks.length
+  do {
+    length = filteredBlocks.length
+    const ids: string[] = filteredBlocks.map((b) => b.id)
+    filteredBlocks = filteredBlocks.filter(
+      (b) => b.parentBlockId == null || ids.includes(b.parentBlockId)
+    )
+  } while (length !== filteredBlocks.length)
+  return filteredBlocks
+}
+
+/**
  * Keeps `journey.customizable` in sync by recalculating it from blocks,
  * actions, and customization fields.
  *
@@ -33,10 +59,11 @@ export async function recalculateJourneyCustomizable(
   if (journey == null) return
   if (journey.template !== true) return
 
-  const blocks = await prisma.block.findMany({
+  const allBlocks = await prisma.block.findMany({
     where: { journeyId, deletedAt: null },
     include: { action: true }
   })
+  const blocks = removeOrphanedBlocks(allBlocks)
 
   const fieldsCount = journey._count.journeyCustomizationFields
 

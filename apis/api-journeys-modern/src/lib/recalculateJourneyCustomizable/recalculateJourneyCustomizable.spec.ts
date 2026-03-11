@@ -246,4 +246,84 @@ describe('recalculateJourneyCustomizable', () => {
 
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
   })
+
+  describe('remove orphaned blocks', () => {
+    it('should ignore customizable block whose parent StepBlock was deleted', async () => {
+      prismaMock.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
+      prismaMock.block.findMany.mockResolvedValueOnce([
+        {
+          id: 'cardId',
+          typename: 'CardBlock',
+          parentBlockId: 'deletedStepId'
+        },
+        {
+          id: 'imageId',
+          typename: 'ImageBlock',
+          parentBlockId: 'cardId',
+          customizable: true,
+          action: null
+        }
+      ] as any)
+
+      await recalculateJourneyCustomizable('journeyId')
+
+      expect(prismaMock.journey.update).not.toHaveBeenCalled()
+    })
+
+    it('should ignore customizable action whose parent StepBlock was deleted', async () => {
+      prismaMock.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
+      prismaMock.block.findMany.mockResolvedValueOnce([
+        {
+          id: 'cardId',
+          typename: 'CardBlock',
+          parentBlockId: 'deletedStepId'
+        },
+        {
+          id: 'buttonId',
+          typename: 'ButtonBlock',
+          parentBlockId: 'cardId',
+          action: {
+            parentBlockId: 'buttonId',
+            customizable: true,
+            blockId: null,
+            url: 'https://example.com'
+          }
+        }
+      ] as any)
+
+      await recalculateJourneyCustomizable('journeyId')
+
+      expect(prismaMock.journey.update).not.toHaveBeenCalled()
+    })
+
+    it('should count customizable blocks with intact parent chain', async () => {
+      prismaMock.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
+      prismaMock.block.findMany.mockResolvedValueOnce([
+        {
+          id: 'stepId',
+          typename: 'StepBlock',
+          parentBlockId: null
+        },
+        {
+          id: 'cardId',
+          typename: 'CardBlock',
+          parentBlockId: 'stepId'
+        },
+        {
+          id: 'imageId',
+          typename: 'ImageBlock',
+          parentBlockId: 'cardId',
+          customizable: true,
+          action: null
+        }
+      ] as any)
+
+      await recalculateJourneyCustomizable('journeyId')
+
+      expect(prismaMock.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { customizable: true }
+      })
+    })
+  })
 })
