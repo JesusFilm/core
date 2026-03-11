@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { Suspense } from 'react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
@@ -17,6 +16,7 @@ import {
   Role,
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 import { GET_ME } from './UserNavigation'
@@ -79,7 +79,10 @@ describe('NavigationDrawer', () => {
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',
       email: 'amin@email.com',
-      firebaseUser: { isAnonymous: false }
+      phoneNumber: null,
+      emailVerified: true,
+      token: 'mock-token',
+      isAnonymous: false
     } as unknown as User
 
     const getMeMock: MockedResponse<GetMe> = {
@@ -174,7 +177,7 @@ describe('NavigationDrawer', () => {
     it('should hide user if anonymous', async () => {
       const anonymousUser = {
         ...user,
-        firebaseUser: { isAnonymous: true }
+        isAnonymous: true
       } as unknown as User
       render(
         <MockedProvider

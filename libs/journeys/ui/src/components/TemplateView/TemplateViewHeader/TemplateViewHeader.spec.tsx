@@ -1,11 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
+import { AuthUser as User } from '../../../libs/auth/types'
 import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
