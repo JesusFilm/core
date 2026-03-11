@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 14
+- **task-number**: 15
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: investigated
-- **next-task**: "Add placeholder t('Paste a YouTube link...') and helper caption t('youtube.com, youtu.be and shorts links supported') to the YouTube URL TextField in VideosSection.tsx, and update unit tests"
-- **tasks-since-checkpoint**: 3
+- **last-result**: pass
+- **next-task**: none
+- **tasks-since-checkpoint**: 4
 
 ## next-task values
 
@@ -44,3 +44,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 11 | 2026-03-11T22:56:20Z | Investigate — queue change TextField to filled variant | investigated | Feature task 6 from function.md (original task 5); match LinksForm.tsx pattern with variant="filled" hiddenLabel |
 | 12 | 2026-03-11T22:59:07Z | Change YouTube URL TextField to variant="filled" with hiddenLabel | pass | Added variant="filled" and hiddenLabel, removed label prop; all 2847 tests pass |
 | 13 | 2026-03-11T23:00:22Z | Investigate — queue add placeholder and helper caption | investigated | Task 7 (remove focus styling) is no-op — filled variant already uses default MUI focus. Skipping to task 8 (Task 4): add placeholder and helper caption |
+| 14 | 2026-03-11T23:03:22Z | Add placeholder and helper caption to YouTube URL TextField | pass | Added placeholder="Paste a YouTube link..." and helper text for supported formats; 2 new unit tests; 2849 tests pass |
