@@ -58,7 +58,7 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true pnpm exec ts-node -P apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec tsx --tsconfig apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/schema/index.ts"
       }
     },
     "subgraph-check": {
@@ -88,7 +88,7 @@
     "sites-add-goals": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node -P apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/scripts/sites-add-goals.ts"
+        "command": "pnpm exec tsx --tsconfig apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/scripts/sites-add-goals.ts"
       }
     }
   }

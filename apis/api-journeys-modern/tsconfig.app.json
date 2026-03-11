@@ -15,12 +15,5 @@
     "jest.config.ts",
     "test/**/*.ts"
   ],
-  "include": ["**/*.ts", "**/*.tsx"],
-  "ts-node": {
-    "transpileOnly": true,
-    "compilerOptions": {
-      "module": "commonjs",
-      "moduleResolution": "node"
-    }
-  }
+  "include": ["**/*.ts", "**/*.tsx"]
 }
