@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 16
+- **task-number**: 17
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: investigated
-- **next-task**: "In handleYouTubeSubmit() in VideosSection.tsx, remove the setYoutubeUrl('') call so the URL stays visible after successful submit, and update unit tests"
-- **tasks-since-checkpoint**: 5
+- **last-result**: pass
+- **next-task**: none
+- **tasks-since-checkpoint**: 6
 
 ## next-task values
 
@@ -46,3 +46,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 13 | 2026-03-11T23:00:22Z | Investigate — queue add placeholder and helper caption | investigated | Task 7 (remove focus styling) is no-op — filled variant already uses default MUI focus. Skipping to task 8 (Task 4): add placeholder and helper caption |
 | 14 | 2026-03-11T23:03:22Z | Add placeholder and helper caption to YouTube URL TextField | pass | Added placeholder="Paste a YouTube link..." and helper text for supported formats; 2 new unit tests; 2849 tests pass |
 | 15 | 2026-03-11T23:04:13Z | Investigate — queue keep URL after submit | investigated | Feature task 9 from function.md (original task 1); remove setYoutubeUrl('') in handleYouTubeSubmit |
+| 16 | 2026-03-11T23:07:03Z | Remove setYoutubeUrl('') to keep URL visible after submit | pass | Removed one line in handleYouTubeSubmit; all 2849 tests pass |
