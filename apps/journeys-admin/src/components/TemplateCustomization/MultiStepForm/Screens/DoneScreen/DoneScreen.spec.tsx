@@ -24,9 +24,9 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
+jest.mock('../../../../../libs/auth', () => ({
   __esModule: true,
-  useUser: () => ({ clientInitialized: false })
+  useAuth: () => ({ user: null })
 }))
 
 jest.mock('react-i18next', () => ({
