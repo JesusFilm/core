@@ -31,8 +31,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
   if (tokens != null) {
     const signInProvider = tokens.decodedToken.firebase?.sign_in_provider
-    const isAnonymous =
-      signInProvider == null || signInProvider === 'anonymous'
+    const isAnonymous = signInProvider == null || signInProvider === 'anonymous'
     if (!isAnonymous) return redirectToApp(ctx)
   }
 

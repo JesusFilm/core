@@ -1,10 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import {
-  UserCredential,
-  linkWithPopup,
-  signInWithPopup
-} from 'firebase/auth'
+import { UserCredential, linkWithPopup, signInWithPopup } from 'firebase/auth'
 import { NextRouter, useRouter } from 'next/router'
 
 import {
@@ -107,9 +103,7 @@ describe('SignInServiceButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Continue with Okta' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Continue with Okta' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
     await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
   })

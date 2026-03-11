@@ -20,7 +20,7 @@ test('Filters', async ({ page }) => {
   })
 
   const subtitlesSection = filterList.locator('div').filter({
-    hasText: 'SubtitlesSearch LanguagesSearch Languages53 languages'
+    hasText: 'SubtitlesSearch LanguagesSearch Languages61 languages'
   })
 
   // Choose audio language
