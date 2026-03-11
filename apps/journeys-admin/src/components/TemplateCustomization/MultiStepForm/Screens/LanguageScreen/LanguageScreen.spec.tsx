@@ -47,18 +47,33 @@ import { LanguageScreen } from './LanguageScreen'
 
 const defaultMockUser = {
   id: 'user-id',
-  email: 'urim@thumim.example.io'
+  uid: 'user-id',
+  email: 'urim@thumim.example.io',
+  displayName: null,
+  photoURL: null,
+  phoneNumber: null,
+  emailVerified: false,
+  token: 'mock-token',
+  isAnonymous: false,
+  providerId: ''
 }
 
 let mockUser: {
   id: string | null
+  uid: string | null
   email: string | null
-  firebaseUser?: { isAnonymous: boolean }
+  displayName: string | null
+  photoURL: string | null
+  phoneNumber: string | null
+  emailVerified: boolean
+  token: string
+  isAnonymous?: boolean
+  providerId: string
 } = defaultMockUser
 
-jest.mock('next-firebase-auth', () => ({
+jest.mock('../../../../../libs/auth', () => ({
   __esModule: true,
-  useUser: () => mockUser
+  useAuth: () => ({ user: mockUser })
 }))
 
 jest.mock('next/router', () => ({
@@ -413,11 +428,7 @@ describe('LanguageScreen', () => {
   })
 
   it('for anonymous user: creates guest team, duplicates journey and redirects to customize', async () => {
-    mockUser = {
-      id: null,
-      email: null,
-      firebaseUser: { isAnonymous: true }
-    }
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
     const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
       request: { query: GET_CURRENT_USER },
@@ -506,11 +517,7 @@ describe('LanguageScreen', () => {
   })
 
   it('for anonymous user with existing team: reuses existing team and does not create a new one', async () => {
-    mockUser = {
-      id: null,
-      email: null,
-      firebaseUser: { isAnonymous: true }
-    }
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
     const existingGuestTeamId = 'teamId1'
     const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
@@ -920,7 +927,18 @@ describe('LanguageScreen', () => {
   })
 
   it('disables Next button when user is not signed in and guest flow flag is off', () => {
-    mockUser = { id: null, email: null }
+    mockUser = {
+      id: null,
+      uid: null,
+      email: null,
+      displayName: null,
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: false,
+      token: '',
+      isAnonymous: false,
+      providerId: ''
+    }
 
     render(
       <MockedProvider
