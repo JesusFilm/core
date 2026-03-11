@@ -429,7 +429,7 @@ describe('TemplateView', () => {
     })
 
     it('should show a non-QA template in Related Templates', async () => {
-      const { getByRole } = render(
+      const { findByRole } = render(
         <MockedProvider
           mocks={[buildRelatedJourneysMock([relatedJourneyBase])]}
         >
@@ -441,13 +441,8 @@ describe('TemplateView', () => {
         </MockedProvider>
       )
 
-      await waitFor(() =>
-        expect(
-          getByRole('heading', { name: 'Related Templates' })
-        ).toBeInTheDocument()
-      )
       expect(
-        getByRole('heading', { name: 'Related Template' })
+        await findByRole('heading', { name: 'Related Template' })
       ).toBeInTheDocument()
     })
   })
