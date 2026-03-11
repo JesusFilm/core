@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 8
+- **task-number**: 9
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: investigated
-- **next-task**: "Remove Max size is 1 GB helper text from UploadButton in VideosSection.tsx by removing the defaultMessage prop and caption Typography, then update unit tests accordingly"
-- **tasks-since-checkpoint**: 7
+- **last-result**: pass
+- **next-task**: none
+- **tasks-since-checkpoint**: 8
 
 ## next-task values
 
@@ -38,3 +38,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 5 | 2026-03-11T22:43:55Z | Investigate — queue create e2e test file | investigated | Setup task 3 from function.md; scaffold e2e spec with video recording and smoke test |
 | 6 | 2026-03-11T22:45:41Z | Create e2e test file youtube-video.spec.ts with smoke test | pass | Uses authedPage fixture, test.use({ video: 'on' }), navigates to Media screen, verifies VideosSection visible |
 | 7 | 2026-03-11T22:46:22Z | Investigate — queue remove Max size helper text | investigated | Feature task 4 from function.md (original task 3); simplest feature change, pure removal |
+| 8 | 2026-03-11T22:49:09Z | Remove Max size is 1 GB helper text from UploadButton | pass | Removed defaultMessage prop, caption only shows on error now, updated 2 unit tests |
