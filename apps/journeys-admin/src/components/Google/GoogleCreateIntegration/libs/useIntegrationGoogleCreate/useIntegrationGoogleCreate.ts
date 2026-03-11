@@ -79,7 +79,9 @@ export function useIntegrationGoogleCreate({
         if (integrationId != null) {
           await onSuccessRef.current?.(integrationId)
         } else {
-          await onErrorRef.current?.(new Error('Integration creation returned no ID'))
+          await onErrorRef.current?.(
+            new Error('Integration creation returned no ID')
+          )
         }
       } catch (error) {
         await onErrorRef.current?.(
@@ -91,13 +93,7 @@ export function useIntegrationGoogleCreate({
     }
 
     void exchangeCode()
-  }, [
-    router,
-    teamId,
-    redirectUri,
-    integrationGoogleCreate,
-    user
-  ])
+  }, [router, teamId, redirectUri, integrationGoogleCreate, user])
 
   return { loading }
 }

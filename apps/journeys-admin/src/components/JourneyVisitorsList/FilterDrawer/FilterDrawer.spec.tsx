@@ -21,9 +21,12 @@ jest.mock('./GoogleSheetsSyncDialog', () => ({
   }
 }))
 
-jest.mock('../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate', () => ({
-  useIntegrationGoogleCreate: jest.fn()
-}))
+jest.mock(
+  '../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate',
+  () => ({
+    useIntegrationGoogleCreate: jest.fn()
+  })
+)
 
 const mockUseIntegrationGoogleCreate =
   useIntegrationGoogleCreate as jest.MockedFunction<
@@ -256,8 +259,7 @@ describe('FilterDrawer', () => {
         </SnackbarProvider>
       )
 
-      const { onSuccess } =
-        mockUseIntegrationGoogleCreate.mock.calls[0][0]
+      const { onSuccess } = mockUseIntegrationGoogleCreate.mock.calls[0][0]
 
       await onSuccess?.('integrationId')
 
@@ -266,7 +268,9 @@ describe('FilterDrawer', () => {
           screen.getByTestId('google-sheets-sync-dialog')
         ).toBeInTheDocument()
       )
-      expect(screen.getByText('Google integration created successfully')).toBeInTheDocument()
+      expect(
+        screen.getByText('Google integration created successfully')
+      ).toBeInTheDocument()
     })
 
     it('should show error snackbar on integration create error', async () => {
@@ -278,8 +282,7 @@ describe('FilterDrawer', () => {
         </SnackbarProvider>
       )
 
-      const { onError } =
-        mockUseIntegrationGoogleCreate.mock.calls[0][0]
+      const { onError } = mockUseIntegrationGoogleCreate.mock.calls[0][0]
 
       await onError?.(new Error('Something went wrong'))
 
