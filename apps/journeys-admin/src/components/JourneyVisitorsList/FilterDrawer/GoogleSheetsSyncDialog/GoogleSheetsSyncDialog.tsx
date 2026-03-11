@@ -162,7 +162,7 @@ export function GoogleSheetsSyncDialog({
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
-  const { data: integrationsData, refetch: refetchIntegrations } =
+  const { data: integrationsData } =
     useIntegrationQuery({
       teamId: journeyData?.journey?.team?.id as string
     })
@@ -196,26 +196,29 @@ export function GoogleSheetsSyncDialog({
       variables: { filter: { journeyId } },
       fetchPolicy: 'network-only'
     })
+  }, [open, journeyId, loadSyncs])
 
-    // Check if returning from Google integration creation
-    const integrationCreated = router.query.integrationCreated === 'true'
-    const openSyncDialog = router.query.openSyncDialog === 'true'
+  const integrationCreatedParam = router.query.integrationCreated
+  const openSyncDialogParam = router.query.openSyncDialog
 
-    if (integrationCreated && openSyncDialog) {
-      const newQuery = { ...router.query }
-      delete newQuery.integrationCreated
-      delete newQuery.openSyncDialog
-      void router.replace(
-        { pathname: router.pathname, query: newQuery },
-        undefined,
-        { shallow: true }
-      )
-      setGoogleDialogOpen(true)
-      enqueueSnackbar(t('Google integration created successfully'), {
-        variant: 'success'
-      })
-    }
-  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t])
+  useEffect(() => {
+    if (!open) return
+    if (integrationCreatedParam !== 'true' || openSyncDialogParam !== 'true')
+      return
+
+    const newQuery = { ...router.query }
+    delete newQuery.integrationCreated
+    delete newQuery.openSyncDialog
+    void router.replace(
+      { pathname: router.pathname, query: newQuery },
+      undefined,
+      { shallow: true }
+    )
+    setGoogleDialogOpen(true)
+    enqueueSnackbar(t('Google integration created successfully'), {
+      variant: 'success'
+    })
+  }, [open, integrationCreatedParam, openSyncDialogParam])
 
   useEffect(() => {
     if (open) return
