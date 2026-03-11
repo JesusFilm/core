@@ -18,6 +18,7 @@ import {
   CustomizationScreen,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
+import { getNextCustomizeScreen } from '../utils/getNextCustomizeScreen'
 import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizationRedirect'
 
 import { ProgressStepper } from './ProgressStepper'
@@ -35,6 +36,7 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
+  screens: CustomizationScreen[],
   handleNext: (overrideJourneyId?: string) => void
 ): ReactElement {
   switch (screen) {
@@ -43,7 +45,7 @@ function renderScreen(
     case 'text':
       return <TextScreen handleNext={handleNext} />
     case 'links':
-      return <LinksScreen handleNext={handleNext} />
+      return <LinksScreen screens={screens} handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
     case 'social':
@@ -95,13 +97,9 @@ export function MultiStepForm(): ReactElement {
   async function handleNext(overrideJourneyId?: string): Promise<void> {
     const targetJourneyId =
       typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
-    const currentIndex = screens.indexOf(activeScreen)
-    const isLastOrInvalidScreen =
-      currentIndex < 0 || currentIndex >= screens.length - 1
-    if (isLastOrInvalidScreen) return
-    void router.replace(
-      buildCustomizeUrl(targetJourneyId, screens[currentIndex + 1], undefined)
-    )
+    const nextScreen = getNextCustomizeScreen(screens, activeScreen)
+    if (nextScreen == null) return
+    void router.replace(buildCustomizeUrl(targetJourneyId, nextScreen, undefined))
   }
 
   return (
@@ -131,7 +129,7 @@ export function MultiStepForm(): ReactElement {
               />
             </Box>
           )}
-          {renderScreen(activeScreen, handleNext)}
+          {renderScreen(activeScreen, screens, handleNext)}
         </Stack>
       </Container>
     </TemplateVideoUploadProvider>
