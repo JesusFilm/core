@@ -59,8 +59,10 @@ export function getCustomizeFlowConfig(
   options: CustomizeFlowOptions = {}
 ): CustomizeFlowConfig {
   // Default false: outage-safe; when flag is missing/undefined, hide media step (new feature off).
-  const { customizableMedia: customizableMediaFlag = false, isNotSignedIn = false } =
-    options
+  const {
+    customizableMedia: customizableMediaFlag = false,
+    isNotSignedIn = false
+  } = options
 
   // Always include language, social, and done screens
   const baseScreens: CustomizationScreen[] = ['language', 'social', 'done']

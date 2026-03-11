@@ -40,7 +40,6 @@ import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
 
-
 jest.mock('next/router', () => ({
   useRouter: () => ({
     push: jest.fn(),
