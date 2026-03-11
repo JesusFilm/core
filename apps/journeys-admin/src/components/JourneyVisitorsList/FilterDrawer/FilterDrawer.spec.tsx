@@ -259,7 +259,7 @@ describe('FilterDrawer', () => {
       const { onSuccess } =
         mockUseIntegrationGoogleCreate.mock.calls[0][0]
 
-      onSuccess?.('integrationId')
+      await onSuccess?.('integrationId')
 
       await waitFor(() =>
         expect(
@@ -281,7 +281,7 @@ describe('FilterDrawer', () => {
       const { onError } =
         mockUseIntegrationGoogleCreate.mock.calls[0][0]
 
-      onError?.(new Error('Something went wrong'))
+      await onError?.(new Error('Something went wrong'))
 
       await waitFor(() =>
         expect(screen.getByText('Something went wrong')).toBeInTheDocument()

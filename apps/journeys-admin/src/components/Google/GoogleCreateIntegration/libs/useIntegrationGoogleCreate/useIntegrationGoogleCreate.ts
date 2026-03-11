@@ -1,7 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { useEffect, useMemo, useRef, useState } from 'react'
+
+import { useAuth } from '../../../../../libs/auth'
 
 export const INTEGRATION_GOOGLE_CREATE = gql`
   mutation IntegrationGoogleCreate($input: IntegrationGoogleCreateInput!) {
@@ -33,7 +34,7 @@ export function useIntegrationGoogleCreate({
   onError
 }: UseIntegrationGoogleCreateOptions): UseIntegrationGoogleCreateResult {
   const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [integrationGoogleCreate] = useMutation(INTEGRATION_GOOGLE_CREATE)
   const hasAttemptedExchangeRef = useRef(false)
@@ -50,7 +51,7 @@ export function useIntegrationGoogleCreate({
   useEffect(() => {
     const authCode = router.query.code as string | undefined
     if (authCode == null || teamId == null || redirectUri == null) return
-    if (!user.clientInitialized) return
+    if (user == null) return
     if (hasAttemptedExchangeRef.current) return
     hasAttemptedExchangeRef.current = true
 
@@ -95,7 +96,7 @@ export function useIntegrationGoogleCreate({
     teamId,
     redirectUri,
     integrationGoogleCreate,
-    user.clientInitialized
+    user
   ])
 
   return { loading }

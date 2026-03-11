@@ -1,8 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { ReactNode } from 'react'
+
+import { useAuth } from '../../../../../libs/auth'
 
 import {
   INTEGRATION_GOOGLE_CREATE,
@@ -13,12 +14,12 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  useUser: jest.fn()
+jest.mock('../../../../../libs/auth', () => ({
+  useAuth: jest.fn()
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
+const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
 
 function createWrapper(
   mocks: MockedResponse[] = []
@@ -54,9 +55,9 @@ const defaultRouter = {
 describe('useIntegrationGoogleCreate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockUseUser.mockReturnValue({
-      clientInitialized: true
-    } as ReturnType<typeof useUser>)
+    mockUseAuth.mockReturnValue({
+      user: { id: 'user-id' } as any
+    })
     mockUseRouter.mockReturnValue({ ...defaultRouter })
   })
 
@@ -117,10 +118,10 @@ describe('useIntegrationGoogleCreate', () => {
     expect(defaultRouter.replace).not.toHaveBeenCalled()
   })
 
-  it('should not trigger mutation when client is not initialized', () => {
-    mockUseUser.mockReturnValue({
-      clientInitialized: false
-    } as ReturnType<typeof useUser>)
+  it('should not trigger mutation when user is null', () => {
+    mockUseAuth.mockReturnValue({
+      user: null
+    })
     mockUseRouter.mockReturnValue({
       ...defaultRouter,
       query: { code: 'auth-code' }
