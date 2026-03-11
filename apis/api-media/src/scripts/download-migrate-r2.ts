@@ -476,6 +476,8 @@ async function main(): Promise<void> {
   } catch (error) {
     console.error({ error }, 'Download-migrate-r2 script failed')
     process.exit(1)
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
