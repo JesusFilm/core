@@ -17,6 +17,10 @@ const CUSTOMIZABLE_MEDIA_BLOCK_TYPES = ['ImageBlock', 'VideoBlock']
  *
  * If you add a customizable field to another block or action type, update the
  * detection logic here to check for it.
+ *
+ * This logic is mirrored in the modern API at
+ * `apis/api-journeys-modern/src/lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable.ts`.
+ * Any changes here must be kept in sync with that implementation.
  */
 @Injectable()
 export class JourneyCustomizableService {
