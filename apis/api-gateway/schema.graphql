@@ -176,7 +176,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): ButtonBlock @join__field(graph: API_JOURNEYS) 
+  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS) 
   cardBlockUpdate(
     id: ID!
