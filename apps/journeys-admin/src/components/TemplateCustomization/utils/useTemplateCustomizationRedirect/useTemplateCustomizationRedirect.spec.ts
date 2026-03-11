@@ -176,7 +176,7 @@ describe('useTemplateCustomizationRedirect', () => {
       renderHook(() => useTemplateCustomizationRedirect(params))
 
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'This step is not available for guests. You have been redirected.',
+        'This template cannot be customised by a guest.',
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
@@ -184,7 +184,7 @@ describe('useTemplateCustomizationRedirect', () => {
       )
     })
 
-    it('redirects guest when current screen is not allowed for guests', () => {
+    it('redirects guest to links screen when current screen is not allowed for guests', () => {
       const params = createParams({
         isGuest: true,
         guestFlowEnabled: true,
@@ -194,11 +194,11 @@ describe('useTemplateCustomizationRedirect', () => {
       renderHook(() => useTemplateCustomizationRedirect(params))
 
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'This step is not available for guests. You have been redirected.',
+        "The step you're trying to access is not available to guests, please sign up.",
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl('journey-1', getFirstGuestAllowedScreen(), true)
+        buildCustomizeUrl('journey-1', 'links' as CustomizationScreen, true)
       )
     })
 

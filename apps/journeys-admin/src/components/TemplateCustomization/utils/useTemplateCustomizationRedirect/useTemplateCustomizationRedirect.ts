@@ -74,19 +74,41 @@ export function useTemplateCustomizationRedirect({
     enqueueSnackbar
   ])
 
-  // 2. For guests: redirect if guest flow disabled or current screen not allowed
+  // 2. For guests: redirect if guest flow is disabled for this template
   useEffect(() => {
     if (!router.isReady || !journeyId || !isGuest) return
+    if (guestFlowEnabled) return
 
-    if (!guestFlowEnabled || !isScreenAllowedForGuest(activeScreen)) {
-      enqueueSnackbar(
-        t('This step is not available for guests. You have been redirected.'),
-        { variant: 'error', preventDuplicate: true }
-      )
-      void router.replace(
-        buildCustomizeUrl(journeyId, getFirstGuestAllowedScreen(), true)
-      )
-    }
+    enqueueSnackbar(t('This template cannot be customised by a guest.'), {
+      variant: 'error',
+      preventDuplicate: true
+    })
+    void router.replace(
+      buildCustomizeUrl(journeyId, getFirstGuestAllowedScreen(), true)
+    )
+  }, [
+    router,
+    router.isReady,
+    journeyId,
+    isGuest,
+    guestFlowEnabled,
+    t,
+    enqueueSnackbar
+  ])
+
+  // 3. For guests: redirect if current screen is not allowed
+  useEffect(() => {
+    if (!router.isReady || !journeyId || !isGuest || !guestFlowEnabled) return
+    if (isScreenAllowedForGuest(activeScreen)) return
+
+    enqueueSnackbar(
+      t(
+        "The step you're trying to access is not available to guests, please sign up."
+      ),
+      { variant: 'error', preventDuplicate: true }
+    )
+    // TODO: update to guest preview screen when available
+    void router.replace(buildCustomizeUrl(journeyId, 'links', true))
   }, [
     router,
     router.isReady,

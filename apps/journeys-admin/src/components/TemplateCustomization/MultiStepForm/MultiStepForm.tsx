@@ -45,6 +45,7 @@ function renderScreen(
     case 'text':
       return <TextScreen handleNext={handleNext} />
     case 'links':
+      // TODO: move screens to guest preview screen when available
       return <LinksScreen screens={screens} handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
@@ -99,7 +100,9 @@ export function MultiStepForm(): ReactElement {
       typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
     const nextScreen = getNextCustomizeScreen(screens, activeScreen)
     if (nextScreen == null) return
-    void router.replace(buildCustomizeUrl(targetJourneyId, nextScreen, undefined))
+    void router.replace(
+      buildCustomizeUrl(targetJourneyId, nextScreen, undefined)
+    )
   }
 
   return (

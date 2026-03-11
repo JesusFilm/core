@@ -272,6 +272,7 @@ export function LinksScreen({
               />
             }
           >
+            {/* TODO: Move to guest preview screen when available */}
             <SignUpButton screens={screens} currentScreen="links" />
             <CardsPreview steps={treeBlocks} />
             <LinksForm links={links} />
