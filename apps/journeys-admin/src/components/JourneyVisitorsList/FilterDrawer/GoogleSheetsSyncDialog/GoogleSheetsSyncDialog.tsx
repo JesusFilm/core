@@ -162,10 +162,9 @@ export function GoogleSheetsSyncDialog({
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
-  const { data: integrationsData } =
-    useIntegrationQuery({
-      teamId: journeyData?.journey?.team?.id as string
-    })
+  const { data: integrationsData } = useIntegrationQuery({
+    teamId: journeyData?.journey?.team?.id as string
+  })
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
   const [pickerActive, setPickerActive] = useState(false)
