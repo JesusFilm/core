@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 17
+- **task-number**: 18
 - **phase**: youtube-ui-fixes
 - **phase-complete**: false
 - **status**: running
-- **last-result**: pass
-- **next-task**: none
-- **tasks-since-checkpoint**: 6
+- **last-result**: investigated
+- **next-task**: "Implement auto-submit with 800ms useEffect debounce on youtubeUrl in VideosSection.tsx: add useEffect+useRef that calls handleYouTubeSubmit when URL validates via extractYouTubeVideoId, add loading guard, remove Set button and handleYouTubeKeyDown, and update unit tests"
+- **tasks-since-checkpoint**: 7
 
 ## next-task values
 
@@ -47,3 +47,4 @@ Implement all 7 YouTube video section UI fixes with unit tests and e2e tests rec
 | 14 | 2026-03-11T23:03:22Z | Add placeholder and helper caption to YouTube URL TextField | pass | Added placeholder="Paste a YouTube link..." and helper text for supported formats; 2 new unit tests; 2849 tests pass |
 | 15 | 2026-03-11T23:04:13Z | Investigate — queue keep URL after submit | investigated | Feature task 9 from function.md (original task 1); remove setYoutubeUrl('') in handleYouTubeSubmit |
 | 16 | 2026-03-11T23:07:03Z | Remove setYoutubeUrl('') to keep URL visible after submit | pass | Removed one line in handleYouTubeSubmit; all 2849 tests pass |
+| 17 | 2026-03-11T23:08:20Z | Investigate — queue auto-submit with debounce | investigated | Last feature task 10 from function.md (original task 6); add useEffect debounce, remove Set button |
