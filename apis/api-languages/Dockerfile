@@ -15,7 +15,9 @@ WORKDIR /app
 COPY ./dist/apps/api-languages .
 COPY ./libs/prisma/languages/db ./prisma/db
 COPY ./libs/prisma/languages/prisma.config.ts ./prisma/prisma.config.ts
+COPY ./apis/api-languages/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
-CMD pnpm exec prisma migrate deploy --config ./prisma/prisma.config.ts && node ./main.js
+
+ENTRYPOINT ["./docker-entrypoint.sh"]

@@ -17,9 +17,9 @@ COPY ./libs/prisma/media/db ./prisma-media/db
 COPY ./libs/prisma/media/prisma.config.ts ./prisma-media/prisma.config.ts
 COPY ./libs/prisma/languages/db ./prisma-languages/db
 COPY ./libs/prisma/languages/prisma.config.ts ./prisma-languages/prisma.config.ts
+COPY ./apis/api-media/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
-CMD pnpm exec prisma migrate deploy --config ./prisma-media/prisma.config.ts \
- && pnpm exec prisma migrate deploy --config ./prisma-languages/prisma.config.ts \
- && node ./main.js
+
+ENTRYPOINT ["./docker-entrypoint.sh"]

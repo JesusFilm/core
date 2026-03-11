@@ -17,9 +17,9 @@ COPY ./libs/prisma/journeys/db ./prisma-journeys/db
 COPY ./libs/prisma/journeys/prisma.config.ts ./prisma-journeys/prisma.config.ts
 COPY ./libs/prisma/users/db ./prisma-users/db
 COPY ./libs/prisma/users/prisma.config.ts ./prisma-users/prisma.config.ts
+COPY ./apis/api-journeys-modern/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
-CMD pnpm exec prisma migrate deploy --config ./prisma-journeys/prisma.config.ts \
- && pnpm exec prisma migrate deploy --config ./prisma-users/prisma.config.ts \
- && node ./main.js
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
