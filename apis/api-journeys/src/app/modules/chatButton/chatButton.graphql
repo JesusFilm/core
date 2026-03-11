@@ -2,6 +2,7 @@ type ChatButton @shareable {
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 extend type Journey {
@@ -16,6 +17,7 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 extend type Mutation {

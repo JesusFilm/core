@@ -376,6 +376,7 @@ export type ChatActionInput = {
 
 export type ChatButton = {
   __typename?: 'ChatButton';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   link?: Maybe<Scalars['String']['output']>;
   platform?: Maybe<MessagePlatform>;
@@ -387,6 +388,7 @@ export type ChatButtonCreateInput = {
 };
 
 export type ChatButtonUpdateInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   link?: InputMaybe<Scalars['String']['input']>;
   platform?: InputMaybe<MessagePlatform>;
 };
@@ -1362,7 +1364,6 @@ export type JourneyThemeUpdateInput = {
 export type JourneyUpdateInput = {
   creatorDescription?: InputMaybe<Scalars['String']['input']>;
   creatorImageBlockId?: InputMaybe<Scalars['ID']['input']>;
-  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   displayTitle?: InputMaybe<Scalars['String']['input']>;
   hostId?: InputMaybe<Scalars['String']['input']>;

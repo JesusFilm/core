@@ -37,10 +37,15 @@ export class JourneyCustomizableService {
     if (journey == null) return
     if (journey.template !== true) return
 
-    const blocks = await this.prismaService.block.findMany({
-      where: { journeyId, deletedAt: null },
-      include: { action: true }
-    })
+    const [blocks, chatButtons] = await Promise.all([
+      this.prismaService.block.findMany({
+        where: { journeyId, deletedAt: null },
+        include: { action: true }
+      }),
+      this.prismaService.chatButton.findMany({
+        where: { journeyId }
+      })
+    ])
 
     const fieldsCount = journey._count.journeyCustomizationFields
 
@@ -48,13 +53,14 @@ export class JourneyCustomizableService {
       (journey.journeyCustomizationDescription ?? '').trim().length > 0 &&
       fieldsCount > 0
 
-    const hasCustomizableLinks = blocks.some(
-      (block) =>
-        CUSTOMIZABLE_LINK_BLOCK_TYPES.includes(block.typename) &&
-        block.action != null &&
-        block.action.customizable === true &&
-        block.action.blockId == null // excludes NavigateToBlockAction
-    )
+    const hasCustomizableLinks =
+      blocks.some(
+        (block) =>
+          CUSTOMIZABLE_LINK_BLOCK_TYPES.includes(block.typename) &&
+          block.action != null &&
+          block.action.customizable === true &&
+          block.action.blockId == null // excludes NavigateToBlockAction
+      ) || chatButtons.some((cb) => cb.customizable === true)
 
     const hasCustomizableLogo =
       journey.website === true &&

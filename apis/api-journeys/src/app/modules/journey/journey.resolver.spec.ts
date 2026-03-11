@@ -13,6 +13,7 @@ import {
   Journey,
   JourneyCollection,
   JourneyProfile,
+  MessagePlatform,
   Prisma,
   Team,
   ThemeMode,
@@ -1275,7 +1276,15 @@ describe('JourneyResolver', () => {
 
     const journeyWithUserTeamAndCustomizationFields = {
       ...journeyWithUserTeam,
-      journeyCustomizationFields: mockCustomizationFields
+      journeyCustomizationFields: mockCustomizationFields,
+      chatButtons: [] as Array<{
+        id: string
+        journeyId: string
+        link: string | null
+        platform: MessagePlatform | null
+        customizable: boolean | null
+        updatedAt: Date
+      }>
     }
 
     beforeEach(() => {
@@ -2220,6 +2229,72 @@ describe('JourneyResolver', () => {
       ).rejects.toThrow('user is not allowed to duplicate journey')
     })
 
+    it('should duplicate chatButtons with correct fields', async () => {
+      const chatButtons = [
+        {
+          id: 'chatButton1',
+          journeyId: 'journeyId',
+          link: 'm.me/user',
+          platform: MessagePlatform.facebook as MessagePlatform | null,
+          customizable: true as boolean | null,
+          updatedAt: new Date()
+        },
+        {
+          id: 'chatButton2',
+          journeyId: 'journeyId',
+          link: 'https://wa.me/123',
+          platform: MessagePlatform.whatsApp as MessagePlatform | null,
+          customizable: null as boolean | null,
+          updatedAt: new Date()
+        }
+      ]
+      const journeyWithChatButtons = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        chatButtons
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(journeyWithChatButtons)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockResolvedValueOnce([journey])
+      prismaService.block.findMany.mockResolvedValueOnce([block])
+      mockUuidv4
+        .mockReset()
+        .mockReturnValueOnce('duplicateJourneyId')
+        .mockReturnValueOnce('duplicateBlockId')
+        .mockReturnValueOnce('duplicateFieldId')
+        .mockReturnValueOnce('duplicateChatButton1')
+        .mockReturnValueOnce('duplicateChatButton2')
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.chatButton.create).toHaveBeenCalledTimes(2)
+      expect(prismaService.chatButton.create).toHaveBeenCalledWith({
+        data: {
+          id: 'duplicateChatButton1',
+          journeyId: 'duplicateJourneyId',
+          link: 'm.me/user',
+          platform: MessagePlatform.facebook,
+          customizable: true
+        }
+      })
+      expect(prismaService.chatButton.create).toHaveBeenCalledWith({
+        data: {
+          id: 'duplicateChatButton2',
+          journeyId: 'duplicateJourneyId',
+          link: 'https://wa.me/123',
+          platform: MessagePlatform.whatsApp,
+          customizable: null
+        }
+      })
+    })
+
+    it('should handle journey with no chatButtons gracefully', async () => {
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.chatButton.create).not.toHaveBeenCalled()
+    })
+
     it('throws error if existing journey not found', async () => {
       prismaService.journey.findUnique.mockReset().mockResolvedValueOnce(null)
       await expect(
@@ -3034,7 +3109,8 @@ describe('JourneyResolver', () => {
         link: 'm.me/user',
         platform: 'facebook',
         journeyId: 'journeyId',
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        customizable: null
       }
       prismaService.chatButton.findMany.mockResolvedValueOnce([chatButton])
       expect(await resolver.chatButtons(journey)).toEqual([chatButton])

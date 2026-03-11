@@ -1359,6 +1359,7 @@ type ChatButton @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEY
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 type CustomDomain @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4174,6 +4175,7 @@ input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph:
 input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 input CustomDomainCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
