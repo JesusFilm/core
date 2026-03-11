@@ -2434,9 +2434,7 @@ input VideoBlockCreateInput {
   showGeneratedSubtitles: Boolean
   customizable: Boolean
 
-  """
-  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
-  """
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
   notes: String
 }
 
