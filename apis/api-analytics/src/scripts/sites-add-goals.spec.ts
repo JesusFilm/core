@@ -1,5 +1,5 @@
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import { PrismaClient } from '../../../../libs/prisma/analytics/src/client'
-
 import { addGoalsToAllSites } from '../lib/site/addGoalsToSites'
 
 import main from './sites-add-goals'

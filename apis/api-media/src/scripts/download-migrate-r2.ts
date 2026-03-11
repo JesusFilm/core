@@ -12,8 +12,8 @@ import fetch from 'node-fetch'
 
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import {
-  prisma,
-  VideoVariantDownloadQuality
+  VideoVariantDownloadQuality,
+  prisma
 } from '../../../../libs/prisma/media/src/client'
 
 function getR2Client(): S3Client {
