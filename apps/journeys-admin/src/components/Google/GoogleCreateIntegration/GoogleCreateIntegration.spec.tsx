@@ -38,14 +38,14 @@ const mockUseIntegrationGoogleCreate =
 const mockUseSnackbar = useSnackbar as jest.MockedFunction<typeof useSnackbar>
 
 describe('GoogleCreateIntegration', () => {
-  const mockPush = jest.fn()
+  const mockReplace = jest.fn()
   const mockEnqueueSnackbar = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
     mockUseRouter.mockReturnValue({
       query: { teamId: 'teamId' },
-      push: mockPush
+      replace: mockReplace
     } as unknown as ReturnType<typeof useRouter>)
     mockUseIntegrationGoogleCreate.mockReturnValue({ loading: false })
     mockUseSnackbar.mockReturnValue({
@@ -90,7 +90,7 @@ describe('GoogleCreateIntegration', () => {
 
     await onSuccess?.('integrationId')
 
-    expect(mockPush).toHaveBeenCalledWith('/teams/teamId/integrations')
+    expect(mockReplace).toHaveBeenCalledWith('/teams/teamId/integrations')
     expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Google settings saved', {
       variant: 'success',
       preventDuplicate: true
@@ -100,7 +100,7 @@ describe('GoogleCreateIntegration', () => {
   it('should navigate to returnTo path on onSuccess when returnTo is set', async () => {
     mockUseRouter.mockReturnValue({
       query: { teamId: 'teamId', returnTo: '/custom/path' },
-      push: mockPush
+      replace: mockReplace
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
@@ -113,7 +113,7 @@ describe('GoogleCreateIntegration', () => {
 
     await onSuccess?.('integrationId')
 
-    expect(mockPush).toHaveBeenCalledWith('/custom/path')
+    expect(mockReplace).toHaveBeenCalledWith('/custom/path')
   })
 
   it('should append integrationCreated param when returnTo includes openSyncDialog', async () => {
@@ -122,7 +122,7 @@ describe('GoogleCreateIntegration', () => {
         teamId: 'teamId',
         returnTo: '/journeys/journeyId?openSyncDialog=true'
       },
-      push: mockPush
+      replace: mockReplace
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
@@ -135,7 +135,7 @@ describe('GoogleCreateIntegration', () => {
 
     await onSuccess?.('integrationId')
 
-    expect(mockPush).toHaveBeenCalledWith(
+    expect(mockReplace).toHaveBeenCalledWith(
       '/journeys/journeyId?openSyncDialog=true&integrationCreated=true'
     )
   })
@@ -155,13 +155,13 @@ describe('GoogleCreateIntegration', () => {
       variant: 'error',
       preventDuplicate: true
     })
-    expect(mockPush).toHaveBeenCalledWith('/teams/teamId/integrations')
+    expect(mockReplace).toHaveBeenCalledWith('/teams/teamId/integrations')
   })
 
   it('should navigate to returnTo path on onError when returnTo is set', async () => {
     mockUseRouter.mockReturnValue({
       query: { teamId: 'teamId', returnTo: '/custom/path' },
-      push: mockPush
+      replace: mockReplace
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
@@ -174,6 +174,44 @@ describe('GoogleCreateIntegration', () => {
 
     await onError?.(new Error('fail'))
 
-    expect(mockPush).toHaveBeenCalledWith('/custom/path')
+    expect(mockReplace).toHaveBeenCalledWith('/custom/path')
+  })
+
+  it('should fall back to integrations page when returnTo is an unsafe URL on onSuccess', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { teamId: 'teamId', returnTo: 'https://evil.com' },
+      replace: mockReplace
+    } as unknown as ReturnType<typeof useRouter>)
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <GoogleCreateIntegration />
+      </MockedProvider>
+    )
+
+    const { onSuccess } = mockUseIntegrationGoogleCreate.mock.calls[0][0]
+
+    await onSuccess?.('integrationId')
+
+    expect(mockReplace).toHaveBeenCalledWith('/teams/teamId/integrations')
+  })
+
+  it('should fall back to integrations page when returnTo is an unsafe URL on onError', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { teamId: 'teamId', returnTo: '//evil.com' },
+      replace: mockReplace
+    } as unknown as ReturnType<typeof useRouter>)
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <GoogleCreateIntegration />
+      </MockedProvider>
+    )
+
+    const { onError } = mockUseIntegrationGoogleCreate.mock.calls[0][0]
+
+    await onError?.(new Error('fail'))
+
+    expect(mockReplace).toHaveBeenCalledWith('/teams/teamId/integrations')
   })
 })

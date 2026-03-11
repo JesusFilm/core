@@ -14,7 +14,7 @@ export const INTEGRATION_GOOGLE_CREATE = gql`
 interface UseIntegrationGoogleCreateOptions {
   teamId?: string
   onSuccess?: (integrationId: string) => void | Promise<void>
-  onError?: (error: Error) => void
+  onError?: (error: Error) => void | Promise<void>
 }
 
 interface UseIntegrationGoogleCreateResult {
@@ -78,10 +78,10 @@ export function useIntegrationGoogleCreate({
         if (integrationId != null) {
           await onSuccessRef.current?.(integrationId)
         } else {
-          onErrorRef.current?.(new Error('Integration creation returned no ID'))
+          await onErrorRef.current?.(new Error('Integration creation returned no ID'))
         }
       } catch (error) {
-        onErrorRef.current?.(
+        await onErrorRef.current?.(
           error instanceof Error ? error : new Error(String(error))
         )
       } finally {

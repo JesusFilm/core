@@ -46,7 +46,7 @@ export function DoneScreen(): ReactElement {
   const [syncDialogOpen, setSyncDialogOpen] = useState(false)
 
   useIntegrationGoogleCreate({
-    teamId: journey?.team?.id ?? undefined,
+    teamId: journey?.team?.id,
     onSuccess: () => {
       enqueueSnackbar(t('Google integration created successfully'), {
         variant: 'success'

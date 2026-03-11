@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
+import { isSafeRelativePath } from '../../../../pages/api/integrations/google/callback'
 import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
 
 import { useIntegrationGoogleCreate } from './libs/useIntegrationGoogleCreate'
@@ -33,10 +34,9 @@ export function GoogleCreateIntegration(): ReactElement {
   const { loading } = useIntegrationGoogleCreate({
     teamId,
     onSuccess: async () => {
-      let redirectPath =
-        returnTo != null && returnTo !== ''
-          ? returnTo
-          : `/teams/${teamId}/integrations`
+      let redirectPath = isSafeRelativePath(returnTo)
+        ? returnTo
+        : `/teams/${teamId}/integrations`
 
       if (returnTo != null && returnTo.includes('openSyncDialog=true')) {
         const url = new URL(redirectPath, window.location.origin)
@@ -44,7 +44,7 @@ export function GoogleCreateIntegration(): ReactElement {
         redirectPath = url.pathname + url.search
       }
 
-      await router.push(redirectPath)
+      await router.replace(redirectPath)
       enqueueSnackbar(t('Google settings saved'), {
         variant: 'success',
         preventDuplicate: true
@@ -55,11 +55,10 @@ export function GoogleCreateIntegration(): ReactElement {
         variant: 'error',
         preventDuplicate: true
       })
-      const fallbackPath =
-        returnTo != null && returnTo !== ''
-          ? returnTo
-          : `/teams/${teamId}/integrations`
-      await router.push(fallbackPath)
+      const redirectPath = isSafeRelativePath(returnTo)
+        ? returnTo
+        : `/teams/${teamId}/integrations`
+      await router.replace(redirectPath)
     }
   })
 
@@ -71,7 +70,7 @@ export function GoogleCreateIntegration(): ReactElement {
         disabled={oauthUrl == null || loading}
         aria-label={t('Connect with Google')}
       >
-        {t('Connect with Google')}
+        {loading ? t('Connecting...') : t('Connect with Google')}
       </Button>
     </Stack>
   )
