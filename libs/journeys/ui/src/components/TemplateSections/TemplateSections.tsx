@@ -18,7 +18,7 @@ import { TemplateGalleryCard } from '../TemplateGalleryCard'
 // directly via their template URL. Remove this constant and the filter below
 // once the customizableMedia feature is stable and the QA template is deleted.
 // See TODO ENG-3584.
-const QA_ONLY_TEMPLATE_SLUG_PREFIX = 'qa-customizable-media-test'
+export const QA_ONLY_TEMPLATE_SLUG_PREFIX = 'qa-customizable-media-test'
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }
