@@ -7,7 +7,6 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
-import { User, useUser } from 'next-firebase-auth'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -41,14 +40,6 @@ import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
 
-jest.mock('next-firebase-auth', () => ({
-  useUser: jest.fn(() => ({
-    id: 'test-user-id',
-    email: 'test-user-email@example.com'
-  }))
-}))
-
-const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
 
 jest.mock('next/router', () => ({
   useRouter: () => ({
