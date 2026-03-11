@@ -75,9 +75,7 @@ export function TemplateCardPreviewItem({
              0px 3px 3px 0px rgba(0, 0, 0, 0.12),
              0px 3px 4px 0px rgba(0, 0, 0, 0.14)`
           : 'none',
-        ...(opacity != null && {
-          opacity: isSelected ? 1 : opacity
-        })
+        opacity: opacity != null && !isSelected ? opacity : 1
       }}
       onClick={() => onClick?.(step)}
       data-testid="TemplateCardPreviewItem"
