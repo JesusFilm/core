@@ -40,13 +40,13 @@ function UploadButton({
       <input {...getInputProps()} />
       <Button
         data-testid="VideosSection-upload-button"
-        size="small"
+        size="medium"
         color="secondary"
         variant="outlined"
         disabled={loading}
         onClick={open}
         sx={{
-          height: 32,
+          height: 40,
           width: '100%',
           borderRadius: 2
         }}

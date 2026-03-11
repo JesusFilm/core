@@ -14,6 +14,39 @@
    1. Resolve conflicts between your PR branch and the stage branch
    1. Run `git push origin stage`
 
+### Recommended automation for stage recovery
+
+Manual stage recovery is disruptive and requires channel coordination. To reduce this overhead, we recommend automating stage reset with a Slack notification and timeout policy.
+
+#### Proposed policy
+
+1. Detect reset-worthy stage states (failed merge bot, broken stage deploy, or explicit manual trigger).
+1. Use a dedicated opt-out label on PRs: `"stage-reset-blocked"`.
+   - Engineers add this label only when they are actively testing and need stage preserved.
+   - If this label is not present, reset is allowed by default.
+1. Post a Slack message to affected PR owners (all open PRs with `"on stage"` label) with:
+   - Why reset is needed
+   - Which PRs are currently on stage
+   - Which PRs are currently protected by `"stage-reset-blocked"`
+1. If no PR is protected by `"stage-reset-blocked"`, proceed automatically:
+   1. Reset `stage` to `main`
+   1. Re-merge open PRs labeled `"on stage"` in update order
+   1. Push updated `stage`
+1. If one or more PRs have `"stage-reset-blocked"`:
+   - Skip automatic reset
+   - Notify owners that reset is blocked until label removal or manual override
+1. Post a completion message to Slack with:
+   - Reset status (success/failure)
+   - PRs successfully re-applied
+   - PRs that failed and require manual follow-up
+
+#### Guardrails
+
+- Do not run automatically during protected release windows.
+- Use `"stage-reset-blocked"` as the only persistent opt-out mechanism.
+- Keep all reset actions auditable in a GitHub Actions run log.
+- Prefer a dry-run mode before enabling automatic reset in production.
+
 ### Resetting the stage branch
 
 From time to time the stage branch will need to be reset to main. This can happen for any number of reasons including but not limited to:
