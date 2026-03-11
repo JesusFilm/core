@@ -4,7 +4,11 @@ import { PrismaClient } from '@core/prisma/journeys/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const adapter = new PrismaPg({
-  connectionString: process.env['PG_DATABASE_URL_JOURNEYS']!
+  connectionString: process.env['PG_DATABASE_URL_JOURNEYS']!,
+  pool: {
+    connectionTimeoutMillis: 5_000,
+    idleTimeoutMillis: 10_000
+  }
 })
 
 @Injectable()
