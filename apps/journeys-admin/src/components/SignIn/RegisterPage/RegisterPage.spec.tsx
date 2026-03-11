@@ -4,7 +4,6 @@ import { FirebaseError } from 'firebase/app'
 import {
   UserCredential,
   createUserWithEmailAndPassword,
-  getAuth,
   linkWithCredential,
   signInWithEmailAndPassword,
   updateProfile
@@ -16,11 +15,13 @@ import {
   JourneyPublishVariables
 } from '../../../../__generated__/JourneyPublish'
 import { UpdateMe, UpdateMeVariables } from '../../../../__generated__/UpdateMe'
+import { getFirebaseAuth } from '../../../libs/auth'
 
 import { JOURNEY_PUBLISH, RegisterPage, UPDATE_ME } from './RegisterPage'
 
+const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
+
 jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(() => ({ currentUser: null })),
   createUserWithEmailAndPassword: jest.fn(),
   signInWithEmailAndPassword: jest.fn(),
   updateProfile: jest.fn(),
@@ -31,6 +32,11 @@ jest.mock('firebase/auth', () => ({
       password
     }))
   }
+}))
+
+jest.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+  loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
 }))
 
 jest.mock('next/router', () => ({
@@ -137,7 +143,9 @@ describe('PasswordPage', () => {
   })
 
   it('should convert anonymous account to permanent account', async () => {
-    const mockGetAuth = getAuth as jest.MockedFunction<typeof getAuth>
+    const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+      typeof getFirebaseAuth
+    >
     const mockLinkWithCredential = linkWithCredential as jest.MockedFunction<
       typeof linkWithCredential
     >
@@ -145,9 +153,9 @@ describe('PasswordPage', () => {
       typeof updateProfile
     >
     const anonymousUser = { isAnonymous: true, uid: 'anon-123' }
-    mockGetAuth.mockReturnValue({
+    mockGetFirebaseAuth.mockReturnValue({
       currentUser: anonymousUser
-    } as ReturnType<typeof getAuth>)
+    } as ReturnType<typeof getFirebaseAuth>)
     mockLinkWithCredential.mockResolvedValue({
       user: { uid: 'linked-user' }
     } as unknown as UserCredential)
@@ -227,8 +235,8 @@ describe('PasswordPage', () => {
       })
     })
 
-    mockGetAuth.mockImplementation(
-      () => ({ currentUser: null }) as ReturnType<typeof getAuth>
+    mockGetFirebaseAuth.mockImplementation(
+      () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
     )
   })
 

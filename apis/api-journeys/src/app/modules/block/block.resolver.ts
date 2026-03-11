@@ -11,6 +11,7 @@ import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { CaslAbility, CaslAccessible } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { BlockService, BlockWithAction } from './block.service'
 
@@ -18,7 +19,8 @@ import { BlockService, BlockWithAction } from './block.service'
 export class BlockResolver {
   constructor(
     private readonly blockService: BlockService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly journeyCustomizableService: JourneyCustomizableService
   ) {}
 
   @ResolveField()
@@ -93,7 +95,7 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    return await this.prismaService.$transaction(async (tx) => {
+    const result = await this.prismaService.$transaction(async (tx) => {
       const duplicatedBlocks = await this.blockService.duplicateBlock(
         block,
         isStepBlock,
@@ -110,6 +112,8 @@ export class BlockResolver {
       })
       return duplicatedBlocks
     })
+    await this.journeyCustomizableService.recalculate(block.journeyId)
+    return result
   }
 
   @Mutation()
@@ -212,7 +216,7 @@ export class BlockResolver {
         extensions: { code: 'FORBIDDEN' }
       })
 
-    return await this.prismaService.$transaction(async (tx) => {
+    const result = await this.prismaService.$transaction(async (tx) => {
       const updatedBlock = await tx.block.update({
         where: { id },
         data: {
@@ -250,7 +254,12 @@ export class BlockResolver {
         },
         data: { updatedAt: new Date().toISOString() }
       })
-      return [...siblings, ...children]
+      return {
+        blocks: [...siblings, ...children],
+        journeyId: updatedBlock.journeyId
+      }
     })
+    await this.journeyCustomizableService.recalculate(result.journeyId)
+    return result.blocks
   }
 }

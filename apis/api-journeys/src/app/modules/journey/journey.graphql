@@ -54,6 +54,10 @@ type Journey @key(fields: "id") @shareable {
   """
   templateSite: Boolean
   """
+  used to display quick start label on customizable templates
+  """
+  customizable: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String

@@ -5,7 +5,6 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   OAuthProvider,
-  getAuth,
   linkWithPopup,
   signInWithPopup
 } from 'firebase/auth'
@@ -17,6 +16,7 @@ import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
 
+import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
 import { JOURNEY_PUBLISH, UPDATE_ME } from '../RegisterPage/RegisterPage'
 import { getJourneyIdFromRedirect } from '../utils'
 
@@ -62,10 +62,12 @@ export function SignInServiceButton({
     if (journeyId != null) {
       await journeyPublish({ variables: { id: journeyId } })
     }
+
+    await loginWithCredential(userCredential)
   }
 
   async function handleSignIn(): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const currentUser = auth.currentUser
     const authProvider =
       service === 'google.com'
@@ -79,7 +81,8 @@ export function SignInServiceButton({
       if (currentUser?.isAnonymous === true) {
         await linkAnonymousUserWithProvider(currentUser, authProvider)
       } else {
-        await signInWithPopup(auth, authProvider)
+        const credential = await signInWithPopup(auth, authProvider)
+        await loginWithCredential(credential)
       }
     } catch (err) {
       console.error(err)

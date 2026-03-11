@@ -6,12 +6,13 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { signInWithEmailAndPassword } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
 import { PageProps } from '../types'
 
 export function PasswordPage({
@@ -19,7 +20,7 @@ export function PasswordPage({
   userPassword,
   setActivePage
 }: PageProps): ReactElement {
-  const auth = getAuth()
+  const auth = getFirebaseAuth()
   const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = (): void => setShowPassword((show) => !show)
   const handleMouseDownPassword = (
@@ -41,7 +42,12 @@ export function PasswordPage({
     { setFieldError }
   ): Promise<void> {
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password)
+      const credential = await signInWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      )
+      await loginWithCredential(credential)
     } catch (error) {
       if (error.code === 'auth/wrong-password') {
         setFieldError(

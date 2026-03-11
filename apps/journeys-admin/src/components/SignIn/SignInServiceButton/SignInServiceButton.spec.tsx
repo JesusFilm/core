@@ -2,7 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   UserCredential,
-  getAuth,
   linkWithPopup,
   signInWithPopup
 } from 'firebase/auth'
@@ -13,14 +12,15 @@ import {
   JourneyPublishVariables
 } from '../../../../__generated__/JourneyPublish'
 import { UpdateMe, UpdateMeVariables } from '../../../../__generated__/UpdateMe'
+import { getFirebaseAuth } from '../../../libs/auth'
 import { JOURNEY_PUBLISH, UPDATE_ME } from '../RegisterPage/RegisterPage'
 
 import { SignInServiceButton } from './SignInServiceButton'
 
 const mockSetCustomParameters = jest.fn()
+const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
 
 jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(() => ({ currentUser: null })),
   signInWithPopup: jest.fn(),
   linkWithPopup: jest.fn(),
   GoogleAuthProvider: jest.fn().mockImplementation(() => {
@@ -34,6 +34,11 @@ jest.mock('firebase/auth', () => ({
   })
 }))
 
+jest.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: jest.fn(() => ({ currentUser: null })),
+  loginWithCredential: (...args: unknown[]) => mockLoginWithCredential(...args)
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
@@ -42,56 +47,71 @@ jest.mock('next/router', () => ({
 const mockSignInWithPopup = signInWithPopup as jest.MockedFunction<
   typeof signInWithPopup
 >
-const mockGetAuth = getAuth as jest.MockedFunction<typeof getAuth>
+const mockGetFirebaseAuth = getFirebaseAuth as jest.MockedFunction<
+  typeof getFirebaseAuth
+>
 const mockLinkWithPopup = linkWithPopup as jest.MockedFunction<
   typeof linkWithPopup
 >
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('SignInServiceButton', () => {
-  describe('new user', () => {
-    it('should handle Google sign-in correctly', async () => {
-      mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockGetFirebaseAuth.mockReturnValue({
+      currentUser: null
+    } as ReturnType<typeof getFirebaseAuth>)
+    mockUseRouter.mockReturnValue({
+      back: jest.fn(),
+      push: jest.fn(),
+      query: {}
+    } as unknown as NextRouter)
+  })
 
-      render(
-        <MockedProvider>
-          <SignInServiceButton service="google.com" />
-        </MockedProvider>
-      )
+  it('should handle Google sign-in correctly', async () => {
+    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Continue with Google' })
-      )
-      await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
-    })
+    render(
+      <MockedProvider>
+        <SignInServiceButton service="google.com" />
+      </MockedProvider>
+    )
 
-    it('should handle Facebook sign-in correctly', async () => {
-      mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Continue with Google' })
+    )
+    await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
+  })
 
-      render(
-        <MockedProvider>
-          <SignInServiceButton service="facebook.com" />
-        </MockedProvider>
-      )
+  it('should handle Facebook sign-in correctly', async () => {
+    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
-      fireEvent.click(screen.getByRole('button'))
-      await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
-    })
+    render(
+      <MockedProvider>
+        <SignInServiceButton service="facebook.com" />
+      </MockedProvider>
+    )
 
-    it('should handle Okta sign-in correctly', async () => {
-      mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
+  })
 
-      render(
-        <MockedProvider>
-          <SignInServiceButton service="oidc.okta" />
-        </MockedProvider>
-      )
+  it('should handle Okta sign-in correctly', async () => {
+    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
 
-      fireEvent.click(
-        screen.getByRole('button', { name: 'Continue with Okta' })
-      )
-      await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
-    })
+    render(
+      <MockedProvider>
+        <SignInServiceButton service="oidc.okta" />
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Continue with Okta' })
+    )
+    await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+    await waitFor(() => expect(mockLoginWithCredential).toHaveBeenCalled())
   })
 
   describe('guest user', () => {
@@ -110,16 +130,16 @@ describe('SignInServiceButton', () => {
     } as unknown as NextRouter
 
     beforeEach(() => {
-      mockGetAuth.mockReturnValue({
+      mockGetFirebaseAuth.mockReturnValue({
         currentUser: anonymousUser
-      } as ReturnType<typeof getAuth>)
+      } as ReturnType<typeof getFirebaseAuth>)
       mockLinkWithPopup.mockResolvedValue(linkedUserCredential)
       mockUseRouter.mockReturnValue(routerWithRedirect)
     })
 
     afterEach(() => {
-      mockGetAuth.mockImplementation(
-        () => ({ currentUser: null }) as ReturnType<typeof getAuth>
+      mockGetFirebaseAuth.mockImplementation(
+        () => ({ currentUser: null }) as ReturnType<typeof getFirebaseAuth>
       )
     })
 
@@ -185,6 +205,9 @@ describe('SignInServiceButton', () => {
       await waitFor(() => {
         expect(journeyPublishMock.result).toHaveBeenCalled()
       })
+      await waitFor(() => {
+        expect(mockLoginWithCredential).toHaveBeenCalled()
+      })
     })
 
     it('should handle Facebook sign-in correctly', async () => {
@@ -246,6 +269,9 @@ describe('SignInServiceButton', () => {
       })
       await waitFor(() => {
         expect(journeyPublishMock.result).toHaveBeenCalled()
+      })
+      await waitFor(() => {
+        expect(mockLoginWithCredential).toHaveBeenCalled()
       })
     })
 
@@ -310,6 +336,9 @@ describe('SignInServiceButton', () => {
       })
       await waitFor(() => {
         expect(journeyPublishMock.result).toHaveBeenCalled()
+      })
+      await waitFor(() => {
+        expect(mockLoginWithCredential).toHaveBeenCalled()
       })
     })
   })

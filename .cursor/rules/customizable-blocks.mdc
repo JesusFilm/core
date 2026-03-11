@@ -1,0 +1,9 @@
+---
+description: Guardrail for adding customizable fields to block or action types
+globs: apis/api-journeys/src/app/modules/block/**/*.ts,apis/api-journeys/src/app/modules/action/**/*.ts
+alwaysApply: false
+---
+
+# Customizable Block/Action Guardrail
+
+When adding a `customizable` field to a new block type or action type, you must also update the detection logic in `JourneyCustomizableService.recalculate()` in `apis/api-journeys/src/app/modules/journey/journeyCustomizable.service.ts` to check for the new block/action type's `customizable` field.

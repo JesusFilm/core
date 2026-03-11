@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography'
 import {
   EmailAuthProvider,
   createUserWithEmailAndPassword,
-  getAuth,
   linkWithCredential,
   signInWithEmailAndPassword,
   updateProfile
@@ -21,6 +20,7 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 import { getJourneyIdFromRedirect } from '../utils'
@@ -85,7 +85,7 @@ export function RegisterPage({
     name: string,
     password: string
   ): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -94,7 +94,8 @@ export function RegisterPage({
     await updateProfile(userCredential.user, {
       displayName: name
     })
-    await signInWithEmailAndPassword(auth, email, password)
+    const credential = await signInWithEmailAndPassword(auth, email, password)
+    await loginWithCredential(credential)
   }
 
   async function convertAnonymousAccountToPermanent(
@@ -102,7 +103,7 @@ export function RegisterPage({
     name: string,
     password: string
   ): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const currentUser = auth.currentUser
     if (currentUser == null || !currentUser.isAnonymous) return
 
@@ -132,7 +133,12 @@ export function RegisterPage({
       await journeyPublish({ variables: { id: journeyId } })
     }
 
-    await signInWithEmailAndPassword(auth, email, password)
+    const signInCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+    await loginWithCredential(signInCredential)
   }
 
   async function handleCreateAccount(
@@ -140,7 +146,7 @@ export function RegisterPage({
     { setFieldError }
   ): Promise<void> {
     try {
-      const auth = getAuth()
+      const auth = getFirebaseAuth()
       const currentUser = auth.currentUser
 
       if (currentUser?.isAnonymous === true) {
