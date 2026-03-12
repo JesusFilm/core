@@ -24,23 +24,17 @@ import { useBlockActionPhoneUpdateMutation } from '../../../../../libs/useBlockA
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { countries } from '../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/countriesList'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { SignUpButton } from '../../CustomizeFlowNextButton/SignUpButton/SignUpButton'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 
 interface LinksScreenProps {
-  screens: CustomizationScreen[]
   handleNext: (overrideJourneyId?: string) => void
 }
 
-export function LinksScreen({
-  screens,
-  handleNext
-}: LinksScreenProps): ReactElement {
+export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const links = useMemo(() => getJourneyLinks(t, journey), [journey])
@@ -272,8 +266,6 @@ export function LinksScreen({
               />
             }
           >
-            {/* TODO: Move to guest preview screen when available */}
-            <SignUpButton screens={screens} currentScreen="links" />
             <CardsPreview steps={treeBlocks} />
             <LinksForm links={links} />
           </ScreenWrapper>

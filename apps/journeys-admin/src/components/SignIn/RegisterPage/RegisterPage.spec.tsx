@@ -14,10 +14,9 @@ import {
   JourneyPublish,
   JourneyPublishVariables
 } from '../../../../__generated__/JourneyPublish'
-import { UpdateMe, UpdateMeVariables } from '../../../../__generated__/UpdateMe'
 import { getFirebaseAuth } from '../../../libs/auth'
 
-import { JOURNEY_PUBLISH, RegisterPage, UPDATE_ME } from './RegisterPage'
+import { JOURNEY_PUBLISH, RegisterPage } from './RegisterPage'
 
 const mockLoginWithCredential = jest.fn().mockResolvedValue(undefined)
 

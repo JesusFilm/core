@@ -46,10 +46,9 @@ function renderScreen(
     case 'text':
       return <TextScreen handleNext={handleNext} />
     case 'links':
-      // TODO: move screens to guest preview screen when available
-      return <LinksScreen screens={screens} handleNext={handleNext} />
+      return <LinksScreen handleNext={handleNext} />
     case 'guestPreview':
-      return <GuestPreviewScreen handleNext={handleNext} />
+      return <GuestPreviewScreen screens={screens} handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
     case 'social':
@@ -68,7 +67,8 @@ export function MultiStepForm(): ReactElement {
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
-  const isAnon = user?.isAnonymous ?? false
+  console.log(user)
+  const isAnon = user?.isAnonymous === true || user?.emailVerified !== true
   const journeyId = journey?.id ?? ''
 
   const isNotSignedIn = user?.email == null
@@ -109,12 +109,6 @@ export function MultiStepForm(): ReactElement {
     void router.replace(
       buildCustomizeUrl(targetJourneyId, nextScreen, undefined)
     )
-  }
-
-  async function handleScreenNavigation(
-    screen: CustomizationScreen
-  ): Promise<void> {
-    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
   }
 
   const activeStepForStepper =

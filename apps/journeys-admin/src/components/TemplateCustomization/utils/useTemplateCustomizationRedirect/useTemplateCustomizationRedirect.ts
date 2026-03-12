@@ -103,12 +103,11 @@ export function useTemplateCustomizationRedirect({
 
     enqueueSnackbar(
       t(
-        "The step you're trying to access is not available to guests, please sign up."
+        "The step you're trying to access is not available to guests. Please sign up."
       ),
       { variant: 'error', preventDuplicate: true }
     )
-    // TODO: update to guest preview screen when available
-    void router.replace(buildCustomizeUrl(journeyId, 'links', true))
+    void router.replace(buildCustomizeUrl(journeyId, 'guestPreview', true))
   }, [
     router,
     router.isReady,
