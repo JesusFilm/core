@@ -33,30 +33,16 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const signInProvider = tokens.decodedToken.firebase?.sign_in_provider
     const isAnonymous = signInProvider == null || signInProvider === 'anonymous'
 
-    if (!isAnonymous) {
-      if (tokens.decodedToken.email_verified) {
-        return redirectToApp(ctx)
-      }
-      const redirectParam =
-        typeof ctx.query.redirect === 'string'
-          ? `?redirect=${encodeURIComponent(ctx.query.redirect)}`
-          : ''
-      return {
-        redirect: {
-          permanent: false,
-          destination: `/users/verify${redirectParam}`
-        }
-      }
-    }
-  }
+    if (!isAnonymous) return redirectToApp(ctx)
 
-  return {
-    props: {
-      ...(await serverSideTranslations(
-        ctx.locale ?? 'en',
-        ['apps-journeys-admin', 'libs-journeys-ui'],
-        i18nConfig
-      ))
+    return {
+      props: {
+        ...(await serverSideTranslations(
+          ctx.locale ?? 'en',
+          ['apps-journeys-admin', 'libs-journeys-ui'],
+          i18nConfig
+        ))
+      }
     }
   }
 }
