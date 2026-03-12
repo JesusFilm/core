@@ -157,6 +157,10 @@ describe('VideosSection', () => {
     mockGetUploadStatus.mockReturnValue(null)
   })
 
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('renders with VideosSection data-testid visible', () => {
     renderVideosSection()
     expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
@@ -336,7 +340,6 @@ describe('VideosSection', () => {
       'video-block-1',
       'dQw4w9WgXcQ'
     )
-    jest.useRealTimers()
   })
 
   it('shows error for invalid YouTube URL after debounce', async () => {
@@ -358,7 +361,6 @@ describe('VideosSection', () => {
       screen.getByText('Please enter a valid YouTube URL')
     ).toBeInTheDocument()
     expect(mockStartYouTubeLink).not.toHaveBeenCalled()
-    jest.useRealTimers()
   })
 
   it('clears error immediately when user types after an invalid URL', async () => {
@@ -377,8 +379,6 @@ describe('VideosSection', () => {
     // Type one more character — error should clear immediately without waiting for debounce
     await user.type(input, 'x')
     expect(screen.queryByText('Please enter a valid YouTube URL')).not.toBeInTheDocument()
-
-    jest.useRealTimers()
   })
 
   it('clears error and does not re-submit when re-pasting a previously-submitted valid URL after an error', async () => {
@@ -408,7 +408,5 @@ describe('VideosSection', () => {
     act(() => { jest.advanceTimersByTime(800) })
     expect(screen.queryByText('Please enter a valid YouTube URL')).not.toBeInTheDocument()
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1) // no duplicate call
-
-    jest.useRealTimers()
   })
 })
