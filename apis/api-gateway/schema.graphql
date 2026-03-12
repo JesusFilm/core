@@ -734,7 +734,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     Use Last Active Team Id from JourneyProfile (if null will error)
     """
     useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS) 
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS) 
   adminJourney(id: ID!, idType: IdType) : Journey! @join__field(graph: API_JOURNEYS) 
   journeys(where: JourneysFilter, options: JourneysQueryOptions) : [Journey!]! @join__field(graph: API_JOURNEYS) 

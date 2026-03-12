@@ -11,6 +11,7 @@ export type CustomizationScreen =
   | 'media'
   | 'social'
   | 'done'
+  | 'guestPreview'
 
 export interface CustomizeFlowConfig {
   screens: CustomizationScreen[]
@@ -23,6 +24,8 @@ export interface CustomizeFlowConfig {
 
 export interface CustomizeFlowOptions {
   customizableMedia?: boolean
+  /** When true, the guestPreview screen is included (e.g. user not signed in). Pass from useAuth().user. */
+  isNotSignedIn?: boolean
 }
 
 /**
@@ -56,7 +59,10 @@ export function getCustomizeFlowConfig(
   options: CustomizeFlowOptions = {}
 ): CustomizeFlowConfig {
   // Default false: outage-safe; when flag is missing/undefined, hide media step (new feature off).
-  const { customizableMedia: customizableMediaFlag = false } = options
+  const {
+    customizableMedia: customizableMediaFlag = false,
+    isNotSignedIn = false
+  } = options
 
   // Always include language, social, and done screens
   const baseScreens: CustomizationScreen[] = ['language', 'social', 'done']
@@ -91,6 +97,12 @@ export function getCustomizeFlowConfig(
     // Insert links screen before social screen, but after text screen if it exists
     const socialIndex = screens.indexOf('social')
     screens.splice(socialIndex, 0, 'links')
+  }
+
+  if (isNotSignedIn) {
+    // Insert guest preview screen before social screen
+    const socialIndex = screens.indexOf('social')
+    screens.splice(socialIndex, 0, 'guestPreview')
   }
 
   if (hasCustomizableMedia && customizableMediaFlag) {

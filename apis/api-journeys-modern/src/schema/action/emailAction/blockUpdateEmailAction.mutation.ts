@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { builder } from '../../builder'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 import { canBlockHaveAction } from '../canBlockHaveAction'
@@ -82,6 +83,8 @@ builder.mutationField('blockUpdateEmailAction', (t) =>
           ...input
         }
       })
+
+      await recalculateJourneyCustomizable(block.journeyId)
 
       return action
     }
