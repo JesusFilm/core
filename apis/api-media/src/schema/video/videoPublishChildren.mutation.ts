@@ -33,6 +33,7 @@ builder.mutationFields((t) => ({
         where: { id },
         select: {
           id: true,
+          label: true,
           publishedAt: true,
           children: {
             select: { id: true, published: true }
@@ -47,6 +48,13 @@ builder.mutationFields((t) => ({
       const childIdsToPublish = parent.children
         .filter((c) => !c.published)
         .map((c) => c.id)
+      const unpublishedParentVariants = await prisma.videoVariant.findMany({
+        where: { videoId: parent.id, published: false },
+        select: { id: true }
+      })
+      const unpublishedParentVariantIds = unpublishedParentVariants.map(
+        (variant) => variant.id
+      )
 
       // Publish parent and unpublished children together
       const now = new Date()
@@ -63,6 +71,13 @@ builder.mutationFields((t) => ({
           await tx.video.updateMany({
             where: { id: { in: childIdsToPublish } },
             data: { published: true, publishedAt: now }
+          })
+        }
+
+        if (unpublishedParentVariantIds.length > 0) {
+          await tx.videoVariant.updateMany({
+            where: { id: { in: unpublishedParentVariantIds } },
+            data: { published: true }
           })
         }
       })
