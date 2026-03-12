@@ -23,6 +23,7 @@ import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizat
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
   MediaScreen,
@@ -42,6 +43,8 @@ function renderScreen(
       return <LanguageScreen handleNext={handleNext} />
     case 'text':
       return <TextScreen handleNext={handleNext} />
+    case 'guestPreview':
+      return <GuestPreviewScreen handleNext={handleNext} />
     case 'links':
       return <LinksScreen handleNext={handleNext} />
     case 'media':
@@ -65,6 +68,8 @@ export function MultiStepForm(): ReactElement {
   const isAnon = user?.isAnonymous ?? false
   const journeyId = journey?.id ?? ''
 
+  const isNotSignedIn = user?.email == null
+
   const {
     screens,
     totalSteps,
@@ -74,9 +79,10 @@ export function MultiStepForm(): ReactElement {
   } = useMemo(
     () =>
       getCustomizeFlowConfig(journey, t, {
-        customizableMedia: customizableMedia ?? false
+        customizableMedia: customizableMedia ?? false,
+        isNotSignedIn
       }),
-    [journey, t, customizableMedia]
+    [journey, t, customizableMedia, isNotSignedIn]
   )
 
   const activeScreen = getActiveScreenFromQuery(
@@ -104,6 +110,17 @@ export function MultiStepForm(): ReactElement {
     )
   }
 
+  async function handleScreenNavigation(
+    screen: CustomizationScreen
+  ): Promise<void> {
+    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
+  }
+
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? screens.indexOf('guestPreview') - 1
+      : screens.indexOf(activeScreen)
+
   return (
     <TemplateVideoUploadProvider>
       <Container
@@ -126,7 +143,7 @@ export function MultiStepForm(): ReactElement {
             hasCustomizableMedia) && (
             <Box sx={{ mt: { xs: 3, sm: 6 } }}>
               <ProgressStepper
-                activeStepNumber={screens.indexOf(activeScreen)}
+                activeStepNumber={activeStepForStepper}
                 totalSteps={totalSteps}
               />
             </Box>

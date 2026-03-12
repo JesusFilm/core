@@ -851,6 +851,10 @@ export interface GetAdminJourney_journey {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourney_journey_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourney {

@@ -16,6 +16,7 @@ import { useUserRoleQuery } from '../../libs/useUserRoleQuery'
 import { ContentCarousel } from '../ContentCarousel'
 import { StrategySection } from '../StrategySection'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
+import { QA_ONLY_TEMPLATE_SLUG_PREFIX } from '../TemplateSections'
 
 import { TemplateFooter } from './TemplateFooter'
 import { TemplatePreviewTabs } from './TemplatePreviewTabs'
@@ -49,7 +50,10 @@ export function TemplateView({
     }
   })
 
-  const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
+  const relatedJourneys = data?.journeys.filter(
+    ({ id, slug }) =>
+      id !== journey?.id && !slug.startsWith(QA_ONLY_TEMPLATE_SLUG_PREFIX)
+  )
 
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)

@@ -99,7 +99,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>

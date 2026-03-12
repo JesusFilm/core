@@ -13,12 +13,15 @@ import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__g
 import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
 
-// QA-only templates use this slug prefix. They are intentionally always hidden
-// from the public gallery so real users never see them. QA testers access them
-// directly via their template URL. Remove this constant and the filter below
-// once the customizableMedia feature is stable and the QA template is deleted.
-// See TODO ENG-3584.
-const QA_ONLY_TEMPLATE_SLUG_PREFIX = 'qa-customizable-media-test'
+/**
+ * QA-only templates use this slug prefix. They are intentionally always hidden
+ * from the public gallery so real users never see them. QA testers access them
+ * directly via their template URL.
+ * Remove this constant and the filter below once the customizableMedia feature
+ * is stable and the QA template is deleted.
+ * See TODO ENG-3584
+ */
+export const QA_ONLY_TEMPLATE_SLUG_PREFIX = 'qa-customizable-media-test'
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }
