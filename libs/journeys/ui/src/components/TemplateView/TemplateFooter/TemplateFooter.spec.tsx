@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
-import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { journey } from './data'
@@ -18,15 +17,10 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('../../../libs/isJourneyCustomizable', () => ({
-  isJourneyCustomizable: jest.fn()
-}))
-
-const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
-  typeof isJourneyCustomizable
->
-
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+const customizableJourney = { ...journey, customizable: true }
+const nonCustomizableJourney = { ...journey, customizable: false }
 
 describe('TemplateFooter', () => {
   const push = jest.fn().mockResolvedValue('')
@@ -72,11 +66,9 @@ describe('TemplateFooter', () => {
   })
 
   it('should push signed in user to customization flow page ', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(true)
-
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey: customizableJourney }}>
           <TemplateFooter signedIn />
         </JourneyProvider>
       </MockedProvider>
@@ -94,11 +86,9 @@ describe('TemplateFooter', () => {
   })
 
   it('should open copy to team dialog if journey is not customizable', async () => {
-    mockIsJourneyCustomizable.mockReturnValue(false)
-
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider value={{ journey }}>
+        <JourneyProvider value={{ journey: nonCustomizableJourney }}>
           <TemplateFooter signedIn />
         </JourneyProvider>
       </MockedProvider>

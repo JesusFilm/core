@@ -47,12 +47,6 @@ type Query {
   userByEmail(email: String!): AuthenticatedUser
 }
 
-input UpdateMeInput {
-  firstName: String!
-  lastName: String
-  email: String!
-}
-
 interface User
   @key(fields: "id")
 {
