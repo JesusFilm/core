@@ -7,9 +7,8 @@ import {
   JourneyPublish,
   JourneyPublishVariables
 } from '../../../../__generated__/JourneyPublish'
-import { UpdateMe, UpdateMeVariables } from '../../../../__generated__/UpdateMe'
 import { getFirebaseAuth } from '../../../libs/auth'
-import { JOURNEY_PUBLISH, UPDATE_ME } from '../RegisterPage/RegisterPage'
+import { JOURNEY_PUBLISH } from '../RegisterPage/RegisterPage'
 
 import { SignInServiceButton } from './SignInServiceButton'
 
