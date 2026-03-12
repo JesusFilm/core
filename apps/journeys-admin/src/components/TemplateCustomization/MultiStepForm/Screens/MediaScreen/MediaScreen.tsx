@@ -53,6 +53,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const showLogo = showLogoSection(journey)
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
+  const showMediaLabels = showImages && showVideos
 
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
@@ -83,11 +84,21 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         customizableSteps={customizableSteps}
         selectedStep={selectedStep}
         handleStepClick={handleStepClick}
+        showLabel={journey?.website === true}
       />
       {showImages && (
-        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
+        <ImagesSection
+          journey={journey}
+          cardBlockId={selectedCardBlockId}
+          showLabel={showMediaLabels}
+        />
       )}
-      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+      {showVideos && (
+        <VideosSection
+          cardBlockId={selectedCardBlockId}
+          showLabel={showMediaLabels}
+        />
+      )}
     </ScreenWrapper>
   )
 }

@@ -40,6 +40,7 @@ export const IMAGE_BLOCK_UPDATE = gql`
 interface ImagesSectionProps {
   journey?: Journey | null
   cardBlockId: string | null
+  showLabel?: boolean
 }
 
 /**
@@ -48,7 +49,8 @@ interface ImagesSectionProps {
  */
 export function ImagesSection({
   journey,
-  cardBlockId
+  cardBlockId,
+  showLabel = false
 }: ImagesSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -84,13 +86,15 @@ export function ImagesSection({
       gap={2}
       sx={{ width: '100%', alignSelf: 'flex-start' }}
     >
-      <Typography
-        variant="subtitle2"
-        gutterBottom
-        sx={{ color: 'text.secondary' }}
-      >
-        {t('Image')}
-      </Typography>
+      {showLabel && (
+        <Typography
+          variant="subtitle2"
+          gutterBottom
+          sx={{ color: 'text.secondary' }}
+        >
+          {t('Image')}
+        </Typography>
+      )}
       {imageBlocks.length === 0 ? (
         <Typography variant="body2" color="text.secondary" align="center">
           {t('No customizable images found for this card.')}

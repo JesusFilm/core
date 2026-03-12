@@ -44,7 +44,29 @@ describe('CardsSection', () => {
       />
     )
     expect(screen.getByTestId('CardsSection')).toBeInTheDocument()
+  })
+
+  it('should show Cards label when showLabel is true', () => {
+    render(
+      <CardsSection
+        customizableSteps={customizableSteps}
+        selectedStep={step1}
+        handleStepClick={handleStepClick}
+        showLabel
+      />
+    )
     expect(screen.getByText('Cards')).toBeInTheDocument()
+  })
+
+  it('should hide Cards label when showLabel is false', () => {
+    render(
+      <CardsSection
+        customizableSteps={customizableSteps}
+        selectedStep={step1}
+        handleStepClick={handleStepClick}
+      />
+    )
+    expect(screen.queryByText('Cards')).not.toBeInTheDocument()
   })
 
   it('should render step cards via TemplateCardPreview', () => {

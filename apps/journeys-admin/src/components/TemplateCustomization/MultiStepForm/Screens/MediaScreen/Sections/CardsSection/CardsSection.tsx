@@ -13,6 +13,7 @@ interface CardsSectionProps {
   customizableSteps: Array<TreeBlock<StepBlock>>
   selectedStep: TreeBlock<StepBlock>
   handleStepClick: (step: TreeBlock<StepBlock>) => void
+  showLabel?: boolean
 }
 
 /**
@@ -28,7 +29,8 @@ interface CardsSectionProps {
 export function CardsSection({
   customizableSteps,
   selectedStep,
-  handleStepClick
+  handleStepClick,
+  showLabel = false
 }: CardsSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -42,9 +44,11 @@ export function CardsSection({
         overflow: 'visible'
       }}
     >
-      <Typography variant="h6" sx={{ color: 'text.primary' }}>
-        {t('Cards')}
-      </Typography>
+      {showLabel && (
+        <Typography variant="h6" sx={{ color: 'text.primary' }}>
+          {t('Cards')}
+        </Typography>
+      )}
       <Box
         sx={{
           width: { xs: '100%', sm: `calc(100% + ${OVERFLOW_PX * 2}px)` },
