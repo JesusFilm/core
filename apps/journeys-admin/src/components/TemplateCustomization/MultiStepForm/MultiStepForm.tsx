@@ -24,6 +24,7 @@ import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizat
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
   MediaScreen,
@@ -43,10 +44,12 @@ function renderScreen(
     case 'language':
       return <LanguageScreen handleNext={handleNext} />
     case 'text':
-      return <TextScreen screens={screens} handleNext={handleNext} />
+      return <TextScreen handleNext={handleNext} />
     case 'links':
       // TODO: move screens to guest preview screen when available
       return <LinksScreen screens={screens} handleNext={handleNext} />
+    case 'guestPreview':
+      return <GuestPreviewScreen handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
     case 'social':
@@ -68,6 +71,8 @@ export function MultiStepForm(): ReactElement {
   const isAnon = user?.isAnonymous ?? false
   const journeyId = journey?.id ?? ''
 
+  const isNotSignedIn = user?.email == null
+
   const {
     screens,
     totalSteps,
@@ -77,9 +82,10 @@ export function MultiStepForm(): ReactElement {
   } = useMemo(
     () =>
       getCustomizeFlowConfig(journey, t, {
-        customizableMedia: customizableMedia ?? false
+        customizableMedia: customizableMedia ?? false,
+        isNotSignedIn
       }),
-    [journey, t, customizableMedia]
+    [journey, t, customizableMedia, isNotSignedIn]
   )
 
   const activeScreen = getActiveScreenFromQuery(
@@ -105,6 +111,17 @@ export function MultiStepForm(): ReactElement {
     )
   }
 
+  async function handleScreenNavigation(
+    screen: CustomizationScreen
+  ): Promise<void> {
+    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
+  }
+
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? screens.indexOf('guestPreview') - 1
+      : screens.indexOf(activeScreen)
+
   return (
     <TemplateVideoUploadProvider>
       <Container
@@ -127,7 +144,7 @@ export function MultiStepForm(): ReactElement {
             hasCustomizableMedia) && (
             <Box sx={{ mt: { xs: 3, sm: 6 } }}>
               <ProgressStepper
-                activeStepNumber={screens.indexOf(activeScreen)}
+                activeStepNumber={activeStepForStepper}
                 totalSteps={totalSteps}
               />
             </Box>

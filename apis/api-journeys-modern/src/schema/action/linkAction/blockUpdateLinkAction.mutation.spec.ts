@@ -1,7 +1,12 @@
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
+
+jest.mock(
+  '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
 
 describe('blockUpdateLinkAction mutation', () => {
   const authClient = getClient({
@@ -32,6 +37,7 @@ describe('blockUpdateLinkAction mutation', () => {
     id: '1',
     typename: 'RadioOptionBlock',
     parentBlockId: 'parent-step-id',
+    journeyId: 'journeyId',
     journey: journeyWithAccess,
     action: null
   } as any
@@ -78,6 +84,8 @@ describe('blockUpdateLinkAction mutation', () => {
           gtmEventName: null
         }
       })
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
       expect(result).toEqual({
         data: {
