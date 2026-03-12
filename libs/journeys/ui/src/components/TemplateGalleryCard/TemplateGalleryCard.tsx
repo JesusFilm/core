@@ -16,7 +16,6 @@ import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-import { isTemplateCustomizable } from '../../libs/isTemplateCustomizable'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { useNavigationState } from '../../libs/useNavigationState'
 
@@ -156,7 +155,7 @@ export function TemplateGalleryCard({
                 zIndex: 3
               }}
             >
-              {isTemplateCustomizable(journey) && (
+              {journey.customizable === true && (
                 <Box
                   data-testid="TemplateGalleryCardQuickStartBadge"
                   sx={{

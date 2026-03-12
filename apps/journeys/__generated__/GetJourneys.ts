@@ -115,6 +115,10 @@ export interface GetJourneys_journeys {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
   website: boolean | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetJourneys_journeys_journeyCustomizationFields[];

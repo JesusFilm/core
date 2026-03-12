@@ -128,7 +128,8 @@ const mockJourneyWithValidLanguage: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  customizable: null
 }
 
 const mockJourneyWithInvalidLanguage: Journey = {
