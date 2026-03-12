@@ -30,3 +30,15 @@
 | 18 | 2026-03-11T23:12:04Z | Implement auto-submit with 800ms debounce, remove Set button | pass | Added useEffect+useRef debounce, removed Set button/handleYouTubeKeyDown, 3 new tests; 2852 tests pass |
 | 19 | 2026-03-11T23:14:20Z | Update e2e tests for all feature changes, remove Set button refs | pass | 6 e2e tests covering placeholder, helper text, auto-submit, invalid URL, upload size, filled variant |
 | 20 | 2026-03-11T23:14:20Z | Phase complete — all 7 feature tasks + e2e tests done | investigated | All features implemented, 2852 unit tests pass, e2e tests scaffolded with video recording |
+
+---
+
+## youtube-url-error-fix
+
+**Goal:** Fix YouTube URL error state not self-correcting: (1) clear error immediately in onChange so typing after an error gives instant feedback, (2) move the lastSubmittedUrl guard after setYoutubeUrlError so re-pasting a previously-submitted valid URL still clears the error. Add unit tests for both scenarios. Phase complete when both fixes pass verify.
+
+| # | Time | Task | Result | Notes |
+|---|------|------|--------|-------|
+| 1 | 2026-03-12T01:53:15Z | Investigate — queue error self-correction fix | investigated | Two bugs: lastSubmittedUrl guard fires before error cleared (line 145), and no immediate error clear on onChange |
+| 2 | 2026-03-12T02:02:00Z | Fix error state not self-correcting after invalid URL | pass | Clear error in onChange immediately; move lastSubmittedUrl guard after setYoutubeUrlError; 2 new tests; 2854 pass |
+| 3 | 2026-03-12T02:03:55Z | Investigate — phase complete verification | investigated | Verify passes: lint clean, 2854 tests pass; both fixes implemented with tests; phase complete |
