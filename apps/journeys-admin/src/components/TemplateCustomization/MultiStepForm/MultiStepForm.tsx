@@ -63,15 +63,12 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { user } = useAuth()
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
+  const { user } = useAuth()
 
-  console.log(user)
-  const isAnon = user?.isAnonymous === true || user?.emailVerified !== true
+  const isGuest = user == null
   const journeyId = journey?.id ?? ''
-
-  const isNotSignedIn = user?.email == null
 
   const {
     screens,
@@ -83,9 +80,9 @@ export function MultiStepForm(): ReactElement {
     () =>
       getCustomizeFlowConfig(journey, t, {
         customizableMedia: customizableMedia ?? false,
-        isNotSignedIn
+        isGuest
       }),
-    [journey, t, customizableMedia, isNotSignedIn]
+    [journey, t, customizableMedia, isGuest]
   )
 
   const activeScreen = getActiveScreenFromQuery(
@@ -97,7 +94,7 @@ export function MultiStepForm(): ReactElement {
     journeyId,
     screens,
     activeScreen,
-    isGuest: isAnon,
+    isGuest,
     guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 
