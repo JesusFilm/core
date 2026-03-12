@@ -362,5 +362,4 @@ describe('VideoInformation', () => {
       expect(saveButton).not.toBeDisabled()
     })
   })
-
 })
