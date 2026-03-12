@@ -23,11 +23,11 @@ COPY ./libs/prisma/media/db ./prisma-media/db
 COPY ./libs/prisma/media/prisma.config.ts ./prisma-media/prisma.config.ts
 COPY ./libs/prisma/languages/db ./prisma-languages/db
 COPY ./libs/prisma/languages/prisma.config.ts ./prisma-languages/prisma.config.ts
+COPY ./apps/arclight/docker-entrypoint.sh ./docker-entrypoint.sh
 
 # dependencies
 RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm add -g next
 RUN pnpm install --prod --silent
-RUN pnpm add sharp pino dd-trace next-logger @prisma/client@7.4.2 @prisma/adapter-pg@7.4.2 dotenv --silent
-RUN pnpm add -D prisma@7.4.2
-CMD ["sh","-lc","pnpm exec prisma migrate deploy --config ./prisma-media/prisma.config.ts && pnpm exec prisma migrate deploy --config ./prisma-languages/prisma.config.ts && NODE_OPTIONS='-r next-logger' pnpm start"]
+RUN pnpm add sharp pino dd-trace next-logger @prisma/client @prisma/adapter-pg dotenv prisma --silent
+ENTRYPOINT ["./docker-entrypoint.sh"]
