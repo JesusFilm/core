@@ -151,6 +151,15 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
+  GuestPreviewScreen: ({
+    handleScreenNavigation
+  }: {
+    handleScreenNavigation: (screen: string) => void
+  }) => (
+    <div data-testid="guest-preview-screen">
+      <h2>Guest Preview Screen</h2>
+    </div>
+  ),
   SocialScreen: ({
     handleNext
   }: {
