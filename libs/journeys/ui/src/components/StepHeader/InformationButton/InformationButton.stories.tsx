@@ -71,7 +71,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>

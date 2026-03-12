@@ -67,11 +67,13 @@ const journey: Journey = {
   updatedAt: '2021-11-19T12:34:56.647Z',
   website: false,
   journeyCustomizationDescription: null,
-  journeyCustomizationFields: []
+  journeyCustomizationFields: [],
+  customizable: null
 }
 
 const customizableTemplateJourney: Journey = {
   ...journey,
+  customizable: true,
   journeyCustomizationDescription: 'Customize this template',
   journeyCustomizationFields: [
     {
@@ -92,6 +94,7 @@ const websiteJourney: Journey = {
 
 const customizableWebsiteTemplateJourney: Journey = {
   ...journey,
+  customizable: true,
   website: true,
   journeyCustomizationDescription: 'Customize this template',
   journeyCustomizationFields: [
