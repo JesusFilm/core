@@ -98,14 +98,21 @@ describe('VideoInformation', () => {
 
     await waitFor(() => {
       expect(screen.getByLabelText('Title')).toBeInTheDocument()
-      expect(screen.getByLabelText('Video URL')).toBeInTheDocument()
+      const videoUrlInput = screen.getByLabelText('Video URL')
+      expect(videoUrlInput).toBeInTheDocument()
+      expect(videoUrlInput).toBeDisabled()
       expect(screen.getByLabelText('Status')).toBeInTheDocument()
       expect(screen.getByLabelText('Label')).toBeInTheDocument()
     })
 
     // Check that form has the correct values
     expect(screen.getByDisplayValue('Test Video Title')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('test-video')).toBeInTheDocument()
+    expect(
+      screen.getByDisplayValue('jesusfilm.org/watch/test-video')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('URLs should not be changed after creation')
+    ).toBeInTheDocument()
   })
 
   it('should show validation warnings for incomplete video when trying to publish', async () => {
@@ -356,107 +363,4 @@ describe('VideoInformation', () => {
     })
   })
 
-  describe('slug editing', () => {
-    it('should enable slug editing when publishedAt is null', async () => {
-      const mockDataWithNullPublishedAt = {
-        adminVideo: {
-          ...mockVideoData.adminVideo,
-          publishedAt: null
-        }
-      }
-
-      const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
-        typeof useSuspenseQuery
-      >
-      mockedUseSuspenseQuery.mockReturnValue({
-        data: mockDataWithNullPublishedAt,
-        fetchMore: jest.fn(),
-        subscribeToMore: jest.fn(),
-        client: {} as any,
-        error: undefined,
-        networkStatus: NetworkStatus.ready,
-        refetch: jest.fn()
-      })
-
-      render(
-        <MockedProvider>
-          <VideoInformation videoId={mockVideoId} />
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        const urlInput = screen.getByLabelText('Video URL')
-        expect(urlInput).toBeInTheDocument()
-        expect(urlInput).not.toBeDisabled()
-      })
-    })
-
-    it('should disable slug editing when publishedAt is not null', async () => {
-      const mockDataWithPublishedAt = {
-        adminVideo: {
-          ...mockVideoData.adminVideo,
-          publishedAt: '2023-01-01T00:00:00.000Z'
-        }
-      }
-
-      const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
-        typeof useSuspenseQuery
-      >
-      mockedUseSuspenseQuery.mockReturnValue({
-        data: mockDataWithPublishedAt,
-        fetchMore: jest.fn(),
-        subscribeToMore: jest.fn(),
-        client: {} as any,
-        error: undefined,
-        networkStatus: NetworkStatus.ready,
-        refetch: jest.fn()
-      })
-
-      render(
-        <MockedProvider>
-          <VideoInformation videoId={mockVideoId} />
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        const urlInput = screen.getByLabelText('Video URL')
-        expect(urlInput).toBeInTheDocument()
-        expect(urlInput).toBeDisabled()
-      })
-    })
-
-    it('should show appropriate helper text when slug editing is disabled', async () => {
-      const mockDataWithPublishedAt = {
-        adminVideo: {
-          ...mockVideoData.adminVideo,
-          publishedAt: '2023-01-01T00:00:00.000Z'
-        }
-      }
-
-      const mockedUseSuspenseQuery = useSuspenseQuery as jest.MockedFunction<
-        typeof useSuspenseQuery
-      >
-      mockedUseSuspenseQuery.mockReturnValue({
-        data: mockDataWithPublishedAt,
-        fetchMore: jest.fn(),
-        subscribeToMore: jest.fn(),
-        client: {} as any,
-        error: undefined,
-        networkStatus: NetworkStatus.ready,
-        refetch: jest.fn()
-      })
-
-      render(
-        <MockedProvider>
-          <VideoInformation videoId={mockVideoId} />
-        </MockedProvider>
-      )
-
-      await waitFor(() => {
-        expect(
-          screen.getByText('URL cannot be changed after video is published')
-        ).toBeInTheDocument()
-      })
-    })
-  })
 })
