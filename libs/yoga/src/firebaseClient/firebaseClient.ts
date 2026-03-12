@@ -32,14 +32,24 @@ const payloadSchema = z
     email: z.string().nullish(),
     email_verified: z.boolean().nullish()
   })
-  .transform((data) => ({
-    id: data.user_id,
-    firstName: data.name?.split(' ').slice(0, -1).join(' ') ?? '',
-    lastName: data.name?.split(' ').slice(-1).join(' '),
-    email: data.email,
-    imageUrl: data.picture,
-    emailVerified: data.email_verified ?? false
-  }))
+  .transform((data) => {
+    const nameParts =
+      data.name
+        ?.trim()
+        .split(' ')
+        .filter((part) => part.length > 0) ?? []
+    return {
+      id: data.user_id,
+      firstName:
+        nameParts.length === 1
+          ? nameParts[0]
+          : nameParts.slice(0, -1).join(' ') || 'Unknown User',
+      lastName: nameParts.length > 1 ? nameParts[nameParts.length - 1] : '',
+      email: data.email,
+      imageUrl: data.picture,
+      emailVerified: data.email_verified ?? false
+    }
+  })
 
 export const auth = getAuth(firebaseClient)
 

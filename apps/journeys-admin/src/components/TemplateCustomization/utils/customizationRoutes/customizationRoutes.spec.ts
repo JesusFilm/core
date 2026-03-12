@@ -128,18 +128,20 @@ describe('customizationRoutes', () => {
   })
 
   describe('guest access', () => {
-    it('GUEST_ACCESSIBLE_SCREENS should be language, text, and links only', () => {
+    it('GUEST_ACCESSIBLE_SCREENS should be language, text, links, and guestPreview', () => {
       expect([...GUEST_ACCESSIBLE_SCREENS]).toEqual([
         'language',
         'text',
-        'links'
+        'links',
+        'guestPreview'
       ])
     })
 
-    it('isScreenAllowedForGuest should return true for language, text, links', () => {
+    it('isScreenAllowedForGuest should return true for language, text, links, guestPreview', () => {
       expect(isScreenAllowedForGuest('language')).toBe(true)
       expect(isScreenAllowedForGuest('text')).toBe(true)
       expect(isScreenAllowedForGuest('links')).toBe(true)
+      expect(isScreenAllowedForGuest('guestPreview')).toBe(true)
     })
 
     it('isScreenAllowedForGuest should return false for social and done', () => {

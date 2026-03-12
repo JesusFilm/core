@@ -1077,6 +1077,8 @@ export type Journey = {
   createdAt: Scalars['DateTime']['output'];
   creatorDescription?: Maybe<Scalars['String']['output']>;
   creatorImageBlock?: Maybe<ImageBlock>;
+  /** used to display quick start label on customizable templates */
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   /** public title for viewers */
@@ -1581,6 +1583,11 @@ export type JourneysQueryOptions = {
   journeyCollection?: InputMaybe<Scalars['Boolean']['input']>;
   /** skip custom domain routing filter (for admin template customization) */
   skipRoutingFilter?: InputMaybe<Scalars['Boolean']['input']>;
+  /**
+   * when provided, filter the journey to only return if its status is in this list.
+   * when not provided, no status filter is applied (current behaviour).
+   */
+  status?: InputMaybe<Array<JourneyStatus>>;
 };
 
 export enum JourneysReportType {
@@ -3710,12 +3717,6 @@ export type QrCodesFilter = {
 export type Query = {
   __typename?: 'Query';
   adminJourney: Journey;
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
   adminVideo: Video;

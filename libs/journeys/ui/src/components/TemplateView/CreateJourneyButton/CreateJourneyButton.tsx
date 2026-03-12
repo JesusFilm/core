@@ -21,6 +21,7 @@ export interface JourneyForTemplate {
   id: string
   title: string
   template?: boolean | null
+  customizable?: boolean | null
   fromTemplateId?: string | null
   language: {
     name: Array<{ value: string; primary: boolean }>
