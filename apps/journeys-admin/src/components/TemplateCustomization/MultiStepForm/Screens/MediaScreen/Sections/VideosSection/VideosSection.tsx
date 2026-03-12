@@ -142,7 +142,6 @@ export function VideosSection({
   useEffect(() => {
     const trimmedUrl = youtubeUrl.trim()
     if (trimmedUrl === '' || loading || videoBlock == null) return
-    if (trimmedUrl === lastSubmittedUrl.current) return
 
     const timer = setTimeout(() => {
       const extractedId = extractYouTubeVideoId(trimmedUrl)
@@ -151,6 +150,7 @@ export function VideosSection({
         return
       }
       setYoutubeUrlError(undefined)
+      if (trimmedUrl === lastSubmittedUrl.current) return
       lastSubmittedUrl.current = trimmedUrl
       void startYouTubeLink(videoBlock.id, extractedId)
     }, 800)
@@ -207,7 +207,10 @@ export function VideosSection({
         fullWidth
         placeholder={t('Paste a YouTube link...')}
         value={youtubeUrl}
-        onChange={(e) => setYoutubeUrl(e.target.value)}
+        onChange={(e) => {
+          setYoutubeUrl(e.target.value)
+          if (youtubeUrlError != null) setYoutubeUrlError(undefined)
+        }}
         disabled={loading}
         error={youtubeUrlError != null}
         helperText={

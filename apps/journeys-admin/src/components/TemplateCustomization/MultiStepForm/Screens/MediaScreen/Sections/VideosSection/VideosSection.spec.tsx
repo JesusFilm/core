@@ -359,4 +359,55 @@ describe('VideosSection', () => {
     expect(mockStartYouTubeLink).not.toHaveBeenCalled()
     jest.useRealTimers()
   })
+
+  it('clears error immediately when user types after an invalid URL', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'not-a-valid-url')
+    act(() => { jest.advanceTimersByTime(800) })
+    expect(screen.getByText('Please enter a valid YouTube URL')).toBeInTheDocument()
+
+    // Type one more character — error should clear immediately without waiting for debounce
+    await user.type(input, 'x')
+    expect(screen.queryByText('Please enter a valid YouTube URL')).not.toBeInTheDocument()
+
+    jest.useRealTimers()
+  })
+
+  it('clears error and does not re-submit when re-pasting a previously-submitted valid URL after an error', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+
+    // First: submit a valid URL
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => { jest.advanceTimersByTime(800) })
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
+
+    // Then: type an invalid URL to trigger the error
+    await user.clear(input)
+    await user.type(input, 'not-valid')
+    act(() => { jest.advanceTimersByTime(800) })
+    expect(screen.getByText('Please enter a valid YouTube URL')).toBeInTheDocument()
+
+    // Finally: re-paste the same valid URL — error should clear, no duplicate submission
+    await user.clear(input)
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => { jest.advanceTimersByTime(800) })
+    expect(screen.queryByText('Please enter a valid YouTube URL')).not.toBeInTheDocument()
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1) // no duplicate call
+
+    jest.useRealTimers()
+  })
 })
