@@ -97,4 +97,31 @@ describe('TemplateCardPreviewItem', () => {
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
+
+  it('should scale up the selected compact card', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem
+        step={step}
+        variant="compact"
+        selectedStep={step}
+      />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
+      transform: 'scale(1.25)'
+    })
+  })
+
+  it('should dim non-selected compact cards', () => {
+    const otherStep = { ...step, id: 'other' } as TreeBlock<StepBlock>
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem
+        step={step}
+        variant="compact"
+        selectedStep={otherStep}
+      />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
+      opacity: 0.75
+    })
+  })
 })
