@@ -124,7 +124,7 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '12px'
   },
   selectedSlideSx: {
-    width: 120 * SELECTED_SCALE,
+    width: COMPACT_CARD_WIDTH * SELECTED_SCALE,
     height: COMPACT_CARD_HEIGHT * SELECTED_SCALE,
     zIndex: 1
   },
