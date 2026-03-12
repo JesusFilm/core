@@ -15,10 +15,7 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
-import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
@@ -73,7 +70,6 @@ export function JourneyCard({
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const isNavigating = useNavigationState()
   const { t } = useTranslation('apps-journeys-admin')
-  const { customizableMedia } = useFlags()
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
@@ -212,54 +208,50 @@ export function JourneyCard({
                 zIndex: 2
               }}
             >
-              {journey.template &&
-                isJourneyCustomizable(
-                  journey as unknown as JourneyFields,
-                  customizableMedia
-                ) && (
+              {journey.customizable === true && (
+                <Box
+                  data-testid="JourneyCardQuickStartBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000000cc',
+                    borderRadius: 11,
+                    padding: 1,
+                    paddingRight: isCardHovered ? 3 : 1,
+                    transition: 'padding 0.3s ease',
+                    boxShadow: `0 3px 4px 0 #0000004D`
+                  }}
+                >
                   <Box
-                    data-testid="JourneyCardQuickStartBadge"
                     sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      background: 'primary.main',
                       display: 'flex',
                       alignItems: 'center',
-                      backgroundColor: '#000000cc',
-                      borderRadius: 11,
-                      padding: 1,
-                      paddingRight: isCardHovered ? 3 : 1,
-                      transition: 'padding 0.3s ease',
-                      boxShadow: `0 3px 4px 0 #0000004D`
+                      justifyContent: 'center',
+                      flexShrink: 0
                     }}
                   >
-                    <Box
-                      sx={{
-                        width: 22,
-                        height: 22,
-                        borderRadius: '50%',
-                        background: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0
-                      }}
-                    >
-                      <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
-                    </Box>
-                    <Typography
-                      sx={{
-                        ml: isCardHovered ? 1 : 0,
-                        maxWidth: isCardHovered ? 100 : 0,
-                        opacity: isCardHovered ? 1 : 0,
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        transition: 'all 0.3s ease',
-                        color: '#FFD700',
-                        typography: 'overline2'
-                      }}
-                    >
-                      {t('Quick Start')}
-                    </Typography>
+                    <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
                   </Box>
-                )}
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? 100 : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#FFD700',
+                      typography: 'overline2'
+                    }}
+                  >
+                    {t('Quick Start')}
+                  </Typography>
+                </Box>
+              )}
               {journey.website && (
                 <Box
                   data-testid="JourneyCardWebsiteBadge"

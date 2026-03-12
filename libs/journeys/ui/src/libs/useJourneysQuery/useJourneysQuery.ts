@@ -33,6 +33,7 @@ export const GET_JOURNEYS = gql`
       seoTitle
       seoDescription
       template
+      customizable
       website
       journeyCustomizationDescription
       journeyCustomizationFields {

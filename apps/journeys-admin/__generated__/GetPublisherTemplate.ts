@@ -851,6 +851,10 @@ export interface GetPublisherTemplate_publisherTemplate {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetPublisherTemplate_publisherTemplate_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetPublisherTemplate {
