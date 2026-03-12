@@ -376,6 +376,7 @@ describe('TemplateView', () => {
       seoDescription: null,
       website: false,
       journeyCustomizationDescription: null,
+      customizable: null,
       journeyCustomizationFields: [],
       userJourneys: []
     }
