@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/users/client'
+import { Prisma, prisma } from '@core/prisma/users/client'
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
 import { builder } from '../builder'
@@ -107,16 +107,28 @@ builder.queryFields((t) => ({
         ctx.currentUser.email != null &&
         ctx.currentUser.firstName != null
       ) {
-        return await prisma.user.update({
-          where: { userId: ctx.currentUser.id },
-          data: {
-            firstName: ctx.currentUser.firstName.trim(),
-            email: ctx.currentUser.email.trim().toLowerCase(),
-            ...(ctx.currentUser.lastName != null && {
-              lastName: ctx.currentUser.lastName.trim() || null
+        try {
+          return await prisma.user.update({
+            where: { userId: ctx.currentUser.id },
+            data: {
+              firstName: ctx.currentUser.firstName.trim(),
+              email: ctx.currentUser.email.trim().toLowerCase(),
+              ...(ctx.currentUser.lastName != null && {
+                lastName: ctx.currentUser.lastName.trim() || null
+              })
+            }
+          })
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2002'
+          ) {
+            throw new GraphQLError('Email already in use', {
+              extensions: { code: 'BAD_USER_INPUT' }
             })
           }
-        })
+          throw error
+        }
       }
       // Anonymous user - only return id
       return { id: user.id }

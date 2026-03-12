@@ -1,5 +1,6 @@
 import omit from 'lodash/omit'
 
+import { Prisma } from '@core/prisma/users/client'
 import { graphql } from '@core/shared/gql'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -133,6 +134,41 @@ describe('api-users', () => {
         })
         expect(data).toHaveProperty('data.me', null)
       })
+    })
+
+    it('should return error when email is already in use', async () => {
+      const findOrFetchUserMock =
+        findOrFetchUser as jest.MockedFunction<typeof findOrFetchUser>
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      prismaMock.user.update.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError(
+          'Unique constraint failed on the fields: (`email`)',
+          { code: 'P2002', clientVersion: 'prismaVersion' }
+        )
+      )
+
+      const data = await authClient({
+        document: ME_QUERY
+      })
+
+      expect(data).toHaveProperty(
+        'errors',
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: 'Email already in use'
+          })
+        ])
+      )
     })
   })
 
