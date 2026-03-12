@@ -166,7 +166,7 @@ export function DoneScreen(): ReactElement {
         <Stack
           spacing={6}
           sx={{
-            border: '2px solid',
+            border: '1px solid',
             borderColor: 'divider',
             borderRadius: 2,
             p: 5
