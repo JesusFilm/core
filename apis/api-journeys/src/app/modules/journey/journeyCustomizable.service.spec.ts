@@ -380,6 +380,25 @@ describe('JourneyCustomizableService', () => {
       expect(prismaService.journey.update).not.toHaveBeenCalled()
     })
 
+    it('should not count chatButton with customizable false', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(baseJourney as any)
+      prismaService.block.findMany.mockResolvedValueOnce([])
+      prismaService.chatButton.findMany.mockResolvedValueOnce([
+        {
+          id: 'chatButton1',
+          journeyId: 'journeyId',
+          link: 'https://wa.me/123',
+          platform: 'whatsApp',
+          customizable: false,
+          updatedAt: new Date()
+        }
+      ] as any)
+
+      await service.recalculate('journeyId')
+
+      expect(prismaService.journey.update).not.toHaveBeenCalled()
+    })
+
     it('should set customizable to false when last customizable chatButton is removed', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce({
         ...baseJourney,
