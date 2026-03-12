@@ -1961,8 +1961,6 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
-  /** Updates the current user's firstName, lastName, and email. Only callable by anonymous users. */
-  updateMe?: Maybe<AuthenticatedUser>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
@@ -2815,11 +2813,6 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
-};
-
-
-export type MutationUpdateMeArgs = {
-  input: UpdateMeInput;
 };
 
 
@@ -5147,12 +5140,6 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
-export type UpdateMeInput = {
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type User = {
   id: Scalars['ID']['output'];
 };
@@ -5467,6 +5454,7 @@ export type VideoBlockCreateInput = {
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear. */
   notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
@@ -5523,6 +5511,7 @@ export type VideoBlockUpdateInput = {
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear. */
   notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
