@@ -1,1 +1,0 @@
-export { isTemplateCustomizable } from './isTemplateCustomizable'

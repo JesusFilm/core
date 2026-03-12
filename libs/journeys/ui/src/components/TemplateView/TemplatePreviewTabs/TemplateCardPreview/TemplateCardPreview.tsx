@@ -4,17 +4,18 @@ import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
+import { AuthUser as User } from '../../../../libs/auth/types'
 import { TreeBlock } from '../../../../libs/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { TemplateActionButton } from '../../TemplateViewHeader/TemplateActionButton/TemplateActionButton'
 
 import {
+  type BreakpointSwiperOptions,
   SELECTED_SCALE,
   type TemplateCardPreviewVariant,
   VARIANT_CONFIGS
@@ -23,7 +24,7 @@ import { TemplateCardPreviewItem } from './TemplateCardPreviewItem'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
-  authUser?: User
+  authUser?: User | null
   variant?: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
@@ -63,6 +64,16 @@ function TemplateCardPreviewPlaceholder({
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 const StyledSwiper = styled(Swiper)(() => ({}))
+
+function getSpacerWidth(
+  cardWidth: number,
+  bp: BreakpointSwiperOptions
+): string {
+  const selectedWidth = cardWidth * SELECTED_SCALE
+  const space = bp.spaceBetween ?? 0
+  const offset = bp.slidesOffsetBefore ?? 0
+  return `calc(100% - ${selectedWidth}px - ${space}px - ${offset}px)`
+}
 
 /**
  * Horizontal carousel of template step cards with optional "more cards" slide.
@@ -165,6 +176,17 @@ export function TemplateCardPreview({
           </StyledSwiperSlide>
         )
       })}
+      {variant === 'media' && (
+        <StyledSwiperSlide
+          data-testid="MediaSpacerSlide"
+          sx={{
+            width: {
+              xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
+              sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
+            }
+          }}
+        />
+      )}
       {showMoreCardsSlide && steps.length > slidesToRender.length && (
         <StyledSwiperSlide
           data-testid="UseTemplatesSlide"

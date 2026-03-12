@@ -796,6 +796,7 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   showAssistant: Boolean
+  customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -1182,6 +1183,11 @@ input JourneysQueryOptions {
 
   """skip custom domain routing filter (for admin template customization)"""
   skipRoutingFilter: Boolean
+
+  """
+  when provided, filter the journey to only return if its status is in this list. when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 enum JourneysReportType {
@@ -1706,6 +1712,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
   getJourneyProfile: JourneyProfile
 
   """

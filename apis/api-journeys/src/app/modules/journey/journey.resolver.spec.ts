@@ -35,10 +35,9 @@ import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService, BlockWithAction } from '../block/block.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
-import { UserRoleResolver } from '../userRole/userRole.resolver'
-import { UserRoleService } from '../userRole/userRole.service'
 
 import { JourneyResolver } from './journey.resolver'
+import { JourneyCustomizableService } from './journeyCustomizable.service'
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -60,6 +59,7 @@ describe('JourneyResolver', () => {
   let resolver: JourneyResolver,
     blockService: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
+    journeyCustomizableService: DeepMockProxy<JourneyCustomizableService>,
     ability: AppAbility,
     abilityWithPublisher: AppAbility,
     plausibleQueue: { add: jest.Mock },
@@ -110,7 +110,8 @@ describe('JourneyResolver', () => {
     fromTemplateId: null,
     journeyCustomizationDescription: null,
     showAssistant: null,
-    templateSite: null
+    templateSite: null,
+    customizable: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -163,9 +164,11 @@ describe('JourneyResolver', () => {
           provide: QrCodeService,
           useValue: mockDeep<QrCodeService>()
         },
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
+        },
         BlockResolver,
-        UserRoleResolver,
-        UserRoleService,
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
@@ -184,6 +187,9 @@ describe('JourneyResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    journeyCustomizableService = module.get<JourneyCustomizableService>(
+      JourneyCustomizableService
+    ) as DeepMockProxy<JourneyCustomizableService>
     ability = await new AppCaslFactory().createAbility({
       id: 'userId'
     })
@@ -869,6 +875,31 @@ describe('JourneyResolver', () => {
         resolver.journey('unknownId', IdType.databaseId)
       ).rejects.toThrow('journey not found')
     })
+
+    it('returns journey when status filter includes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(
+        await resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.published]
+        })
+      ).toEqual(journey)
+    })
+
+    it('throws journey not found when status filter excludes journey status', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.journey('journey-slug', IdType.slug, {
+          status: [JourneyStatus.draft]
+        })
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('returns journey when no status filter is provided (default behaviour)', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      expect(await resolver.journey('journey-slug', IdType.slug)).toEqual(
+        journey
+      )
+    })
   })
 
   describe('journeyCreate', () => {
@@ -1269,7 +1300,14 @@ describe('JourneyResolver', () => {
     })
 
     it('duplicates your journey', async () => {
-      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+      await resolver.journeyDuplicate(
+        ability,
+        'journeyId',
+        'userId',
+        'teamId',
+        undefined,
+        true
+      )
       expect(plausibleQueue.add).toHaveBeenCalledWith(
         'create-journey-site',
         {
@@ -1307,15 +1345,20 @@ describe('JourneyResolver', () => {
             'strategySlug',
             'logoImageBlockId',
             'menuStepBlockId',
-            'templateSite'
+            'templateSite',
+            'customizable'
           ]),
           id: 'duplicateJourneyId',
-          status: JourneyStatus.published,
-          publishedAt: new Date(),
+          status: JourneyStatus.draft,
+          publishedAt: null,
+          archivedAt: null,
+          trashedAt: null,
+          deletedAt: null,
           slug: `${journey.title}-copy`,
           title: `${journey.title} copy`,
           template: false,
           featuredAt: null,
+          customizable: false,
           team: {
             connect: { id: 'teamId' }
           },
@@ -1383,7 +1426,8 @@ describe('JourneyResolver', () => {
             'strategySlug',
             'logoImageBlockId',
             'menuStepBlockId',
-            'templateSite'
+            'templateSite',
+            'customizable'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1393,6 +1437,7 @@ describe('JourneyResolver', () => {
           template: false,
           featuredAt: null,
           archivedAt: null,
+          customizable: false,
           team: {
             connect: { id: 'teamId' }
           },
@@ -1459,7 +1504,8 @@ describe('JourneyResolver', () => {
           'strategySlug',
           'logoImageBlockId',
           'menuStepBlockId',
-          'templateSite'
+          'templateSite',
+          'customizable'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1469,6 +1515,7 @@ describe('JourneyResolver', () => {
         featuredAt: null,
         fromTemplateId: 'journeyId',
         template: false, // journey being duplicated for customization should be false
+        customizable: false,
         team: {
           connect: { id: 'teamId' }
         },
@@ -1553,7 +1600,8 @@ describe('JourneyResolver', () => {
           'strategySlug',
           'logoImageBlockId',
           'menuStepBlockId',
-          'templateSite'
+          'templateSite',
+          'customizable'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1563,6 +1611,7 @@ describe('JourneyResolver', () => {
         featuredAt: null,
         fromTemplateId: 'journeyId',
         template: true,
+        customizable: false,
         team: {
           connect: { id: 'teamId' }
         },
@@ -1688,7 +1737,8 @@ describe('JourneyResolver', () => {
             'strategySlug',
             'logoImageBlockId',
             'menuStepBlockId',
-            'templateSite'
+            'templateSite',
+            'customizable'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1697,6 +1747,7 @@ describe('JourneyResolver', () => {
           title: `${journey.title} copy 2`,
           featuredAt: null,
           template: false,
+          customizable: false,
           team: {
             connect: { id: 'teamId' }
           },
@@ -2195,6 +2246,76 @@ describe('JourneyResolver', () => {
         resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
       ).rejects.toThrow('journey not found')
     })
+
+    it('carries customizable: true forward when duplicating a local template', async () => {
+      const customizableJourney = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        template: true,
+        customizable: true
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(customizableJourney)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: true })
+        })
+      )
+    })
+
+    it('sets customizable: false when duplicating a global template', async () => {
+      const customizableGlobalTemplate = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        teamId: 'jfp-team', // global template team
+        template: true,
+        customizable: true
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(customizableGlobalTemplate)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: false })
+        })
+      )
+    })
+
+    it('sets customizable: false when duplicating a local template with forceNonTemplate', async () => {
+      const customizableJourney = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        template: true,
+        customizable: true
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce(customizableJourney)
+        .mockResolvedValueOnce(journeyWithUserTeam)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+
+      await resolver.journeyDuplicate(
+        ability,
+        'journeyId',
+        'userId',
+        'teamId',
+        true
+      )
+
+      expect(prismaService.journey.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ customizable: false })
+        })
+      )
+    })
   })
 
   describe('journeyUpdate', () => {
@@ -2380,6 +2501,30 @@ describe('JourneyResolver', () => {
       await expect(
         resolver.journeyUpdate(ability, 'journeyId', { title: 'new title' })
       ).rejects.toThrow('journey not found')
+    })
+
+    it('should call recalculate when website is defined', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        website: true
+      })
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        'journeyId'
+      )
+    })
+
+    it('should not call recalculate when website is not in input', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
+      await resolver.journeyUpdate(ability, 'journeyId', {
+        title: 'new title'
+      })
+      expect(journeyCustomizableService.recalculate).not.toHaveBeenCalled()
     })
   })
 
@@ -2690,6 +2835,16 @@ describe('JourneyResolver', () => {
         where: { id: 'journeyId' },
         data: { template: true }
       })
+    })
+
+    it('should call recalculate after calling jouneyTemplate', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        'journeyId'
+      )
     })
 
     describe('when user is publisher', () => {

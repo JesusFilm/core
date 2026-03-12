@@ -1,11 +1,11 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { User } from 'next-firebase-auth'
 
 import {
   GetAdminJourneys,
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { defaultJourney, oldJourney } from '../journeyListData'
 
@@ -21,7 +21,11 @@ import {
 export const user: User = {
   id: 'user-id1',
   displayName: 'Test User',
-  email: 'test@example.com'
+  email: 'test@example.com',
+  photoURL: null,
+  phoneNumber: null,
+  emailVerified: true,
+  token: 'mock-token'
 } as unknown as User
 
 export const activeJourneysMock: MockedResponse<
