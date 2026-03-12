@@ -1456,6 +1456,7 @@ export class VideoBlock implements Block {
     subtitleLanguage?: Nullable<Language>;
     showGeneratedSubtitles?: Nullable<boolean>;
     customizable?: Nullable<boolean>;
+    notes?: Nullable<string>;
 }
 
 export class VideoTriggerBlock implements Block {
