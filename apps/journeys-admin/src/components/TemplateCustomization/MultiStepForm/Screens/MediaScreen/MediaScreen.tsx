@@ -22,6 +22,7 @@ import {
   getCardBlockIdFromStep,
   getCustomizableMediaSteps
 } from './utils/mediaScreenUtils'
+import Stack from '@mui/material/Stack'
 
 interface MediaScreenProps {
   handleNext: (overrideJourneyId?: string) => void
@@ -79,26 +80,28 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         />
       }
     >
-      {showLogo && <LogoSection />}
-      <CardsSection
-        customizableSteps={customizableSteps}
-        selectedStep={selectedStep}
-        handleStepClick={handleStepClick}
-        showLabel={journey?.website === true}
-      />
-      {showImages && (
-        <ImagesSection
-          journey={journey}
-          cardBlockId={selectedCardBlockId}
-          showLabel={showMediaLabels}
+      <Stack sx={{ width: '100%', gap: 6 }}>
+        {showLogo && <LogoSection />}
+        <CardsSection
+          customizableSteps={customizableSteps}
+          selectedStep={selectedStep}
+          handleStepClick={handleStepClick}
+          showLabel={journey?.website === true}
         />
-      )}
-      {showVideos && (
-        <VideosSection
-          cardBlockId={selectedCardBlockId}
-          showLabel={showMediaLabels}
-        />
-      )}
+        {showImages && (
+          <ImagesSection
+            journey={journey}
+            cardBlockId={selectedCardBlockId}
+            showLabel={showMediaLabels}
+          />
+        )}
+        {showVideos && (
+          <VideosSection
+            cardBlockId={selectedCardBlockId}
+            showLabel={showMediaLabels}
+          />
+        )}
+      </Stack>
     </ScreenWrapper>
   )
 }
