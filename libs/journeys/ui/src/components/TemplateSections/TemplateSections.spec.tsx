@@ -60,7 +60,8 @@ describe('TemplateSections', () => {
     website: false,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    userJourneys: []
+    userJourneys: [],
+    customizable: null
   }
 
   const acceptance: Tag = {

@@ -91,7 +91,8 @@ export const defaultJourney: Journey = {
   trashedAt: null,
   template: false,
   primaryImageBlock: null,
-  fromTemplateId: null
+  fromTemplateId: null,
+  customizable: null
 }
 
 export const journeyWithImage: Journey = {
@@ -167,6 +168,7 @@ export const templateJourneyFromTemplate: Journey = {
 
 export const customizableTemplateJourney: Journey = {
   ...templateJourney,
+  customizable: true,
   journeyCustomizationDescription: 'a customizable template journey',
   journeyCustomizationFields: [
     {
@@ -195,6 +197,7 @@ export const customizableWebsiteTemplateJourney: Journey = {
   description: 'a customizable website template journey',
   website: true,
   template: true,
+  customizable: true,
   journeyCustomizationDescription: 'a customizable website template journey',
   journeyCustomizationFields: [
     {
