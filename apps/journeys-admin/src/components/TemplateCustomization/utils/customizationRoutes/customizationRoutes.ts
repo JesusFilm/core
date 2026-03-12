@@ -10,7 +10,8 @@ export const JOURNEY_NOT_FOUND_ERROR = 'journeyNotFound'
 export const GUEST_ACCESSIBLE_SCREENS = [
   'language',
   'text',
-  'links'
+  'links',
+  'guestPreview'
 ] as const satisfies readonly CustomizationScreen[]
 
 export type GuestAccessibleScreen = (typeof GUEST_ACCESSIBLE_SCREENS)[number]

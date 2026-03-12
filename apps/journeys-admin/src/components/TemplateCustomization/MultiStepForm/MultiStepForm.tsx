@@ -2,13 +2,13 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
+import { useAuth } from '../../../libs/auth'
 import {
   CUSTOMIZE_SCREEN_QUERY_KEY,
   buildCustomizeUrl,
@@ -23,6 +23,7 @@ import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizat
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
   MediaScreen,
@@ -42,6 +43,8 @@ function renderScreen(
       return <LanguageScreen handleNext={handleNext} />
     case 'text':
       return <TextScreen handleNext={handleNext} />
+    case 'guestPreview':
+      return <GuestPreviewScreen handleNext={handleNext} />
     case 'links':
       return <LinksScreen handleNext={handleNext} />
     case 'media':
@@ -58,13 +61,14 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
 
-  const firebaseUserLoaded = user?.firebaseUser != null
-  const isAnon = user?.firebaseUser?.isAnonymous ?? false
+  const isAnon = user?.isAnonymous ?? false
   const journeyId = journey?.id ?? ''
+
+  const isNotSignedIn = user?.email == null
 
   const {
     screens,
@@ -75,9 +79,10 @@ export function MultiStepForm(): ReactElement {
   } = useMemo(
     () =>
       getCustomizeFlowConfig(journey, t, {
-        customizableMedia: customizableMedia ?? false
+        customizableMedia: customizableMedia ?? false,
+        isNotSignedIn
       }),
-    [journey, t, customizableMedia]
+    [journey, t, customizableMedia, isNotSignedIn]
   )
 
   const activeScreen = getActiveScreenFromQuery(
@@ -89,7 +94,7 @@ export function MultiStepForm(): ReactElement {
     journeyId,
     screens,
     activeScreen,
-    isGuest: firebaseUserLoaded && isAnon,
+    isGuest: isAnon,
     guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 
@@ -104,6 +109,17 @@ export function MultiStepForm(): ReactElement {
       buildCustomizeUrl(targetJourneyId, screens[currentIndex + 1], undefined)
     )
   }
+
+  async function handleScreenNavigation(
+    screen: CustomizationScreen
+  ): Promise<void> {
+    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
+  }
+
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? screens.indexOf('guestPreview') - 1
+      : screens.indexOf(activeScreen)
 
   return (
     <TemplateVideoUploadProvider>
@@ -127,7 +143,7 @@ export function MultiStepForm(): ReactElement {
             hasCustomizableMedia) && (
             <Box sx={{ mt: { xs: 3, sm: 6 } }}>
               <ProgressStepper
-                activeStepNumber={screens.indexOf(activeScreen)}
+                activeStepNumber={activeStepForStepper}
                 totalSteps={totalSteps}
               />
             </Box>

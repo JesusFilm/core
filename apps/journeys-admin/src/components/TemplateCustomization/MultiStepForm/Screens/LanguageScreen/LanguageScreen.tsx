@@ -6,8 +6,6 @@ import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik, FormikValues } from 'formik'
 import uniqBy from 'lodash/uniqBy'
-import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -22,11 +20,11 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -37,16 +35,13 @@ interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
-const FORM_SM_BREAKPOINT_WIDTH = '390px'
-
 export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
   const { t } = useTranslation('journeys-ui')
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
-  const router = useRouter()
-  const user = useUser()
+  const { user } = useAuth()
   const { journey } = useJourney()
   const { query } = useTeam()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
@@ -57,9 +52,11 @@ export function LanguageScreen({
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
   >
+  // If the user is not authenticated, useAuth returns { user: null }
   const isParentTemplate = journey?.fromTemplateId == null
-  //If the user is not authenticated, useUser will return a User instance with a null id https://github.com/gladly-team/next-firebase-auth?tab=readme-ov-file#useuser
   const isSignedIn = user?.email != null && user?.id != null
+  const isGuestFlowEnabled = templateCustomizationGuestFlow === true
+  const isNextDisabled = (!isSignedIn && !isGuestFlowEnabled) || loading
 
   const {
     languages: childJourneyLanguages,
@@ -161,7 +158,7 @@ export function LanguageScreen({
 
   async function createGuestUser(): Promise<{ teamId: string }> {
     const teamName = t('My Team')
-    const isAnonymous = user?.firebaseUser?.isAnonymous ?? false
+    const isAnonymous = user?.isAnonymous ?? false
     if (!isAnonymous) {
       try {
         await signInAnonymously(getAuth(getApp()))
@@ -309,11 +306,7 @@ export function LanguageScreen({
             <CustomizeFlowNextButton
               label={t('Next')}
               onClick={() => formikHandleSubmit()}
-              disabled={
-                templateCustomizationGuestFlow == null ||
-                !templateCustomizationGuestFlow ||
-                loading
-              }
+              disabled={isNextDisabled}
               ariaLabel={t('Next')}
             />
           }

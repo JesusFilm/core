@@ -10,22 +10,45 @@ import { JourneyFields as Journey } from '../../../../__generated__/JourneyField
 
 import { MultiStepForm } from './MultiStepForm'
 
-// Mock complex dependencies that the screens use (User.id can be null when unauthenticated).
-// MultiStepForm treats as guest only when user.firebaseUser != null && user.firebaseUser.isAnonymous.
-type MockUser = {
-  id: string | null
-  email?: string | null
-  firebaseUser?: { isAnonymous: boolean } | null
+// Mock complex dependencies that the screens use (user is null when unauthenticated)
+const defaultAuth: {
+  user: {
+    id: string | null
+    email: string | null
+    displayName: string | null
+    photoURL: string | null
+    phoneNumber: string | null
+    emailVerified: boolean
+    token: string
+    isAnonymous: boolean
+  } | null
+} = {
+  user: {
+    id: 'test-user-id',
+    email: null,
+    displayName: null,
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: false,
+    token: 'mock-token',
+    isAnonymous: false
+  }
 }
-const defaultUser: MockUser = { id: 'test-user-id', firebaseUser: null }
-const guestUser: MockUser = {
-  id: null,
-  email: null,
-  firebaseUser: { isAnonymous: true }
+const guestAuth = {
+  user: {
+    id: null,
+    email: null,
+    displayName: null,
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: false,
+    token: 'mock-token',
+    isAnonymous: true
+  }
 }
-const mockUseUser = jest.fn<MockUser, []>(() => defaultUser)
-jest.mock('next-firebase-auth', () => ({
-  useUser: () => mockUseUser()
+const mockUseAuth = jest.fn(() => defaultAuth)
+jest.mock('../../../libs/auth', () => ({
+  useAuth: () => mockUseAuth()
 }))
 
 const defaultFlags = {
@@ -128,6 +151,15 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
+  GuestPreviewScreen: ({
+    handleScreenNavigation
+  }: {
+    handleScreenNavigation: (screen: string) => void
+  }) => (
+    <div data-testid="guest-preview-screen">
+      <h2>Guest Preview Screen</h2>
+    </div>
+  ),
   SocialScreen: ({
     handleNext
   }: {
@@ -150,7 +182,7 @@ jest.mock('./Screens', () => ({
 describe('MultiStepForm', () => {
   afterEach(() => {
     jest.clearAllMocks()
-    mockUseUser.mockImplementation(() => defaultUser)
+    mockUseAuth.mockImplementation(() => defaultAuth)
   })
 
   describe('rendering and controls', () => {
@@ -948,7 +980,7 @@ describe('MultiStepForm', () => {
 
     describe('guest access', () => {
       it('should redirect guest to language screen when on non-guest-accessible screen (e.g. social)', async () => {
-        mockUseUser.mockReturnValue(guestUser)
+        mockUseAuth.mockReturnValue(guestAuth)
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -982,7 +1014,7 @@ describe('MultiStepForm', () => {
       })
 
       it('should redirect guest to language screen when flag is false (safer: no guest access)', async () => {
-        mockUseUser.mockReturnValue(guestUser)
+        mockUseAuth.mockReturnValue(guestAuth)
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -1016,7 +1048,7 @@ describe('MultiStepForm', () => {
       })
 
       it('should redirect guest to language screen when flag is null (safer: flag not served)', async () => {
-        mockUseUser.mockReturnValue(guestUser)
+        mockUseAuth.mockReturnValue(guestAuth)
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -1050,7 +1082,18 @@ describe('MultiStepForm', () => {
       })
 
       it('should not redirect when user is signed in even on any screen', () => {
-        mockUseUser.mockReturnValue({ id: 'signed-in-user-id' })
+        mockUseAuth.mockReturnValue({
+          user: {
+            id: 'signed-in-user-id',
+            email: null,
+            displayName: null,
+            photoURL: null,
+            phoneNumber: null,
+            emailVerified: false,
+            token: 'mock-token',
+            isAnonymous: false
+          }
+        })
 
         const journeyWithNoCapabilities = {
           ...journey,
