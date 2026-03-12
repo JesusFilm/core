@@ -432,7 +432,7 @@ describe('LinksForm', () => {
       id: 'chat-1',
       linkType: 'chatButtons',
       url: 'https://wa.me/123',
-      label: 'Chat Widget: WhatsApp',
+      label: 'Chat Widget',
       platform: MessagePlatform.whatsApp
     }
 

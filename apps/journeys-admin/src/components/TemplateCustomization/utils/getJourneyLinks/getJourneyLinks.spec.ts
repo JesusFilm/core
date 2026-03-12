@@ -48,14 +48,14 @@ describe('getJourneyLinks', () => {
           id: 'chat-1',
           linkType: 'chatButtons',
           url: 'https://wa.me/123',
-          label: 'Chat Widget: WhatsApp',
+          label: 'Chat Widget',
           platform: MessagePlatform.whatsApp
         },
         {
           id: 'chat-2',
           linkType: 'chatButtons',
           url: 'https://t.me/test',
-          label: 'Chat Widget: Telegram',
+          label: 'Chat Widget',
           platform: MessagePlatform.telegram
         }
       ])
@@ -116,25 +116,7 @@ describe('getJourneyLinks', () => {
       if (links[0].linkType === 'chatButtons') {
         expect(links[0].platform).toBe(MessagePlatform.custom)
       }
-      expect(links[0].label).toBe('Chat Widget: ')
-    })
-
-    it('uses human-readable platform label (e.g. "TikTok" not "tikTok")', () => {
-      const journey = {
-        journeyCustomizationFields: [],
-        chatButtons: [
-          {
-            id: 'chat-1',
-            link: 'https://tiktok.com/@test',
-            platform: MessagePlatform.tikTok,
-            customizable: true
-          }
-        ],
-        blocks: []
-      } as unknown as Journey
-
-      const links = getJourneyLinks(t, journey)
-      expect(links[0].label).toBe('Chat Widget: TikTok')
+      expect(links[0].label).toBe('Chat Widget')
     })
   })
 

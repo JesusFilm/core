@@ -150,7 +150,7 @@ export function LinksForm({
                       display: 'flex',
                       alignItems: 'center',
                       height: 56,
-                      bgcolor: 'action.hover',
+                      bgcolor: 'rgba(0, 0, 0, 0.06)',
                       borderRadius: 1,
                       borderBottom: hasError ? 2 : 1,
                       borderColor: hasError

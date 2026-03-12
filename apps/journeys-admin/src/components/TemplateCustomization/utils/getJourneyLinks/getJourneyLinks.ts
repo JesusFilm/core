@@ -81,15 +81,11 @@ export function getJourneyLinks(
   const chatButtons = journey.chatButtons ?? []
   chatButtons.forEach((chatButton) => {
     if (chatButton.customizable !== true) return
-    const platformLabel =
-      chatButton.platform != null
-        ? messagePlatformDisplayNames[chatButton.platform]
-        : ''
     links.push({
       id: chatButton.id,
       linkType: 'chatButtons',
       url: chatButton.link ?? '',
-      label: `${t('Chat Widget')}: ${platformLabel}`,
+      label: t('Chat Widget'),
       platform: chatButton.platform ?? MessagePlatform.custom
     })
   })

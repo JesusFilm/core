@@ -100,7 +100,7 @@ describe('LinksScreen', () => {
     expect(
       screen.queryByTestId('CardsPreviewPlaceholder')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('Chat Widget: WhatsApp')).toBeInTheDocument()
+    expect(screen.getByText('Chat Widget')).toBeInTheDocument()
   })
 
   it('shows validation error for invalid chat URL on submit', async () => {
@@ -115,7 +115,7 @@ describe('LinksScreen', () => {
       )
     })
 
-    const chatGroup = screen.getByLabelText('Edit Chat Widget: WhatsApp')
+    const chatGroup = screen.getByLabelText('Edit Chat Widget')
     const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'wa.me/999' } })
 
@@ -304,7 +304,7 @@ describe('LinksScreen', () => {
     const emailInput = within(emailGroup).getByRole('textbox')
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
-    const chatGroup = screen.getByLabelText('Edit Chat Widget: WhatsApp')
+    const chatGroup = screen.getByLabelText('Edit Chat Widget')
     const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
