@@ -107,15 +107,13 @@ export interface GetAdminJourneys_journeys {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneys_journeys_journeyCustomizationFields[];
   website: boolean | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneys {
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   journeys: GetAdminJourneys_journeys[];
 }
 

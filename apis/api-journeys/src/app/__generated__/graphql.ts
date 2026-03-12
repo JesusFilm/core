@@ -959,6 +959,7 @@ export class Journey {
     tags: Tag[];
     journeyCollections: JourneyCollection[];
     templateSite?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;
@@ -996,8 +997,6 @@ export abstract class IQuery {
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
-
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 

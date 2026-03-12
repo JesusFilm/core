@@ -182,6 +182,9 @@ type Journey
   """used to see if a template has a site created for it"""
   templateSite: Boolean
 
+  """used to display quick start label on customizable templates"""
+  customizable: Boolean
+
   """used in a plausible share link to embed report"""
   plausibleToken: String
   website: Boolean
@@ -230,21 +233,6 @@ extend type Query {
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
-
-  """
-  returns all journeys that match the provided filters
-  If no team id is provided and template is not true then only returns journeys
-  where the user is not a member of a team but is an editor or owner of the
-  journey
-  """
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-
-    """Use Last Active Team Id from JourneyProfile (if null will error)"""
-    useLastActiveTeamId: Boolean
-  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
