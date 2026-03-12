@@ -1,8 +1,15 @@
-import { getNextCustomizeScreen } from './getNextCustomizeScreen'
 import { CustomizationScreen } from '../getCustomizeFlowConfig'
 
+import { getNextCustomizeScreen } from './getNextCustomizeScreen'
+
 describe('getNextCustomizeScreen', () => {
-  const screens: CustomizationScreen[] = ['language', 'text', 'links', 'media', 'done']
+  const screens: CustomizationScreen[] = [
+    'language',
+    'text',
+    'links',
+    'media',
+    'done'
+  ]
 
   it('returns the next screen', () => {
     expect(getNextCustomizeScreen(screens, 'language')).toBe('text')
