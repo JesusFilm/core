@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { builder } from '../../builder'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
@@ -71,6 +72,8 @@ builder.mutationField('blockUpdatePhoneAction', (t) =>
           ...input
         }
       })
+
+      await recalculateJourneyCustomizable(block.journeyId)
 
       return action
     }
