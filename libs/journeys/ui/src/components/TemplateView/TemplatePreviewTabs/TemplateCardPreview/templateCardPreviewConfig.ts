@@ -36,6 +36,7 @@ export interface VariantConfig {
 export const SELECTED_SCALE = 1.25
 export const OVERFLOW_PX = 40
 const MEDIA_CARD_HEIGHT = 209
+const MEDIA_CARD_WIDTH = 120
 const PREVIEW_CARD_HEIGHT_XS = 295
 const PREVIEW_CARD_HEIGHT_SM = 404
 
@@ -82,7 +83,7 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
 }
 
 const MEDIA_VARIANT_CONFIG: VariantConfig = {
-  cardWidth: { xs: 120, sm: 120 },
+  cardWidth: { xs: MEDIA_CARD_WIDTH, sm: MEDIA_CARD_WIDTH },
   cardHeight: { xs: MEDIA_CARD_HEIGHT, sm: MEDIA_CARD_HEIGHT },
   swiperHeight: {
     xs: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
@@ -115,7 +116,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   },
   slideSx: {
     height: MEDIA_CARD_HEIGHT,
-    width: 120,
+    width: MEDIA_CARD_WIDTH,
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
@@ -123,7 +124,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '12px'
   },
   selectedSlideSx: {
-    width: 120 * SELECTED_SCALE,
+    width: MEDIA_CARD_WIDTH * SELECTED_SCALE,
     height: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
     zIndex: 1
   },
