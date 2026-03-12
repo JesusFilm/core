@@ -33,6 +33,7 @@ export const GET_INTEGRATION = gql`
           }
         }
         accountEmail
+        oauthStale
       }
     }
   }
