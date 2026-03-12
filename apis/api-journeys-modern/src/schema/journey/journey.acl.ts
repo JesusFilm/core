@@ -34,6 +34,31 @@ export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
   }
 }
 
+export function journeyReadAccessWhere(
+  userId: string,
+  user: { roles?: string[] }
+): Prisma.JourneyWhereInput {
+  const isPublisher = user.roles?.includes('publisher') === true
+  return {
+    OR: [
+      {
+        team: {
+          userTeams: { some: { userId, role: UserTeamRole.manager } }
+        }
+      },
+      {
+        team: {
+          userTeams: { some: { userId, role: UserTeamRole.member } }
+        }
+      },
+      { userJourneys: { some: { userId, role: UserJourneyRole.owner } } },
+      { userJourneys: { some: { userId, role: UserJourneyRole.editor } } },
+      { template: true, status: JourneyStatus.published },
+      ...(isPublisher ? [{ template: true }] : [])
+    ]
+  }
+}
+
 export function journeyAcl(
   action: Action,
   journey: Partial<Journey>,
