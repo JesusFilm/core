@@ -44,6 +44,8 @@ export function HoverLayer({ className }: HoverLayerProps): ReactElement {
   )
 }
 
+//
+
 interface TemplateGalleryCardProps {
   item?: Journey
   priority?: boolean
