@@ -46,7 +46,8 @@ describe('useHandleNewAccountRedirect', () => {
       push,
       pathname: '/users/sign-in',
       query: {
-        redirect: '/templates/journey-123/customize?screen=media&newAccount=true'
+        redirect:
+          '/templates/journey-123/customize?screen=media&newAccount=true'
       }
     } as unknown as NextRouter)
 

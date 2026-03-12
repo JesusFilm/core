@@ -111,10 +111,7 @@ export function TermsAndConditions(): ReactElement {
         }),
         router.push(
           router.query.redirect != null
-            ? new URL(
-                router.query.redirect as string,
-                window.location.origin
-              )
+            ? new URL(router.query.redirect as string, window.location.origin)
             : hasExistingTeam
               ? '/'
               : '/?onboarding=true'

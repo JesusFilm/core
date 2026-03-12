@@ -198,7 +198,11 @@ describe('useTemplateCustomizationRedirect', () => {
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl('journey-1', 'guestPreview' as CustomizationScreen, true)
+        buildCustomizeUrl(
+          'journey-1',
+          'guestPreview' as CustomizationScreen,
+          true
+        )
       )
     })
 
