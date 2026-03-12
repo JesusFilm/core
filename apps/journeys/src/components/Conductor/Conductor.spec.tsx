@@ -159,7 +159,8 @@ describe('Conductor', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null
   }
 
   it('should create a journeyViewEvent', async () => {
