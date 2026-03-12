@@ -1005,11 +1005,11 @@ describe('MultiStepForm', () => {
 
         expect(
           await screen.findByText(
-            "The step you're trying to access is not available to guests, please sign up."
+            "The step you're trying to access is not available to guests. Please sign up."
           )
         ).toBeInTheDocument()
         expect(mockReplace).toHaveBeenCalledWith(
-          `/templates/${journeyId}/customize?screen=links`
+          `/templates/${journeyId}/customize?screen=guestPreview`
         )
       })
 

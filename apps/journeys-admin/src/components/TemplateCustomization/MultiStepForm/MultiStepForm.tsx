@@ -67,7 +67,7 @@ export function MultiStepForm(): ReactElement {
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
   const { user } = useAuth()
 
-  const isGuest = user == null
+  const isGuest = user == null || user.isAnonymous === true
   const journeyId = journey?.id ?? ''
 
   const {

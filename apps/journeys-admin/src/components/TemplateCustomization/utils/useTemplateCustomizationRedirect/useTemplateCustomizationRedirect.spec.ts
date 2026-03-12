@@ -194,11 +194,11 @@ describe('useTemplateCustomizationRedirect', () => {
       renderHook(() => useTemplateCustomizationRedirect(params))
 
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        "The step you're trying to access is not available to guests, please sign up.",
+        "The step you're trying to access is not available to guests. Please sign up.",
         { variant: 'error', preventDuplicate: true }
       )
       expect(mockReplace).toHaveBeenCalledWith(
-        buildCustomizeUrl('journey-1', 'links' as CustomizationScreen, true)
+        buildCustomizeUrl('journey-1', 'guestPreview' as CustomizationScreen, true)
       )
     })
 
