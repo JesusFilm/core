@@ -1,6 +1,11 @@
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+
+jest.mock(
+  '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
 
 describe('blockDeleteAction mutation', () => {
   const authClient = getClient({
@@ -28,6 +33,7 @@ describe('blockDeleteAction mutation', () => {
     id: '1',
     typename: 'RadioOptionBlock',
     parentBlockId: 'parent-step-id',
+    journeyId: 'journeyId',
     journey: journeyWithAccess,
     action: { parentBlockId: '1' }
   } as any
@@ -48,6 +54,9 @@ describe('blockDeleteAction mutation', () => {
       expect(prismaMock.action.deleteMany).toHaveBeenCalledWith({
         where: { parentBlockId: actionableBlock.id }
       })
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+
       expect(result).toEqual({
         data: { blockDeleteAction: { id: actionableBlock.id } }
       })
@@ -63,6 +72,9 @@ describe('blockDeleteAction mutation', () => {
       })
 
       expect(prismaMock.action.delete).not.toHaveBeenCalled()
+
+      expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
+
       expect(result).toEqual({
         data: { blockDeleteAction: { id: noActionBlock.id } }
       })

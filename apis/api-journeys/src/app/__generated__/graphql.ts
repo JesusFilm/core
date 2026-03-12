@@ -682,6 +682,7 @@ export class JourneysQueryOptions {
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
     skipRoutingFilter?: Nullable<boolean>;
+    status?: Nullable<JourneyStatus[]>;
 }
 
 export class JourneyCreateInput {
@@ -958,6 +959,7 @@ export class Journey {
     tags: Tag[];
     journeyCollections: JourneyCollection[];
     templateSite?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;

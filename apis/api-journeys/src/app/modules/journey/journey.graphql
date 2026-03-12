@@ -54,6 +54,10 @@ type Journey @key(fields: "id") @shareable {
   """
   templateSite: Boolean
   """
+  used to display quick start label on customizable templates
+  """
+  customizable: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -121,6 +125,11 @@ input JourneysQueryOptions {
   skip custom domain routing filter (for admin template customization)
   """
   skipRoutingFilter: Boolean
+  """
+  when provided, filter the journey to only return if its status is in this list.
+  when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 enum JourneysReportType {

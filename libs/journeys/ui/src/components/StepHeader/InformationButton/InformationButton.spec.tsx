@@ -89,7 +89,8 @@ describe('InformationButton', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null
   }
 
   it('should have report contact button', () => {

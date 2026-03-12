@@ -85,7 +85,8 @@ describe('ThemeBuilderDialog', () => {
     },
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null
+    fromTemplateId: null,
+    customizable: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {

@@ -10,13 +10,45 @@ import { JourneyFields as Journey } from '../../../../__generated__/JourneyField
 
 import { MultiStepForm } from './MultiStepForm'
 
-// Mock complex dependencies that the screens use (User.id can be null when unauthenticated)
-type MockUser = { id: string | null; email?: string | null }
-const defaultUser: MockUser = { id: 'test-user-id' }
-const guestUser: MockUser = { id: null, email: null }
-const mockUseUser = jest.fn<MockUser, []>(() => defaultUser)
-jest.mock('next-firebase-auth', () => ({
-  useUser: () => mockUseUser()
+// Mock complex dependencies that the screens use (user is null when unauthenticated)
+const defaultAuth: {
+  user: {
+    id: string | null
+    email: string | null
+    displayName: string | null
+    photoURL: string | null
+    phoneNumber: string | null
+    emailVerified: boolean
+    token: string
+    isAnonymous: boolean
+  } | null
+} = {
+  user: {
+    id: 'test-user-id',
+    email: null,
+    displayName: null,
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: false,
+    token: 'mock-token',
+    isAnonymous: false
+  }
+}
+const guestAuth = {
+  user: {
+    id: null,
+    email: null,
+    displayName: null,
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: false,
+    token: 'mock-token',
+    isAnonymous: true
+  }
+}
+const mockUseAuth = jest.fn(() => defaultAuth)
+jest.mock('../../../libs/auth', () => ({
+  useAuth: () => mockUseAuth()
 }))
 
 const defaultFlags = {
@@ -119,6 +151,15 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
+  GuestPreviewScreen: ({
+    handleScreenNavigation
+  }: {
+    handleScreenNavigation: (screen: string) => void
+  }) => (
+    <div data-testid="guest-preview-screen">
+      <h2>Guest Preview Screen</h2>
+    </div>
+  ),
   SocialScreen: ({
     handleNext
   }: {
@@ -131,41 +172,17 @@ jest.mock('./Screens', () => ({
       </button>
     </div>
   ),
-  DoneScreen: ({
-    handleScreenNavigation
-  }: {
-    handleScreenNavigation: (screen: string) => void
-  }) => (
+  DoneScreen: () => (
     <div data-testid="done-screen">
       <h2>Done Screen</h2>
-      <button
-        onClick={() => handleScreenNavigation('language')}
-        data-testid="done-screen-go-to-language"
-      >
-        Go to language
-      </button>
     </div>
   )
 }))
 
-function renderMultiStepForm(
-  journeyData: Journey,
-  options: { customizableMedia?: boolean } = {}
-): ReturnType<typeof render> {
-  const { customizableMedia = false } = options
-  return render(
-    <FlagsProvider flags={{ ...defaultFlags, customizableMedia }}>
-      <JourneyProvider value={{ journey: journeyData }}>
-        <MultiStepForm />
-      </JourneyProvider>
-    </FlagsProvider>
-  )
-}
-
 describe('MultiStepForm', () => {
   afterEach(() => {
     jest.clearAllMocks()
-    mockUseUser.mockImplementation(() => defaultUser)
+    mockUseAuth.mockImplementation(() => defaultAuth)
   })
 
   describe('rendering and controls', () => {
@@ -789,90 +806,6 @@ describe('MultiStepForm', () => {
       })
     })
 
-    describe('Edit Manually button', () => {
-      it('should hide edit manually button when on the language screen', () => {
-        const journey = {
-          id: 'test-journey-id'
-        } as unknown as Journey
-
-        setRouterQuery({ journeyId: 'test-journey-id' })
-
-        render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-
-        const editButton = screen.getByText('Edit Manually')
-        expect(editButton).toHaveStyle('visibility: hidden')
-      })
-
-      it('should show edit manually button when on any screen after the first screen', () => {
-        const journey = {
-          id: 'test-journey-id'
-        } as unknown as Journey
-
-        setRouterQuery({ journeyId: 'test-journey-id' })
-
-        const { rerender } = render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey: journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-
-        const editButton = screen.getByText('Edit Manually')
-        expect(editButton).toHaveStyle('visibility: hidden')
-
-        fireEvent.click(screen.getByTestId('language-next'))
-        setRouterQuery({ journeyId: 'test-journey-id', screen: 'social' })
-        rerender(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey: journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-        const editButtonAfterRerender = screen.getByText('Edit Manually')
-        expect(editButtonAfterRerender).toHaveStyle('visibility: visible')
-        expect(editButtonAfterRerender).toHaveAttribute(
-          'href',
-          '/journeys/test-journey-id'
-        )
-      })
-
-      it('should disable edit manually button if journey is not found', () => {
-        const journey = {
-          id: null
-        } as unknown as Journey
-
-        setRouterQuery({ journeyId: 'test-journey-id' })
-
-        render(
-          <FlagsProvider flags={defaultFlags}>
-            <SnackbarProvider>
-              <JourneyProvider value={{ journey }}>
-                <MultiStepForm />
-              </JourneyProvider>
-            </SnackbarProvider>
-          </FlagsProvider>
-        )
-        expect(screen.getByText('Edit Manually')).toHaveAttribute(
-          'aria-disabled',
-          'true'
-        )
-      })
-    })
-
     describe('progress stepper', () => {
       it('should not render progress stepper when journey has no customization capabilities', async () => {
         const journeyWithNoCapabilities = {
@@ -1047,7 +980,7 @@ describe('MultiStepForm', () => {
 
     describe('guest access', () => {
       it('should redirect guest to language screen when on non-guest-accessible screen (e.g. social)', async () => {
-        mockUseUser.mockReturnValue(guestUser)
+        mockUseAuth.mockReturnValue(guestAuth)
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -1081,7 +1014,7 @@ describe('MultiStepForm', () => {
       })
 
       it('should redirect guest to language screen when flag is false (safer: no guest access)', async () => {
-        mockUseUser.mockReturnValue(guestUser)
+        mockUseAuth.mockReturnValue(guestAuth)
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -1115,7 +1048,7 @@ describe('MultiStepForm', () => {
       })
 
       it('should redirect guest to language screen when flag is null (safer: flag not served)', async () => {
-        mockUseUser.mockReturnValue(guestUser)
+        mockUseAuth.mockReturnValue(guestAuth)
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -1149,7 +1082,18 @@ describe('MultiStepForm', () => {
       })
 
       it('should not redirect when user is signed in even on any screen', () => {
-        mockUseUser.mockReturnValue({ id: 'signed-in-user-id' })
+        mockUseAuth.mockReturnValue({
+          user: {
+            id: 'signed-in-user-id',
+            email: null,
+            displayName: null,
+            photoURL: null,
+            phoneNumber: null,
+            emailVerified: false,
+            token: 'mock-token',
+            isAnonymous: false
+          }
+        })
 
         const journeyWithNoCapabilities = {
           ...journey,
@@ -1174,55 +1118,6 @@ describe('MultiStepForm', () => {
 
         expect(mockReplace).not.toHaveBeenCalled()
       })
-    })
-
-    it('should call router.replace with correct URL when handleScreenNavigation is called', () => {
-      const journeyWithAllCapabilities = {
-        ...journey,
-        journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
-        journeyCustomizationFields: [
-          {
-            id: '1',
-            key: 'firstName',
-            value: 'John',
-            __typename: 'JourneyCustomizationField'
-          }
-        ],
-        blocks: [
-          {
-            __typename: 'ButtonBlock',
-            id: '1',
-            label: 'Test Button',
-            action: {
-              __typename: 'LinkAction',
-              url: 'https://wa.me/123',
-              customizable: true,
-              parentStepId: null
-            }
-          }
-        ]
-      } as unknown as Journey
-
-      const journeyId = journeyWithAllCapabilities.id
-      setRouterQuery({ journeyId, screen: 'done' })
-
-      render(
-        <FlagsProvider flags={defaultFlags}>
-          <SnackbarProvider>
-            <JourneyProvider value={{ journey: journeyWithAllCapabilities }}>
-              <MultiStepForm />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </FlagsProvider>
-      )
-
-      expect(screen.getByTestId('done-screen')).toBeInTheDocument()
-      fireEvent.click(screen.getByTestId('done-screen-go-to-language'))
-
-      expect(mockReplace).toHaveBeenCalledTimes(1)
-      expect(mockReplace).toHaveBeenCalledWith(
-        `/templates/${journeyId}/customize?screen=language`
-      )
     })
 
     it('should call router.replace with override journey id and next screen when handleNext(overrideJourneyId) is called', () => {

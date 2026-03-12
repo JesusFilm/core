@@ -851,4 +851,8 @@ export interface JourneyFields {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: JourneyFields_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }

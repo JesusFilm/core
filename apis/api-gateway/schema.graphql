@@ -677,6 +677,10 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   """
   templateSite: Boolean
   """
+  used to display quick start label on customizable templates
+  """
+  customizable: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -790,7 +794,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     template: Boolean
     teamId: ID
     useLastActiveTeamId: Boolean
-  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -4479,6 +4483,11 @@ input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: 
   skip custom domain routing filter (for admin template customization)
   """
   skipRoutingFilter: Boolean
+  """
+  when provided, filter the journey to only return if its status is in this list.
+  when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 input JourneyCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
