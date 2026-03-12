@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -10,7 +11,7 @@ describe('EventResolver', () => {
   describe('__resolveType', () => {
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [EventResolver, PrismaService]
+        providers: [EventResolver, { provide: PrismaService, useValue: mockDeep<PrismaService>() }]
       }).compile()
       resolver = module.get<EventResolver>(EventResolver)
     })

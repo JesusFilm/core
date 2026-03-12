@@ -1,14 +1,12 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { prisma } from '@core/prisma/journeys/client'
+import type { PrismaClient } from '@core/prisma/journeys/client'
 
-import { PrismaClient, adapter } from '@core/prisma/journeys/client'
+/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
+export abstract class PrismaService {}
+export interface PrismaService extends PrismaClient {}
+/* eslint-enable @typescript-eslint/no-unsafe-declaration-merging */
 
-@Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
-  constructor() {
-    super({ adapter })
-  }
-
-  async onModuleInit(): Promise<void> {
-    await this.$connect()
-  }
+export const prismaServiceProvider = {
+  provide: PrismaService,
+  useValue: prisma
 }
