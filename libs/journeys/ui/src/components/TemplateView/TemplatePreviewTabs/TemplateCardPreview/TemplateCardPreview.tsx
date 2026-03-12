@@ -111,6 +111,7 @@ export function TemplateCardPreview({
     showMoreCardsSlide,
     swiperProps,
     slideSx,
+    selectedSlideSx,
     swiperSx,
     modules
   } = config
@@ -147,25 +148,16 @@ export function TemplateCardPreview({
       }}
     >
       {slidesToRender.map((step) => {
-        const isSelected = selectedStep?.id === step.id
-        const selectedSlideSx =
-          variant === 'media' && isSelected
-            ? {
-                width: {
-                  xs: cardWidth.xs * SELECTED_SCALE,
-                  sm: cardWidth.sm * SELECTED_SCALE
-                },
-                height: {
-                  xs: cardHeight.xs * SELECTED_SCALE,
-                  sm: cardHeight.sm * SELECTED_SCALE
-                }
-              }
-            : {}
+        const isSelected =
+          variant === 'media' && selectedStep?.id === step.id
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
             key={step.id}
-            sx={{ ...slideSx, ...selectedSlideSx }}
+            sx={{
+              ...(slideSx as object),
+              ...(isSelected ? (selectedSlideSx as object) : {})
+            }}
           >
             <TemplateCardPreviewItem
               step={step}

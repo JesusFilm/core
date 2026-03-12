@@ -7,7 +7,7 @@ export type TemplateCardPreviewVariant = 'preview' | 'media'
 interface FramePortalConfig {
   width: { xs: number; sm: number }
   height: { xs: number; sm: number }
-  transform: { xs: string; sm: string }
+  scale: { xs: number; sm: number }
   borderRadius?: number | string
 }
 
@@ -26,9 +26,11 @@ export interface VariantConfig {
   breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
   cardSx: SxProps<Theme>
   slideSx: SxProps<Theme>
+  selectedSlideSx: SxProps<Theme>
   swiperSx: SxProps<Theme>
   modules?: SwiperModule[]
   opacity?: number
+  selectedBoxShadow?: string
 }
 
 export const SELECTED_SCALE = 1.25
@@ -45,7 +47,7 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   framePortal: {
     width: { xs: 485, sm: 445 },
     height: { xs: 738, sm: 673 },
-    transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' },
+    scale: { xs: 0.4, sm: 0.6 },
     borderRadius: 4
   },
   breakpoints: {
@@ -62,6 +64,7 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
     mr: { xs: 3, sm: 7 },
     width: 'unset !important'
   },
+  selectedSlideSx: {},
   swiperSx: {
     overflow: 'visible',
     zIndex: 2
@@ -89,7 +92,7 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   framePortal: {
     width: { xs: 300, sm: 300 },
     height: { xs: 523, sm: 523 },
-    transform: { xs: 'scale(0.4)', sm: 'scale(0.4)' },
+    scale: { xs: 0.4, sm: 0.4 },
     borderRadius: '24px'
   },
   breakpoints: {
@@ -108,22 +111,28 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
   cardSx: {
     position: 'relative',
     backgroundColor: 'background.default',
-    borderRadius: '12px',
-    transition: 'all 0.3s ease'
+    borderRadius: '12px'
   },
   slideSx: {
-    height: 209,
+    height: MEDIA_CARD_HEIGHT,
     width: 120,
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '12px',
-    transition: 'all 0.3s ease'
+    borderRadius: '12px'
   },
+  selectedSlideSx: {
+    width: 120 * SELECTED_SCALE,
+    height: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
+    zIndex: 1
+  },
+  selectedBoxShadow: `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
+    0px 3px 3px 0px rgba(0, 0, 0, 0.12),
+    0px 3px 4px 0px rgba(0, 0, 0, 0.14)`,
   swiperSx: {
     width: '100%',
-    overflow: { xs: 'visible', sm: 'hidden' },
+    overflow: 'visible',
     zIndex: 2,
     '& .swiper-wrapper': {
       alignItems: 'center'
