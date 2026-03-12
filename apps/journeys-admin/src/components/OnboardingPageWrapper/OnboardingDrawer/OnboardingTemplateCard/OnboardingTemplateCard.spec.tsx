@@ -57,7 +57,8 @@ describe('OnboardingTemplateCard', () => {
     updatedAt: '2023-08-14T04:24:24.392Z',
     website: false,
     journeyCustomizationDescription: null,
-    journeyCustomizationFields: []
+    journeyCustomizationFields: [],
+    customizable: null
   }
 
   it('should render OnboardingTemplateCard', async () => {
