@@ -50,14 +50,14 @@ describe('TemplateCardPreviewItem', () => {
 
   it('should render preview variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="preview" />
+      <TemplateCardPreviewItem step={step} variant="standard" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
   it('should render media variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="media" />
+      <TemplateCardPreviewItem step={step} variant="compact" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
@@ -67,7 +67,7 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         onClick={handleClick}
       />
     )
@@ -80,7 +80,7 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         selectedStep={step}
       />
     )
@@ -91,7 +91,7 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         selectedStep={null}
       />
     )

@@ -2,7 +2,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
-export type TemplateCardPreviewVariant = 'preview' | 'media'
+export type TemplateCardPreviewVariant = 'standard' | 'compact'
 
 interface FramePortalConfig {
   width: { xs: number; sm: number }
@@ -35,15 +35,15 @@ export interface VariantConfig {
 
 export const SELECTED_SCALE = 1.25
 export const OVERFLOW_PX = 40
-const MEDIA_CARD_HEIGHT = 209
-const MEDIA_CARD_WIDTH = 120
-const PREVIEW_CARD_HEIGHT_XS = 295
-const PREVIEW_CARD_HEIGHT_SM = 404
+const COMPACT_CARD_HEIGHT = 209
+const COMPACT_CARD_WIDTH = 120
+const STANDARD_CARD_HEIGHT_XS = 295
+const STANDARD_CARD_HEIGHT_SM = 404
 
-const PREVIEW_VARIANT_CONFIG: VariantConfig = {
+const STANDARD_VARIANT_CONFIG: VariantConfig = {
   cardWidth: { xs: 194, sm: 267 },
-  cardHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
-  swiperHeight: { xs: PREVIEW_CARD_HEIGHT_XS, sm: PREVIEW_CARD_HEIGHT_SM },
+  cardHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
+  swiperHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
   showMoreCardsSlide: true,
   framePortal: {
     width: { xs: 485, sm: 445 },
@@ -82,12 +82,12 @@ const PREVIEW_VARIANT_CONFIG: VariantConfig = {
   modules: [Mousewheel, FreeMode, A11y]
 }
 
-const MEDIA_VARIANT_CONFIG: VariantConfig = {
-  cardWidth: { xs: MEDIA_CARD_WIDTH, sm: MEDIA_CARD_WIDTH },
-  cardHeight: { xs: MEDIA_CARD_HEIGHT, sm: MEDIA_CARD_HEIGHT },
+const COMPACT_VARIANT_CONFIG: VariantConfig = {
+  cardWidth: { xs: COMPACT_CARD_WIDTH, sm: COMPACT_CARD_WIDTH },
+  cardHeight: { xs: COMPACT_CARD_HEIGHT, sm: COMPACT_CARD_HEIGHT },
   swiperHeight: {
-    xs: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
-    sm: MEDIA_CARD_HEIGHT * SELECTED_SCALE
+    xs: COMPACT_CARD_HEIGHT * SELECTED_SCALE,
+    sm: COMPACT_CARD_HEIGHT * SELECTED_SCALE
   },
   showMoreCardsSlide: false,
   framePortal: {
@@ -115,8 +115,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '12px'
   },
   slideSx: {
-    height: MEDIA_CARD_HEIGHT,
-    width: MEDIA_CARD_WIDTH,
+    height: COMPACT_CARD_HEIGHT,
+    width: COMPACT_CARD_WIDTH,
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
@@ -124,8 +124,8 @@ const MEDIA_VARIANT_CONFIG: VariantConfig = {
     borderRadius: '12px'
   },
   selectedSlideSx: {
-    width: MEDIA_CARD_WIDTH * SELECTED_SCALE,
-    height: MEDIA_CARD_HEIGHT * SELECTED_SCALE,
+    width: 120 * SELECTED_SCALE,
+    height: COMPACT_CARD_HEIGHT * SELECTED_SCALE,
     zIndex: 1
   },
   selectedBoxShadow: `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
@@ -147,6 +147,6 @@ export const VARIANT_CONFIGS: Record<
   TemplateCardPreviewVariant,
   VariantConfig
 > = {
-  preview: PREVIEW_VARIANT_CONFIG,
-  media: MEDIA_VARIANT_CONFIG
+  standard: STANDARD_VARIANT_CONFIG,
+  compact: COMPACT_VARIANT_CONFIG
 }
