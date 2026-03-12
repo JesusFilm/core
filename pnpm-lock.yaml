@@ -1140,6 +1140,90 @@ importers:
         specifier: ^3.62.0
         version: 3.114.14(@cloudflare/workers-types@4.20251014.0)
 
+  apis/api-analytics:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+
+  apis/api-journeys:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-journeys-modern:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-languages:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-media:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-users:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
   apps/cms:
     dependencies:
       '@strapi/plugin-cloud':
