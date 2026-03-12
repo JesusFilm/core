@@ -133,7 +133,7 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
     0px 3px 4px 0px rgba(0, 0, 0, 0.14)`,
   swiperSx: {
     width: '100%',
-    overflow: 'visible',
+    overflow: { xs: 'visible', sm: 'hidden' },
     zIndex: 2,
     '& .swiper-wrapper': {
       alignItems: 'center'

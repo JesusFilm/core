@@ -33,17 +33,24 @@ interface TemplateCardPreviewProps {
 interface TemplateCardPreviewPlaceholderProps {
   cardWidth: { xs: number; sm: number }
   cardHeight: { xs: number; sm: number }
+  breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
 }
 
 function TemplateCardPreviewPlaceholder({
   cardWidth,
-  cardHeight
+  cardHeight,
+  breakpoints: bp
 }: TemplateCardPreviewPlaceholderProps) {
   return (
     <Stack
       data-testid="TemplateCardsPreviewPlaceholder"
       direction="row"
-      sx={{ overflowY: 'visible' }}
+      sx={{
+        pl: {
+          xs: `${bp.xs.slidesOffsetBefore ?? 0}px`,
+          sm: `${bp.sm.slidesOffsetBefore ?? 0}px`
+        }
+      }}
     >
       {[0, 1, 2, 3, 4, 5, 6].map((value) => (
         <Skeleton
@@ -52,7 +59,10 @@ function TemplateCardPreviewPlaceholder({
           data-testid="TemplateCardSkeleton"
           sx={{
             minWidth: cardWidth,
-            mr: { xs: 3, sm: 7 },
+            mr: {
+              xs: `${bp.xs.spaceBetween ?? 0}px`,
+              sm: `${bp.sm.spaceBetween ?? 0}px`
+            },
             height: cardHeight,
             borderRadius: 2
           }}
@@ -251,6 +261,7 @@ export function TemplateCardPreview({
     <TemplateCardPreviewPlaceholder
       cardWidth={cardWidth}
       cardHeight={cardHeight}
+      breakpoints={config.breakpoints}
     />
   )
 }
