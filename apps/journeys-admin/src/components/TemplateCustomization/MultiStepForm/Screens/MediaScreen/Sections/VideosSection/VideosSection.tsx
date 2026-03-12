@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -139,6 +139,13 @@ export function VideosSection({
 
   const lastSubmittedUrl = useRef('')
 
+  function handleYouTubeUrlChange(
+    event: ChangeEvent<HTMLInputElement>
+  ): void {
+    setYoutubeUrl(event.target.value)
+    if (youtubeUrlError != null) setYoutubeUrlError(undefined)
+  }
+
   useEffect(() => {
     const trimmedUrl = youtubeUrl.trim()
     if (trimmedUrl === '' || loading || videoBlock == null) return
@@ -207,10 +214,7 @@ export function VideosSection({
         fullWidth
         placeholder={t('Paste a YouTube link...')}
         value={youtubeUrl}
-        onChange={(e) => {
-          setYoutubeUrl(e.target.value)
-          if (youtubeUrlError != null) setYoutubeUrlError(undefined)
-        }}
+        onChange={handleYouTubeUrlChange}
         disabled={loading}
         error={youtubeUrlError != null}
         helperText={

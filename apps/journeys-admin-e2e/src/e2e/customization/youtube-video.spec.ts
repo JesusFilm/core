@@ -51,6 +51,7 @@ test.describe('YouTube video section on Media screen', () => {
 
     const inputValue = await mediaPage.getYouTubeInputValue()
     expect(inputValue).toBe(YOUTUBE_URL)
+    await mediaPage.verifyVideoPreviewVisible()
   })
 
   test('should show error for invalid YouTube URL', async ({
@@ -60,7 +61,7 @@ test.describe('YouTube video section on Media screen', () => {
     await mediaPage.navigateToCustomize(TEMPLATE_ID)
     await mediaPage.navigateToMediaScreen()
     await mediaPage.pasteYouTubeUrl('not-a-valid-url')
-    await mediaPage.waitForAutoSubmit()
+    await mediaPage.waitForAutoSubmitError()
 
     const helperText = await mediaPage.getYouTubeHelperText()
     expect(helperText).toBe('Please enter a valid YouTube URL')

@@ -1,7 +1,8 @@
 import { expect } from '@playwright/test'
-import type { Page } from 'playwright-core'
+import type { Locator, Page } from 'playwright-core'
 
 const defaultTimeout = 60000
+const maxNavigationClicks = 5
 
 export class CustomizationMediaPage {
   readonly page: Page
@@ -24,23 +25,23 @@ export class CustomizationMediaPage {
   }
 
   async navigateToMediaScreen(): Promise<void> {
-    // Language → Text → Media (click Next twice)
-    await this.clickNextButton()
-    await this.clickNextButton()
-    await expect(
-      this.page.getByTestId('VideosSection')
-    ).toBeVisible({ timeout: defaultTimeout })
+    const videosSection = this.page.getByTestId('VideosSection')
+    for (let i = 0; i < maxNavigationClicks; i++) {
+      if (await videosSection.isVisible()) return
+      await this.clickNextButton()
+    }
+    await expect(videosSection).toBeVisible({ timeout: defaultTimeout })
   }
 
-  async getVideosSectionLocator() {
+  getVideosSectionLocator(): Locator {
     return this.page.getByTestId('VideosSection')
   }
 
-  async getYouTubeInput() {
+  getYouTubeInput(): Locator {
     return this.page.getByTestId('VideosSection-youtube-input')
   }
 
-  async getUploadButton() {
+  getUploadButton(): Locator {
     return this.page.getByTestId('VideosSection-upload-button')
   }
 
@@ -52,8 +53,18 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmit(): Promise<void> {
-    // Auto-submit fires after 800ms debounce; wait a bit longer for network
-    await this.page.waitForTimeout(1500)
+    const helperText = this.page
+      .getByTestId('VideosSection-youtube-input')
+      .locator('.MuiFormHelperText-root')
+    await expect(helperText).toBeVisible({ timeout: defaultTimeout })
+    await this.page.waitForLoadState('networkidle')
+  }
+
+  async waitForAutoSubmitError(): Promise<void> {
+    const errorText = this.page
+      .getByTestId('VideosSection-youtube-input')
+      .locator('.Mui-error, .MuiFormHelperText-root.Mui-error')
+    await expect(errorText).toBeVisible({ timeout: defaultTimeout })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {
@@ -63,7 +74,6 @@ export class CustomizationMediaPage {
   }
 
   async verifyVideoPreviewVisible(): Promise<void> {
-    // After YouTube link is set, either a video player or placeholder should be visible
     await expect(
       this.page.getByTestId('VideosSection').locator('iframe, video')
     ).toBeVisible({ timeout: defaultTimeout })
