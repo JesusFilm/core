@@ -137,8 +137,9 @@ describe('api-users', () => {
     })
 
     it('should return error when email is already in use', async () => {
-      const findOrFetchUserMock =
-        findOrFetchUser as jest.MockedFunction<typeof findOrFetchUser>
+      const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
+        typeof findOrFetchUser
+      >
       findOrFetchUserMock.mockResolvedValueOnce({
         id: '1',
         userId: 'testUserId',
