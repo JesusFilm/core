@@ -148,8 +148,7 @@ export function TemplateCardPreview({
       }}
     >
       {slidesToRender.map((step) => {
-        const isSelected =
-          variant === 'compact' && selectedStep?.id === step.id
+        const isSelected = variant === 'compact' && selectedStep?.id === step.id
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
