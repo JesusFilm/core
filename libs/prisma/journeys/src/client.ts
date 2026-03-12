@@ -6,10 +6,8 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient }
 
 export const adapter = new PrismaPg({
   connectionString: process.env['PG_DATABASE_URL_JOURNEYS']!,
-  pool: {
-    connectionTimeoutMillis: 5_000,
-    idleTimeoutMillis: 10_000
-  }
+  connectionTimeoutMillis: 5_000,
+  idleTimeoutMillis: 10_000
 })
 
 export * from './__generated__/client/client'
