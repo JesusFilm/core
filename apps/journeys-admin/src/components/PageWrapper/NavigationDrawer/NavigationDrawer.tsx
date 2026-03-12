@@ -11,7 +11,6 @@ import Tooltip from '@mui/material/Tooltip'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import type { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, Suspense, useState } from 'react'
 
@@ -21,6 +20,7 @@ import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
 import taskbarIcon from '../../../../public/taskbar-icon.svg'
+import type { User } from '../../../libs/auth'
 
 const DRAWER_WIDTH = '237px'
 
@@ -36,7 +36,7 @@ const UserNavigation = dynamic(
 interface NavigationDrawerProps {
   open?: boolean
   onClose?: (value: boolean) => void
-  user?: User
+  user?: User | null
   selectedPage?: string
 }
 
@@ -49,8 +49,7 @@ export function NavigationDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const [tooltip, setTooltip] = useState<string | undefined>()
 
-  const firebaseUserLoaded = user?.firebaseUser != null
-  const isAnon = user?.firebaseUser?.isAnonymous
+  const isAnon = user?.isAnonymous ?? false
 
   function handleClose(): void {
     onClose?.(open !== true)
@@ -174,7 +173,7 @@ export function NavigationDrawer({
             primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
           />
         </ListItemButton>
-        {user?.id != null && firebaseUserLoaded && !isAnon && (
+        {user?.id != null && !isAnon && (
           <NoSsr>
             <Suspense>
               <UserNavigation

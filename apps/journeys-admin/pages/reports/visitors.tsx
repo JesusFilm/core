@@ -1,11 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
+import { GetServerSidePropsContext } from 'next'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -14,18 +9,24 @@ import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../src/components/ReportsNavigation'
 import { VisitorsList } from '../../src/components/VisitorsList'
+import { useAuth } from '../../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
-function ReportsVisitorsPage(): ReactElement {
+export default function ReportsVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
 
   return (
     <>
       <NextSeo title={t('Visitors Analytics')} />
       <PageWrapper
         title={t('Visitors Analytics')}
-        user={user}
+        user={user ?? undefined}
         mainHeaderChildren={
           <Stack
             direction="row"
@@ -59,27 +60,23 @@ function ReportsVisitorsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+  const user = toUser(tokens)
 
   const { redirect, translations } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       ...translations
     }
   }
-})
-
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(ReportsVisitorsPage)
+}

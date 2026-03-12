@@ -14,7 +14,7 @@ import {
   GetPlausibleJourneyQrCodeScans,
   GetPlausibleJourneyQrCodeScansVariables
 } from '../../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
-import { earliestStatsCollected } from '../../../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
+import { earliestStatsCollected } from '../../../../../Slider/JourneyFlow/AnalyticsOverlaySwitch/buildPresetDateRange'
 
 export const GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS = gql`
   query GetPlausibleJourneyQrCodeScans(

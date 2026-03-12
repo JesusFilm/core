@@ -5,9 +5,8 @@ import CardContent from '@mui/material/CardContent'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import NextLink from 'next/link'
-import { useUser, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -22,6 +21,8 @@ import {
   UpdateJourneysEmailPreference_updateJourneysEmailPreference
 } from '../../__generated__/UpdateJourneysEmailPreference'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
+import { useAuth } from '../../src/libs/auth'
+import { getAuthTokens, toUser } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 const GET_EMAIL_PREFERENCE = gql`
@@ -51,11 +52,11 @@ interface EmailPreferencesPageProps {
   updatePrefs?: UpdateJourneysEmailPreference
 }
 
-function EmailPreferencesPage({
+export default function EmailPreferencesPage({
   journeysEmailPreferenceData,
   updatePrefs
 }: EmailPreferencesPageProps): ReactElement {
-  const user = useUser()
+  const { user } = useAuth()
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
   const [updateJourneysEmailPreference, { loading }] =
@@ -102,7 +103,7 @@ function EmailPreferencesPage({
   return (
     <OnboardingPageWrapper
       emailSubject="a question about email preferences"
-      user={user}
+      user={user ?? undefined}
     >
       <Stack
         sx={{
@@ -151,63 +152,70 @@ function EmailPreferencesPage({
   )
 }
 
-export const getServerSideProps: GetServerSideProps<EmailPreferencesPageProps> =
-  withUserTokenSSR()(async ({ user, locale, resolvedUrl, query }) => {
-    const { apolloClient, translations } = await initAndAuthApp({
-      user,
-      locale,
-      resolvedUrl
-    })
+export const getServerSideProps: GetServerSideProps<
+  EmailPreferencesPageProps
+> = async (ctx: GetServerSidePropsContext) => {
+  const rawEmail = ctx.query?.email
+  const email = Array.isArray(rawEmail) ? rawEmail[0] : (rawEmail ?? null)
+  if (!email) return { notFound: true }
 
-    let updatePrefs: UpdateJourneysEmailPreference | null | undefined
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : undefined
 
-    // TemplateDetailsPage
-    let { data: journeysEmailPreferenceData } = await apolloClient.query<
-      JourneysEmailPreference,
-      JourneysEmailPreferenceVariables
-    >({
-      query: GET_EMAIL_PREFERENCE,
-      variables: {
-        email: query?.email as string
-      }
-    })
+  const { apolloClient, translations } = await initAndAuthApp({
+    user,
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
+  })
 
-    if (journeysEmailPreferenceData.journeysEmailPreference == null) {
-      journeysEmailPreferenceData = {
-        journeysEmailPreference: {
-          email: query?.email as string,
-          unsubscribeAll: false,
-          accountNotifications: true,
-          __typename: 'JourneysEmailPreference'
-        }
-      }
-    }
+  let updatePrefs: UpdateJourneysEmailPreference | null | undefined
 
-    if (query?.unsubscribeAll != null) {
-      const { data: updatePrefsData } = await apolloClient.mutate<
-        UpdateJourneysEmailPreference,
-        UpdateJourneysEmailPreferenceVariables
-      >({
-        mutation: UPDATE_EMAIL_PREFERENCE,
-        variables: {
-          input: {
-            email: journeysEmailPreferenceData?.journeysEmailPreference
-              ?.email as string,
-            preference: 'accountNotifications',
-            value: false
-          }
-        }
-      })
-      if (updatePrefsData != null) updatePrefs = updatePrefsData
-    }
-    return {
-      props: {
-        ...translations,
-        initialApolloState: apolloClient.cache.extract(),
-        journeysEmailPreferenceData,
-        updatePrefs: updatePrefs ?? undefined
-      }
+  // TemplateDetailsPage
+  let { data: journeysEmailPreferenceData } = await apolloClient.query<
+    JourneysEmailPreference,
+    JourneysEmailPreferenceVariables
+  >({
+    query: GET_EMAIL_PREFERENCE,
+    variables: {
+      email
     }
   })
 
-export default withUser()(EmailPreferencesPage)
+  if (journeysEmailPreferenceData.journeysEmailPreference == null) {
+    journeysEmailPreferenceData = {
+      journeysEmailPreference: {
+        email,
+        unsubscribeAll: false,
+        accountNotifications: true,
+        __typename: 'JourneysEmailPreference'
+      }
+    }
+  }
+
+  if (ctx.query?.unsubscribeAll != null) {
+    const { data: updatePrefsData } = await apolloClient.mutate<
+      UpdateJourneysEmailPreference,
+      UpdateJourneysEmailPreferenceVariables
+    >({
+      mutation: UPDATE_EMAIL_PREFERENCE,
+      variables: {
+        input: {
+          email: journeysEmailPreferenceData?.journeysEmailPreference
+            ?.email as string,
+          preference: 'accountNotifications',
+          value: false
+        }
+      }
+    })
+    if (updatePrefsData != null) updatePrefs = updatePrefsData
+  }
+  return {
+    props: {
+      ...translations,
+      initialApolloState: apolloClient.cache.extract(),
+      journeysEmailPreferenceData,
+      updatePrefs: updatePrefs ?? undefined,
+      ...(user != null ? { userSerialized: JSON.stringify(user) } : {})
+    }
+  }
+}
