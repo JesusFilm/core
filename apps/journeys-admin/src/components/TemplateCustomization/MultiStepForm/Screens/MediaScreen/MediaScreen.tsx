@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -22,7 +23,6 @@ import {
   getCardBlockIdFromStep,
   getCustomizableMediaSteps
 } from './utils/mediaScreenUtils'
-import Stack from '@mui/material/Stack'
 
 interface MediaScreenProps {
   handleNext: (overrideJourneyId?: string) => void
