@@ -111,7 +111,7 @@ describe('VideoInformation', () => {
       screen.getByDisplayValue('jesusfilm.org/watch/test-video')
     ).toBeInTheDocument()
     expect(
-      screen.getByText('URLs should not be changed after creation')
+      screen.getByText('URLs cannot be changed after creation')
     ).toBeInTheDocument()
   })
 
