@@ -43,7 +43,7 @@ const payloadSchema = z
       firstName:
         nameParts.length === 1
           ? nameParts[0]
-          : nameParts.slice(0, -1).join(' '),
+          : nameParts.slice(0, -1).join(' ') || 'Unknown User',
       lastName: nameParts.length > 1 ? nameParts[nameParts.length - 1] : '',
       email: data.email,
       imageUrl: data.picture,
