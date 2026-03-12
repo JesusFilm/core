@@ -168,7 +168,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS) 
+  buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
