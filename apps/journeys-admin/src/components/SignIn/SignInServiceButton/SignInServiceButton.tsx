@@ -17,7 +17,7 @@ import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
 
 import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
-import { JOURNEY_PUBLISH, UPDATE_ME } from '../RegisterPage/RegisterPage'
+import { JOURNEY_PUBLISH } from '../RegisterPage/RegisterPage'
 import { getJourneyIdFromRedirect } from '../utils'
 
 interface SignInServiceButtonProps {
@@ -29,7 +29,6 @@ export function SignInServiceButton({
 }: SignInServiceButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const [updateMe] = useMutation(UPDATE_ME)
   const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
 
   async function linkAnonymousUserWithProvider(
@@ -38,23 +37,8 @@ export function SignInServiceButton({
   ): Promise<void> {
     const userCredential = await linkWithPopup(currentUser, authProvider)
     const user = userCredential.user
-    const displayName = user.displayName ?? ''
     const email = user.email?.trim().toLowerCase()
     if (email == null) return
-
-    const nameParts = displayName.trim().split(/\s+/).filter(Boolean)
-    const firstName = nameParts[0] ?? displayName.trim()
-    const lastName =
-      nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined
-    await updateMe({
-      variables: {
-        input: {
-          firstName,
-          lastName,
-          email
-        }
-      }
-    })
 
     const journeyId = getJourneyIdFromRedirect(
       router.query.redirect as string | undefined

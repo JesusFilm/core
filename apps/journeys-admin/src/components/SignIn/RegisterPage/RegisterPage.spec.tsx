@@ -161,30 +161,6 @@ describe('PasswordPage', () => {
     } as unknown as UserCredential)
     mockUseRouter.mockReturnValue(routerWithRedirect)
 
-    const updateMeMock: MockedResponse<UpdateMe, UpdateMeVariables> = {
-      request: {
-        query: UPDATE_ME,
-        variables: {
-          input: {
-            firstName: 'First',
-            lastName: 'name last name',
-            email: 'example@example.com'
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          updateMe: {
-            __typename: 'AuthenticatedUser',
-            id: 'user-1',
-            firstName: 'First',
-            lastName: 'name last name',
-            email: 'example@example.com'
-          }
-        }
-      }))
-    }
-
     const journeyPublishMock: MockedResponse<
       JourneyPublish,
       JourneyPublishVariables
@@ -204,7 +180,7 @@ describe('PasswordPage', () => {
     }
 
     render(
-      <MockedProvider mocks={[updateMeMock, journeyPublishMock]}>
+      <MockedProvider mocks={[journeyPublishMock]}>
         <RegisterPage
           setActivePage={jest.fn()}
           userEmail="example@example.com"
@@ -220,9 +196,6 @@ describe('PasswordPage', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Sign Up' }))
 
-    await waitFor(() => {
-      expect(updateMeMock.result).toHaveBeenCalled()
-    })
     await waitFor(() => {
       expect(journeyPublishMock.result).toHaveBeenCalled()
     })

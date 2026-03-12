@@ -138,30 +138,6 @@ describe('SignInServiceButton', () => {
     })
 
     it('should handle Google sign-in correctly', async () => {
-      const updateMeMock: MockedResponse<UpdateMe, UpdateMeVariables> = {
-        request: {
-          query: UPDATE_ME,
-          variables: {
-            input: {
-              firstName: 'First',
-              lastName: 'name last name',
-              email: 'example@example.com'
-            }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            updateMe: {
-              __typename: 'AuthenticatedUser',
-              id: 'user-1',
-              firstName: 'First',
-              lastName: 'name last name',
-              email: 'example@example.com'
-            }
-          }
-        }))
-      }
-
       const journeyPublishMock: MockedResponse<
         JourneyPublish,
         JourneyPublishVariables
@@ -181,7 +157,7 @@ describe('SignInServiceButton', () => {
       }
 
       render(
-        <MockedProvider mocks={[updateMeMock, journeyPublishMock]}>
+        <MockedProvider mocks={[journeyPublishMock]}>
           <SignInServiceButton service="google.com" />
         </MockedProvider>
       )
@@ -194,9 +170,6 @@ describe('SignInServiceButton', () => {
         expect(mockLinkWithPopup).toHaveBeenCalled()
       })
       await waitFor(() => {
-        expect(updateMeMock.result).toHaveBeenCalled()
-      })
-      await waitFor(() => {
         expect(journeyPublishMock.result).toHaveBeenCalled()
       })
       await waitFor(() => {
@@ -205,30 +178,6 @@ describe('SignInServiceButton', () => {
     })
 
     it('should handle Facebook sign-in correctly', async () => {
-      const updateMeMock: MockedResponse<UpdateMe, UpdateMeVariables> = {
-        request: {
-          query: UPDATE_ME,
-          variables: {
-            input: {
-              firstName: 'First',
-              lastName: 'name last name',
-              email: 'example@example.com'
-            }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            updateMe: {
-              __typename: 'AuthenticatedUser',
-              id: 'user-1',
-              firstName: 'First',
-              lastName: 'name last name',
-              email: 'example@example.com'
-            }
-          }
-        }))
-      }
-
       const journeyPublishMock: MockedResponse<
         JourneyPublish,
         JourneyPublishVariables
@@ -248,7 +197,7 @@ describe('SignInServiceButton', () => {
       }
 
       render(
-        <MockedProvider mocks={[updateMeMock, journeyPublishMock]}>
+        <MockedProvider mocks={[journeyPublishMock]}>
           <SignInServiceButton service="facebook.com" />
         </MockedProvider>
       )
@@ -259,9 +208,6 @@ describe('SignInServiceButton', () => {
         expect(mockLinkWithPopup).toHaveBeenCalled()
       })
       await waitFor(() => {
-        expect(updateMeMock.result).toHaveBeenCalled()
-      })
-      await waitFor(() => {
         expect(journeyPublishMock.result).toHaveBeenCalled()
       })
       await waitFor(() => {
@@ -270,30 +216,6 @@ describe('SignInServiceButton', () => {
     })
 
     it('should handle Okta sign-in correctly', async () => {
-      const updateMeMock: MockedResponse<UpdateMe, UpdateMeVariables> = {
-        request: {
-          query: UPDATE_ME,
-          variables: {
-            input: {
-              firstName: 'First',
-              lastName: 'name last name',
-              email: 'example@example.com'
-            }
-          }
-        },
-        result: jest.fn(() => ({
-          data: {
-            updateMe: {
-              __typename: 'AuthenticatedUser',
-              id: 'user-1',
-              firstName: 'First',
-              lastName: 'name last name',
-              email: 'example@example.com'
-            }
-          }
-        }))
-      }
-
       const journeyPublishMock: MockedResponse<
         JourneyPublish,
         JourneyPublishVariables
@@ -313,7 +235,7 @@ describe('SignInServiceButton', () => {
       }
 
       render(
-        <MockedProvider mocks={[updateMeMock, journeyPublishMock]}>
+        <MockedProvider mocks={[journeyPublishMock]}>
           <SignInServiceButton service="oidc.okta" />
         </MockedProvider>
       )
@@ -324,9 +246,6 @@ describe('SignInServiceButton', () => {
 
       await waitFor(() => {
         expect(mockLinkWithPopup).toHaveBeenCalled()
-      })
-      await waitFor(() => {
-        expect(updateMeMock.result).toHaveBeenCalled()
       })
       await waitFor(() => {
         expect(journeyPublishMock.result).toHaveBeenCalled()

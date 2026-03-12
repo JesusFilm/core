@@ -9,6 +9,8 @@ import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationFi
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { ScreenWrapper } from '../ScreenWrapper'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { SignUpButton } from '../../CustomizeFlowNextButton/SignUpButton'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -124,9 +126,13 @@ const renderEditableText = (
 
 interface TextScreenProps {
   handleNext: (overrideJourneyId?: string) => void
+  screens: CustomizationScreen[]
 }
 
-export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
+export function TextScreen({
+  screens,
+  handleNext
+}: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
@@ -203,6 +209,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         />
       }
     >
+      <SignUpButton screens={screens} currentScreen="text" />
       <Box sx={{ position: 'relative', width: '100%' }}>
         <Box
           sx={{

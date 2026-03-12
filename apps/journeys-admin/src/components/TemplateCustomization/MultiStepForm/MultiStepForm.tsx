@@ -43,7 +43,7 @@ function renderScreen(
     case 'language':
       return <LanguageScreen handleNext={handleNext} />
     case 'text':
-      return <TextScreen handleNext={handleNext} />
+      return <TextScreen screens={screens} handleNext={handleNext} />
     case 'links':
       // TODO: move screens to guest preview screen when available
       return <LinksScreen screens={screens} handleNext={handleNext} />

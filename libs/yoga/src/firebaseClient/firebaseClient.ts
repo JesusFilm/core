@@ -49,6 +49,7 @@ export function getUserIdFromPayload(
 ): string | null {
   if (process.env.NODE_ENV === 'test') return 'testUserId'
 
+  console.log('pre-payload user', payload)
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
 
@@ -72,6 +73,7 @@ export function getUserFromPayload(
       imageUrl: null
     }
 
+  console.log('pre-payload user', payload)
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data
 

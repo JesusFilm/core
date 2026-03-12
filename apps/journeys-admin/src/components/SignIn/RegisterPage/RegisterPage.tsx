@@ -25,17 +25,6 @@ import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount
 import { PageProps } from '../types'
 import { getJourneyIdFromRedirect } from '../utils'
 
-export const UPDATE_ME = gql`
-  mutation UpdateMe($input: UpdateMeInput!) {
-    updateMe(input: $input) {
-      id
-      firstName
-      lastName
-      email
-    }
-  }
-`
-
 export const JOURNEY_PUBLISH = gql`
   mutation JourneyPublish($id: ID!) {
     journeyPublish(id: $id) {
@@ -51,7 +40,6 @@ export function RegisterPage({
   const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
   const router = useRouter()
-  const [updateMe] = useMutation(UPDATE_ME)
   const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
 
   useHandleNewAccountRedirect()
@@ -115,16 +103,6 @@ export function RegisterPage({
     const firstName = nameParts[0] ?? name.trim()
     const lastName =
       nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined
-
-    await updateMe({
-      variables: {
-        input: {
-          firstName,
-          lastName,
-          email: email.trim().toLowerCase()
-        }
-      }
-    })
 
     const journeyId = getJourneyIdFromRedirect(
       router.query.redirect as string | undefined
