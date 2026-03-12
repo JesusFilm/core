@@ -10,13 +10,13 @@
 
 ## Current State
 
-- **task-number**: 1
+- **task-number**: 2
 - **phase**: youtube-url-error-fix
 - **phase-complete**: false
 - **status**: running
-- **last-result**: none
-- **next-task**: none
-- **tasks-since-checkpoint**: 0
+- **last-result**: investigated
+- **next-task**: "In VideosSection.tsx: (1) add setYoutubeUrlError(undefined) in the TextField onChange handler so error clears immediately on input change, and (2) move the lastSubmittedUrl guard to after setYoutubeUrlError(undefined) inside the setTimeout so re-pasting a previously-submitted valid URL still clears the error. Add unit tests for both behaviours."
+- **tasks-since-checkpoint**: 1
 
 ## next-task values
 
@@ -31,3 +31,4 @@ Fix YouTube URL error state not self-correcting: (1) clear error immediately in 
 
 | # | Time | Task | Result | Notes |
 |---|------|------|--------|-------|
+| 1 | 2026-03-12T01:53:15Z | Investigate — queue error self-correction fix | investigated | Two bugs: lastSubmittedUrl guard fires before error cleared (line 145), and no immediate error clear on onChange |
