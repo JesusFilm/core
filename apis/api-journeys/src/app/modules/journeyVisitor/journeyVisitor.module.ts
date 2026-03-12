@@ -10,7 +10,11 @@ import { JourneyVisitorService } from './journeyVisitor.service'
 @Global()
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [JourneyVisitorService, JourneyVisitorResolver, prismaServiceProvider],
+  providers: [
+    JourneyVisitorService,
+    JourneyVisitorResolver,
+    prismaServiceProvider
+  ],
   exports: [JourneyVisitorService]
 })
 export class JourneyVisitorModule {}

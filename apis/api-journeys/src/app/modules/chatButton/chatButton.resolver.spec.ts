@@ -25,7 +25,10 @@ describe('ChatButtonResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChatButtonResolver, { provide: PrismaService, useValue: mockDeep<PrismaService>() }]
+      providers: [
+        ChatButtonResolver,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+      ]
     }).compile()
     resolver = module.get<ChatButtonResolver>(ChatButtonResolver)
     prismaService = module.get<PrismaService>(PrismaService)

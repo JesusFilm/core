@@ -14,7 +14,11 @@ import { UserTeamInviteService } from './userTeamInvite.service'
     CaslAuthModule.register(AppCaslFactory),
     BullModule.registerQueue({ name: 'api-journeys-email' })
   ],
-  providers: [UserTeamInviteResolver, prismaServiceProvider, UserTeamInviteService],
+  providers: [
+    UserTeamInviteResolver,
+    prismaServiceProvider,
+    UserTeamInviteService
+  ],
   exports: [UserTeamInviteResolver, UserTeamInviteService]
 })
 export class UserTeamInviteModule {}

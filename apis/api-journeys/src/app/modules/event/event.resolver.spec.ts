@@ -11,7 +11,10 @@ describe('EventResolver', () => {
   describe('__resolveType', () => {
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [EventResolver, { provide: PrismaService, useValue: mockDeep<PrismaService>() }]
+        providers: [
+          EventResolver,
+          { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+        ]
       }).compile()
       resolver = module.get<EventResolver>(EventResolver)
     })
