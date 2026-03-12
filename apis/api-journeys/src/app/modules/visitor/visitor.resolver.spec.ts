@@ -261,7 +261,10 @@ describe('VisitorResolver', () => {
               team: {
                 is: {
                   userTeams: {
-                    some: { userId: 'userId', role: { in: ['manager', 'member'] } }
+                    some: {
+                      userId: 'userId',
+                      role: { in: ['manager', 'member'] }
+                    }
                   }
                 }
               }
