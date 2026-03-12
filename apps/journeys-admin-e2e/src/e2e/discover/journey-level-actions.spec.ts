@@ -147,7 +147,6 @@ test.describe('Journey level actions', () => {
     page
   }) => {
     test.setTimeout(120000)
-
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
