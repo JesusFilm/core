@@ -2,26 +2,18 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_JOURNEYS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
   output       = "../src/__generated__/pothos-types.ts"
-  clientOutput = ".prisma/api-journeys-client"
+  clientOutput = "./client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_JOURNEYS")
 }
 
 enum MessagePlatform {
@@ -115,8 +107,9 @@ model ChatButton {
   journeyId String
   link      String?
   updatedAt DateTime         @default(now()) @updatedAt
-  platform  MessagePlatform?
-  journey   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  platform     MessagePlatform?
+  customizable Boolean?
+  journey      Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
 }

@@ -195,32 +195,29 @@ export function GoogleSheetsSyncDialog({
       variables: { filter: { journeyId } },
       fetchPolicy: 'network-only'
     })
+  }, [open, journeyId, loadSyncs])
 
-    // Check if returning from Google integration creation
-    const integrationCreated = router.query.integrationCreated === 'true'
-    const openSyncDialog = router.query.openSyncDialog === 'true'
+  const integrationCreatedParam = router.query.integrationCreated
+  const openSyncDialogParam = router.query.openSyncDialog
 
-    if (integrationCreated && openSyncDialog) {
-      // Remove query parameters from URL
-      const newQuery = { ...router.query }
-      delete newQuery.integrationCreated
-      delete newQuery.openSyncDialog
-      void router.replace(
-        {
-          pathname: router.pathname,
-          query: newQuery
-        },
-        undefined,
-        { shallow: true }
-      )
+  useEffect(() => {
+    if (!open) return
+    if (integrationCreatedParam !== 'true' || openSyncDialogParam !== 'true')
+      return
 
-      // Open the "Add Google Sheets Sync" dialog
-      setGoogleDialogOpen(true)
-      enqueueSnackbar(t('Google integration created successfully'), {
-        variant: 'success'
-      })
-    }
-  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t])
+    const newQuery = { ...router.query }
+    delete newQuery.integrationCreated
+    delete newQuery.openSyncDialog
+    void router.replace(
+      { pathname: router.pathname, query: newQuery },
+      undefined,
+      { shallow: true }
+    )
+    setGoogleDialogOpen(true)
+    enqueueSnackbar(t('Google integration created successfully'), {
+      variant: 'success'
+    })
+  }, [open, integrationCreatedParam, openSyncDialogParam])
 
   useEffect(() => {
     if (open) return
@@ -233,6 +230,11 @@ export function GoogleSheetsSyncDialog({
   const historySyncs = googleSheetsSyncs.filter(
     (sync) => sync.deletedAt != null
   )
+
+  const syncsResolved = syncsCalled && !syncsLoading
+  const hasNoSyncs =
+    syncsResolved && activeSyncs.length === 0 && historySyncs.length === 0
+  const hideMainDialog = !syncsResolved || hasNoSyncs
 
   // Auto-open "Add Google Sheets Sync" dialog if there are no syncs
   useEffect(() => {
@@ -467,6 +469,7 @@ export function GoogleSheetsSyncDialog({
           ? `https://docs.google.com/spreadsheets/d/${syncResult.spreadsheetId}`
           : null)
       setGoogleDialogOpen(false)
+      if (hideMainDialog) onClose()
       actions.resetForm()
       if (typeof window !== 'undefined' && spreadsheetUrl != null) {
         window.open(spreadsheetUrl, '_blank', 'noopener,noreferrer')
@@ -659,7 +662,7 @@ export function GoogleSheetsSyncDialog({
   return (
     <>
       <Dialog
-        open={open}
+        open={open && !hideMainDialog}
         onClose={onClose}
         dialogTitle={{
           title: t('Sync to Google Sheets'),
@@ -1068,6 +1071,7 @@ export function GoogleSheetsSyncDialog({
             open={googleDialogOpen}
             onClose={() => {
               setGoogleDialogOpen(false)
+              if (hideMainDialog) onClose()
               resetForm()
             }}
             dialogTitle={{
@@ -1086,6 +1090,7 @@ export function GoogleSheetsSyncDialog({
                   color="primary"
                   onClick={() => {
                     setGoogleDialogOpen(false)
+                    if (hideMainDialog) onClose()
                     resetForm()
                   }}
                   sx={{
@@ -1222,19 +1227,15 @@ export function GoogleSheetsSyncDialog({
                     color="primary"
                     href={(() => {
                       const teamId = journeyData?.journey?.team?.id
-                      if (teamId == null) return undefined
+                      if (teamId == null || typeof window === 'undefined')
+                        return undefined
 
-                      // Create returnTo URL that will redirect back to current page with sync dialog open
-                      const currentPath = router.asPath.split('?')[0]
-                      const returnTo = `${currentPath}?openSyncDialog=true`
+                      // Build returnTo URL pointing directly back to the current page
+                      const url = new URL(router.asPath, window.location.origin)
+                      url.searchParams.set('openSyncDialog', 'true')
+                      const returnTo = url.pathname + url.search
 
-                      // Generate OAuth URL that will redirect to GoogleCreateIntegration page,
-                      // which will then redirect back to returnTo after integration is created
-                      const googleCreateIntegrationPath = `/teams/${teamId}/integrations/new/google?returnTo=${encodeURIComponent(returnTo)}`
-                      return getGoogleOAuthUrl(
-                        teamId,
-                        googleCreateIntegrationPath
-                      )
+                      return getGoogleOAuthUrl(teamId, returnTo)
                     })()}
                     sx={{
                       alignSelf: 'flex-end',

@@ -74,7 +74,7 @@ describe('anonymousJourneyCleanup service', () => {
     expect(mockPrismaUsers.user.delete).not.toHaveBeenCalled()
   })
 
-  it('should delete old journeys, userTeams, empty teams, and the user when no journeys remain', async () => {
+  it('should delete old journeys and the user when no journeys remain', async () => {
     mockPrismaUsers.user.findMany.mockResolvedValue([
       { id: 'user-db-1', userId: 'user-1' }
     ])
@@ -84,34 +84,23 @@ describe('anonymousJourneyCleanup service', () => {
     ] as any)
     prismaMock.journey.delete.mockResolvedValue({} as any)
     prismaMock.journey.count.mockResolvedValue(0)
-    prismaMock.userTeam.findMany.mockResolvedValue([
-      { teamId: 'team-1' },
-      { teamId: 'team-2' }
-    ] as any)
-    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 2 })
-    prismaMock.userTeam.count.mockResolvedValueOnce(0).mockResolvedValueOnce(3)
-    prismaMock.team.delete.mockResolvedValue({} as any)
     mockPrismaUsers.user.delete.mockResolvedValue({})
 
     await service(mockJob, mockLogger)
 
     expect(prismaMock.journey.delete).toHaveBeenCalledTimes(2)
-    expect(prismaMock.userTeam.findMany).toHaveBeenCalledWith({
-      where: { userId: 'user-1' },
-      select: { teamId: true }
+    expect(prismaMock.journey.delete).toHaveBeenCalledWith({
+      where: { id: 'journey-1' }
     })
-    expect(prismaMock.userTeam.deleteMany).toHaveBeenCalledWith({
-      where: { userId: 'user-1' }
+    expect(prismaMock.journey.delete).toHaveBeenCalledWith({
+      where: { id: 'journey-2' }
     })
-    expect(prismaMock.userTeam.count).toHaveBeenCalledWith({
-      where: { teamId: 'team-1' }
-    })
-    expect(prismaMock.userTeam.count).toHaveBeenCalledWith({
-      where: { teamId: 'team-2' }
-    })
-    expect(prismaMock.team.delete).toHaveBeenCalledTimes(1)
-    expect(prismaMock.team.delete).toHaveBeenCalledWith({
-      where: { id: 'team-1' }
+    expect(prismaMock.journey.count).toHaveBeenCalledWith({
+      where: {
+        userJourneys: {
+          some: { userId: 'user-1', role: UserJourneyRole.owner }
+        }
+      }
     })
     expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
       where: { id: 'user-db-1' }
@@ -146,8 +135,6 @@ describe('anonymousJourneyCleanup service', () => {
       .mockRejectedValueOnce(new Error('delete failed'))
       .mockResolvedValueOnce({} as any)
     prismaMock.journey.count.mockResolvedValue(0)
-    prismaMock.userTeam.findMany.mockResolvedValue([])
-    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })
     mockPrismaUsers.user.delete.mockResolvedValue({})
 
     await service(mockJob, mockLogger)
@@ -169,8 +156,6 @@ describe('anonymousJourneyCleanup service', () => {
     ] as any)
     prismaMock.journey.delete.mockResolvedValue({} as any)
     prismaMock.journey.count.mockResolvedValue(0)
-    prismaMock.userTeam.findMany.mockResolvedValue([])
-    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })
     mockPrismaUsers.user.delete.mockRejectedValue(
       new Error('user delete failed')
     )
@@ -193,24 +178,11 @@ describe('anonymousJourneyCleanup service', () => {
       .mockResolvedValueOnce([{ id: 'journey-2', title: 'J2' }] as any)
     prismaMock.journey.delete.mockResolvedValue({} as any)
     prismaMock.journey.count.mockResolvedValueOnce(0).mockResolvedValueOnce(3)
-    prismaMock.userTeam.findMany.mockResolvedValue([
-      { teamId: 'team-1' }
-    ] as any)
-    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 1 })
-    prismaMock.userTeam.count.mockResolvedValue(0)
-    prismaMock.team.delete.mockResolvedValue({} as any)
     mockPrismaUsers.user.delete.mockResolvedValue({})
 
     await service(mockJob, mockLogger)
 
     expect(prismaMock.journey.delete).toHaveBeenCalledTimes(2)
-    expect(prismaMock.userTeam.deleteMany).toHaveBeenCalledTimes(1)
-    expect(prismaMock.userTeam.deleteMany).toHaveBeenCalledWith({
-      where: { userId: 'user-1' }
-    })
-    expect(prismaMock.team.delete).toHaveBeenCalledWith({
-      where: { id: 'team-1' }
-    })
     expect(mockPrismaUsers.user.delete).toHaveBeenCalledTimes(1)
     expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
       where: { id: 'user-db-1' }
@@ -239,8 +211,6 @@ describe('anonymousJourneyCleanup service', () => {
     ] as any)
     prismaMock.journey.delete.mockResolvedValue({} as any)
     prismaMock.journey.count.mockResolvedValue(0)
-    prismaMock.userTeam.findMany.mockResolvedValue([])
-    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })
     mockPrismaUsers.user.delete.mockResolvedValue({})
 
     await service(mockJob, mockLogger)
