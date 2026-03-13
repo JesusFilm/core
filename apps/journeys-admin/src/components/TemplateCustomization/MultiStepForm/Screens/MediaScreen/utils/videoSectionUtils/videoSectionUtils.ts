@@ -6,7 +6,8 @@ import { VideoBlockSource } from '../../../../../../../../__generated__/globalTy
 import { getJourneyMedia } from '../../../../../utils/getJourneyMedia'
 
 const YOUTUBE_ID_REGEX = /^[0-9A-Za-z_-]{11}$/
-const YOUTUBE_HOST_REGEX = /(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)youtube-nocookie\.com$/
+const YOUTUBE_HOST_REGEX =
+  /(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)youtube-nocookie\.com$/
 
 /**
  * Extracts an 11-character YouTube video ID from a URL.
@@ -23,8 +24,8 @@ export function extractYouTubeVideoId(url: string): string | null {
 
     const candidate = host.endsWith('youtu.be')
       ? parsed.pathname.split('/').filter(Boolean)[0]
-      : parsed.searchParams.get('v') ??
-        parsed.pathname.split('/').filter(Boolean).at(-1)
+      : (parsed.searchParams.get('v') ??
+        parsed.pathname.split('/').filter(Boolean).at(-1))
 
     return candidate != null && YOUTUBE_ID_REGEX.test(candidate)
       ? candidate

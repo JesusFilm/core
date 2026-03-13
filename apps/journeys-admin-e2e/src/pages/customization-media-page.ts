@@ -12,10 +12,9 @@ export class CustomizationMediaPage {
   }
 
   async navigateToCustomize(templateId: string): Promise<void> {
-    await this.page.goto(
-      `/templates/${templateId}/customize?screen=language`,
-      { waitUntil: 'load' }
-    )
+    await this.page.goto(`/templates/${templateId}/customize?screen=language`, {
+      waitUntil: 'load'
+    })
   }
 
   async clickNextButton(): Promise<void> {
@@ -68,9 +67,9 @@ export class CustomizationMediaPage {
   }
 
   async verifyVideosSectionVisible(): Promise<void> {
-    await expect(
-      this.page.getByTestId('VideosSection')
-    ).toBeVisible({ timeout: defaultTimeout })
+    await expect(this.page.getByTestId('VideosSection')).toBeVisible({
+      timeout: defaultTimeout
+    })
   }
 
   async verifyVideoPreviewVisible(): Promise<void> {

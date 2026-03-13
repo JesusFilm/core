@@ -1,5 +1,4 @@
-import { test, expect } from '../../fixtures/authenticated'
-
+import { expect, test } from '../../fixtures/authenticated'
 import { CustomizationMediaPage } from '../../pages/customization-media-page'
 
 const TEMPLATE_ID = '8d4c24c3-5fe0-428d-b221-af9e46975933'
@@ -32,12 +31,13 @@ test.describe('YouTube video section on Media screen', () => {
     const input = authedPage
       .getByTestId('VideosSection-youtube-input')
       .locator('input')
-    await expect(input).toHaveAttribute('placeholder', 'Paste a YouTube link...')
+    await expect(input).toHaveAttribute(
+      'placeholder',
+      'Paste a YouTube link...'
+    )
 
     const helperText = await mediaPage.getYouTubeHelperText()
-    expect(helperText).toBe(
-      'youtube.com, youtu.be and shorts links supported'
-    )
+    expect(helperText).toBe('youtube.com, youtu.be and shorts links supported')
   })
 
   test('should auto-submit valid YouTube URL and show video preview', async ({
@@ -54,9 +54,7 @@ test.describe('YouTube video section on Media screen', () => {
     await mediaPage.verifyVideoPreviewVisible()
   })
 
-  test('should show error for invalid YouTube URL', async ({
-    authedPage
-  }) => {
+  test('should show error for invalid YouTube URL', async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
     await mediaPage.navigateToCustomize(TEMPLATE_ID)
     await mediaPage.navigateToMediaScreen()
@@ -67,9 +65,7 @@ test.describe('YouTube video section on Media screen', () => {
     expect(helperText).toBe('Please enter a valid YouTube URL')
   })
 
-  test('should render upload button at medium size', async ({
-    authedPage
-  }) => {
+  test('should render upload button at medium size', async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
     await mediaPage.navigateToCustomize(TEMPLATE_ID)
     await mediaPage.navigateToMediaScreen()
@@ -78,9 +74,7 @@ test.describe('YouTube video section on Media screen', () => {
     await expect(uploadButton).toBeVisible()
 
     // Verify Max size text is not present
-    await expect(
-      authedPage.getByText('Max size is 1 GB')
-    ).not.toBeVisible()
+    await expect(authedPage.getByText('Max size is 1 GB')).toBeHidden()
   })
 
   test('should use filled variant styling on YouTube input', async ({

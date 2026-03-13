@@ -99,7 +99,9 @@ describe('videoSectionUtils', () => {
 
     it('returns null for host spoofing YouTube in path', () => {
       expect(
-        extractYouTubeVideoId('https://evil.com/youtube.com/watch?v=dQw4w9WgXcQ')
+        extractYouTubeVideoId(
+          'https://evil.com/youtube.com/watch?v=dQw4w9WgXcQ'
+        )
       ).toBeNull()
     })
 
@@ -119,9 +121,7 @@ describe('videoSectionUtils', () => {
 
     it('trims whitespace before parsing', () => {
       expect(
-        extractYouTubeVideoId(
-          '  https://www.youtube.com/watch?v=dQw4w9WgXcQ  '
-        )
+        extractYouTubeVideoId('  https://www.youtube.com/watch?v=dQw4w9WgXcQ  ')
       ).toBe('dQw4w9WgXcQ')
     })
   })

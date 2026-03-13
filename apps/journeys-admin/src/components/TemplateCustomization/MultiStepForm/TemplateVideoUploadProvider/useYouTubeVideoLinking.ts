@@ -37,7 +37,10 @@ export function useYouTubeVideoLinking({
   removeTask,
   activeBlocksRef
 }: UseYouTubeVideoLinkingParams): {
-  linkYouTubeVideo: (videoBlockId: string, youtubeVideoId: string) => Promise<void>
+  linkYouTubeVideo: (
+    videoBlockId: string,
+    youtubeVideoId: string
+  ) => Promise<void>
 } {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()

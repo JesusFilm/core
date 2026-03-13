@@ -139,9 +139,7 @@ export function VideosSection({
 
   const lastSubmittedUrl = useRef('')
 
-  function handleYouTubeUrlChange(
-    event: ChangeEvent<HTMLInputElement>
-  ): void {
+  function handleYouTubeUrlChange(event: ChangeEvent<HTMLInputElement>): void {
     setYoutubeUrl(event.target.value)
     if (youtubeUrlError != null) setYoutubeUrlError(undefined)
   }
