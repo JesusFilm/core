@@ -2,14 +2,8 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
-import {
-  Action,
-  ability,
-  subject as abilitySubject
-} from '../../../lib/auth/ability'
-import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
 import { builder } from '../../builder'
-import { update } from '../service'
+import { authorizeBlockUpdate, update, validateParentBlock } from '../service'
 
 import { ButtonBlock } from './button'
 import { ButtonBlockUpdateInput } from './inputs'
@@ -45,18 +39,10 @@ builder.mutationField('buttonBlockUpdate', (t) =>
       const { id, input: initialInput } = args
       const input = { ...initialInput }
 
-      const block = await fetchBlockWithJourneyAcl(id)
+      const block = await authorizeBlockUpdate(id, context.user)
 
-      if (
-        !ability(
-          Action.Update,
-          abilitySubject('Journey', block.journey),
-          context.user
-        )
-      ) {
-        throw new GraphQLError('user is not allowed to update block', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      if (input.parentBlockId != null) {
+        await validateParentBlock(input.parentBlockId, block.journeyId)
       }
 
       if (input.startIconId != null) {

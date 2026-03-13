@@ -4,7 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import {
-  ButtonBlockCreateInput,
   ButtonBlockUpdateInput,
   ButtonColor,
   ButtonSize,
