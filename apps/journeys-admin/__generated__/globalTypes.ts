@@ -463,6 +463,7 @@ export interface ChatButtonCreateInput {
 export interface ChatButtonUpdateInput {
   link?: string | null;
   platform?: MessagePlatform | null;
+  customizable?: boolean | null;
 }
 
 export interface ChatOpenEventCreateInput {
