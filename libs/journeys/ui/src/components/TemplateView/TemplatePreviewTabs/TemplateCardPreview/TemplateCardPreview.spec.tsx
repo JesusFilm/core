@@ -137,7 +137,7 @@ describe('TemplateCardPreview', () => {
 
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview steps={steps} variant="media" />
+          <TemplateCardPreview steps={steps} variant="compact" />
         </ThemeProvider>
       )
       await waitFor(() =>
@@ -162,7 +162,7 @@ describe('TemplateCardPreview', () => {
         <ThemeProvider theme={createTheme()}>
           <TemplateCardPreview
             steps={steps}
-            variant="media"
+            variant="compact"
             selectedStep={steps[1]}
           />
         </ThemeProvider>

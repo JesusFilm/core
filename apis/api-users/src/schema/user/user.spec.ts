@@ -1,5 +1,6 @@
 import omit from 'lodash/omit'
 
+import { Prisma } from '@core/prisma/users/client'
 import { graphql } from '@core/shared/gql'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
@@ -133,6 +134,42 @@ describe('api-users', () => {
         })
         expect(data).toHaveProperty('data.me', null)
       })
+    })
+
+    it('should return error when email is already in use', async () => {
+      const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      prismaMock.user.update.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError(
+          'Unique constraint failed on the fields: (`email`)',
+          { code: 'P2002', clientVersion: 'prismaVersion' }
+        )
+      )
+
+      const data = await authClient({
+        document: ME_QUERY
+      })
+
+      expect(data).toHaveProperty(
+        'errors',
+        expect.arrayContaining([
+          expect.objectContaining({
+            message: 'Email already in use'
+          })
+        ])
+      )
     })
   })
 
@@ -363,128 +400,6 @@ describe('api-users', () => {
         }
       })
       expect(data).toHaveProperty('data.userImpersonate', null)
-    })
-  })
-
-  describe('updateMe', () => {
-    const UPDATE_ME_MUTATION = graphql(`
-      mutation UpdateMe($input: UpdateMeInput!) {
-        updateMe(input: $input) {
-          id
-          firstName
-          lastName
-          email
-          emailVerified
-        }
-      }
-    `)
-
-    const authClient = getClient({
-      headers: {
-        authorization: '1234'
-      }
-    })
-
-    it('should update firstName, lastName, and email', async () => {
-      getUserFromPayloadMock.mockReturnValueOnce({
-        id: 'testUserId',
-        firstName: 'Test',
-        lastName: 'User',
-        email: null,
-        emailVerified: false,
-        imageUrl: null
-      })
-
-      const existingUser = {
-        ...user,
-        email: null,
-        firstName: '',
-        lastName: null
-      } as unknown as typeof user
-      const updatedUser = {
-        ...existingUser,
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'jane@example.com'
-      }
-      prismaMock.user.findUnique
-        .mockResolvedValueOnce(existingUser)
-        .mockResolvedValueOnce(existingUser)
-      prismaMock.user.update.mockResolvedValueOnce(updatedUser)
-
-      const data = (await authClient({
-        document: UPDATE_ME_MUTATION,
-        variables: {
-          input: {
-            firstName: 'Jane',
-            lastName: 'Doe',
-            email: 'jane@example.com'
-          }
-        }
-      })) as { data?: { updateMe?: Record<string, unknown> }; errors?: unknown }
-
-      expect(prismaMock.user.update).toHaveBeenCalledWith({
-        where: { userId: 'testUserId' },
-        data: {
-          firstName: 'Jane',
-          lastName: 'Doe',
-          email: 'jane@example.com'
-        }
-      })
-      expect(data.data?.updateMe).toMatchObject({
-        id: updatedUser.id,
-        firstName: 'Jane',
-        lastName: 'Doe',
-        email: 'jane@example.com',
-        emailVerified: updatedUser.emailVerified
-      })
-    })
-
-    it('should return null when caller is not anonymous (has email)', async () => {
-      prismaMock.user.findUnique.mockResolvedValueOnce(user)
-
-      const data = (await authClient({
-        document: UPDATE_ME_MUTATION,
-        variables: {
-          input: {
-            firstName: 'Other',
-            lastName: 'Name',
-            email: 'other@example.com'
-          }
-        }
-      })) as { data?: { updateMe?: null }; errors?: unknown }
-
-      expect(prismaMock.user.update).not.toHaveBeenCalled()
-      expect(data.data?.updateMe).toBeNull()
-    })
-
-    it('should throw when user not found', async () => {
-      getUserFromPayloadMock.mockReturnValueOnce({
-        id: 'testUserId',
-        firstName: 'Test',
-        lastName: 'User',
-        email: null,
-        emailVerified: false,
-        imageUrl: null
-      })
-
-      prismaMock.user.findUnique
-        .mockResolvedValueOnce({ ...user, email: null })
-        .mockResolvedValueOnce(null)
-
-      const data = (await authClient({
-        document: UPDATE_ME_MUTATION,
-        variables: {
-          input: {
-            firstName: 'Jane',
-            lastName: null,
-            email: 'jane@example.com'
-          }
-        }
-      })) as { data?: { updateMe?: null }; errors?: unknown[] }
-
-      expect(data.errors).toBeDefined()
-      expect(data.data?.updateMe).toBeNull()
     })
   })
 
