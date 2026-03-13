@@ -42,15 +42,6 @@ describe('ButtonBlock', () => {
     ...block,
     journey
   }
-  const blockCreateInput: ButtonBlockCreateInput = {
-    id: 'blockId',
-    journeyId: 'journeyId',
-    parentBlockId: 'parentBlockId',
-    label: 'label',
-    variant: ButtonVariant.contained,
-    color: ButtonColor.primary,
-    size: ButtonSize.medium
-  }
   const blockUpdateInput: ButtonBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
     label: 'label',
@@ -89,66 +80,6 @@ describe('ButtonBlock', () => {
     ])
 
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
-  })
-
-  describe('buttonBlockCreate', () => {
-    beforeEach(() => {
-      prismaService.$transaction.mockImplementation(
-        async (callback) => await callback(prismaService)
-      )
-    })
-
-    it('creates a ButtonBlock', async () => {
-      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
-      expect(
-        await resolver.buttonBlockCreate(ability, blockCreateInput)
-      ).toEqual(blockWithUserTeam)
-      expect(prismaService.block.create).toHaveBeenCalledWith({
-        data: {
-          color: 'primary',
-          id: 'blockId',
-          journey: { connect: { id: 'journeyId' } },
-          label: 'label',
-          parentBlock: { connect: { id: 'parentBlockId' } },
-          parentOrder: 2,
-          settings: {},
-          size: 'medium',
-          typename: 'ButtonBlock',
-          variant: 'contained'
-        },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        blockCreateInput.journeyId,
-        blockCreateInput.parentBlockId
-      )
-    })
-
-    it('should set the journey updatedAt when button is created', async () => {
-      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
-      expect(
-        await resolver.buttonBlockCreate(ability, blockCreateInput)
-      ).toEqual(blockWithUserTeam)
-      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
-        prismaService,
-        blockWithUserTeam
-      )
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.block.create.mockResolvedValueOnce(block)
-      await expect(
-        resolver.buttonBlockCreate(ability, blockCreateInput)
-      ).rejects.toThrow('user is not allowed to create block')
-    })
   })
 
   describe('buttonBlockUpdate', () => {
