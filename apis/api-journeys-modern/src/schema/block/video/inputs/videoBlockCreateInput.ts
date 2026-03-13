@@ -36,7 +36,7 @@ export const VideoBlockCreateInput = builder.inputType(
       notes: t.string({
         required: false,
         description:
-          'Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.'
+          'Publisher notes for template adapters (e.g. trailer, intro).'
       })
     })
   }
