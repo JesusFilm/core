@@ -5,6 +5,7 @@ import {
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 
 import {
+  extractYouTubeVideoId,
   getCustomizableCardVideoBlock,
   getVideoBlockDisplayTitle,
   getVideoPoster,
@@ -43,6 +44,88 @@ function createBaseVideoBlock(overrides: Partial<VideoBlock> = {}): VideoBlock {
 }
 
 describe('videoSectionUtils', () => {
+  describe('extractYouTubeVideoId', () => {
+    it('extracts ID from standard youtube.com watch URL', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from youtube.com watch URL with extra params', () => {
+      expect(
+        extractYouTubeVideoId(
+          'https://www.youtube.com/watch?v=JHdB1dYAteA&pp=ygUKam9obiBwaXBlcg%3D%3D'
+        )
+      ).toBe('JHdB1dYAteA')
+    })
+
+    it('extracts ID from youtu.be short link', () => {
+      expect(extractYouTubeVideoId('https://youtu.be/dQw4w9WgXcQ')).toBe(
+        'dQw4w9WgXcQ'
+      )
+    })
+
+    it('extracts ID from youtube.com shorts URL', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/shorts/dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from youtube.com embed URL', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/embed/dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from youtube-nocookie.com embed URL', () => {
+      expect(
+        extractYouTubeVideoId(
+          'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+        )
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('extracts ID from m.youtube.com watch URL', () => {
+      expect(
+        extractYouTubeVideoId('https://m.youtube.com/watch?v=dQw4w9WgXcQ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+
+    it('returns null for non-YouTube host', () => {
+      expect(
+        extractYouTubeVideoId('https://example.com/watch?v=dQw4w9WgXcQ')
+      ).toBeNull()
+    })
+
+    it('returns null for host spoofing YouTube in path', () => {
+      expect(
+        extractYouTubeVideoId(
+          'https://evil.com/youtube.com/watch?v=dQw4w9WgXcQ'
+        )
+      ).toBeNull()
+    })
+
+    it('returns null for invalid URL string', () => {
+      expect(extractYouTubeVideoId('not-a-valid-url')).toBeNull()
+    })
+
+    it('returns null for empty string', () => {
+      expect(extractYouTubeVideoId('')).toBeNull()
+    })
+
+    it('returns null when video ID is not 11 characters', () => {
+      expect(
+        extractYouTubeVideoId('https://www.youtube.com/watch?v=short')
+      ).toBeNull()
+    })
+
+    it('trims whitespace before parsing', () => {
+      expect(
+        extractYouTubeVideoId('  https://www.youtube.com/watch?v=dQw4w9WgXcQ  ')
+      ).toBe('dQw4w9WgXcQ')
+    })
+  })
+
   describe('getCustomizableCardVideoBlock', () => {
     it('returns null when journey is null', () => {
       expect(getCustomizableCardVideoBlock(undefined, 'card-1')).toBeNull()
