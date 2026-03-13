@@ -4,7 +4,6 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { Block, Journey, UserTeamRole } from '@core/prisma/journeys/client'
 
 import {
-  CardBlockCreateInput,
   CardBlockUpdateInput,
   ThemeMode,
   ThemeName
@@ -40,15 +39,6 @@ describe('CardBlockResolver', () => {
   const blockWithUserTeam = {
     ...block,
     journey
-  }
-  const blockCreateInput: CardBlockCreateInput = {
-    id: 'blockId',
-    journeyId: 'journeyId',
-    parentBlockId: 'parentBlockId',
-    backgroundColor: '#FFF',
-    fullscreen: true,
-    themeMode: ThemeMode.light,
-    themeName: ThemeName.base
   }
   const blockUpdateInput: CardBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
