@@ -5,8 +5,8 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
-import { isSafeRelativePath } from '../../../libs/isSafeRelativePath'
 import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
+import { isSafeRelativePath } from '../../../libs/isSafeRelativePath'
 
 import { useIntegrationGoogleCreate } from './libs/useIntegrationGoogleCreate'
 
