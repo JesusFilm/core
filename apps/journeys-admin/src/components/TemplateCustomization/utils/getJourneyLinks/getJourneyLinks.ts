@@ -14,43 +14,6 @@ import {
   MessagePlatform
 } from '../../../../../__generated__/globalTypes'
 
-export const messagePlatformDisplayNames: Record<MessagePlatform, string> = {
-  [MessagePlatform.custom]: 'Chat',
-  [MessagePlatform.facebook]: 'Facebook Messenger',
-  [MessagePlatform.instagram]: 'Instagram',
-  [MessagePlatform.kakaoTalk]: 'KakaoTalk',
-  [MessagePlatform.line]: 'LINE',
-  [MessagePlatform.skype]: 'Skype',
-  [MessagePlatform.snapchat]: 'Snapchat',
-  [MessagePlatform.telegram]: 'Telegram',
-  [MessagePlatform.tikTok]: 'TikTok',
-  [MessagePlatform.viber]: 'Viber',
-  [MessagePlatform.vk]: 'VK',
-  [MessagePlatform.whatsApp]: 'WhatsApp',
-  [MessagePlatform.globe2]: 'Globe 1',
-  [MessagePlatform.globe3]: 'Globe 2',
-  [MessagePlatform.messageText1]: 'Message Text Circle',
-  [MessagePlatform.messageText2]: 'Message Text Square',
-  [MessagePlatform.send1]: 'Send 1',
-  [MessagePlatform.send2]: 'Send 2',
-  [MessagePlatform.messageChat2]: 'Message Chat Circle',
-  [MessagePlatform.messageCircle]: 'Message Circle',
-  [MessagePlatform.messageNotifyCircle]: 'Message Notify Circle',
-  [MessagePlatform.messageNotifySquare]: 'Message Notify Square',
-  [MessagePlatform.messageSquare]: 'Message Square',
-  [MessagePlatform.mail1]: 'Mail',
-  [MessagePlatform.linkExternal]: 'Link External',
-  [MessagePlatform.home3]: 'Home 1',
-  [MessagePlatform.home4]: 'Home 2',
-  [MessagePlatform.helpCircleContained]: 'Help Circle',
-  [MessagePlatform.helpSquareContained]: 'Help Square',
-  [MessagePlatform.shieldCheck]: 'Shield Check',
-  [MessagePlatform.menu1]: 'Menu',
-  [MessagePlatform.checkBroken]: 'Check Broken',
-  [MessagePlatform.checkContained]: 'Check Contained',
-  [MessagePlatform.settings]: 'Settings'
-}
-
 export type JourneyLink =
   | {
       id: string
