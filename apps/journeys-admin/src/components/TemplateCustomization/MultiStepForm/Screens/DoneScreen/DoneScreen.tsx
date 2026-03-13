@@ -49,7 +49,7 @@ export function DoneScreen(): ReactElement {
       }
     >
       {steps.length > 0 && (
-        <TemplateCardPreviewItem step={steps[0]} variant="preview" />
+        <TemplateCardPreviewItem step={steps[0]} variant="standard" />
       )}
 
       <Stack
