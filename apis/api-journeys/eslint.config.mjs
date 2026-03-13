@@ -10,11 +10,5 @@ export default [
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/require-await': 'off'
     }
-  },
-  {
-    files: ['**/scripts/**', '**/seeds/**'],
-    rules: {
-      '@nx/enforce-module-boundaries': 'off'
-    }
   }
 ]

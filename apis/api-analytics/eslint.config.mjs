@@ -15,11 +15,5 @@ export default [
         tsconfigRootDir
       }
     }
-  },
-  {
-    files: ['**/scripts/**', '**/seeds/**'],
-    rules: {
-      '@nx/enforce-module-boundaries': 'off'
-    }
   }
 ]
