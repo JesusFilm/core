@@ -371,7 +371,6 @@ export function LanguageScreen({
                       >
                         {t('Select a team')}
                       </Typography>
-
                       <Typography
                         variant="body2"
                         display={{ xs: 'block', sm: 'none' }}
