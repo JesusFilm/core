@@ -5454,6 +5454,7 @@ export type VideoBlockCreateInput = {
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). */
   notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
@@ -5510,6 +5511,7 @@ export type VideoBlockUpdateInput = {
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear. */
   notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
