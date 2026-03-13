@@ -52,7 +52,6 @@ describe('BlockResolver', () => {
   }
   const blockService = {
     provide: BlockService,
-    PrismaService,
     useFactory: () => ({
       duplicateBlock: jest.fn((block, _parentOrder) => [block, block]),
       removeBlockAndChildren: jest.fn(() => []),

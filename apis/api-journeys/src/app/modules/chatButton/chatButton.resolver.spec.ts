@@ -32,7 +32,7 @@ describe('ChatButtonResolver', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ChatButtonResolver,
-        PrismaService,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() },
         {
           provide: JourneyCustomizableService,
           useValue: mockDeep<JourneyCustomizableService>()
