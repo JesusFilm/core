@@ -14,7 +14,7 @@ export class CustomizationMediaPage {
   async navigateToCustomize(templateId: string): Promise<void> {
     await this.page.goto(
       `/templates/${templateId}/customize?screen=language`,
-      { waitUntil: 'networkidle' }
+      { waitUntil: 'load' }
     )
   }
 
@@ -57,7 +57,7 @@ export class CustomizationMediaPage {
       .getByTestId('VideosSection-youtube-input')
       .locator('.MuiFormHelperText-root')
     await expect(helperText).toBeVisible({ timeout: defaultTimeout })
-    await this.page.waitForLoadState('networkidle')
+    await this.page.waitForLoadState('load')
   }
 
   async waitForAutoSubmitError(): Promise<void> {
