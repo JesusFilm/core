@@ -21,7 +21,7 @@ export interface TemplateVideoUploadContextType {
   startYouTubeLink: (
     videoBlockId: string,
     youtubeVideoId: string
-  ) => Promise<void>
+  ) => Promise<boolean>
   getUploadStatus: (videoBlockId: string) => VideoUploadState | null
   hasActiveUploads: boolean
 }

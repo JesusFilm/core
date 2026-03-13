@@ -324,6 +324,7 @@ describe('VideosSection', () => {
   })
 
   it('auto-submits valid YouTube URL after 800ms debounce', async () => {
+    mockStartYouTubeLink.mockResolvedValue(true)
     jest.useFakeTimers()
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
     renderVideosSection({
@@ -390,6 +391,7 @@ describe('VideosSection', () => {
   })
 
   it('clears error and does not re-submit when re-pasting a previously-submitted valid URL after an error', async () => {
+    mockStartYouTubeLink.mockResolvedValue(true)
     jest.useFakeTimers()
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
     renderVideosSection({
@@ -399,12 +401,16 @@ describe('VideosSection', () => {
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
 
-    // First: submit a valid URL
+    // First: submit a valid URL — resolves true so dedup map records it
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
       jest.advanceTimersByTime(800)
     })
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
+    // Flush the .then() callback that writes to the dedup map
+    await act(async () => {
+      await Promise.resolve()
+    })
 
     // Then: type an invalid URL to trigger the error
     await user.clear(input)
@@ -426,5 +432,35 @@ describe('VideosSection', () => {
       screen.queryByText('Please enter a valid YouTube URL')
     ).not.toBeInTheDocument()
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1) // no duplicate call
+  })
+
+  it('allows retry of same URL after a failed submission', async () => {
+    mockStartYouTubeLink.mockResolvedValue(false)
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+
+    // First attempt — fails (returns false), so dedup map is NOT written
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    // Re-type same URL — should re-submit since the first attempt failed
+    await user.clear(input)
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(2)
   })
 })

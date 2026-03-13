@@ -137,7 +137,7 @@ export function VideosSection({
     disabled: loading
   })
 
-  const lastSubmittedUrl = useRef('')
+  const lastSubmittedRef = useRef(new Map<string, string>())
 
   function handleYouTubeUrlChange(event: ChangeEvent<HTMLInputElement>): void {
     setYoutubeUrl(event.target.value)
@@ -155,9 +155,12 @@ export function VideosSection({
         return
       }
       setYoutubeUrlError(undefined)
-      if (trimmedUrl === lastSubmittedUrl.current) return
-      lastSubmittedUrl.current = trimmedUrl
-      void startYouTubeLink(videoBlock.id, extractedId)
+      if (trimmedUrl === lastSubmittedRef.current.get(videoBlock.id)) return
+      void startYouTubeLink(videoBlock.id, extractedId).then((success) => {
+        if (success) {
+          lastSubmittedRef.current.set(videoBlock.id, trimmedUrl)
+        }
+      })
     }, 800)
 
     return () => clearTimeout(timer)

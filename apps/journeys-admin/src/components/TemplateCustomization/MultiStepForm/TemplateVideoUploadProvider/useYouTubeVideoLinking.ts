@@ -40,7 +40,7 @@ export function useYouTubeVideoLinking({
   linkYouTubeVideo: (
     videoBlockId: string,
     youtubeVideoId: string
-  ) => Promise<void>
+  ) => Promise<boolean>
 } {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -49,9 +49,9 @@ export function useYouTubeVideoLinking({
   const [videoBlockUpdate] = useMutation(VIDEO_BLOCK_UPDATE)
 
   const linkYouTubeVideo = useCallback(
-    async (videoBlockId: string, youtubeVideoId: string) => {
-      if (activeBlocksRef.current.has(videoBlockId)) return
-      if (journey?.id == null) return
+    async (videoBlockId: string, youtubeVideoId: string): Promise<boolean> => {
+      if (activeBlocksRef.current.has(videoBlockId)) return false
+      if (journey?.id == null) return false
 
       activeBlocksRef.current.add(videoBlockId)
       setUploadTasks((prev) => {
@@ -90,15 +90,20 @@ export function useYouTubeVideoLinking({
           autoHideDuration: 2000
         })
         removeTask(videoBlockId)
+        return true
       } catch {
-        enqueueSnackbar(t('Failed to set YouTube video. Please try again'), {
+        const errorMessage = t(
+          'Failed to set YouTube video. Please try again'
+        )
+        enqueueSnackbar(errorMessage, {
           variant: 'error',
           autoHideDuration: 2000
         })
         updateTask(videoBlockId, {
           status: 'error',
-          error: 'Failed to set YouTube video. Please try again'
+          error: errorMessage
         })
+        return false
       } finally {
         activeBlocksRef.current.delete(videoBlockId)
       }
