@@ -34,6 +34,8 @@ interface LinksScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
 
+//
+
 export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()

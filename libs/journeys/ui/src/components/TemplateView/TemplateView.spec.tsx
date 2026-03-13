@@ -10,10 +10,12 @@ import {
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
 import {
   GetJourneys,
+  GetJourneys_journeys as GetJourneysJourney,
   GetJourneysVariables
 } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
+import { QA_ONLY_TEMPLATE_SLUG_PREFIX } from '../TemplateSections'
 
 import { defaultJourney } from './data'
 import { parentTags, tags } from './TemplateTags/data'
@@ -324,6 +326,125 @@ describe('TemplateView', () => {
     )
     await waitFor(() => {
       expect(getAllByTestId('TemplateViewDescriptionSkeleton')).toHaveLength(3)
+    })
+  })
+
+  describe('QA template filtering in Related Templates', () => {
+    const tag: Tag = {
+      __typename: 'Tag',
+      id: 'tag.id',
+      parentId: 'tags.topic.id',
+      name: [
+        {
+          __typename: 'TagName',
+          primary: true,
+          value: 'tag.name',
+          language: { __typename: 'Language', id: 'language.id' }
+        }
+      ]
+    }
+
+    const journeyWithTags: Journey = {
+      ...defaultJourney,
+      strategySlug: null,
+      tags: [tag]
+    }
+
+    const relatedJourneyBase: GetJourneysJourney = {
+      __typename: 'Journey',
+      trashedAt: null,
+      id: 'related.id',
+      title: 'Related Template',
+      slug: 'related-slug',
+      template: true,
+      description: null,
+      themeName: defaultJourney.themeName,
+      themeMode: defaultJourney.themeMode,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
+      },
+      tags: [tag],
+      primaryImageBlock: null,
+      publishedAt: '2023-08-14T04:24:24.392Z',
+      createdAt: '2023-08-14T04:24:24.392Z',
+      updatedAt: '2023-08-14T04:24:24.392Z',
+      featuredAt: null,
+      status: defaultJourney.status,
+      seoTitle: null,
+      seoDescription: null,
+      website: false,
+      journeyCustomizationDescription: null,
+      customizable: null,
+      journeyCustomizationFields: [],
+      userJourneys: []
+    }
+
+    function buildRelatedJourneysMock(
+      journeys: GetJourneysJourney[]
+    ): MockedResponse<GetJourneys, GetJourneysVariables> {
+      return {
+        request: {
+          query: GET_JOURNEYS,
+          variables: {
+            where: {
+              template: true,
+              orderByRecent: true,
+              tagIds: ['tag.id'],
+              limit: 10,
+              teamId: 'jfp-team'
+            }
+          }
+        },
+        result: { data: { journeys } }
+      }
+    }
+
+    it('should not show a QA template in Related Templates', async () => {
+      const qaJourney: GetJourneysJourney = {
+        ...relatedJourneyBase,
+        id: 'qa.id',
+        title: 'QA Test Journey',
+        slug: `${QA_ONLY_TEMPLATE_SLUG_PREFIX}-some-variant`
+      }
+
+      const { queryByRole, findByRole } = render(
+        <MockedProvider
+          mocks={[buildRelatedJourneysMock([relatedJourneyBase, qaJourney])]}
+        >
+          <JourneyProvider
+            value={{ journey: journeyWithTags, variant: 'admin' }}
+          >
+            <TemplateView authUser={{} as unknown as User} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        await findByRole('heading', { name: 'Related Template' })
+      ).toBeInTheDocument()
+      expect(
+        queryByRole('heading', { name: 'QA Test Journey' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should show a non-QA template in Related Templates', async () => {
+      const { findByRole } = render(
+        <MockedProvider
+          mocks={[buildRelatedJourneysMock([relatedJourneyBase])]}
+        >
+          <JourneyProvider
+            value={{ journey: journeyWithTags, variant: 'admin' }}
+          >
+            <TemplateView authUser={{} as unknown as User} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        await findByRole('heading', { name: 'Related Template' })
+      ).toBeInTheDocument()
     })
   })
 })

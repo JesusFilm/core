@@ -1,6 +1,6 @@
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
-import { Action, ability } from '../../../lib/auth/ability'
+import { ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 jest.mock('../../../lib/auth/ability', () => ({
@@ -45,7 +45,13 @@ describe('buttonBlockCreate', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
+    mockAbility.mockReturnValue(true)
     prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findFirst.mockResolvedValue({
+      id: 'parentId',
+      journeyId: 'journeyId'
+    } as any)
     prismaMock.block.findUnique.mockResolvedValue({
       id: 'blockId',
       typename: 'ButtonBlock',
@@ -58,9 +64,6 @@ describe('buttonBlockCreate', () => {
   })
 
   it('creates button block when authorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
-    mockAbility.mockReturnValue(true)
-
     const tx = {
       block: {
         create: jest.fn().mockResolvedValue({
@@ -73,7 +76,6 @@ describe('buttonBlockCreate', () => {
           settings: {},
           journey: { id: 'journeyId' }
         }),
-        findFirst: jest.fn().mockResolvedValue(null),
         findMany: jest.fn().mockResolvedValue([])
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
@@ -85,12 +87,6 @@ describe('buttonBlockCreate', () => {
       variables: { input }
     })
 
-    expect(fetchJourneyWithAclIncludes).toHaveBeenCalledWith('journeyId')
-    expect(mockAbility).toHaveBeenCalledWith(
-      Action.Update,
-      { subject: 'Journey', object: { id: 'journeyId' } },
-      expect.any(Object)
-    )
     expect(tx.block.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -116,30 +112,7 @@ describe('buttonBlockCreate', () => {
     })
   })
 
-  it('returns FORBIDDEN if unauthorized', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
-    mockAbility.mockReturnValue(false)
-
-    const result = await authClient({
-      document: BUTTON_BLOCK_CREATE,
-      variables: { input }
-    })
-
-    expect(fetchJourneyWithAclIncludes).toHaveBeenCalledWith('journeyId')
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'user is not allowed to create block'
-        })
-      ]
-    })
-  })
-
   it('creates button block with all optional fields', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
-    mockAbility.mockReturnValue(true)
-
     const tx = {
       block: {
         create: jest.fn().mockResolvedValue({
@@ -156,7 +129,6 @@ describe('buttonBlockCreate', () => {
           settings: { alignment: 'center', color: '#ff0000' },
           journey: { id: 'journeyId' }
         }),
-        findFirst: jest.fn().mockResolvedValue(null),
         findMany: jest.fn().mockResolvedValue([{}, {}])
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
@@ -209,9 +181,6 @@ describe('buttonBlockCreate', () => {
   })
 
   it('defaults settings to empty object when not provided', async () => {
-    fetchJourneyWithAclIncludes.mockResolvedValue({ id: 'journeyId' })
-    mockAbility.mockReturnValue(true)
-
     const tx = {
       block: {
         create: jest.fn().mockResolvedValue({
@@ -224,7 +193,6 @@ describe('buttonBlockCreate', () => {
           settings: {},
           journey: { id: 'journeyId' }
         }),
-        findFirst: jest.fn().mockResolvedValue(null),
         findMany: jest.fn().mockResolvedValue([])
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }

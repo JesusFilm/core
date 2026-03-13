@@ -1,9 +1,49 @@
+import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
 import { Action, Block, Prisma, prisma } from '@core/prisma/journeys/client'
+import { User } from '@core/yoga/firebaseClient'
+
+import {
+  Action as AuthAction,
+  ability,
+  subject as abilitySubject
+} from '../../lib/auth/ability'
+import { fetchJourneyWithAclIncludes } from '../../lib/auth/fetchJourneyWithAclIncludes'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 export type BlockWithAction = Block & { action: Action | null }
+
+export async function authorizeBlockCreate(
+  journeyId: string,
+  user: User
+): Promise<void> {
+  const journey = await fetchJourneyWithAclIncludes(journeyId)
+  if (!ability(AuthAction.Update, abilitySubject('Journey', journey), user)) {
+    throw new GraphQLError('user is not allowed to create block', {
+      extensions: { code: 'FORBIDDEN' }
+    })
+  }
+}
+
+export async function validateParentBlock(
+  parentBlockId: string,
+  journeyId: string
+): Promise<void> {
+  const parentBlock = await prisma.block.findFirst({
+    where: {
+      id: parentBlockId,
+      journeyId,
+      deletedAt: null
+    }
+  })
+  if (parentBlock == null) {
+    throw new GraphQLError('parent block not found in journey', {
+      extensions: { code: 'BAD_USER_INPUT' }
+    })
+  }
+}
 
 export async function getSiblingsInternal(
   journeyId: string,
@@ -96,7 +136,7 @@ export async function update<T>(
   id: string,
   input: Prisma.BlockUpdateInput | Prisma.BlockUncheckedUpdateInput
 ): Promise<T> {
-  return await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     if (input.action != null) {
       const data = {
         parentBlock: { connect: { id } },
@@ -121,6 +161,8 @@ export async function update<T>(
       include: { action: true }
     })
     await setJourneyUpdatedAt(tx, updatedBlock)
-    return updatedBlock as unknown as T
+    return updatedBlock
   })
+  await recalculateJourneyCustomizable(result.journeyId)
+  return result as unknown as T
 }

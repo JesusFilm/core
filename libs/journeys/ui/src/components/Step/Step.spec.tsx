@@ -122,7 +122,8 @@ const journey: Journey = {
   ],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const block: TreeBlock<StepFields> = {

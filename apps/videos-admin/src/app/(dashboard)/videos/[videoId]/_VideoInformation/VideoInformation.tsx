@@ -9,7 +9,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
-import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -18,7 +17,6 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useRouter } from 'next/navigation'
@@ -122,7 +120,6 @@ export function VideoInformation({
   const router = useRouter()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
-  const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
   const { enqueueSnackbar } = useSnackbar()
   const [createdTitleId, setCreatedTitleId] = useState<string | null>(null)
@@ -143,7 +140,6 @@ export function VideoInformation({
 
   const validationSchema = object().shape({
     title: string().trim().required('Title is required'),
-    url: string().trim().required('Url is required'),
     published: string().required('Published is required'),
     label: string().required('Label is required')
   })
@@ -492,42 +488,11 @@ export function VideoInformation({
                 name="url"
                 label="Video URL"
                 fullWidth
-                value={values.url}
+                value={`${jesusFilmUrl}${values.url}`}
                 variant="outlined"
-                error={Boolean(errors.url)}
-                onChange={handleChange}
-                helperText={
-                  data.adminVideo.publishedAt != null
-                    ? 'URL cannot be changed after video is published'
-                    : (errors.url as string)
-                }
-                disabled={data.adminVideo.publishedAt != null}
-                slotProps={{
-                  input: {
-                    startAdornment: (
-                      <InputAdornment
-                        position="start"
-                        disablePointerEvents
-                        sx={{
-                          backgroundColor: theme.palette.background.paper,
-                          px: 2,
-                          py: 3,
-                          borderRight: `1px solid ${theme.palette.divider}`,
-                          borderTopLeftRadius: theme.shape.borderRadius,
-                          borderBottomLeftRadius: theme.shape.borderRadius
-                        }}
-                      >
-                        {jesusFilmUrl}
-                      </InputAdornment>
-                    )
-                  }
-                }}
-                sx={{
-                  flexGrow: 1,
-                  '& .MuiOutlinedInput-root': {
-                    pl: 0
-                  }
-                }}
+                helperText="URLs cannot be changed after creation"
+                disabled
+                sx={{ flexGrow: 1 }}
               />
             </Stack>
             <Stack

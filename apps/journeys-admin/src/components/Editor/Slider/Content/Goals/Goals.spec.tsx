@@ -176,7 +176,8 @@ describe('Goals', () => {
     fromTemplateId: null,
     socialNodeX: null,
     socialNodeY: null,
-    journeyTheme: null
+    journeyTheme: null,
+    customizable: null
   }
 
   it('should render placeholder', () => {
