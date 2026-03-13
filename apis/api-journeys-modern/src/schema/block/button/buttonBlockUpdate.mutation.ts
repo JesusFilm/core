@@ -13,10 +13,10 @@ async function validateBlock(
   parentBlockId: string
 ): Promise<boolean> {
   if (id == null) return false
-  const block = await prisma.block.findUnique({
-    where: { id, deletedAt: null }
+  const block = await prisma.block.findFirst({
+    where: { id, parentBlockId, deletedAt: null }
   })
-  return block != null && block.parentBlockId === parentBlockId
+  return block != null
 }
 
 builder.mutationField('buttonBlockUpdate', (t) =>

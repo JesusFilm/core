@@ -45,7 +45,7 @@ describe('buttonBlockUpdate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     prismaMock.block.findMany.mockResolvedValue([] as any)
-    prismaMock.block.findUnique.mockResolvedValue({
+    prismaMock.block.findFirst.mockResolvedValue({
       id,
       typename: 'ButtonBlock',
       journeyId: 'journeyId',
@@ -146,7 +146,7 @@ describe('buttonBlockUpdate', () => {
       journey: { id: 'journeyId' }
     })
     mockAbility.mockReturnValue(true)
-    prismaMock.block.findUnique.mockResolvedValue(null)
+    prismaMock.block.findFirst.mockResolvedValue(null)
 
     const result = await authClient({
       document: BUTTON_BLOCK_UPDATE,
@@ -171,7 +171,7 @@ describe('buttonBlockUpdate', () => {
       journey: { id: 'journeyId' }
     })
     mockAbility.mockReturnValue(true)
-    prismaMock.block.findUnique.mockResolvedValue(null)
+    prismaMock.block.findFirst.mockResolvedValue(null)
 
     const result = await authClient({
       document: BUTTON_BLOCK_UPDATE,
