@@ -26,39 +26,6 @@ export class CardBlockResolver {
 
   @Mutation()
   @UseGuards(AppCaslGuard)
-  async cardBlockCreate(
-    @CaslAbility() ability: AppAbility,
-    @Args('input') input: CardBlockCreateInput
-  ): Promise<Block> {
-    const parentOrder = (
-      await this.blockService.getSiblings(input.journeyId, input.parentBlockId)
-    ).length
-    return await this.prismaService.$transaction(async (tx) => {
-      const block = await tx.block.create({
-        data: {
-          ...omit(input, 'parentBlockId', 'journeyId'),
-          id: input.id ?? undefined,
-          typename: 'CardBlock',
-          parentBlock: { connect: { id: input.parentBlockId } },
-          journey: { connect: { id: input.journeyId } },
-          parentOrder
-        },
-        include: {
-          action: true,
-          ...INCLUDE_JOURNEY_ACL
-        }
-      })
-      await this.blockService.setJourneyUpdatedAt(tx, block)
-      if (!ability.can(Action.Update, subject('Journey', block.journey)))
-        throw new GraphQLError('user is not allowed to create block', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-      return block
-    })
-  }
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
   async cardBlockUpdate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,

@@ -88,65 +88,6 @@ describe('CardBlockResolver', () => {
     ])
   })
 
-  describe('cardBlockCreate', () => {
-    beforeEach(() => {
-      prismaService.$transaction.mockImplementation(
-        async (callback) => await callback(prismaService)
-      )
-    })
-
-    it('creates a CardBlock', async () => {
-      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
-      expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
-        blockWithUserTeam
-      )
-      expect(prismaService.block.create).toHaveBeenCalledWith({
-        data: {
-          backgroundColor: '#FFF',
-          themeMode: ThemeMode.light,
-          themeName: ThemeName.base,
-          id: 'blockId',
-          journey: { connect: { id: 'journeyId' } },
-          parentBlock: { connect: { id: 'parentBlockId' } },
-          parentOrder: 2,
-          typename: 'CardBlock',
-          fullscreen: true
-        },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
-      expect(service.getSiblings).toHaveBeenCalledWith(
-        blockCreateInput.journeyId,
-        blockCreateInput.parentBlockId
-      )
-    })
-
-    it('should set journey updatedAt when card is created', async () => {
-      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
-      expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
-        blockWithUserTeam
-      )
-      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
-        prismaService,
-        blockWithUserTeam
-      )
-    })
-
-    it('throws error if not authorized', async () => {
-      prismaService.block.create.mockResolvedValueOnce(block)
-      await expect(
-        resolver.cardBlockCreate(ability, blockCreateInput)
-      ).rejects.toThrow('user is not allowed to create block')
-    })
-  })
-
   describe('cardBlockUpdate', () => {
     it('updates a CardBlock', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
