@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
 import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
@@ -43,7 +43,7 @@ import {
     IntegrationGrowthSpacesService,
     JourneyCustomizableService,
     JourneyViewEventResolver,
-    PrismaService,
+    prismaServiceProvider,
     StepViewEventResolver,
     StepNextEventResolver,
     StepPreviousEventResolver,
