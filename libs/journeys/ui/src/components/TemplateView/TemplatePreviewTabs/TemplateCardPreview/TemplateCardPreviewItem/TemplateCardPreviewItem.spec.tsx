@@ -50,14 +50,14 @@ describe('TemplateCardPreviewItem', () => {
 
   it('should render preview variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="preview" />
+      <TemplateCardPreviewItem step={step} variant="standard" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
   it('should render media variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="media" />
+      <TemplateCardPreviewItem step={step} variant="compact" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
@@ -67,7 +67,7 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         onClick={handleClick}
       />
     )
@@ -80,7 +80,7 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         selectedStep={step}
       />
     )
@@ -91,10 +91,37 @@ describe('TemplateCardPreviewItem', () => {
     const { getByTestId } = renderWithProviders(
       <TemplateCardPreviewItem
         step={step}
-        variant="preview"
+        variant="standard"
         selectedStep={null}
       />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
+  it('should scale up the selected compact card', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem
+        step={step}
+        variant="compact"
+        selectedStep={step}
+      />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
+      transform: 'scale(1.25)'
+    })
+  })
+
+  it('should dim non-selected compact cards', () => {
+    const otherStep = { ...step, id: 'other' } as TreeBlock<StepBlock>
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem
+        step={step}
+        variant="compact"
+        selectedStep={otherStep}
+      />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
+      opacity: 0.75
+    })
   })
 })
