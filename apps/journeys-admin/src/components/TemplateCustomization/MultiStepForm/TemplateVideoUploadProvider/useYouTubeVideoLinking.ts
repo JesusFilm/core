@@ -92,9 +92,7 @@ export function useYouTubeVideoLinking({
         removeTask(videoBlockId)
         return true
       } catch {
-        const errorMessage = t(
-          'Failed to set YouTube video. Please try again'
-        )
+        const errorMessage = t('Failed to set YouTube video. Please try again')
         enqueueSnackbar(errorMessage, {
           variant: 'error',
           autoHideDuration: 2000
