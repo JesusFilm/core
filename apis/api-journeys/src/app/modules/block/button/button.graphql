@@ -50,27 +50,3 @@ type ButtonBlock implements Block @shareable {
   submitEnabled: Boolean @shareable
   settings: ButtonBlockSettings! @shareable
 }
-
-input ButtonBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  startIconId: ID
-  endIconId: ID
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
-}
-
-extend type Mutation {
-  buttonBlockUpdate(
-    id: ID!
-    input: ButtonBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): ButtonBlock
-}
