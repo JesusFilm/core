@@ -4,11 +4,10 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '@core/prisma/journeys/client'
-import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
-export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
+export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude = {
   journey: {
     include: {
       team: { include: { userTeams: true } },

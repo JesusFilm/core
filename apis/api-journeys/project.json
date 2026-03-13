@@ -115,7 +115,7 @@
     "prisma-seed": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm exec ts-node apis/api-journeys/db/seed.ts"]
+        "commands": ["pnpm exec tsx apis/api-journeys/db/seed.ts"]
       }
     }
   }

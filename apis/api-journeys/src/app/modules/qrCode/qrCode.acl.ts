@@ -3,11 +3,10 @@ import {
   UserJourneyRole,
   UserTeamRole
 } from '@core/prisma/journeys/client'
-import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
-export const INCLUDE_QR_CODE_ACL: Prisma.QrCodeInclude<DefaultArgs> = {
+export const INCLUDE_QR_CODE_ACL: Prisma.QrCodeInclude = {
   journey: {
     include: {
       userJourneys: true

@@ -4,7 +4,6 @@ EXPOSE 4008
 
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
-ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
 ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
@@ -14,12 +13,11 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
-COPY ./libs/prisma/analytics/db ./prisma
+COPY ./libs/prisma/analytics/db ./prisma/db
+COPY ./libs/prisma/analytics/prisma.config.ts ./prisma/prisma.config.ts
+
+COPY ./apis/api-analytics/docker-entrypoint.sh ./docker-entrypoint.sh
 
 RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
 RUN pnpm install --prod --silent
-RUN pnpm add @prisma/client@6.18.0
-RUN pnpm add -D prisma@6.18.0
-RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
-
-CMD node ./main.js
+ENTRYPOINT ["./docker-entrypoint.sh"]
