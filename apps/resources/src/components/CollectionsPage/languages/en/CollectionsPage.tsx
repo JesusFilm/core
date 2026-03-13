@@ -76,8 +76,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Easter"
-          descriptionBeforeYear="Easter"
-          descriptionAfterYear="videos & resources about Lent, Holy Week, Resurrection"
+          descriptionBeforeYear="Watch the resurrection story free"
+          descriptionAfterYear="in 2,000+ languages"
           feedbackButtonLabel="Give Feedback"
         />
       }
@@ -87,7 +87,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="The Real Easter story"
+          title="What Is the True Meaning of Easter?"
           subtitle="Questioning? Searching? Discover the true power of Easter."
           firstParagraph={{
             beforeHighlight: 'Beyond eggs and bunnies lies the story of ',
@@ -114,7 +114,7 @@ Because the greatest celebration in human history is about far more than traditi
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Related questions"
+          questionsTitle="Frequently asked questions about Easter"
           askButtonText="Ask yours"
           bibleQuotesTitle="Bible quotes"
           quizButtonText="What's your next step of faith?"

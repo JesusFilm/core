@@ -20,8 +20,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Pâques"
-          descriptionBeforeYear="Pâques"
-          descriptionAfterYear="vidéos et ressources sur le Carême, la Semaine Sainte, la Résurrection"
+          descriptionBeforeYear="Regardez gratuitement l’histoire de la résurrection"
+          descriptionAfterYear="dans plus de 2 000 langues"
           feedbackButtonLabel="Donner un Avis"
         />
       }
@@ -31,7 +31,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
-          title="La véritable histoire de Pâques"
+          title="Quel est le vrai sens de Pâques ?"
           subtitle="Des questions ? En recherche ? Découvrez le véritable pouvoir de Pâques."
           firstParagraph={{
             beforeHighlight:
@@ -58,7 +58,7 @@ export function CollectionsPage(): ReactElement {
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Questions connexes"
+          questionsTitle="Questions fréquentes sur Pâques"
           askButtonText="Posez la vôtre"
           bibleQuotesTitle="Citations bibliques"
           quizButtonText="Quelle est votre prochaine étape de foi ?"

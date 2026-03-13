@@ -77,8 +77,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Pascua"
-          descriptionBeforeYear="Pascua"
-          descriptionAfterYear="videos y recursos sobre la Cuaresma, la Semana Santa, la Resurrección"
+          descriptionBeforeYear="Mira gratis la historia de la resurrección"
+          descriptionAfterYear="en más de 2.000 idiomas"
           feedbackButtonLabel="Dar Comentarios"
         />
       }
@@ -88,7 +88,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="La verdadera historia de la Pascua"
+          title="¿Cuál es el verdadero significado de la Pascua?"
           subtitle="¿Cuestionando? ¿Buscando? Descubre el verdadero poder de la Pascua."
           firstParagraph={{
             beforeHighlight:
@@ -116,7 +116,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Preguntas relacionadas"
+          questionsTitle="Preguntas frecuentes sobre la Pascua"
           askButtonText="Haz la tuya"
           bibleQuotesTitle="Citas bíblicas"
           quizButtonText="¿Cuál es tu próximo paso de fe?"

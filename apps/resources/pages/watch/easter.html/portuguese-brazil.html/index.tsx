@@ -13,13 +13,12 @@ export default function EasterPage(): ReactElement {
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Vídeos e recursos da Páscoa 2025 sobre Quaresma, Semana Santa e Ressurreição | Jesus Film Project"
-        description="Explore o outro lado da Páscoa — repleto de traição, esperança e uma afirmação que mudou o mundo."
+        defaultTitle="Páscoa 2026: assista grátis à história da ressurreição | Jesus Film Project"
+        description="Descubra o verdadeiro significado da Páscoa com vídeos grátis sobre a ressurreição de Jesus. Assista à Semana Santa, à Sexta-Feira Santa e ao Domingo da Ressurreição em mais de 2.000 idiomas."
         openGraph={{
-          title:
-            'E se tudo o que você pensava sobre a Páscoa fosse apenas metade da história?',
+          title: 'Páscoa 2026: assista grátis à história da ressurreição',
           description:
-            'Explore o outro lado da Páscoa — repleto de traição, esperança e uma afirmação que mudou o mundo.',
+            'Descubra o verdadeiro significado da Páscoa com vídeos grátis sobre a ressurreição de Jesus. Assista em mais de 2.000 idiomas.',
           url: 'https://www.jesusfilm.org/watch/easter/portuguese-brazil',
           type: 'website',
           locale: 'pt_BR',
