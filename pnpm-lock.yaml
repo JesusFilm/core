@@ -368,6 +368,9 @@ importers:
       dd-trace:
         specifier: ^5.25.0
         version: 5.36.0
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.5.0
       express:
         specifier: 4.21.2
         version: 4.21.2
@@ -503,6 +506,9 @@ importers:
       prism-react-renderer:
         specifier: ^2.0.0
         version: 2.4.1(react@19.2.0)
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -930,9 +936,6 @@ importers:
       dayjs:
         specifier: 1.11.18
         version: 1.11.18
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.5.0
       esbuild:
         specifier: ^0.19.12
         version: 0.19.12
@@ -1062,9 +1065,6 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.14
         version: 0.6.14(prettier@3.6.2)
-      prisma:
-        specifier: ^7.0.0
-        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
       react-refresh:
         specifier: ^0.18.0
         version: 0.18.0
@@ -1134,6 +1134,90 @@ importers:
       wrangler:
         specifier: ^3.62.0
         version: 3.114.14(@cloudflare/workers-types@4.20251014.0)
+
+  apis/api-analytics:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+
+  apis/api-journeys:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-journeys-modern:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-languages:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-media:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
+
+  apis/api-users:
+    dependencies:
+      '@prisma/adapter-pg':
+        specifier: ^7.0.0
+        version: 7.4.2
+      '@prisma/client':
+        specifier: ^7.0.0
+        version: 7.4.2(prisma@7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3))(typescript@5.9.3)
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
+      prisma:
+        specifier: ^7.0.0
+        version: 7.4.2(@types/react@19.2.2)(magicast@0.3.5)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)
 
   apps/cms:
     dependencies:
@@ -22645,7 +22729,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qrcode.react@4.2.0:
@@ -33331,6 +33414,18 @@ snapshots:
   '@formatjs/intl-localematcher@0.6.2':
     dependencies:
       tslib: 2.8.1
+
+  '@formatjs/intl@2.10.0(typescript@5.4.4)':
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.18.2
+      '@formatjs/fast-memoize': 2.2.0
+      '@formatjs/icu-messageformat-parser': 2.7.6
+      '@formatjs/intl-displaynames': 6.6.6
+      '@formatjs/intl-listformat': 7.5.5
+      intl-messageformat: 10.5.11
+      tslib: 2.8.1
+    optionalDependencies:
+      typescript: 5.4.4
 
   '@formatjs/intl@2.10.0(typescript@5.9.3)':
     dependencies:
@@ -56739,7 +56834,7 @@ snapshots:
     dependencies:
       '@formatjs/ecma402-abstract': 1.18.2
       '@formatjs/icu-messageformat-parser': 2.7.6
-      '@formatjs/intl': 2.10.0(typescript@5.9.3)
+      '@formatjs/intl': 2.10.0(typescript@5.4.4)
       '@formatjs/intl-displaynames': 6.6.6
       '@formatjs/intl-listformat': 7.5.5
       '@types/hoist-non-react-statics': 3.3.6

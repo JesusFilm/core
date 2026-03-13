@@ -33,17 +33,24 @@ interface TemplateCardPreviewProps {
 interface TemplateCardPreviewPlaceholderProps {
   cardWidth: { xs: number; sm: number }
   cardHeight: { xs: number; sm: number }
+  breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
 }
 
 function TemplateCardPreviewPlaceholder({
   cardWidth,
-  cardHeight
+  cardHeight,
+  breakpoints: bp
 }: TemplateCardPreviewPlaceholderProps) {
   return (
     <Stack
       data-testid="TemplateCardsPreviewPlaceholder"
       direction="row"
-      sx={{ overflowY: 'visible' }}
+      sx={{
+        pl: {
+          xs: `${bp.xs.slidesOffsetBefore ?? 0}px`,
+          sm: `${bp.sm.slidesOffsetBefore ?? 0}px`
+        }
+      }}
     >
       {[0, 1, 2, 3, 4, 5, 6].map((value) => (
         <Skeleton
@@ -52,7 +59,10 @@ function TemplateCardPreviewPlaceholder({
           data-testid="TemplateCardSkeleton"
           sx={{
             minWidth: cardWidth,
-            mr: { xs: 3, sm: 7 },
+            mr: {
+              xs: `${bp.xs.spaceBetween ?? 0}px`,
+              sm: `${bp.sm.spaceBetween ?? 0}px`
+            },
             height: cardHeight,
             borderRadius: 2
           }}
@@ -80,22 +90,22 @@ function getSpacerWidth(
  *
  * TemplateCardPreview has two variants:
  *
- * 'preview': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
+ * 'standard': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
  *
- * 'media': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
+ * 'compact': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
  *
  * @param props - Component props
  * @param props.steps - Journey step blocks to display as cards
  * @param props.authUser - Authenticated user for CTA sign-in state
- * @param props.variant - 'preview' | 'media'; controls layout and behaviour
+ * @param props.variant - 'standard' | 'compact'; controls layout and behaviour
  * @param props.onClick - Handler when a card is clicked
- * @param props.selectedStep - Selected step (media variant)
+ * @param props.selectedStep - Selected step (compact variant)
  * @returns Carousel UI or skeleton placeholder when steps are loading
  */
 export function TemplateCardPreview({
   steps,
   authUser,
-  variant = 'preview',
+  variant = 'standard',
   onClick,
   selectedStep
 }: TemplateCardPreviewProps): ReactElement {
@@ -111,6 +121,7 @@ export function TemplateCardPreview({
     showMoreCardsSlide,
     swiperProps,
     slideSx,
+    selectedSlideSx,
     swiperSx,
     modules
   } = config
@@ -121,10 +132,10 @@ export function TemplateCardPreview({
   }
 
   const slidesToRender =
-    steps != null ? (variant === 'media' ? steps : take(steps, 7)) : []
+    steps != null ? (variant === 'compact' ? steps : take(steps, 7)) : []
 
   useEffect(() => {
-    if (variant !== 'media' || swiper == null || selectedStep == null) return
+    if (variant !== 'compact' || swiper == null || selectedStep == null) return
 
     const index = slidesToRender.findIndex(
       (step) => step.id === selectedStep.id
@@ -147,25 +158,15 @@ export function TemplateCardPreview({
       }}
     >
       {slidesToRender.map((step) => {
-        const isSelected = selectedStep?.id === step.id
-        const selectedSlideSx =
-          variant === 'media' && isSelected
-            ? {
-                width: {
-                  xs: cardWidth.xs * SELECTED_SCALE,
-                  sm: cardWidth.sm * SELECTED_SCALE
-                },
-                height: {
-                  xs: cardHeight.xs * SELECTED_SCALE,
-                  sm: cardHeight.sm * SELECTED_SCALE
-                }
-              }
-            : {}
+        const isSelected = variant === 'compact' && selectedStep?.id === step.id
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
             key={step.id}
-            sx={{ ...slideSx, ...selectedSlideSx }}
+            sx={{
+              ...(slideSx as object),
+              ...(isSelected ? (selectedSlideSx as object) : {})
+            }}
           >
             <TemplateCardPreviewItem
               step={step}
@@ -176,7 +177,7 @@ export function TemplateCardPreview({
           </StyledSwiperSlide>
         )
       })}
-      {variant === 'media' && (
+      {variant === 'compact' && (
         <StyledSwiperSlide
           data-testid="MediaSpacerSlide"
           sx={{
@@ -260,6 +261,7 @@ export function TemplateCardPreview({
     <TemplateCardPreviewPlaceholder
       cardWidth={cardWidth}
       cardHeight={cardHeight}
+      breakpoints={config.breakpoints}
     />
   )
 }

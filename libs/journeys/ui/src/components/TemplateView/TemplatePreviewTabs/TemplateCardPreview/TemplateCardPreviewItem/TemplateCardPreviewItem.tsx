@@ -51,37 +51,41 @@ export function TemplateCardPreviewItem({
   ) as TreeBlock<CardBlock>
 
   const config = VARIANT_CONFIGS[variant]
-  const { cardWidth, cardHeight, framePortal, cardSx } = config
+  const {
+    cardWidth,
+    cardHeight,
+    framePortal,
+    cardSx,
+    opacity,
+    selectedBoxShadow
+  } = config
   const isSelected = selectedStep?.id === step.id
+
+  const baseTransform = {
+    xs: `scale(${framePortal.scale.xs})`,
+    sm: `scale(${framePortal.scale.sm})`
+  }
 
   return (
     <Box
       sx={{
         ...cardSx,
-        width: isSelected
-          ? {
-              xs: cardWidth.xs * SELECTED_SCALE,
-              sm: cardWidth.sm * SELECTED_SCALE
-            }
-          : cardWidth,
-        height: isSelected
-          ? {
-              xs: cardHeight.xs * SELECTED_SCALE,
-              sm: cardHeight.sm * SELECTED_SCALE
-            }
-          : cardHeight,
-        boxShadow: isSelected
-          ? `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
-             0px 3px 3px 0px rgba(0, 0, 0, 0.12),
-             0px 3px 4px 0px rgba(0, 0, 0, 0.14)`
-          : 'none'
+        width: cardWidth,
+        height: cardHeight,
+        transform: isSelected ? `scale(${SELECTED_SCALE})` : 'scale(1)',
+        transition: isSelected
+          ? 'transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease'
+          : 'box-shadow 0.3s ease',
+        boxShadow:
+          isSelected && selectedBoxShadow != null ? selectedBoxShadow : 'none',
+        opacity: opacity != null && !isSelected ? opacity : 1
       }}
       onClick={() => onClick?.(step)}
       data-testid="TemplateCardPreviewItem"
     >
       <Box
         sx={{
-          transform: framePortal.transform,
+          transform: baseTransform,
           transformOrigin: 'top left',
           borderRadius: framePortal.borderRadius
         }}
@@ -90,18 +94,8 @@ export function TemplateCardPreviewItem({
           sx={{
             position: 'absolute',
             display: 'block',
-            width: isSelected
-              ? {
-                  xs: framePortal.width.xs * SELECTED_SCALE,
-                  sm: framePortal.width.sm * SELECTED_SCALE
-                }
-              : framePortal.width,
-            height: isSelected
-              ? {
-                  xs: framePortal.height.xs * SELECTED_SCALE,
-                  sm: framePortal.height.sm * SELECTED_SCALE
-                }
-              : framePortal.height,
+            width: framePortal.width,
+            height: framePortal.height,
             zIndex: 2,
             cursor: 'grab',
             borderRadius: framePortal.borderRadius
@@ -109,18 +103,8 @@ export function TemplateCardPreviewItem({
         />
         <FramePortal
           sx={{
-            width: isSelected
-              ? {
-                  xs: framePortal.width.xs * SELECTED_SCALE,
-                  sm: framePortal.width.sm * SELECTED_SCALE
-                }
-              : framePortal.width,
-            height: isSelected
-              ? {
-                  xs: framePortal.height.xs * SELECTED_SCALE,
-                  sm: framePortal.height.sm * SELECTED_SCALE
-                }
-              : framePortal.height,
+            width: framePortal.width,
+            height: framePortal.height,
             borderRadius: framePortal.borderRadius
           }}
           dir={rtl ? 'rtl' : 'ltr'}

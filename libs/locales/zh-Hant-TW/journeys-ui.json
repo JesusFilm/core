@@ -1,8 +1,13 @@
 {
+  "My Team": "我的團隊",
+  "Unable to create guest user. Please try again or sign in.": "無法建立訪客使用者。請重試或登入。",
   "Failed to duplicate journey to team, please refresh the page and try again": "複製旅程到團隊失敗，請刷新頁面再試一次",
-  "Let's get started!": "讓我們開始吧！",
+  "Journey failed to load. Please refresh the page and try again.": "旅程載入失敗。請刷新頁面再試。",
+  "Let's Get Started!": "讓我們開始吧!",
+  "Get Started": "開始使用",
   "A few quick edits and your template will be ready to share.": "幾個快速編輯後，您的範本就可以分享了。",
+  "A few quick edits and it's ready to share!": "幾個快速編輯就可以分享了！",
+  "Next": "下一個",
   "Select a language": "選擇語言",
-  "Select a team": "選擇團隊",
-  "Next": "下一個"
+  "Select a team": "選擇團隊"
 }

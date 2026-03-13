@@ -51,19 +51,6 @@ type ButtonBlock implements Block @shareable {
   settings: ButtonBlockSettings! @shareable
 }
 
-input ButtonBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
-}
-
 input ButtonBlockUpdateInput {
   parentBlockId: ID
   eventLabel: BlockEventLabel
@@ -78,7 +65,6 @@ input ButtonBlockUpdateInput {
 }
 
 extend type Mutation {
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
