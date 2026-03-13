@@ -429,7 +429,8 @@ export class JourneyResolver {
           include: { userTeams: true }
         },
         journeyCustomizationFields: true,
-        journeyTheme: true
+        journeyTheme: true,
+        chatButtons: true
       }
     })
     if (journey == null)
@@ -567,7 +568,8 @@ export class JourneyResolver {
                   'journeyCustomizationFields',
                   'journeyTheme',
                   'templateSite',
-                  'customizable'
+                  'customizable',
+                  'chatButtons'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -711,6 +713,17 @@ export class JourneyResolver {
               headerFont: journey.journeyTheme.headerFont,
               bodyFont: journey.journeyTheme.bodyFont,
               labelFont: journey.journeyTheme.labelFont
+            }
+          })
+        }
+        for (const chatButton of journey.chatButtons) {
+          await this.prismaService.chatButton.create({
+            data: {
+              id: uuidv4(),
+              journeyId: duplicateJourneyId,
+              link: chatButton.link,
+              platform: chatButton.platform,
+              customizable: chatButton.customizable
             }
           })
         }

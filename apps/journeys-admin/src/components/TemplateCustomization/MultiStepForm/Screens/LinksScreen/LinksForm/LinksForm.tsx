@@ -1,5 +1,8 @@
 import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
+import MenuItem from '@mui/material/MenuItem'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -7,9 +10,14 @@ import { Form, useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { MessageChatIcon } from '@core/journeys/ui/MessageChatIcon'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
-import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../../../__generated__/globalTypes'
 import { PhoneField } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/PhoneField/PhoneField'
 import { getFullPhoneNumber } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/getFullPhoneNumber'
 import { normalizeCallingCode } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/normalizeCallingCode'
@@ -17,10 +25,60 @@ import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 interface LinksFormProps {
   links: JourneyLink[]
+  onPlatformChange?: (chatButtonId: string, platform: MessagePlatform) => void
 }
 
-export function LinksForm({ links }: LinksFormProps): ReactElement {
+export function LinksForm({
+  links,
+  onPlatformChange
+}: LinksFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const messagePlatformOptions: Array<{
+    value: MessagePlatform
+    label: string
+  }> = [
+    { value: MessagePlatform.custom, label: t('Chat') },
+    { value: MessagePlatform.facebook, label: t('Facebook Messenger') },
+    { value: MessagePlatform.instagram, label: t('Instagram') },
+    { value: MessagePlatform.kakaoTalk, label: t('KakaoTalk') },
+    { value: MessagePlatform.line, label: t('LINE') },
+    { value: MessagePlatform.skype, label: t('Skype') },
+    { value: MessagePlatform.snapchat, label: t('Snapchat') },
+    { value: MessagePlatform.telegram, label: t('Telegram') },
+    { value: MessagePlatform.tikTok, label: t('TikTok') },
+    { value: MessagePlatform.viber, label: t('Viber') },
+    { value: MessagePlatform.vk, label: t('VK') },
+    { value: MessagePlatform.whatsApp, label: t('WhatsApp') },
+    { value: MessagePlatform.globe2, label: t('Globe 1') },
+    { value: MessagePlatform.globe3, label: t('Globe 2') },
+    { value: MessagePlatform.messageText1, label: t('Message Text Circle') },
+    { value: MessagePlatform.messageText2, label: t('Message Text Square') },
+    { value: MessagePlatform.send1, label: t('Send 1') },
+    { value: MessagePlatform.send2, label: t('Send 2') },
+    { value: MessagePlatform.messageChat2, label: t('Message Chat Circle') },
+    { value: MessagePlatform.messageCircle, label: t('Message Circle') },
+    {
+      value: MessagePlatform.messageNotifyCircle,
+      label: t('Message Notify Circle')
+    },
+    {
+      value: MessagePlatform.messageNotifySquare,
+      label: t('Message Notify Square')
+    },
+    { value: MessagePlatform.messageSquare, label: t('Message Square') },
+    { value: MessagePlatform.mail1, label: t('Mail') },
+    { value: MessagePlatform.linkExternal, label: t('Link External') },
+    { value: MessagePlatform.home3, label: t('Home 1') },
+    { value: MessagePlatform.home4, label: t('Home 2') },
+    { value: MessagePlatform.helpCircleContained, label: t('Help Circle') },
+    { value: MessagePlatform.helpSquareContained, label: t('Help Square') },
+    { value: MessagePlatform.shieldCheck, label: t('Shield Check') },
+    { value: MessagePlatform.menu1, label: t('Menu') },
+    { value: MessagePlatform.checkBroken, label: t('Check Broken') },
+    { value: MessagePlatform.checkContained, label: t('Check Contained') },
+    { value: MessagePlatform.settings, label: t('Settings') }
+  ]
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<Record<string, string>>()
 
@@ -57,6 +115,14 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     if (!value) return
     const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
     void setFieldValue(name, url)
+  }
+
+  function handlePlatformSelect(
+    event: SelectChangeEvent<string>,
+    chatButtonId: string
+  ): void {
+    const platform = event.target.value as MessagePlatform
+    onPlatformChange?.(chatButtonId, platform)
   }
 
   return (
@@ -113,7 +179,102 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                   <LinkExternal />
                 </IconButton>
               </Stack>
-              {link.linkType === 'phone' ? (
+              {link.linkType === 'chatButtons' ? (
+                <>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      height: 56,
+                      bgcolor: 'rgba(0, 0, 0, 0.06)',
+                      borderRadius: 1,
+                      borderBottom: hasError ? 2 : 1,
+                      borderColor: hasError
+                        ? 'error.main'
+                        : 'action.disabledBackground'
+                    }}
+                  >
+                    <FormControl
+                      variant="standard"
+                      hiddenLabel
+                      sx={{ flexShrink: 0, alignSelf: 'stretch' }}
+                    >
+                      <Select
+                        variant="standard"
+                        value={link.platform}
+                        onChange={(e) => handlePlatformSelect(e, link.id)}
+                        IconComponent={ChevronDownIcon}
+                        aria-label={t('Select chat icon')}
+                        disableUnderline
+                        renderValue={(selected) => (
+                          <MessageChatIcon
+                            platform={selected as MessagePlatform}
+                          />
+                        )}
+                        sx={{
+                          height: '100%',
+                          pl: 3,
+                          pr: 1,
+                          '& .MuiSelect-select': {
+                            display: 'flex',
+                            alignItems: 'center',
+                            pr: '20px !important'
+                          }
+                        }}
+                      >
+                        {messagePlatformOptions.map(({ value, label }) => (
+                          <MenuItem key={`chat-icon-${value}`} value={value}>
+                            <Stack
+                              direction="row"
+                              spacing={3}
+                              alignItems="center"
+                            >
+                              <MessageChatIcon platform={value} />
+                              <Typography>{label}</Typography>
+                            </Stack>
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <Box
+                      sx={{
+                        width: '1px',
+                        alignSelf: 'stretch',
+                        my: 2,
+                        bgcolor: 'action.disabledBackground',
+                        flexShrink: 0,
+                        mx: 1
+                      }}
+                    />
+                    <TextField
+                      id={fieldName}
+                      name={fieldName}
+                      variant="standard"
+                      hiddenLabel
+                      fullWidth
+                      placeholder={t('Chat URL')}
+                      value={values?.[fieldName] ?? ''}
+                      onChange={handleChange}
+                      onBlur={handleLinkBLur}
+                      error={hasError}
+                      aria-label={`${t('Edit')} ${link.label}`}
+                      InputProps={{ disableUnderline: true }}
+                      sx={{
+                        px: 2,
+                        alignSelf: 'stretch',
+                        justifyContent: 'center'
+                      }}
+                    />
+                  </Box>
+                  <Typography
+                    variant="caption"
+                    color={hasError ? 'error' : 'transparent'}
+                    sx={{ mt: 0.5, mx: 3.5 }}
+                  >
+                    {hasError ? (errors?.[fieldName] as string) : '\u00A0'}
+                  </Typography>
+                </>
+              ) : link.linkType === 'phone' ? (
                 <Box
                   onKeyDown={(e) => {
                     // Because of how Forms are nested, default pressing enter reloads the page.

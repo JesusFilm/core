@@ -886,13 +886,15 @@ export const JourneyAppearanceEdit = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.tikTok
+          platform: MessagePlatform.tikTok,
+          customizable: null
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.snapchat
+          platform: MessagePlatform.snapchat,
+          customizable: null
         }
       ]
     }

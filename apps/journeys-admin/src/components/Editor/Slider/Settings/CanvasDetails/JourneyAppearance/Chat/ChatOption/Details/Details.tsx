@@ -4,11 +4,14 @@ import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -60,6 +63,7 @@ export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
       id
       link
       platform
+      customizable
     }
   }
 `
@@ -69,6 +73,8 @@ interface DetailsProps {
   chatButtonId?: string
   currentPlatform: MessagePlatform
   currentLink: string
+  currentCustomizable: boolean | null
+  active: boolean
   setCurrentPlatform: (value: MessagePlatform) => void
   setCurrentLink: (value: string) => void
   helperInfo?: string
@@ -86,6 +92,8 @@ export function Details({
   chatButtonId,
   currentPlatform,
   currentLink,
+  currentCustomizable,
+  active,
   setCurrentPlatform,
   setCurrentLink,
   helperInfo,
@@ -94,6 +102,8 @@ export function Details({
   const [open, setOpen] = useState(false)
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const { add } = useCommand()
   const [journeyChatButtonUpdate] = useMutation<JourneyChatButtonUpdate>(
     JOURNEY_CHAT_BUTTON_UPDATE
   )
@@ -294,7 +304,8 @@ export function Details({
         chatButtonUpdate: {
           __typename: 'ChatButton',
           id: chatButtonId,
-          ...input
+          ...input,
+          customizable: currentCustomizable ?? null
         }
       }
     })
@@ -311,9 +322,35 @@ export function Details({
     if (!open) setOpen(true)
   }
 
+  const handleCustomizableChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    if (chatButtonId == null) return
+    const newValue = event.target.checked
+    const oldValue = currentCustomizable ?? false
+
+    add({
+      parameters: {
+        execute: { customizable: newValue },
+        undo: { customizable: oldValue }
+      },
+      execute({ customizable: value }) {
+        void journeyChatButtonUpdate({
+          variables: {
+            chatButtonUpdateId: chatButtonId,
+            journeyId,
+            input: {
+              customizable: value
+            }
+          }
+        })
+      }
+    })
+  }
+
   return (
     <Box sx={{ px: 6 }} data-testid="ChatOptionDetails">
-      <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
+      <Stack direction="column" spacing={4} sx={{ pb: 4 }}>
         {enableIconSelect && (
           <FormControl variant="filled" fullWidth hiddenLabel>
             <Select
@@ -347,6 +384,16 @@ export function Details({
         />
         {helperInfo != null && (
           <Typography variant="caption">{helperInfo}</Typography>
+        )}
+        {journey?.template === true && active && (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <Switch
+              checked={currentCustomizable ?? false}
+              onChange={handleCustomizableChange}
+              inputProps={{ 'aria-label': t('Toggle customizable') }}
+            />
+            <Typography variant="body1">{t('Needs Customization')}</Typography>
+          </Stack>
         )}
       </Stack>
     </Box>

@@ -1,9 +1,18 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  JourneyChatButtonUpdate,
+  JourneyChatButtonUpdateVariables
+} from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
 
 import { JOURNEY_CHAT_BUTTON_UPDATE } from './Details'
 
@@ -15,6 +24,8 @@ describe('Details', () => {
     chatButtonId: 'chat.id',
     currentPlatform: MessagePlatform.whatsApp,
     currentLink: 'https://example.com',
+    currentCustomizable: null as boolean | null,
+    active: true,
     setCurrentPlatform: noop,
     setCurrentLink: noop,
     helperInfo: 'helper info',
@@ -43,10 +54,11 @@ describe('Details', () => {
     const result = jest.fn(() => ({
       data: {
         chatButtonUpdate: {
-          __typename: 'ChatButton',
+          __typename: 'ChatButton' as const,
           id: 'chat.id',
           link: 'https://newlink.com',
-          platform: MessagePlatform.telegram
+          platform: MessagePlatform.telegram,
+          customizable: null
         }
       }
     }))
@@ -93,10 +105,11 @@ describe('Details', () => {
     const result = jest.fn(() => ({
       data: {
         chatButtonUpdate: {
-          __typename: 'ChatButton',
+          __typename: 'ChatButton' as const,
           id: 'chat.id',
           link: 'newlink.com',
-          platform: MessagePlatform.telegram
+          platform: MessagePlatform.telegram,
+          customizable: null
         }
       }
     }))
@@ -144,10 +157,11 @@ describe('Details', () => {
     const result = jest.fn(() => ({
       data: {
         chatButtonUpdate: {
-          __typename: 'ChatButton',
+          __typename: 'ChatButton' as const,
           id: 'chat.id',
           link: 'https://example.com',
-          platform: MessagePlatform.snapchat
+          platform: MessagePlatform.snapchat,
+          customizable: null
         }
       }
     }))
@@ -180,5 +194,158 @@ describe('Details', () => {
     fireEvent.click(getByRole('combobox'))
     fireEvent.click(getByText('Snapchat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  describe('customizable toggle', () => {
+    const templateJourney = {
+      ...defaultJourney,
+      template: true
+    } as unknown as Journey
+
+    const nonTemplateJourney = {
+      ...defaultJourney,
+      template: false
+    } as unknown as Journey
+
+    it('renders toggle when journey.template is true and chat option is active', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: templateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details {...defaultProps} currentCustomizable={false} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      ).toBeInTheDocument()
+      expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    })
+
+    it('does not render toggle when journey.template is false', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: nonTemplateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details {...defaultProps} currentCustomizable={false} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByRole('checkbox', { name: 'Toggle customizable' })
+      ).not.toBeInTheDocument()
+      expect(screen.queryByText('Needs Customization')).not.toBeInTheDocument()
+    })
+
+    it('does not render toggle when active is false', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: templateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details
+                  {...defaultProps}
+                  active={false}
+                  currentCustomizable={false}
+                />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByRole('checkbox', { name: 'Toggle customizable' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('calls chatButtonUpdate with correct customizable value when toggled', async () => {
+      const result = jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp,
+            customizable: true
+          }
+        }
+      }))
+
+      const mock: MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_CHAT_BUTTON_UPDATE,
+          variables: {
+            chatButtonUpdateId: 'chat.id',
+            journeyId: 'journeyId',
+            input: {
+              customizable: true
+            }
+          }
+        },
+        result
+      }
+
+      render(
+        <MockedProvider mocks={[mock]}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: templateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details {...defaultProps} currentCustomizable={false} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      const toggle = screen.getByRole('checkbox', {
+        name: 'Toggle customizable'
+      })
+      expect(toggle).not.toBeChecked()
+
+      fireEvent.click(toggle)
+
+      await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('renders checked state when currentCustomizable is true', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: templateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details {...defaultProps} currentCustomizable={true} />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      const toggle = screen.getByRole('checkbox', {
+        name: 'Toggle customizable'
+      })
+      expect(toggle).toBeChecked()
+    })
   })
 })
