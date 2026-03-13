@@ -340,17 +340,6 @@ export function Details({
             chatButtonUpdateId: chatButtonId,
             journeyId,
             input: {
-              link: currentLink,
-              platform: currentPlatform,
-              customizable: value
-            }
-          },
-          optimisticResponse: {
-            chatButtonUpdate: {
-              __typename: 'ChatButton',
-              id: chatButtonId,
-              link: currentLink,
-              platform: currentPlatform,
               customizable: value
             }
           }

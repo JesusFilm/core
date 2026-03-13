@@ -296,8 +296,6 @@ describe('Details', () => {
             chatButtonUpdateId: 'chat.id',
             journeyId: 'journeyId',
             input: {
-              link: 'https://example.com',
-              platform: MessagePlatform.whatsApp,
               customizable: true
             }
           }
