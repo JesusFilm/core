@@ -11,7 +11,7 @@ function getOrigin(req: NextApiRequest): string {
   return `${proto}://${host}`
 }
 
-function isSafeRelativePath(path: string | undefined): path is string {
+export function isSafeRelativePath(path: string | undefined): path is string {
   if (path == null) return false
   if (!path.startsWith('/')) return false
   // very basic check to avoid protocol-relative or absolute URLs

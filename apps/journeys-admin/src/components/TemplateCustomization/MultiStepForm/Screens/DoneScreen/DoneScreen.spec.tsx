@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -12,12 +12,21 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
 import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+import { useJourneyNotifcationUpdateMock } from '../../../../../libs/useJourneyNotificationUpdate/useJourneyNotificationUpdate.mock'
 
-import { DoneScreen } from './DoneScreen'
+import {
+  DoneScreen,
+  GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN
+} from './DoneScreen'
 
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
+}))
+
+jest.mock('../../../../../libs/auth', () => ({
+  __esModule: true,
+  useAuth: () => ({ user: null })
 }))
 
 jest.mock('react-i18next', () => ({
@@ -47,6 +56,30 @@ const getCustomDomainsMock = {
           journeyCollection: null
         }
       ]
+    }
+  }
+}
+
+const googleSheetsSyncsNoActiveMock: MockedResponse = {
+  request: {
+    query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+    variables: { filter: { journeyId: 'journeyId' } }
+  },
+  result: {
+    data: {
+      googleSheetsSyncs: []
+    }
+  }
+}
+
+const googleSheetsSyncsWithActiveMock: MockedResponse = {
+  request: {
+    query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+    variables: { filter: { journeyId: 'journeyId' } }
+  },
+  result: {
+    data: {
+      googleSheetsSyncs: [{ id: 'syncId', deletedAt: null }]
     }
   }
 }
@@ -121,7 +154,9 @@ describe('DoneScreen', () => {
 
   it('renders the completion message', () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -133,7 +168,9 @@ describe('DoneScreen', () => {
 
   it('renders first card of journey as preview', async () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey: journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -145,7 +182,9 @@ describe('DoneScreen', () => {
 
   it('renders all action buttons', () => {
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -164,7 +203,9 @@ describe('DoneScreen', () => {
     }
 
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider
+        mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+      >
         <JourneyProvider value={{ journey: journeyWithSlug, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -185,8 +226,16 @@ describe('DoneScreen', () => {
       id: 'test-journey-id'
     }
 
+    const syncsForTestJourneyMock: MockedResponse = {
+      request: {
+        query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+        variables: { filter: { journeyId: 'test-journey-id' } }
+      },
+      result: { data: { googleSheetsSyncs: [] } }
+    }
+
     render(
-      <MockedProvider mocks={[getCustomDomainsMock]}>
+      <MockedProvider mocks={[getCustomDomainsMock, syncsForTestJourneyMock]}>
         <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
           <DoneScreen />
         </JourneyProvider>
@@ -199,6 +248,64 @@ describe('DoneScreen', () => {
     fireEvent.click(dashboardButton)
 
     expect(push).toHaveBeenCalledWith('/')
+  })
+
+  it('renders notification section heading and label', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
+    expect(screen.getByText('Send to my email')).toBeInTheDocument()
+  })
+
+  it('renders notification switch unchecked by default', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    const checkbox = screen.getByRole('checkbox')
+    expect(checkbox).not.toBeChecked()
+  })
+
+  it('fires notification update mutation when switch is toggled', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[
+            getCustomDomainsMock,
+            googleSheetsSyncsNoActiveMock,
+            { ...useJourneyNotifcationUpdateMock, result }
+          ]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('checkbox'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
   it('opens the share dialog when clicked', async () => {
@@ -214,7 +321,13 @@ describe('DoneScreen', () => {
 
     render(
       <SnackbarProvider>
-        <MockedProvider mocks={[getCustomDomainsMock, journeyForSharingMock]}>
+        <MockedProvider
+          mocks={[
+            getCustomDomainsMock,
+            googleSheetsSyncsNoActiveMock,
+            journeyForSharingMock
+          ]}
+        >
           <JourneyProvider
             value={{ journey: journeyWithTeam, variant: 'admin' }}
           >
@@ -255,6 +368,67 @@ describe('DoneScreen', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Link copied')).toBeInTheDocument()
+    })
+  })
+
+  it('renders Sync to Google Sheets row with Sync button when no active syncs', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Sync to Google Sheets')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('GoogleSheetsSyncButton')).toHaveTextContent(
+        'Sync'
+      )
+    })
+  })
+
+  it('renders Edit button when active syncs exist', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsWithActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('GoogleSheetsSyncButton')).toHaveTextContent(
+        'Edit'
+      )
+    })
+  })
+
+  it('opens GoogleSheetsSyncDialog when Sync button is clicked', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <DoneScreen />
+          </JourneyProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('GoogleSheetsSyncButton'))
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument()
     })
   })
 })

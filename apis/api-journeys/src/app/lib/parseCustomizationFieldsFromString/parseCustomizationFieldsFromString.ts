@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { JourneyCustomizationField } from '.prisma/api-journeys-client'
+import { JourneyCustomizationField } from '@core/prisma/journeys/client'
 
 /**
  * Transforms a string containing customization field syntax into an array of CustomizationFieldData objects

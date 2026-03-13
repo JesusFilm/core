@@ -8,7 +8,11 @@ import i18nConfig from '../../next-i18next.config'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { SignIn } from '../../src/components/SignIn'
 import { useAuth } from '../../src/libs/auth'
-import { getAuthTokens, redirectToApp } from '../../src/libs/auth/getAuthTokens'
+import {
+  getAuthTokens,
+  redirectToApp,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 
 export default function SignInPage(): ReactElement {
   const { user } = useAuth()
@@ -29,7 +33,10 @@ export default function SignInPage(): ReactElement {
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
-  if (tokens != null) return redirectToApp(ctx)
+  if (tokens != null) {
+    const user = await toUser(tokens)
+    if (!user.isAnonymous) return redirectToApp(ctx)
+  }
 
   return {
     props: {

@@ -10,7 +10,8 @@ import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import type PrismaTypes from '@core/prisma/users/__generated__/pothos-types'
-import { Prisma, prisma } from '@core/prisma/users/client'
+import { getDatamodel } from '@core/prisma/users/__generated__/pothos-types'
+import { prisma } from '@core/prisma/users/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
@@ -104,7 +105,7 @@ export const builder = new SchemaBuilder<{
   },
   prisma: {
     client: prisma,
-    dmmf: Prisma.dmmf,
+    dmmf: getDatamodel(),
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })
