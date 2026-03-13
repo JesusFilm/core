@@ -8,7 +8,11 @@ import i18nConfig from '../../next-i18next.config'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { SignIn } from '../../src/components/SignIn'
 import { useAuth } from '../../src/libs/auth'
-import { getAuthTokens, redirectToApp } from '../../src/libs/auth/getAuthTokens'
+import {
+  getAuthTokens,
+  redirectToApp,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 
 export default function SignInPage(): ReactElement {
   const { user } = useAuth()
@@ -29,7 +33,33 @@ export default function SignInPage(): ReactElement {
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
-  if (tokens != null) return redirectToApp(ctx)
+  if (tokens != null) {
+    const user = await toUser(tokens)
+
+    const firebaseAnon = user.isAnonymous
+    const localAnon =
+      tokens.decodedToken.firebase.sign_in_provider === 'custom' &&
+      tokens.decodedToken.source_sign_in_provider === 'password' &&
+      tokens.decodedToken.email_verified === false
+
+    if (firebaseAnon || localAnon) {
+      const redirectParam =
+        typeof ctx.query.redirect === 'string' ? ctx.query.redirect : null
+      const verifyDestination =
+        redirectParam != null
+          ? `/users/verify?redirect=${encodeURIComponent(redirectParam)}`
+          : '/users/verify'
+
+      return {
+        redirect: {
+          permanent: false,
+          destination: verifyDestination
+        }
+      }
+    } else {
+      return redirectToApp(ctx)
+    }
+  }
 
   return {
     props: {
