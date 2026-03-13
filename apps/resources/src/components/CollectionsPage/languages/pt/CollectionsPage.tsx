@@ -76,8 +76,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Páscoa"
-          descriptionBeforeYear="Páscoa"
-          descriptionAfterYear="vídeos e recursos sobre a Quaresma, Semana Santa e Ressurreição"
+          descriptionBeforeYear="Assista grátis à história da ressurreição"
+          descriptionAfterYear="em mais de 2.000 idiomas"
           feedbackButtonLabel="Dar Feedback"
         />
       }
@@ -87,7 +87,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="A verdadeira história da Páscoa"
+          title="Qual é o verdadeiro significado da Páscoa?"
           subtitle="Questionando? Buscando? Descubra o verdadeiro poder da Páscoa."
           firstParagraph={{
             beforeHighlight: 'Além dos ovos e coelhos está a história da ',
@@ -112,7 +112,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Perguntas relacionadas"
+          questionsTitle="Perguntas frequentes sobre a Páscoa"
           askButtonText="Faça a sua"
           bibleQuotesTitle="Citações bíblicas"
           quizButtonText="Qual é seu próximo passo de fé?"
