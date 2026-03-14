@@ -7,7 +7,6 @@ import { JourneyCustomizableService } from '../journey/journeyCustomizable.servi
 
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
-import { ButtonBlockResolver } from './button/button.resolver'
 import { CardBlockResolver } from './card/card.resolver'
 import { IconBlockResolver } from './icon/icon.resolver'
 import { ImageBlockResolver } from './image/image.resolver'
@@ -26,7 +25,6 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
   providers: [
     BlockService,
     BlockResolver,
-    ButtonBlockResolver,
     CardBlockResolver,
     IconBlockResolver,
     ImageBlockResolver,

@@ -318,31 +318,6 @@ export class ButtonBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class ButtonBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    eventLabel?: Nullable<BlockEventLabel>;
-    label?: Nullable<string>;
-    variant?: Nullable<ButtonVariant>;
-    color?: Nullable<ButtonColor>;
-    size?: Nullable<ButtonSize>;
-    startIconId?: Nullable<string>;
-    endIconId?: Nullable<string>;
-    submitEnabled?: Nullable<boolean>;
-    settings?: Nullable<ButtonBlockSettingsInput>;
-}
-
-export class CardBlockCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    parentBlockId: string;
-    eventLabel?: Nullable<BlockEventLabel>;
-    backgroundColor?: Nullable<string>;
-    backdropBlur?: Nullable<number>;
-    fullscreen?: Nullable<boolean>;
-    themeMode?: Nullable<ThemeMode>;
-    themeName?: Nullable<ThemeName>;
-}
-
 export class CardBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     eventLabel?: Nullable<BlockEventLabel>;
@@ -1040,10 +1015,6 @@ export abstract class IMutation {
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract buttonBlockUpdate(id: string, input: ButtonBlockUpdateInput, journeyId?: Nullable<string>): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
-
-    abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
     abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
 

@@ -168,15 +168,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
-  buttonBlockUpdate(
-    id: ID!
-    input: ButtonBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS) 
+  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
@@ -184,7 +176,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): CardBlock! @join__field(graph: API_JOURNEYS) 
+  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS) 
   iconBlockUpdate(
     id: ID!
@@ -360,6 +352,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
   buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectBlockCreate(input: MultiselectBlockCreateInput!) : MultiselectBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockUpdate(
     id: ID!
@@ -3905,19 +3905,6 @@ input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(gra
   color: String
 }
 
-input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  startIconId: ID
-  endIconId: ID
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
-}
-
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   journeyId: ID!
@@ -4705,6 +4692,19 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  submitEnabled: Boolean
+  settings: ButtonBlockSettingsInput
+}
+
+input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  label: String
+  variant: ButtonVariant
+  color: ButtonColor
+  size: ButtonSize
+  startIconId: ID
+  endIconId: ID
   submitEnabled: Boolean
   settings: ButtonBlockSettingsInput
 }

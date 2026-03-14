@@ -2,19 +2,14 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import omit from 'lodash/omit'
 
 import { Block } from '@core/prisma/journeys/client'
 
-import {
-  CardBlockCreateInput,
-  CardBlockUpdateInput
-} from '../../../__generated__/graphql'
+import { CardBlockUpdateInput } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { CaslAbility } from '../../../lib/CaslAuthModule'
 import { PrismaService } from '../../../lib/prisma.service'
-import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
 @Resolver('CardBlock')
@@ -23,39 +18,6 @@ export class CardBlockResolver {
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService
   ) {}
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async cardBlockCreate(
-    @CaslAbility() ability: AppAbility,
-    @Args('input') input: CardBlockCreateInput
-  ): Promise<Block> {
-    const parentOrder = (
-      await this.blockService.getSiblings(input.journeyId, input.parentBlockId)
-    ).length
-    return await this.prismaService.$transaction(async (tx) => {
-      const block = await tx.block.create({
-        data: {
-          ...omit(input, 'parentBlockId', 'journeyId'),
-          id: input.id ?? undefined,
-          typename: 'CardBlock',
-          parentBlock: { connect: { id: input.parentBlockId } },
-          journey: { connect: { id: input.journeyId } },
-          parentOrder
-        },
-        include: {
-          action: true,
-          ...INCLUDE_JOURNEY_ACL
-        }
-      })
-      await this.blockService.setJourneyUpdatedAt(tx, block)
-      if (!ability.can(Action.Update, subject('Journey', block.journey)))
-        throw new GraphQLError('user is not allowed to create block', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-      return block
-    })
-  }
 
   @Mutation()
   @UseGuards(AppCaslGuard)
