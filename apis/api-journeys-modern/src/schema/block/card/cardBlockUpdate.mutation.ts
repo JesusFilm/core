@@ -7,7 +7,7 @@ import { CardBlockUpdateInput } from './inputs'
 builder.mutationField('cardBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: CardBlock,
-    nullable: true,
+    nullable: false,
     override: {
       from: 'api-journeys'
     },
