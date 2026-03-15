@@ -111,14 +111,12 @@ jest.mock('child_process', () => ({
 }))
 
 // Mock prisma client
-jest.mock('.prisma/api-media-client', () => {
+jest.mock('../../../../libs/prisma/media/src/client', () => {
   const upsert = jest.fn().mockResolvedValue({ id: 1 })
   return {
-    PrismaClient: jest.fn().mockImplementation(() => ({
-      importTimes: {
-        upsert
-      }
-    }))
+    prisma: {
+      importTimes: { upsert }
+    }
   }
 })
 

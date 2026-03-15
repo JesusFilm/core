@@ -318,19 +318,6 @@ export class ButtonBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class ButtonBlockCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    parentBlockId: string;
-    eventLabel?: Nullable<BlockEventLabel>;
-    label: string;
-    variant?: Nullable<ButtonVariant>;
-    color?: Nullable<ButtonColor>;
-    size?: Nullable<ButtonSize>;
-    submitEnabled?: Nullable<boolean>;
-    settings?: Nullable<ButtonBlockSettingsInput>;
-}
-
 export class ButtonBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     eventLabel?: Nullable<BlockEventLabel>;
@@ -1054,8 +1041,6 @@ export abstract class IMutation {
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
 
     abstract buttonBlockUpdate(id: string, input: ButtonBlockUpdateInput, journeyId?: Nullable<string>): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 
