@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import { MessagePlatform } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
@@ -24,7 +25,10 @@ describe('ChatButtonResolver', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ChatButtonResolver, PrismaService]
+      providers: [
+        ChatButtonResolver,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+      ]
     }).compile()
     resolver = module.get<ChatButtonResolver>(ChatButtonResolver)
     prismaService = module.get<PrismaService>(PrismaService)

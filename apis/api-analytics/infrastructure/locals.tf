@@ -2,7 +2,6 @@ locals {
   port = 4008
   environment_variables = [
     "PG_DATABASE_URL_ANALYTICS",
-    "PRISMA_LOCATION_ANALYTICS",
     "PLAUSIBLE_SECRET_KEY_BASE",
     "GATEWAY_HMAC_SECRET"
   ]

@@ -10,9 +10,7 @@ import {
 import { Upload } from '@aws-sdk/lib-storage'
 import fetch from 'node-fetch'
 
-import { PrismaClient } from '.prisma/api-media-client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../../../libs/prisma/media/src/client'
 
 function getR2Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
