@@ -189,6 +189,7 @@ export enum MessagePlatform {
   checkBroken = "checkBroken",
   checkContained = "checkContained",
   custom = "custom",
+  discord = "discord",
   facebook = "facebook",
   globe2 = "globe2",
   globe3 = "globe3",
@@ -213,12 +214,14 @@ export enum MessagePlatform {
   send2 = "send2",
   settings = "settings",
   shieldCheck = "shieldCheck",
+  signal = "signal",
   skype = "skype",
   snapchat = "snapchat",
   telegram = "telegram",
   tikTok = "tikTok",
   viber = "viber",
   vk = "vk",
+  weChat = "weChat",
   whatsApp = "whatsApp",
 }
 
