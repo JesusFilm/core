@@ -1006,6 +1006,7 @@ export interface VideoBlockCreateInput {
   subtitleLanguageId?: string | null;
   showGeneratedSubtitles?: boolean | null;
   customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -1029,6 +1030,7 @@ export interface VideoBlockUpdateInput {
   source?: VideoBlockSource | null;
   showGeneratedSubtitles?: boolean | null;
   customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoCollapseEventCreateInput {
