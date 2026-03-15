@@ -10,10 +10,12 @@ export interface User extends FirebaseUserInfo {
 
 export interface AuthContextValue {
   user: User | null
+  decodedToken?: Record<string, unknown> | null
 }
 
 export const AuthContext = createContext<AuthContextValue>({
-  user: null
+  user: null,
+  decodedToken: null
 })
 
 export const useAuth = (): AuthContextValue => useContext(AuthContext)

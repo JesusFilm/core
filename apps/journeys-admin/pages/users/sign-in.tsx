@@ -35,6 +35,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
   if (tokens != null) {
     const user = await toUser(tokens)
+    console.log('TOKENS', tokens)
 
     const firebaseAnon = user.isAnonymous
     const localAnon =

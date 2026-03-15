@@ -3,6 +3,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { useAuth } from '../../libs/auth'
 
+import { DevAuthPanel } from './DevAuthPanel/DevAuthPanel'
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
 import { PasswordPage } from './PasswordPage'
@@ -70,5 +71,10 @@ export function SignIn(): ReactElement {
       page = <></>
       break
   }
-  return <>{page}</>
+  return (
+    <>
+      {page}
+      <DevAuthPanel />
+    </>
+  )
 }
