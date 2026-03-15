@@ -47,7 +47,7 @@ describe('VideoTriggerBlockResolver', () => {
       providers: [
         BlockService,
         VideoTriggerResolver,
-        PrismaService,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() },
         {
           provide: JourneyCustomizableService,
           useValue: mockDeep<JourneyCustomizableService>()

@@ -1,16 +1,12 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/users/client'
+import { Prisma, prisma } from '@core/prisma/users/client'
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
-import {
-  CreateVerificationRequestInput,
-  MeInput,
-  UpdateMeInput
-} from './inputs'
+import { CreateVerificationRequestInput, MeInput } from './inputs'
 import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
@@ -106,6 +102,33 @@ builder.queryFields((t) => ({
       // Return appropriate type based on whether user has email
       if (user.email != null) {
         return user
+      } else if (
+        // if the user has been converted from anonymous to authenticated, return the user with the new email and first name
+        ctx.currentUser.email != null &&
+        ctx.currentUser.firstName != null
+      ) {
+        try {
+          return await prisma.user.update({
+            where: { userId: ctx.currentUser.id },
+            data: {
+              firstName: ctx.currentUser.firstName.trim(),
+              email: ctx.currentUser.email.trim().toLowerCase(),
+              ...(ctx.currentUser.lastName != null && {
+                lastName: ctx.currentUser.lastName.trim() || null
+              })
+            }
+          })
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === 'P2002'
+          ) {
+            throw new GraphQLError('Email already in use', {
+              extensions: { code: 'BAD_USER_INPUT' }
+            })
+          }
+          throw error
+        }
       }
       // Anonymous user - only return id
       return { id: user.id }
@@ -180,35 +203,6 @@ builder.mutationFields((t) => ({
         input?.app ?? 'NextSteps'
       )
       return true
-    }
-  }),
-  updateMe: t.withAuth({ isAnonymous: true }).field({
-    description:
-      "Updates the current user's firstName, lastName, and email. Only callable by anonymous users.",
-    type: AuthenticatedUser,
-    args: {
-      input: t.arg({ type: UpdateMeInput, required: true })
-    },
-    nullable: true,
-    resolve: async (_parent, { input }, ctx) => {
-      const existingUser = await prisma.user.findUnique({
-        where: { userId: ctx.currentUser.id }
-      })
-      if (existingUser == null)
-        throw new GraphQLError('User not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-
-      return await prisma.user.update({
-        where: { userId: ctx.currentUser.id },
-        data: {
-          firstName: input.firstName.trim(),
-          email: input.email.trim().toLowerCase(),
-          ...(input.lastName != null && {
-            lastName: input.lastName.trim() || null
-          })
-        }
-      })
     }
   }),
   validateEmail: t.field({

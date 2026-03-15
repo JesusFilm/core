@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
@@ -17,7 +17,7 @@ import { VisitorService } from './visitor.service'
     VisitorResolver,
     BlockService,
     JourneyCustomizableService,
-    PrismaService
+    prismaServiceProvider
   ],
   exports: [VisitorService]
 })

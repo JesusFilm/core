@@ -1332,6 +1332,14 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @override(from: "api-journeys")
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock @override(from: "api-journeys")
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!

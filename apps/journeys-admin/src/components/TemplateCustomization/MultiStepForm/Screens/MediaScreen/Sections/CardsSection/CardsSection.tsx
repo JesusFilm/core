@@ -57,7 +57,7 @@ export function CardsSection({
       >
         <TemplateCardPreview
           steps={customizableSteps}
-          variant="media"
+          variant="compact"
           onClick={handleStepClick}
           selectedStep={selectedStep}
         />

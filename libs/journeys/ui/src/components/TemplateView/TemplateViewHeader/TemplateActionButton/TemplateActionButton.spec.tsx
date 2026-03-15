@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { JourneyFields_journeyCustomizationFields as JourneyCustomizationField } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { JourneyForTemplate } from '../../CreateJourneyButton'
@@ -11,22 +10,19 @@ import { journey } from '../../TemplateFooter/data'
 
 import { TemplateActionButton } from './TemplateActionButton'
 
-jest.mock('../../../../libs/isJourneyCustomizable', () => ({
-  isJourneyCustomizable: jest.fn()
-}))
-
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
-  typeof isJourneyCustomizable
->
+
+const customizableJourney = { ...journey, customizable: true }
+const nonCustomizableJourney = { ...journey, customizable: false }
 
 const customizableTemplateJourney: JourneyForTemplate = {
   ...journey,
+  customizable: true,
   journeyCustomizationDescription: 'Customize this journey',
   journeyCustomizationFields: [
     {
@@ -51,21 +47,13 @@ describe('TemplateActionButton', () => {
     } as unknown as NextRouter)
   })
 
-  describe.each([
-    ['when journey is accessed from the context', undefined],
-    ['when journey is accessed via prop drill', journey]
-  ])('%s', (_, templateJourney) => {
+  describe('when journey is accessed from the context', () => {
     it('should render UseThisTemplateButton when journey is customizable and user is signed in', () => {
-      mockIsJourneyCustomizable.mockReturnValue(true)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                signedIn={signedIn}
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: customizableJourney }}>
+              <TemplateActionButton signedIn={signedIn} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -81,16 +69,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should render UseThisTemplateButton when journey is customizable and user is signed out', () => {
-      mockIsJourneyCustomizable.mockReturnValue(true)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                signedIn={signedOut}
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: customizableJourney }}>
+              <TemplateActionButton signedIn={signedOut} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -106,16 +89,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should render CreateJourneyButton when journey is not customizable and user is signed in', () => {
-      mockIsJourneyCustomizable.mockReturnValue(false)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                signedIn={signedIn}
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: nonCustomizableJourney }}>
+              <TemplateActionButton signedIn={signedIn} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -131,16 +109,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should render CreateJourneyButton when journey is not customizable and user is signed out', () => {
-      mockIsJourneyCustomizable.mockReturnValue(false)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                signedIn={signedOut}
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: nonCustomizableJourney }}>
+              <TemplateActionButton signedIn={signedOut} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -178,16 +151,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should render UseThisTemplateMenuItem when variant is menu-item', () => {
-      mockIsJourneyCustomizable.mockReturnValue(true)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                variant="menu-item"
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: customizableJourney }}>
+              <TemplateActionButton variant="menu-item" />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -200,17 +168,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should push to customization flow when menu-item is clicked and journey is customizable', async () => {
-      mockIsJourneyCustomizable.mockReturnValue(true)
-      const journeyId = templateJourney?.id ?? journey?.id ?? ''
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                variant="menu-item"
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: customizableJourney }}>
+              <TemplateActionButton variant="menu-item" />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -220,7 +182,7 @@ describe('TemplateActionButton', () => {
 
       await waitFor(() => {
         expect(mockUseRouter().push).toHaveBeenCalledWith(
-          `/templates/${journeyId}/customize`,
+          `/templates/${journey.id}/customize`,
           undefined,
           { shallow: true }
         )
@@ -228,17 +190,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should open account check dialog when button is clicked and user is not signed in', async () => {
-      mockIsJourneyCustomizable.mockReturnValue(true)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                variant="button"
-                signedIn={false}
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: customizableJourney }}>
+              <TemplateActionButton variant="button" signedIn={false} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -254,16 +210,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should open copy to team dialog when menu-item is clicked and journey is not customizable', async () => {
-      mockIsJourneyCustomizable.mockReturnValue(false)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                variant="menu-item"
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: nonCustomizableJourney }}>
+              <TemplateActionButton variant="menu-item" />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -279,17 +230,11 @@ describe('TemplateActionButton', () => {
     })
 
     it('should open copy to team dialog when button is clicked, journey is not customizable, and user is signed in', async () => {
-      mockIsJourneyCustomizable.mockReturnValue(false)
-
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <JourneyProvider value={{ journey }}>
-              <TemplateActionButton
-                variant="button"
-                signedIn={true}
-                journey={templateJourney}
-              />
+            <JourneyProvider value={{ journey: nonCustomizableJourney }}>
+              <TemplateActionButton variant="button" signedIn={true} />
             </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -303,19 +248,53 @@ describe('TemplateActionButton', () => {
     })
   })
 
-  describe.each([
-    [
-      'when customizable template journey is accessed from the context',
-      undefined
-    ],
-    [
-      'when customizable template journey is accessed via prop drill',
-      customizableTemplateJourney
-    ]
-  ])('%s', (_, customizableTemplateJourney) => {
-    it('should push to customization flow when button is clicked, journey is customizable, and user is signed in', async () => {
-      mockIsJourneyCustomizable.mockReturnValue(true)
+  describe('when journey is accessed via prop drill', () => {
+    it('should render UseThisTemplateButton when journey prop is customizable', () => {
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey }}>
+              <TemplateActionButton
+                signedIn={signedIn}
+                journey={customizableTemplateJourney}
+              />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
 
+      expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CreateJourneyButton')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render CreateJourneyButton when journey prop is not customizable', () => {
+      const nonCustomizableTemplateProp: JourneyForTemplate = {
+        ...journey,
+        customizable: false
+      }
+
+      render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={{ journey }}>
+              <TemplateActionButton
+                signedIn={signedIn}
+                journey={nonCustomizableTemplateProp}
+              />
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('UseThisTemplateButton')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should push to customization flow when button is clicked, journey prop is customizable, and user is signed in', async () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
@@ -334,7 +313,7 @@ describe('TemplateActionButton', () => {
 
       await waitFor(() => {
         expect(mockUseRouter().push).toHaveBeenCalledWith(
-          `/templates/${customizableTemplateJourney?.id ?? journey?.id ?? ''}/customize`,
+          `/templates/${customizableTemplateJourney.id}/customize`,
           undefined,
           { shallow: true }
         )

@@ -111,7 +111,8 @@ const journeyWithMatchingVideoBlock: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const journeyWithNoMatchingVideoBlock: Journey = {
