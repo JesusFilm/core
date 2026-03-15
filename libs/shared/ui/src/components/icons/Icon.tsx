@@ -67,6 +67,7 @@ import CursorPointer from './CursorPointer'
 import Dash from './Dash'
 import Data1 from './Data1'
 import Diamond from './Diamond'
+import Discord from './Discord'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
 import DownArrowSm from './DownArrowSm'
@@ -182,6 +183,7 @@ import Send2 from './Send2'
 import Settings from './Settings'
 import Share from './Share'
 import ShieldCheck from './ShieldCheck'
+import Signal from './Signal'
 import Skype from './Skype'
 import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
@@ -224,6 +226,7 @@ import Vk from './Vk'
 import Volume5 from './Volume5'
 import VolumeOff from './VolumeOff'
 import Web from './Web'
+import WeChat from './WeChat'
 import WhatsApp from './WhatsApp'
 import X1 from './X1'
 import X2 from './X2'
@@ -299,6 +302,7 @@ export type IconName =
   | 'Dash'
   | 'Data1'
   | 'Diamond'
+  | 'Discord'
   | 'DotVertical'
   | 'DownArrowSm'
   | 'DownArrow'
@@ -414,6 +418,7 @@ export type IconName =
   | 'Settings'
   | 'Share'
   | 'ShieldCheck'
+  | 'Signal'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -456,6 +461,7 @@ export type IconName =
   | 'VolumeOff'
   | 'Volume5'
   | 'Web'
+  | 'WeChat'
   | 'WhatsApp'
   | 'X1'
   | 'X2'
@@ -535,6 +541,7 @@ const iconComponents: IconComponents = {
   Dash,
   Data1,
   Diamond,
+  Discord,
   DotVertical,
   DownArrowSm,
   DownArrow,
@@ -650,6 +657,7 @@ const iconComponents: IconComponents = {
   Settings,
   Share,
   ShieldCheck,
+  Signal,
   Skype,
   SmileyNeutral,
   Snapchat,
@@ -692,6 +700,7 @@ const iconComponents: IconComponents = {
   VolumeOff,
   Volume5,
   Web,
+  WeChat,
   WhatsApp,
   X1,
   X2,
