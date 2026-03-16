@@ -4,8 +4,6 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
-import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
-import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
@@ -15,6 +13,8 @@ import {
   JourneyChatButtonUpdate,
   JourneyChatButtonUpdateVariables
 } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
+import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { JOURNEY_CHAT_BUTTON_UPDATE } from './Details'
 

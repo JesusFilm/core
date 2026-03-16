@@ -276,9 +276,7 @@ describe('LinksScreen', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}
-      >
+      <MockedProvider mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}>
         <JourneyProvider
           value={{ journey: journeyWithLinks, variant: 'admin' }}
         >
