@@ -11,6 +11,10 @@ const nextConfig = {
   i18n,
   images: {
     remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**'
+      },
       { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'unsplash.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
@@ -107,7 +111,15 @@ const nextConfig = {
     ]
   },
   experimental: {
+    instrumentationHook: true,
     reactCompiler: true
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.md$/,
+      use: 'raw-loader'
+    })
+    return config
   }
 }
 const plugins = [withNx]
