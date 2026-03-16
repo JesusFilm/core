@@ -519,6 +519,7 @@ export class ChatButtonCreateInput {
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
+    customizable?: Nullable<boolean>;
 }
 
 export class CustomDomainCreateInput {
@@ -1458,6 +1459,7 @@ export class ChatButton {
     id: string;
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
+    customizable?: Nullable<boolean>;
 }
 
 export class CustomDomain {
