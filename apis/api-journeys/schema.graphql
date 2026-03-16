@@ -339,7 +339,6 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
@@ -571,19 +570,6 @@ type ButtonBlock implements Block
   action: Action
   submitEnabled: Boolean @shareable
   settings: ButtonBlockSettings! @shareable
-}
-
-input ButtonBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
 }
 
 input ButtonBlockUpdateInput {

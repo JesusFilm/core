@@ -11,6 +11,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { DatadogTraceModule } from 'nestjs-ddtrace'
 import { LoggerModule } from 'nestjs-pino'
 
+import { PrismaModule } from './lib/prisma.module'
 import { ActionModule } from './modules/action/action.module'
 import { BlockModule } from './modules/block/block.module'
 import { CustomDomainModule } from './modules/customDomain/customDomain.module'
@@ -39,6 +40,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
 
 @Module({
   imports: [
+    PrismaModule,
     ActionModule,
     BlockModule,
     CustomDomainModule,

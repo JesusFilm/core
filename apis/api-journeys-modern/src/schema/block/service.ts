@@ -9,6 +9,7 @@ import {
   ability,
   subject as abilitySubject
 } from '../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../lib/auth/fetchBlockWithJourneyAcl'
 import { fetchJourneyWithAclIncludes } from '../../lib/auth/fetchJourneyWithAclIncludes'
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 
@@ -25,6 +26,18 @@ export async function authorizeBlockCreate(
       extensions: { code: 'FORBIDDEN' }
     })
   }
+}
+
+export async function authorizeBlockUpdate(blockId: string, user: User) {
+  const block = await fetchBlockWithJourneyAcl(blockId)
+  if (
+    !ability(AuthAction.Update, abilitySubject('Journey', block.journey), user)
+  ) {
+    throw new GraphQLError('user is not allowed to update block', {
+      extensions: { code: 'FORBIDDEN' }
+    })
+  }
+  return block
 }
 
 export async function validateParentBlock(
