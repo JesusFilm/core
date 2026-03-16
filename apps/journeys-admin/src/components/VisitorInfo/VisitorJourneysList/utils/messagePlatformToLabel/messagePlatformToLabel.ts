@@ -15,8 +15,6 @@ export function messagePlatformToLabel(
       return t('KakaoTalk')
     case MessagePlatform.line:
       return t('LINE')
-    case MessagePlatform.skype:
-      return t('Skype')
     case MessagePlatform.snapchat:
       return t('Snapchat')
     case MessagePlatform.telegram:
@@ -25,16 +23,31 @@ export function messagePlatformToLabel(
       return t('TikTok')
     case MessagePlatform.viber:
       return t('Viber')
-    case MessagePlatform.vk:
-      return t('VK')
     case MessagePlatform.whatsApp:
       return t('WhatsApp')
+    case MessagePlatform.discord:
+      return t('Discord')
+    case MessagePlatform.signal:
+      return t('Signal')
+    case MessagePlatform.weChat:
+      return t('WeChat')
     case MessagePlatform.custom:
       return t('Custom')
-    case MessagePlatform.globe2:
-      return t('Globe 1')
     case MessagePlatform.globe3:
       return t('Globe 2')
+    case MessagePlatform.helpCircleContained:
+      return t('Help Circle')
+    case MessagePlatform.mail1:
+      return t('Mail')
+    // ===== REMOVED FROM CHAT WIDGET DROPDOWNS =====
+    // These platforms are no longer selectable on chat widget dropdowns,
+    // but labels are kept for visitor info display and legacy dropdown rendering
+    case MessagePlatform.globe2:
+      return t('Globe 1')
+    case MessagePlatform.vk:
+      return t('VK')
+    case MessagePlatform.skype:
+      return t('Skype')
     case MessagePlatform.messageText1:
       return t('Message Text Circle')
     case MessagePlatform.messageText2:
@@ -53,16 +66,12 @@ export function messagePlatformToLabel(
       return t('Message Notify Square')
     case MessagePlatform.messageSquare:
       return t('Message Square')
-    case MessagePlatform.mail1:
-      return t('Mail')
     case MessagePlatform.linkExternal:
       return t('Link External')
     case MessagePlatform.home3:
       return t('Home 1')
     case MessagePlatform.home4:
       return t('Home 2')
-    case MessagePlatform.helpCircleContained:
-      return t('Help Circle')
     case MessagePlatform.helpSquareContained:
       return t('Help Square')
     case MessagePlatform.shieldCheck:
@@ -75,11 +84,5 @@ export function messagePlatformToLabel(
       return t('Check Contained')
     case MessagePlatform.settings:
       return t('Settings')
-    case MessagePlatform.discord:
-      return t('Discord')
-    case MessagePlatform.signal:
-      return t('Signal')
-    case MessagePlatform.weChat:
-      return t('WeChat')
   }
 }

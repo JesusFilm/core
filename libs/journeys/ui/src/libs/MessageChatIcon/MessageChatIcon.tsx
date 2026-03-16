@@ -64,7 +64,8 @@ export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
     globe3: Globe3,
     helpCircleContained: HelpCircleContained,
     mail1: Mail1,
-    // Deprecated platforms — kept for backward compatibility
+    // ===== DEPRECATED BUT KEPT FOR BACKWARD COMPATIBILITY =====
+    // Keep these so existing journeys don't break
     globe2: Globe2,
     vk: Vk,
     skype: Skype,

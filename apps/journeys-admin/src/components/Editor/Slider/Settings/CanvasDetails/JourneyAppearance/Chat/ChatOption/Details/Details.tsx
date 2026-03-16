@@ -18,6 +18,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { messagePlatformToLabel } from '../../../../../../../../VisitorInfo/VisitorJourneysList/utils/messagePlatformToLabel'
 import { getMessagePlatformOptions } from '../../utils/getMessagePlatformOptions'
 
 export const JOURNEY_CHAT_BUTTON_UPDATE = gql`
@@ -182,7 +183,8 @@ export function Details({
                   <Typography>
                     {messagePlatformOptions.find(
                       (opt) => opt.value === selected
-                    )?.label ?? selected}
+                    )?.label ??
+                      messagePlatformToLabel(selected as MessagePlatform, t)}
                   </Typography>
                 </Stack>
               )}
