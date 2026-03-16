@@ -103,17 +103,14 @@ if $DRY_RUN; then
   git checkout -b "$TEMP_BRANCH" origin/main --quiet
 else
   echo ""
-  read -r -p "This will DELETE and recreate the stage branch. Continue? [y/N] " confirm
+  read -r -p "This will reset the stage branch to main and re-merge PRs. Continue? [y/N] " confirm
   if [[ ! "$confirm" =~ ^[yY]$ ]]; then
     echo "Aborted."
     exit 0
   fi
   echo ""
 
-  log "Deleting remote stage branch..."
-  git push -d origin stage 2>/dev/null || warn "Remote stage branch did not exist"
-
-  log "Recreating local stage branch from origin/main..."
+  log "Resetting local stage branch to origin/main..."
   git checkout -B stage origin/main --quiet
 fi
 
@@ -164,7 +161,7 @@ done <<< "$PR_JSON"
 
 if ! $DRY_RUN; then
   log "Pushing stage branch to origin..."
-  git push origin stage --quiet
+  git push --force-with-lease origin stage --quiet
   ok "Stage branch pushed"
 fi
 
