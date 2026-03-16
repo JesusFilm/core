@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 
 import CheckBroken from '@core/shared/ui/icons/CheckBroken'
 import CheckContained from '@core/shared/ui/icons/CheckContained'
+import Discord from '@core/shared/ui/icons/Discord'
 import Facebook from '@core/shared/ui/icons/Facebook'
 import Globe2 from '@core/shared/ui/icons/Globe2'
 import Globe3 from '@core/shared/ui/icons/Globe3'
@@ -28,12 +29,14 @@ import Send1 from '@core/shared/ui/icons/Send1'
 import Send2 from '@core/shared/ui/icons/Send2'
 import Settings from '@core/shared/ui/icons/Settings'
 import ShieldCheck from '@core/shared/ui/icons/ShieldCheck'
+import Signal from '@core/shared/ui/icons/Signal'
 import Skype from '@core/shared/ui/icons/Skype'
 import Snapchat from '@core/shared/ui/icons/Snapchat'
 import Telegram from '@core/shared/ui/icons/Telegram'
 import Tiktok from '@core/shared/ui/icons/Tiktok'
 import Viber from '@core/shared/ui/icons/Viber'
 import Vk from '@core/shared/ui/icons/Vk'
+import WeChat from '@core/shared/ui/icons/WeChat'
 import WhatsApp from '@core/shared/ui/icons/WhatsApp'
 
 import { MessagePlatform } from '../../../__generated__/globalTypes'
@@ -51,14 +54,20 @@ export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
     instagram: Instagram,
     kakaoTalk: KakaoTalk,
     viber: Viber,
-    vk: Vk,
     snapchat: Snapchat,
-    skype: Skype,
     line: Line,
     tikTok: Tiktok,
+    discord: Discord,
+    signal: Signal,
+    weChat: WeChat,
     custom: MessageTyping,
-    globe2: Globe2,
     globe3: Globe3,
+    helpCircleContained: HelpCircleContained,
+    mail1: Mail1,
+    // Deprecated platforms — kept for backward compatibility
+    globe2: Globe2,
+    vk: Vk,
+    skype: Skype,
     messageText1: MessageText1,
     messageText2: MessageText2,
     send1: Send1,
@@ -68,11 +77,9 @@ export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
     messageNotifyCircle: MessageNotifyCircle,
     messageNotifySquare: MessageNotifySquare,
     messageSquare: MessageSquare,
-    mail1: Mail1,
     linkExternal: LinkExternal,
     home3: Home3,
     home4: Home4,
-    helpCircleContained: HelpCircleContained,
     helpSquareContained: HelpSquareContained,
     shieldCheck: ShieldCheck,
     menu1: Menu1,

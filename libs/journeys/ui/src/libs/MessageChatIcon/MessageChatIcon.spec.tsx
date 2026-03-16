@@ -174,4 +174,20 @@ describe('MessageChatIcon', () => {
     render(<MessageChatIcon platform={MessagePlatform.settings} />)
     expect(screen.getByTestId('SettingsIcon')).toBeInTheDocument()
   })
+
+  it('should return discord icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.discord} />)
+    expect(screen.getByTestId('DiscordIcon')).toBeInTheDocument()
+  })
+
+  it('should return signal icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.signal} />)
+    expect(screen.getByTestId('SignalIcon')).toBeInTheDocument()
+  })
+
+  it('should return weChat icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.weChat} />)
+    expect(screen.getByTestId('WeChatIcon')).toBeInTheDocument()
+  })
+
 })
