@@ -58,8 +58,6 @@ export function DevAuthPanel(): ReactElement {
     await logout()
   }, [])
 
-  if (process.env.NODE_ENV === 'production') return <></>
-
   return (
     <Box
       sx={{

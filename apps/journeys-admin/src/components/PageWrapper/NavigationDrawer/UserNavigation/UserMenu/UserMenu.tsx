@@ -104,17 +104,15 @@ export function UserMenu({
           onClick={() => setOpen(true)}
           testId="Language"
         />
-        {process.env.NODE_ENV !== 'production' && (
-          <MenuItem
-            label="Dev Auth Debug"
-            icon={<BugReportIcon fontSize="small" />}
-            onClick={() => {
-              handleProfileClose()
-              setDevAuthOpen(true)
-            }}
-            testId="DevAuthDebug"
-          />
-        )}
+        <MenuItem
+          label="Dev Auth Debug"
+          icon={<BugReportIcon fontSize="small" />}
+          onClick={() => {
+            handleProfileClose()
+            setDevAuthOpen(true)
+          }}
+          testId="DevAuthDebug"
+        />
         <MenuItem
           label={t('Logout')}
           icon={<Logout2Icon fontSize="small" />}
