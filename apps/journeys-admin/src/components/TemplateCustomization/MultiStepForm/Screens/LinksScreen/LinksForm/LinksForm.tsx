@@ -25,7 +25,7 @@ import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 interface LinksFormProps {
   links: JourneyLink[]
-  onPlatformChange?: (chatButtonId: string, platform: MessagePlatform) => void
+  onPlatformChange: (chatButtonId: string, platform: MessagePlatform) => void
 }
 
 export function LinksForm({
@@ -122,7 +122,7 @@ export function LinksForm({
     chatButtonId: string
   ): void {
     const platform = event.target.value as MessagePlatform
-    onPlatformChange?.(chatButtonId, platform)
+    onPlatformChange(chatButtonId, platform)
   }
 
   return (

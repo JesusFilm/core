@@ -50,7 +50,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -89,7 +89,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -120,7 +120,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -151,7 +151,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': 'example.com' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -188,7 +188,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -225,7 +225,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -258,7 +258,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -295,7 +295,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -331,7 +331,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -364,7 +364,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -410,7 +410,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -444,7 +444,7 @@ describe('LinksForm', () => {
         >
           {(formik) => (
             <FormikProvider value={formik}>
-              <LinksForm links={[chatLink]} />
+              <LinksForm links={[chatLink]} onPlatformChange={jest.fn()} />
             </FormikProvider>
           )}
         </Formik>
@@ -458,7 +458,7 @@ describe('LinksForm', () => {
         <Formik initialValues={{ 'chat-1': '' }} onSubmit={jest.fn()}>
           {(formik) => (
             <FormikProvider value={formik}>
-              <LinksForm links={[chatLink]} />
+              <LinksForm links={[chatLink]} onPlatformChange={jest.fn()} />
             </FormikProvider>
           )}
         </Formik>
@@ -496,27 +496,6 @@ describe('LinksForm', () => {
         'chat-1',
         MessagePlatform.telegram
       )
-    })
-
-    it('should not call onPlatformChange when prop is not provided', () => {
-      render(
-        <Formik
-          initialValues={{ 'chat-1': 'https://wa.me/123' }}
-          onSubmit={jest.fn()}
-        >
-          {(formik) => (
-            <FormikProvider value={formik}>
-              <LinksForm links={[chatLink]} />
-            </FormikProvider>
-          )}
-        </Formik>
-      )
-
-      fireEvent.mouseDown(screen.getByRole('combobox'))
-      const listbox = screen.getByRole('listbox')
-      expect(() =>
-        fireEvent.click(within(listbox).getByText('Telegram'))
-      ).not.toThrow()
     })
   })
 })
