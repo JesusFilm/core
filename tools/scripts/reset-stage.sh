@@ -131,7 +131,7 @@ while IFS= read -r line; do
       while IFS= read -r f; do
         git checkout --theirs -- "$f" 2>/dev/null || git rm -f "$f" 2>/dev/null || true
       done <<< "$UNRESOLVED"
-      git add -A --quiet
+      git add -A
       git -c core.editor=true commit --no-edit --quiet 2>/dev/null || true
       ok "  #$PR_NUM merged (force-resolved remaining conflicts)"
       AUTORESOLVED_PRS+=("$PR_NUM|$PR_BRANCH|$PR_AUTHOR|$PR_TITLE")
