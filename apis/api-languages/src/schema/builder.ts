@@ -11,7 +11,8 @@ import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import type PrismaTypes from '@core/prisma/languages/__generated__/pothos-types'
-import { LanguageRole, Prisma, prisma } from '@core/prisma/languages/client'
+import { getDatamodel } from '@core/prisma/languages/__generated__/pothos-types'
+import { LanguageRole, prisma } from '@core/prisma/languages/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
@@ -100,7 +101,7 @@ export const builder = new SchemaBuilder<{
   },
   prisma: {
     client: prisma,
-    dmmf: Prisma.dmmf,
+    dmmf: getDatamodel(),
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })

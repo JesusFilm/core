@@ -61,61 +61,71 @@ export const Platform = {
         __typename: 'ChatButton',
         id: '1',
         link: 'https://m.me/',
-        platform: MessagePlatform.facebook
+        platform: MessagePlatform.facebook,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '2',
         link: 'https://other.messagingplatform/',
-        platform: MessagePlatform.telegram
+        platform: MessagePlatform.telegram,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '3',
         link: 'https://whatsapp.com/',
-        platform: MessagePlatform.whatsApp
+        platform: MessagePlatform.whatsApp,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '4',
         link: 'https://instagram.com/',
-        platform: MessagePlatform.instagram
+        platform: MessagePlatform.instagram,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '5',
         link: 'https://viber.com/',
-        platform: MessagePlatform.viber
+        platform: MessagePlatform.viber,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '6',
         link: 'https://vk.com/',
-        platform: MessagePlatform.vk
+        platform: MessagePlatform.vk,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '7',
         link: 'https://snapchat.com/',
-        platform: MessagePlatform.snapchat
+        platform: MessagePlatform.snapchat,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '8',
         link: 'https://skype.com/',
-        platform: MessagePlatform.skype
+        platform: MessagePlatform.skype,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '9',
         link: 'https://line.me/',
-        platform: MessagePlatform.line
+        platform: MessagePlatform.line,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '10',
         link: 'https://tiktok.com/',
-        platform: MessagePlatform.tikTok
+        platform: MessagePlatform.tikTok,
+        customizable: null
       }
     ]
   }
@@ -130,13 +140,15 @@ export const Website = {
         __typename: 'ChatButton',
         id: '1',
         link: 'https://m.me/',
-        platform: MessagePlatform.facebook
+        platform: MessagePlatform.facebook,
+        customizable: null
       },
       {
         __typename: 'ChatButton',
         id: '2',
         link: 'https://other.messagingplatform/',
-        platform: MessagePlatform.telegram
+        platform: MessagePlatform.telegram,
+        customizable: null
       }
     ]
   }

@@ -701,6 +701,7 @@ export interface JourneyFields_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_host {

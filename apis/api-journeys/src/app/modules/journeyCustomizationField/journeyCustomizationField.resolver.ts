@@ -3,7 +3,7 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { JourneyCustomizationField } from '.prisma/api-journeys-client'
+import { JourneyCustomizationField } from '@core/prisma/journeys/client'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'

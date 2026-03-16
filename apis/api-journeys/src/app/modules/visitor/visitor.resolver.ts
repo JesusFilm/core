@@ -137,10 +137,17 @@ export class VisitorResolver {
   }
 
   @ResolveField()
+  @UseGuards(AppCaslGuard)
   @FromPostgresql()
-  async events(@Parent() visitor): Promise<Event[]> {
+  async events(
+    @Parent() visitor,
+    @CaslAccessible('Event')
+    accessibleEvents: Prisma.EventWhereInput
+  ): Promise<Event[]> {
     return await this.prismaService.event.findMany({
-      where: { visitorId: visitor.id }
+      where: {
+        AND: compact([{ visitorId: visitor.id }, accessibleEvents])
+      }
     })
   }
 

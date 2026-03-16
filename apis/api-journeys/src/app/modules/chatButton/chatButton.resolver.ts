@@ -7,10 +7,14 @@ import {
   ChatButtonUpdateInput
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 @Resolver('ChatButton')
 export class ChatButtonResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly journeyCustomizableService: JourneyCustomizableService
+  ) {}
 
   @Mutation()
   async chatButtonCreate(
@@ -41,7 +45,7 @@ export class ChatButtonResolver {
     @Args('journeyId') journeyId: string,
     @Args('input') input: ChatButtonUpdateInput
   ): Promise<ChatButton> {
-    return await this.prismaService.chatButton.update({
+    const result = await this.prismaService.chatButton.update({
       where: {
         id
       },
@@ -50,14 +54,18 @@ export class ChatButtonResolver {
         ...input
       }
     })
+    await this.journeyCustomizableService.recalculate(journeyId)
+    return result
   }
 
   @Mutation()
   async chatButtonRemove(@Args('id') id: string): Promise<ChatButton> {
-    return await this.prismaService.chatButton.delete({
+    const result = await this.prismaService.chatButton.delete({
       where: {
         id
       }
     })
+    await this.journeyCustomizableService.recalculate(result.journeyId)
+    return result
   }
 }
