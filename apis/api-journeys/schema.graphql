@@ -1305,6 +1305,7 @@ type ChatButton
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 input ChatButtonCreateInput {
@@ -1315,6 +1316,7 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 type CustomDomain

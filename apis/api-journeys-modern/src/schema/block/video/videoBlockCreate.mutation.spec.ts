@@ -41,6 +41,7 @@ describe('videoBlockCreate', () => {
         fullsize
         posterBlockId
         showGeneratedSubtitles
+        notes
       }
     }
   `)
@@ -66,7 +67,8 @@ describe('videoBlockCreate', () => {
     muted: true,
     autoplay: true,
     fullsize: false,
-    posterBlockId: 'posterId'
+    posterBlockId: 'posterId',
+    notes: 'intro video'
   }
 
   beforeEach(() => {
@@ -120,7 +122,8 @@ describe('videoBlockCreate', () => {
       data: {
         videoBlockCreate: expect.objectContaining({
           id: 'blockId',
-          journeyId: 'journeyId'
+          journeyId: 'journeyId',
+          notes: 'intro video'
         })
       }
     })

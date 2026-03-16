@@ -1319,6 +1319,10 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   showGeneratedSubtitles: Boolean
   customizable: Boolean
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Publisher notes for template adapters (e.g. trailer, intro).
+  """
+  notes: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -1342,6 +1346,7 @@ type ChatButton @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEY
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 type CustomDomain @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4131,6 +4136,7 @@ input ChatButtonCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph:
 input ChatButtonUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 input CustomDomainCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5029,6 +5035,10 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  """
+  Publisher notes for template adapters (e.g. trailer, intro).
+  """
+  notes: String
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5056,6 +5066,10 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  """
+  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
+  """
+  notes: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
