@@ -59,10 +59,15 @@ export async function recalculateJourneyCustomizable(
   if (journey == null) return
   if (journey.template !== true) return
 
-  const allBlocks = await prisma.block.findMany({
-    where: { journeyId, deletedAt: null },
-    include: { action: true }
-  })
+  const [allBlocks, chatButtons] = await Promise.all([
+    prisma.block.findMany({
+      where: { journeyId, deletedAt: null },
+      include: { action: true }
+    }),
+    prisma.chatButton.findMany({
+      where: { journeyId }
+    })
+  ])
   const blocks = removeOrphanedBlocks(allBlocks)
 
   const fieldsCount = journey._count.journeyCustomizationFields
@@ -71,13 +76,14 @@ export async function recalculateJourneyCustomizable(
     (journey.journeyCustomizationDescription ?? '').trim().length > 0 &&
     fieldsCount > 0
 
-  const hasCustomizableLinks = blocks.some(
-    (block) =>
-      CUSTOMIZABLE_LINK_BLOCK_TYPES.includes(block.typename) &&
-      block.action != null &&
-      block.action.customizable === true &&
-      block.action.blockId == null // excludes NavigateToBlockAction
-  )
+  const hasCustomizableLinks =
+    blocks.some(
+      (block) =>
+        CUSTOMIZABLE_LINK_BLOCK_TYPES.includes(block.typename) &&
+        block.action != null &&
+        block.action.customizable === true &&
+        block.action.blockId == null // excludes NavigateToBlockAction
+    ) || chatButtons.some((cb) => cb.customizable === true)
 
   const hasCustomizableLogo =
     journey.website === true &&

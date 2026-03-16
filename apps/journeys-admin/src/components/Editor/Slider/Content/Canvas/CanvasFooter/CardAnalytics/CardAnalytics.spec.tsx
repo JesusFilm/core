@@ -16,13 +16,15 @@ describe('CardAnalytics', () => {
           __typename: 'ChatButtonBlock',
           id: 'chatButton1.id',
           link: 'https://chatButton1.com',
-          platform: MessagePlatform.facebook
+          platform: MessagePlatform.facebook,
+          customizable: null
         },
         {
           __typename: 'ChatButtonBlock',
           id: 'chatButton2.id',
           link: 'https://chatButton2.com',
-          platform: MessagePlatform.custom
+          platform: MessagePlatform.custom,
+          customizable: null
         }
       ]
     } as unknown as Journey
