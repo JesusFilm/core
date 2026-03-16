@@ -189,5 +189,4 @@ describe('MessageChatIcon', () => {
     render(<MessageChatIcon platform={MessagePlatform.weChat} />)
     expect(screen.getByTestId('WeChatIcon')).toBeInTheDocument()
   })
-
 })

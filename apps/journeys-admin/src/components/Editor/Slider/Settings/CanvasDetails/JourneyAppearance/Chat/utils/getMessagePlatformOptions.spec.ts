@@ -53,9 +53,7 @@ describe('getMessagePlatformOptions', () => {
     )
     expect(facebookOption?.label).toBe('Messenger')
 
-    const globeOption = options.find(
-      (o) => o.value === MessagePlatform.globe3
-    )
+    const globeOption = options.find((o) => o.value === MessagePlatform.globe3)
     expect(globeOption?.label).toBe('Globe')
   })
 

@@ -44,9 +44,7 @@ export function getMessagePlatformOptions(
   ]
 
   if (options?.excludeDedicated === true) {
-    return allOptions.filter(
-      (option) => !DEDICATED_PLATFORMS.has(option.value)
-    )
+    return allOptions.filter((option) => !DEDICATED_PLATFORMS.has(option.value))
   }
 
   return allOptions
