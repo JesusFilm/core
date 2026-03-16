@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import {
   StepNextEventCreateInput,
@@ -52,7 +53,11 @@ describe('Step', () => {
 
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
-        providers: [StepViewEventResolver, eventService, PrismaService]
+        providers: [
+          StepViewEventResolver,
+          eventService,
+          { provide: PrismaService, useValue: mockDeep<PrismaService>() }
+        ]
       }).compile()
       resolver = module.get<StepViewEventResolver>(StepViewEventResolver)
       eService = module.get<EventService>(EventService)

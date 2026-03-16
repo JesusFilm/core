@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { JourneyCustomizationFieldResolver } from './journeyCustomizationField.resolver'
@@ -12,7 +12,7 @@ import { JourneyCustomizationFieldResolver } from './journeyCustomizationField.r
   providers: [
     JourneyCustomizableService,
     JourneyCustomizationFieldResolver,
-    PrismaService
+    prismaServiceProvider
   ],
   exports: [JourneyCustomizationFieldResolver]
 })
