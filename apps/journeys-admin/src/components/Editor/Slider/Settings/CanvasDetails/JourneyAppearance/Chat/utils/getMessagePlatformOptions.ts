@@ -25,22 +25,24 @@ export function getMessagePlatformOptions(
   options?: { excludeDedicated?: boolean }
 ): MessagePlatformOption[] {
   const allOptions: MessagePlatformOption[] = [
-    { value: MessagePlatform.custom, label: t('Chat') },
+    // Social/messaging platforms (alphabetical)
     { value: MessagePlatform.discord, label: t('Discord') },
-    { value: MessagePlatform.facebook, label: t('Messenger') },
-    { value: MessagePlatform.globe3, label: t('Globe') },
-    { value: MessagePlatform.helpCircleContained, label: t('Help Circle') },
     { value: MessagePlatform.instagram, label: t('Instagram') },
     { value: MessagePlatform.kakaoTalk, label: t('KakaoTalk') },
     { value: MessagePlatform.line, label: t('LINE') },
-    { value: MessagePlatform.mail1, label: t('Mail') },
+    { value: MessagePlatform.facebook, label: t('Messenger') },
     { value: MessagePlatform.signal, label: t('Signal') },
     { value: MessagePlatform.snapchat, label: t('Snapchat') },
     { value: MessagePlatform.telegram, label: t('Telegram') },
     { value: MessagePlatform.tikTok, label: t('TikTok') },
     { value: MessagePlatform.viber, label: t('Viber') },
     { value: MessagePlatform.weChat, label: t('WeChat') },
-    { value: MessagePlatform.whatsApp, label: t('WhatsApp') }
+    { value: MessagePlatform.whatsApp, label: t('WhatsApp') },
+    // Generic icons
+    { value: MessagePlatform.custom, label: t('Chat') },
+    { value: MessagePlatform.globe3, label: t('Globe') },
+    { value: MessagePlatform.helpCircleContained, label: t('Help Circle') },
+    { value: MessagePlatform.mail1, label: t('Mail') }
   ]
 
   if (options?.excludeDedicated === true) {

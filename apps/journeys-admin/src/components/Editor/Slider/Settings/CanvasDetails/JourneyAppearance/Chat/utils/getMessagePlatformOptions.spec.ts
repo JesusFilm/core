@@ -15,22 +15,22 @@ describe('getMessagePlatformOptions', () => {
 
     expect(options).toHaveLength(16)
     expect(options.map((o) => o.value)).toEqual([
-      MessagePlatform.custom,
       MessagePlatform.discord,
-      MessagePlatform.facebook,
-      MessagePlatform.globe3,
-      MessagePlatform.helpCircleContained,
       MessagePlatform.instagram,
       MessagePlatform.kakaoTalk,
       MessagePlatform.line,
-      MessagePlatform.mail1,
+      MessagePlatform.facebook,
       MessagePlatform.signal,
       MessagePlatform.snapchat,
       MessagePlatform.telegram,
       MessagePlatform.tikTok,
       MessagePlatform.viber,
       MessagePlatform.weChat,
-      MessagePlatform.whatsApp
+      MessagePlatform.whatsApp,
+      MessagePlatform.custom,
+      MessagePlatform.globe3,
+      MessagePlatform.helpCircleContained,
+      MessagePlatform.mail1
     ])
   })
 
