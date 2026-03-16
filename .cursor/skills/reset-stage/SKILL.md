@@ -101,8 +101,8 @@ deterministic — same PR set + same order = same result.
 
 ### If stage is broken after a reset
 
-Run the reset again. The script deletes the remote stage branch and
-recreates it from `main`, so every reset starts completely fresh.
+Run the reset again. The script resets stage to `main` and force-pushes,
+so every reset starts completely fresh.
 
 ### If an engineer's PR is causing problems on stage
 

@@ -267,7 +267,7 @@ else
 fi
 echo ""
 
-# ── Slack notification (failures only) ───────────────────────────────
+# ── Slack notification ────────────────────────────────────────────────
 
 if ! $NO_SLACK; then
 
