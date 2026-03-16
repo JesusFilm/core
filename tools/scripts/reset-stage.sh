@@ -283,11 +283,15 @@ EOF
     -H 'Content-type: application/json; charset=utf-8' \
     -d "$SUMMARY_PAYLOAD")
 
-  PARENT_OK=$(echo "$PARENT_RESPONSE" | grep -o '"ok":true' || true)
-  PARENT_TS=$(echo "$PARENT_RESPONSE" | grep -o '"ts":"[^"]*"' | head -1 | cut -d'"' -f4)
+  PARENT_OK=""
+  PARENT_TS=""
+  if echo "$PARENT_RESPONSE" | grep -q '"ok":true'; then
+    PARENT_OK="true"
+    PARENT_TS=$(echo "$PARENT_RESPONSE" | grep -o '"ts":"[^"]*"' | head -1 | cut -d'"' -f4 || true)
+  fi
 
   if [ -z "$PARENT_OK" ]; then
-    SLACK_ERROR=$(echo "$PARENT_RESPONSE" | grep -o '"error":"[^"]*"' | cut -d'"' -f4)
+    SLACK_ERROR=$(echo "$PARENT_RESPONSE" | grep -o '"error":"[^"]*"' | cut -d'"' -f4 || true)
     warn "Slack summary post failed: $SLACK_ERROR"
   elif [ -z "$PARENT_TS" ]; then
     warn "Slack summary posted but could not extract message ts for threading"
@@ -315,8 +319,7 @@ EOF
 
     log "Posting merged list in thread..."
     MERGED_RESP=$(post_thread "$MERGED_TEXT")
-    MERGED_OK=$(echo "$MERGED_RESP" | grep -o '"ok":true' || true)
-    if [ -n "$MERGED_OK" ]; then
+    if echo "$MERGED_RESP" | grep -q '"ok":true'; then
       ok "Merged list posted in thread"
     else
       warn "Merged list thread post failed"
@@ -346,8 +349,7 @@ EOF
 
     log "Posting failed list in thread..."
     FAILED_RESP=$(post_thread "$FAILED_TEXT")
-    FAILED_OK=$(echo "$FAILED_RESP" | grep -o '"ok":true' || true)
-    if [ -n "$FAILED_OK" ]; then
+    if echo "$FAILED_RESP" | grep -q '"ok":true'; then
       ok "Slack notifications sent (summary + 2 threaded replies)"
     else
       warn "Failed list thread post failed"
