@@ -180,11 +180,11 @@ export function LinksForm({
                 </IconButton>
               </Stack>
               {link.linkType === 'chatButtons' ? (
-                <>
-                  <Box
+                <Stack>
+                  <Stack
+                    direction="row"
+                    alignItems="center"
                     sx={{
-                      display: 'flex',
-                      alignItems: 'center',
                       height: 56,
                       bgcolor: 'rgba(0, 0, 0, 0.06)',
                       borderRadius: 1,
@@ -265,7 +265,7 @@ export function LinksForm({
                         justifyContent: 'center'
                       }}
                     />
-                  </Box>
+                  </Stack>
                   <Typography
                     variant="caption"
                     color={hasError ? 'error' : 'transparent'}
@@ -273,7 +273,7 @@ export function LinksForm({
                   >
                     {hasError ? (errors?.[fieldName] as string) : '\u00A0'}
                   </Typography>
-                </>
+                </Stack>
               ) : link.linkType === 'phone' ? (
                 <Box
                   onKeyDown={(e) => {

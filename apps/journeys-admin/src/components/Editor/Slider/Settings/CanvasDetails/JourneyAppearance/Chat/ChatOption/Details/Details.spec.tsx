@@ -4,6 +4,8 @@ import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
@@ -325,6 +327,189 @@ describe('Details', () => {
       fireEvent.click(toggle)
 
       await waitFor(() => expect(result).toHaveBeenCalled())
+    })
+
+    it('undo after toggling customizable calls chatButtonUpdate with previous value', async () => {
+      const executeResult = jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp,
+            customizable: true
+          }
+        }
+      }))
+      const undoResult = jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp,
+            customizable: false
+          }
+        }
+      }))
+
+      const executeMock: MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_CHAT_BUTTON_UPDATE,
+          variables: {
+            chatButtonUpdateId: 'chat.id',
+            journeyId: 'journeyId',
+            input: { customizable: true }
+          }
+        },
+        result: executeResult
+      }
+      const undoMock: MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_CHAT_BUTTON_UPDATE,
+          variables: {
+            chatButtonUpdateId: 'chat.id',
+            journeyId: 'journeyId',
+            input: { customizable: false }
+          }
+        },
+        result: undoResult
+      }
+
+      render(
+        <MockedProvider mocks={[executeMock, undoMock]}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: templateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details {...defaultProps} currentCustomizable={false} />
+                <CommandUndoItem variant="button" />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      )
+      await waitFor(() => expect(executeResult).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+    })
+
+    it('redo after undo calls chatButtonUpdate with execute value', async () => {
+      const executeResult = jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp,
+            customizable: true
+          }
+        }
+      }))
+      const undoResult = jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp,
+            customizable: false
+          }
+        }
+      }))
+      const redoResult = jest.fn(() => ({
+        data: {
+          chatButtonUpdate: {
+            __typename: 'ChatButton' as const,
+            id: 'chat.id',
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp,
+            customizable: true
+          }
+        }
+      }))
+
+      const executeMock: MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_CHAT_BUTTON_UPDATE,
+          variables: {
+            chatButtonUpdateId: 'chat.id',
+            journeyId: 'journeyId',
+            input: { customizable: true }
+          }
+        },
+        result: executeResult
+      }
+      const undoMock: MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_CHAT_BUTTON_UPDATE,
+          variables: {
+            chatButtonUpdateId: 'chat.id',
+            journeyId: 'journeyId',
+            input: { customizable: false }
+          }
+        },
+        result: undoResult
+      }
+      const redoMock: MockedResponse<
+        JourneyChatButtonUpdate,
+        JourneyChatButtonUpdateVariables
+      > = {
+        request: {
+          query: JOURNEY_CHAT_BUTTON_UPDATE,
+          variables: {
+            chatButtonUpdateId: 'chat.id',
+            journeyId: 'journeyId',
+            input: { customizable: true }
+          }
+        },
+        result: redoResult
+      }
+
+      render(
+        <MockedProvider mocks={[executeMock, undoMock, redoMock]}>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{ journey: templateJourney, variant: 'admin' }}
+            >
+              <CommandProvider>
+                <Details {...defaultProps} currentCustomizable={false} />
+                <CommandUndoItem variant="button" />
+                <CommandRedoItem variant="button" />
+              </CommandProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      fireEvent.click(
+        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+      )
+      await waitFor(() => expect(executeResult).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+      await waitFor(() => expect(redoResult).toHaveBeenCalled())
     })
 
     it('renders checked state when currentCustomizable is true', () => {
