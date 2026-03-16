@@ -19,7 +19,7 @@ for arg in "$@"; do
       echo ""
       echo "Options:"
       echo "  --apply      Actually reset and rebuild the stage branch (destructive)"
-      echo "  --no-slack   Skip posting failures to Slack"
+      echo "  --no-slack   Skip Slack notifications"
       echo "  --help, -h   Show this help"
       exit 0
       ;;
@@ -45,7 +45,7 @@ if ! gh auth status &>/dev/null; then
   exit 1
 fi
 
-if [ -n "$(git diff --stat HEAD)" ]; then
+if [ -n "$(git status --porcelain)" ]; then
   fail "Working tree has uncommitted changes. Commit or stash first."
   exit 1
 fi
@@ -59,8 +59,13 @@ git fetch origin stage --quiet 2>/dev/null || warn "Remote stage branch not foun
 # ── Collect PRs ──────────────────────────────────────────────────────
 
 log "Fetching 'on stage' PRs..."
-PR_JSON=$(gh api "repos/$REPO/pulls?state=open&labels=on+stage&per_page=100" \
-  --jq '.[] | "\(.number)|\(.head.ref)|\(.user.login)|\(.title)"')
+PR_JSON=$(gh pr list \
+  --repo "$REPO" \
+  --state open \
+  --label "on stage" \
+  --limit 100 \
+  --json number,headRefName,author,title \
+  --jq '.[] | "\(.number)|\(.headRefName)|\(.author.login)|\(.title)"')
 
 if [ -z "$PR_JSON" ]; then
   warn "No open PRs with 'on stage' label found. Nothing to do."
@@ -77,6 +82,19 @@ if $DRY_RUN; then
   echo "════════════════════════════════════════════════════════════════"
   echo ""
 fi
+
+# ── Cleanup trap ─────────────────────────────────────────────────────
+
+cleanup() {
+  if $DRY_RUN; then
+    git checkout "${ORIGINAL_BRANCH:-main}" --quiet 2>/dev/null || git checkout - --quiet || true
+    git branch -D "$TEMP_BRANCH" --quiet 2>/dev/null || true
+  else
+    git checkout "${ORIGINAL_BRANCH:-main}" --quiet 2>/dev/null || git checkout main --quiet || true
+  fi
+}
+
+trap cleanup EXIT
 
 # ── Branch setup ─────────────────────────────────────────────────────
 
@@ -95,11 +113,8 @@ else
   log "Deleting remote stage branch..."
   git push -d origin stage 2>/dev/null || warn "Remote stage branch did not exist"
 
-  log "Deleting local stage branch..."
-  git branch -D stage 2>/dev/null || true
-
-  log "Creating new stage branch from origin/main..."
-  git checkout -b stage origin/main --quiet
+  log "Recreating local stage branch from origin/main..."
+  git checkout -B stage origin/main --quiet
 fi
 
 # ── Merge loop ───────────────────────────────────────────────────────
@@ -339,10 +354,16 @@ EOF
     # ── Helper: post a threaded reply ──
     post_thread() {
       local TEXT="$1"
+      local payload
+      payload=$(jq -n \
+        --arg channel "$SLACK_CHANNEL_ID" \
+        --arg thread_ts "$PARENT_TS" \
+        --arg text "$TEXT" \
+        '{channel: $channel, thread_ts: $thread_ts, text: $text}')
       curl -s -X POST "$SLACK_API" \
         -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
         -H 'Content-type: application/json; charset=utf-8' \
-        -d "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"thread_ts\":\"${PARENT_TS}\",\"text\":\"${TEXT}\"}"
+        -d "$payload"
     }
 
     # ── Thread reply 1: merged PRs (clean + auto-resolved) ──
