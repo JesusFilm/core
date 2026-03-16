@@ -1,12 +1,9 @@
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
-import IconButton from '@mui/material/IconButton'
 import { ReactElement } from 'react'
 
-import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview'
-
 import { TreeBlock } from '@core/journeys/ui/block'
+import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 
