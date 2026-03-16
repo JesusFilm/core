@@ -277,7 +277,10 @@ if ! $NO_SLACK; then
   SLACK_API="https://slack.com/api/chat.postMessage"
 
   # Fetch Slack credentials from Doppler
-  if ! command -v doppler &>/dev/null; then
+  if ! command -v jq &>/dev/null; then
+    warn "jq not installed — skipping Slack notification"
+    NO_SLACK=true
+  elif ! command -v doppler &>/dev/null; then
     warn "doppler CLI not installed — skipping Slack notification"
     warn "Install: https://docs.doppler.com/docs/install-cli"
   elif ! doppler me &>/dev/null 2>&1; then
@@ -331,7 +334,7 @@ EOF
 )
 
   log "Posting summary to Slack..."
-  PARENT_RESPONSE=$(curl -s -X POST "$SLACK_API" \
+  PARENT_RESPONSE=$(curl -s --connect-timeout 10 --max-time 30 -X POST "$SLACK_API" \
     -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
     -H 'Content-type: application/json; charset=utf-8' \
     -d "$SUMMARY_PAYLOAD")
@@ -360,7 +363,7 @@ EOF
         --arg thread_ts "$PARENT_TS" \
         --arg text "$TEXT" \
         '{channel: $channel, thread_ts: $thread_ts, text: $text}')
-      curl -s -X POST "$SLACK_API" \
+      curl -s --connect-timeout 10 --max-time 30 -X POST "$SLACK_API" \
         -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
         -H 'Content-type: application/json; charset=utf-8' \
         -d "$payload"
