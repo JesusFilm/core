@@ -185,7 +185,7 @@ Return in this format:
 `
 
         const analysisResult = await generateObject({
-          model: google('gemini-2.0-flash'),
+          model: google('gemini-2.5-flash'),
           messages: [
             {
               role: 'system',
@@ -381,7 +381,7 @@ If there is no Bible translation was available, use the the most popular English
             try {
               // Stream the translations
               const { fullStream } = streamObject({
-                model: google('gemini-2.0-flash'),
+                model: google('gemini-2.5-flash'),
                 messages: [
                   {
                     role: 'system',
@@ -656,7 +656,7 @@ Return in this format:
 
       try {
         const { object: analysisAndTranslation } = await generateObject({
-          model: google('gemini-2.0-flash'),
+          model: google('gemini-2.5-flash'),
           messages: [
             {
               role: 'system',
@@ -826,7 +826,7 @@ If there is no Bible translation was available, use the the most popular English
               try {
                 // Stream the translations
                 const { fullStream } = streamObject({
-                  model: google('gemini-2.0-flash'),
+                  model: google('gemini-2.5-flash'),
                   messages: [
                     {
                       role: 'system',
