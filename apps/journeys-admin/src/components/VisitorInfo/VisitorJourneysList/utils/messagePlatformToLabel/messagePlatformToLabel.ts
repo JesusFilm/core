@@ -75,5 +75,11 @@ export function messagePlatformToLabel(
       return t('Check Contained')
     case MessagePlatform.settings:
       return t('Settings')
+    case MessagePlatform.discord:
+      return t('Discord')
+    case MessagePlatform.signal:
+      return t('Signal')
+    case MessagePlatform.weChat:
+      return t('WeChat')
   }
 }
