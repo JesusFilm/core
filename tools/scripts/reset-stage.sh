@@ -286,7 +286,7 @@ if ! $NO_SLACK; then
     HEADER_TEXT="Stage Reset Complete  —  $(date '+%Y-%m-%d')"
     SUMMARY_TEXT="*${ALL_MERGED}* PRs merged (*${MERGED_COUNT}* clean, *${AUTORESOLVED_COUNT}* auto-resolved)  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
     if [ "$FAILED_COUNT" -gt 0 ]; then
-      FOOTER_TEXT="Failed PRs need their authors to rebase against \`main\`."
+      FOOTER_TEXT="*${FAILED_COUNT}* PR(s) could not be auto-resolved — authors should investigate."
     else
       FOOTER_TEXT="All PRs merged successfully. Stage deploy will trigger automatically."
     fi
