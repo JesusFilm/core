@@ -36,6 +36,8 @@ gh api graphql -f query='
 
 Filter to `isResolved === false`. Collect every comment per thread together — thread context matters.
 
+> **Pagination**: The query above fetches the first 100 threads and 20 comments each. For large PRs that exceed these limits, paginate using `pageInfo { hasNextPage endCursor }` and pass `after: endCursor` in follow-up queries. Nested pagination (threads × comments) requires custom looping — `gh api graphql --paginate` only handles a single connection.
+
 ## 3. Triage — classify each thread
 
 Before writing any code, read **all** unresolved threads and the surrounding source code, then classify each into one of:
@@ -110,7 +112,11 @@ gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
   -f body="Your reply here"
 ```
 
-Or if the thread is a top-level review comment, use `issues_add_comment` as a fallback.
+Or if the thread is a top-level review comment, fall back to a PR-level comment:
+
+```bash
+gh pr comment PR_NUMBER --body "Your reply here"
+```
 
 ## 9. Post summary comment
 
