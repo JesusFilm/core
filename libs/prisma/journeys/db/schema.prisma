@@ -629,6 +629,7 @@ model Block {
   settings                   Json                 @default("{ }") // block settings
   exportOrder                Int? // column order for CSV exports and Google Sheets syncs
   customizable               Boolean?
+  notes                      String? // VideoBlock: publisher notes for template adapters (e.g. trailer, intro)
 
   @@unique([slug, journeyId])
   @@index(journeyId)

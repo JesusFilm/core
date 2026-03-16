@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import {
-  act,
   fireEvent,
   render,
   screen,
@@ -86,15 +85,13 @@ describe('LinksScreen', () => {
   } as unknown as Journey
 
   it('renders first step card preview and chat link form when only chat buttons exist', async () => {
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen handleNext={jest.fn()} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <LinksScreen handleNext={jest.fn()} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     expect(screen.getByTestId('CardsPreviewItem')).toBeInTheDocument()
     expect(
@@ -105,15 +102,13 @@ describe('LinksScreen', () => {
 
   it('shows validation error for invalid chat URL on submit', async () => {
     const handleNext = jest.fn()
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     const chatGroup = screen.getByLabelText('Edit Chat Widget')
     const chatInput = within(chatGroup).getByRole('textbox')
@@ -127,15 +122,13 @@ describe('LinksScreen', () => {
 
   it('calls handleNext on submit (unchanged values)', async () => {
     const handleNext = jest.fn()
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
@@ -282,19 +275,15 @@ describe('LinksScreen', () => {
       }))
     }
 
-    await act(async () => {
-      render(
-        <MockedProvider
-          mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}
+    render(
+      <MockedProvider mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}>
+        <JourneyProvider
+          value={{ journey: journeyWithLinks, variant: 'admin' }}
         >
-          <JourneyProvider
-            value={{ journey: journeyWithLinks, variant: 'admin' }}
-          >
-            <LinksScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     const urlGroup = screen.getByLabelText('Edit Primary')
     const urlInput = within(urlGroup).getByRole('textbox')
@@ -385,17 +374,15 @@ describe('LinksScreen', () => {
       }))
     }
 
-    await act(async () => {
-      render(
-        <MockedProvider mocks={[phoneUpdateMock]}>
-          <JourneyProvider
-            value={{ journey: journeyWithPhone, variant: 'admin' }}
-          >
-            <LinksScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+    render(
+      <MockedProvider mocks={[phoneUpdateMock]}>
+        <JourneyProvider
+          value={{ journey: journeyWithPhone, variant: 'admin' }}
+        >
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     const phoneLabel = screen.getByText('Call Us')
     expect(phoneLabel).toBeInTheDocument()
@@ -418,50 +405,48 @@ describe('LinksScreen', () => {
   })
 
   it('shows validation error for invalid phone input', async () => {
-    await act(async () => {
-      render(
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: {
-                ...defaultJourney,
-                id: 'journey-id',
-                blocks: [
-                  {
-                    id: 'step-1',
-                    __typename: 'StepBlock',
-                    parentBlockId: null,
-                    parentOrder: 0,
-                    locked: false,
-                    nextBlockId: null,
-                    slug: 's1',
-                    children: []
-                  },
-                  {
-                    id: 'btn-phone',
-                    __typename: 'ButtonBlock',
-                    parentBlockId: 'step-1',
-                    parentOrder: 0,
-                    label: 'Support',
-                    action: {
-                      __typename: 'PhoneAction',
-                      phone: '+123456789',
-                      countryCode: 'US',
-                      contactAction: ContactActionType.call,
-                      parentStepId: 'step-1',
-                      customizable: true
-                    }
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              id: 'journey-id',
+              blocks: [
+                {
+                  id: 'step-1',
+                  __typename: 'StepBlock',
+                  parentBlockId: null,
+                  parentOrder: 0,
+                  locked: false,
+                  nextBlockId: null,
+                  slug: 's1',
+                  children: []
+                },
+                {
+                  id: 'btn-phone',
+                  __typename: 'ButtonBlock',
+                  parentBlockId: 'step-1',
+                  parentOrder: 0,
+                  label: 'Support',
+                  action: {
+                    __typename: 'PhoneAction',
+                    phone: '+123456789',
+                    countryCode: 'US',
+                    contactAction: ContactActionType.call,
+                    parentStepId: 'step-1',
+                    customizable: true
                   }
-                ]
-              } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <LinksScreen handleNext={jest.fn()} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+                }
+              ]
+            } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <LinksScreen handleNext={jest.fn()} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     const phoneLabel = screen.getByText('Support')
     expect(phoneLabel).toBeInTheDocument()
@@ -514,15 +499,13 @@ describe('LinksScreen', () => {
       }))
     }
 
-    await act(async () => {
-      render(
-        <MockedProvider mocks={[platformUpdateMock]}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <LinksScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </MockedProvider>
-      )
-    })
+    render(
+      <MockedProvider mocks={[platformUpdateMock]}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
 
     fireEvent.mouseDown(screen.getByRole('combobox'))
     await waitFor(() => {
