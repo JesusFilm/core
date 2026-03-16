@@ -701,6 +701,7 @@ export interface GetJourney_journey_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface GetJourney_journey_host {

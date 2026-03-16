@@ -9,7 +9,10 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_VideoTriggerBlock as VideoTriggerBlock
 } from '../../../../../__generated__/GetJourney'
-import { ContactActionType } from '../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../__generated__/globalTypes'
 
 export type JourneyLink =
   | {
@@ -17,6 +20,7 @@ export type JourneyLink =
       linkType: 'chatButtons'
       url: string
       label: string
+      platform: MessagePlatform
       parentStepId?: never
     }
   | {
@@ -37,17 +41,17 @@ export function getJourneyLinks(
 
   const links: JourneyLink[] = []
 
-  // TODO: uncomment this when chat buttons are added to duplicate api
-  // Collect chat buttons as top-level links (no step association)
-  // const chatButtons = journey.chatButtons ?? []
-  // chatButtons.forEach((chatButton) => {
-  //   links.push({
-  //     id: chatButton.id,
-  //     linkType: 'chatButtons',
-  //     url: chatButton.link ?? '',
-  //     label: `${t('Chat')}: ${chatButton.platform != null ? MessagePlatform[chatButton.platform] : ''}`
-  //   })
-  // })
+  const chatButtons = journey.chatButtons ?? []
+  chatButtons.forEach((chatButton) => {
+    if (chatButton.customizable !== true) return
+    links.push({
+      id: chatButton.id,
+      linkType: 'chatButtons',
+      url: chatButton.link ?? '',
+      label: t('Chat Widget'),
+      platform: chatButton.platform ?? MessagePlatform.custom
+    })
+  })
 
   const blocks = journey?.blocks ?? []
   if (blocks.length === 0) return links
