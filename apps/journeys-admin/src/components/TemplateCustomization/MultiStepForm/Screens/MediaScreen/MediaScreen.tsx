@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -53,6 +54,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const showLogo = showLogoSection(journey)
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
+  const showMediaLabels = showImages && showVideos
 
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
@@ -78,16 +80,28 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         />
       }
     >
-      {showLogo && <LogoSection />}
-      <CardsSection
-        customizableSteps={customizableSteps}
-        selectedStep={selectedStep}
-        handleStepClick={handleStepClick}
-      />
-      {showImages && (
-        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
-      )}
-      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+      <Stack sx={{ width: '100%', gap: 6 }}>
+        {showLogo && <LogoSection />}
+        <CardsSection
+          customizableSteps={customizableSteps}
+          selectedStep={selectedStep}
+          handleStepClick={handleStepClick}
+          showLabel={journey?.website === true}
+        />
+        {showImages && (
+          <ImagesSection
+            journey={journey}
+            cardBlockId={selectedCardBlockId}
+            showLabel={showMediaLabels}
+          />
+        )}
+        {showVideos && (
+          <VideosSection
+            cardBlockId={selectedCardBlockId}
+            showLabel={showMediaLabels}
+          />
+        )}
+      </Stack>
     </ScreenWrapper>
   )
 }
