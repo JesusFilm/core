@@ -376,6 +376,7 @@ export type ChatActionInput = {
 
 export type ChatButton = {
   __typename?: 'ChatButton';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   link?: Maybe<Scalars['String']['output']>;
   platform?: Maybe<MessagePlatform>;
@@ -387,6 +388,7 @@ export type ChatButtonCreateInput = {
 };
 
 export type ChatButtonUpdateInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   link?: InputMaybe<Scalars['String']['input']>;
   platform?: InputMaybe<MessagePlatform>;
 };
@@ -1959,8 +1961,6 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
-  /** Updates the current user's firstName, lastName, and email. Only callable by anonymous users. */
-  updateMe?: Maybe<AuthenticatedUser>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
@@ -2813,11 +2813,6 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
-};
-
-
-export type MutationUpdateMeArgs = {
-  input: UpdateMeInput;
 };
 
 
@@ -5143,12 +5138,6 @@ export type UnsplashUserLinks = {
   photos: Scalars['String']['output'];
   portfolio: Scalars['String']['output'];
   self: Scalars['String']['output'];
-};
-
-export type UpdateMeInput = {
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type User = {

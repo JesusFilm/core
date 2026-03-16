@@ -143,7 +143,8 @@ describe('getFooterElements', () => {
                 __typename: 'ChatButton',
                 id: 'chatButtonId',
                 link: null,
-                platform: null
+                platform: null,
+                customizable: null
               }
             ]
           },
@@ -305,7 +306,8 @@ describe('getFooterElements', () => {
                 __typename: 'ChatButton',
                 id: 'chatButtonId',
                 link: null,
-                platform: null
+                platform: null,
+                customizable: null
               }
             ]
           }
@@ -359,7 +361,8 @@ describe('getFooterElements', () => {
                 __typename: 'ChatButton',
                 id: 'chatButtonId',
                 link: null,
-                platform: null
+                platform: null,
+                customizable: null
               }
             ]
           }
