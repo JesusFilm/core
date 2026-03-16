@@ -28,6 +28,7 @@ for arg in "$@"; do
 done
 
 MERGED_PRS=()
+AUTORESOLVED_PRS=()
 FAILED_PRS=()
 FAILED_FILES=()
 MISSING_PRS=()
@@ -120,12 +121,27 @@ while IFS= read -r line; do
   if git merge "origin/$PR_BRANCH" --no-edit --no-ff --quiet 2>/dev/null; then
     ok "  #$PR_NUM merged"
     MERGED_PRS+=("$PR_NUM|$PR_BRANCH|$PR_AUTHOR|$PR_TITLE")
+  elif git merge --abort 2>/dev/null && git merge "origin/$PR_BRANCH" --no-edit --no-ff -X theirs --quiet 2>/dev/null; then
+    ok "  #$PR_NUM merged (conflicts auto-resolved via -X theirs)"
+    AUTORESOLVED_PRS+=("$PR_NUM|$PR_BRANCH|$PR_AUTHOR|$PR_TITLE")
   else
-    CONFLICT_FILES=$(git diff --name-only --diff-filter=U 2>/dev/null | tr '\n' ', ' | sed 's/,$//')
-    git merge --abort 2>/dev/null || git reset --hard HEAD --quiet
-    fail "  #$PR_NUM CONFLICT: $CONFLICT_FILES"
-    FAILED_PRS+=("$PR_NUM|$PR_BRANCH|$PR_AUTHOR|$PR_TITLE")
-    FAILED_FILES+=("$CONFLICT_FILES")
+    # -X theirs didn't resolve everything (e.g. modify/delete conflicts)
+    UNRESOLVED=$(git diff --name-only --diff-filter=U 2>/dev/null || true)
+    if [ -n "$UNRESOLVED" ]; then
+      while IFS= read -r f; do
+        git checkout --theirs -- "$f" 2>/dev/null || git rm -f "$f" 2>/dev/null || true
+      done <<< "$UNRESOLVED"
+      git add -A --quiet
+      git -c core.editor=true commit --no-edit --quiet 2>/dev/null || true
+      ok "  #$PR_NUM merged (force-resolved remaining conflicts)"
+      AUTORESOLVED_PRS+=("$PR_NUM|$PR_BRANCH|$PR_AUTHOR|$PR_TITLE")
+    else
+      git merge --abort 2>/dev/null || git reset --hard HEAD --quiet
+      CONFLICT_FILES=$(git diff --name-only --diff-filter=U 2>/dev/null | tr '\n' ', ' | sed 's/,$//')
+      fail "  #$PR_NUM FAILED: $CONFLICT_FILES"
+      FAILED_PRS+=("$PR_NUM|$PR_BRANCH|$PR_AUTHOR|$PR_TITLE")
+      FAILED_FILES+=("$CONFLICT_FILES")
+    fi
   fi
 done <<< "$PR_JSON"
 
@@ -149,9 +165,11 @@ fi
 # ── Report ───────────────────────────────────────────────────────────
 
 MERGED_COUNT=${#MERGED_PRS[@]}
+AUTORESOLVED_COUNT=${#AUTORESOLVED_PRS[@]}
 FAILED_COUNT=${#FAILED_PRS[@]}
 MISSING_COUNT=${#MISSING_PRS[@]}
-TOTAL=$((MERGED_COUNT + FAILED_COUNT + MISSING_COUNT))
+TOTAL=$((MERGED_COUNT + AUTORESOLVED_COUNT + FAILED_COUNT + MISSING_COUNT))
+ALL_MERGED=$((MERGED_COUNT + AUTORESOLVED_COUNT))
 
 echo ""
 echo "══════════════════════════════════════════════════════════════════════"
@@ -176,8 +194,20 @@ if [ "$MERGED_COUNT" -gt 0 ]; then
   echo ""
 fi
 
+if [ "$AUTORESOLVED_COUNT" -gt 0 ]; then
+  echo "⚡ Auto-resolved conflicts ($AUTORESOLVED_COUNT/$TOTAL)"
+  echo "──────────────────────────────────────────────────────────────────"
+  for entry in "${AUTORESOLVED_PRS[@]}"; do
+    PR_NUM=$(echo "$entry" | cut -d'|' -f1)
+    PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
+    PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
+    printf "  #%-6s %-18s %s\n" "$PR_NUM" "$PR_AUTHOR" "$PR_TITLE"
+  done
+  echo ""
+fi
+
 if [ "$FAILED_COUNT" -gt 0 ]; then
-  echo "✗ Failed — authors need to rebase against main ($FAILED_COUNT/$TOTAL)"
+  echo "✗ Failed — could not auto-resolve ($FAILED_COUNT/$TOTAL)"
   echo "──────────────────────────────────────────────────────────────────"
   for i in "${!FAILED_PRS[@]}"; do
     entry="${FAILED_PRS[$i]}"
@@ -206,7 +236,11 @@ if [ "$MISSING_COUNT" -gt 0 ]; then
 fi
 
 if [ "$FAILED_COUNT" -eq 0 ] && [ "$MISSING_COUNT" -eq 0 ]; then
-  ok "All $TOTAL PRs merged cleanly!"
+  if [ "$AUTORESOLVED_COUNT" -gt 0 ]; then
+    ok "All $TOTAL PRs merged ($AUTORESOLVED_COUNT had conflicts auto-resolved)"
+  else
+    ok "All $TOTAL PRs merged cleanly!"
+  fi
 fi
 
 echo "──────────────────────────────────────────────────────────────────"
@@ -223,7 +257,7 @@ echo ""
 
 # ── Slack notification (failures only) ───────────────────────────────
 
-if [ "$FAILED_COUNT" -gt 0 ] && ! $NO_SLACK; then
+if ! $NO_SLACK; then
 
   SLACK_API="https://slack.com/api/chat.postMessage"
 
@@ -246,12 +280,16 @@ if [ "$FAILED_COUNT" -gt 0 ] && ! $NO_SLACK; then
 
   if $DRY_RUN; then
     HEADER_TEXT="Stage Reset Preview (no changes made)  —  $(date '+%Y-%m-%d')"
-    SUMMARY_TEXT="If stage were reset now: *${MERGED_COUNT}* PRs would merge  •  *${FAILED_COUNT}* would conflict  •  *${MISSING_COUNT}* branches missing"
-    FOOTER_TEXT="This was a dry run — stage has NOT been reset. No action needed yet."
+    SUMMARY_TEXT="If stage were reset now: *${MERGED_COUNT}* clean  •  *${AUTORESOLVED_COUNT}* auto-resolved  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
+    FOOTER_TEXT="This was a dry run — stage has NOT been reset."
   else
-    HEADER_TEXT="Stage Reset Report  —  $(date '+%Y-%m-%d')"
-    SUMMARY_TEXT="*${MERGED_COUNT}* PRs merged  •  *${FAILED_COUNT}* PRs failed  •  *${MISSING_COUNT}* branches missing"
-    FOOTER_TEXT="Authors: please rebase your branch against \`main\` and re-apply the 'on stage' label."
+    HEADER_TEXT="Stage Reset Complete  —  $(date '+%Y-%m-%d')"
+    SUMMARY_TEXT="*${ALL_MERGED}* PRs merged (*${MERGED_COUNT}* clean, *${AUTORESOLVED_COUNT}* auto-resolved)  •  *${FAILED_COUNT}* failed  •  *${MISSING_COUNT}* missing"
+    if [ "$FAILED_COUNT" -gt 0 ]; then
+      FOOTER_TEXT="Failed PRs need their authors to rebase against \`main\`."
+    else
+      FOOTER_TEXT="All PRs merged successfully. Stage deploy will trigger automatically."
+    fi
   fi
 
   # ── Post 1: top-level summary ──
@@ -270,7 +308,7 @@ if [ "$FAILED_COUNT" -gt 0 ] && ! $NO_SLACK; then
     },
     {
       "type": "context",
-      "elements": [{ "type": "mrkdwn", "text": "${FOOTER_TEXT}  •  See thread for full details." }]
+      "elements": [{ "type": "mrkdwn", "text": "${FOOTER_TEXT}  •  See thread for details." }]
     }
   ]
 }
@@ -307,15 +345,25 @@ EOF
         -d "{\"channel\":\"${SLACK_CHANNEL_ID}\",\"thread_ts\":\"${PARENT_TS}\",\"text\":\"${TEXT}\"}"
     }
 
-    # ── Thread reply 1: merged PRs ──
+    # ── Thread reply 1: merged PRs (clean + auto-resolved) ──
 
-    MERGED_TEXT="*Merged (${MERGED_COUNT}/${TOTAL}):*\n"
+    MERGED_TEXT="*Clean merges (${MERGED_COUNT}):*\n"
     for entry in "${MERGED_PRS[@]}"; do
       PR_NUM=$(echo "$entry" | cut -d'|' -f1)
       PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
       PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
       MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
     done
+
+    if [ "$AUTORESOLVED_COUNT" -gt 0 ]; then
+      MERGED_TEXT="${MERGED_TEXT}\n*Auto-resolved (${AUTORESOLVED_COUNT}):*\n"
+      for entry in "${AUTORESOLVED_PRS[@]}"; do
+        PR_NUM=$(echo "$entry" | cut -d'|' -f1)
+        PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
+        PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
+        MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+      done
+    fi
 
     log "Posting merged list in thread..."
     MERGED_RESP=$(post_thread "$MERGED_TEXT")
@@ -325,34 +373,42 @@ EOF
       warn "Merged list thread post failed"
     fi
 
-    # ── Thread reply 2: failed PRs (with truncated conflict lists) ──
+    # ── Thread reply 2: failed + missing PRs (only if any) ──
 
-    FAILED_TEXT="*Failed — need rebase (${FAILED_COUNT}/${TOTAL}):*\n"
-    for i in "${!FAILED_PRS[@]}"; do
-      entry="${FAILED_PRS[$i]}"
-      PR_NUM=$(echo "$entry" | cut -d'|' -f1)
-      PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
-      PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-      FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
-    done
+    if [ "$FAILED_COUNT" -gt 0 ] || [ "$MISSING_COUNT" -gt 0 ]; then
+      FAILED_TEXT=""
 
-    if [ "$MISSING_COUNT" -gt 0 ]; then
-      FAILED_TEXT="${FAILED_TEXT}\n*Missing branches (${MISSING_COUNT}/${TOTAL}):*\n"
-      for entry in "${MISSING_PRS[@]}"; do
-        PR_NUM=$(echo "$entry" | cut -d'|' -f1)
-        PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
-        PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-        PR_BRANCH=$(echo "$entry" | cut -d'|' -f2)
-        FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE} (branch: ${PR_BRANCH})\n"
-      done
-    fi
+      if [ "$FAILED_COUNT" -gt 0 ]; then
+        FAILED_TEXT="*Failed — could not auto-resolve (${FAILED_COUNT}):*\n"
+        for i in "${!FAILED_PRS[@]}"; do
+          entry="${FAILED_PRS[$i]}"
+          PR_NUM=$(echo "$entry" | cut -d'|' -f1)
+          PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
+          PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
+          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+        done
+      fi
 
-    log "Posting failed list in thread..."
-    FAILED_RESP=$(post_thread "$FAILED_TEXT")
-    if echo "$FAILED_RESP" | grep -q '"ok":true'; then
-      ok "Slack notifications sent (summary + 2 threaded replies)"
+      if [ "$MISSING_COUNT" -gt 0 ]; then
+        FAILED_TEXT="${FAILED_TEXT}\n*Missing branches (${MISSING_COUNT}):*\n"
+        for entry in "${MISSING_PRS[@]}"; do
+          PR_NUM=$(echo "$entry" | cut -d'|' -f1)
+          PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
+          PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
+          PR_BRANCH=$(echo "$entry" | cut -d'|' -f2)
+          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE} (branch: ${PR_BRANCH})\n"
+        done
+      fi
+
+      log "Posting failed list in thread..."
+      FAILED_RESP=$(post_thread "$FAILED_TEXT")
+      if echo "$FAILED_RESP" | grep -q '"ok":true'; then
+        ok "Slack notifications sent (summary + 2 threaded replies)"
+      else
+        warn "Failed list thread post failed"
+      fi
     else
-      warn "Failed list thread post failed"
+      ok "Slack notification sent (summary + merged list)"
     fi
   fi
   fi
