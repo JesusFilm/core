@@ -53,7 +53,7 @@ Before writing any code, read **all** unresolved threads and the surrounding sou
 
 Present the triage to the user for confirmation before proceeding. Format:
 
-```
+```markdown
 ## Triage
 
 **Will fix:**
