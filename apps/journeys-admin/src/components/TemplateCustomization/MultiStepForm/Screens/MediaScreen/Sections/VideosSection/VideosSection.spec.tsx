@@ -135,16 +135,18 @@ const journeyWithVideoBlockWithDisplayTitle: Journey = {
 
 function renderVideosSection({
   journey = journeyWithNoMatchingVideoBlock,
-  cardBlockId: cardId = null
+  cardBlockId: cardId = null,
+  showLabel = false
 }: {
   journey?: Journey
   cardBlockId?: string | null
+  showLabel?: boolean
 } = {}) {
   return render(
     <MockedProvider>
       <SnackbarProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <VideosSection cardBlockId={cardId} />
+          <VideosSection cardBlockId={cardId} showLabel={showLabel} />
         </JourneyProvider>
       </SnackbarProvider>
     </MockedProvider>
@@ -166,9 +168,14 @@ describe('VideosSection', () => {
     expect(screen.getByTestId('VideosSection')).toBeInTheDocument()
   })
 
-  it('renders Video heading', () => {
-    renderVideosSection()
+  it('shows Video heading when showLabel is true', () => {
+    renderVideosSection({ showLabel: true })
     expect(screen.getByText('Video')).toBeInTheDocument()
+  })
+
+  it('hides Video heading when showLabel is false', () => {
+    renderVideosSection()
+    expect(screen.queryByText('Video')).not.toBeInTheDocument()
   })
 
   it('renders upload button with Upload file text', () => {

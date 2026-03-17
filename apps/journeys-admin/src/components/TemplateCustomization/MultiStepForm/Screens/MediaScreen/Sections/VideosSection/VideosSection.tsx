@@ -92,6 +92,7 @@ function VideoTitle({ title }: VideoTitleProps): ReactElement {
 
 interface VideosSectionProps {
   cardBlockId: string | null
+  showLabel?: boolean
 }
 
 /**
@@ -99,7 +100,8 @@ interface VideosSectionProps {
  * customizable video preview (YouTube, Mux, or internal).
  */
 export function VideosSection({
-  cardBlockId
+  cardBlockId,
+  showLabel = false
 }: VideosSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -169,9 +171,11 @@ export function VideosSection({
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
       <Stack gap={2}>
-        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-          {t('Video')}
-        </Typography>
+        {showLabel && (
+          <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
+            {t('Video')}
+          </Typography>
+        )}
         <Stack gap={1.5}>
           {loading ? (
             <Box
