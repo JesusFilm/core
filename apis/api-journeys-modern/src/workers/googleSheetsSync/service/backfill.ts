@@ -6,7 +6,9 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { getIntegrationGoogleAccessToken } from '../../../lib/google/googleAuth'
 import {
   clearSheet,
+  columnIndexToA1,
   ensureSheet,
+  readValues,
   writeValues
 } from '../../../lib/google/sheets'
 import { computeConnectedBlockIds } from '../../../schema/journeyVisitor/export/connectivity'
@@ -42,6 +44,28 @@ interface JourneyVisitorExportRow {
   visitorId: string
   date: string
   [key: string]: string
+}
+
+function isTargetRangeUnchanged({
+  nextValues,
+  existingValues,
+  writeWidth
+}: {
+  nextValues: (string | null)[][]
+  existingValues: (string | null)[][]
+  writeWidth: number
+}): boolean {
+  return nextValues.every((nextRow, rowIndex) => {
+    const existingRow = existingValues[rowIndex] ?? []
+
+    for (let colIndex = 0; colIndex < writeWidth; colIndex++) {
+      const nextCell = String(nextRow[colIndex] ?? '')
+      const existingCell = String(existingRow[colIndex] ?? '')
+      if (nextCell !== existingCell) return false
+    }
+
+    return true
+  })
 }
 
 async function* getJourneyVisitors(
@@ -303,14 +327,35 @@ export async function backfillService(
     values.push(aligned)
   }
 
-  // Write all data at once
-  await writeValues({
+  const writeWidth = finalHeader.length
+  const writeHeight = values.length
+  const lastColumnA1 = columnIndexToA1(writeWidth - 1)
+  const targetRange = `${sheetName}!A1:${lastColumnA1}${writeHeight}`
+  const existingTargetValues = await readValues({
     accessToken,
     spreadsheetId,
-    sheetTitle: sheetName,
-    values,
-    append: false
+    range: targetRange
   })
+
+  const targetRangeUnchanged = isTargetRangeUnchanged({
+    nextValues: values,
+    existingValues: existingTargetValues,
+    writeWidth
+  })
+
+  if (!targetRangeUnchanged) {
+    // Clear existing data
+    await clearSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
+
+    // Write all data at once
+    await writeValues({
+      accessToken,
+      spreadsheetId,
+      sheetTitle: sheetName,
+      values,
+      append: false
+    })
+  }
 
   // Update exportOrder on blocks that don't have it set yet.
   // This ensures columns maintain their positions for future syncs.
