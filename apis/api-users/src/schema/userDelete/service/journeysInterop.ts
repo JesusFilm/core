@@ -5,10 +5,9 @@ import {
   gql
 } from '@apollo/client'
 
-import { createLog, LogEntry } from './types'
+import { LogEntry, createLog } from './types'
 
-const gatewayUrl =
-  process.env.GATEWAY_URL ?? 'http://localhost:4000'
+const gatewayUrl = process.env.GATEWAY_URL ?? 'http://localhost:4000'
 
 const httpLink = createHttpLink({
   uri: gatewayUrl,

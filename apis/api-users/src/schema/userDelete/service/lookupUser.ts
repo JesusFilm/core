@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { User, prisma } from '@core/prisma/users/client'
 
-import { createLog, LogEntry } from './types'
+import { LogEntry, createLog } from './types'
 
 interface LookupResult {
   user: User

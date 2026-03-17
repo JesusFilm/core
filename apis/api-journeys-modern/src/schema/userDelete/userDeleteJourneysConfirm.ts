@@ -155,9 +155,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
             deletedUserJourneyIds.push(...ujRecords.map((r) => r.id))
             await tx.userJourney.deleteMany({ where: { userId } })
             logs.push(
-              createLog(
-                `Removed ${ujRecords.length} user-journey memberships`
-              )
+              createLog(`Removed ${ujRecords.length} user-journey memberships`)
             )
 
             const utRecords = await tx.userTeam.findMany({
@@ -185,9 +183,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               await tx.team.deleteMany({
                 where: { id: { in: teamIdsToDelete } }
               })
-              logs.push(
-                createLog(`Deleted ${teamIdsToDelete.length} teams`)
-              )
+              logs.push(createLog(`Deleted ${teamIdsToDelete.length} teams`))
             }
 
             // Clean up related records
@@ -244,9 +240,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               where: { userId }
             })
             if (integrations.count > 0)
-              logs.push(
-                createLog(`Deleted ${integrations.count} integrations`)
-              )
+              logs.push(createLog(`Deleted ${integrations.count} integrations`))
 
             const userRoles = await tx.userRole.deleteMany({
               where: { userId }
@@ -258,9 +252,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               where: { userId }
             })
             if (visitors.count > 0)
-              logs.push(
-                createLog(`Deleted ${visitors.count} visitor records`)
-              )
+              logs.push(createLog(`Deleted ${visitors.count} visitor records`))
 
             return {
               deletedJourneyIds: journeyIdsToDelete,
@@ -276,8 +268,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
 
         return { success: true, ...result, logs }
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error ? error.message : 'Unknown error'
         logs.push(
           createLog(
             `Journeys database cleanup failed: ${message}. All changes reverted.`,

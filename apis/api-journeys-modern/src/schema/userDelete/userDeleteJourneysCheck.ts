@@ -12,8 +12,9 @@ function createLog(message: string, level = 'info'): LogEntry {
   return { message, level, timestamp: new Date().toISOString() }
 }
 
-const UserDeleteJourneysLogEntry =
-  builder.objectRef<LogEntry>('UserDeleteJourneysLogEntry')
+const UserDeleteJourneysLogEntry = builder.objectRef<LogEntry>(
+  'UserDeleteJourneysLogEntry'
+)
 
 builder.objectType(UserDeleteJourneysLogEntry, {
   fields: (t) => ({
@@ -105,7 +106,9 @@ builder.mutationField('userDeleteJourneysCheck', (t) =>
         )
       if (journeysToTransfer > 0)
         logs.push(
-          createLog(`${journeysToTransfer} journey ownerships will be transferred`)
+          createLog(
+            `${journeysToTransfer} journey ownerships will be transferred`
+          )
         )
       if (journeysToRemove > 0)
         logs.push(
@@ -153,9 +156,7 @@ builder.mutationField('userDeleteJourneysCheck', (t) =>
         )
       if (teamsToTransfer > 0)
         logs.push(
-          createLog(
-            `${teamsToTransfer} team manager roles will be transferred`
-          )
+          createLog(`${teamsToTransfer} team manager roles will be transferred`)
         )
       if (teamsToRemove > 0)
         logs.push(

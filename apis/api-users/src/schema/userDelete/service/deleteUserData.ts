@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
-import { createLog, LogEntry } from './types'
+import { LogEntry, createLog } from './types'
 
 interface DeleteUserDataInput {
   userDbId: string
@@ -34,17 +34,13 @@ export async function deleteUserData(
     await auth.deleteUser(input.firebaseUserId)
     logs.push(createLog('Firebase auth record deleted'))
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Unknown error'
+    const message = error instanceof Error ? error.message : 'Unknown error'
     // auth/user-not-found means no Firebase record exists — safe to proceed
     if (message.includes('user-not-found')) {
       logs.push(createLog('No Firebase auth record found, proceeding'))
     } else {
       logs.push(
-        createLog(
-          `Failed to delete Firebase auth record: ${message}`,
-          'error'
-        )
+        createLog(`Failed to delete Firebase auth record: ${message}`, 'error')
       )
       return { success: false, logs }
     }
@@ -75,8 +71,7 @@ export async function deleteUserData(
     await prisma.user.delete({ where: { id: input.userDbId } })
     logs.push(createLog('User record deleted from database'))
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : 'Unknown error'
+    const message = error instanceof Error ? error.message : 'Unknown error'
     await prisma.userDeleteAuditLog.update({
       where: { id: auditLog.id },
       data: { errorMessage: `Failed to delete user record: ${message}` }

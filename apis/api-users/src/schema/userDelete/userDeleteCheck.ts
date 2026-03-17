@@ -1,10 +1,10 @@
 import { builder } from '../builder'
 
 import {
+  type LogEntry,
   callJourneysCheck,
   createLog,
-  lookupUser,
-  type LogEntry
+  lookupUser
 } from './service'
 
 const UserDeleteIdType = builder.enumType('UserDeleteIdType', {
@@ -34,8 +34,9 @@ interface UserDeleteCheckResultShape {
   logs: LogEntry[]
 }
 
-const UserDeleteCheckResult =
-  builder.objectRef<UserDeleteCheckResultShape>('UserDeleteCheckResult')
+const UserDeleteCheckResult = builder.objectRef<UserDeleteCheckResultShape>(
+  'UserDeleteCheckResult'
+)
 
 builder.objectType(UserDeleteCheckResult, {
   fields: (t) => ({

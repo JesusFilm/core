@@ -5,11 +5,11 @@ import { prisma } from '@core/prisma/users/client'
 import { builder } from '../builder'
 
 import {
+  type LogEntry,
   callJourneysConfirm,
   createLog,
   deleteUserData,
-  lookupUser,
-  type LogEntry
+  lookupUser
 } from './service'
 import { UserDeleteIdType, UserDeleteLogEntry } from './userDeleteCheck'
 

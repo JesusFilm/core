@@ -80,9 +80,7 @@ export function UserDelete(): ReactElement {
     variables: { input: { redirect: router?.query?.redirect } }
   })
 
-  const [idType, setIdType] = useState<UserDeleteIdType>(
-    UserDeleteIdType.email
-  )
+  const [idType, setIdType] = useState<UserDeleteIdType>(UserDeleteIdType.email)
   const [userId, setUserId] = useState('')
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [checkComplete, setCheckComplete] = useState(false)
@@ -113,7 +111,12 @@ export function UserDelete(): ReactElement {
       logs
         .map((log) => {
           const time = new Date(log.timestamp).toLocaleTimeString()
-          const prefix = log.level === 'error' ? 'ERROR' : log.level === 'warn' ? 'WARN' : 'INFO'
+          const prefix =
+            log.level === 'error'
+              ? 'ERROR'
+              : log.level === 'warn'
+                ? 'WARN'
+                : 'INFO'
           return `[${time}] ${prefix}: ${log.message}`
         })
         .join('\n'),
@@ -251,9 +254,7 @@ export function UserDelete(): ReactElement {
         <Button
           variant="contained"
           onClick={handleCheck}
-          disabled={
-            userId.trim() === '' || checkLoading || confirmLoading
-          }
+          disabled={userId.trim() === '' || checkLoading || confirmLoading}
           sx={{ whiteSpace: 'nowrap', minWidth: 100 }}
         >
           {checkLoading ? t('Checking...') : t('Check')}
@@ -285,9 +286,7 @@ export function UserDelete(): ReactElement {
           variant="contained"
           color="error"
           onClick={() => setConfirmOpen(true)}
-          disabled={
-            !checkComplete || confirmLoading || deleteComplete
-          }
+          disabled={!checkComplete || confirmLoading || deleteComplete}
         >
           {confirmLoading ? t('Deleting...') : t('Delete User')}
         </Button>
