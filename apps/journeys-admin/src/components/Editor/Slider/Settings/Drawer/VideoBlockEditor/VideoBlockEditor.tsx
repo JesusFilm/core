@@ -57,10 +57,7 @@ export function VideoBlockEditor({
 
   function handleNotesBlur(): void {
     const trimmed = notesInputValue.trim()
-    if (
-      videoBlock != null &&
-      trimmed !== (videoBlock.notes ?? '').trim()
-    ) {
+    if (videoBlock != null && trimmed !== (videoBlock.notes ?? '').trim()) {
       void onChange({ notes: trimmed || null })
     }
   }
