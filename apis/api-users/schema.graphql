@@ -39,6 +39,8 @@ type Mutation {
   userImpersonate(email: String!): String
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
   validateEmail(email: String!, token: String!): AuthenticatedUser
+  userDeleteCheck(idType: UserDeleteIdType!, id: String!): UserDeleteCheckResult!
+  userDeleteConfirm(idType: UserDeleteIdType!, id: String!): UserDeleteResult!
 }
 
 type Query {
@@ -51,4 +53,33 @@ interface User
   @key(fields: "id")
 {
   id: ID!
+}
+
+type UserDeleteCheckResult {
+  userId: String!
+  userEmail: String
+  userFirstName: String!
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteLogEntry!]!
+}
+
+enum UserDeleteIdType {
+  databaseId
+  email
+}
+
+type UserDeleteLogEntry {
+  message: String!
+  level: String!
+  timestamp: String!
+}
+
+type UserDeleteResult {
+  success: Boolean!
+  logs: [UserDeleteLogEntry!]!
 }
