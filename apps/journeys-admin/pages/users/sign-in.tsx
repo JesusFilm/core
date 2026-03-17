@@ -13,6 +13,7 @@ import {
   redirectToApp,
   toUser
 } from '../../src/libs/auth/getAuthTokens'
+import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
 export default function SignInPage(): ReactElement {
   const { user } = useAuth()
@@ -34,32 +35,17 @@ export default function SignInPage(): ReactElement {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const tokens = await getAuthTokens(ctx)
   if (tokens != null) {
-    const user = await toUser(tokens)
-    console.log('TOKENS', tokens)
+    const user = toUser(tokens)
 
-    const firebaseAnon = user.isAnonymous
-    const localAnon =
-      tokens.decodedToken.firebase.sign_in_provider === 'custom' &&
-      tokens.decodedToken.source_sign_in_provider === 'password' &&
-      tokens.decodedToken.email_verified === false
+    const { redirect } = await initAndAuthApp({
+      user,
+      locale: ctx.locale,
+      resolvedUrl: ctx.resolvedUrl
+    })
 
-    if (firebaseAnon || localAnon) {
-      const redirectParam =
-        typeof ctx.query.redirect === 'string' ? ctx.query.redirect : null
-      const verifyDestination =
-        redirectParam != null
-          ? `/users/verify?redirect=${encodeURIComponent(redirectParam)}`
-          : '/users/verify'
+    if (redirect != null) return { redirect }
 
-      return {
-        redirect: {
-          permanent: false,
-          destination: verifyDestination
-        }
-      }
-    } else {
-      return redirectToApp(ctx)
-    }
+    return redirectToApp(ctx)
   }
 
   return {

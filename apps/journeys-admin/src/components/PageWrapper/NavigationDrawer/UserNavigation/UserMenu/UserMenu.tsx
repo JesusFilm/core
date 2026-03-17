@@ -1,11 +1,7 @@
 import { useApolloClient } from '@apollo/client'
-import BugReportIcon from '@mui/icons-material/BugReport'
 import LanguageIcon from '@mui/icons-material/Language'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import Menu from '@mui/material/Menu'
 import Stack from '@mui/material/Stack'
@@ -23,7 +19,6 @@ import Mail1 from '@core/shared/ui/icons/Mail1'
 import { GetMe_me_AuthenticatedUser as ApiUser } from '../../../../../../__generated__/GetMe'
 import { User } from '../../../../../libs/auth'
 import { logout } from '../../../../../libs/auth/firebase'
-import { DevAuthPanel } from '../../../../SignIn/DevAuthPanel/DevAuthPanel'
 import { LanguageSwitcher } from '../../../../LanguageSwitcher'
 import { MenuItem } from '../../../../MenuItem'
 
@@ -47,7 +42,6 @@ export function UserMenu({
   const client = useApolloClient()
   const { setActiveTeam } = useTeam()
   const [open, setOpen] = useState(false)
-  const [devAuthOpen, setDevAuthOpen] = useState(false)
   const router = useRouter()
 
   return (
@@ -105,15 +99,6 @@ export function UserMenu({
           testId="Language"
         />
         <MenuItem
-          label="Dev Auth Debug"
-          icon={<BugReportIcon fontSize="small" />}
-          onClick={() => {
-            handleProfileClose()
-            setDevAuthOpen(true)
-          }}
-          testId="DevAuthDebug"
-        />
-        <MenuItem
           label={t('Logout')}
           icon={<Logout2Icon fontSize="small" />}
           onClick={async () => {
@@ -131,19 +116,6 @@ export function UserMenu({
       </Menu>
       {open && (
         <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
-      )}
-      {devAuthOpen && (
-        <Dialog
-          open={devAuthOpen}
-          onClose={() => setDevAuthOpen(false)}
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle>Dev Auth Debug</DialogTitle>
-          <DialogContent>
-            <DevAuthPanel />
-          </DialogContent>
-        </Dialog>
       )}
     </>
   )
