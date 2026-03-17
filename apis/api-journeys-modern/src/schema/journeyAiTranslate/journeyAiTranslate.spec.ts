@@ -482,8 +482,12 @@ describe('journeyAiTranslateCreate mutation', () => {
     // Make stream throw an error
     mockStreamText.mockReturnValueOnce({
       elementStream: {
-        async *[Symbol.asyncIterator]() {
-          throw new Error('Translation error')
+        [Symbol.asyncIterator]() {
+          return {
+            next: async () => {
+              throw new Error('Translation error')
+            }
+          }
         }
       }
     } as any)
