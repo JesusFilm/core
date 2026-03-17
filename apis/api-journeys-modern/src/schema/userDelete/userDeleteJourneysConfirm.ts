@@ -130,9 +130,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               if (others.length === 0) {
                 teamIdsToDelete.push(ut.team.id)
               } else if (ut.role === 'manager') {
-                const existingManager = others.find(
-                  (o) => o.role === 'manager'
-                )
+                const existingManager = others.find((o) => o.role === 'manager')
                 if (existingManager != null) {
                   logs.push(
                     createLog(
