@@ -1,4 +1,5 @@
 import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -211,6 +212,14 @@ export function DefaultMenu({
           setHasOpenDialog?.(true)
         }}
       />
+      {template !== true && (
+        <NextLink href={`/journeys/${journeyId}/ai`} passHref legacyBehavior>
+          <MenuItem
+            label={t('Edit with AI')}
+            icon={<AutoAwesomeIcon color="secondary" />}
+          />
+        </NextLink>
+      )}
       <Divider />
       {template !== true && (
         <MenuItem

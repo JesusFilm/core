@@ -1,4 +1,5 @@
 import { gql, useApolloClient, useMutation } from '@apollo/client'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -345,6 +346,17 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         alignItems="center"
       >
         <Items />
+        {journey != null && journey.template !== true && smUp && (
+          <Tooltip title={t('Switch to AI Editor')} placement="bottom" arrow>
+            <IconButton
+              component={NextLink}
+              href={`/journeys/${journey.id}/ai`}
+              data-testid="AIEditorButton"
+            >
+              <AutoAwesomeIcon />
+            </IconButton>
+          </Tooltip>
+        )}
         <PreviewItem variant="icon-button" />
         <Box ref={menuRef}>
           <Menu user={user} />
