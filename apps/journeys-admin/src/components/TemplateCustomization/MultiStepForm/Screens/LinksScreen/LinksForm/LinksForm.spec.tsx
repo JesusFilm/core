@@ -483,10 +483,7 @@ describe('LinksForm', () => {
         >
           {(formik) => (
             <FormikProvider value={formik}>
-              <LinksForm
-                links={[legacyLink]}
-                onPlatformChange={jest.fn()}
-              />
+              <LinksForm links={[legacyLink]} onPlatformChange={jest.fn()} />
             </FormikProvider>
           )}
         </Formik>
