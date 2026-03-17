@@ -467,6 +467,35 @@ describe('LinksForm', () => {
       expect(screen.getByPlaceholderText('Chat URL')).toBeInTheDocument()
     })
 
+    it('should display icon for legacy platform value not in dropdown options', () => {
+      const legacyLink: JourneyLink = {
+        id: 'chat-legacy',
+        linkType: 'chatButtons',
+        url: 'https://vk.com/123',
+        label: 'Legacy Chat',
+        platform: MessagePlatform.vk
+      }
+
+      render(
+        <Formik
+          initialValues={{ 'chat-legacy': 'https://vk.com/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm
+                links={[legacyLink]}
+                onPlatformChange={jest.fn()}
+              />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByLabelText('Select chat icon')).toBeInTheDocument()
+      expect(screen.getByTestId('VkIcon')).toBeInTheDocument()
+    })
+
     it('should call onPlatformChange when a new platform is selected', async () => {
       const onPlatformChange = jest.fn()
 
