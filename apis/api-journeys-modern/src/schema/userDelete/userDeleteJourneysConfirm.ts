@@ -2,17 +2,8 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
+import { LogEntry, createLog } from './types'
 import { UserDeleteJourneysLogEntry } from './userDeleteJourneysCheck'
-
-interface LogEntry {
-  message: string
-  level: string
-  timestamp: string
-}
-
-function createLog(message: string, level = 'info'): LogEntry {
-  return { message, level, timestamp: new Date().toISOString() }
-}
 
 interface JourneysConfirmResultShape {
   success: boolean
@@ -90,20 +81,29 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               if (others.length === 0) {
                 journeyIdsToDelete.push(uj.journey.id)
               } else if (uj.role === 'owner') {
+                // Prefer editors over inviteRequested users for ownership transfer
                 const nextOwner =
                   others.find((o) => o.role === 'editor') ?? others[0]
-                await tx.userJourney.updateMany({
-                  where: {
-                    journeyId: uj.journey.id,
-                    userId: nextOwner.userId
-                  },
-                  data: { role: 'owner' }
-                })
-                logs.push(
-                  createLog(
-                    `Transferred ownership of journey "${uj.journey.title}" to user ${nextOwner.userId}`
+                if (nextOwner.role === 'owner') {
+                  logs.push(
+                    createLog(
+                      `Journey "${uj.journey.title}" already has another owner (${nextOwner.userId}), skipping transfer`
+                    )
                   )
-                )
+                } else {
+                  await tx.userJourney.updateMany({
+                    where: {
+                      journeyId: uj.journey.id,
+                      userId: nextOwner.userId
+                    },
+                    data: { role: 'owner' }
+                  })
+                  logs.push(
+                    createLog(
+                      `Transferred ownership of journey "${uj.journey.title}" to user ${nextOwner.userId}`
+                    )
+                  )
+                }
               }
             }
 
@@ -130,20 +130,30 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               if (others.length === 0) {
                 teamIdsToDelete.push(ut.team.id)
               } else if (ut.role === 'manager') {
-                const nextManager =
-                  others.find((o) => o.role === 'manager') ?? others[0]
-                await tx.userTeam.updateMany({
-                  where: {
-                    teamId: ut.team.id,
-                    userId: nextManager.userId
-                  },
-                  data: { role: 'manager' }
-                })
-                logs.push(
-                  createLog(
-                    `Transferred manager role of team "${ut.team.title}" to user ${nextManager.userId}`
-                  )
+                const existingManager = others.find(
+                  (o) => o.role === 'manager'
                 )
+                if (existingManager != null) {
+                  logs.push(
+                    createLog(
+                      `Team "${ut.team.title}" already has another manager (${existingManager.userId}), skipping transfer`
+                    )
+                  )
+                } else {
+                  const nextManager = others[0]
+                  await tx.userTeam.updateMany({
+                    where: {
+                      teamId: ut.team.id,
+                      userId: nextManager.userId
+                    },
+                    data: { role: 'manager' }
+                  })
+                  logs.push(
+                    createLog(
+                      `Transferred manager role of team "${ut.team.title}" to user ${nextManager.userId}`
+                    )
+                  )
+                }
               }
             }
 

@@ -1,1 +1,1 @@
-export { UserDelete } from './UserDelete'
+export { UserDeleteWithErrorBoundary as UserDelete } from './UserDelete'

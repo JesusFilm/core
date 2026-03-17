@@ -34,11 +34,16 @@ export async function deleteUserData(
     await auth.deleteUser(input.firebaseUserId)
     logs.push(createLog('Firebase auth record deleted'))
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
     // auth/user-not-found means no Firebase record exists — safe to proceed
-    if (message.includes('user-not-found')) {
+    if (
+      error != null &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 'auth/user-not-found'
+    ) {
       logs.push(createLog('No Firebase auth record found, proceeding'))
     } else {
+      const message = error instanceof Error ? error.message : 'Unknown error'
       logs.push(
         createLog(`Failed to delete Firebase auth record: ${message}`, 'error')
       )
@@ -47,24 +52,36 @@ export async function deleteUserData(
   }
 
   // 2. Create audit log with success: false
-  const auditLog = await prisma.userDeleteAuditLog.create({
-    data: {
-      deletedUserId: input.userDbId,
-      deletedUserEmail: input.userEmail,
-      deletedUserFirstName: input.userFirstName,
-      deletedUserLastName: input.userLastName,
-      callerUserId: input.callerUserId,
-      callerEmail: input.callerEmail,
-      callerFirstName: input.callerFirstName,
-      callerLastName: input.callerLastName,
-      deletedJourneyIds: input.deletedJourneyIds,
-      deletedTeamIds: input.deletedTeamIds,
-      deletedUserJourneyIds: input.deletedUserJourneyIds,
-      deletedUserTeamIds: input.deletedUserTeamIds,
-      success: false
-    }
-  })
-  logs.push(createLog('Audit log created'))
+  let auditLog: { id: string } | null = null
+  try {
+    auditLog = await prisma.userDeleteAuditLog.create({
+      data: {
+        deletedUserId: input.userDbId,
+        deletedUserEmail: input.userEmail,
+        deletedUserFirstName: input.userFirstName,
+        deletedUserLastName: input.userLastName,
+        callerUserId: input.callerUserId,
+        callerEmail: input.callerEmail,
+        callerFirstName: input.callerFirstName,
+        callerLastName: input.callerLastName,
+        deletedJourneyIds: input.deletedJourneyIds,
+        deletedTeamIds: input.deletedTeamIds,
+        deletedUserJourneyIds: input.deletedUserJourneyIds,
+        deletedUserTeamIds: input.deletedUserTeamIds,
+        success: false
+      }
+    })
+    logs.push(createLog('Audit log created'))
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    logs.push(
+      createLog(
+        `Failed to create audit log: ${message}. Aborting deletion.`,
+        'error'
+      )
+    )
+    return { success: false, logs }
+  }
 
   // 3. Delete User record
   try {
@@ -72,19 +89,23 @@ export async function deleteUserData(
     logs.push(createLog('User record deleted from database'))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    await prisma.userDeleteAuditLog.update({
-      where: { id: auditLog.id },
-      data: { errorMessage: `Failed to delete user record: ${message}` }
-    })
+    if (auditLog != null) {
+      await prisma.userDeleteAuditLog.update({
+        where: { id: auditLog.id },
+        data: { errorMessage: `Failed to delete user record: ${message}` }
+      })
+    }
     logs.push(createLog(`Failed to delete user record: ${message}`, 'error'))
     return { success: false, logs }
   }
 
   // 4. Update audit log to success
-  await prisma.userDeleteAuditLog.update({
-    where: { id: auditLog.id },
-    data: { success: true }
-  })
+  if (auditLog != null) {
+    await prisma.userDeleteAuditLog.update({
+      where: { id: auditLog.id },
+      data: { success: true }
+    })
+  }
 
   logs.push(createLog('User deleted successfully'))
   return { success: true, logs }

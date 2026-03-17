@@ -18,7 +18,16 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  Component,
+  ErrorInfo,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import { GetMe } from '../../../__generated__/GetMe'
 import { UserDeleteIdType } from '../../../__generated__/globalTypes'
@@ -72,7 +81,67 @@ export const USER_DELETE_CONFIRM = gql`
   }
 `
 
-export function UserDelete(): ReactElement {
+interface UserDeleteErrorBoundaryProps {
+  children: ReactNode
+}
+
+interface UserDeleteErrorBoundaryState {
+  hasError: boolean
+  error: Error | null
+}
+
+class UserDeleteErrorBoundary extends Component<
+  UserDeleteErrorBoundaryProps,
+  UserDeleteErrorBoundaryState
+> {
+  constructor(props: UserDeleteErrorBoundaryProps) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error: Error): UserDeleteErrorBoundaryState {
+    return { hasError: true, error }
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+    console.error('UserDelete error:', error, errorInfo)
+  }
+
+  render(): ReactNode {
+    if (this.state.hasError) {
+      return <UserDeleteErrorFallback error={this.state.error} />
+    }
+    return this.props.children
+  }
+}
+
+function UserDeleteErrorFallback({
+  error
+}: {
+  error: Error | null
+}): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  return (
+    <Box sx={{ p: 4, maxWidth: 800 }}>
+      <Alert severity="error">
+        <AlertTitle>{t('Something went wrong')}</AlertTitle>
+        <Typography variant="body2">
+          {error?.message ?? t('An unexpected error occurred.')}
+        </Typography>
+      </Alert>
+    </Box>
+  )
+}
+
+export function UserDeleteWithErrorBoundary(): ReactElement {
+  return (
+    <UserDeleteErrorBoundary>
+      <UserDeleteContent />
+    </UserDeleteErrorBoundary>
+  )
+}
+
+function UserDeleteContent(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -202,7 +271,7 @@ export function UserDelete(): ReactElement {
         {t('Delete User')}
       </Typography>
 
-      <Alert severity="warning" sx={{ mb: 3 }}>
+      <Alert id="delete-warning" severity="warning" sx={{ mb: 3 }}>
         <AlertTitle>{t('Warning')}</AlertTitle>
         <Typography variant="body2">
           {t(
@@ -216,6 +285,7 @@ export function UserDelete(): ReactElement {
           <InputLabel id="id-type-label">{t('Lookup By')}</InputLabel>
           <Select
             labelId="id-type-label"
+            aria-describedby="delete-warning"
             value={idType}
             label={t('Lookup By')}
             onChange={(e) => {
@@ -234,6 +304,12 @@ export function UserDelete(): ReactElement {
 
         <TextField
           size="small"
+          aria-label={
+            idType === UserDeleteIdType.email
+              ? t('User email to delete')
+              : t('Database ID to delete')
+          }
+          aria-describedby="delete-warning"
           label={
             idType === UserDeleteIdType.email
               ? t('User Email')

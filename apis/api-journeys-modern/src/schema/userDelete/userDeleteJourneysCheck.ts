@@ -2,15 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
-interface LogEntry {
-  message: string
-  level: string
-  timestamp: string
-}
-
-function createLog(message: string, level = 'info'): LogEntry {
-  return { message, level, timestamp: new Date().toISOString() }
-}
+import { LogEntry, createLog } from './types'
 
 const UserDeleteJourneysLogEntry = builder.objectRef<LogEntry>(
   'UserDeleteJourneysLogEntry'
