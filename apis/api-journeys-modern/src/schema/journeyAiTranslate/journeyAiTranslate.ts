@@ -56,10 +56,52 @@ const JourneyAnalysisSchema = z.object({
   seoDescription: z.string().describe('Translated journey SEO description')
 })
 
+const BlockTranslationUpdatesSchema = z
+  .object({
+    content: z.string().optional(),
+    label: z.string().optional(),
+    placeholder: z.string().optional()
+  })
+  .refine((updates) => Object.keys(updates).length > 0, {
+    message: 'At least one supported update field is required'
+  })
+
 const BlockTranslationSchema = z.object({
   blockId: z.string().describe('The block id to update'),
-  updates: z.record(z.string(), z.string()).describe('Translated block fields')
+  updates: BlockTranslationUpdatesSchema.describe('Translated block fields')
 })
+
+type TranslatableBlockField = keyof z.infer<typeof BlockTranslationUpdatesSchema>
+
+const allowedTranslationFieldsByBlockType = {
+  TypographyBlock: ['content'],
+  ButtonBlock: ['label'],
+  RadioOptionBlock: ['label'],
+  TextResponseBlock: ['label', 'placeholder']
+} as const satisfies Record<string, readonly TranslatableBlockField[]>
+
+function getValidatedBlockUpdates(
+  block: { typename: string },
+  updates: z.infer<typeof BlockTranslationUpdatesSchema>
+): Partial<Record<TranslatableBlockField, string>> | null {
+  const allowedFields =
+    allowedTranslationFieldsByBlockType[
+      block.typename as keyof typeof allowedTranslationFieldsByBlockType
+    ]
+
+  if (allowedFields == null) {
+    return null
+  }
+
+  const validatedUpdates = Object.fromEntries(
+    allowedFields.flatMap((field) => {
+      const value = updates[field]
+      return typeof value === 'string' ? [[field, value]] : []
+    })
+  ) as Partial<Record<TranslatableBlockField, string>>
+
+  return Object.keys(validatedUpdates).length > 0 ? validatedUpdates : null
+}
 
 // Define the shared input type
 const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
@@ -424,12 +466,29 @@ If there is no Bible translation was available, use the the most popular English
                     continue
                   }
 
+                  const blockToUpdate = updatedJourney.blocks.find(
+                    (block) => block.id === cleanBlockId
+                  )
+
+                  if (blockToUpdate == null) {
+                    continue
+                  }
+
+                  const validatedUpdates = getValidatedBlockUpdates(
+                    blockToUpdate,
+                    item.updates
+                  )
+
+                  if (validatedUpdates == null) {
+                    continue
+                  }
+
                   await prisma.block.update({
                     where: {
                       id: cleanBlockId,
                       journeyId: input.journeyId
                     },
-                    data: item.updates
+                    data: validatedUpdates
                   })
 
                   // Update the in-memory journey blocks
@@ -439,7 +498,7 @@ If there is no Bible translation was available, use the the most popular English
                   if (blockIndex !== -1) {
                     updatedJourney.blocks[blockIndex] = {
                       ...updatedJourney.blocks[blockIndex],
-                      ...item.updates
+                      ...validatedUpdates
                     }
                   }
                 } catch (updateError) {
@@ -828,12 +887,29 @@ If there is no Bible translation was available, use the the most popular English
                       continue
                     }
 
+                    const blockToUpdate = journey.blocks.find(
+                      (block) => block.id === cleanBlockId
+                    )
+
+                    if (blockToUpdate == null) {
+                      continue
+                    }
+
+                    const validatedUpdates = getValidatedBlockUpdates(
+                      blockToUpdate,
+                      item.updates
+                    )
+
+                    if (validatedUpdates == null) {
+                      continue
+                    }
+
                     await prisma.block.update({
                       where: {
                         id: cleanBlockId,
                         journeyId: input.journeyId
                       },
-                      data: item.updates
+                      data: validatedUpdates
                     })
                   } catch (updateError) {
                     console.error(

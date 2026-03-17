@@ -150,10 +150,6 @@ describe('journeyAiTranslateCreate mutation', () => {
       updates: { label: 'Haga clic aquí' }
     },
     {
-      blockId: 'radio1',
-      updates: { label: 'Elija una opción' }
-    },
-    {
       blockId: 'option1',
       updates: { label: 'Opción 1' }
     },
@@ -303,7 +299,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
 
     // Verify block translations were processed
-    // We should have 5 blocks to update from our mock data
+    // We should have one update per supported translated block
     expect(prismaMock.block.update).toHaveBeenCalledTimes(
       mockTranslatedBlocks.length
     )
