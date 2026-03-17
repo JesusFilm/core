@@ -9,7 +9,9 @@ import { JourneyFields as Journey } from '../../../../../../../../__generated__/
 
 import { Chat } from '.'
 
-const renderChat = (chatButtons: Journey['chatButtons']): ReturnType<typeof render> => {
+const renderChat = (
+  chatButtons: Journey['chatButtons']
+): ReturnType<typeof render> => {
   const journey = { chatButtons } as unknown as Journey
   return render(
     <MockedProvider>
