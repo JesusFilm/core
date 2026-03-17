@@ -90,7 +90,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return {
     props: {
       userSerialized: JSON.stringify(user),
-      decodedTokenSerialized: JSON.stringify(tokens.decodedToken),
       initialApolloState: apolloClient.cache.extract(),
       ...translations,
       flags

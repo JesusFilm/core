@@ -26,7 +26,6 @@ getFirebaseAuth()
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
-  decodedTokenSerialized?: string
   flags?: { [key: string]: boolean }
   initialApolloState?: NormalizedCacheObject
 }> & {
@@ -44,11 +43,6 @@ function JourneysAdminApp({
   const user: User | null =
     pageProps.userSerialized != null
       ? JSON.parse(pageProps.userSerialized)
-      : null
-
-  const decodedToken: Record<string, unknown> | null =
-    pageProps.decodedTokenSerialized != null
-      ? JSON.parse(pageProps.decodedTokenSerialized)
       : null
 
   const apolloClient = useApollo({
@@ -118,7 +112,7 @@ function JourneysAdminApp({
            `}
               </Script>
             )}
-          <AuthProvider user={user} decodedToken={decodedToken}>
+          <AuthProvider user={user}>
             <ApolloProvider client={apolloClient}>
               <TeamProvider>
                 <SnackbarProvider
