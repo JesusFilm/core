@@ -424,9 +424,8 @@ You must never make changes to content from the Bible yourself.
 If there is no Bible translation was available, use the the most popular English Bible translation available. 
 `
 
-            // Create a map of valid block IDs for quick lookup
-            const validBlockIds = new Set(
-              updatedJourney.blocks.map((block) => block.id)
+            const allowedBlockIdsForCard = new Set(
+              allBlocksToTranslate.map((block) => block.id)
             )
 
             try {
@@ -463,8 +462,8 @@ If there is no Bible translation was available, use the the most popular English
                 try {
                   const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
 
-                  // Verify block ID exists in our journey
-                  if (!validBlockIds.has(cleanBlockId)) {
+                  // Verify the block belongs to the current card translation batch
+                  if (!allowedBlockIdsForCard.has(cleanBlockId)) {
                     continue
                   }
 
@@ -748,9 +747,6 @@ Return in this format:
           (block) => block.typename === 'CardBlock'
         )
 
-        // Create a map of valid block IDs for quick lookup
-        const validBlockIds = new Set(journey.blocks.map((block) => block.id))
-
         await Promise.all(
           cardBlocks.map(async (cardBlock, i) => {
             const cardContent = cardBlocksContent[i]
@@ -791,6 +787,10 @@ Return in this format:
               if (allBlocksToTranslate.length === 0) {
                 return
               }
+
+              const allowedBlockIdsForCard = new Set(
+                allBlocksToTranslate.map((block) => block.id)
+              )
 
               // Create a more concise representation of blocks to translate
               const blocksToTranslateInfo = allBlocksToTranslate
@@ -884,8 +884,8 @@ If there is no Bible translation was available, use the the most popular English
                   try {
                     const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
 
-                    // Verify block ID exists in our journey
-                    if (!validBlockIds.has(cleanBlockId)) {
+                    // Verify the block belongs to the current card translation batch
+                    if (!allowedBlockIdsForCard.has(cleanBlockId)) {
                       continue
                     }
 
