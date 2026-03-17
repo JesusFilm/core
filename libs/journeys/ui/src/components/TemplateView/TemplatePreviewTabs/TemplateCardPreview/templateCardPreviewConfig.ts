@@ -18,7 +18,7 @@ interface FramePortalConfig {
 
 export type BreakpointSwiperOptions = Pick<
   SwiperOptions,
-  'spaceBetween' | 'slidesOffsetBefore'
+  'spaceBetween' | 'slidesOffsetBefore' | 'slidesOffsetAfter'
 >
 
 export interface VariantConfig {
@@ -190,6 +190,7 @@ const GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG: VariantConfig = {
     width: 'auto',
     flexShrink: 0
   },
+  selectedSlideSx: {},
   swiperSx: {
     overflow: 'visible',
     zIndex: 2
@@ -243,6 +244,7 @@ const GUEST_PREVIEW_MOBILE_VARIANT_CONFIG: VariantConfig = {
     width: 'auto',
     flexShrink: 0
   },
+  selectedSlideSx: {},
   swiperSx: {
     overflow: 'visible',
     zIndex: 2
