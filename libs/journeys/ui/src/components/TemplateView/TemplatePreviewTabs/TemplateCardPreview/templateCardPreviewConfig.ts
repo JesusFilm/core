@@ -1,5 +1,5 @@
 import type { SxProps, Theme } from '@mui/material/styles'
-import { A11y, FreeMode, Mousewheel, Pagination } from 'swiper/modules'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
 export type TemplateCardPreviewVariant =
@@ -192,20 +192,7 @@ const GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG: VariantConfig = {
   },
   swiperSx: {
     overflow: 'visible',
-    zIndex: 2,
-    '& .swiper-pagination': {
-      position: 'relative',
-      mt: 2,
-      mb: 0
-    },
-    '& .swiper-pagination-bullet': {
-      backgroundColor: 'background.paper',
-      opacity: 0.5
-    },
-    '& .swiper-pagination-bullet-active': {
-      opacity: 1,
-      backgroundColor: 'primary.main'
-    }
+    zIndex: 2
   },
   swiperProps: {
     mousewheel: { forceToAxis: true },
@@ -214,10 +201,9 @@ const GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG: VariantConfig = {
     spaceBetween: 16,
     centeredSlides: true,
     observer: true,
-    observeParents: true,
-    pagination: { clickable: true }
+    observeParents: true
   },
-  modules: [Mousewheel, A11y, Pagination]
+  modules: [Mousewheel, A11y]
 }
 
 const GUEST_PREVIEW_MOBILE_CARD_WIDTH = 300
@@ -259,20 +245,7 @@ const GUEST_PREVIEW_MOBILE_VARIANT_CONFIG: VariantConfig = {
   },
   swiperSx: {
     overflow: 'visible',
-    zIndex: 2,
-    '& .swiper-pagination': {
-      position: 'relative',
-      mt: 2,
-      mb: 0
-    },
-    '& .swiper-pagination-bullet': {
-      backgroundColor: 'background.paper',
-      opacity: 0.5
-    },
-    '& .swiper-pagination-bullet-active': {
-      opacity: 1,
-      backgroundColor: 'primary.main'
-    }
+    zIndex: 2
   },
   swiperProps: {
     mousewheel: { forceToAxis: true },
@@ -281,10 +254,9 @@ const GUEST_PREVIEW_MOBILE_VARIANT_CONFIG: VariantConfig = {
     spaceBetween: 16,
     centeredSlides: true,
     observer: true,
-    observeParents: true,
-    pagination: { clickable: true }
+    observeParents: true
   },
-  modules: [Mousewheel, A11y, Pagination]
+  modules: [Mousewheel, A11y]
 }
 
 export const VARIANT_CONFIGS: Record<

@@ -17,6 +17,9 @@ import {
 import { BlockRenderer } from '../../../../BlockRenderer'
 import { CardWrapper } from '../../../../CardWrapper'
 import { FramePortal } from '../../../../FramePortal'
+import { StepFooter } from '../../../../StepFooter'
+import { StepHeader } from '../../../../StepHeader'
+import { StepFields } from '../../../../Step/__generated__/StepFields'
 import { VideoWrapper } from '../../../../VideoWrapper'
 import {
   SELECTED_SCALE,
@@ -29,12 +32,14 @@ export interface TemplateCardPreviewItemProps {
   variant: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
+  steps?: Array<TreeBlock<StepFields>> | null
 }
 
 /**
  * Renders a single template step as a preview card inside a FramePortal.
  * Applies variant-based sizing, optional selection scale, and theme/RTL from the journey.
  * Invokes onClick when the card is clicked.
+ * Renders StepHeader and StepFooter overlaid on the card using the provided steps list.
  *
  * @returns A clickable card box containing the step content in a scaled frame.
  */
@@ -42,7 +47,8 @@ export function TemplateCardPreviewItem({
   step,
   variant,
   onClick,
-  selectedStep
+  selectedStep,
+  steps
 }: TemplateCardPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -121,16 +127,24 @@ export function TemplateCardPreviewItem({
           >
             <Box
               sx={{
+                position: 'relative',
                 height: '100%',
                 borderRadius: framePortal.borderRadius
               }}
             >
+              <StepHeader
+                steps={steps}
+                selectedStep={step as unknown as TreeBlock<StepFields>}
+              />
               <BlockRenderer
                 block={step}
                 wrappers={{
                   VideoWrapper,
                   CardWrapper
                 }}
+              />
+              <StepFooter
+                selectedStep={step as unknown as TreeBlock<StepFields>}
               />
             </Box>
           </ThemeProvider>

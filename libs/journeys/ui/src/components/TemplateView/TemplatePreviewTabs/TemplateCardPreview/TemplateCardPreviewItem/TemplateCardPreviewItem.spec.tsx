@@ -62,6 +62,20 @@ describe('TemplateCardPreviewItem', () => {
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
+  it('should render guestPreviewDesktop variant', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem step={step} variant="guestPreviewDesktop" />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
+  it('should render guestPreviewMobile variant', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem step={step} variant="guestPreviewMobile" />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
   it('should call onClick with step when clicked', () => {
     const handleClick = jest.fn()
     const { getByTestId } = renderWithProviders(
@@ -123,5 +137,12 @@ describe('TemplateCardPreviewItem', () => {
     expect(getByTestId('TemplateCardPreviewItem')).toHaveStyle({
       opacity: 0.75
     })
+  })
+
+  it('should render with steps prop for StepHeader and StepFooter', () => {
+    const { getByTestId } = renderWithProviders(
+      <TemplateCardPreviewItem step={step} variant="standard" steps={[step]} />
+    )
+    expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 })

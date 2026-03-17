@@ -21,9 +21,13 @@ const mockUpdate = jest.fn()
 jest.mock('swiper/react', () => {
   const React = require('react')
   return {
-    Swiper: ({ children, onSwiper }: any) => {
+    Swiper: ({ children, onSwiper, onSlideChangeTransitionEnd }: any) => {
       React.useEffect(() => {
-        onSwiper?.({ slideTo: mockSlideTo, update: mockUpdate })
+        onSwiper?.({
+          slideTo: mockSlideTo,
+          update: mockUpdate,
+          realIndex: 0
+        })
       }, [onSwiper])
       return <div data-testid="Swiper">{children}</div>
     },
@@ -53,7 +57,9 @@ describe('TemplateCardPreview', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <JourneyProvider value={{ journey }}>
+          <TemplateCardPreview steps={steps} />
+        </JourneyProvider>
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -101,7 +107,9 @@ describe('TemplateCardPreview', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <JourneyProvider value={{ journey }}>
+          <TemplateCardPreview steps={steps} />
+        </JourneyProvider>
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -114,7 +122,9 @@ describe('TemplateCardPreview', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <JourneyProvider value={{ journey }}>
+          <TemplateCardPreview steps={steps} />
+        </JourneyProvider>
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -139,7 +149,9 @@ describe('TemplateCardPreview', () => {
 
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview steps={steps} variant="compact" />
+          <JourneyProvider value={{ journey }}>
+            <TemplateCardPreview steps={steps} variant="compact" />
+          </JourneyProvider>
         </ThemeProvider>
       )
       await waitFor(() =>
@@ -162,11 +174,13 @@ describe('TemplateCardPreview', () => {
 
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview
-            steps={steps}
-            variant="compact"
-            selectedStep={steps[1]}
-          />
+          <JourneyProvider value={{ journey }}>
+            <TemplateCardPreview
+              steps={steps}
+              variant="compact"
+              selectedStep={steps[1]}
+            />
+          </JourneyProvider>
         </ThemeProvider>
       )
       await waitFor(() => expect(mockSlideTo).toHaveBeenCalledWith(1, 500))
@@ -189,11 +203,13 @@ describe('TemplateCardPreview', () => {
       ] as Array<TreeBlock<StepBlock>>
 
       render(
-        <ThemeProvider theme={createTheme()}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TemplateCardPreview steps={steps} variant="guestPreviewDesktop" />
-          </JourneyProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider theme={createTheme()}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TemplateCardPreview steps={steps} variant="guestPreviewDesktop" />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       await waitFor(() =>
         expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
@@ -211,15 +227,17 @@ describe('TemplateCardPreview', () => {
       ] as Array<TreeBlock<StepBlock>>
 
       render(
-        <ThemeProvider theme={createTheme()}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TemplateCardPreview
-              steps={steps}
-              variant="guestPreviewDesktop"
-              initialStepId="step-2"
-            />
-          </JourneyProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider theme={createTheme()}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TemplateCardPreview
+                steps={steps}
+                variant="guestPreviewDesktop"
+                initialStepId="step-2"
+              />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       await waitFor(() =>
         expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
@@ -243,11 +261,13 @@ describe('TemplateCardPreview', () => {
       ] as Array<TreeBlock<StepBlock>>
 
       render(
-        <ThemeProvider theme={createTheme()}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TemplateCardPreview steps={steps} variant="guestPreviewMobile" />
-          </JourneyProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider theme={createTheme()}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TemplateCardPreview steps={steps} variant="guestPreviewMobile" />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       await waitFor(() =>
         expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
@@ -265,15 +285,17 @@ describe('TemplateCardPreview', () => {
       ] as Array<TreeBlock<StepBlock>>
 
       render(
-        <ThemeProvider theme={createTheme()}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <TemplateCardPreview
-              steps={steps}
-              variant="guestPreviewMobile"
-              initialStepId="step-2"
-            />
-          </JourneyProvider>
-        </ThemeProvider>
+        <MockedProvider>
+          <ThemeProvider theme={createTheme()}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TemplateCardPreview
+                steps={steps}
+                variant="guestPreviewMobile"
+                initialStepId="step-2"
+              />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
       )
       await waitFor(() =>
         expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)

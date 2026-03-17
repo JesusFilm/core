@@ -76,4 +76,14 @@ describe('CardsPreview', () => {
     expect(handleCardClick).toHaveBeenCalledTimes(1)
     expect(handleCardClick).toHaveBeenCalledWith(steps[0])
   })
+
+  it('should render cards with steps prop passed to each item', () => {
+    const steps = buildSteps(3)
+    render(
+      <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+        <CardsPreview steps={steps} />
+      </JourneyProvider>
+    )
+    expect(screen.getAllByTestId('CardsPreviewItem')).toHaveLength(3)
+  })
 })
