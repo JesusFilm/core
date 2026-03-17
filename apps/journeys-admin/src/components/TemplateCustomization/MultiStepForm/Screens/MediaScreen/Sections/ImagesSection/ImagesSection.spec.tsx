@@ -64,7 +64,7 @@ describe('ImagesSection', () => {
     blocks: [imageBlock]
   } as unknown as Journey
 
-  it('should render the section title and display empty message when no blocks found', () => {
+  it('should render the section and display empty message when no blocks found', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
@@ -72,10 +72,31 @@ describe('ImagesSection', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(screen.getByText('Image')).toBeInTheDocument()
     expect(
       screen.getByText('No customizable images found for this card.')
     ).toBeInTheDocument()
+  })
+
+  it('should show Image label when showLabel is true', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ImagesSection journey={null} cardBlockId={null} showLabel />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByText('Image')).toBeInTheDocument()
+  })
+
+  it('should hide Image label when showLabel is false', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ImagesSection journey={null} cardBlockId={null} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByText('Image')).not.toBeInTheDocument()
   })
 
   it('should display empty message when cardBlockId is null with a non-null journey', () => {
