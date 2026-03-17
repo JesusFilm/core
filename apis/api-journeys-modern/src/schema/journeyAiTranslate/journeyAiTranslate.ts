@@ -71,7 +71,9 @@ const BlockTranslationSchema = z.object({
   updates: BlockTranslationUpdatesSchema.describe('Translated block fields')
 })
 
-type TranslatableBlockField = keyof z.infer<typeof BlockTranslationUpdatesSchema>
+type TranslatableBlockField = keyof z.infer<
+  typeof BlockTranslationUpdatesSchema
+>
 
 const allowedTranslationFieldsByBlockType = {
   TypographyBlock: ['content'],
