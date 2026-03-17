@@ -18,6 +18,7 @@ import {
   ContactActionType,
   MessagePlatform
 } from '../../../../../../../__generated__/globalTypes'
+import { getMessagePlatformOptions } from '../../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/utils/getMessagePlatformOptions'
 import { PhoneField } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/PhoneField/PhoneField'
 import { getFullPhoneNumber } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/getFullPhoneNumber'
 import { normalizeCallingCode } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/normalizeCallingCode'
@@ -34,51 +35,7 @@ export function LinksForm({
 }: LinksFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const messagePlatformOptions: Array<{
-    value: MessagePlatform
-    label: string
-  }> = [
-    { value: MessagePlatform.custom, label: t('Chat') },
-    { value: MessagePlatform.facebook, label: t('Facebook Messenger') },
-    { value: MessagePlatform.instagram, label: t('Instagram') },
-    { value: MessagePlatform.kakaoTalk, label: t('KakaoTalk') },
-    { value: MessagePlatform.line, label: t('LINE') },
-    { value: MessagePlatform.skype, label: t('Skype') },
-    { value: MessagePlatform.snapchat, label: t('Snapchat') },
-    { value: MessagePlatform.telegram, label: t('Telegram') },
-    { value: MessagePlatform.tikTok, label: t('TikTok') },
-    { value: MessagePlatform.viber, label: t('Viber') },
-    { value: MessagePlatform.vk, label: t('VK') },
-    { value: MessagePlatform.whatsApp, label: t('WhatsApp') },
-    { value: MessagePlatform.globe2, label: t('Globe 1') },
-    { value: MessagePlatform.globe3, label: t('Globe 2') },
-    { value: MessagePlatform.messageText1, label: t('Message Text Circle') },
-    { value: MessagePlatform.messageText2, label: t('Message Text Square') },
-    { value: MessagePlatform.send1, label: t('Send 1') },
-    { value: MessagePlatform.send2, label: t('Send 2') },
-    { value: MessagePlatform.messageChat2, label: t('Message Chat Circle') },
-    { value: MessagePlatform.messageCircle, label: t('Message Circle') },
-    {
-      value: MessagePlatform.messageNotifyCircle,
-      label: t('Message Notify Circle')
-    },
-    {
-      value: MessagePlatform.messageNotifySquare,
-      label: t('Message Notify Square')
-    },
-    { value: MessagePlatform.messageSquare, label: t('Message Square') },
-    { value: MessagePlatform.mail1, label: t('Mail') },
-    { value: MessagePlatform.linkExternal, label: t('Link External') },
-    { value: MessagePlatform.home3, label: t('Home 1') },
-    { value: MessagePlatform.home4, label: t('Home 2') },
-    { value: MessagePlatform.helpCircleContained, label: t('Help Circle') },
-    { value: MessagePlatform.helpSquareContained, label: t('Help Square') },
-    { value: MessagePlatform.shieldCheck, label: t('Shield Check') },
-    { value: MessagePlatform.menu1, label: t('Menu') },
-    { value: MessagePlatform.checkBroken, label: t('Check Broken') },
-    { value: MessagePlatform.checkContained, label: t('Check Contained') },
-    { value: MessagePlatform.settings, label: t('Settings') }
-  ]
+  const messagePlatformOptions = getMessagePlatformOptions(t)
   const { values, errors, touched, setFieldValue, handleChange } =
     useFormikContext<Record<string, string>>()
 

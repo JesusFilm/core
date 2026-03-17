@@ -221,7 +221,10 @@ export enum MessagePlatform {
     menu1 = "menu1",
     checkBroken = "checkBroken",
     checkContained = "checkContained",
-    settings = "settings"
+    settings = "settings",
+    discord = "discord",
+    signal = "signal",
+    weChat = "weChat"
 }
 
 export enum IntegrationType {
