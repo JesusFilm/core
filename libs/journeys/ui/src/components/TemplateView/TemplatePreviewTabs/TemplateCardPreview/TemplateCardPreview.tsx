@@ -89,16 +89,18 @@ function getSpacerWidth(
 /**
  * Horizontal carousel of template step cards with optional "more cards" slide.
  *
- * TemplateCardPreview has two variants:
+ * TemplateCardPreview has four variants:
  *
- * 'standard': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
+ * 'standard': Renders the first 7 steps plus a "use this template" call-to-action. Used on the /templates page.
  *
  * 'compact': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
+ *
+ * 'guestPreviewDesktop' / 'guestPreviewMobile': Full-size single-card preview used in the guest preview dialog.
  *
  * @param props - Component props
  * @param props.steps - Journey step blocks to display as cards
  * @param props.authUser - Authenticated user for CTA sign-in state
- * @param props.variant - 'standard' | 'compact'; controls layout and behaviour
+ * @param props.variant - Controls layout and behaviour
  * @param props.onClick - Handler when a card is clicked
  * @param props.selectedStep - Selected step (compact variant)
  * @returns Carousel UI or skeleton placeholder when steps are loading
@@ -169,123 +171,143 @@ export function TemplateCardPreview({
     swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
-  return steps != null ? (
+  if (steps == null) {
+    const placeholderBreakpoints =
+      config.breakpoints ?? {
+        xs: { spaceBetween: 0, slidesOffsetBefore: 0 },
+        sm: { spaceBetween: 0, slidesOffsetBefore: 0 }
+      }
+    return (
+      <TemplateCardPreviewPlaceholder
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        breakpoints={placeholderBreakpoints}
+      />
+    )
+  }
+
+  return (
     <StyledSwiper
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
       initialSlide={isGuestPreviewVariant ? initialSlide : undefined}
       {...swiperProps}
-      sx={{
-        ...swiperSx,
-        height: swiperHeight
-      }}
-    >
-      {slidesToRender.map((step) => {
-        const isSelected = variant === 'compact' && selectedStep?.id === step.id
-        return (
+        sx={{
+          ...swiperSx,
+          height: swiperHeight
+        }}
+      >
+        {slidesToRender.map((step) => {
+          const isSelected = selectedStep?.id === step.id
+          const selectedSlideSx =
+            variant === 'compact' && isSelected
+              ? {
+                  width: {
+                    xs: cardWidth.xs * SELECTED_SCALE,
+                    sm: cardWidth.sm * SELECTED_SCALE
+                  },
+                  height: {
+                    xs: cardHeight.xs * SELECTED_SCALE,
+                    sm: cardHeight.sm * SELECTED_SCALE
+                  }
+                }
+              : {}
+          return (
+            <StyledSwiperSlide
+              data-testid="TemplateCardsSwiperSlide"
+              key={step.id}
+              sx={{ ...slideSx, ...selectedSlideSx }}
+            >
+              <TemplateCardPreviewItem
+                step={step}
+                variant={variant}
+                onClick={onClick}
+                selectedStep={selectedStep}
+                steps={slidesToRender}
+              />
+            </StyledSwiperSlide>
+          )
+        })}
+        {variant === 'compact' && config.breakpoints != null && (
           <StyledSwiperSlide
-            data-testid="TemplateCardsSwiperSlide"
-            key={step.id}
+            data-testid="MediaSpacerSlide"
             sx={{
-              ...(slideSx as object),
-              ...(isSelected ? (selectedSlideSx as object) : {})
+              width: {
+                xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
+                sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
+              }
+            }}
+          />
+        )}
+        {showMoreCardsSlide && steps.length > slidesToRender.length && (
+          <StyledSwiperSlide
+            data-testid="UseTemplatesSlide"
+            sx={{
+              width: 'unset !important',
+              cursor: 'grab',
+              zIndex: 2
             }}
           >
-            <TemplateCardPreviewItem
-              step={step}
-              variant={variant}
-              onClick={onClick}
-              selectedStep={selectedStep}
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              gap={2}
+              sx={{
+                width: cardWidth,
+                mr: { xs: 3, sm: 7 },
+                height: cardHeight,
+                borderRadius: 2,
+                backgroundColor: 'secondary.main',
+                px: 1
+              }}
+            >
+              <Typography
+                variant="overline2"
+                color="background.paper"
+                textAlign="center"
+              >
+                {t('{{count}} more cards', {
+                  count: steps.length - slidesToRender.length
+                })}
+              </Typography>
+              <Typography
+                variant="overline2"
+                color="background.paper"
+                textAlign="center"
+              >
+                {t('Use this template to see more!')}
+              </Typography>
+              <TemplateActionButton signedIn={authUser?.id != null} />
+            </Stack>
+            <Box
+              sx={{
+                position: 'relative',
+                bottom: { xs: 290, sm: 400 },
+                left: 10,
+                zIndex: -1,
+                minWidth: cardWidth,
+                mr: { xs: 3, sm: 7 },
+                height: cardHeight,
+                borderRadius: 2,
+                backgroundColor: 'secondary.light'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: { xs: -10, sm: -10 },
+                left: 30,
+                zIndex: -2,
+                minWidth: cardWidth,
+                mr: { xs: 3, sm: 7 },
+                height: cardHeight,
+                borderRadius: 2,
+                backgroundColor: 'divider'
+              }}
             />
           </StyledSwiperSlide>
-        )
-      })}
-      {variant === 'compact' && (
-        <StyledSwiperSlide
-          data-testid="MediaSpacerSlide"
-          sx={{
-            width: {
-              xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
-              sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
-            }
-          }}
-        />
-      )}
-      {showMoreCardsSlide && steps.length > slidesToRender.length && (
-        <StyledSwiperSlide
-          data-testid="UseTemplatesSlide"
-          sx={{
-            width: 'unset !important',
-            cursor: 'grab',
-            zIndex: 2
-          }}
-        >
-          <Stack
-            alignItems="center"
-            justifyContent="center"
-            gap={2}
-            sx={{
-              width: cardWidth,
-              mr: { xs: 3, sm: 7 },
-              height: cardHeight,
-              borderRadius: 2,
-              backgroundColor: 'secondary.main',
-              px: 1
-            }}
-          >
-            <Typography
-              variant="overline2"
-              color="background.paper"
-              textAlign="center"
-            >
-              {t('{{count}} more cards', {
-                count: steps.length - slidesToRender.length
-              })}
-            </Typography>
-            <Typography
-              variant="overline2"
-              color="background.paper"
-              textAlign="center"
-            >
-              {t('Use this template to see more!')}
-            </Typography>
-            <TemplateActionButton signedIn={authUser?.id != null} />
-          </Stack>
-          <Box
-            sx={{
-              position: 'relative',
-              bottom: { xs: 290, sm: 400 },
-              left: 10,
-              zIndex: -1,
-              minWidth: cardWidth,
-              mr: { xs: 3, sm: 7 },
-              height: cardHeight,
-              borderRadius: 2,
-              backgroundColor: 'secondary.light'
-            }}
-          />
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: { xs: -10, sm: -10 },
-              left: 30,
-              zIndex: -2,
-              minWidth: cardWidth,
-              mr: { xs: 3, sm: 7 },
-              height: cardHeight,
-              borderRadius: 2,
-              backgroundColor: 'divider'
-            }}
-          />
-        </StyledSwiperSlide>
-      )}
+        )}
     </StyledSwiper>
-  ) : (
-    <TemplateCardPreviewPlaceholder
-      cardWidth={cardWidth}
-      cardHeight={cardHeight}
-      breakpoints={config.breakpoints}
-    />
   )
 }

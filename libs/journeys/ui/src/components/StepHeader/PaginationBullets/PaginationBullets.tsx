@@ -10,9 +10,19 @@ import { StepFields } from '../../Step/__generated__/StepFields'
 
 import { Bullet } from './Bullet'
 
-export function PaginationBullets(): ReactElement {
+interface PaginationBulletsProps {
+  steps?: Array<TreeBlock<StepFields>> | null
+  selectedStep?: TreeBlock<StepFields> | null
+}
+
+export function PaginationBullets({
+  steps: stepsProp,
+  selectedStep: selectedStepProp
+}: PaginationBulletsProps = {}): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
   const { variant } = useJourney()
+
+  const isPreviewMode = stepsProp != null && selectedStepProp !== undefined
 
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [activeBlock, setActiveBlock] = useState<TreeBlock<StepFields>>(
@@ -34,14 +44,26 @@ export function PaginationBullets(): ReactElement {
   }, [])
 
   const bullets: number[] = useMemo(() => {
+    if (isPreviewMode) {
+      return [...new Array(stepsProp.length)]
+    }
     if (variant === 'admin') {
       return adminBullets.bullets
     } else {
       return bulletsToRender(treeBlocks)
     }
-  }, [treeBlocks, variant, adminBullets])
+  }, [isPreviewMode, stepsProp, treeBlocks, variant, adminBullets])
 
+  // Preview mode: derive active index from selectedStep prop
   useEffect(() => {
+    if (!isPreviewMode) return
+    const index = stepsProp.findIndex((s) => s.id === selectedStepProp?.id)
+    setActiveIndex(index >= 0 ? index : 0)
+  }, [isPreviewMode, stepsProp, selectedStepProp])
+
+  // Default mode: derive active index from blockHistory
+  useEffect(() => {
+    if (isPreviewMode) return
     const currentActiveBlock = blockHistory[
       blockHistory.length - 1
     ] as TreeBlock<StepFields>
@@ -60,7 +82,7 @@ export function PaginationBullets(): ReactElement {
     } else {
       setActiveIndex(bullets.length - 1)
     }
-  }, [blockHistory, bullets.length, variant, adminBullets])
+  }, [isPreviewMode, blockHistory, bullets.length, variant, adminBullets])
 
   return (
     <Box
@@ -87,6 +109,9 @@ export function PaginationBullets(): ReactElement {
         {bullets.map((val, i) => {
           const distanceFromInitial = i * BULLET_GAP
           const moveDistance = (): number => {
+            if (isPreviewMode) {
+              return (activeIndex + 1) * BULLET_GAP
+            }
             // if on a card that has no next step - show end pagination bullets state
             const hasBlockAction =
               activeBlock?.nextBlockId != null ||
