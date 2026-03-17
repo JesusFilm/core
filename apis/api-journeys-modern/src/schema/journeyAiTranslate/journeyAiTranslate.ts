@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { generateObject, streamObject } from 'ai'
+import { Output, generateText, streamText } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
@@ -54,6 +54,11 @@ const JourneyAnalysisSchema = z.object({
   description: z.string().describe('Translated journey description'),
   seoTitle: z.string().describe('Translated journey SEO title'),
   seoDescription: z.string().describe('Translated journey SEO description')
+})
+
+const BlockTranslationSchema = z.object({
+  blockId: z.string().describe('The block id to update'),
+  updates: z.record(z.string(), z.string()).describe('Translated block fields')
 })
 
 // Define the shared input type
@@ -184,8 +189,8 @@ Return in this format:
 }
 `
 
-        const analysisResult = await generateObject({
-          model: google('gemini-2.0-flash'),
+        const { output: analysisResult } = await generateText({
+          model: google('gemini-2.5-flash'),
           messages: [
             {
               role: 'system',
@@ -201,24 +206,26 @@ Return in this format:
               ]
             }
           ],
-          schema: JourneyAnalysisSchema
+          output: Output.object({
+            schema: JourneyAnalysisSchema
+          })
         })
 
-        if (!analysisResult.object.title) {
+        if (!analysisResult.title) {
           throw new GraphQLError('Failed to translate journey title')
         }
 
-        if (hasDescription && !analysisResult.object.description) {
+        if (hasDescription && !analysisResult.description) {
           throw new GraphQLError('Failed to translate journey description')
         }
 
         // Only validate seoTitle if the original journey had one
-        if (journey.seoTitle && !analysisResult.object.seoTitle) {
+        if (journey.seoTitle && !analysisResult.seoTitle) {
           throw new GraphQLError('Failed to translate journey seo title')
         }
 
         // Only validate seoDescription if the original journey had one
-        if (journey.seoDescription && !analysisResult.object.seoDescription) {
+        if (journey.seoDescription && !analysisResult.seoDescription) {
           throw new GraphQLError('Failed to translate journey seo description')
         }
 
@@ -236,22 +243,22 @@ Return in this format:
           seoTitle?: string
           seoDescription?: string
         } = {
-          title: analysisResult.object.title,
+          title: analysisResult.title,
           languageId: input.textLanguageId
         }
 
-        if (hasDescription && analysisResult.object.description) {
-          updateData.description = analysisResult.object.description
+        if (hasDescription && analysisResult.description) {
+          updateData.description = analysisResult.description
         }
 
         // Only update seoTitle if the original journey had one
-        if (journey.seoTitle && analysisResult.object.seoTitle) {
-          updateData.seoTitle = analysisResult.object.seoTitle
+        if (journey.seoTitle && analysisResult.seoTitle) {
+          updateData.seoTitle = analysisResult.seoTitle
         }
 
         // Only update seoDescription if the original journey had one
-        if (journey.seoDescription && analysisResult.object.seoDescription) {
-          updateData.seoDescription = analysisResult.object.seoDescription
+        if (journey.seoDescription && analysisResult.seoDescription) {
+          updateData.seoDescription = analysisResult.seoDescription
         }
 
         const updatedJourney = await prisma.journey.update({
@@ -338,7 +345,7 @@ Return in this format:
 
             const blockTranslationPrompt = `
 JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:
-${hardenPrompt(analysisResult.object.analysis)}
+${hardenPrompt(analysisResult.analysis)}
 
 Translate content
 ${hardenPrompt(`
@@ -380,8 +387,8 @@ If there is no Bible translation was available, use the the most popular English
 
             try {
               // Stream the translations
-              const { fullStream } = streamObject({
-                model: google('gemini-2.0-flash'),
+              const { elementStream } = streamText({
+                model: google('gemini-2.5-flash'),
                 messages: [
                   {
                     role: 'system',
@@ -397,7 +404,9 @@ If there is no Bible translation was available, use the the most popular English
                     ]
                   }
                 ],
-                output: 'no-schema',
+                output: Output.array({
+                  element: BlockTranslationSchema
+                }),
                 onError: ({ error }) => {
                   console.warn(
                     `Error in translation stream for card ${cardBlock.id}:`,
@@ -406,83 +415,38 @@ If there is no Bible translation was available, use the the most popular English
                 }
               })
 
-              let partialTranslations = []
+              for await (const item of elementStream) {
+                try {
+                  const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
 
-              // Process the stream as chunks arrive
-              for await (const chunk of fullStream) {
-                // Process object chunks which contain translation data
-                if (chunk.type === 'object' && chunk.object) {
-                  // Handle streaming array building
-                  if (Array.isArray(chunk.object)) {
-                    partialTranslations = chunk.object
-                    // Process each block in the array
-                    for (const item of partialTranslations) {
-                      try {
-                        // Check if we've already processed this block (in case of duplicate items in stream)
-                        if (
-                          item &&
-                          typeof item === 'object' &&
-                          'blockId' in item &&
-                          typeof item.blockId === 'string' &&
-                          'updates' in item &&
-                          typeof item.updates === 'object' &&
-                          !Array.isArray(item.updates) &&
-                          item.updates !== null
-                        ) {
-                          // Remove brackets if present
-                          const cleanBlockId =
-                            typeof item.blockId === 'string'
-                              ? item.blockId.replace(/^\[|\]$/g, '')
-                              : item.blockId
+                  // Verify block ID exists in our journey
+                  if (!validBlockIds.has(cleanBlockId)) {
+                    continue
+                  }
 
-                          // Verify block ID exists in our journey
-                          if (!validBlockIds.has(cleanBlockId)) {
-                            continue
-                          }
+                  await prisma.block.update({
+                    where: {
+                      id: cleanBlockId,
+                      journeyId: input.journeyId
+                    },
+                    data: item.updates
+                  })
 
-                          await prisma.block.update({
-                            where: {
-                              id: cleanBlockId,
-                              journeyId: input.journeyId
-                            },
-                            data: item.updates
-                          })
-
-                          // Update the in-memory journey blocks
-                          const blockIndex = updatedJourney.blocks.findIndex(
-                            (block) => block.id === cleanBlockId
-                          )
-                          if (blockIndex !== -1 && item.updates) {
-                            updatedJourney.blocks[blockIndex] = {
-                              ...updatedJourney.blocks[blockIndex],
-                              ...item.updates
-                            }
-                          }
-                        }
-                      } catch (updateError) {
-                        if (
-                          item &&
-                          typeof item === 'object' &&
-                          'blockId' in item
-                        ) {
-                          const blockIdString =
-                            typeof item.blockId === 'string'
-                              ? item.blockId
-                              : JSON.stringify(item.blockId)
-
-                          console.error(
-                            `Error updating block ${blockIdString}:`,
-                            updateError
-                          )
-                        } else {
-                          console.error(
-                            `Error updating unknown block:`,
-                            updateError
-                          )
-                        }
-                      }
+                  // Update the in-memory journey blocks
+                  const blockIndex = updatedJourney.blocks.findIndex(
+                    (block) => block.id === cleanBlockId
+                  )
+                  if (blockIndex !== -1) {
+                    updatedJourney.blocks[blockIndex] = {
+                      ...updatedJourney.blocks[blockIndex],
+                      ...item.updates
                     }
                   }
+                } catch (updateError) {
+                  console.error(
+                    `Error updating block ${item.blockId}:`,
+                    updateError
+                  )
                 }
               }
             } catch (error) {
@@ -655,8 +619,8 @@ Return in this format:
 `
 
       try {
-        const { object: analysisAndTranslation } = await generateObject({
-          model: google('gemini-2.0-flash'),
+        const { output: analysisAndTranslation } = await generateText({
+          model: google('gemini-2.5-flash'),
           messages: [
             {
               role: 'system',
@@ -672,7 +636,9 @@ Return in this format:
               ]
             }
           ],
-          schema: JourneyAnalysisSchema
+          output: Output.object({
+            schema: JourneyAnalysisSchema
+          })
         })
 
         if (!analysisAndTranslation.title)
@@ -825,8 +791,8 @@ If there is no Bible translation was available, use the the most popular English
 `
               try {
                 // Stream the translations
-                const { fullStream } = streamObject({
-                  model: google('gemini-2.0-flash'),
+                const { elementStream } = streamText({
+                  model: google('gemini-2.5-flash'),
                   messages: [
                     {
                       role: 'system',
@@ -842,7 +808,9 @@ If there is no Bible translation was available, use the the most popular English
                       ]
                     }
                   ],
-                  output: 'no-schema',
+                  output: Output.array({
+                    element: BlockTranslationSchema
+                  }),
                   onError: ({ error }) => {
                     console.warn(
                       `Error in translation stream for card ${cardBlock.id}:`,
@@ -851,71 +819,27 @@ If there is no Bible translation was available, use the the most popular English
                   }
                 })
 
-                let partialTranslations = []
+                for await (const item of elementStream) {
+                  try {
+                    const cleanBlockId = item.blockId.replace(/^\[|\]$/g, '')
 
-                // Process the stream as chunks arrive
-                for await (const chunk of fullStream) {
-                  // Process object chunks which contain translation data
-                  if (chunk.type === 'object' && chunk.object) {
-                    // Handle streaming array building
-                    if (Array.isArray(chunk.object)) {
-                      partialTranslations = chunk.object
-                      // Process each block in the array
-                      for (const item of partialTranslations) {
-                        try {
-                          // Check if we've already processed this block (in case of duplicate items in stream)
-                          if (
-                            item &&
-                            typeof item === 'object' &&
-                            'blockId' in item &&
-                            typeof item.blockId === 'string' &&
-                            'updates' in item &&
-                            typeof item.updates === 'object' &&
-                            !Array.isArray(item.updates) &&
-                            item.updates !== null
-                          ) {
-                            // Remove brackets if present
-                            const cleanBlockId =
-                              typeof item.blockId === 'string'
-                                ? item.blockId.replace(/^\[|\]$/g, '')
-                                : item.blockId
-
-                            // Verify block ID exists in our journey
-                            if (!validBlockIds.has(cleanBlockId)) {
-                              return
-                            }
-                            await prisma.block.update({
-                              where: {
-                                id: cleanBlockId,
-                                journeyId: input.journeyId
-                              },
-                              data: item.updates
-                            })
-                          }
-                        } catch (updateError) {
-                          if (
-                            item &&
-                            typeof item === 'object' &&
-                            'blockId' in item
-                          ) {
-                            const blockIdString =
-                              typeof item.blockId === 'string'
-                                ? item.blockId
-                                : JSON.stringify(item.blockId)
-
-                            console.error(
-                              `Error updating block ${blockIdString}:`,
-                              updateError
-                            )
-                          } else {
-                            console.error(
-                              `Error updating unknown block:`,
-                              updateError
-                            )
-                          }
-                        }
-                      }
+                    // Verify block ID exists in our journey
+                    if (!validBlockIds.has(cleanBlockId)) {
+                      continue
                     }
+
+                    await prisma.block.update({
+                      where: {
+                        id: cleanBlockId,
+                        journeyId: input.journeyId
+                      },
+                      data: item.updates
+                    })
+                  } catch (updateError) {
+                    console.error(
+                      `Error updating block ${item.blockId}:`,
+                      updateError
+                    )
                   }
                 }
               } catch (error) {
