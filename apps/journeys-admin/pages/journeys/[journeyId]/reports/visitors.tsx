@@ -307,6 +307,7 @@ function JourneyVisitorsPage({
         sidePanelChildren={
           <FilterDrawer
             journeyId={journeyId}
+            teamId={journey?.team?.id}
             handleChange={handleChange}
             sortSetting={sortSetting}
             chatStarted={chatStarted}
