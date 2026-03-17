@@ -61,10 +61,14 @@ export function TemplateCardPreviewItem({
   } = config
   const isSelected = selectedStep?.id === step.id
 
-  const baseTransform = {
-    xs: `scale(${framePortal.scale.xs})`,
-    sm: `scale(${framePortal.scale.sm})`
-  }
+  const baseTransform =
+    framePortal.transform ??
+    (framePortal.scale != null
+      ? {
+          xs: `scale(${framePortal.scale.xs})`,
+          sm: `scale(${framePortal.scale.sm})`
+        }
+      : { xs: 'scale(1)', sm: 'scale(1)' })
 
   return (
     <Box
