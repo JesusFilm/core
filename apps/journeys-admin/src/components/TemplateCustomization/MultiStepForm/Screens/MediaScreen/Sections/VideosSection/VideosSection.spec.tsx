@@ -245,7 +245,7 @@ describe('VideosSection', () => {
       journey: journeyWithEmptyNotes,
       cardBlockId
     })
-    expect(screen.queryByText('trailer')).not.toBeInTheDocument()
+    expect(screen.queryByText('   ')).not.toBeInTheDocument()
   })
 
   it('disables upload button when loading', () => {

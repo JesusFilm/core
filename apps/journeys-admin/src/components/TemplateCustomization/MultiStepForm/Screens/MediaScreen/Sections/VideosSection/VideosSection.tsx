@@ -104,7 +104,7 @@ export function VideosSection({
   const { startUpload, getUploadStatus } = useTemplateVideoUpload()
 
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
-  const adapterNote = (videoBlock?.notes?.trim() ?? '') || ''
+  const adapterNote = videoBlock?.notes?.trim() ?? ''
 
   const uploadStatus =
     videoBlock != null ? getUploadStatus(videoBlock.id) : null
