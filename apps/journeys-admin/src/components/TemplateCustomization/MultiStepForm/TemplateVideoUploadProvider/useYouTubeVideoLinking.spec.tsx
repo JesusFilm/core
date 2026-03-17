@@ -165,10 +165,10 @@ describe('useYouTubeVideoLinking', () => {
   })
 
   it('returns false when journey id is null', async () => {
-    const Wrapper = createWrapper(
-      [videoBlockUpdateSuccessMock],
-      { ...mockJourney, id: null } as unknown as typeof mockJourney
-    )
+    const Wrapper = createWrapper([videoBlockUpdateSuccessMock], {
+      ...mockJourney,
+      id: null
+    } as unknown as typeof mockJourney)
     const { result } = renderHook(() => useYouTubeLinkingWithTaskMap(), {
       wrapper: Wrapper
     })
