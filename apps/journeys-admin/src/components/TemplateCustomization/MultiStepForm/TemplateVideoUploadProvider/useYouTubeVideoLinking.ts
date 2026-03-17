@@ -37,7 +37,7 @@ export function useYouTubeVideoLinking({
   removeTask,
   activeBlocksRef
 }: UseYouTubeVideoLinkingParams): {
-  linkYouTubeVideo: (
+  startYouTubeLink: (
     videoBlockId: string,
     youtubeVideoId: string
   ) => Promise<boolean>
@@ -48,7 +48,7 @@ export function useYouTubeVideoLinking({
 
   const [videoBlockUpdate] = useMutation(VIDEO_BLOCK_UPDATE)
 
-  const linkYouTubeVideo = useCallback(
+  const startYouTubeLink = useCallback(
     async (videoBlockId: string, youtubeVideoId: string): Promise<boolean> => {
       if (activeBlocksRef.current.has(videoBlockId)) return false
       if (journey?.id == null) return false
@@ -118,5 +118,5 @@ export function useYouTubeVideoLinking({
     ]
   )
 
-  return { linkYouTubeVideo }
+  return { startYouTubeLink }
 }

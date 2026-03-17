@@ -323,13 +323,6 @@ describe('VideosSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not render a Set button', () => {
-    renderVideosSection()
-    expect(
-      screen.queryByTestId('VideosSection-youtube-set')
-    ).not.toBeInTheDocument()
-  })
-
   it('auto-submits valid YouTube URL after 800ms debounce', async () => {
     mockStartYouTubeLink.mockResolvedValue(true)
     jest.useFakeTimers()

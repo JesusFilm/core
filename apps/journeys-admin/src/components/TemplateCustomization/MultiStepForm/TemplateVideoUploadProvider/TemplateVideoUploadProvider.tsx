@@ -57,7 +57,7 @@ export function TemplateVideoUploadProvider({
     activeBlocksRef
   })
 
-  const { linkYouTubeVideo } = useYouTubeVideoLinking({
+  const { startYouTubeLink } = useYouTubeVideoLinking({
     setUploadTasks,
     updateTask,
     removeTask,
@@ -175,11 +175,11 @@ export function TemplateVideoUploadProvider({
   const value = useMemo<TemplateVideoUploadContextType>(
     () => ({
       startUpload,
-      startYouTubeLink: linkYouTubeVideo,
+      startYouTubeLink,
       getUploadStatus,
       hasActiveUploads
     }),
-    [startUpload, linkYouTubeVideo, getUploadStatus, hasActiveUploads]
+    [startUpload, startYouTubeLink, getUploadStatus, hasActiveUploads]
   )
 
   return (
