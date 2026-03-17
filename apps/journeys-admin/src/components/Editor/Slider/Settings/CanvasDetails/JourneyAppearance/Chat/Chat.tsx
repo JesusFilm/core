@@ -27,7 +27,7 @@ export function Chat(): ReactElement {
   const telegram = chatButtons.find(
     (button) => button.platform === MessagePlatform.telegram
   )
-  const custom = chatButtons.find(
+  const customButtons = chatButtons.filter(
     (button) =>
       button.platform !== MessagePlatform.facebook &&
       button.platform !== MessagePlatform.whatsApp &&
@@ -66,9 +66,17 @@ export function Chat(): ReactElement {
           disableSelection={maxSelection}
         />
         <ChatOption
-          chatButton={custom}
+          chatButton={customButtons[0]}
           title={t('Custom')}
-          active={custom != null}
+          active={customButtons[0] != null}
+          journeyId={journey?.id}
+          disableSelection={maxSelection}
+          enableIconSelect
+        />
+        <ChatOption
+          chatButton={customButtons[1]}
+          title={t('Custom')}
+          active={customButtons[1] != null}
           journeyId={journey?.id}
           disableSelection={maxSelection}
           enableIconSelect
