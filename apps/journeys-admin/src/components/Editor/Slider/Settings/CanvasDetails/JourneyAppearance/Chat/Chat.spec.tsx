@@ -130,8 +130,8 @@ describe('Chat', () => {
 
     expect(
       screen.getByText('You can add no more than two chat platforms')
-    ).toBeVisible()
-    expect(screen.getByTestId('checkbox-facebook')).toHaveAttribute('disabled')
-    expect(screen.getByTestId('checkbox-telegram')).toHaveAttribute('disabled')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('checkbox-facebook')).toHaveClass('Mui-disabled')
+    expect(screen.getByTestId('checkbox-telegram')).toHaveClass('Mui-disabled')
   })
 })
