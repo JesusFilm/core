@@ -42,7 +42,8 @@ export async function quickStartTemplate(action?: 'reset'): Promise<void> {
       createdAt: new Date(),
       publishedAt: new Date(),
       teamId: 'jfp-team',
-      journeyCustomizationDescription: CUSTOMIZATION_DESCRIPTION
+      journeyCustomizationDescription: CUSTOMIZATION_DESCRIPTION,
+      customizable: true
     }
   })
 
