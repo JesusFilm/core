@@ -425,6 +425,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -554,7 +556,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
-  userDeleteCheck(idType: UserDeleteIdType!, id: String!) : UserDeleteCheckResult! @join__field(graph: API_USERS) 
+  userDeleteCheck(idType: UserDeleteIdType!, id: String!) : UserDeleteCheckResult! @join__field(graph: API_USERS)
+  userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN)
+  userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN)
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -2548,6 +2552,31 @@ type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   visitors: Int!
 }
 
+type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry @join__type(graph: API_JOURNEYS_MODERN)  {
+  message: String!
+  level: String!
+  timestamp: String!
+}
+
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
   id: ID!
   primaryLanguageId: ID
@@ -3313,6 +3342,31 @@ type UserDeleteLogEntry @join__type(graph: API_USERS)  {
   message: String!
   level: String!
   timestamp: String!
+}
+
+type UserDeleteJourneysLogEntry @join__type(graph: API_JOURNEYS_MODERN)  {
+  message: String!
+  level: String!
+  timestamp: String!
+}
+
+type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
 }
 
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {

@@ -1,8 +1,8 @@
-import { prisma as prismaJourneys } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { LogEntry, createLog } from './types'
 
-interface CheckJourneysDataResult {
+export interface CheckJourneysDataResult {
   journeysToDelete: number
   journeysToTransfer: number
   journeysToRemove: number
@@ -18,7 +18,7 @@ export async function checkJourneysData(
   const logs: LogEntry[] = []
 
   // Check journeys
-  const userJourneys = await prismaJourneys.userJourney.findMany({
+  const userJourneys = await prisma.userJourney.findMany({
     where: { userId },
     include: {
       journey: {
@@ -66,7 +66,7 @@ export async function checkJourneysData(
     )
 
   // Check teams
-  const userTeams = await prismaJourneys.userTeam.findMany({
+  const userTeams = await prisma.userTeam.findMany({
     where: { userId },
     include: {
       team: {
@@ -121,17 +121,17 @@ export async function checkJourneysData(
     journeyEventsExportLog,
     journeyTheme
   ] = await Promise.all([
-    prismaJourneys.userRole.count({ where: { userId } }),
-    prismaJourneys.journeyProfile.count({ where: { userId } }),
-    prismaJourneys.integration.count({ where: { userId } }),
-    prismaJourneys.visitor.count({ where: { userId } }),
-    prismaJourneys.journeyNotification.count({ where: { userId } }),
-    prismaJourneys.userTeamInvite.count({
+    prisma.userRole.count({ where: { userId } }),
+    prisma.journeyProfile.count({ where: { userId } }),
+    prisma.integration.count({ where: { userId } }),
+    prisma.visitor.count({ where: { userId } }),
+    prisma.journeyNotification.count({ where: { userId } }),
+    prisma.userTeamInvite.count({
       where: { OR: [{ senderId: userId }, { receipientId: userId }] }
     }),
-    prismaJourneys.userInvite.count({ where: { senderId: userId } }),
-    prismaJourneys.journeyEventsExportLog.count({ where: { userId } }),
-    prismaJourneys.journeyTheme.count({ where: { userId } })
+    prisma.userInvite.count({ where: { senderId: userId } }),
+    prisma.journeyEventsExportLog.count({ where: { userId } }),
+    prisma.journeyTheme.count({ where: { userId } })
   ])
 
   const tablesToClean: string[] = []

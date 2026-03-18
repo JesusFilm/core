@@ -2,7 +2,7 @@ import { builder } from '../builder'
 
 import {
   type LogEntry,
-  checkJourneysData,
+  callJourneysCheck,
   createLog,
   lookupUser
 } from './service'
@@ -73,7 +73,7 @@ builder.mutationField('userDeleteCheck', (t) =>
 
       allLogs.push(createLog('📋 Checking journeys and teams...'))
 
-      const journeysResult = await checkJourneysData(user.userId)
+      const journeysResult = await callJourneysCheck(user.userId)
       allLogs.push(...journeysResult.logs)
 
       return {

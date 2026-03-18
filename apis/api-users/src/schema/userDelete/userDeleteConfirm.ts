@@ -6,8 +6,8 @@ import { builder } from '../builder'
 
 import {
   type LogEntry,
+  callJourneysConfirm,
   createLog,
-  deleteJourneysData,
   deleteUserData,
   lookupUser
 } from './service'
@@ -62,14 +62,14 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
         })
       }
 
-      // Phase 1: Journeys DB cleanup (direct Prisma access)
+      // Phase 1: Journeys DB cleanup (via interop)
       yield {
         log: createLog('🔄 Starting journeys database cleanup...'),
         done: false,
         success: null
       }
 
-      const journeysResult = await deleteJourneysData(user.userId)
+      const journeysResult = await callJourneysConfirm(user.userId)
       for (const log of journeysResult.logs) {
         yield { log, done: false, success: null }
       }
