@@ -1,4 +1,4 @@
-import { generateObject } from 'ai'
+import { generateText } from 'ai'
 
 import { translateCustomizationFields } from './translateCustomizationFields'
 
@@ -8,7 +8,8 @@ jest.mock('@ai-sdk/google', () => ({
 }))
 
 jest.mock('ai', () => ({
-  generateObject: jest.fn()
+  Output: { object: jest.fn(({ schema }) => ({ schema })) },
+  generateText: jest.fn()
 }))
 
 jest.mock('@core/shared/ai/prompts', () => ({
@@ -17,8 +18,8 @@ jest.mock('@core/shared/ai/prompts', () => ({
 }))
 
 describe('translateCustomizationFields', () => {
-  const mockGenerateObject = generateObject as jest.MockedFunction<
-    typeof generateObject
+  const mockGenerateText = generateText as jest.MockedFunction<
+    typeof generateText
   >
 
   const mockJourneyCustomizationFields = [
@@ -54,8 +55,8 @@ describe('translateCustomizationFields', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
-    mockGenerateObject.mockResolvedValue({
-      object: { translatedValue: 'Translated Value' },
+    mockGenerateText.mockResolvedValue({
+      output: { translatedValue: 'Translated Value' },
       usage: {
         totalTokens: 100,
         inputTokens: 50,
@@ -78,13 +79,13 @@ describe('translateCustomizationFields', () => {
 
     // Use mockImplementation to return translations based on the input value
     // This handles the parallel execution order issue with Promise.all
-    mockGenerateObject.mockImplementation(async (options: any) => {
+    mockGenerateText.mockImplementation(async (options: any) => {
       const prompt = options.messages[1].content[0].text
 
       // Check if this is a description translation (has "customization description" in prompt)
       if (prompt.includes('customization description')) {
         return {
-          object: {
+          output: {
             translatedDescription:
               '¡Bienvenido {{ user_name }}! Tu evento es el {{ event_date }} en {{ location }}.'
           },
@@ -101,7 +102,7 @@ describe('translateCustomizationFields', () => {
       // Field value translations - match based on the value in the prompt
       if (prompt.includes('John Doe')) {
         return {
-          object: { translatedValue: 'Juan Pérez' },
+          output: { translatedValue: 'Juan Pérez' },
           usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
           finishReason: 'stop',
           warnings: [],
@@ -113,7 +114,7 @@ describe('translateCustomizationFields', () => {
       }
       if (prompt.includes('Guest')) {
         return {
-          object: { translatedValue: 'Invitado' },
+          output: { translatedValue: 'Invitado' },
           usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
           finishReason: 'stop',
           warnings: [],
@@ -125,7 +126,7 @@ describe('translateCustomizationFields', () => {
       }
       if (prompt.includes('January 15, 2024')) {
         return {
-          object: { translatedValue: '15 de enero de 2024' },
+          output: { translatedValue: '15 de enero de 2024' },
           usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
           finishReason: 'stop',
           warnings: [],
@@ -137,7 +138,7 @@ describe('translateCustomizationFields', () => {
       }
       if (prompt.includes('New York')) {
         return {
-          object: { translatedValue: 'Nueva York' },
+          output: { translatedValue: 'Nueva York' },
           usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
           finishReason: 'stop',
           warnings: [],
@@ -150,7 +151,7 @@ describe('translateCustomizationFields', () => {
 
       // Default fallback
       return {
-        object: { translatedValue: 'Translated Value' },
+        output: { translatedValue: 'Translated Value' },
         usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
         finishReason: 'stop',
         warnings: [],
@@ -193,13 +194,13 @@ describe('translateCustomizationFields', () => {
 
     // Verify generateObject was called for each field value and description
     // 4 field translations (user_name value, user_name defaultValue, event_date value, location defaultValue) + 1 description
-    expect(mockGenerateObject).toHaveBeenCalledTimes(5)
+    expect(mockGenerateText).toHaveBeenCalledTimes(5)
   })
 
   it('should handle null customization description', async () => {
     // Mock field value and defaultValue translations (2 calls for field1)
-    mockGenerateObject.mockResolvedValueOnce({
-      object: { translatedValue: 'Juan Pérez' },
+    mockGenerateText.mockResolvedValueOnce({
+      output: { translatedValue: 'Juan Pérez' },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
       finishReason: 'stop',
       warnings: [],
@@ -209,8 +210,8 @@ describe('translateCustomizationFields', () => {
       createdAt: new Date()
     } as any)
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: { translatedValue: 'Invitado' },
+    mockGenerateText.mockResolvedValueOnce({
+      output: { translatedValue: 'Invitado' },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
       finishReason: 'stop',
       warnings: [],
@@ -230,12 +231,12 @@ describe('translateCustomizationFields', () => {
     expect(result.translatedDescription).toBeNull()
     expect(result.translatedFields).toHaveLength(1)
     // Description translation should not be called - only field value and defaultValue
-    expect(mockGenerateObject).toHaveBeenCalledTimes(2)
+    expect(mockGenerateText).toHaveBeenCalledTimes(2)
   })
 
   it('should handle empty customization fields array', async () => {
-    mockGenerateObject.mockResolvedValueOnce({
-      object: {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
         translatedDescription: 'Translated description'
       },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
@@ -257,7 +258,7 @@ describe('translateCustomizationFields', () => {
     expect(result.translatedDescription).toBe('Translated description')
     expect(result.translatedFields).toHaveLength(0)
     // Only description translation should be called
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1)
+    expect(mockGenerateText).toHaveBeenCalledTimes(1)
   })
 
   it('should skip fields with no value or defaultValue', async () => {
@@ -273,8 +274,8 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
         translatedDescription: 'Translated description'
       },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
@@ -295,7 +296,7 @@ describe('translateCustomizationFields', () => {
 
     expect(result.translatedFields).toHaveLength(0)
     // Only description translation should be called
-    expect(mockGenerateObject).toHaveBeenCalledTimes(1)
+    expect(mockGenerateText).toHaveBeenCalledTimes(1)
   })
 
   it('should preserve text inside curly braces in description', async () => {
@@ -304,8 +305,8 @@ describe('translateCustomizationFields', () => {
     const sourceLanguageName = 'English'
     const targetLanguageName = 'Spanish'
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
         translatedDescription:
           'Hola {{ user_name }}, tu código es {{ code: ABC123 }}.'
       },
@@ -334,8 +335,8 @@ describe('translateCustomizationFields', () => {
   it('should include journey analysis in translation prompts when provided', async () => {
     const journeyAnalysis = 'This journey is about user onboarding'
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: { translatedValue: 'Translated Value' },
+    mockGenerateText.mockResolvedValueOnce({
+      output: { translatedValue: 'Translated Value' },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
       finishReason: 'stop',
       warnings: [],
@@ -345,8 +346,8 @@ describe('translateCustomizationFields', () => {
       createdAt: new Date()
     } as any)
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: { translatedDescription: 'Translated description' },
+    mockGenerateText.mockResolvedValueOnce({
+      output: { translatedDescription: 'Translated description' },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
       finishReason: 'stop',
       warnings: [],
@@ -365,7 +366,7 @@ describe('translateCustomizationFields', () => {
     })
 
     // Verify journey analysis was included in the prompt
-    const calls = mockGenerateObject.mock.calls
+    const calls = mockGenerateText.mock.calls
     expect(calls.length).toBeGreaterThan(0)
     const promptText = JSON.stringify(calls[0])
     expect(promptText).toContain('journey')
@@ -394,8 +395,8 @@ describe('translateCustomizationFields', () => {
       }
     ]
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: { translatedValue: '123 Main Street, New York, NY 10001' },
+    mockGenerateText.mockResolvedValueOnce({
+      output: { translatedValue: '123 Main Street, New York, NY 10001' },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
       finishReason: 'stop',
       warnings: [],
@@ -405,8 +406,8 @@ describe('translateCustomizationFields', () => {
       createdAt: new Date()
     } as any)
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: { translatedValue: '3:00 PM on Monday, January 15' },
+    mockGenerateText.mockResolvedValueOnce({
+      output: { translatedValue: '3:00 PM on Monday, January 15' },
       usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
       finishReason: 'stop',
       warnings: [],
@@ -425,8 +426,8 @@ describe('translateCustomizationFields', () => {
 
     // The prompt should instruct not to translate addresses/times
     // In a real scenario, the AI would preserve these, but in tests we verify the prompt
-    expect(mockGenerateObject).toHaveBeenCalledTimes(2)
-    const promptCalls = mockGenerateObject.mock.calls
+    expect(mockGenerateText).toHaveBeenCalledTimes(2)
+    const promptCalls = mockGenerateText.mock.calls
     promptCalls.forEach((call) => {
       const prompt = JSON.stringify(call)
       expect(prompt).toContain('DO NOT translate addresses')

@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { generateObject } from 'ai'
+import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { JourneyCustomizationField } from '@core/prisma/journeys/client'
@@ -157,7 +157,7 @@ Value to translate: ${hardenPrompt(value)}
 Return only the translated value, maintaining the same meaning and cultural appropriateness while preserving addresses, times, and locations exactly as they appear.
 `
 
-  const { object } = await generateObject({
+  const { output } = await generateText({
     model: google('gemini-2.5-flash'),
     messages: [
       {
@@ -174,10 +174,12 @@ Return only the translated value, maintaining the same meaning and cultural appr
         ]
       }
     ],
-    schema: CustomizationFieldTranslationSchema
+    output: Output.object({
+      schema: CustomizationFieldTranslationSchema
+    })
   })
 
-  return object.translatedValue
+  return output.translatedValue
 }
 
 /**
@@ -264,7 +266,7 @@ ${hardenPrompt(description)}
 IMPORTANT: When you see {{ anything }}, copy it EXACTLY as-is to the output without any changes. Only translate text that is completely OUTSIDE the {{ }} brackets. The field keys inside {{ }} are identifiers that map to journeyCustomizationFields and must never be changed or translated.
 `
 
-  const { object } = await generateObject({
+  const { output } = await generateText({
     model: google('gemini-2.0-flash'),
     messages: [
       {
@@ -281,8 +283,10 @@ IMPORTANT: When you see {{ anything }}, copy it EXACTLY as-is to the output with
         ]
       }
     ],
-    schema: CustomizationDescriptionTranslationSchema
+    output: Output.object({
+      schema: CustomizationDescriptionTranslationSchema
+    })
   })
 
-  return object.translatedDescription
+  return output.translatedDescription
 }

@@ -251,13 +251,24 @@ export function LanguageScreen({
     })
 
     if (data?.journeyDuplicate == null) {
-      enqueueSnackbar(
-        t(
-          'Failed to duplicate journey to team, please refresh the page and try again'
-        ),
-        { variant: 'error' }
-      )
-      return null
+      switch (type) {
+        case 'signedIn':
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          return null
+        case 'guest':
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            { variant: 'error' }
+          )
+          return null
+      }
     }
 
     return data?.journeyDuplicate?.id ?? null
@@ -379,6 +390,7 @@ export function LanguageScreen({
         }
       }
     } else {
+      // Creates a guest user and duplicates the journey for them
       const duplicatedJourneyId = await handleJourneyDuplication(
         'guest',
         journeyId
