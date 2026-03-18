@@ -6,46 +6,53 @@ import { builder } from '../builder'
 
 import {
   type LogEntry,
-  callJourneysConfirm,
   createLog,
+  deleteJourneysData,
   deleteUserData,
   lookupUser
 } from './service'
 import { UserDeleteIdType, UserDeleteLogEntry } from './userDeleteCheck'
 
-interface UserDeleteResultShape {
-  success: boolean
-  logs: LogEntry[]
+interface UserDeleteConfirmProgressShape {
+  log: LogEntry
+  done: boolean
+  success: boolean | null
 }
 
-const UserDeleteResult =
-  builder.objectRef<UserDeleteResultShape>('UserDeleteResult')
+const UserDeleteConfirmProgress =
+  builder.objectRef<UserDeleteConfirmProgressShape>(
+    'UserDeleteConfirmProgress'
+  )
 
-builder.objectType(UserDeleteResult, {
+builder.objectType(UserDeleteConfirmProgress, {
   fields: (t) => ({
-    success: t.exposeBoolean('success', { nullable: false }),
-    logs: t.field({
-      type: [UserDeleteLogEntry],
+    log: t.field({
+      type: UserDeleteLogEntry,
       nullable: false,
-      resolve: (parent) => parent.logs
+      resolve: (parent) => parent.log
+    }),
+    done: t.exposeBoolean('done', { nullable: false }),
+    success: t.boolean({
+      nullable: true,
+      resolve: (parent) => parent.success
     })
   })
 })
 
-builder.mutationField('userDeleteConfirm', (t) =>
+builder.subscriptionField('userDeleteConfirm', (t) =>
   t.withAuth({ isSuperAdmin: true }).field({
-    type: UserDeleteResult,
+    type: UserDeleteConfirmProgress,
     nullable: false,
     args: {
       idType: t.arg({ type: UserDeleteIdType, required: true }),
       id: t.arg.string({ required: true })
     },
-    resolve: async (_parent, { idType, id }, ctx) => {
-      const allLogs: LogEntry[] = []
-
+    subscribe: async function* (_parent, { idType, id }, ctx) {
       // Look up the target user
       const { user, logs: lookupLogs } = await lookupUser(idType, id)
-      allLogs.push(...lookupLogs)
+      for (const log of lookupLogs) {
+        yield { log, done: false, success: null }
+      }
 
       // Look up the caller (superAdmin) for audit log
       const caller = await prisma.user.findUnique({
@@ -57,18 +64,34 @@ builder.mutationField('userDeleteConfirm', (t) =>
         })
       }
 
-      // Phase 1: Journeys DB cleanup via interop
-      allLogs.push(createLog('🔄 Starting journeys database cleanup...'))
+      // Phase 1: Journeys DB cleanup (direct Prisma access)
+      yield {
+        log: createLog('🔄 Starting journeys database cleanup...'),
+        done: false,
+        success: null
+      }
 
-      const journeysResult = await callJourneysConfirm(user.userId)
-      allLogs.push(...journeysResult.logs)
+      const journeysResult = await deleteJourneysData(user.userId)
+      for (const log of journeysResult.logs) {
+        yield { log, done: false, success: null }
+      }
 
       if (!journeysResult.success) {
-        return { success: false, logs: allLogs }
+        yield {
+          log: createLog('❌ Journeys cleanup failed, aborting', 'error'),
+          done: true,
+          success: false
+        }
+        return
       }
 
       // Phase 2: Users DB deletion + Firebase cleanup
-      allLogs.push(createLog('🔄 Starting user record deletion...'))
+      yield {
+        log: createLog('🔄 Starting user record deletion...'),
+        done: false,
+        success: null
+      }
+
       const userResult = await deleteUserData({
         userDbId: user.id,
         firebaseUserId: user.userId,
@@ -84,9 +107,21 @@ builder.mutationField('userDeleteConfirm', (t) =>
         deletedUserJourneyIds: journeysResult.deletedUserJourneyIds,
         deletedUserTeamIds: journeysResult.deletedUserTeamIds
       })
-      allLogs.push(...userResult.logs)
 
-      return { success: userResult.success, logs: allLogs }
-    }
+      for (const log of userResult.logs) {
+        yield { log, done: false, success: null }
+      }
+
+      yield {
+        log: createLog(
+          userResult.success
+            ? '✅ User deletion completed successfully'
+            : '❌ User deletion failed'
+        ),
+        done: true,
+        success: userResult.success
+      }
+    },
+    resolve: (progress) => progress
   })
 )

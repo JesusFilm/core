@@ -1,2 +1,0 @@
-import './userDeleteJourneysCheck'
-import './userDeleteJourneysConfirm'

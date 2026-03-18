@@ -1,4 +1,4 @@
-import { ApolloError, gql, useMutation, useSuspenseQuery } from '@apollo/client'
+import { ApolloError, gql, useMutation, useSubscription, useSuspenseQuery } from '@apollo/client'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
@@ -36,9 +36,9 @@ import {
   UserDeleteCheckVariables
 } from '../../../__generated__/UserDeleteCheck'
 import {
-  UserDeleteConfirm,
-  UserDeleteConfirmVariables
-} from '../../../__generated__/UserDeleteConfirm'
+  UserDeleteConfirmSubscription,
+  UserDeleteConfirmSubscriptionVariables
+} from '../../../__generated__/UserDeleteConfirmSubscription'
 import { GET_ME } from '../PageWrapper/NavigationDrawer/UserNavigation/UserNavigation'
 
 interface LogEntry {
@@ -69,14 +69,15 @@ export const USER_DELETE_CHECK = gql`
 `
 
 export const USER_DELETE_CONFIRM = gql`
-  mutation UserDeleteConfirm($idType: UserDeleteIdType!, $id: String!) {
+  subscription UserDeleteConfirmSubscription($idType: UserDeleteIdType!, $id: String!) {
     userDeleteConfirm(idType: $idType, id: $id) {
-      success
-      logs {
+      log {
         message
         level
         timestamp
       }
+      done
+      success
     }
   }
 `
@@ -141,6 +142,11 @@ export function UserDeleteWithErrorBoundary(): ReactElement {
   )
 }
 
+interface ConfirmVars {
+  idType: UserDeleteIdType
+  id: string
+}
+
 function UserDeleteContent(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -155,16 +161,57 @@ function UserDeleteContent(): ReactElement {
   const [checkComplete, setCheckComplete] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deleteComplete, setDeleteComplete] = useState(false)
+  const [confirmVars, setConfirmVars] = useState<ConfirmVars | null>(null)
 
   const [userDeleteCheck, { loading: checkLoading }] = useMutation<
     UserDeleteCheck,
     UserDeleteCheckVariables
   >(USER_DELETE_CHECK)
 
-  const [userDeleteConfirm, { loading: confirmLoading }] = useMutation<
-    UserDeleteConfirm,
-    UserDeleteConfirmVariables
-  >(USER_DELETE_CONFIRM)
+  useSubscription<
+    UserDeleteConfirmSubscription,
+    UserDeleteConfirmSubscriptionVariables
+  >(USER_DELETE_CONFIRM, {
+    skip: confirmVars == null,
+    variables: confirmVars ?? { idType: UserDeleteIdType.email, id: '' },
+    onData: ({ data: subData }) => {
+      const progress = subData.data?.userDeleteConfirm
+      if (progress == null) return
+
+      setLogs((prev) => [...prev, progress.log])
+
+      if (progress.done) {
+        setDeleteComplete(true)
+        setConfirmVars(null)
+
+        if (progress.success === true) {
+          enqueueSnackbar(t('User deleted successfully'), {
+            variant: 'success'
+          })
+          setCheckComplete(false)
+        } else {
+          enqueueSnackbar(t('User deletion failed. Check logs for details.'), {
+            variant: 'error'
+          })
+        }
+      }
+    },
+    onError: (error) => {
+      const message = error.graphQLErrors[0]?.message ?? error.message
+      setLogs((prev) => [
+        ...prev,
+        {
+          message: `Error: ${message}`,
+          level: 'error',
+          timestamp: new Date().toISOString()
+        }
+      ])
+      enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
+      setConfirmVars(null)
+    }
+  })
+
+  const confirmLoading = confirmVars != null && !deleteComplete
 
   const isSuperAdmin =
     data.me?.__typename === 'AuthenticatedUser' && data.me.superAdmin === true
@@ -224,44 +271,11 @@ function UserDeleteContent(): ReactElement {
     }
   }, [idType, userId, userDeleteCheck, enqueueSnackbar])
 
-  const handleConfirmDelete = useCallback(async () => {
+  const handleConfirmDelete = useCallback(() => {
     setConfirmOpen(false)
-
-    try {
-      const { data: confirmData } = await userDeleteConfirm({
-        variables: { idType, id: userId.trim() }
-      })
-
-      if (confirmData?.userDeleteConfirm != null) {
-        setLogs((prev) => [...prev, ...confirmData.userDeleteConfirm.logs])
-        setDeleteComplete(true)
-
-        if (confirmData.userDeleteConfirm.success) {
-          enqueueSnackbar(t('User deleted successfully'), {
-            variant: 'success'
-          })
-          setCheckComplete(false)
-        } else {
-          enqueueSnackbar(t('User deletion failed. Check logs for details.'), {
-            variant: 'error'
-          })
-        }
-      }
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        const message = error.graphQLErrors[0]?.message ?? error.message
-        setLogs((prev) => [
-          ...prev,
-          {
-            message: `Error: ${message}`,
-            level: 'error',
-            timestamp: new Date().toISOString()
-          }
-        ])
-        enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
-      }
-    }
-  }, [idType, userId, userDeleteConfirm, enqueueSnackbar, t])
+    setDeleteComplete(false)
+    setConfirmVars({ idType, id: userId.trim() })
+  }, [idType, userId])
 
   if (!isSuperAdmin) return <></>
 

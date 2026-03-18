@@ -1,5 +1,6 @@
 export { lookupUser } from './lookupUser'
 export { deleteUserData } from './deleteUserData'
-export { callJourneysCheck, callJourneysConfirm } from './journeysInterop'
+export { deleteJourneysData } from './deleteJourneysData'
+export { checkJourneysData } from './checkJourneysData'
 export type { LogEntry } from './types'
 export { createLog } from './types'

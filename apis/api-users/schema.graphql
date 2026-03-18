@@ -40,13 +40,16 @@ type Mutation {
   createVerificationRequest(input: CreateVerificationRequestInput): Boolean
   validateEmail(email: String!, token: String!): AuthenticatedUser
   userDeleteCheck(idType: UserDeleteIdType!, id: String!): UserDeleteCheckResult!
-  userDeleteConfirm(idType: UserDeleteIdType!, id: String!): UserDeleteResult!
 }
 
 type Query {
   me(input: MeInput): User
   user(id: ID!): AuthenticatedUser
   userByEmail(email: String!): AuthenticatedUser
+}
+
+type Subscription {
+  userDeleteConfirm(idType: UserDeleteIdType!, id: String!): UserDeleteConfirmProgress!
 }
 
 interface User
@@ -68,6 +71,12 @@ type UserDeleteCheckResult {
   logs: [UserDeleteLogEntry!]!
 }
 
+type UserDeleteConfirmProgress {
+  log: UserDeleteLogEntry!
+  done: Boolean!
+  success: Boolean
+}
+
 enum UserDeleteIdType {
   databaseId
   email
@@ -77,9 +86,4 @@ type UserDeleteLogEntry {
   message: String!
   level: String!
   timestamp: String!
-}
-
-type UserDeleteResult {
-  success: Boolean!
-  logs: [UserDeleteLogEntry!]!
 }
