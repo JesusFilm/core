@@ -35,8 +35,7 @@ export function AiEditorCardPreview({
   const { journey } = useJourney()
 
   const steps = useMemo(
-    () =>
-      transformer(journey?.blocks ?? []) as Array<TreeBlock<StepFields>>,
+    () => transformer(journey?.blocks ?? []) as Array<TreeBlock<StepFields>>,
     [journey?.blocks]
   )
 
@@ -55,8 +54,7 @@ export function AiEditorCardPreview({
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
   const isAffected =
-    selectedCardId != null &&
-    aiState.affectedCardIds.includes(selectedCardId)
+    selectedCardId != null && aiState.affectedCardIds.includes(selectedCardId)
 
   // Scale the 324×674 card to fit the container
   const scale = 0.42

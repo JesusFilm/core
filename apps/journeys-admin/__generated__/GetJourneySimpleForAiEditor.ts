@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface GetJourneySimpleForAiEditor {
-  journeySimpleGet: Record<string, unknown> | null;
+  journeySimpleGet: any | null;
 }
 
 export interface GetJourneySimpleForAiEditorVariables {

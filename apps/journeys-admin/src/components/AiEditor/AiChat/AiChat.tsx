@@ -309,7 +309,10 @@ export function AiChat({
       if (message.proposedJourney == null) return
       if (message.generationId !== state.generationId) return
 
-      dispatch({ type: 'APPLY_START', messageGenerationId: message.generationId })
+      dispatch({
+        type: 'APPLY_START',
+        messageGenerationId: message.generationId
+      })
 
       try {
         await journeySimpleUpdate({
@@ -383,7 +386,9 @@ export function AiChat({
       <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
         {isEmpty ? (
           <Box sx={{ textAlign: 'center', mt: 4 }}>
-            <AutoAwesomeIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+            <AutoAwesomeIcon
+              sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }}
+            />
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               {t('Describe changes to your journey in plain language')}
             </Typography>

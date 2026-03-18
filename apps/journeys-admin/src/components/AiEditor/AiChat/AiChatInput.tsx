@@ -50,9 +50,12 @@ export function AiChatInput({
         <Box sx={{ mb: 1 }}>
           <Chip
             size="small"
-            label={t('Screen {{n}} selected — changes will target this screen', {
-              n: selectedCardIndex
-            })}
+            label={t(
+              'Screen {{n}} selected — changes will target this screen',
+              {
+                n: selectedCardIndex
+              }
+            )}
             onDelete={onClearSelectedCard}
             color="primary"
             variant="outlined"

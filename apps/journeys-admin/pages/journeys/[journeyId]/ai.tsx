@@ -111,19 +111,13 @@ function AiEditorPage(): ReactElement {
     [refetchJourney]
   )
 
-  const handleProposedJourney = useCallback(
-    (journey: JourneySimple | null) => {
-      setProposedJourney(journey)
-    },
-    []
-  )
+  const handleProposedJourney = useCallback((journey: JourneySimple | null) => {
+    setProposedJourney(journey)
+  }, [])
 
-  const handleSelectedCardChange = useCallback(
-    (cardId: string | null) => {
-      setSelectedCardId(cardId)
-    },
-    []
-  )
+  const handleSelectedCardChange = useCallback((cardId: string | null) => {
+    setSelectedCardId(cardId)
+  }, [])
 
   const handleClearSelectedCard = useCallback(() => {
     setSelectedCardId(null)

@@ -1,15 +1,15 @@
 import { google } from '@ai-sdk/google'
-import { generateObject, ModelMessage, NoObjectGeneratedError } from 'ai'
+import { ModelMessage, NoObjectGeneratedError, generateObject } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { hardenPrompt } from '@core/shared/ai/prompts'
 import {
   JourneySimple,
   JourneySimpleCard,
   journeySimpleSchema
 } from '@core/shared/ai/journeySimpleTypes'
+import { hardenPrompt } from '@core/shared/ai/prompts'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
@@ -23,8 +23,9 @@ interface JourneyAiEditResult {
   proposedJourney: JourneySimple | null
 }
 
-const JourneyAiEditResultRef =
-  builder.objectRef<JourneyAiEditResult>('JourneyAiEditResult')
+const JourneyAiEditResultRef = builder.objectRef<JourneyAiEditResult>(
+  'JourneyAiEditResult'
+)
 
 builder.objectType(JourneyAiEditResultRef, {
   fields: (t) => ({
@@ -122,7 +123,9 @@ builder.mutationField('journeyAiEdit', (t) =>
         })
       }
 
-      if (!ability(Action.Update, subject('Journey', dbJourney), context.user)) {
+      if (
+        !ability(Action.Update, subject('Journey', dbJourney), context.user)
+      ) {
         throw new GraphQLError(
           'user does not have permission to update journey',
           { extensions: { code: 'FORBIDDEN' } }
@@ -136,15 +139,21 @@ builder.mutationField('journeyAiEdit', (t) =>
       } catch (error) {
         if (error instanceof GraphQLError) throw error
         console.error('journeyAiEdit: failed to load journey', error)
-        throw new GraphQLError('Failed to load journey data. Please try again.', {
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
-        })
+        throw new GraphQLError(
+          'Failed to load journey data. Please try again.',
+          {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' }
+          }
+        )
       }
 
       // 4. Prune history to last 10 turns
       const prunedHistory = (input.history ?? [])
         .slice(-10)
-        .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
+        .map((m) => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content
+        }))
 
       // 5. Harden user message
       const hardenedMessage = hardenPrompt(input.message)
@@ -164,7 +173,7 @@ builder.mutationField('journeyAiEdit', (t) =>
           messages: [
             ...prunedHistory,
             { role: 'user', content: hardenedMessage }
-          ] as ModelMessage[],
+          ],
           schema: journeyAiEditSchema,
           maxRetries: 2,
           abortSignal: AbortSignal.timeout(30_000)
@@ -198,7 +207,7 @@ builder.mutationField('journeyAiEdit', (t) =>
       })
 
       // 9. Return result
-      const rawJourney = aiResult.journey as JourneySimple | null
+      const rawJourney = aiResult.journey
       return {
         reply: aiResult.reply,
         proposedJourney: rawJourney != null ? sanitizeJourney(rawJourney) : null

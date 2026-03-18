@@ -39,9 +39,7 @@ export function AiChatMessage({
   const isUser = message.role === 'user'
   const isStale = message.generationId !== currentGenerationId
   const hasProposal =
-    message.proposedJourney != null &&
-    !message.applied &&
-    !message.dismissed
+    message.proposedJourney != null && !message.applied && !message.dismissed
 
   return (
     <Box
