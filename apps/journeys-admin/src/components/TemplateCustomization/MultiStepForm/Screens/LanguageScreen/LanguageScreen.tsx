@@ -354,7 +354,6 @@ export function LanguageScreen({
       languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
 
     if (shouldSkipDuplicate(journey, values) && !translateWithAI) {
-      setLoading(false)
       handleNext()
     } else if (isSignedIn) {
       if (translateWithAI && translateLanguage) {
@@ -377,6 +376,8 @@ export function LanguageScreen({
             textLanguageId: translateLanguage.id,
             textLanguageName: targetLanguageName
           })
+        } else {
+          setLoading(false)
         }
       } else {
         const duplicatedJourneyId = await handleJourneyDuplication(
@@ -385,20 +386,21 @@ export function LanguageScreen({
         )
 
         if (duplicatedJourneyId != null) {
-          setLoading(false)
           handleNext(duplicatedJourneyId)
+        } else {
+          setLoading(false)
         }
       }
     } else {
-      // Creates a guest user and duplicates the journey for them
       const duplicatedJourneyId = await handleJourneyDuplication(
         'guest',
         journeyId
       )
 
       if (duplicatedJourneyId != null) {
-        setLoading(false)
         handleNext(duplicatedJourneyId)
+      } else {
+        setLoading(false)
       }
     }
     return
@@ -424,6 +426,7 @@ export function LanguageScreen({
               label={t('Next')}
               onClick={() => formikHandleSubmit()}
               disabled={isNextDisabled}
+              loading={loading}
               ariaLabel={t('Next')}
             />
           }
