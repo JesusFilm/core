@@ -77,13 +77,10 @@ export function Chat(): ReactElement {
         }
       })
     } catch (error) {
-      enqueueSnackbar(
-        t('Error adding button, please reload and try again.'),
-        {
-          variant: 'error',
-          preventDuplicate: true
-        }
-      )
+      enqueueSnackbar(t('Error adding button, please reload and try again.'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 
@@ -129,6 +126,7 @@ export function Chat(): ReactElement {
         />
         {customButtons.length === 2 && (
           <ChatOption
+            key={customButtons[1]?.id ?? 'custom-1'}
             chatButton={customButtons[1]}
             title={t('Custom')}
             active
