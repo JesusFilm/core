@@ -115,18 +115,17 @@ export function Chat(): ReactElement {
           disableSelection={maxSelection}
           enableIconSelect
         />
-        {customButtons.length >= 2 && (
+        {customButtons.length === 2 && (
           <ChatOption
-            key={customButtons[1]?.id ?? 'custom-1'}
             chatButton={customButtons[1]}
             title={t('Custom')}
-            active={customButtons[1] != null}
+            active
             journeyId={journey?.id}
             disableSelection={maxSelection}
             enableIconSelect
           />
         )}
-        {/* {customButtons.length === 1 && !maxSelection && (
+        {customButtons.length === 1 && !maxSelection && (
           <Button
             variant="text"
             size="small"
@@ -135,7 +134,7 @@ export function Chat(): ReactElement {
           >
             {t('+ Add 2nd Custom Button')}
           </Button>
-        )} */}
+        )}
         <Box
           sx={{
             display: maxSelection ? 'flex' : 'none',
