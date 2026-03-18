@@ -556,9 +556,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
-  userDeleteCheck(idType: UserDeleteIdType!, id: String!) : UserDeleteCheckResult! @join__field(graph: API_USERS)
-  userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN)
-  userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN)
+  userDeleteCheck(idType: UserDeleteIdType!, id: String!) : UserDeleteCheckResult! @join__field(graph: API_USERS) 
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -3342,31 +3340,6 @@ type UserDeleteLogEntry @join__type(graph: API_USERS)  {
   message: String!
   level: String!
   timestamp: String!
-}
-
-type UserDeleteJourneysLogEntry @join__type(graph: API_JOURNEYS_MODERN)  {
-  message: String!
-  level: String!
-  timestamp: String!
-}
-
-type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeysToDelete: Int!
-  journeysToTransfer: Int!
-  journeysToRemove: Int!
-  teamsToDelete: Int!
-  teamsToTransfer: Int!
-  teamsToRemove: Int!
-  logs: [UserDeleteJourneysLogEntry!]!
-}
-
-type UserDeleteJourneysConfirmResult @join__type(graph: API_JOURNEYS_MODERN)  {
-  success: Boolean!
-  deletedJourneyIds: [String!]!
-  deletedTeamIds: [String!]!
-  deletedUserJourneyIds: [String!]!
-  deletedUserTeamIds: [String!]!
-  logs: [UserDeleteJourneysLogEntry!]!
 }
 
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
