@@ -125,9 +125,7 @@ function CustomizePage() {
             variant: 'customize'
           }}
         >
-          <DiagnosticErrorBoundary
-            key={router.query.journeyId as string}
-          >
+          <DiagnosticErrorBoundary key={router.query.journeyId as string}>
             <MultiStepForm />
           </DiagnosticErrorBoundary>
         </JourneyProvider>
