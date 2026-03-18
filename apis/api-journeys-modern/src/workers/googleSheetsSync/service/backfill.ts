@@ -46,7 +46,7 @@ interface JourneyVisitorExportRow {
   [key: string]: string
 }
 
-function isTargetRangeUnchanged({
+function isSheetContentUnchanged({
   nextValues,
   existingValues,
   writeWidth
@@ -55,6 +55,8 @@ function isTargetRangeUnchanged({
   existingValues: (string | null)[][]
   writeWidth: number
 }): boolean {
+  if (existingValues.length !== nextValues.length) return false
+
   return nextValues.every((nextRow, rowIndex) => {
     const existingRow = existingValues[rowIndex] ?? []
 
@@ -305,9 +307,6 @@ export async function backfillService(
   // Ensure sheet exists
   await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
 
-  // Clear existing data
-  await clearSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
-
   // Build data rows
   const sanitizedHeaderRow = headerRow.map((cell) =>
     sanitizeGoogleSheetsCell(cell)
@@ -328,26 +327,36 @@ export async function backfillService(
   }
 
   const writeWidth = finalHeader.length
-  const writeHeight = values.length
   const lastColumnA1 = columnIndexToA1(writeWidth - 1)
-  const targetRange = `${sheetName}!A1:${lastColumnA1}${writeHeight}`
-  const existingTargetValues = await readValues({
-    accessToken,
-    spreadsheetId,
-    range: targetRange
-  })
+  const fullRange = `${sheetName}!A:${lastColumnA1}`
 
-  const targetRangeUnchanged = isTargetRangeUnchanged({
-    nextValues: values,
-    existingValues: existingTargetValues,
-    writeWidth
-  })
+  let existingValues: (string | null)[][] = []
+  let readFailed = false
+  try {
+    existingValues = await readValues({
+      accessToken,
+      spreadsheetId,
+      range: fullRange
+    })
+  } catch (err) {
+    readFailed = true
+    logger?.warn(
+      { err, range: fullRange },
+      'Failed to read existing sheet values, proceeding with full write'
+    )
+  }
 
-  if (!targetRangeUnchanged) {
-    // Clear existing data
+  const contentUnchanged =
+    !readFailed &&
+    isSheetContentUnchanged({
+      nextValues: values,
+      existingValues,
+      writeWidth
+    })
+
+  if (!contentUnchanged) {
     await clearSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
 
-    // Write all data at once
     await writeValues({
       accessToken,
       spreadsheetId,
