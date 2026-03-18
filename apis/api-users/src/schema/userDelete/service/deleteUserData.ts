@@ -45,7 +45,10 @@ export async function deleteUserData(
     } else {
       const message = error instanceof Error ? error.message : 'Unknown error'
       logs.push(
-        createLog(`❌ Failed to delete Firebase auth record: ${message}`, 'error')
+        createLog(
+          `❌ Failed to delete Firebase auth record: ${message}`,
+          'error'
+        )
       )
       return { success: false, logs }
     }

@@ -163,7 +163,9 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
             deletedUserJourneyIds.push(...ujRecords.map((r) => r.id))
             await tx.userJourney.deleteMany({ where: { userId } })
             logs.push(
-              createLog(`🗑️ Removed ${ujRecords.length} user-journey memberships`)
+              createLog(
+                `🗑️ Removed ${ujRecords.length} user-journey memberships`
+              )
             )
 
             const utRecords = await tx.userTeam.findMany({

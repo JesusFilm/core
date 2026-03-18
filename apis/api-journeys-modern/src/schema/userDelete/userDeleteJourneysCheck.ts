@@ -203,7 +203,9 @@ builder.mutationField('userDeleteJourneysCheck', (t) =>
         logs.push(createLog('✨ No additional related records found'))
       }
 
-      logs.push(createLog('✅ Check complete. Ready for deletion confirmation.'))
+      logs.push(
+        createLog('✅ Check complete. Ready for deletion confirmation.')
+      )
 
       return {
         journeysToDelete,
