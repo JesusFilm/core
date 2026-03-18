@@ -48,8 +48,8 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
       id: t.arg.string({ required: true })
     },
     subscribe: async function* (_parent, { idType, id }, ctx) {
-      // Look up the target user
-      const { user, logs: lookupLogs } = await lookupUser(idType, id)
+      // Look up the target user (also checks Firebase status)
+      const { user, firebase, logs: lookupLogs } = await lookupUser(idType, id)
       for (const log of lookupLogs) {
         yield { log, done: false, success: null }
       }
@@ -92,9 +92,17 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
         success: null
       }
 
+      // Use the Firebase UID from lookup if it differs from the DB userId
+      // (e.g. email-based fallback found a different UID)
+      const firebaseUidOverride =
+        firebase.uid != null && firebase.uid !== user.userId
+          ? firebase.uid
+          : null
+
       const userResult = await deleteUserData({
         userDbId: user.id,
         firebaseUserId: user.userId,
+        firebaseUidOverride,
         userEmail: user.email,
         userFirstName: user.firstName,
         userLastName: user.lastName,
