@@ -29,7 +29,9 @@ jest.mock('@core/prisma/users/client', () => ({
   }
 }))
 
-const { prisma: mockPrismaUsers } = jest.requireMock('@core/prisma/users/client')
+const { prisma: mockPrismaUsers } = jest.requireMock(
+  '@core/prisma/users/client'
+)
 
 let args = {}
 jest.mock('@core/yoga/email', () => ({
