@@ -38,12 +38,19 @@ builder.objectType(JourneyAiEditResultRef, {
   })
 })
 
+const MessageHistoryItem = builder.inputType('MessageHistoryItem', {
+  fields: (t) => ({
+    role: t.string({ required: true }),
+    content: t.string({ required: true })
+  })
+})
+
 // Input type
 const JourneyAiEditInput = builder.inputType('JourneyAiEditInput', {
   fields: (t) => ({
     journeyId: t.id({ required: true }),
     message: t.string({ required: true }),
-    history: t.field({ type: 'Json', required: false }),
+    history: t.field({ type: [MessageHistoryItem], required: false }),
     selectedCardId: t.string({ required: false })
   })
 })
@@ -121,9 +128,9 @@ builder.mutationField('journeyAiEdit', (t) =>
       }
 
       // 4. Prune history to last 10 turns
-      const rawHistory =
-        (input.history as ModelMessage[] | null | undefined) ?? []
-      const prunedHistory = rawHistory.slice(-10)
+      const prunedHistory = (input.history ?? [])
+        .slice(-10)
+        .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }))
 
       // 5. Harden user message
       const hardenedMessage = hardenPrompt(input.message)

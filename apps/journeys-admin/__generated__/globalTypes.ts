@@ -583,7 +583,7 @@ export interface IntegrationGrowthSpacesUpdateInput {
 export interface JourneyAiEditInput {
   journeyId: string;
   message: string;
-  history?: any | null;
+  history?: MessageHistoryItem[] | null;
   selectedCardId?: string | null;
 }
 
@@ -743,6 +743,11 @@ export interface LinkActionInput {
 export interface MeInput {
   redirect?: string | null;
   app?: App | null;
+}
+
+export interface MessageHistoryItem {
+  role: string;
+  content: string;
 }
 
 export interface MultiselectBlockCreateInput {

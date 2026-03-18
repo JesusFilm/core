@@ -826,7 +826,7 @@ type Journey
 input JourneyAiEditInput {
   journeyId: ID!
   message: String!
-  history: Json
+  history: [MessageHistoryItem!]
   selectedCardId: String
 }
 
@@ -1244,6 +1244,11 @@ input LinkActionInput {
 }
 
 union MediaVideo = MuxVideo | Video | YouTube
+
+input MessageHistoryItem {
+  role: String!
+  content: String!
+}
 
 enum MessagePlatform {
   facebook

@@ -4812,7 +4812,7 @@ input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input JourneyAiEditInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
   message: String!
-  history: Json
+  history: [MessageHistoryItem!]
   selectedCardId: String
 }
 
@@ -4871,6 +4871,11 @@ input LinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   target: String
   customizable: Boolean
   parentStepId: String
+}
+
+input MessageHistoryItem @join__type(graph: API_JOURNEYS_MODERN)  {
+  role: String!
+  content: String!
 }
 
 input MultiselectBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
