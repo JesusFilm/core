@@ -7,7 +7,8 @@ import { prisma } from '@core/prisma/journeys/client'
 import { hardenPrompt } from '@core/shared/ai/prompts'
 import {
   JourneySimple,
-  journeySimpleSchemaUpdate
+  JourneySimpleCard,
+  journeySimpleSchema
 } from '@core/shared/ai/journeySimpleTypes'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
@@ -55,19 +56,35 @@ const JourneyAiEditInput = builder.inputType('JourneyAiEditInput', {
   })
 })
 
-// Flat schema for AI response — avoids boolean enum which Gemini rejects
+// Use the base schema (no superRefine) so Zod validation doesn't reject
+// model output that has minor issues (e.g. empty video urls on non-video cards).
+// We sanitize the output ourselves after generation.
 const journeyAiEditSchema = z.object({
   reply: z
     .string()
     .describe(
       'Plain language explanation of what was changed and why, or suggestions/answer if no changes'
     ),
-  journey: journeySimpleSchemaUpdate
+  journey: journeySimpleSchema
     .nullable()
     .describe(
       'Full updated journey with all changes applied, or null if no structural changes are needed'
     )
 })
+
+// Strip video fields with empty URLs that the model sometimes emits on non-video cards
+function sanitizeJourney(journey: JourneySimple): JourneySimple {
+  return {
+    ...journey,
+    cards: journey.cards.map((card): JourneySimpleCard => {
+      if (card.video != null && !card.video.url) {
+        const { video: _video, ...rest } = card
+        return rest
+      }
+      return card
+    })
+  }
+}
 
 builder.mutationField('journeyAiEdit', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -181,9 +198,10 @@ builder.mutationField('journeyAiEdit', (t) =>
       })
 
       // 9. Return result
+      const rawJourney = aiResult.journey as JourneySimple | null
       return {
         reply: aiResult.reply,
-        proposedJourney: (aiResult.journey as JourneySimple) ?? null
+        proposedJourney: rawJourney != null ? sanitizeJourney(rawJourney) : null
       }
     }
   })
