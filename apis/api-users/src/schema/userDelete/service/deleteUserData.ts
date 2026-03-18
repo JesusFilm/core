@@ -34,7 +34,7 @@ function isFirebaseNotFound(error: unknown): boolean {
   )
 }
 
-async function deleteFirebaseUser(
+export async function deleteFirebaseUser(
   firebaseUserId: string,
   firebaseUidOverride: string | null,
   email: string | null

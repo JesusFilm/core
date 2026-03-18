@@ -14,7 +14,7 @@ interface FirebaseStatus {
 }
 
 interface LookupResult {
-  user: User
+  user: User | null
   firebase: FirebaseStatus
   logs: LogEntry[]
 }
@@ -124,24 +124,41 @@ export async function lookupUser(
       ? await prisma.user.findUnique({ where: { email: id } })
       : await prisma.user.findUnique({ where: { id } })
 
-  if (user == null) {
-    throw new GraphQLError(`User not found with ${idType}: ${id}`, {
-      extensions: { code: 'NOT_FOUND' }
-    })
+  if (user != null) {
+    logs.push(
+      createLog(
+        `✅ User found: ${user.firstName} ${user.lastName ?? ''} (${user.email ?? 'no email'})`
+      )
+    )
+
+    const { status: firebase, logs: fbLogs } = await checkFirebaseUser(
+      user.userId,
+      user.email
+    )
+    logs.push(...fbLogs)
+
+    return { user, firebase, logs }
   }
 
-  logs.push(
-    createLog(
-      `✅ User found: ${user.firstName} ${user.lastName ?? ''} (${user.email ?? 'no email'})`
-    )
-  )
+  // No DB user — check Firebase directly (only possible with email lookup)
+  logs.push(createLog(`⚠️ No database user found for ${idType}: ${id}`, 'warn'))
 
-  // Check Firebase status
-  const { status: firebase, logs: fbLogs } = await checkFirebaseUser(
-    user.userId,
-    user.email
-  )
-  logs.push(...fbLogs)
+  if (idType === 'email') {
+    const { status: firebase, logs: fbLogs } = await checkFirebaseUser('', id)
+    logs.push(...fbLogs)
 
-  return { user, firebase, logs }
+    if (firebase.exists) {
+      logs.push(
+        createLog(
+          '⚠️ Firebase-only account detected — no database record, but Firebase auth exists',
+          'warn'
+        )
+      )
+      return { user: null, firebase, logs }
+    }
+  }
+
+  throw new GraphQLError(`User not found with ${idType}: ${id}`, {
+    extensions: { code: 'NOT_FOUND' }
+  })
 }

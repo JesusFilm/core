@@ -8,6 +8,7 @@ import {
   type LogEntry,
   callJourneysConfirm,
   createLog,
+  deleteFirebaseUser,
   deleteUserData,
   lookupUser
 } from './service'
@@ -50,6 +51,45 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
       const { user, firebase, logs: lookupLogs } = await lookupUser(idType, id)
       for (const log of lookupLogs) {
         yield { log, done: false, success: null }
+      }
+
+      // Firebase-only account — no DB user, just delete Firebase auth
+      if (user == null) {
+        if (!firebase.exists || firebase.uid == null) {
+          yield {
+            log: createLog('❌ No Firebase account found to delete', 'error'),
+            done: true,
+            success: false
+          }
+          return
+        }
+
+        yield {
+          log: createLog('🔥 Deleting Firebase-only account...'),
+          done: false,
+          success: null
+        }
+
+        const fbLogs = await deleteFirebaseUser(
+          firebase.uid,
+          null,
+          firebase.email
+        )
+        for (const log of fbLogs) {
+          yield { log, done: false, success: null }
+        }
+
+        const hasError = fbLogs.some((log) => log.level === 'error')
+        yield {
+          log: createLog(
+            hasError
+              ? '❌ Firebase deletion failed'
+              : '✅ Firebase-only account deleted successfully'
+          ),
+          done: true,
+          success: !hasError
+        }
+        return
       }
 
       // Look up the caller (superAdmin) for audit log

@@ -68,8 +68,29 @@ builder.mutationField('userDeleteCheck', (t) =>
     resolve: async (_parent, { idType, id }) => {
       const allLogs: LogEntry[] = []
 
-      const { user, logs: lookupLogs } = await lookupUser(idType, id)
+      const { user, firebase, logs: lookupLogs } = await lookupUser(idType, id)
       allLogs.push(...lookupLogs)
+
+      // Firebase-only account — no DB user, no journeys data
+      if (user == null) {
+        allLogs.push(
+          createLog(
+            '📋 Skipping journeys check — no database user to look up'
+          )
+        )
+        return {
+          userId: firebase.uid ?? '',
+          userEmail: firebase.email,
+          userFirstName: '(Firebase only)',
+          journeysToDelete: 0,
+          journeysToTransfer: 0,
+          journeysToRemove: 0,
+          teamsToDelete: 0,
+          teamsToTransfer: 0,
+          teamsToRemove: 0,
+          logs: allLogs
+        }
+      }
 
       allLogs.push(createLog('📋 Checking journeys and teams...'))
 
