@@ -172,14 +172,44 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
           createLog(`🗑️ Removed ${utRecords.length} user-team memberships`)
         )
 
-        // Phase 3: Delete sole-accessor journeys one at a time (heavy cascades)
-        for (const journeyId of journeyIdsToDelete) {
-          await prisma.journey.delete({ where: { id: journeyId } })
-          logs.push(createLog(`🗑️ Deleted journey ${journeyId}`))
-        }
+        // Phase 3: Delete sole-accessor journeys
         if (journeyIdsToDelete.length > 0) {
+          // Pre-delete heavy child records to avoid slow cascade deletes
+          const eventCount = await prisma.event.deleteMany({
+            where: { journeyId: { in: journeyIdsToDelete } }
+          })
+          if (eventCount.count > 0)
+            logs.push(createLog(`🗑️ Deleted ${eventCount.count} events`))
+
+          const journeyVisitorCount =
+            await prisma.journeyVisitor.deleteMany({
+              where: { journeyId: { in: journeyIdsToDelete } }
+            })
+          if (journeyVisitorCount.count > 0)
+            logs.push(
+              createLog(
+                `🗑️ Deleted ${journeyVisitorCount.count} journey visitors`
+              )
+            )
+
+          const actionCount = await prisma.action.deleteMany({
+            where: { journeyId: { in: journeyIdsToDelete } }
+          })
+          if (actionCount.count > 0)
+            logs.push(createLog(`🗑️ Deleted ${actionCount.count} actions`))
+
+          const blockCount = await prisma.block.deleteMany({
+            where: { journeyId: { in: journeyIdsToDelete } }
+          })
+          if (blockCount.count > 0)
+            logs.push(createLog(`🗑️ Deleted ${blockCount.count} blocks`))
+
+          // Now delete the journeys (cascades are already cleared)
+          for (const journeyId of journeyIdsToDelete) {
+            await prisma.journey.delete({ where: { id: journeyId } })
+          }
           logs.push(
-            createLog(`🗑️ Deleted ${journeyIdsToDelete.length} journeys total`)
+            createLog(`🗑️ Deleted ${journeyIdsToDelete.length} journeys`)
           )
         }
 
