@@ -47,8 +47,6 @@ export const AuthProvider: FunctionComponent<AuthProviderProps> = ({
   const user = serverUser ?? clientUser
 
   return (
-    <AuthContext.Provider value={{ user }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
   )
 }

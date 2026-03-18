@@ -1,9 +1,9 @@
-import { Auth, User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'
 import { act, render, renderHook, waitFor } from '@testing-library/react'
+import { Auth, User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'
 import { ReactNode } from 'react'
 
-import { AuthProvider } from './AuthProvider'
 import { User, useAuth } from './authContext'
+import { AuthProvider } from './AuthProvider'
 import { getFirebaseAuth } from './firebase'
 
 jest.mock('firebase/auth', () => ({
