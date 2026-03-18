@@ -32,6 +32,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react'
 
@@ -231,6 +232,15 @@ function UserDeleteContent(): ReactElement {
     }
   }, [isSuperAdmin, router])
 
+  const logBoxRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const el = logBoxRef.current
+    if (el != null) {
+      el.scrollTop = el.scrollHeight
+    }
+  }, [logs])
+
   const logText = useMemo(
     () =>
       logs
@@ -366,6 +376,7 @@ function UserDeleteContent(): ReactElement {
         rows={16}
         fullWidth
         value={logText}
+        inputRef={logBoxRef}
         slotProps={{
           input: {
             readOnly: true
