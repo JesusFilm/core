@@ -120,9 +120,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
           })
 
           for (const ut of userTeams) {
-            const others = ut.team.userTeams.filter(
-              (t) => t.userId !== userId
-            )
+            const others = ut.team.userTeams.filter((t) => t.userId !== userId)
             if (others.length === 0) {
               teamIdsToDelete.push(ut.team.id)
             } else if (ut.role === 'manager') {
@@ -161,9 +159,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
         deletedUserJourneyIds.push(...ujRecords.map((r) => r.id))
         await prisma.userJourney.deleteMany({ where: { userId } })
         logs.push(
-          createLog(
-            `🗑️ Removed ${ujRecords.length} user-journey memberships`
-          )
+          createLog(`🗑️ Removed ${ujRecords.length} user-journey memberships`)
         )
 
         const utRecords = await prisma.userTeam.findMany({
@@ -183,9 +179,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
         }
         if (journeyIdsToDelete.length > 0) {
           logs.push(
-            createLog(
-              `🗑️ Deleted ${journeyIdsToDelete.length} journeys total`
-            )
+            createLog(`🗑️ Deleted ${journeyIdsToDelete.length} journeys total`)
           )
         }
 
@@ -213,17 +207,13 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
           }
         })
         if (userTeamInvites.count > 0)
-          logs.push(
-            createLog(`Deleted ${userTeamInvites.count} team invites`)
-          )
+          logs.push(createLog(`Deleted ${userTeamInvites.count} team invites`))
 
         const userInvites = await prisma.userInvite.deleteMany({
           where: { senderId: userId }
         })
         if (userInvites.count > 0)
-          logs.push(
-            createLog(`Deleted ${userInvites.count} journey invites`)
-          )
+          logs.push(createLog(`Deleted ${userInvites.count} journey invites`))
 
         const exportLogs = await prisma.journeyEventsExportLog.deleteMany({
           where: { userId }
@@ -235,9 +225,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
           where: { userId }
         })
         if (journeyThemes.count > 0)
-          logs.push(
-            createLog(`Deleted ${journeyThemes.count} journey themes`)
-          )
+          logs.push(createLog(`Deleted ${journeyThemes.count} journey themes`))
 
         const journeyProfile = await prisma.journeyProfile.deleteMany({
           where: { userId }
@@ -278,10 +266,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error'
         logs.push(
-          createLog(
-            `❌ Journeys database cleanup failed: ${message}`,
-            'error'
-          )
+          createLog(`❌ Journeys database cleanup failed: ${message}`, 'error')
         )
         return {
           success: false,
