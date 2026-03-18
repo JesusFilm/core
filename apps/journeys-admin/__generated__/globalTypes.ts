@@ -580,6 +580,13 @@ export interface IntegrationGrowthSpacesUpdateInput {
   accessSecret: string;
 }
 
+export interface JourneyAiEditInput {
+  journeyId: string;
+  message: string;
+  history?: any | null;
+  selectedCardId?: string | null;
+}
+
 export interface JourneyCollectionCreateInput {
   id?: string | null;
   teamId: string;

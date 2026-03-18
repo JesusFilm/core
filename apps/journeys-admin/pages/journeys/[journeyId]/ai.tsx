@@ -10,6 +10,10 @@ import { ReactElement, useCallback, useState } from 'react'
 
 import { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
 
+import {
+  GetAiEditorJourney,
+  GetAiEditorJourneyVariables
+} from '../../../__generated__/GetAiEditorJourney'
 import { AiChat, AiState } from '../../../src/components/AiEditor/AiChat/AiChat'
 import { AiEditorHeader } from '../../../src/components/AiEditor/AiEditorHeader'
 import { AiEditorPreview } from '../../../src/components/AiEditor/AiEditorPreview'
@@ -44,7 +48,10 @@ function AiEditorPage(): ReactElement {
   })
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
 
-  const { data, loading } = useQuery(GET_AI_EDITOR_JOURNEY, {
+  const { data, loading } = useQuery<
+    GetAiEditorJourney,
+    GetAiEditorJourneyVariables
+  >(GET_AI_EDITOR_JOURNEY, {
     variables: { id: journeyId },
     skip: journeyId == null
   })

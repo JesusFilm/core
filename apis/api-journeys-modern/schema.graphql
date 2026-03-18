@@ -823,6 +823,18 @@ type Journey
   journeyCollections: [JourneyCollection!]!
 }
 
+input JourneyAiEditInput {
+  journeyId: ID!
+  message: String!
+  history: Json
+  selectedCardId: String
+}
+
+type JourneyAiEditResult {
+  reply: String
+  proposedJourney: Json
+}
+
 input JourneyAiTranslateInput {
   journeyId: ID!
   name: String!
@@ -1393,6 +1405,7 @@ type Mutation {
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
+  journeyAiEdit(input: JourneyAiEditInput!): JourneyAiEditResult!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!

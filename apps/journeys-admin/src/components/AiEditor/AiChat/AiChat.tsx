@@ -4,6 +4,15 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+
+import {
+  JourneyAiEdit,
+  JourneyAiEditVariables
+} from '../../../../__generated__/JourneyAiEdit'
+import {
+  JourneySimpleUpdateFromAiEditor,
+  JourneySimpleUpdateFromAiEditorVariables
+} from '../../../../__generated__/JourneySimpleUpdateFromAiEditor'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useReducer, useRef } from 'react'
 
@@ -213,8 +222,13 @@ export function AiChat({
     applyingMessageId: null
   })
 
-  const [journeyAiEdit] = useMutation(JOURNEY_AI_EDIT)
-  const [journeySimpleUpdate] = useMutation(JOURNEY_SIMPLE_UPDATE)
+  const [journeyAiEdit] = useMutation<JourneyAiEdit, JourneyAiEditVariables>(
+    JOURNEY_AI_EDIT
+  )
+  const [journeySimpleUpdate] = useMutation<
+    JourneySimpleUpdateFromAiEditor,
+    JourneySimpleUpdateFromAiEditorVariables
+  >(JOURNEY_SIMPLE_UPDATE)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
