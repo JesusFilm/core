@@ -58,7 +58,7 @@ builder.mutationField('userDeleteConfirm', (t) =>
       }
 
       // Phase 1: Journeys DB cleanup via interop
-      allLogs.push(createLog('Starting journeys database cleanup...'))
+      allLogs.push(createLog('🔄 Starting journeys database cleanup...'))
 
       const journeysResult = await callJourneysConfirm(user.userId)
       allLogs.push(...journeysResult.logs)
@@ -68,7 +68,7 @@ builder.mutationField('userDeleteConfirm', (t) =>
       }
 
       // Phase 2: Users DB deletion + Firebase cleanup
-      allLogs.push(createLog('Starting user record deletion...'))
+      allLogs.push(createLog('🔄 Starting user record deletion...'))
       const userResult = await deleteUserData({
         userDbId: user.id,
         firebaseUserId: user.userId,
