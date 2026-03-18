@@ -114,7 +114,12 @@ export async function callJourneysCheck(
       teamsToDelete: 0,
       teamsToTransfer: 0,
       teamsToRemove: 0,
-      logs: [createLog(`❌ Journeys check failed: ${message}`, 'error')]
+      logs: [
+        createLog(
+          `❌ Journeys check failed: ${message} (GATEWAY_URL ${process.env.GATEWAY_URL != null ? 'is set' : 'is NOT set'})`,
+          'error'
+        )
+      ]
     }
   }
 }
