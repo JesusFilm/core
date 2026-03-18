@@ -181,10 +181,9 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
           if (eventCount.count > 0)
             logs.push(createLog(`🗑️ Deleted ${eventCount.count} events`))
 
-          const journeyVisitorCount =
-            await prisma.journeyVisitor.deleteMany({
-              where: { journeyId: { in: journeyIdsToDelete } }
-            })
+          const journeyVisitorCount = await prisma.journeyVisitor.deleteMany({
+            where: { journeyId: { in: journeyIdsToDelete } }
+          })
           if (journeyVisitorCount.count > 0)
             logs.push(
               createLog(
