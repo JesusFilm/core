@@ -40,7 +40,6 @@ export function AiEditorPreview({
       }}
     >
       <AiEditorCardPreview
-        journey={journey}
         selectedCardId={selectedCardId}
         aiState={aiState}
         sx={{ height: '50%' }}

@@ -1,13 +1,121 @@
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import { SxProps } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { MouseEvent, ReactElement, memo, useMemo } from 'react'
+import {
+  Background,
+  Edge,
+  Handle,
+  Node,
+  NodeProps,
+  Position,
+  ReactFlow,
+  ReactFlowProvider
+} from 'reactflow'
+import 'reactflow/dist/style.css'
 
-import { JourneySimple, JourneySimpleCard } from '@core/shared/ai/journeySimpleTypes'
+import { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
 
 import { AiState } from './AiChat/AiChat'
+
+const NODE_WIDTH = 160
+const NODE_HEIGHT = 60
+
+interface AiCardNodeData {
+  cardIndex: number
+  label: string
+  isAffected: boolean
+  isLoading: boolean
+  isSelected: boolean
+}
+
+const AiCardNode = memo(
+  ({ data, id }: NodeProps<AiCardNodeData>): ReactElement => {
+    const { label, cardIndex, isAffected, isLoading, isSelected } = data
+    const theme = useTheme()
+
+    const borderColor = isSelected
+      ? theme.palette.primary.main
+      : isAffected
+        ? theme.palette.primary.main
+        : theme.palette.divider
+
+    return (
+      <>
+        <Handle
+          type="target"
+          position={Position.Top}
+          style={{ opacity: 0, pointerEvents: 'none' }}
+        />
+        <Paper
+          elevation={isSelected ? 4 : 1}
+          data-testid={`AiCardNode-${id}`}
+          sx={{
+            width: NODE_WIDTH,
+            height: NODE_HEIGHT,
+            border: `2px solid ${borderColor}`,
+            borderRadius: 2,
+            display: 'flex',
+            alignItems: 'center',
+            px: 1.5,
+            gap: 1,
+            bgcolor: isAffected ? 'primary.50' : 'background.paper',
+            cursor: 'pointer',
+            userSelect: 'none',
+            animation: isLoading ? 'aiPulse 1.5s infinite' : 'none',
+            '@keyframes aiPulse': {
+              '0%': { opacity: 1 },
+              '50%': { opacity: 0.55 },
+              '100%': { opacity: 1 }
+            }
+          }}
+        >
+          <Box
+            sx={{
+              minWidth: 20,
+              height: 20,
+              borderRadius: '50%',
+              bgcolor: isAffected ? 'primary.main' : 'action.selected',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Typography
+              variant="caption"
+              fontWeight={700}
+              sx={{
+                fontSize: '9px',
+                color: isAffected ? 'primary.contrastText' : 'text.secondary'
+              }}
+            >
+              {cardIndex}
+            </Typography>
+          </Box>
+          <Typography
+            variant="caption"
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              flex: 1,
+              fontWeight: isSelected ? 600 : 400
+            }}
+          >
+            {label !== '' ? label : '…'}
+          </Typography>
+        </Paper>
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          style={{ opacity: 0, pointerEvents: 'none' }}
+        />
+      </>
+    )
+  }
+)
+AiCardNode.displayName = 'AiCardNode'
 
 interface AiEditorFlowMapProps {
   journey: JourneySimple
@@ -17,219 +125,105 @@ interface AiEditorFlowMapProps {
   sx?: SxProps
 }
 
-interface CardNode {
-  card: JourneySimpleCard
-  index: number
-}
-
-function getCardConnections(
-  cards: JourneySimpleCard[]
-): Array<{ from: string; to: string }> {
-  const connections: Array<{ from: string; to: string }> = []
-
-  for (const card of cards) {
-    if (card.defaultNextCard != null) {
-      connections.push({ from: card.id, to: card.defaultNextCard })
-    }
-    if (card.button?.nextCard != null) {
-      connections.push({ from: card.id, to: card.button.nextCard })
-    }
-    if (card.poll != null) {
-      for (const option of card.poll) {
-        if (option.nextCard != null) {
-          connections.push({ from: card.id, to: option.nextCard })
-        }
-      }
-    }
-  }
-
-  return connections
-}
-
-export function AiEditorFlowMap({
+function AiEditorFlowMapInner({
   journey,
   selectedCardId,
   aiState,
   onCardSelect,
   sx
 }: AiEditorFlowMapProps): ReactElement {
-  const CARD_WIDTH = 120
-  const CARD_HEIGHT = 72
-  const H_GAP = 48
-  const V_GAP = 32
-  const CARDS_PER_ROW = 3
+  const nodeTypes = useMemo(() => ({ aiCard: AiCardNode }), [])
 
-  const nodes: CardNode[] = journey.cards.map((card, index) => ({
-    card,
-    index
-  }))
+  const { nodes, edges } = useMemo(() => {
+    const nodes: Node<AiCardNodeData>[] = journey.cards.map((card, index) => ({
+      id: card.id,
+      position: { x: card.x, y: card.y },
+      type: 'aiCard',
+      data: {
+        cardIndex: index + 1,
+        label: card.heading ?? card.text ?? '',
+        isAffected: aiState.affectedCardIds.includes(card.id),
+        isLoading: aiState.status === 'loading',
+        isSelected: card.id === selectedCardId
+      }
+    }))
 
-  const useStoredCoords = journey.cards.every(
-    (c) => typeof c.x === 'number' && typeof c.y === 'number'
-  )
-
-  function getPos(node: CardNode): { x: number; y: number } {
-    if (useStoredCoords) {
-      return {
-        x: node.card.x * (CARD_WIDTH + H_GAP),
-        y: node.card.y * (CARD_HEIGHT + V_GAP)
+    const edges: Edge[] = []
+    for (const card of journey.cards) {
+      if (card.defaultNextCard != null) {
+        edges.push({
+          id: `${card.id}->default->${card.defaultNextCard}`,
+          source: card.id,
+          target: card.defaultNextCard,
+          style: { strokeWidth: 1.5 }
+        })
+      }
+      if (card.button?.nextCard != null) {
+        edges.push({
+          id: `${card.id}->btn->${card.button.nextCard}`,
+          source: card.id,
+          target: card.button.nextCard,
+          label: card.button.text,
+          style: { strokeWidth: 1.5 }
+        })
+      }
+      if (card.poll != null) {
+        card.poll.forEach((opt, i) => {
+          if (opt.nextCard != null) {
+            edges.push({
+              id: `${card.id}->poll${i}->${opt.nextCard}`,
+              source: card.id,
+              target: opt.nextCard,
+              label: opt.text,
+              style: { strokeWidth: 1.5 }
+            })
+          }
+        })
       }
     }
-    const col = node.index % CARDS_PER_ROW
-    const row = Math.floor(node.index / CARDS_PER_ROW)
-    return {
-      x: col * (CARD_WIDTH + H_GAP) + H_GAP,
-      y: row * (CARD_HEIGHT + V_GAP) + V_GAP
-    }
+
+    return { nodes, edges }
+  }, [journey, selectedCardId, aiState])
+
+  function handleNodeClick(_: MouseEvent, node: Node): void {
+    onCardSelect(node.id)
   }
-
-  const positions = new Map(nodes.map((n) => [n.card.id, getPos(n)]))
-
-  const maxX =
-    Math.max(...Array.from(positions.values()).map((p) => p.x)) +
-    CARD_WIDTH +
-    H_GAP
-  const maxY =
-    Math.max(...Array.from(positions.values()).map((p) => p.y)) +
-    CARD_HEIGHT +
-    V_GAP
-
-  const connections = getCardConnections(journey.cards)
 
   return (
     <Box
       sx={{
-        overflow: 'auto',
-        bgcolor: 'background.default',
+        width: '100%',
+        height: '100%',
+        borderTop: 1,
+        borderColor: 'divider',
         ...sx
       }}
+      data-testid="AiEditorFlowMap"
     >
-      <Box sx={{ position: 'relative', minWidth: maxX, minHeight: maxY }}>
-        {/* SVG arrows */}
-        <svg
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: maxX,
-            height: maxY,
-            pointerEvents: 'none'
-          }}
-        >
-          {connections.map(({ from, to }, i) => {
-            const fromPos = positions.get(from)
-            const toPos = positions.get(to)
-            if (fromPos == null || toPos == null) return null
-
-            const x1 = fromPos.x + CARD_WIDTH / 2
-            const y1 = fromPos.y + CARD_HEIGHT
-            const x2 = toPos.x + CARD_WIDTH / 2
-            const y2 = toPos.y
-
-            return (
-              <g key={i}>
-                <defs>
-                  <marker
-                    id={`arrow-${i}`}
-                    markerWidth="6"
-                    markerHeight="6"
-                    refX="5"
-                    refY="3"
-                    orient="auto"
-                  >
-                    <path d="M0,0 L0,6 L6,3 z" fill="#9e9e9e" />
-                  </marker>
-                </defs>
-                <path
-                  d={`M ${x1} ${y1} C ${x1} ${(y1 + y2) / 2}, ${x2} ${(y1 + y2) / 2}, ${x2} ${y2}`}
-                  fill="none"
-                  stroke="#9e9e9e"
-                  strokeWidth="1.5"
-                  markerEnd={`url(#arrow-${i})`}
-                />
-              </g>
-            )
-          })}
-        </svg>
-
-        {/* Card nodes */}
-        {nodes.map((node) => {
-          const pos = getPos(node)
-          const isSelected = selectedCardId === node.card.id
-          const isAffected = aiState.affectedCardIds.includes(node.card.id)
-          const isLoading = aiState.status === 'loading' && isAffected
-          const isProposal = aiState.status === 'proposal' && isAffected
-
-          return (
-            <Paper
-              key={node.card.id}
-              elevation={isSelected ? 3 : 1}
-              onClick={() => onCardSelect(node.card.id)}
-              data-testid={`FlowMapCard-${node.card.id}`}
-              sx={{
-                position: 'absolute',
-                left: pos.x,
-                top: pos.y,
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                p: 1,
-                cursor: 'pointer',
-                overflow: 'hidden',
-                border: 2,
-                borderColor: isSelected
-                  ? 'primary.main'
-                  : isProposal
-                    ? 'primary.light'
-                    : isLoading
-                      ? 'warning.light'
-                      : 'transparent',
-                animation: isLoading
-                  ? 'pulse 1.5s ease-in-out infinite'
-                  : 'none',
-                '@keyframes pulse': {
-                  '0%, 100%': { opacity: 1 },
-                  '50%': { opacity: 0.6 }
-                },
-                '&:hover': { borderColor: 'primary.light', elevation: 2 }
-              }}
-            >
-              <Box sx={{ position: 'relative' }}>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ fontSize: '9px', display: 'block' }}
-                >
-                  {node.index + 1}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  fontWeight={600}
-                  sx={{
-                    fontSize: '10px',
-                    overflow: 'hidden',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical'
-                  }}
-                >
-                  {node.card.heading ?? node.card.text ?? '(empty)'}
-                </Typography>
-                {isProposal && (
-                  <AutoAwesomeIcon
-                    sx={{
-                      fontSize: 12,
-                      color: 'primary.main',
-                      position: 'absolute',
-                      top: 0,
-                      right: 0
-                    }}
-                  />
-                )}
-              </Box>
-            </Paper>
-          )
-        })}
-      </Box>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodeClick={handleNodeClick}
+        fitView
+        fitViewOptions={{ padding: 0.2 }}
+        minZoom={0.2}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        elementsSelectable={false}
+        proOptions={{ hideAttribution: true }}
+        deleteKeyCode={[]}
+      >
+        <Background color="#ccc" gap={16} />
+      </ReactFlow>
     </Box>
+  )
+}
+
+export function AiEditorFlowMap(props: AiEditorFlowMapProps): ReactElement {
+  return (
+    <ReactFlowProvider>
+      <AiEditorFlowMapInner {...props} />
+    </ReactFlowProvider>
   )
 }

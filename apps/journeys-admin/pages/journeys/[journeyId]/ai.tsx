@@ -6,14 +6,21 @@ import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
 import { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
 
 import {
   GetAiEditorJourney,
   GetAiEditorJourneyVariables
 } from '../../../__generated__/GetAiEditorJourney'
+import {
+  GetJourneySimpleForAiEditor,
+  GetJourneySimpleForAiEditorVariables
+} from '../../../__generated__/GetJourneySimpleForAiEditor'
+import { IdType } from '../../../__generated__/globalTypes'
 import { AiChat, AiState } from '../../../src/components/AiEditor/AiChat/AiChat'
 import { AiEditorHeader } from '../../../src/components/AiEditor/AiEditorHeader'
 import { AiEditorPreview } from '../../../src/components/AiEditor/AiEditorPreview'
@@ -31,6 +38,12 @@ const GET_AI_EDITOR_JOURNEY = gql`
       title
       description
     }
+  }
+`
+
+const GET_JOURNEY_SIMPLE_FOR_AI_EDITOR = gql`
+  query GetJourneySimpleForAiEditor($id: ID!) {
+    journeySimpleGet(id: $id)
   }
 `
 
@@ -59,6 +72,27 @@ function AiEditorPage(): ReactElement {
     skip: journeyId == null
   })
 
+  const { data: simpleData } = useQuery<
+    GetJourneySimpleForAiEditor,
+    GetJourneySimpleForAiEditorVariables
+  >(GET_JOURNEY_SIMPLE_FOR_AI_EDITOR, {
+    variables: { id: journeyId },
+    skip: journeyId == null
+  })
+
+  const { data: journeyData, refetch: refetchJourney } = useJourneyQuery({
+    id: journeyId,
+    idType: IdType.databaseId,
+    options: { skipRoutingFilter: true }
+  })
+
+  // Populate currentJourney from the initial fetch
+  useEffect(() => {
+    if (simpleData?.journeySimpleGet != null && currentJourney == null) {
+      setCurrentJourney(simpleData.journeySimpleGet as JourneySimple)
+    }
+  }, [simpleData, currentJourney])
+
   const journey = data?.journey
 
   const previewJourney = proposedJourney ?? currentJourney
@@ -68,10 +102,14 @@ function AiEditorPage(): ReactElement {
       ? previewJourney.cards.findIndex((c) => c.id === selectedCardId) + 1
       : null
 
-  const handleJourneyUpdated = useCallback((updatedJourney: JourneySimple) => {
-    setCurrentJourney(updatedJourney)
-    setAiState({ status: 'idle', affectedCardIds: [] })
-  }, [])
+  const handleJourneyUpdated = useCallback(
+    (updatedJourney: JourneySimple) => {
+      setCurrentJourney(updatedJourney)
+      setAiState({ status: 'idle', affectedCardIds: [] })
+      void refetchJourney()
+    },
+    [refetchJourney]
+  )
 
   const handleProposedJourney = useCallback(
     (journey: JourneySimple | null) => {
@@ -149,28 +187,30 @@ function AiEditorPage(): ReactElement {
               }
             }}
           />
-          {previewJourney != null ? (
-            <AiEditorPreview
-              journey={previewJourney}
-              aiState={aiState}
-              onSelectedCardChange={handleSelectedCardChange}
-              sx={{ flex: 1, display: { xs: 'none', md: 'flex' } }}
-            />
-          ) : (
-            <Box
-              sx={{
-                flex: 1,
-                display: { xs: 'none', md: 'flex' },
-                alignItems: 'center',
-                justifyContent: 'center',
-                bgcolor: 'background.default'
-              }}
-            >
-              <Typography variant="body2" color="text.secondary" align="center">
-                {t('Start chatting to see your journey preview')}
-              </Typography>
-            </Box>
-          )}
+          <JourneyProvider
+            value={{ journey: journeyData?.journey, variant: 'admin' }}
+          >
+            {previewJourney != null ? (
+              <AiEditorPreview
+                journey={previewJourney}
+                aiState={aiState}
+                onSelectedCardChange={handleSelectedCardChange}
+                sx={{ flex: 1, display: { xs: 'none', md: 'flex' } }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  flex: 1,
+                  display: { xs: 'none', md: 'flex' },
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: 'background.default'
+                }}
+              >
+                <CircularProgress />
+              </Box>
+            )}
+          </JourneyProvider>
         </Box>
       </Box>
     </>
