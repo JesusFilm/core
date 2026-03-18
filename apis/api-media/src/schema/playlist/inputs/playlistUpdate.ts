@@ -12,7 +12,7 @@ const PlaylistUpdateInputSchema = z.object({
     .string()
     .max(1000, 'Note must be less than 1000 characters')
     .optional(),
-  noteSharedAt: z.date().optional(),
+  noteSharedAt: z.date().nullish(),
   sharedAt: z.date().optional()
 })
 

@@ -113,7 +113,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const radioOption: TreeBlock<RadioOptionBlock> = {
@@ -124,6 +125,7 @@ const radioOption: TreeBlock<RadioOptionBlock> = {
   pollOptionImageBlockId: null,
   children: [],
   label: 'radio option 1',
+  eventLabel: null,
   action: {
     __typename: 'LinkAction',
     url: 'https://example.com',
@@ -147,7 +149,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 describe('RadioOptionImage', () => {
@@ -198,7 +201,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         radioOptionBlockUpdate: {
           id: radioOption.id,
@@ -483,7 +487,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const radioOptionImageUpdateMock: MockedResponse<
@@ -566,7 +571,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const radioOptionImageUpdateMock: MockedResponse<
@@ -669,7 +675,8 @@ describe('RadioOptionImage', () => {
           blurhash: image.blurhash,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       }
       const radioOptionImageUpdateMock: MockedResponse<

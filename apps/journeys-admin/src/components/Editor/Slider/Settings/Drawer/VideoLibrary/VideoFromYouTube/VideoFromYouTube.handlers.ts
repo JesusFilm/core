@@ -10,7 +10,10 @@ const playlistItem1: YoutubePlaylist = {
       'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
     thumbnails: {
       default: {
-        url: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg'
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
+      high: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
     }
   },
@@ -28,6 +31,9 @@ const playlistItem2: YoutubePlaylist = {
     thumbnails: {
       default: {
         url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
+      high: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
     }
   },
@@ -44,7 +50,10 @@ const playlistItem3: YoutubePlaylist = {
       'This video summarizes the overall story of the Bible as a series of crossroad decisions.',
     thumbnails: {
       default: {
-        url: 'https://i.ytimg.com/vi/7_CGP-12AE0/default.jpg'
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
+      high: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
     }
   },
@@ -63,6 +72,9 @@ const video1: YoutubeVideo = {
     thumbnails: {
       default: {
         url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+      },
+      high: {
+        url: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
       }
     }
   },

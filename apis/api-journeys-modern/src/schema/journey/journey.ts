@@ -166,6 +166,9 @@ export const JourneyRef = builder.prismaObject('Journey', {
     showAssistant: t.exposeBoolean('showAssistant', {
       nullable: true
     }),
+    customizable: t.exposeBoolean('customizable', {
+      nullable: true
+    }),
 
     // UI Configuration Fields
     menuButtonIcon: t.field({
@@ -201,6 +204,10 @@ export const JourneyRef = builder.prismaObject('Journey', {
     // journeyCollections field will be added via extension in journeyCollection module
     strategySlug: t.exposeString('strategySlug', {
       nullable: true
+    }),
+    templateSite: t.exposeBoolean('templateSite', {
+      nullable: true,
+      description: 'used to see if a template has a site created for it'
     }),
     plausibleToken: t.exposeString('plausibleToken', {
       nullable: true,

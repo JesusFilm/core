@@ -1,7 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -9,8 +7,8 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey_journeyCustomizationFields as JourneyCustomizationField } from '../../../../../../__generated__/GetJourney'
 import { JourneyCustomizationFieldUpdate } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 export const JOURNEY_CUSTOMIZATION_FIELD_UPDATE = gql`
   mutation JourneyCustomizationFieldUpdate(
@@ -125,14 +123,10 @@ const renderEditableText = (
 }
 
 interface TextScreenProps {
-  handleNext: () => void
-  handleScreenNavigation: (screen: CustomizationScreen) => void
+  handleNext: (overrideJourneyId?: string) => void
 }
 
-export function TextScreen({
-  handleNext,
-  handleScreenNavigation
-}: TextScreenProps): ReactElement {
+export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
   const { t } = useTranslation()
   const { journey } = useJourney()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
@@ -194,62 +188,21 @@ export function TextScreen({
   }
 
   return (
-    <Stack
-      alignItems="center"
-      gap={{ xs: 0, sm: 2 }}
-      sx={{
-        px: { xs: 2, md: 8 },
-        width: '100%'
-      }}
+    <ScreenWrapper
+      title={t('Text')}
+      subtitle={t(
+        "Fill out the blue fields and we'll customize the content with your information."
+      )}
+      mobileSubtitle={t('Fill in the blue fields to customize the content.')}
+      footer={
+        <CustomizeFlowNextButton
+          label={t('Next')}
+          onClick={handleSubmit}
+          loading={isSubmitting}
+          ariaLabel={t('Save and continue')}
+        />
+      }
     >
-      <Stack alignItems="center" sx={{ pb: 4 }}>
-        <Typography
-          variant="h4"
-          display={{ xs: 'none', sm: 'block' }}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Text')}
-        </Typography>
-        <Typography
-          variant="h6"
-          display={{ xs: 'block', sm: 'none' }}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Text')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          display={{ xs: 'none', sm: 'block' }}
-          color="text.secondary"
-          align="center"
-          sx={{
-            maxWidth: { xs: '100%', sm: '90%' }
-          }}
-        >
-          {t(
-            "Fill out the blue fields and we'll customise the content with your information."
-          )}
-        </Typography>
-        <Typography
-          variant="body2"
-          display={{ xs: 'block', sm: 'none' }}
-          color="text.secondary"
-          align="center"
-          sx={{
-            maxWidth: { xs: '100%', sm: '90%' }
-          }}
-        >
-          {t(
-            "Fill out the blue fields and we'll customise the content with your information."
-          )}
-        </Typography>
-      </Stack>
       <Box sx={{ position: 'relative', width: '100%' }}>
         <Box
           sx={{
@@ -261,7 +214,10 @@ export function TextScreen({
             width: '100%',
             whiteSpace: 'pre-wrap',
             overflowY: 'auto',
-            maxHeight: { xs: 'calc(100vh - 323px)', sm: 'calc(100vh - 370px)' },
+            maxHeight: {
+              xs: 'calc(100vh - 323px)',
+              sm: 'calc(100vh - 370px)'
+            },
             '&::-webkit-scrollbar': {
               display: 'none'
             },
@@ -293,12 +249,6 @@ export function TextScreen({
           }}
         />
       </Box>
-      <CustomizeFlowNextButton
-        label={t('Next')}
-        onClick={handleSubmit}
-        loading={isSubmitting}
-        ariaLabel={t('Save and continue')}
-      />
-    </Stack>
+    </ScreenWrapper>
   )
 }

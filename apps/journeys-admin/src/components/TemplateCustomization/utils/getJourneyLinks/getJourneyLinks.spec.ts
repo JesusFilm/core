@@ -2,6 +2,10 @@
 import { TFunction } from 'i18next'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../__generated__/globalTypes'
 
 import { getJourneyLinks } from './getJourneyLinks'
 
@@ -15,6 +19,105 @@ describe('getJourneyLinks', () => {
   it('returns empty array if journey has no blocks', () => {
     const journey = { chatButtons: [], blocks: [] } as unknown as Journey
     expect(getJourneyLinks(t, journey)).toEqual([])
+  })
+
+  describe('chatButtons', () => {
+    it('includes chatButtons with customizable: true', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.whatsApp,
+            customizable: true
+          },
+          {
+            id: 'chat-2',
+            link: 'https://t.me/test',
+            platform: MessagePlatform.telegram,
+            customizable: true
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links).toEqual([
+        {
+          id: 'chat-1',
+          linkType: 'chatButtons',
+          url: 'https://wa.me/123',
+          label: 'Chat Widget',
+          platform: MessagePlatform.whatsApp
+        },
+        {
+          id: 'chat-2',
+          linkType: 'chatButtons',
+          url: 'https://t.me/test',
+          label: 'Chat Widget',
+          platform: MessagePlatform.telegram
+        }
+      ])
+    })
+
+    it('excludes chatButtons with customizable: false', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.whatsApp,
+            customizable: false
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links).toEqual([])
+    })
+
+    it('excludes chatButtons with customizable: null', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://wa.me/123',
+            platform: MessagePlatform.whatsApp,
+            customizable: null
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links).toEqual([])
+    })
+
+    it('defaults platform to custom when chatButton.platform is null', () => {
+      const journey = {
+        journeyCustomizationFields: [],
+        chatButtons: [
+          {
+            id: 'chat-1',
+            link: 'https://example.com',
+            platform: null,
+            customizable: true
+          }
+        ],
+        blocks: []
+      } as unknown as Journey
+
+      const links = getJourneyLinks(t, journey)
+      expect(links[0].linkType).toBe('chatButtons')
+      if (links[0].linkType === 'chatButtons') {
+        expect(links[0].platform).toBe(MessagePlatform.custom)
+      }
+      expect(links[0].label).toBe('Chat Widget')
+    })
   })
 
   it('should extract customizable links and use default label when missing', () => {
@@ -79,6 +182,19 @@ describe('getJourneyLinks', () => {
         {
           __typename: 'ButtonBlock',
           id: 'btn-3',
+          label: 'Call us',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1234567890',
+            countryCode: 'US',
+            contactAction: ContactActionType.call,
+            customizable: true,
+            parentStepId: 'step-6'
+          }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-4',
           label: 'Chat Support',
           action: {
             __typename: 'ChatAction',
@@ -126,11 +242,90 @@ describe('getJourneyLinks', () => {
       },
       {
         id: 'btn-3',
+        linkType: 'phone',
+        url: '+1234567890',
+        label: 'Call us',
+        parentStepId: 'step-6',
+        customizable: true,
+        contactAction: ContactActionType.call
+      },
+      {
+        id: 'btn-4',
         linkType: 'url',
         url: 'https://chat.example.com',
         label: 'Chat Support',
         parentStepId: 'step-6',
         customizable: true
+      }
+    ])
+  })
+
+  it('should extract customizable phone actions', () => {
+    const journey = {
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: 'phone-btn-1',
+          label: 'Call Support',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1234567890',
+            countryCode: 'US',
+            contactAction: ContactActionType.call,
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'phone-btn-2',
+          label: 'Text Us',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1987654321',
+            countryCode: 'US',
+            contactAction: ContactActionType.text,
+            customizable: true,
+            parentStepId: 'step-2'
+          }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'phone-btn-3',
+          label: 'Not Customizable',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1555555555',
+            countryCode: 'US',
+            contactAction: ContactActionType.call,
+            customizable: false,
+            parentStepId: 'step-3'
+          }
+        }
+      ]
+    } as unknown as Journey
+
+    const links = getJourneyLinks(t, journey)
+    expect(links).toEqual([
+      {
+        id: 'phone-btn-1',
+        linkType: 'phone',
+        url: '+1234567890',
+        label: 'Call Support',
+        parentStepId: 'step-1',
+        customizable: true,
+        contactAction: ContactActionType.call
+      },
+      {
+        id: 'phone-btn-2',
+        linkType: 'phone',
+        url: '+1987654321',
+        label: 'Text Us',
+        parentStepId: 'step-2',
+        customizable: true,
+        contactAction: ContactActionType.text
       }
     ])
   })

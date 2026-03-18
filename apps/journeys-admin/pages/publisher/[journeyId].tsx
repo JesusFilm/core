@@ -1,6 +1,6 @@
 import { gql, useQuery } from '@apollo/client'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
@@ -14,6 +14,11 @@ import { GetPublisherTemplate } from '../../__generated__/GetPublisherTemplate'
 import { Role } from '../../__generated__/globalTypes'
 import { Editor } from '../../src/components/Editor'
 import { PublisherInvite } from '../../src/components/PublisherInvite'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useInvalidJourneyRedirect } from '../../src/libs/useInvalidJourneyRedirect'
 
@@ -45,6 +50,7 @@ function TemplateEditPage(): ReactElement {
   const isPublisher = publisherData?.getUserRole?.roles?.includes(
     Role.publisher
   )
+  const isGlobalTemplate = data?.publisherTemplate?.team?.id === 'jfp-team'
 
   const searchClient = useInstantSearchClient()
 
@@ -61,7 +67,7 @@ function TemplateEditPage(): ReactElement {
         filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm"
         hitsPerPage={5}
       />
-      {isPublisher === true && (
+      {(isPublisher || !isGlobalTemplate) && (
         <>
           <NextSeo
             title={
@@ -77,7 +83,7 @@ function TemplateEditPage(): ReactElement {
           />
         </>
       )}
-      {data?.publisherTemplate != null && isPublisher !== true && (
+      {isGlobalTemplate && !isPublisher && (
         <>
           <NextSeo title={t('Access Denied')} />
           <PublisherInvite />
@@ -87,28 +93,27 @@ function TemplateEditPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  const user = tokens != null ? toUser(tokens) : null
+
+  if (user == null) return redirectToLogin(ctx)
 
   const { redirect, translations, flags } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       ...translations,
       flags
     }
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(TemplateEditPage)
+export default TemplateEditPage

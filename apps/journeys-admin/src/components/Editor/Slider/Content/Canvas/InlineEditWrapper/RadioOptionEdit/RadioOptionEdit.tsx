@@ -9,13 +9,21 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
+import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
+import {
+  RadioOptionBlockCreate,
+  RadioOptionBlockCreateVariables
+} from '../../../../../../../../__generated__/RadioOptionBlockCreate'
 import {
   RadioOptionBlockUpdateContent,
   RadioOptionBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
+import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { InlineEditInput } from '../InlineEditInput'
+import { RADIO_OPTION_BLOCK_CREATE } from '../RadioQuestionEdit/RadioQuestionEdit'
+import { handleCreateRadioOption } from '../RadioQuestionEdit/utils/handleCreateRadioOption/handleCreateRadioOption'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
   mutation RadioOptionBlockUpdateContent(
@@ -126,6 +134,12 @@ export function RadioOptionEdit({
     })
   }
 
+  const { addBlock } = useBlockCreateCommand()
+  const [radioOptionBlockCreate] = useMutation<
+    RadioOptionBlockCreate,
+    RadioOptionBlockCreateVariables
+  >(RADIO_OPTION_BLOCK_CREATE)
+
   return (
     <RadioOption
       {...radioOptionProps}
@@ -157,6 +171,29 @@ export function RadioOptionEdit({
           onChange={(e) => {
             setValue(e.currentTarget.value)
             handleSubmit(e.target.value)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              handleSubmit(value)
+
+              const parentBlock = searchBlocks(
+                selectedStep?.children ?? [],
+                radioOptionProps.parentBlockId ?? ''
+              )
+              const siblingCount = parentBlock?.children?.length ?? 0
+
+              if (siblingCount >= 12) return
+
+              handleCreateRadioOption({
+                dispatch,
+                addBlock,
+                radioOptionBlockCreate,
+                parentBlockId: radioOptionProps.parentBlockId,
+                journey,
+                siblingCount
+              })
+            }
           }}
           onClick={(e) => e.stopPropagation()}
         />

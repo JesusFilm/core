@@ -38,7 +38,7 @@ export const cache = (): InMemoryCache =>
             ...offsetLimitPagination(),
             keyArgs: [
               'where',
-              ['labels', 'availableVariantLanguageIds', 'title']
+              ['labels', 'availableVariantLanguageIds', 'title', 'ids']
             ]
           }
         }

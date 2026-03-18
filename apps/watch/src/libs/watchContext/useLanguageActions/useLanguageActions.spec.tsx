@@ -70,6 +70,22 @@ describe('useLanguageActions', () => {
         query: {}
       })
     })
+
+    it('should trigger router navigation to language-specific home page when on home page', async () => {
+      await mockRouter.push('/watch')
+      const wrapper = ({ children }: { children: ReactNode }) => (
+        <WatchProvider>{children}</WatchProvider>
+      )
+
+      const { result } = renderHook(() => useLanguageActions(), { wrapper })
+
+      result.current.updateAudioLanguage({ id: '496', slug: 'french' })
+
+      expect(mockRouter).toMatchObject({
+        pathname: '/watch/french',
+        query: {}
+      })
+    })
   })
 
   describe('updateSubtitleLanguage', () => {

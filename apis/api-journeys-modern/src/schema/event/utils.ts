@@ -1,4 +1,3 @@
-import { format } from 'date-fns'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -8,14 +7,7 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
-import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
-import {
-  columnIndexToA1,
-  ensureSheet,
-  readValues,
-  updateRangeValues,
-  writeValues
-} from '../../lib/google/sheets'
+import { logger } from '../logger'
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -29,14 +21,34 @@ try {
   emailQueue = null
 }
 
+// Queue for Google Sheets sync
+let googleSheetsSyncQueue: any
+try {
+  // Avoid requiring Redis in tests
+  if (process.env.NODE_ENV !== 'test') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    googleSheetsSyncQueue =
+      require('../../workers/googleSheetsSync/queue').queue
+  }
+} catch {
+  googleSheetsSyncQueue = null
+}
+
 // Test helper to inject a mock queue
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export function __setEmailQueueForTests(mockQueue: any): void {
   emailQueue = mockQueue
 }
 
+// Test helper to inject a mock Google Sheets sync queue
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function __setGoogleSheetsSyncQueueForTests(mockQueue: any): void {
+  googleSheetsSyncQueue = mockQueue
+}
+
 const TWO_MINUTES = 2 * 60 * 1000
 export const ONE_DAY = 24 * 60 * 60 // in seconds
+const ONE_HOUR = 60 * 60 // in seconds
 
 export async function validateBlockEvent(
   userId: string,
@@ -228,7 +240,28 @@ export async function resetEventsEmailDelay(
   await existingJob.changeDelay(delayMs)
 }
 
-// Live Google Sheets sync: append row per event when a sync config exists
+/**
+ * Queue backfill jobs to sync events to Google Sheets.
+ * Schedules backfill jobs to run at the top of each minute (:00 seconds).
+ * Multiple events throughout the minute (seconds 1-59) will batch into a single
+ * backfill job via deterministic job IDs (backfill-${syncId}).
+ *
+ * This approach:
+ * - Reduces API calls: backfill makes only 1 read request vs 3-4 for append
+ * - Prevents quota errors: batches events over a full minute before syncing
+ * - Uses BullMQ's automatic deduplication via deterministic job IDs
+ * - Ensures predictable sync timing: all sheets sync at :00 each minute
+ *
+ * Jobs are configured with:
+ * - Delay to next minute boundary (:00 seconds)
+ * - Deterministic job IDs to prevent duplicates
+ * - 3 retry attempts on failure
+ * - Immediate expiration on success (removeOnComplete: true)
+ * - 1 hour expiration on failure (removeOnFail: { age: ONE_HOUR })
+ *
+ * Note: No job is created if there are no active syncs for the journey.
+ * Syncs without integrationId or sheetName are skipped with a warning.
+ */
 export async function appendEventToGoogleSheets({
   journeyId,
   teamId,
@@ -240,126 +273,83 @@ export async function appendEventToGoogleSheets({
   row: (string | number | null)[]
   sheetName?: string
 }): Promise<void> {
-  // find sync config
-  const sync = await prisma.googleSheetsSync.findFirst({
-    where: { journeyId, teamId, deletedAt: null }
-  })
-  if (sync == null) return
+  if (process.env.NODE_ENV === 'test' || googleSheetsSyncQueue == null) return
 
-  const { accessToken } = await getTeamGoogleAccessToken(teamId)
-  const tabName =
-    sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
-  await ensureSheet({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    sheetTitle: tabName
-  })
-  // Expected incoming row format from callers:
-  // [visitorId, createdAtISO, name, email, phone, dynamicKey, dynamicValue]
-  const safe = (v: string | number | null | undefined): string =>
-    v == null ? '' : String(v)
-  const visitorId = safe(row[0])
-  const createdAt = safe(row[1])
-  const name = safe(row[2])
-  const email = safe(row[3])
-  const phone = safe(row[4])
-  const dynamicKey = safe(row[5])
-  const dynamicValue = safe(row[6])
-
-  // Load current header
-  const headerRange = `${tabName}!A1:ZZ1`
-  const headerRows = await readValues({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    range: headerRange
-  })
-  const existingHeader: string[] = (headerRows[0] ?? []).map((v) => v ?? '')
-
-  // Ensure base headers
-  const baseHeaders = ['visitorId', 'createdAt', 'name', 'email', 'phone']
-  // Build headers as baseHeaders followed by existingHeaders filtered to remove duplicates
-  const baseHeaderSet = new Set(baseHeaders)
-  const additionalHeaders = existingHeader.filter(
-    (h) => h !== '' && !baseHeaderSet.has(h)
-  )
-  const headers: string[] = [...baseHeaders, ...additionalHeaders]
-  // Ensure dynamic key column exists (if provided)
-  if (dynamicKey !== '' && !headers.includes(dynamicKey)) {
-    headers.push(dynamicKey)
-  }
-
-  // If headers changed, write them back
-  const headersChanged =
-    existingHeader.length === 0 ||
-    headers.length !== existingHeader.length ||
-    headers.some((h, i) => h !== (existingHeader[i] ?? ''))
-  if (headersChanged) {
-    await updateRangeValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A1:${columnIndexToA1(headers.length - 1)}1`,
-      values: [headers]
-    })
-  }
-
-  // Build an aligned row matching headers
-  const alignedRow = new Array(headers.length).fill('') as string[]
-  const setIfPresent = (key: string, value: string) => {
-    const idx = headers.indexOf(key)
-    if (idx >= 0 && value !== '') alignedRow[idx] = value
-  }
-  setIfPresent('visitorId', visitorId)
-  setIfPresent('createdAt', createdAt)
-  setIfPresent('name', name)
-  setIfPresent('email', email)
-  setIfPresent('phone', phone)
-  if (dynamicKey !== '') setIfPresent(dynamicKey, dynamicValue)
-
-  // Try to find an existing row for this visitorId in column A (which should be visitorId)
-  const idColumnRange = `${tabName}!A2:A1000000`
-  const idColumnValues = await readValues({
-    accessToken,
-    spreadsheetId: sync.spreadsheetId,
-    range: idColumnRange
-  })
-  let foundRowIndex: number | null = null // 1-based row index in the sheet
-  for (let i = 0; i < idColumnValues.length; i++) {
-    const cellVal = idColumnValues[i]?.[0] ?? ''
-    if (cellVal === visitorId && visitorId !== '') {
-      foundRowIndex = i + 2 // offset since A2 is index 0
-      break
+  // Fetch syncs with integrationId needed for backfill jobs
+  const syncs = await prisma.googleSheetsSync.findMany({
+    where: { journeyId, teamId, deletedAt: null },
+    select: {
+      id: true,
+      spreadsheetId: true,
+      sheetName: true,
+      timezone: true,
+      integrationId: true
     }
-  }
+  })
 
-  const lastColA1 = columnIndexToA1(headers.length - 1)
-  if (foundRowIndex != null) {
-    // Read existing row to merge values (avoid blanking non-updated fields)
-    const existingRowRes = await readValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A${foundRowIndex}:${lastColA1}${foundRowIndex}`
-    })
-    const existingRow: string[] = (existingRowRes[0] ?? []).map((v) => v ?? '')
-    const mergedRow = new Array(headers.length)
-      .fill('')
-      .map((_, i) =>
-        alignedRow[i] !== '' ? alignedRow[i] : (existingRow[i] ?? '')
+  // No syncs configured - skip job creation
+  if (syncs.length === 0) return
+
+  // Calculate target timestamp for next minute boundary (:00 seconds) once
+  // All jobs will target this exact timestamp for consistent batching
+  const now = new Date()
+  const nextMinuteBoundary = new Date(now)
+  nextMinuteBoundary.setSeconds(0)
+  nextMinuteBoundary.setMilliseconds(0)
+  nextMinuteBoundary.setMinutes(nextMinuteBoundary.getMinutes() + 1)
+  const targetTimestamp = nextMinuteBoundary.getTime()
+
+  // Queue backfill jobs instead of append jobs
+  // Use deterministic job IDs to prevent duplicates - BullMQ handles deduplication automatically
+  // Multiple events will batch into a single backfill job per sync
+  for (const sync of syncs) {
+    // Skip syncs without required fields for backfill
+    if (sync.integrationId == null) {
+      logger.warn(
+        { syncId: sync.id, journeyId, teamId },
+        'Skipping Google Sheets sync: missing integrationId'
       )
+      continue
+    }
 
-    await updateRangeValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A${foundRowIndex}:${lastColA1}${foundRowIndex}`,
-      values: [mergedRow]
-    })
-  } else {
-    // Append as a new row
-    await writeValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      sheetTitle: tabName,
-      values: [alignedRow],
-      append: true
-    })
+    if (sync.sheetName == null) {
+      logger.warn(
+        { syncId: sync.id, journeyId, teamId },
+        'Skipping Google Sheets sync: missing sheetName'
+      )
+      continue
+    }
+
+    // Calculate delay to target timestamp right before adding
+    // This accounts for any time spent in the loop (await calls, etc.)
+    // Ensures all jobs target the exact same minute boundary
+    const delayMs = targetTimestamp - Date.now()
+
+    // BullMQ silently ignores duplicate job IDs - no error thrown
+    // If a job with this ID already exists, it will be ignored and not added
+    await googleSheetsSyncQueue.add(
+      'google-sheets-sync-backfill',
+      {
+        type: 'backfill',
+        journeyId,
+        teamId,
+        syncId: sync.id,
+        spreadsheetId: sync.spreadsheetId,
+        sheetName: sync.sheetName,
+        timezone: sync.timezone ?? 'UTC',
+        integrationId: sync.integrationId
+      },
+      {
+        jobId: `backfill-${sync.id}`,
+        delay: delayMs,
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 1000
+        },
+        removeOnComplete: true,
+        removeOnFail: { age: ONE_HOUR }
+      }
+    )
   }
 }

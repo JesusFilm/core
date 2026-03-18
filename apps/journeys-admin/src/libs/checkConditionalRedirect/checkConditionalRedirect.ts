@@ -27,12 +27,14 @@ interface CheckConditionalRedirectProps {
   apolloClient: ApolloClient<NormalizedCacheObject>
   resolvedUrl: string
   teamName?: string
+  allowGuest?: boolean
 }
 
 export async function checkConditionalRedirect({
   apolloClient,
   resolvedUrl,
-  teamName
+  teamName,
+  allowGuest = false
 }: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
   const currentRedirect = new URL(
     resolvedUrl,
@@ -52,12 +54,18 @@ export async function checkConditionalRedirect({
     variables: { input: { redirect } }
   })
 
-  if (!(me.me?.emailVerified ?? false)) {
-    if (resolvedUrl.startsWith('/users/verify')) return
-    return {
-      destination: `/users/verify${redirect}`,
-      permanent: false
+  if (me.me?.__typename === 'AuthenticatedUser') {
+    if (!(me.me?.emailVerified ?? false)) {
+      if (resolvedUrl.startsWith('/users/verify')) return
+      return {
+        destination: `/users/verify${redirect}`,
+        permanent: false
+      }
     }
+  }
+
+  if (me.me?.__typename === 'AnonymousUser' && allowGuest) {
+    return
   }
 
   // don't redirect on /users/verify

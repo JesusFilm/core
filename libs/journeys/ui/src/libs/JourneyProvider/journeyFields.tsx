@@ -54,15 +54,18 @@ export const JOURNEY_FIELDS = gql`
       openedAt
       user {
         id
-        firstName
-        lastName
-        imageUrl
+        ... on AuthenticatedUser {
+          firstName
+          lastName
+          imageUrl
+        }
       }
     }
     chatButtons {
       id
       link
       platform
+      customizable
     }
     host {
       id
@@ -117,5 +120,6 @@ export const JOURNEY_FIELDS = gql`
       defaultValue
     }
     fromTemplateId
+    customizable
   }
 `

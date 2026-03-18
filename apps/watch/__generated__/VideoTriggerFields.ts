@@ -50,6 +50,8 @@ export interface VideoTriggerFields_triggerAction_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction | VideoTriggerFields_triggerAction_ChatAction | VideoTriggerFields_triggerAction_PhoneAction;

@@ -23,6 +23,7 @@ import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUp
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../libs/useCoverBlockRestoreMutation'
+import { useMuxVideoUpload } from '../../../../../../../../MuxVideoUploadProvider'
 
 import { BackgroundMediaVideo } from './Video/BackgroundMediaVideo'
 
@@ -61,6 +62,7 @@ type BackgroundMediaBlockType = 'VideoBlock' | 'ImageBlock'
 export function BackgroundMedia(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { add } = useCommand()
+  const { cancelUploadForBlock } = useMuxVideoUpload()
   const { journey } = useJourney()
   const router = useRouter()
   const {
@@ -95,7 +97,15 @@ export function BackgroundMedia(): ReactElement {
     _,
     newBlockType: BackgroundMediaBlockType | null
   ): void {
-    if (newBlockType == null || journey == null || cardBlock == null) return
+    if (
+      newBlockType == null ||
+      journey == null ||
+      cardBlock == null ||
+      selectedBlock == null
+    )
+      return
+
+    cancelUploadForBlock(selectedBlock)
 
     setBlockType(newBlockType)
 

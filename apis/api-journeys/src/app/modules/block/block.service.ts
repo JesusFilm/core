@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common'
 import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
-import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
-import { ToPostgresql } from '@core/nest/decorators/ToPostgresql'
 import { Action, Block, Prisma } from '@core/prisma/journeys/client'
 
 import { BlockDuplicateIdMap } from '../../__generated__/graphql'
+import { FromPostgresql } from '../../lib/decorators/FromPostgresql'
+import { ToPostgresql } from '../../lib/decorators/ToPostgresql'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 export const OMITTED_BLOCK_FIELDS = ['__typename', 'journeyId', 'isCover']
 
@@ -27,7 +28,10 @@ type PrismaTransation = Omit<
 
 @Injectable()
 export class BlockService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly journeyCustomizableService: JourneyCustomizableService
+  ) {}
 
   async findParentStepBlock(id?: string): Promise<Block | undefined> {
     const block = await this.prismaService.block.findUnique({ where: { id } })
@@ -153,6 +157,7 @@ export class BlockService {
           'slug',
           'pollOptionImageBlockId'
         ]),
+        customizable: false,
         settings: block.settings ?? {},
         journey: {
           connect: { id: block.journeyId }
@@ -372,7 +377,7 @@ export class BlockService {
 
   @FromPostgresql()
   async removeBlockAndChildren(block: Block): Promise<BlockWithAction[]> {
-    return await this.prismaService.$transaction(async (tx) => {
+    const result = await this.prismaService.$transaction(async (tx) => {
       const currentTime = new Date().toISOString()
       const updatedBlock = await tx.block.update({
         where: { id: block.id },
@@ -384,7 +389,7 @@ export class BlockService {
         },
         data: { updatedAt: currentTime }
       })
-      const result = await this.reorderSiblings(
+      return await this.reorderSiblings(
         await this.getSiblingsInternal(
           block.journeyId,
           block.parentBlockId,
@@ -392,8 +397,9 @@ export class BlockService {
         ),
         tx
       )
-      return result
     })
+    await this.journeyCustomizableService.recalculate(block.journeyId)
+    return result
   }
 
   async validateBlock(
@@ -454,7 +460,7 @@ export class BlockService {
     id: string,
     input: Prisma.BlockUpdateInput | Prisma.BlockUncheckedUpdateInput
   ): Promise<T> {
-    return await this.prismaService.$transaction(async (tx) => {
+    const result = await this.prismaService.$transaction(async (tx) => {
       if (input.action != null) {
         const data = {
           parentBlock: { connect: { id } },
@@ -479,7 +485,9 @@ export class BlockService {
         include: { action: true }
       })
       await this.setJourneyUpdatedAt(tx, updatedBlock)
-      return updatedBlock as unknown as T
+      return updatedBlock
     })
+    await this.journeyCustomizableService.recalculate(result.journeyId)
+    return result as unknown as T
   }
 }

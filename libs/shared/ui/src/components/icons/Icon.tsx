@@ -1,6 +1,7 @@
 import { SvgIconProps } from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
+import Activity from './Activity'
 import AddSquare2 from './AddSquare2'
 import AddSquare4 from './AddSquare4'
 import AlertCircle from './AlertCircle'
@@ -14,10 +15,12 @@ import ArrowExpand1 from './ArrowExpand1'
 import ArrowExpand2 from './ArrowExpand2'
 import ArrowLeft from './ArrowLeft'
 import ArrowLeftContained1 from './ArrowLeftContained1'
+import ArrowLeftContained2 from './ArrowLeftContained2'
 import ArrowLeftSm from './ArrowLeftSm'
 import ArrowRefresh6 from './ArrowRefresh6'
 import ArrowRight from './ArrowRight'
 import ArrowRightContained1 from './ArrowRightContained1'
+import ArrowRightContained2 from './ArrowRightContained2'
 import ArrowRightSm from './ArrowRightSm'
 import ArrowRotateLeft1 from './ArrowRotateLeft1'
 import ArrowRotateRight2 from './ArrowRotateRight2'
@@ -62,7 +65,9 @@ import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
 import Dash from './Dash'
+import Data1 from './Data1'
 import Diamond from './Diamond'
+import Discord from './Discord'
 import DotVertical from './DotVertical'
 import DownArrow from './DownArrow'
 import DownArrowSm from './DownArrowSm'
@@ -119,8 +124,10 @@ import Key1 from './Key1'
 import Key2 from './Key2'
 import Laptop1 from './Laptop1'
 import Layers4 from './Layers4'
+import Layout1 from './Layout1'
 import Layout2 from './Layout2'
 import LayoutScale from './LayoutScale'
+import LayoutTop from './LayoutTop'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
@@ -154,6 +161,7 @@ import Minimise1 from './Minimise1'
 import Minimise2 from './Minimise2'
 import MinusCircleContained from './MinusCircleContained'
 import More from './More'
+import Note2 from './Note2'
 import PackagePlus from './PackagePlus'
 import Palette from './Palette'
 import Passport from './Passport'
@@ -175,6 +183,7 @@ import Send2 from './Send2'
 import Settings from './Settings'
 import Share from './Share'
 import ShieldCheck from './ShieldCheck'
+import Signal from './Signal'
 import Skype from './Skype'
 import SmileyNeutral from './SmileyNeutral'
 import Snapchat from './Snapchat'
@@ -196,6 +205,7 @@ import ThumbsDown from './ThumbsDown'
 import ThumbsUp from './ThumbsUp'
 import Tiktok from './Tiktok'
 import Transform from './Transform'
+import Translate from './Translate'
 import Trash2 from './Trash2'
 import TrendDown1 from './TrendDown1'
 import TwitterLogo from './TwitterLogo'
@@ -216,6 +226,7 @@ import Vk from './Vk'
 import Volume5 from './Volume5'
 import VolumeOff from './VolumeOff'
 import Web from './Web'
+import WeChat from './WeChat'
 import WhatsApp from './WhatsApp'
 import X1 from './X1'
 import X2 from './X2'
@@ -225,6 +236,7 @@ import XSquareContained from './XSquareContained'
 import Youtube from './Youtube'
 
 export type IconName =
+  | 'Activity'
   | 'AddSquare2'
   | 'AddSquare4'
   | 'AlertCircle'
@@ -237,10 +249,12 @@ export type IconName =
   | 'ArrowExpand1'
   | 'ArrowExpand2'
   | 'ArrowLeftContained1'
+  | 'ArrowLeftContained2'
   | 'ArrowLeftSm'
   | 'ArrowLeft'
   | 'ArrowRefresh6'
   | 'ArrowRightContained1'
+  | 'ArrowRightContained2'
   | 'ArrowRightSm'
   | 'ArrowRight'
   | 'ArrowRotateLeft1'
@@ -286,7 +300,9 @@ export type IconName =
   | 'Cursor6'
   | 'CursorPointer'
   | 'Dash'
+  | 'Data1'
   | 'Diamond'
+  | 'Discord'
   | 'DotVertical'
   | 'DownArrowSm'
   | 'DownArrow'
@@ -343,8 +359,10 @@ export type IconName =
   | 'Key2'
   | 'Laptop1'
   | 'Layers4'
+  | 'Layout1'
   | 'Layout2'
   | 'LayoutScale'
+  | 'LayoutTop'
   | 'Lightning2'
   | 'LightningCircleContained'
   | 'Line'
@@ -378,6 +396,7 @@ export type IconName =
   | 'Minimise2'
   | 'MinusCircleContained'
   | 'More'
+  | 'Note2'
   | 'PackagePlus'
   | 'Palette'
   | 'Passport'
@@ -399,6 +418,7 @@ export type IconName =
   | 'Settings'
   | 'Share'
   | 'ShieldCheck'
+  | 'Signal'
   | 'Skype'
   | 'SmileyNeutral'
   | 'Snapchat'
@@ -421,6 +441,7 @@ export type IconName =
   | 'ThumbsUp'
   | 'Tiktok'
   | 'Transform'
+  | 'Translate'
   | 'TrendDown1'
   | 'TwitterLogo'
   | 'Type1'
@@ -440,6 +461,7 @@ export type IconName =
   | 'VolumeOff'
   | 'Volume5'
   | 'Web'
+  | 'WeChat'
   | 'WhatsApp'
   | 'X1'
   | 'X2'
@@ -453,6 +475,7 @@ type IconComponents = {
 }
 
 const iconComponents: IconComponents = {
+  Activity,
   AddSquare2,
   AddSquare4,
   AlertCircle,
@@ -465,10 +488,12 @@ const iconComponents: IconComponents = {
   ArrowExpand1,
   ArrowExpand2,
   ArrowLeftContained1,
+  ArrowLeftContained2,
   ArrowLeftSm,
   ArrowLeft,
   ArrowRefresh6,
   ArrowRightContained1,
+  ArrowRightContained2,
   ArrowRightSm,
   ArrowRight,
   ArrowRotateLeft1,
@@ -514,7 +539,9 @@ const iconComponents: IconComponents = {
   Cursor6,
   CursorPointer,
   Dash,
+  Data1,
   Diamond,
+  Discord,
   DotVertical,
   DownArrowSm,
   DownArrow,
@@ -571,8 +598,10 @@ const iconComponents: IconComponents = {
   Key2,
   Laptop1,
   Layers4,
+  Layout1,
   Layout2,
   LayoutScale,
+  LayoutTop,
   Lightning2,
   LightningCircleContained,
   Line,
@@ -606,6 +635,7 @@ const iconComponents: IconComponents = {
   MediaStrip1,
   MinusCircleContained,
   More,
+  Note2,
   PackagePlus,
   Palette,
   Passport,
@@ -627,6 +657,7 @@ const iconComponents: IconComponents = {
   Settings,
   Share,
   ShieldCheck,
+  Signal,
   Skype,
   SmileyNeutral,
   Snapchat,
@@ -649,6 +680,7 @@ const iconComponents: IconComponents = {
   ThumbsUp,
   Tiktok,
   Transform,
+  Translate,
   TrendDown1,
   TwitterLogo,
   Type1,
@@ -668,6 +700,7 @@ const iconComponents: IconComponents = {
   VolumeOff,
   Volume5,
   Web,
+  WeChat,
   WhatsApp,
   X1,
   X2,

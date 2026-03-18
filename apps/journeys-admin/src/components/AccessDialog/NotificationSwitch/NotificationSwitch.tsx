@@ -60,16 +60,22 @@ export function NotificationSwitch({
     }
   }
 
+  const switchElement = (
+    <Box>
+      <Switch
+        inputProps={{ 'aria-checked': checked }}
+        checked={checked}
+        onChange={handleChange}
+        disabled={loading || disabled}
+      />
+    </Box>
+  )
+
+  if (name == null) return switchElement
+
   return (
     <Tooltip title={t('Only {{ name }} can change this', { name })}>
-      <Box>
-        <Switch
-          inputProps={{ 'aria-checked': checked }}
-          checked={checked}
-          onChange={handleChange}
-          disabled={loading || disabled}
-        />
-      </Box>
+      {switchElement}
     </Tooltip>
   )
 }

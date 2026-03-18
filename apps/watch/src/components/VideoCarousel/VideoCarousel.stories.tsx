@@ -8,8 +8,8 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { watchConfig } from '../../libs/storybook/config'
+import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'
 import { videos } from '../Videos/__generated__/testData'
-import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
 
 import { VideoCarousel } from './VideoCarousel'
 

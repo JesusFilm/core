@@ -54,7 +54,8 @@ describe('ImageOptions', () => {
     children: [],
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   const response: ImageBlockUpdate = {

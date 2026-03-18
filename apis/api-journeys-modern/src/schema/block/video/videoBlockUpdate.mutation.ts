@@ -21,9 +21,6 @@ import { VideoBlock } from './video'
 
 builder.mutationField('videoBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: VideoBlock,
     nullable: false,
     args: {
@@ -95,7 +92,10 @@ builder.mutationField('videoBlockUpdate', (t) =>
       }
 
       return await update(id, {
-        ...input
+        ...input,
+        ...(input.notes !== undefined
+          ? { notes: input.notes === '' ? null : input.notes }
+          : {})
       })
     }
   })

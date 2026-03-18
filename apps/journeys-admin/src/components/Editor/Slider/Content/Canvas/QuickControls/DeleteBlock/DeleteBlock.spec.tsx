@@ -293,6 +293,7 @@ describe('DeleteBlock', () => {
           themeName: null,
           fullscreen: false,
           backdropBlur: null,
+          eventLabel: null,
           children: [selectedBlock, block1, block2]
         }
       ]

@@ -25,12 +25,16 @@ describe('ArclightApiKey', () => {
         {
           key: 'key1',
           desc: 'Description 1',
-          defaultPlatform: 'ios'
+          defaultPlatform: 'ios',
+          createdAt: new Date(),
+          updatedAt: new Date()
         },
         {
           key: 'key2',
           desc: 'Description 2',
-          defaultPlatform: 'android'
+          defaultPlatform: 'android',
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ]
       prismaMock.arclightApiKey.findMany.mockResolvedValue(mockApiKeys)
@@ -77,7 +81,9 @@ describe('ArclightApiKey', () => {
       const mockApiKey: ArclightApiKey = {
         key: 'testKey',
         desc: 'Test Description',
-        defaultPlatform: 'web'
+        defaultPlatform: 'web',
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
       prismaMock.arclightApiKey.findUnique.mockResolvedValue(mockApiKey)
 

@@ -16,6 +16,8 @@ export interface BlockActionPhoneUpdate_blockUpdatePhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockActionPhoneUpdate {

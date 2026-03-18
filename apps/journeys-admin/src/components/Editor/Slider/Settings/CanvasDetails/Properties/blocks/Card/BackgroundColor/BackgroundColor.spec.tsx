@@ -89,7 +89,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 describe('BackgroundColor', () => {
@@ -104,6 +105,7 @@ describe('BackgroundColor', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
 

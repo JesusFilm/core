@@ -79,12 +79,14 @@ interface SearchBarProps {
   showDropdown?: boolean
   showLanguageButton?: boolean
   props?: TextFieldProps
+  basePath?: string
 }
 
 export function SearchBar({
   showDropdown = false,
   showLanguageButton = false,
-  props
+  props,
+  basePath = '/'
 }: SearchBarProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
@@ -137,7 +139,7 @@ export function SearchBar({
   }
 
   const findUserCountry = useCallback(async () => {
-    const response = await fetch('/api/geolocation')
+    const response = await fetch(`${basePath}api/geolocation`)
     const { country } = await response.json()
 
     if (country != null) {

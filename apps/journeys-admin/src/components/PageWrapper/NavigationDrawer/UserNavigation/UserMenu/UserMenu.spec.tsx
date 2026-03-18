@@ -2,7 +2,6 @@ import { ApolloClient, useApolloClient } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -10,6 +9,8 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+
+import { User } from '../../../../../libs/auth/authContext'
 
 import { UserMenu } from '.'
 
@@ -29,9 +30,14 @@ const mockUseApolloClient = useApolloClient as jest.MockedFunction<
   typeof useApolloClient
 >
 
+const mockLogout = jest.fn()
+jest.mock('../../../../../libs/auth/firebase', () => ({
+  __esModule: true,
+  logout: (...args: unknown[]) => mockLogout(...args)
+}))
+
 describe('UserMenu', () => {
   const handleProfileClose = jest.fn()
-  const signOut = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -43,7 +49,7 @@ describe('UserMenu', () => {
         <SnackbarProvider>
           <UserMenu
             apiUser={{
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'userId',
               firstName: 'Amin',
               lastName: 'One',
@@ -57,10 +63,13 @@ describe('UserMenu', () => {
             handleProfileClose={handleProfileClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                signOut
+                phoneNumber: null,
+                emailVerified: true,
+                token: 'mock-token'
               } as unknown as User
             }
           />
@@ -86,7 +95,7 @@ describe('UserMenu', () => {
         <SnackbarProvider>
           <UserMenu
             apiUser={{
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'userId',
               firstName: 'Amin',
               lastName: 'One',
@@ -100,10 +109,13 @@ describe('UserMenu', () => {
             handleProfileClose={handleProfileClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                signOut
+                phoneNumber: null,
+                emailVerified: true,
+                token: 'mock-token'
               } as unknown as User
             }
           />
@@ -117,7 +129,7 @@ describe('UserMenu', () => {
     )
   })
 
-  it('should call signOut on logout click', async () => {
+  it('should call logout on logout click', async () => {
     const clearStore = jest.fn()
     mockUseApolloClient.mockReturnValue({
       clearStore
@@ -152,7 +164,7 @@ describe('UserMenu', () => {
           <TeamProvider>
             <UserMenu
               apiUser={{
-                __typename: 'User',
+                __typename: 'AuthenticatedUser',
                 id: 'userId',
                 firstName: 'Amin',
                 lastName: 'One',
@@ -166,10 +178,13 @@ describe('UserMenu', () => {
               handleProfileClose={handleProfileClose}
               user={
                 {
+                  id: 'userId',
                   displayName: 'Amin One',
                   photoURL: 'https://bit.ly/3Gth4Yf',
                   email: 'amin@email.com',
-                  signOut
+                  phoneNumber: null,
+                  emailVerified: true,
+                  token: 'mock-token'
                 } as unknown as User
               }
             />
@@ -180,7 +195,7 @@ describe('UserMenu', () => {
 
     expect(getByRole('img', { name: 'Amin One' })).toBeInTheDocument()
     fireEvent.click(getByRole('menuitem', { name: 'Logout' }))
-    await waitFor(() => expect(signOut).toHaveBeenCalled())
+    await waitFor(() => expect(mockLogout).toHaveBeenCalled())
     await waitFor(() =>
       expect(getByText('Logout successful')).toBeInTheDocument()
     )
@@ -194,7 +209,7 @@ describe('UserMenu', () => {
         <SnackbarProvider>
           <UserMenu
             apiUser={{
-              __typename: 'User',
+              __typename: 'AuthenticatedUser',
               id: 'userId',
               firstName: 'Amin',
               lastName: 'One',
@@ -208,10 +223,13 @@ describe('UserMenu', () => {
             handleProfileClose={handleProfileClose}
             user={
               {
+                id: 'userId',
                 displayName: 'Amin One',
                 photoURL: 'https://bit.ly/3Gth4Yf',
                 email: 'amin@email.com',
-                signOut
+                phoneNumber: null,
+                emailVerified: true,
+                token: 'mock-token'
               } as unknown as User
             }
           />

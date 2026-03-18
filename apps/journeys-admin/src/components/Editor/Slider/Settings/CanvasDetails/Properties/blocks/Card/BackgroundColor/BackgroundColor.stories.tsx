@@ -53,6 +53,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 

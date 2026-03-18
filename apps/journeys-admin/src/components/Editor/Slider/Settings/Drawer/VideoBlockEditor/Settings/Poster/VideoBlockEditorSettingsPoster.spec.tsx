@@ -38,6 +38,8 @@ const video: VideoBlock = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -61,6 +63,7 @@ const video: VideoBlock = {
     },
     variantLanguages: []
   },
+  customizable: null,
   posterBlockId: null
 }
 
@@ -76,7 +79,8 @@ const image: ImageBlock = {
   blurhash: '',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 describe('VideoBlockEditorSettingsPoster', () => {

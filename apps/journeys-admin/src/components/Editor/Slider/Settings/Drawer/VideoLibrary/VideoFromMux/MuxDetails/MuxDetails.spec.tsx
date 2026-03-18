@@ -78,6 +78,9 @@ const mockVideoBlock = {
   subtitleLanguage: null,
   showGeneratedSubtitles: false,
   action: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'MuxVideo' as const,
     id: 'videoId',

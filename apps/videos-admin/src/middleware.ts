@@ -10,11 +10,10 @@ const GET_AUTH = graphql(`
   query me {
     me {
       id
-      email
-      firstName
-      lastName
-      imageUrl
-      mediaUserRoles
+      __typename
+      ... on AuthenticatedUser {
+        mediaUserRoles
+      }
     }
   }
 `)
@@ -57,7 +56,12 @@ export default async function middleware(
       }).query({
         query: GET_AUTH
       })
-      if (data.me?.mediaUserRoles.length === 0) {
+
+      const hasMediaRoles =
+        data.me?.__typename === 'AuthenticatedUser' &&
+        data.me.mediaUserRoles.length > 0
+
+      if (!hasMediaRoles) {
         req.nextUrl.pathname = unAuthorizedPage
         return NextResponse.redirect(req.nextUrl)
       }

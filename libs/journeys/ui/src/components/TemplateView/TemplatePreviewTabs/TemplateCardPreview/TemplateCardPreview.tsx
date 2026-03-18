@@ -4,163 +4,191 @@ import Stack from '@mui/material/Stack'
 import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import take from 'lodash/take'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
-import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/react'
+import { ReactElement, useEffect, useState } from 'react'
+import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import { AuthUser as User } from '../../../../libs/auth/types'
 import { TreeBlock } from '../../../../libs/block'
-import { useJourney } from '../../../../libs/JourneyProvider'
-import { getJourneyRTL } from '../../../../libs/rtl'
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
-import { BlockRenderer } from '../../../BlockRenderer'
-import { CardWrapper } from '../../../CardWrapper'
-import { FramePortal } from '../../../FramePortal'
-import { VideoWrapper } from '../../../VideoWrapper'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { TemplateActionButton } from '../../TemplateViewHeader/TemplateActionButton/TemplateActionButton'
+
+import {
+  type BreakpointSwiperOptions,
+  SELECTED_SCALE,
+  type TemplateCardPreviewVariant,
+  VARIANT_CONFIGS
+} from './templateCardPreviewConfig'
+import { TemplateCardPreviewItem } from './TemplateCardPreviewItem'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
-  authUser?: User
+  authUser?: User | null
+  variant?: TemplateCardPreviewVariant
+  onClick?: (step: TreeBlock<StepBlock>) => void
+  selectedStep?: TreeBlock<StepBlock> | null
 }
 
-interface TemplateCardPreviewItemProps {
-  step: TreeBlock<StepBlock>
+interface TemplateCardPreviewPlaceholderProps {
+  cardWidth: { xs: number; sm: number }
+  cardHeight: { xs: number; sm: number }
+  breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
+}
+
+function TemplateCardPreviewPlaceholder({
+  cardWidth,
+  cardHeight,
+  breakpoints: bp
+}: TemplateCardPreviewPlaceholderProps) {
+  return (
+    <Stack
+      data-testid="TemplateCardsPreviewPlaceholder"
+      direction="row"
+      sx={{
+        pl: {
+          xs: `${bp.xs.slidesOffsetBefore ?? 0}px`,
+          sm: `${bp.sm.slidesOffsetBefore ?? 0}px`
+        }
+      }}
+    >
+      {[0, 1, 2, 3, 4, 5, 6].map((value) => (
+        <Skeleton
+          variant="rounded"
+          key={value}
+          data-testid="TemplateCardSkeleton"
+          sx={{
+            minWidth: cardWidth,
+            mr: {
+              xs: `${bp.xs.spaceBetween ?? 0}px`,
+              sm: `${bp.sm.spaceBetween ?? 0}px`
+            },
+            height: cardHeight,
+            borderRadius: 2
+          }}
+        />
+      ))}
+    </Stack>
+  )
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
 const StyledSwiper = styled(Swiper)(() => ({}))
 
-function TemplateCardPreviewItem({
-  step
-}: TemplateCardPreviewItemProps): ReactElement {
-  const { journey } = useJourney()
-  const { rtl, locale } = getJourneyRTL(journey)
-  const cardBlock = step.children.find(
-    (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock>
-
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        width: { xs: 194, sm: 267 },
-        height: { xs: 295, sm: 404 },
-        backgroundColor: 'background.default',
-        borderRadius: 3
-      }}
-      data-testid="TemplateCardPreviewItem"
-    >
-      <Box
-        sx={{
-          transform: { xs: 'scale(0.4)', sm: 'scale(0.6)' },
-          transformOrigin: 'top left'
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            display: 'block',
-            width: { xs: 485, sm: 445 },
-            height: { xs: 738, sm: 673 },
-            zIndex: 2,
-            cursor: 'grab'
-          }}
-        />
-        <FramePortal
-          sx={{
-            width: { xs: 485, sm: 445 },
-            height: { xs: 738, sm: 673 }
-          }}
-          dir={rtl ? 'rtl' : 'ltr'}
-        >
-          <ThemeProvider
-            themeName={cardBlock?.themeName ?? ThemeName.base}
-            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-            rtl={rtl}
-            locale={locale}
-          >
-            <Box
-              sx={{
-                height: '100%',
-                borderRadius: 4
-              }}
-            >
-              <BlockRenderer
-                block={step}
-                wrappers={{
-                  VideoWrapper,
-                  CardWrapper
-                }}
-              />
-            </Box>
-          </ThemeProvider>
-        </FramePortal>
-      </Box>
-    </Box>
-  )
+function getSpacerWidth(
+  cardWidth: number,
+  bp: BreakpointSwiperOptions
+): string {
+  const selectedWidth = cardWidth * SELECTED_SCALE
+  const space = bp.spaceBetween ?? 0
+  const offset = bp.slidesOffsetBefore ?? 0
+  return `calc(100% - ${selectedWidth}px - ${space}px - ${offset}px)`
 }
 
+/**
+ * Horizontal carousel of template step cards with optional "more cards" slide.
+ *
+ * TemplateCardPreview has two variants:
+ *
+ * 'standard': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
+ *
+ * 'compact': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
+ *
+ * @param props - Component props
+ * @param props.steps - Journey step blocks to display as cards
+ * @param props.authUser - Authenticated user for CTA sign-in state
+ * @param props.variant - 'standard' | 'compact'; controls layout and behaviour
+ * @param props.onClick - Handler when a card is clicked
+ * @param props.selectedStep - Selected step (compact variant)
+ * @returns Carousel UI or skeleton placeholder when steps are loading
+ */
 export function TemplateCardPreview({
   steps,
-  authUser
+  authUser,
+  variant = 'standard',
+  onClick,
+  selectedStep
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
+  const [swiper, setSwiper] = useState<SwiperClass>()
+
+  const config = VARIANT_CONFIGS[variant]
+  const {
+    cardWidth,
+    cardHeight,
+    swiperHeight,
+    showMoreCardsSlide,
+    swiperProps,
+    slideSx,
+    selectedSlideSx,
+    swiperSx,
+    modules
+  } = config
+
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: {
-      spaceBetween: 12
-    },
-    [breakpoints.values.sm]: {
-      spaceBetween: 28
-    }
+    [breakpoints.values.xs]: VARIANT_CONFIGS[variant].breakpoints.xs,
+    [breakpoints.values.sm]: VARIANT_CONFIGS[variant].breakpoints.sm
   }
 
-  const slidesToRender: Array<TreeBlock<StepBlock>> | undefined = take(steps, 7)
+  const slidesToRender =
+    steps != null ? (variant === 'compact' ? steps : take(steps, 7)) : []
+
+  useEffect(() => {
+    if (variant !== 'compact' || swiper == null || selectedStep == null) return
+
+    const index = slidesToRender.findIndex(
+      (step) => step.id === selectedStep.id
+    )
+    if (index < 0) return
+
+    swiper.update()
+    swiper.slideTo(index, 500)
+  }, [swiper, selectedStep])
 
   return steps != null ? (
     <StyledSwiper
-      modules={[Mousewheel, FreeMode, A11y]}
-      mousewheel={{
-        forceToAxis: true
-      }}
-      freeMode
-      watchOverflow
-      slidesPerView="auto"
-      spaceBetween={12}
-      observer
-      observeParents
+      modules={modules}
       breakpoints={swiperBreakpoints}
+      onSwiper={setSwiper}
+      {...swiperProps}
       sx={{
-        overflow: 'visible',
-        zIndex: 2,
-        height: { xs: 295, sm: 404 }
+        ...swiperSx,
+        height: swiperHeight
       }}
     >
       {slidesToRender.map((step) => {
+        const isSelected = variant === 'compact' && selectedStep?.id === step.id
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
             key={step.id}
             sx={{
-              zIndex: 2,
-              mr: { xs: 3, sm: 7 },
-              width: 'unset !important'
+              ...(slideSx as object),
+              ...(isSelected ? (selectedSlideSx as object) : {})
             }}
           >
-            <TemplateCardPreviewItem step={step} />
+            <TemplateCardPreviewItem
+              step={step}
+              variant={variant}
+              onClick={onClick}
+              selectedStep={selectedStep}
+            />
           </StyledSwiperSlide>
         )
       })}
-      {steps.length > slidesToRender.length && (
+      {variant === 'compact' && (
+        <StyledSwiperSlide
+          data-testid="MediaSpacerSlide"
+          sx={{
+            width: {
+              xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
+              sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
+            }
+          }}
+        />
+      )}
+      {showMoreCardsSlide && steps.length > slidesToRender.length && (
         <StyledSwiperSlide
           data-testid="UseTemplatesSlide"
           sx={{
@@ -174,9 +202,9 @@ export function TemplateCardPreview({
             justifyContent="center"
             gap={2}
             sx={{
-              width: { xs: 194, sm: 267 },
+              width: cardWidth,
               mr: { xs: 3, sm: 7 },
-              height: { xs: 295, sm: 404 },
+              height: cardHeight,
               borderRadius: 2,
               backgroundColor: 'secondary.main',
               px: 1
@@ -206,9 +234,9 @@ export function TemplateCardPreview({
               bottom: { xs: 290, sm: 400 },
               left: 10,
               zIndex: -1,
-              minWidth: { xs: 194, sm: 267 },
+              minWidth: cardWidth,
               mr: { xs: 3, sm: 7 },
-              height: { xs: 295, sm: 404 },
+              height: cardHeight,
               borderRadius: 2,
               backgroundColor: 'secondary.light'
             }}
@@ -219,9 +247,9 @@ export function TemplateCardPreview({
               bottom: { xs: -10, sm: -10 },
               left: 30,
               zIndex: -2,
-              minWidth: { xs: 194, sm: 267 },
+              minWidth: cardWidth,
               mr: { xs: 3, sm: 7 },
-              height: { xs: 295, sm: 404 },
+              height: cardHeight,
               borderRadius: 2,
               backgroundColor: 'divider'
             }}
@@ -230,26 +258,10 @@ export function TemplateCardPreview({
       )}
     </StyledSwiper>
   ) : (
-    <Stack
-      data-testid="TemplateCardsPreviewPlaceholder"
-      direction="row"
-      sx={{ overflowY: 'visible' }}
-    >
-      {[0, 1, 2, 3, 4, 5, 6].map((value) => {
-        return (
-          <Skeleton
-            variant="rounded"
-            key={value}
-            data-testid="TemplateCardSkeleton"
-            sx={{
-              minWidth: { xs: 194, sm: 267 },
-              mr: { xs: 3, sm: 7 },
-              height: { xs: 295, sm: 404 },
-              borderRadius: 2
-            }}
-          />
-        )
-      })}
-    </Stack>
+    <TemplateCardPreviewPlaceholder
+      cardWidth={cardWidth}
+      cardHeight={cardHeight}
+      breakpoints={config.breakpoints}
+    />
   )
 }

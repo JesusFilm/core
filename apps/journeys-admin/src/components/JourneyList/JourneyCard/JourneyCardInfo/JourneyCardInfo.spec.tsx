@@ -7,7 +7,7 @@ import {
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../ThemeProvider'
-import { publishedJourney } from '../../journeyListData'
+import { publishedJourney, templateJourney } from '../../journeyListData'
 import { JourneyCardVariant } from '../journeyCardVariant'
 
 import { JourneyCardInfo } from '.'
@@ -25,7 +25,7 @@ describe('JourneyCardInfo', () => {
           id: 'userJourney4.id',
           role: UserJourneyRole.inviteRequested,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user4.id',
             firstName: 'Four',
             lastName: 'LastName',
@@ -60,7 +60,7 @@ describe('JourneyCardInfo', () => {
           id: 'userJourney4.id',
           role: UserJourneyRole.inviteRequested,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user4.id',
             firstName: 'Four',
             lastName: 'LastName',
@@ -72,7 +72,7 @@ describe('JourneyCardInfo', () => {
           id: 'userJourney5.id',
           role: UserJourneyRole.inviteRequested,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user5.id',
             firstName: 'Five',
             lastName: 'LastName',
@@ -109,5 +109,21 @@ describe('JourneyCardInfo', () => {
 
     expect(getByTestId('AnalyticsItem')).toBeInTheDocument()
     expect(getByTestId('ResponsesItem')).toBeInTheDocument()
+  })
+
+  it('should not render the access avatars if the journey is a template', () => {
+    const { queryByTestId } = render(
+      <MockedProvider>
+        <ThemeProvider>
+          <JourneyCardInfo
+            journey={templateJourney}
+            variant={JourneyCardVariant.default}
+          />
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    expect(queryByTestId('AccessAvatars')).not.toBeInTheDocument()
+    expect(queryByTestId('AnalyticsItem')).toBeInTheDocument()
+    expect(queryByTestId('ResponsesItem')).toBeInTheDocument()
   })
 })

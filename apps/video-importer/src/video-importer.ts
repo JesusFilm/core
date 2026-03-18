@@ -1,6 +1,5 @@
 import { promises } from 'fs'
 import path from 'path'
-import 'dotenv/config'
 
 import { Command } from 'commander'
 
@@ -29,12 +28,18 @@ const options = program.opts()
 
 // Regex patterns are imported from the respective importers
 
+function getDefaultFolderPath(): string {
+  const runningAsStandaloneExecutable =
+    typeof Bun !== 'undefined' && Bun.embeddedFiles.length > 0
+
+  if (!runningAsStandaloneExecutable) return process.cwd()
+
+  // In Bun standalone executable mode, `process.execPath` is the path to the compiled binary.
+  return path.dirname(process.execPath)
+}
+
 async function main() {
-  // Check if running in a Single Executable Application
-  const runningInSEA = require('node:sea').isSea()
-  const defaultFolderPath = runningInSEA
-    ? path.dirname(process.execPath)
-    : process.cwd()
+  const defaultFolderPath = getDefaultFolderPath()
 
   const folderPath = options.folder
     ? path.resolve(options.folder)

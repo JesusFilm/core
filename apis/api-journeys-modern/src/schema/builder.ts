@@ -18,7 +18,8 @@ import {
 import { GraphQLJSONObject } from 'graphql-type-json'
 
 import type PrismaTypes from '@core/prisma/journeys/__generated__/pothos-types'
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { getDatamodel } from '@core/prisma/journeys/__generated__/pothos-types'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { AuthScopes, Context, authScopes } from './authScopes'
 
@@ -33,6 +34,7 @@ export const builder = new SchemaBuilder<{
   AuthScopes: AuthScopes
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isAnonymous: Extract<Context, { type: 'authenticated' }>
     isInTeam: Extract<Context, { type: 'authenticated' }>
     isIntegrationOwner: Extract<Context, { type: 'authenticated' }>
     isTeamManager: Extract<Context, { type: 'authenticated' }>
@@ -64,7 +66,7 @@ export const builder = new SchemaBuilder<{
   },
   prisma: {
     client: prisma,
-    dmmf: Prisma.dmmf,
+    dmmf: getDatamodel(),
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   },
   scopeAuth: {

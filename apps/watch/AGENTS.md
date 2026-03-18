@@ -125,7 +125,16 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 
 ## Shadcn & Monorepo
 
-1. Since it's a monorepo, shadcn components live in the root of the repo in /core/libs/ui/. When adding new shadcn components add it to the root.
+1. **REQUIRED**: Use the automated script `libs/shared/ui-modern/add-shadcn-component.sh` for adding new shadcn components:
+
+   ```bash
+   cd libs/shared/ui-modern
+   ./add-shadcn-component.sh <component-name>
+   ```
+
+   This ensures dependencies are installed at the monorepo root level, not in individual library packages.
+
+2. Shadcn components live in `/core/libs/shared/ui-modern/src/components/`. When adding new shadcn components, always add them to this shared library.
 
 ### UI Component Hierarchy (order of preference)
 
@@ -195,7 +204,6 @@ describe('MyComponent', () => {
 - Extend Playwright scenarios when UI behavior shifts, and capture console logs/screenshots for regressions.
 - Document the executed test suite, notable scenarios, and any skipped checks in `/prds/watch/`.
 - Reuse the shared Jest setup in `apps/watch/setupTests.tsx`; it already boots MSW, the Next router mock, and a longer async timeout.
-- Wrap component specs with `MockedProvider`, `VideoProvider`, and `WatchProvider` when the unit touches those contexts—`NewVideoContentPage.spec.tsx` shows the expected harness.
 - Enclose SWR-based hooks in `TestSWRConfig` (`apps/watch/test/TestSWRConfig.tsx`) to isolate cache state between assertions.
 
 ## Manual user validation
@@ -210,7 +218,7 @@ describe('MyComponent', () => {
 - UI flows are expected to sit inside `VideoProvider`, `WatchProvider`, and `PlayerProvider` (see `apps/watch/src/libs/videoContext`, `watchContext`, and `playerContext`). Mirror that wiring when composing features and when writing tests.
 - `useWatch` dispatches should target only the keys you intend to change (audio language, subtitle language, or `subtitleOn`) so user preferences are preserved across renders.
 - `usePlayer` handles playback state (mute, fullscreen, current time). Keep reducer updates idempotent and avoid mixing DOM mutations with state—hero playback relies on these flags.
-- Components like `VideoContentHero` depend on the full provider stack plus video.js and mux metadata; preserve the existing contracts so autoplay, subtitles, and analytics remain intact.
+- Components like `VideoBlock` depend on the full provider stack plus video.js and mux metadata; preserve the existing contracts so autoplay, subtitles, and analytics remain intact.
 
 ## Data fetching & codegen
 
@@ -312,6 +320,7 @@ describe('MyComponent', () => {
 - Do not add new packages unless absolutely critical to deliver the feature. Prefer refactoring or reusing existing utilities.
 - Reuse the workspace Playwright installation; never install Playwright globally or commit browser binaries.
 - When lint/type-check errors stem from unrelated legacy code, ensure no new issues originate from your changes and call out the existing failures in documentation.
+- Use `pnpm dlx nx run watch:serve` when starting the dev server to guarantee a clean Nx CLI environment; this avoids stale global Nx installs and ensures commands run with the repo-locked version.
 
 ## Planning & Knowledge sharing
 
@@ -337,6 +346,22 @@ For all new features that doens't already have execution plan, we create detaile
   - Example:  
     Branch → `feature/abc-123-new-feature-name`  
     Log → `/prds/watch/feature-abc-123-new-feature-name.md`
+
+## Verification & Success Criteria
+
+An implementation is **not considered complete** unless it can prove correctness with measurable evidence.  
+Any response that provides code, config, or a "solution" must also include at least one of the following forms of verification:
+
+- **Console Output / Logs**: Show the result of running the code, including relevant debug or test logs.
+- **Measured Data**: Performance metrics, counts, or state values that demonstrate the code executes as intended.
+- **Automated Tests**: Passing unit, integration, or end-to-end tests with clear output.
+- **Screenshots or Artifacts** (when visual/UI): Evidence that the feature behaves correctly in context.
+
+If no measurable verification is provided, the task is considered **failed** and must be revised until proof exists.
+
+### Rule
+
+> **All agents must treat tasks as failed by default unless they provide verifiable runtime evidence. Confidence alone does not equal success.**
 
 ### Updating `AGENTS`
 

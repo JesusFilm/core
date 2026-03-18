@@ -2,12 +2,12 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SyntheticEvent, useMemo, useState } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
+import { AuthUser as User } from '../../../libs/auth/types'
 import { TreeBlock } from '../../../libs/block/TreeBlock'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { transformer } from '../../../libs/transformer'
@@ -21,7 +21,7 @@ import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'
 
 interface TemplatePreviewTabsProps {
-  authUser?: User
+  authUser?: User | null
 }
 
 export function TemplatePreviewTabs({

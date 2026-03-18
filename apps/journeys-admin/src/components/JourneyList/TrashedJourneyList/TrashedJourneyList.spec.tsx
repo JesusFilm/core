@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -8,21 +7,34 @@ import {
   GetAdminJourneysVariables
 } from '../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
-import { SortOrder } from '../JourneySort'
-
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from './TrashedJourneyList'
+} from '../JourneyListContent/JourneyListContent'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
+import { SortOrder } from '../JourneySort'
 
 import { TrashedJourneyList } from '.'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
+
+jest.mock('../../../libs/useTemplateFamilyStatsAggregateLazyQuery', () => ({
+  useTemplateFamilyStatsAggregateLazyQuery: jest.fn(),
+  extractTemplateIdsFromJourneys: jest.requireActual(
+    '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
+  ).extractTemplateIdsFromJourneys
+}))
+
+const mockedUseTemplateFamilyStatsAggregateLazyQuery =
+  useTemplateFamilyStatsAggregateLazyQuery as jest.MockedFunction<
+    typeof useTemplateFamilyStatsAggregateLazyQuery
+  >
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -77,8 +89,22 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('TrashedJourneyList', () => {
+  const refetchTemplateStats = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
+    refetchTemplateStats.mockClear()
+    mockedUseTemplateFamilyStatsAggregateLazyQuery.mockReturnValue({
+      query: [
+        jest.fn(),
+        {
+          data: undefined,
+          loading: false,
+          error: undefined
+        }
+      ] as any,
+      refetchTemplateStats
+    })
   })
 
   beforeAll(() => {
@@ -199,7 +225,20 @@ describe('TrashedJourneyList', () => {
 
   describe('Restore All', () => {
     const result = jest.fn(() => ({
-      data: [{ id: defaultJourney.id, status: 'published' }]
+      data: {
+        journeysRestore: [
+          {
+            id: defaultJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-1'
+          },
+          {
+            id: oldJourney.id,
+            status: 'published',
+            fromTemplateId: 'template-2'
+          }
+        ]
+      }
     }))
     const restoreJourneysMock = {
       request: {
@@ -236,7 +275,17 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="restoreAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -262,7 +311,17 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="restoreAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={
+                    {
+                      id: 'user-id1',
+                      email: null,
+                      displayName: null,
+                      photoURL: null,
+                      phoneNumber: null,
+                      emailVerified: false,
+                      token: 'mock-token'
+                    } as unknown as User
+                  }
                 />
               </SnackbarProvider>
             </ThemeProvider>
@@ -274,6 +333,44 @@ describe('TrashedJourneyList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Restore' }))
       await waitFor(() => expect(getByText('error')).toBeInTheDocument())
+    })
+
+    it('should call refetchTemplateStats when restoring journeys with fromTemplateId', async () => {
+      const { getByText, getByRole } = render(
+        <MockedProvider
+          mocks={[trashedJourneysMock, restoreJourneysMock, noJourneysMock]}
+        >
+          <ThemeProvider>
+            <SnackbarProvider>
+              <TrashedJourneyList
+                event="restoreAllTrashed"
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+      fireEvent.click(getByRole('button', { name: 'Restore' }))
+      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() => {
+        expect(refetchTemplateStats).toHaveBeenCalledWith([
+          'template-1',
+          'template-2'
+        ])
+      })
     })
   })
 
@@ -315,7 +412,17 @@ describe('TrashedJourneyList', () => {
             <SnackbarProvider>
               <TrashedJourneyList
                 event="deleteAllTrashed"
-                user={{ id: 'user-id1' } as unknown as User}
+                user={
+                  {
+                    id: 'user-id1',
+                    email: null,
+                    displayName: null,
+                    photoURL: null,
+                    phoneNumber: null,
+                    emailVerified: false,
+                    token: 'mock-token'
+                  } as unknown as User
+                }
               />
             </SnackbarProvider>
           </ThemeProvider>
@@ -341,7 +448,17 @@ describe('TrashedJourneyList', () => {
               <SnackbarProvider>
                 <TrashedJourneyList
                   event="deleteAllTrashed"
-                  user={{ id: 'user-id1' } as unknown as User}
+                  user={
+                    {
+                      id: 'user-id1',
+                      email: null,
+                      displayName: null,
+                      photoURL: null,
+                      phoneNumber: null,
+                      emailVerified: false,
+                      token: 'mock-token'
+                    } as unknown as User
+                  }
                 />
               </SnackbarProvider>
             </ThemeProvider>

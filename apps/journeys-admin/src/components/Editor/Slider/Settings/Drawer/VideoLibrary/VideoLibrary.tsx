@@ -8,6 +8,7 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import YoutubeIcon from '@core/shared/ui/icons/Youtube'
@@ -66,12 +67,17 @@ export function VideoLibrary({
     selectedBlock?.videoId != null && open
   )
 
-  const { getUploadStatus } = useMuxVideoUpload()
+  const {
+    state: { selectedBlock: editorSelectedBlock }
+  } = useEditor()
+
+  const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
   const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
 
   const [activeTab, setActiveTab] = useState(
     uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
   )
+
   const router = useRouter()
 
   useEffect(() => {
@@ -98,7 +104,7 @@ export function VideoLibrary({
     newValue: number
   ): void => {
     setActiveTab(newValue)
-    const route: 'unsplash-image' | 'custom-image' | 'ai-image' =
+    const route: 'video-library' | 'video-youtube' | 'video-upload' =
       TabParams[newValue]
     if (route != null) setRoute(route)
   }
@@ -108,11 +114,25 @@ export function VideoLibrary({
     shouldCloseDrawer = true
   ): void => {
     const shouldFocus = shouldCloseDrawer
+
+    // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
+    if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
+
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {
+    if (selectedBlock?.source === 'mux') {
+      setActiveTab(UPLOAD_TAB)
+      setRoute(TabParams[UPLOAD_TAB])
+    } else if (selectedBlock?.source === 'internal') {
+      setActiveTab(LIBRARY_TAB)
+      setRoute(TabParams[LIBRARY_TAB])
+    } else if (selectedBlock?.source === 'youTube') {
+      setActiveTab(YOUTUBE_TAB)
+      setRoute(TabParams[YOUTUBE_TAB])
+    }
     setOpenVideoDetails(false)
     if (closeParent === true) onClose?.()
   }

@@ -17,3 +17,7 @@ playwright-report/
 .cursor/
 !apis/api-languages/src/__generated__/languageSlugs.ts
 pnpm-lock.yaml
+
+# Kubernetes manifests: managed by upstream charts/tools and often intentionally not Prettier-formatted
+/infrastructure/kube/**/*.yaml
+/infrastructure/kube/**/*.yml

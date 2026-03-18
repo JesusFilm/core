@@ -49,14 +49,6 @@ describe('middleware', () => {
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
-    it('should use geolocation if no other locale indicators', async () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'cf-ipcountry': 'FR' }
-      })
-      const result = await middleware(req)
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
     it('should fallback to default locale if no locale detected', async () => {
       const req = createMockRequest('/watch/jesus.html')
       const result = await middleware(req)
@@ -102,26 +94,10 @@ describe('middleware', () => {
     })
   })
 
-  describe('geolocation handling', () => {
-    it('should handle Cloudflare country headers', async () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'cf-ipcountry': 'FR' }
-      })
-      const result = await middleware(req)
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
-    it('should handle Vercel country headers', async () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'x-vercel-ip-country': 'FR' }
-      })
-      const result = await middleware(req)
-      expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
-    })
-
-    it('should handle unsupported country codes by using default', async () => {
-      const req = createMockRequest('/watch/jesus.html', {
-        headers: { 'cf-ipcountry': 'XX' }
+  describe('static assets', () => {
+    it('should not rewrite requests for static assets (e.g. images)', async () => {
+      const req = createMockRequest('/watch/images/jesus-film-logo-full.svg', {
+        headers: { 'accept-language': 'fr-FR,fr;q=0.9,en;q=0.8' }
       })
       const result = await middleware(req)
       expect(result).toEqual(NextResponse.next())
@@ -149,16 +125,6 @@ describe('middleware', () => {
       expect(result).toBeInstanceOf(NextResponse)
       expect(result?.status).toBe(302)
       // Should redirect to French locale
-      expect(result?.headers.get('location')).toContain('/watch/french.html')
-    })
-
-    it('should handle watch root path with geolocation redirect', async () => {
-      const req = createMockRequest('/watch', {
-        headers: { 'cf-ipcountry': 'FR' }
-      })
-      const result = await middleware(req)
-      expect(result).toBeInstanceOf(NextResponse)
-      expect(result?.status).toBe(302)
       expect(result?.headers.get('location')).toContain('/watch/french.html')
     })
 

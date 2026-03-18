@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "styles/globals.css",
+    "baseColor": "slate",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@core/shared/ui-modern/components",
+    "utils": "@core/shared/ui-modern/utils",
+    "hooks": "@core/shared/ui-modern/hooks",
+    "lib": "@core/shared/ui-modern/lib",
+    "ui": "@core/shared/ui-modern/components"
+  }
+}

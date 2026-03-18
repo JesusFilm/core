@@ -21,13 +21,20 @@ export interface CreateJourney_journeyCreate_language {
   name: CreateJourney_journeyCreate_language_name[];
 }
 
-export interface CreateJourney_journeyCreate_userJourneys_user {
-  __typename: "User";
+export interface CreateJourney_journeyCreate_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface CreateJourney_journeyCreate_userJourneys_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type CreateJourney_journeyCreate_userJourneys_user = CreateJourney_journeyCreate_userJourneys_user_AnonymousUser | CreateJourney_journeyCreate_userJourneys_user_AuthenticatedUser;
 
 export interface CreateJourney_journeyCreate_userJourneys {
   __typename: "UserJourney";

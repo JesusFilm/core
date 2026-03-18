@@ -8,13 +8,18 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import {
+  extractTemplateIdsFromJourneys,
+  useTemplateFamilyStatsAggregateLazyQuery
+} from '../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
@@ -27,23 +32,6 @@ const Dialog = dynamic(
   { ssr: false }
 )
 
-export const RESTORE_TRASHED_JOURNEYS = gql`
-  mutation RestoreTrashedJourneys($ids: [ID!]!) {
-    journeysRestore(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
-export const DELETE_TRASHED_JOURNEYS = gql`
-  mutation DeleteTrashedJourneys($ids: [ID!]!) {
-    journeysDelete(ids: $ids) {
-      id
-      status
-    }
-  }
-`
 export function TrashedJourneyList({
   user,
   sortOrder,
@@ -55,12 +43,19 @@ export function TrashedJourneyList({
     status: [JourneyStatus.trashed],
     useLastActiveTeamId: true
   })
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
+
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
           variant: 'success'
         })
+        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
+        if (templateIds.length > 0) {
+          void refetchTemplateStats(templateIds)
+        }
+
         void refetch()
       }
     }
@@ -71,6 +66,7 @@ export function TrashedJourneyList({
         enqueueSnackbar(t('Journeys Deleted'), {
           variant: 'success'
         })
+
         void refetch()
       }
     }
@@ -176,18 +172,11 @@ export function TrashedJourneyList({
                 key={journey.id}
                 size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
               >
-                <JourneyProvider
-                  value={{
-                    journey: journey as unknown as JourneyFields,
-                    variant: 'admin'
-                  }}
-                >
-                  <JourneyCard
-                    key={journey.id}
-                    journey={journey}
-                    refetch={refetch}
-                  />
-                </JourneyProvider>
+                <JourneyCard
+                  key={journey.id}
+                  journey={journey}
+                  refetch={refetch}
+                />
               </Grid>
             ))}
           </Grid>

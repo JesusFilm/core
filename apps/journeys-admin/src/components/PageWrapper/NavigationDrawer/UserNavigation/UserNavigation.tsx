@@ -8,7 +8,6 @@ import compact from 'lodash/compact'
 import dynamic from 'next/dynamic'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 
@@ -17,6 +16,7 @@ import UserProfile3Icon from '@core/shared/ui/icons/UserProfile3'
 
 import { GetMe } from '../../../../../__generated__/GetMe'
 import { JourneyStatus, Role } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth'
 import { useAdminJourneysSuspenseQuery } from '../../../../libs/useAdminJourneysSuspenseQuery'
 import { useUserRoleSuspenseQuery } from '../../../../libs/useUserRoleSuspenseQuery'
 import { getJourneyTooltip } from '../../utils/getJourneyTooltip'
@@ -44,18 +44,20 @@ export const GET_ME = gql`
   query GetMe($input: MeInput) {
     me(input: $input) {
       id
-      firstName
-      lastName
-      email
-      imageUrl
-      superAdmin
-      emailVerified
+      ... on AuthenticatedUser {
+        firstName
+        lastName
+        email
+        imageUrl
+        superAdmin
+        emailVerified
+      }
     }
   }
 `
 
 interface UserNavigationProps {
-  user: User
+  user: User | null
   selectedPage?: string
   setTooltip?: (value: string | undefined) => void
 }
@@ -83,7 +85,7 @@ export function UserNavigation({
 
   useEffect(() => {
     switch (
-      user.id != null
+      user?.id != null
         ? getJourneyTooltip(journeysData.journeys, user.id)
         : undefined
     ) {
@@ -94,7 +96,7 @@ export function UserNavigation({
         setTooltip?.(t('New Journey'))
         break
     }
-  }, [journeysData.journeys, user.id, t, setTooltip])
+  }, [journeysData.journeys, user?.id, t, setTooltip])
   function handleImpersonateClick(): void {
     setImpersonateOpen(true)
   }
@@ -111,7 +113,7 @@ export function UserNavigation({
     setProfileAnchorEl(null)
   }
 
-  return user.id != null && data.me != null ? (
+  return user?.id != null && data.me != null ? (
     <>
       <Divider sx={{ mb: 0.5, mx: 6, borderColor: 'secondary.main' }} />
       {userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true && (
@@ -130,45 +132,49 @@ export function UserNavigation({
           />
         </ListItemButton>
       )}
-      {data.me.superAdmin === true && (
+      {data.me?.__typename === 'AuthenticatedUser' &&
+        data.me.superAdmin === true && (
+          <ListItemButton
+            data-testid="NavigationListItemImpersonate"
+            onClick={handleImpersonateClick}
+          >
+            <ListItemIcon>
+              <UserProfile3Icon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t('Impersonate')}
+              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            />
+          </ListItemButton>
+        )}
+      {data.me?.__typename === 'AuthenticatedUser' && (
         <ListItemButton
-          data-testid="NavigationListItemImpersonate"
-          onClick={handleImpersonateClick}
+          data-testid="NavigationListItemProfile"
+          onClick={handleProfileClick}
         >
           <ListItemIcon>
-            <UserProfile3Icon />
+            <Avatar
+              alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
+              src={data.me.imageUrl ?? undefined}
+              sx={{ width: 24, height: 24 }}
+            />
           </ListItemIcon>
           <ListItemText
-            primary={t('Impersonate')}
+            primary={t('Profile')}
             primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
           />
         </ListItemButton>
       )}
-      <ListItemButton
-        data-testid="NavigationListItemProfile"
-        onClick={handleProfileClick}
-      >
-        <ListItemIcon>
-          <Avatar
-            alt={compact([data.me.firstName, data.me.lastName]).join(' ')}
-            src={data.me.imageUrl ?? undefined}
-            sx={{ width: 24, height: 24 }}
+      {profileAnchorEl !== undefined &&
+        data.me?.__typename === 'AuthenticatedUser' && (
+          <UserMenu
+            apiUser={data.me}
+            profileOpen={profileOpen}
+            profileAnchorEl={profileAnchorEl}
+            handleProfileClose={handleProfileClose}
+            user={user}
           />
-        </ListItemIcon>
-        <ListItemText
-          primary={t('Profile')}
-          primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
-        />
-      </ListItemButton>
-      {profileAnchorEl !== undefined && (
-        <UserMenu
-          apiUser={data.me}
-          profileOpen={profileOpen}
-          profileAnchorEl={profileAnchorEl}
-          handleProfileClose={handleProfileClose}
-          user={user}
-        />
-      )}
+        )}
       {impersonateOpen != null && (
         <ImpersonateDialog
           open={impersonateOpen}

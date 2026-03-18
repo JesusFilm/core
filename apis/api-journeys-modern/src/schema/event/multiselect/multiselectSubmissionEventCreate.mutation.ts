@@ -9,10 +9,7 @@ import { MultiselectSubmissionEventCreateInput } from './inputs/multiselectSubmi
 import { MultiselectSubmissionEventRef } from './multiselectSubmissionEvent'
 
 builder.mutationField('multiselectSubmissionEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: MultiselectSubmissionEventRef,
     args: {
@@ -53,7 +50,6 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
         }
       })
 
-      // live sync to Google Sheets (fire and forget)
       if (teamId) {
         appendEventToGoogleSheets({
           journeyId,

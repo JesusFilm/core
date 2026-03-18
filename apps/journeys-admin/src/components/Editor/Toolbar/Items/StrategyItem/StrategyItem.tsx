@@ -18,7 +18,10 @@ export function StrategyItem({
   closeMenu
 }: StrategyItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { dispatch } = useEditor()
+  const {
+    dispatch,
+    state: { showAnalytics }
+  } = useEditor()
 
   function handleGoalsClick(): void {
     dispatch({
@@ -39,6 +42,8 @@ export function StrategyItem({
         label={t('Strategy')}
         icon={<BulbIcon />}
         onClick={handleGoalsClick}
+        ButtonProps={{ disabled: showAnalytics }}
+        MenuItemProps={{ disabled: showAnalytics }}
       />
     </Box>
   )

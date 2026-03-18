@@ -1,40 +1,85 @@
 import { Hono } from 'hono'
 
+const CACHE_MAX_AGE = 86400 // 24 hours
+
 const app = new Hono<{
   Bindings: {
+    RESOURCES_PROXY_DEST?: string
     WATCH_PROXY_DEST?: string
-    WATCH_MODERN_PROXY_DEST?: string
-    WATCH_MODERN_PROXY_PATHS?: string[]
+    IOS_APP_ID?: string
+    ANDROID_PACKAGE_NAME?: string
+    ANDROID_SHA256_CERT_FINGERPRINT?: string
   }
 }>()
+
+app.on(
+  'GET',
+  ['/.well-known/apple-app-site-association', '/apple-app-site-association'],
+  async (c) => {
+    const iosAppId = c.env.IOS_APP_ID
+    if (!iosAppId) return new Response('Not Configured', { status: 500 })
+
+    const aasa = {
+      applinks: {
+        apps: [],
+        details: [{ appID: iosAppId, paths: ['*', '/'] }]
+      }
+    }
+    const body = JSON.stringify(aasa)
+    return new Response(body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, max-age=${CACHE_MAX_AGE}`
+      }
+    })
+  }
+)
+
+app.get('/.well-known/assetlinks.json', async (c) => {
+  const packageName = c.env.ANDROID_PACKAGE_NAME
+  const fingerprints = c.env.ANDROID_SHA256_CERT_FINGERPRINT
+  if (!packageName || !fingerprints)
+    return new Response('Not Configured', { status: 500 })
+
+  const sha256List = fingerprints
+    .split(',')
+    .map((f) => f.trim())
+    .filter(Boolean)
+  const assetlinks = [
+    {
+      relation: ['delegate_permission/common.handle_all_urls'],
+      target: {
+        namespace: 'android_app',
+        package_name: packageName,
+        sha256_cert_fingerprints: sha256List
+      }
+    }
+  ]
+  const body = JSON.stringify(assetlinks)
+  return new Response(body, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': `public, max-age=${CACHE_MAX_AGE}`
+    }
+  })
+})
 
 app.get('*', async (c) => {
   const url = new URL(c.req.url)
   const pathname = url.pathname
 
-  // Check if path should route to modern proxy
-  const modernProxyPaths = c.env.WATCH_MODERN_PROXY_PATHS || []
-  const shouldUseModernProxy = modernProxyPaths.some((pattern) => {
-    try {
-      const regex = new RegExp(pattern)
-      return regex.test(pathname)
-    } catch (error) {
-      console.error('Invalid regex pattern:', pattern, error)
-      return false
-    }
-  })
+  // Check if path is /watch and has EXPERIMENTAL cookie
+  const cookieHeader = c.req.header('cookie')
+  const hasExperimentalCookie = cookieHeader?.includes('EXPERIMENTAL')
+  const isWatchPath = pathname.startsWith('/watch')
 
-  // Set destination based on path matching
-  const proxyDest = shouldUseModernProxy
-    ? (c.env.WATCH_MODERN_PROXY_DEST ?? url.hostname)
-    : (c.env.WATCH_PROXY_DEST ?? url.hostname)
+  // Set destination based on path and cookie
+  const proxyDest =
+    isWatchPath && hasExperimentalCookie
+      ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
+      : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
 
   url.hostname = proxyDest
-
-  // Modify path for /watch/modern/* routes by removing 'modern/' part
-  if (shouldUseModernProxy && pathname.startsWith('/watch/modern/')) {
-    url.pathname = pathname.replace('/watch/modern/', '/watch/')
-  }
 
   let response: Response
 
@@ -52,7 +97,6 @@ app.get('*', async (c) => {
   }
 
   // Ensure cookies are properly passed
-  const cookieHeader = c.req.header('cookie')
   if (cookieHeader) {
     headers.set('cookie', cookieHeader)
   }

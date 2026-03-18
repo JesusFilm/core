@@ -1,0 +1,1 @@
+export { useLatestVideos } from './useLatestVideos'

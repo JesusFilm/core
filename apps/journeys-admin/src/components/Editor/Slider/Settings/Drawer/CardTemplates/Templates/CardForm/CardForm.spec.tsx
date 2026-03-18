@@ -64,6 +64,7 @@ describe('CardForm', () => {
     themeName: null,
     fullscreen: false,
     backdropBlur: null,
+    eventLabel: null,
     children: []
   }
   const step: TreeBlock = {
@@ -95,7 +96,8 @@ describe('CardForm', () => {
           isCover: true,
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -188,7 +190,8 @@ describe('CardForm', () => {
           __typename: 'ImageBlock',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         subtitle: {
           id: 'subtitleId',
@@ -246,6 +249,7 @@ describe('CardForm', () => {
           action: null,
           submitEnabled: true,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         startIcon: {
@@ -279,6 +283,7 @@ describe('CardForm', () => {
           action: null,
           submitEnabled: true,
           settings: null,
+          eventLabel: null,
           __typename: 'ButtonBlock'
         },
         body: {
@@ -306,6 +311,7 @@ describe('CardForm', () => {
           themeName: null,
           fullscreen: true,
           backdropBlur: null,
+          eventLabel: null,
           __typename: 'CardBlock'
         }
       }

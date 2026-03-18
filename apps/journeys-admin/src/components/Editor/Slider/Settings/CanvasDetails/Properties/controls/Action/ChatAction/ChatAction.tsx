@@ -91,7 +91,7 @@ export function ChatAction({ ref }: ChatActionProps): ReactElement {
         color="secondary.main"
         sx={{ mt: 1, mb: 3 }}
       >
-        {t('Open chat widget with the provided URL.')}
+        {t('Start a chat with the provided URL.')}
       </Typography>
       <Box data-testid="ChatAction">
         <TextFieldForm

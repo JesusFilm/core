@@ -26,6 +26,8 @@ export const ACTION_FIELDS = gql`
       phone
       countryCode
       contactAction
+      customizable
+      parentStepId
     }
   }
 `

@@ -50,6 +50,7 @@ describe('NewSignUpButton', () => {
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: []
       }
     ]

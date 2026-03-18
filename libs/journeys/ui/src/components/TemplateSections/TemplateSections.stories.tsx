@@ -69,7 +69,11 @@ const defaultTemplate: Journey = {
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: []
+  website: false,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  userJourneys: [],
+  customizable: null
 }
 
 const acceptance: Tag = {

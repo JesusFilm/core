@@ -34,8 +34,10 @@ variable "service_config" {
       health_check_timeout             = optional(number, 4)
       health_check_healthy_threshold   = optional(number, 2)
       health_check_unhealthy_threshold = optional(number, 4)
+      health_check_matcher             = optional(string, "200")
     })
 
+    health_check_grace_period_seconds = optional(number, 0)
     auto_scaling = object({
       max_capacity = number
       min_capacity = number
@@ -97,7 +99,9 @@ variable "dd_source" {
 
 
 variable "doppler_token" {
-  type = string
+  type        = string
+  description = "Doppler token for ECS Task"
+  sensitive   = true
 }
 
 # We are unable to for_each sensitive values, so we must provide a list of secret env vars

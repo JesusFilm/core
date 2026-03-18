@@ -1,34 +1,49 @@
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
+import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
+
 import { useJourney } from '../../../libs/JourneyProvider'
+import { JourneyFields } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface UseThisTemplateButtonProps {
+  variant?: 'menu-item' | 'button'
   signedIn?: boolean
+  journeyId?: string
 }
 
 export function UseThisTemplateButton({
-  signedIn = false
+  variant = 'button',
+  signedIn = false,
+  journeyId
 }: UseThisTemplateButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const { templateCustomizationGuestFlow } = useFlags()
 
   const router = useRouter()
-  const { journey } = useJourney()
+  const { journey: journeyFromContext } = useJourney()
+  const journeyDataId = journeyId ?? journeyFromContext?.id
   const [openAccountDialog, setOpenAccountDialog] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function handleCustomizeNavigation(): Promise<void> {
-    void router.push(`/templates/${journey?.id ?? ''}/customize`, undefined, {
+    void router.push(`/templates/${journeyDataId ?? ''}/customize`, undefined, {
       shallow: true
     })
   }
 
   const handleCheckSignIn = async (): Promise<void> => {
-    if (signedIn) {
+    // For menu-item variant, assume user is signed in
+    const canCustomize = templateCustomizationGuestFlow || signedIn
+    if (variant === 'menu-item' || canCustomize) {
       setLoading(true)
       await handleCustomizeNavigation()
     } else {
@@ -40,7 +55,7 @@ export function UseThisTemplateButton({
     // Use env var if outside journeys-admin project
     const domain =
       process.env.NEXT_PUBLIC_JOURNEYS_ADMIN_URL ?? window.location.origin
-    const url = `${domain}/templates/${journey?.id ?? ''}`
+    const url = `${domain}/templates/${journeyDataId ?? ''}`
 
     void router.push(
       {
@@ -58,24 +73,38 @@ export function UseThisTemplateButton({
   }
 
   useEffect(() => {
-    if (!signedIn) {
+    if (!signedIn && variant === 'button') {
       // Prefetch the dashboard page
       void router.prefetch('/users/sign-in')
     }
-  }, [signedIn, router])
+  }, [signedIn, router, variant])
+
+  if (variant === 'menu-item') {
+    return (
+      <MenuItem
+        onClick={handleCheckSignIn}
+        data-testid="UseThisTemplateMenuItem"
+      >
+        <ListItemIcon sx={{ color: 'secondary.main' }}>
+          <LayoutTopIcon />
+        </ListItemIcon>
+        <ListItemText>{t('Use This Template')}</ListItemText>
+      </MenuItem>
+    )
+  }
 
   return (
     <>
       <Button
         onMouseEnter={() => {
           if (signedIn) {
-            void router.prefetch(`/templates/${journey?.id ?? ''}/customize`)
+            void router.prefetch(`/templates/${journeyDataId ?? ''}/customize`)
           }
         }}
         onClick={handleCheckSignIn}
         variant="contained"
         sx={{ flex: 'none', minWidth: 180 }}
-        disabled={journey == null}
+        disabled={journeyDataId == null}
         data-testid="UseThisTemplateButton"
       >
         {loading ? (

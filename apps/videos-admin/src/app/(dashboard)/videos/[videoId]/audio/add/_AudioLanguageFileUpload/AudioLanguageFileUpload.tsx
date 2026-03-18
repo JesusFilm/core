@@ -17,6 +17,10 @@ interface AudioLanguageFileUploadProps {
   processing?: boolean
   selectedFile?: File | null
   uploadProgress?: number
+  uploadedBytes?: number
+  totalBytes?: number
+  uploadSpeedBps?: number | null
+  etaSeconds?: number | null
   clearUploadState?: () => void
 }
 
@@ -29,6 +33,10 @@ export function AudioLanguageFileUpload({
   processing,
   selectedFile,
   uploadProgress = 0,
+  uploadedBytes = 0,
+  totalBytes = 0,
+  uploadSpeedBps = null,
+  etaSeconds = null,
   clearUploadState
 }: AudioLanguageFileUploadProps): ReactElement {
   const [fileRejected, setFileRejected] = useState(false)
@@ -79,6 +87,28 @@ export function AudioLanguageFileUpload({
 
   const noBorder = error != null || uploading || fileRejected
   const isDisabled = disabled || loading || uploading || processing
+
+  const formatBytes = (bytes: number): string => {
+    if (bytes <= 0) return '0 MB'
+    const mb = bytes / (1024 * 1024)
+    if (mb < 1024) return `${mb.toFixed(1)} MB`
+    const gb = mb / 1024
+    return `${gb.toFixed(2)} GB`
+  }
+
+  const formatSpeed = (bps: number | null): string => {
+    if (bps == null || bps <= 0) return '—'
+    const mbps = bps / (1024 * 1024)
+    return `${mbps.toFixed(2)} MB/s`
+  }
+
+  const formatEta = (seconds: number | null): string => {
+    if (seconds == null || !Number.isFinite(seconds)) return '—'
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.max(0, Math.round(seconds % 60))
+    if (mins <= 0) return `${secs}s`
+    return `${mins}m ${secs}s`
+  }
 
   return (
     <Stack
@@ -143,6 +173,28 @@ export function AudioLanguageFileUpload({
               value={uploadProgress}
               sx={{ height: 8, borderRadius: 4 }}
             />
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              sx={{ mt: 1 }}
+            >
+              <Typography variant="caption" color="secondary.light">
+                {uploadProgress}% • {formatBytes(uploadedBytes)} /{' '}
+                {formatBytes(totalBytes)}
+              </Typography>
+              <Typography variant="caption" color="secondary.light">
+                {formatSpeed(uploadSpeedBps)} • ETA {formatEta(etaSeconds)}
+              </Typography>
+            </Stack>
+            {selectedFile != null && (
+              <Typography
+                variant="caption"
+                color="secondary.light"
+                sx={{ display: 'block', mt: 0.5, textAlign: 'left' }}
+              >
+                File: {selectedFile.name}
+              </Typography>
+            )}
           </Box>
         )}
 

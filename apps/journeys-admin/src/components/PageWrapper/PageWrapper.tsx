@@ -3,11 +3,12 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { ReactElement, ReactNode, useState } from 'react'
 import { use100vh } from 'react-div-100vh'
 
+import { User } from '../../libs/auth'
 import { PageProvider, PageState } from '../../libs/PageWrapperProvider'
+import { HelpScoutBeacon } from '../HelpScoutBeacon'
 
 import { AppHeader } from './AppHeader'
 import { MainPanelBody } from './MainPanelBody'
@@ -36,7 +37,7 @@ interface PageWrapperProps {
   // Either render default SidePanel with sidePanelChildren
   // Or render customSidePanel
   customSidePanel?: ReactNode
-  user?: User
+  user?: User | null
   initialState?: Partial<PageState>
   background?: string
   backgroundColor?: string
@@ -67,6 +68,11 @@ export function PageWrapper({
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
+
+  const userInfo = {
+    name: user?.displayName ?? '',
+    email: user?.email ?? ''
+  }
 
   return (
     <PageProvider initialState={initialState}>
@@ -115,7 +121,19 @@ export function PageWrapper({
             }}
           >
             {showAppHeader && (
-              <AppHeader onClick={() => setOpen(!open)} user={user} />
+              <>
+                <AppHeader onClick={() => setOpen(!open)} user={user} />
+                <Box
+                  sx={{
+                    position: 'fixed',
+                    bottom: 16,
+                    right: 16,
+                    zIndex: (theme) => theme.zIndex.modal + 3
+                  }}
+                >
+                  <HelpScoutBeacon variant="fab" userInfo={userInfo} />
+                </Box>
+              </>
             )}
 
             <Stack

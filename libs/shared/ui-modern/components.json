@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "src/components",
+    "utils": "src/utils",
+    "hooks": "src/hooks",
+    "lib": "src/lib",
+    "ui": "src/components"
+  },
+  "_comment": "For monorepo: Install dependencies manually at root first, then run: npx shadcn@latest add <component> --cwd libs/shared/ui-modern --yes"
+}

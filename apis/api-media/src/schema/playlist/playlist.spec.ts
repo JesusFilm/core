@@ -479,6 +479,7 @@ describe('playlist', () => {
                 name
                 note
                 noteUpdatedAt
+                noteSharedAt
                 sharedAt
               }
             }
@@ -538,6 +539,7 @@ describe('playlist', () => {
             name: 'Updated Playlist',
             note: 'Updated note',
             noteUpdatedAt: new Date('2023-01-02').toISOString(),
+            noteSharedAt: new Date('2023-01-02').toISOString(),
             sharedAt: new Date('2023-01-03').toISOString()
           }
         })
@@ -568,6 +570,33 @@ describe('playlist', () => {
         expect(data).toHaveProperty(
           'data.playlistUpdate.data.sharedAt',
           sharedDate.toISOString()
+        )
+      })
+
+      it('should allow setting noteSharedAt to null', async () => {
+        const updatedPlaylist = { ...mockPlaylist, noteSharedAt: null }
+        prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
+        prismaMock.playlist.update.mockResolvedValueOnce(updatedPlaylist)
+
+        const data = await authClient({
+          document: UPDATE_PLAYLIST_MUTATION,
+          variables: {
+            id: 'playlistId',
+            input: {
+              noteSharedAt: null
+            }
+          }
+        })
+
+        expect(prismaMock.playlist.update).toHaveBeenCalledWith({
+          where: { id: 'playlistId' },
+          data: {
+            noteSharedAt: null
+          }
+        })
+        expect(data).toHaveProperty(
+          'data.playlistUpdate.data.noteSharedAt',
+          null
         )
       })
 

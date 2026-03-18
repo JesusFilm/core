@@ -50,6 +50,7 @@ const step: TreeBlock = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         block,
         {

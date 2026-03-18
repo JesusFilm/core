@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { Block } from '../block'
 import { builder } from '../builder'
 
@@ -10,9 +11,6 @@ import { canBlockHaveAction } from './canBlockHaveAction'
 
 builder.mutationField('blockDeleteAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: Block,
     args: {
       id: t.arg.id({ required: true }),
@@ -57,6 +55,8 @@ builder.mutationField('blockDeleteAction', (t) =>
 
       // Delete the action if it exists
       await prisma.action.deleteMany({ where: { parentBlockId: id } })
+
+      await recalculateJourneyCustomizable(block.journeyId)
 
       return block
     }

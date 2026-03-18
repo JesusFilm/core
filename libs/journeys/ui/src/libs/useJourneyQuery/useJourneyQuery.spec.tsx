@@ -62,7 +62,7 @@ describe('useJourneyQuery', () => {
           role: UserJourneyRole.owner,
           openedAt: null,
           user: {
-            __typename: 'User',
+            __typename: 'AuthenticatedUser',
             id: 'user-id1',
             firstName: 'Amin',
             lastName: 'One',
@@ -84,7 +84,8 @@ describe('useJourneyQuery', () => {
       journeyCustomizationFields: [],
       fromTemplateId: null,
       socialNodeX: null,
-      socialNodeY: null
+      socialNodeY: null,
+      customizable: null
     }
 
     const result = jest.fn(() => ({ data: { journey } }))

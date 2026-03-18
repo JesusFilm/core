@@ -36,6 +36,9 @@ describe('VideoWrapper', () => {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
       children: [
         {
           id: 'image5.id',
@@ -50,7 +53,8 @@ describe('VideoWrapper', () => {
           blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       ]
     }
@@ -77,7 +81,8 @@ describe('VideoWrapper', () => {
             width: 1920,
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ],
         endAt: null,
@@ -99,7 +104,10 @@ describe('VideoWrapper', () => {
         videoId: null,
         videoVariantLanguageId: '529',
         subtitleLanguage: null,
-        showGeneratedSubtitles: null
+        showGeneratedSubtitles: null,
+        eventLabel: null,
+        endEventLabel: null,
+        customizable: null
       },
       undefined
     )
@@ -129,6 +137,9 @@ describe('VideoWrapper', () => {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
+      customizable: null,
       children: [
         {
           id: 'image5.id',
@@ -143,7 +154,8 @@ describe('VideoWrapper', () => {
           blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         }
       ]
     }
@@ -170,7 +182,8 @@ describe('VideoWrapper', () => {
             width: 1920,
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ],
         endAt: null,
@@ -192,7 +205,10 @@ describe('VideoWrapper', () => {
         videoId: null,
         videoVariantLanguageId: '529',
         subtitleLanguage: null,
-        showGeneratedSubtitles: null
+        showGeneratedSubtitles: null,
+        eventLabel: null,
+        endEventLabel: null,
+        customizable: null
       },
       undefined
     )

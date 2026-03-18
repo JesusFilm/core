@@ -30,7 +30,10 @@ const createMockPlayer = (): Player & {
     textTracks: jest.fn(() => mockTracks),
     addRemoteTextTrack: mockAddRemoteTextTrack,
     addEventListener: jest.fn(),
-    removeEventListener: jest.fn()
+    removeEventListener: jest.fn(),
+    el_: {
+      parentNode: document.body
+    }
   } as unknown as Player & {
     textTracks?: () => TextTrackList
     addRemoteTextTrack: jest.Mock

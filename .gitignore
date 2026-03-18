@@ -6,7 +6,7 @@
 /out-tsc
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -87,9 +87,19 @@ terraform.tfstate.backup
 
 .cursor/rules/*.dev.mdc
 
+# personal claude rules
+.claude/rules/preferences.md
+.claude/rules/workflows.md
+.claude/rules/*.dev.md
+.claude/worktrees
+
 # ignore exports
 /exports/*
 /imports/*
 
 # node sea
 sea-prep.blob
+
+# Strapi CMS compiled config files
+apis/cms/config/*.js
+apis/cms/config/*.js.map

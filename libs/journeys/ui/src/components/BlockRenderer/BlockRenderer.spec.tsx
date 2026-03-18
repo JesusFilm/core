@@ -20,11 +20,6 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
-}))
-
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {
@@ -68,7 +63,8 @@ describe('BlockRenderer', () => {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
     const { getByText } = render(
       <MockedProvider>
@@ -95,7 +91,8 @@ describe('BlockRenderer', () => {
       submitEnabled: null,
       action: null,
       children: [],
-      settings: null
+      settings: null,
+      eventLabel: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider>
@@ -132,6 +129,7 @@ describe('BlockRenderer', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -172,6 +170,7 @@ describe('BlockRenderer', () => {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -231,6 +230,7 @@ describe('BlockRenderer', () => {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
     const { getByRole } = render(<BlockRenderer block={block} />)
@@ -256,6 +256,7 @@ describe('BlockRenderer', () => {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -288,7 +289,8 @@ describe('BlockRenderer', () => {
       label: 'radio option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
     const { getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -307,7 +309,8 @@ describe('BlockRenderer', () => {
       label: 'radio option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -342,7 +345,8 @@ describe('BlockRenderer', () => {
       label: 'radio option',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider mocks={[]} addTypename={false}>
@@ -377,7 +381,8 @@ describe('BlockRenderer', () => {
       label: 'radio option 1',
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
 
     const block: TreeBlock<RadioQuestionFields> = {
@@ -635,7 +640,8 @@ describe('BlockRenderer', () => {
           submitEnabled: null,
           action: null,
           children: [],
-          settings: null
+          settings: null,
+          eventLabel: null
         }
       ]
     }
@@ -675,7 +681,8 @@ describe('BlockRenderer', () => {
           submitEnabled: null,
           action: null,
           children: [],
-          settings: null
+          settings: null,
+          eventLabel: null
         }
       ]
     }
@@ -780,6 +787,8 @@ describe('BlockRenderer', () => {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
       mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
@@ -812,6 +821,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       fullsize: null,
       action: null,
+      customizable: null,
       children: []
     }
     const { getByTestId } = render(
@@ -838,6 +848,8 @@ describe('BlockRenderer', () => {
       objectFit: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: null,
+      eventLabel: null,
+      endEventLabel: null,
       mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
@@ -870,6 +882,7 @@ describe('BlockRenderer', () => {
       fullsize: null,
       action: null,
       parentOrder: 0,
+      customizable: null,
       children: []
     }
     const { getByTestId } = render(

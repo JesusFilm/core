@@ -11,17 +11,21 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import { useIntegrationGoogleCreate } from '../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate'
 import { Tooltip } from '../../Tooltip/Tooltip'
 
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
+import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
 
 export const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
   query GetJourneyBlockTypes($id: ID!) {
@@ -45,11 +49,13 @@ interface FilterDrawerProps {
   hideInteractive: boolean
   handleClearAll: () => void
   journeyId?: string
+  teamId?: string
   disableExportButton?: boolean
 }
 
 export function FilterDrawer({
   journeyId,
+  teamId,
   handleClose,
   handleChange,
   sortSetting,
@@ -63,7 +69,33 @@ export function FilterDrawer({
   disableExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [showSyncsDialog, setShowSyncsDialog] = useState(false)
+
+  useIntegrationGoogleCreate({
+    teamId,
+    onSuccess: () => {
+      enqueueSnackbar(t('Google integration created successfully'), {
+        variant: 'success'
+      })
+      setShowSyncsDialog(true)
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+  })
+
+  // Check for query parameter to open sync dialog after integration creation
+  useEffect(() => {
+    if (journeyId == null) return
+    const openSyncDialog = router.query.openSyncDialog === 'true'
+    const hasCode = router.query.code != null
+    if (openSyncDialog && !hasCode) {
+      setShowSyncsDialog(true)
+    }
+  }, [journeyId, router.query.openSyncDialog, router.query.code])
 
   const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
     skip: journeyId == null,
@@ -176,6 +208,15 @@ export function FilterDrawer({
       {journeyId != null && (
         <>
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ width: '100%', mb: 2 }}
+              onClick={() => setShowSyncsDialog(true)}
+              disabled={disableExportButton}
+            >
+              {t('Sync to Google Sheets')}
+            </Button>
             {disableExportButton ? (
               <Tooltip
                 title={t(
@@ -185,7 +226,7 @@ export function FilterDrawer({
               >
                 <span>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="secondary"
                     sx={{ width: '100%' }}
                     aria-label={`${t('Export Data')} - ${t(
@@ -200,7 +241,7 @@ export function FilterDrawer({
               </Tooltip>
             ) : (
               <Button
-                variant="contained"
+                variant="outlined"
                 color="secondary"
                 sx={{ width: '100%' }}
                 onClick={() => setShowExportDialog(true)}
@@ -236,6 +277,11 @@ export function FilterDrawer({
                   ? blockTypesData.journey.createdAt.toISOString()
                   : null
             }
+          />
+          <GoogleSheetsSyncDialog
+            open={showSyncsDialog}
+            onClose={() => setShowSyncsDialog(false)}
+            journeyId={journeyId}
           />
         </>
       )}

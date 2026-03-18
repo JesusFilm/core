@@ -5,10 +5,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import Globe2Icon from '@core/shared/ui/icons/Globe2'
+import TranslateIcon from '@core/shared/ui/icons/Translate'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -29,7 +30,9 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
+import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
+import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -46,7 +49,9 @@ export const GET_JOURNEY_WITH_USER_ROLES = gql`
         role
         user {
           id
-          email
+          ... on AuthenticatedUser {
+            email
+          }
         }
       }
     }
@@ -68,6 +73,7 @@ interface DefaultMenuProps {
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
 /**
@@ -106,17 +112,27 @@ export function DefaultMenu({
   setOpenTranslateDialog,
   handleKeepMounted,
   template,
-  refetch
+  refetch,
+  setHasOpenDialog
 }: DefaultMenuProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { data: userRoleData } = useUserRoleQuery()
+  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
   })
 
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
+
+  const hasCurrentUser = currentUser != null
+  const isAnonymousUser =
+    hasCurrentUser && currentUser.__typename !== 'AuthenticatedUser'
+  const currentUserEmail =
+    hasCurrentUser && currentUser.__typename === 'AuthenticatedUser'
+      ? currentUser.email
+      : undefined
 
   // Lazy query for journey data if context is missing
   const [loadJourney, { data: journeyFromLazyQuery }] =
@@ -136,9 +152,13 @@ export function DefaultMenu({
       ),
     [journeyWithUserRoles?.journey?.userJourneys]
   )
+  const ownerEmail =
+    owner?.user?.__typename === 'AuthenticatedUser'
+      ? owner.user.email
+      : undefined
   const isOwner = useMemo(
-    () => owner?.user?.email === currentUser?.email,
-    [currentUser?.email, owner?.user?.email]
+    () => ownerEmail === currentUserEmail,
+    [currentUserEmail, ownerEmail]
   )
 
   useEffect(() => {
@@ -151,15 +171,17 @@ export function DefaultMenu({
 
   // Determine the current user's role in the team
   const teamRole = useMemo<UserTeamRole | undefined>(() => {
-    if (activeTeam?.userTeams == null || currentUser?.email == null)
+    if (activeTeam?.userTeams == null || currentUserEmail == null)
       return undefined
 
     const userTeam = activeTeam.userTeams.find(
-      (userTeam) => userTeam.user.email === currentUser.email
+      (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
+        userTeam.user.email === currentUserEmail
     )
 
     return userTeam?.role
-  }, [activeTeam?.userTeams, currentUser?.email])
+  }, [activeTeam?.userTeams, currentUserEmail])
 
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
@@ -171,6 +193,13 @@ export function DefaultMenu({
 
   const cantManageJourney = !canManageJourney
 
+  const isLocalTemplate =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+
+  if (hasCurrentUser && isAnonymousUser) {
+    return <></>
+  }
+
   return (
     <>
       <MenuItem
@@ -179,6 +208,7 @@ export function DefaultMenu({
         onClick={() => {
           setOpenDetailsDialog()
           handleCloseMenu()
+          setHasOpenDialog?.(true)
         }}
       />
       <Divider />
@@ -189,6 +219,7 @@ export function DefaultMenu({
           onClick={() => {
             setOpenAccessDialog()
             handleCloseMenu()
+            setHasOpenDialog?.(true)
           }}
         />
       )}
@@ -211,29 +242,64 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
+        setHasOpenDialog={setHasOpenDialog}
       />
-      <Divider />
+      <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
-          <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
+          <DuplicateJourneyMenuItem
+            id={id}
+            handleCloseMenu={handleCloseMenu}
+            journey={journey}
+            fromTemplateId={journey?.fromTemplateId}
+          />
           <MenuItem
             label={t('Translate')}
-            icon={<Globe2Icon color="secondary" />}
+            icon={<TranslateIcon color="secondary" />}
             onClick={() => {
               setOpenTranslateDialog()
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
           />
+          <Divider />
+          <CreateTemplateItem
+            variant="menu-item"
+            globalPublish={false}
+            handleCloseMenu={handleCloseMenu}
+            journey={journey}
+          />
+          {isPublisher === true && (
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={true}
+              handleCloseMenu={handleCloseMenu}
+              journey={journey}
+            />
+          )}
+          <Divider />
         </>
       )}
-
-      <Divider />
-      <CopyToTeamMenuItem
-        id={id}
-        handleCloseMenu={handleCloseMenu}
-        handleKeepMounted={handleKeepMounted}
-        journey={journey}
-      />
+      {template === true && (
+        <>
+          <TemplateActionButton
+            variant="menu-item"
+            handleCloseMenu={handleCloseMenu}
+            journey={journey}
+            refetchTemplateStats={refetchTemplateStats}
+          />
+          <Divider />
+        </>
+      )}
+      {!isLocalTemplate && (
+        <CopyToTeamMenuItem
+          id={id}
+          handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
+          journey={journey}
+          setHasOpenDialog={setHasOpenDialog}
+        />
+      )}
       {activeTeam != null && (
         <>
           <ArchiveJourney
@@ -250,6 +316,7 @@ export function DefaultMenu({
             onClick={() => {
               setOpenTrashDialog()
               handleCloseMenu()
+              setHasOpenDialog?.(true)
             }}
             disabled={cantManageJourney}
           />

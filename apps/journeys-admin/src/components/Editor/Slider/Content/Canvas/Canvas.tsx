@@ -96,6 +96,10 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
+    dispatch({
+      type: 'SetSelectedBlockOnlyAction',
+      selectedBlock: selectedStep
+    })
     const param = 'step-footer'
     void router.push({ query: { ...router.query, param } }, undefined, {
       shallow: true

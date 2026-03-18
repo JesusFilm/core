@@ -1,38 +1,46 @@
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import {
-  AuthAction,
-  useUser,
-  withUser,
-  withUserTokenSSR
-} from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
-import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
 import { PageWrapper } from '../src/components/PageWrapper'
+import { SidePanelTitle } from '../src/components/SidePanelTitle/SidePanelTitle'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
+import { useAuth } from '../src/libs/auth'
+import {
+  getAuthTokens,
+  redirectToLogin,
+  toUser
+} from '../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
-function IndexPage(): ReactElement {
+export default function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const user = useUser()
+  const { user } = useAuth()
   const router = useRouter()
   const { query, activeTeam, refetch } = useTeam()
 
-  // MA - ensure team is refetched if user is not loaded before provider
   useEffect(() => {
     if (activeTeam == null) {
       void refetch()
     }
-  }, [user.id, query, activeTeam, refetch])
+  }, [user?.id, query, activeTeam, refetch])
+
+  const currentContentType =
+    (router?.query?.type as 'journeys' | 'templates') ?? 'journeys'
+  const showSidePanel = currentContentType === 'journeys'
+
+  const userInfo = {
+    name: user?.displayName ?? '',
+    email: user?.email ?? ''
+  }
 
   return (
     <>
@@ -52,19 +60,11 @@ function IndexPage(): ReactElement {
             </Stack>
           </Stack>
         }
-        sidePanelChildren={<OnboardingPanel />}
+        sidePanelChildren={showSidePanel ? <OnboardingPanel /> : undefined}
         sidePanelTitle={
-          <>
-            <Typography variant="subtitle1">
-              {t('Create a New Journey')}
-            </Typography>
-            <HelpScoutBeacon
-              userInfo={{
-                name: user?.displayName ?? '',
-                email: user?.email ?? ''
-              }}
-            />
-          </>
+          showSidePanel ? (
+            <SidePanelTitle name={userInfo.name} email={userInfo.email} />
+          ) : undefined
         }
       >
         <JourneyList user={user} />
@@ -73,29 +73,26 @@ function IndexPage(): ReactElement {
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl, query }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const tokens = await getAuthTokens(ctx)
+  if (tokens == null) return redirectToLogin(ctx)
+
+  const user = toUser(tokens)
 
   const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
     user,
-    locale,
-    resolvedUrl
+    locale: ctx.locale,
+    resolvedUrl: ctx.resolvedUrl
   })
 
   if (redirect != null) return { redirect }
 
   return {
     props: {
+      userSerialized: JSON.stringify(user),
       initialApolloState: apolloClient.cache.extract(),
       ...translations,
       flags
     }
   }
-})
-
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(IndexPage)
+}

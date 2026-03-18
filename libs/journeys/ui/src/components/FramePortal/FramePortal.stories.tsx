@@ -48,6 +48,7 @@ const block: TreeBlock<Block> = {
       themeName: null,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       children: [
         {
           id: 'image0.id',
@@ -62,7 +63,8 @@ const block: TreeBlock<Block> = {
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
           scale: null,
           focalLeft: 50,
-          focalTop: 50
+          focalTop: 50,
+          customizable: null
         },
         {
           id: 'typographyBlockId1',
@@ -120,7 +122,8 @@ const block: TreeBlock<Block> = {
               children: []
             }
           ],
-          settings: null
+          settings: null,
+          eventLabel: null
         }
       ]
     }

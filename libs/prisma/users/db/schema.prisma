@@ -2,25 +2,17 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_USERS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_USERS")
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-users-client"
+  clientOutput = "./client"
   output       = "../src/__generated__/pothos-types.ts"
 }
 
@@ -29,7 +21,7 @@ model User {
   userId        String   @unique
   firstName     String
   lastName      String?
-  email         String   @unique
+  email         String?  @unique
   imageUrl      String?
   createdAt     DateTime @default(now())
   superAdmin    Boolean  @default(false)

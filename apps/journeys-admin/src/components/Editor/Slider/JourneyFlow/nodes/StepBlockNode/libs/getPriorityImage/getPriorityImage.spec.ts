@@ -20,7 +20,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -34,6 +35,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: true,
   backdropBlur: null,
+  eventLabel: null,
   children: [image]
 }
 
@@ -48,6 +50,7 @@ const emptyCard: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: true,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 

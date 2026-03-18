@@ -1,8 +1,11 @@
 'use client'
 
+import Button from '@mui/material/Button'
 import MuiCard from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
+import { SxProps, styled, useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -40,15 +43,31 @@ interface CenterPageProps {
   children: ReactNode
 }
 export function CenterPage({ children }: CenterPageProps): ReactElement {
+  const { t } = useTranslation('apps-videos-admin')
+
   return (
     <Container
       direction="column"
-      justifyContent="space-between"
+      justifyContent="space-evenly"
       data-testid="CenterPageContainer"
     >
-      <Card variant="outlined" data-testid="CenterPageCard">
-        {children}
-      </Card>
+      <Stack alignItems="center" gap={5}>
+        <Card variant="outlined" data-testid="CenterPageCard">
+          {children}
+        </Card>
+        <Button size="small">
+          <Typography
+            variant="body2"
+            sx={{ color: '#C52D3A', cursor: 'pointer' }}
+            component="a"
+            href="https://www.cru.org/us/en/about/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('Privacy Policy')}
+          </Typography>
+        </Button>
+      </Stack>
     </Container>
   )
 }

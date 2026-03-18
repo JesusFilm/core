@@ -1,10 +1,9 @@
 import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
-import { PrismaService } from '../../lib/prisma.service'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 
 import { UserTeamResolver } from './userTeam.resolver'
 import { UserTeamService } from './userTeam.service'
@@ -15,7 +14,7 @@ import { UserTeamService } from './userTeam.service'
     CaslAuthModule.register(AppCaslFactory),
     BullModule.registerQueue({ name: 'api-journeys-email' })
   ],
-  providers: [UserTeamResolver, PrismaService, UserTeamService],
+  providers: [UserTeamResolver, prismaServiceProvider, UserTeamService],
   exports: []
 })
 export class UserTeamModule {}

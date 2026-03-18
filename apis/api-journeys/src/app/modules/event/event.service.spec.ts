@@ -1,5 +1,6 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
@@ -71,7 +72,7 @@ describe('EventService', () => {
         EventService,
         blockService,
         visitorService,
-        PrismaService,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() },
         {
           provide: getQueueToken('api-journeys-events-email'),
           useValue: emailQueue

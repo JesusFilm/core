@@ -13,6 +13,7 @@ export interface DeleteTrashedJourneys_journeysDelete {
   __typename: "Journey";
   id: string;
   status: JourneyStatus;
+  fromTemplateId: string | null;
 }
 
 export interface DeleteTrashedJourneys {

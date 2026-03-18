@@ -33,15 +33,27 @@ export const GET_JOURNEYS = gql`
       seoTitle
       seoDescription
       template
+      customizable
+      website
+      journeyCustomizationDescription
+      journeyCustomizationFields {
+        id
+        journeyId
+        key
+        value
+        defaultValue
+      }
       userJourneys {
         id
         role
         openedAt
         user {
           id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            firstName
+            lastName
+            imageUrl
+          }
         }
       }
       primaryImageBlock {

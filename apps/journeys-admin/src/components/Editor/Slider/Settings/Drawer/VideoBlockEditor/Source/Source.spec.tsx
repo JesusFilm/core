@@ -227,7 +227,10 @@ describe('Source', () => {
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: null,
+              eventLabel: null,
+              endEventLabel: null,
               posterBlockId: 'poster1.id',
+              customizable: null,
               children: []
             }}
             onChange={onChange}
@@ -289,7 +292,10 @@ describe('Source', () => {
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: null,
+              eventLabel: null,
+              endEventLabel: null,
               posterBlockId: 'poster1.id',
+              customizable: null,
               children: []
             }}
             onChange={onChange}
@@ -366,7 +372,10 @@ describe('Source', () => {
                 objectFit: null,
                 subtitleLanguage: null,
                 showGeneratedSubtitles: false,
+                eventLabel: null,
+                endEventLabel: null,
                 posterBlockId: null,
+                customizable: null,
                 children: []
               }}
               onChange={onChange}
@@ -417,7 +426,10 @@ describe('Source', () => {
                 objectFit: null,
                 subtitleLanguage: null,
                 showGeneratedSubtitles: false,
+                eventLabel: null,
+                endEventLabel: null,
                 posterBlockId: null,
+                customizable: null,
                 children: []
               }}
               onChange={onChange}
@@ -490,7 +502,10 @@ describe('Source', () => {
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: false,
+              eventLabel: null,
+              endEventLabel: null,
               posterBlockId: null,
+              customizable: null,
               children: []
             }}
             onChange={onChange}

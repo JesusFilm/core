@@ -227,6 +227,10 @@ export default function AddAudioLanguageDialog(): ReactElement {
                   processing={uploadState.isProcessing}
                   selectedFile={values.file}
                   uploadProgress={uploadState.uploadProgress}
+                  uploadedBytes={uploadState.uploadedBytes}
+                  totalBytes={uploadState.totalBytes}
+                  uploadSpeedBps={uploadState.uploadSpeedBps}
+                  etaSeconds={uploadState.etaSeconds}
                   clearUploadState={clearUploadState}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>

@@ -307,7 +307,8 @@ export function CardCta(): ReactElement {
       __typename: 'ImageBlock',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     } satisfies ImageBlock
 
     const subtitle = {
@@ -353,6 +354,7 @@ export function CardCta(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -389,6 +391,7 @@ export function CardCta(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -425,6 +428,7 @@ export function CardCta(): ReactElement {
       submitEnabled: null,
       action: null,
       settings: null,
+      eventLabel: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -458,6 +462,7 @@ export function CardCta(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: false,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 

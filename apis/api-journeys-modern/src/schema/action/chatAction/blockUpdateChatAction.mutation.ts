@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { builder } from '../../builder'
 import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 import { canBlockHaveAction } from '../canBlockHaveAction'
@@ -12,9 +13,6 @@ import { ChatActionInput } from './inputs'
 
 builder.mutationField('blockUpdateChatAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: ChatActionRef,
     args: {
       id: t.arg.id({ required: true }),
@@ -71,6 +69,8 @@ builder.mutationField('blockUpdateChatAction', (t) =>
           ...input
         }
       })
+
+      await recalculateJourneyCustomizable(block.journeyId)
 
       return action
     }

@@ -3,12 +3,17 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
+import { BlockEventLabel } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import {
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 
@@ -55,7 +60,8 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 0,
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     },
     {
       __typename: 'RadioOptionBlock',
@@ -65,6 +71,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 1,
       action: null,
       pollOptionImageBlockId: null,
+      eventLabel: null,
       children: []
     }
   ]
@@ -341,16 +348,127 @@ describe('RadioQuestion', () => {
             stepId: 'step.id',
             event: 'radioQuestionSubmit',
             blockId: 'RadioOption1',
-            target: null
+            target: null,
+            journeyId: 'journey.id'
           }),
           simpleKey: keyify({
             stepId: 'step.id',
             event: 'radioQuestionSubmit',
-            blockId: 'RadioOption1'
+            blockId: 'RadioOption1',
+            journeyId: 'journey.id'
+          }),
+          templateKey: templateKeyify({
+            event: 'radioQuestionSubmit',
+            target: actionToTarget(null),
+            journeyId: 'journey.id'
           })
         }
       })
     )
+  })
+
+  it('should call plausible with eventLabel for radioQuestionSubmit events', async () => {
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const blockWithEventLabel: TreeBlock<RadioQuestionFields> = {
+      ...block,
+      children: [
+        {
+          __typename: 'RadioOptionBlock',
+          id: 'RadioOption1',
+          label: 'Option 1',
+          parentBlockId: 'RadioQuestion1',
+          parentOrder: 0,
+          action: null,
+          pollOptionImageBlockId: null,
+          children: [],
+          eventLabel: BlockEventLabel.custom1
+        },
+        {
+          __typename: 'RadioOptionBlock',
+          id: 'RadioOption2',
+          label: 'Option 2',
+          parentBlockId: 'RadioQuestion1',
+          parentOrder: 1,
+          action: null,
+          pollOptionImageBlockId: null,
+          eventLabel: null,
+          children: []
+        }
+      ]
+    }
+
+    const { getAllByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption1',
+                  stepId: 'step.id',
+                  label: 'Step {{number}}',
+                  value: 'Option 1'
+                }
+              }
+            },
+            result: {
+              data: {
+                radioQuestionSubmissionEventCreate: {
+                  id: 'uuid'
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <RadioQuestion {...blockWithEventLabel} uuid={() => 'uuid'} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const buttons = getAllByRole('button')
+    fireEvent.click(buttons[0])
+    await waitFor(() =>
+      expect(mockPlausible).toHaveBeenCalledWith(
+        'radioQuestionSubmit',
+        expect.any(Object)
+      )
+    )
+    expect(mockPlausible).toHaveBeenCalledWith(BlockEventLabel.custom1, {
+      u: expect.stringContaining(`/journey.id/RadioQuestion1`),
+      props: {
+        id: 'uuid',
+        blockId: 'RadioQuestion1',
+        label: 'Step {{number}}',
+        radioOptionBlockId: 'RadioOption1',
+        stepId: 'step.id',
+        value: 'Option 1',
+        key: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom1,
+          blockId: 'RadioOption1',
+          target: null,
+          journeyId: 'journey.id'
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: BlockEventLabel.custom1,
+          blockId: 'RadioOption1',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: BlockEventLabel.custom1,
+          journeyId: 'journey.id'
+        })
+      }
+    })
   })
 
   it('should set selectedId to null when  is false', () => {

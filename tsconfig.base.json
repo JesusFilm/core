@@ -21,10 +21,6 @@
         "libs/journeys/ui/src/components/*",
         "libs/journeys/ui/src/libs/*"
       ],
-      "@core/nest/common/*": ["libs/nest/common/src/lib/*"],
-      "@core/nest/decorators/*": ["libs/nest/decorators/src/lib/*"],
-      "@core/nest/gqlAuthGuard/*": ["libs/nest/gqlAuthGuard/src/lib/*"],
-      "@core/nest/powerBi/*": ["libs/nest/powerBi/src/lib/*"],
       "@core/prisma/analytics/*": ["libs/prisma/analytics/src/*"],
       "@core/prisma/journeys/*": ["libs/prisma/journeys/src/*"],
       "@core/prisma/languages/*": ["libs/prisma/languages/src/*"],
@@ -40,6 +36,7 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
+      "@core/shared/ui-modern/*": ["libs/shared/ui-modern/src/*"],
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },

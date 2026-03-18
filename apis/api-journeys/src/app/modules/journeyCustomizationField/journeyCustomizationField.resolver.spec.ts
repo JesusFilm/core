@@ -9,13 +9,14 @@ import {
   UserJourneyRole,
   UserTeam,
   UserTeamRole
-} from '.prisma/api-journeys-client'
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+} from '@core/prisma/journeys/client'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { JourneyCustomizationFieldResolver } from './journeyCustomizationField.resolver'
 
@@ -30,6 +31,7 @@ const mockParseCustomizationFieldsFromString =
 describe('JourneyCustomizationFieldResolver', () => {
   let resolver: JourneyCustomizationFieldResolver
   let prismaService: DeepMockProxy<PrismaService>
+  let journeyCustomizableService: DeepMockProxy<JourneyCustomizableService>
   let ability: AppAbility
   let abilityWithPublisher: AppAbility
 
@@ -77,7 +79,9 @@ describe('JourneyCustomizationFieldResolver', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    showAssistant: null
+    showAssistant: null,
+    templateSite: null,
+    customizable: null
   }
 
   const mockTeam: Team = {
@@ -156,6 +160,10 @@ describe('JourneyCustomizationFieldResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
         }
       ]
     }).compile()
@@ -166,6 +174,9 @@ describe('JourneyCustomizationFieldResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    journeyCustomizableService = module.get<JourneyCustomizableService>(
+      JourneyCustomizableService
+    ) as DeepMockProxy<JourneyCustomizableService>
     ability = await new AppCaslFactory().createAbility({
       id: 'userId'
     })
@@ -239,6 +250,36 @@ describe('JourneyCustomizationFieldResolver', () => {
       })
 
       expect(result).toEqual([mockJourneyCustomizationField])
+    })
+
+    it('should call recalculate after publisher update', async () => {
+      const journeyId = 'journey-id'
+      const string = 'Hello {{ name: John }}!'
+      const parsedFields = [
+        {
+          id: 'field-id',
+          journeyId: 'journey-id',
+          key: 'name',
+          value: 'John',
+          defaultValue: 'John'
+        }
+      ]
+
+      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
+      mockParseCustomizationFieldsFromString.mockReturnValue(parsedFields)
+      prismaService.journeyCustomizationField.findMany.mockResolvedValue([
+        mockJourneyCustomizationField
+      ])
+
+      await resolver.journeyCustomizationFieldPublisherUpdate(
+        abilityWithPublisher,
+        journeyId,
+        string
+      )
+
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        journeyId
+      )
     })
 
     it('should throw error if journey not found', async () => {

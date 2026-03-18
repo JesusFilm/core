@@ -84,7 +84,16 @@ export const yoga = createYoga<
           cache,
           ttlPerSchemaCoordinate: {
             'Journey.blockTypenames': 0,
-            'Query.googleSheetsSyncs': 0
+            'Query.adminJourneys': 0,
+            'Query.getJourneyProfile': 1000,
+            'Query.getUserRole': 0,
+            'Query.googleSheetsSyncs': 0,
+            'Query.journeysPlausibleStatsAggregate': 5000,
+            'Query.journeysPlausibleStatsBreakdown': 5000,
+            'Query.journeysPlausibleStatsRealtimeVisitors': 5000,
+            'Query.journeysPlausibleStatsTimeseries': 5000,
+            'Query.templateFamilyStatsAggregate': 5000,
+            'Query.templateFamilyStatsBreakdown': 5000
           }
         })
       : {}

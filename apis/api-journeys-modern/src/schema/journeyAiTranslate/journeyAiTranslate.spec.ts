@@ -1,4 +1,4 @@
-import { generateObject, streamObject } from 'ai'
+import { Output, generateText, streamText } from 'ai'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -14,8 +14,12 @@ jest.mock('@ai-sdk/google', () => ({
 }))
 
 jest.mock('ai', () => ({
-  generateObject: jest.fn(),
-  streamObject: jest.fn()
+  Output: {
+    object: jest.fn((config) => ({ type: 'object', ...config })),
+    array: jest.fn((config) => ({ type: 'array', ...config }))
+  },
+  generateText: jest.fn(),
+  streamText: jest.fn()
 }))
 
 jest.mock('@core/shared/ai/prompts', () => ({
@@ -61,11 +65,15 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 
 describe('journeyAiTranslateCreate mutation', () => {
   const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockGenerateObject = generateObject as jest.MockedFunction<
-    typeof generateObject
+  const mockGenerateText = generateText as jest.MockedFunction<
+    typeof generateText
   >
-  const mockStreamObject = streamObject as jest.MockedFunction<
-    typeof streamObject
+  const mockStreamText = streamText as jest.MockedFunction<typeof streamText>
+  const mockOutputObject = Output.object as jest.MockedFunction<
+    typeof Output.object
+  >
+  const mockOutputArray = Output.array as jest.MockedFunction<
+    typeof Output.array
   >
   const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
     typeof getCardBlocksContent
@@ -173,10 +181,6 @@ describe('journeyAiTranslateCreate mutation', () => {
       updates: { label: 'Haga clic aquí' }
     },
     {
-      blockId: 'radio1',
-      updates: { label: 'Elija una opción' }
-    },
-    {
       blockId: 'option1',
       updates: { label: 'Opción 1' }
     },
@@ -233,8 +237,8 @@ describe('journeyAiTranslateCreate mutation', () => {
 
     mockAbility.mockReturnValue(true)
 
-    mockGenerateObject.mockResolvedValue({
-      object: mockAnalysisAndTranslation,
+    mockGenerateText.mockResolvedValue({
+      output: mockAnalysisAndTranslation,
       usage: {
         totalTokens: 1000,
         inputTokens: 600,
@@ -248,11 +252,9 @@ describe('journeyAiTranslateCreate mutation', () => {
       createdAt: new Date()
     } as any)
 
-    // Create a mock implementation for streamObject
-    mockStreamObject.mockReturnValue({
-      fullStream: createMockAsyncIterator([
-        { type: 'object', object: mockTranslatedBlocks }
-      ])
+    // Create a mock implementation for streamText
+    mockStreamText.mockReturnValue({
+      elementStream: createMockAsyncIterator(mockTranslatedBlocks)
     } as any)
 
     mockGetCardBlocksContent.mockResolvedValue(mockCardBlocksContent)
@@ -316,10 +318,12 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
 
     // Verify AI analysis was requested
-    expect(mockGenerateObject).toHaveBeenCalledWith(
+    expect(mockOutputObject).toHaveBeenCalled()
+    expect(mockOutputArray).toHaveBeenCalled()
+    expect(mockGenerateText).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'mocked-google-model',
-        schema: expect.any(Object),
+        output: expect.any(Object),
         messages: expect.arrayContaining([
           expect.objectContaining({
             role: 'system',
@@ -351,7 +355,7 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
 
     // Verify block translations were processed
-    // We should have 5 blocks to update from our mock data
+    // We should have one update per supported translated block
     expect(prismaMock.block.update).toHaveBeenCalledTimes(
       mockTranslatedBlocks.length
     )
@@ -467,8 +471,8 @@ describe('journeyAiTranslateCreate mutation', () => {
   })
 
   it('should throw an error if title translation fails', async () => {
-    mockGenerateObject.mockResolvedValueOnce({
-      object: {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
         ...mockAnalysisAndTranslation,
         title: '' // Empty title
       },
@@ -548,8 +552,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       languageId: mockInput.textLanguageId
     } as any)
 
-    mockGenerateObject.mockResolvedValueOnce({
-      object: {
+    mockGenerateText.mockResolvedValueOnce({
+      output: {
         ...mockAnalysisAndTranslation,
         description: '' // Empty description
       },
@@ -602,10 +606,16 @@ describe('journeyAiTranslateCreate mutation', () => {
 
   it('should handle errors during card translation and continue with other cards', async () => {
     // Make stream throw an error
-    mockStreamObject.mockReturnValueOnce({
-      fullStream: createMockAsyncIterator([
-        { type: 'error', error: new Error('Translation error') }
-      ])
+    mockStreamText.mockReturnValueOnce({
+      elementStream: {
+        [Symbol.asyncIterator]() {
+          return {
+            next: async () => {
+              throw new Error('Translation error')
+            }
+          }
+        }
+      }
     } as any)
 
     // Create a journey with multiple card blocks
@@ -634,16 +644,11 @@ describe('journeyAiTranslateCreate mutation', () => {
     ])
 
     // Second stream call should succeed
-    mockStreamObject.mockReturnValueOnce({
-      fullStream: createMockAsyncIterator([
+    mockStreamText.mockReturnValueOnce({
+      elementStream: createMockAsyncIterator([
         {
-          type: 'object',
-          object: [
-            {
-              blockId: 'typography2',
-              updates: { content: 'Otro contenido de texto' }
-            }
-          ]
+          blockId: 'typography2',
+          updates: { content: 'Otro contenido de texto' }
         }
       ])
     } as any)
@@ -685,12 +690,10 @@ describe('journeyAiTranslateCreate mutation', () => {
 
 describe('journeyAiTranslateCreateSubscription', () => {
   const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockGenerateObject = generateObject as jest.MockedFunction<
-    typeof generateObject
+  const mockGenerateText = generateText as jest.MockedFunction<
+    typeof generateText
   >
-  const mockStreamObject = streamObject as jest.MockedFunction<
-    typeof streamObject
-  >
+  const mockStreamText = streamText as jest.MockedFunction<typeof streamText>
   const mockGetCardBlocksContent = getCardBlocksContent as jest.MockedFunction<
     typeof getCardBlocksContent
   >
@@ -813,9 +816,9 @@ describe('journeyAiTranslateCreateSubscription', () => {
     // Mock card blocks content
     mockGetCardBlocksContent.mockResolvedValue(mockCardBlocksContent)
 
-    // Mock generateObject for journey analysis
-    mockGenerateObject.mockResolvedValue({
-      object: mockAnalysisAndTranslation,
+    // Mock generateText for journey analysis
+    mockGenerateText.mockResolvedValue({
+      output: mockAnalysisAndTranslation,
       usage: {
         totalTokens: 1000,
         inputTokens: 600,
@@ -829,25 +832,20 @@ describe('journeyAiTranslateCreateSubscription', () => {
       createdAt: new Date()
     } as any)
 
-    // Mock streamObject for block translations
-    mockStreamObject.mockReturnValue({
-      fullStream: createMockAsyncIterator([
+    // Mock streamText for block translations
+    mockStreamText.mockReturnValue({
+      elementStream: createMockAsyncIterator([
         {
-          type: 'object',
-          object: [
-            {
-              blockId: 'typography1',
-              updates: { content: 'Contenido traducido' }
-            },
-            {
-              blockId: 'button1',
-              updates: { label: 'Botón traducido' }
-            },
-            {
-              blockId: 'option1',
-              updates: { label: 'Opción 1' }
-            }
-          ]
+          blockId: 'typography1',
+          updates: { content: 'Contenido traducido' }
+        },
+        {
+          blockId: 'button1',
+          updates: { label: 'Botón traducido' }
+        },
+        {
+          blockId: 'option1',
+          updates: { label: 'Opción 1' }
         }
       ])
     } as any)
@@ -878,8 +876,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
 
   it('should validate subscription includes SEO fields in schema', () => {
     // Test that the subscription now supports SEO fields
-    expect(mockGenerateObject).toBeDefined()
-    expect(mockStreamObject).toBeDefined()
+    expect(mockGenerateText).toBeDefined()
+    expect(mockStreamText).toBeDefined()
 
     // This tests the updated schema includes SEO fields
     const expectedSchema = {

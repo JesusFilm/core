@@ -18,7 +18,7 @@ describe('actions', () => {
         },
         {
           value: 'LinkAction',
-          label: 'translation_URL/Website'
+          label: 'translation_Website'
         },
         {
           value: 'EmailAction',
@@ -43,7 +43,7 @@ describe('actions', () => {
       const result = getAction(t as unknown as TFunction, value)
       expect(result).toEqual({
         value: 'LinkAction',
-        label: 'translation_URL/Website'
+        label: 'translation_Website'
       })
     })
 

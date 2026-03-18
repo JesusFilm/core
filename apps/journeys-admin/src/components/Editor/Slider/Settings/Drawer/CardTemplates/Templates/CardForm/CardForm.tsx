@@ -259,7 +259,8 @@ export function CardForm(): ReactElement {
       __typename: 'ImageBlock',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     } satisfies ImageBlock
 
     const subtitle = {
@@ -321,7 +322,8 @@ export function CardForm(): ReactElement {
       endIconId: uuidv4(),
       action: null,
       submitEnabled: true,
-      settings: null
+      settings: null,
+      eventLabel: null
     } satisfies ButtonBlock
 
     const body = {
@@ -351,6 +353,7 @@ export function CardForm(): ReactElement {
       themeName: ThemeName.base,
       fullscreen: true,
       backdropBlur: null,
+      eventLabel: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 

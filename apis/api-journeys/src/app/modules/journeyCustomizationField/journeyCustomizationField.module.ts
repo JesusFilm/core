@@ -1,15 +1,19 @@
 import { Module } from '@nestjs/common'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
-import { PrismaService } from '../../lib/prisma.service'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { prismaServiceProvider } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { JourneyCustomizationFieldResolver } from './journeyCustomizationField.resolver'
 
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [JourneyCustomizationFieldResolver, PrismaService],
+  providers: [
+    JourneyCustomizableService,
+    JourneyCustomizationFieldResolver,
+    prismaServiceProvider
+  ],
   exports: [JourneyCustomizationFieldResolver]
 })
 export class JourneyCustomizationFieldModule {}

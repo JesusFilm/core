@@ -45,6 +45,9 @@ const video: TreeBlock<VideoBlock> = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { Block, Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
+import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { builder } from '../builder'
 import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
 
@@ -66,9 +67,6 @@ async function findParentStepBlock(id?: string): Promise<Block | undefined> {
 
 builder.mutationField('blockUpdateAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     type: ActionInterface,
     args: {
       id: t.arg.id({ required: true }),
@@ -142,7 +140,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           })
         }
 
-        return await prisma.action.upsert({
+        const emailAction = await prisma.action.upsert({
           where: { parentBlockId: id },
           create: {
             ...emailInput,
@@ -153,6 +151,8 @@ builder.mutationField('blockUpdateAction', (t) =>
             ...emailInput
           }
         })
+        await recalculateJourneyCustomizable(block.journeyId)
+        return emailAction
       }
 
       if (isNavigateToBlock) {
@@ -174,7 +174,7 @@ builder.mutationField('blockUpdateAction', (t) =>
           ...omit(navigateToBlockInput, 'blockId'),
           block: { connect: { id: input.blockId } }
         }
-        return await prisma.action.upsert({
+        const navigateAction = await prisma.action.upsert({
           where: { parentBlockId: id },
           create: {
             ...inputWithBlockConnection,
@@ -185,10 +185,12 @@ builder.mutationField('blockUpdateAction', (t) =>
             ...inputWithBlockConnection
           }
         })
+        await recalculateJourneyCustomizable(block.journeyId)
+        return navigateAction
       }
 
-      if (isLink)
-        return await prisma.action.upsert({
+      if (isLink) {
+        const linkAction = await prisma.action.upsert({
           where: { parentBlockId: id },
           create: {
             ...linkInput,
@@ -199,9 +201,12 @@ builder.mutationField('blockUpdateAction', (t) =>
             ...linkInput
           }
         })
+        await recalculateJourneyCustomizable(block.journeyId)
+        return linkAction
+      }
 
       if (isPhone) {
-        return await prisma.action.upsert({
+        const phoneAction = await prisma.action.upsert({
           where: { parentBlockId: id },
           create: {
             ...phoneInput,
@@ -212,10 +217,12 @@ builder.mutationField('blockUpdateAction', (t) =>
             ...phoneInput
           }
         })
+        await recalculateJourneyCustomizable(block.journeyId)
+        return phoneAction
       }
 
       if (isChat) {
-        return await prisma.action.upsert({
+        const chatAction = await prisma.action.upsert({
           where: { parentBlockId: id },
           create: {
             ...chatInput,
@@ -226,6 +233,8 @@ builder.mutationField('blockUpdateAction', (t) =>
             ...chatInput
           }
         })
+        await recalculateJourneyCustomizable(block.journeyId)
+        return chatAction
       }
 
       throw new GraphQLError('no inputs provided', {

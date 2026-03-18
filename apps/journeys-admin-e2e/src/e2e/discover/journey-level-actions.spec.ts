@@ -57,7 +57,7 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the three dot options
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
+    await journeyPage.backToHome() // clicking on the NextSteps logo icon in the custom jouney page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and updated in the journey list
   })
 
@@ -116,7 +116,7 @@ test.describe('Journey level actions', () => {
     ) // clicking on the Edit Details option of the thre dot options
     await journeyLevelActions.enterTitle() // entering title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
+    await journeyPage.backToHome() // clicking the NextSteps logo icon at the top left corner in the custom journey page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying journey is displaying in the journey list with the entered title
   })
 
@@ -138,7 +138,7 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit description' popup
     await journeyLevelActions.validateJourneyDescription() // verifying the description is updated in the journey details page
     //new UI descriptions details are not shown in the journey card list, so commenting the below line
-    //await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
+    //await journeyPage.backToHome() // clicking the NextSteps logo icon at the top left corner in the custom journey page
     //await journeyLevelActions.verifyDescriptionAddedForSelectedJourney() // verifying the journey is displaying in the journey list with added description below the journey title
   })
 
@@ -146,6 +146,8 @@ test.describe('Journey level actions', () => {
   test('Verify language option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
+    test.setTimeout(120000)
+
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
@@ -155,15 +157,15 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the language option of the three dot options
-    await journeyLevelActions.enterLanguage('Abau') // selecting language in the edit language popup
+    await journeyLevelActions.enterLanguage('Adi') // selecting language in the edit language popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+    await journeyLevelActions.sleep(2000) // allow journey refetch before reopening
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the language option of the three dot options
-    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is updated in the edit language popup
-    await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selected language is updated in the edit language popup
+    await journeyPage.clickSaveBtn() // close the edit language popup
   })
 
   // Discover page -> Select an existing journey -> Three dots on top right -> Copy Link

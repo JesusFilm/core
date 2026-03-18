@@ -23,7 +23,7 @@ describe('getGoalDetails', () => {
 
   it('should return chat details', () => {
     const details = getGoalDetails(GoalType.Chat, t)
-    expect(details.label).toBe('Start a Conversation')
+    expect(details.label).toBe('Start a Chat')
     expect(details.icon).toEqual(
       <MessageChat1Icon sx={{ color: 'secondary.light' }} />
     )

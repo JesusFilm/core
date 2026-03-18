@@ -130,25 +130,4 @@ describe('Revalidate API', () => {
       error: errorMessage
     })
   })
-
-  it('should log the url being revalidated', async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-    const url = '/watch/some-video.html/english.html'
-    const req = {
-      method: 'POST',
-      query: { secret: 'test-secret' },
-      body: { url }
-    } as unknown as NextApiRequest
-
-    const revalidate = jest.fn().mockResolvedValue(undefined)
-    const res = {
-      revalidate,
-      json: jest.fn()
-    } as unknown as NextApiResponse
-
-    await handler(req, res)
-
-    expect(consoleSpy).toHaveBeenCalledWith('url', url)
-    consoleSpy.mockRestore()
-  })
 })

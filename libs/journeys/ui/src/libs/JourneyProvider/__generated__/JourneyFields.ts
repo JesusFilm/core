@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -71,6 +71,8 @@ export interface JourneyFields_blocks_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_LinkAction | JourneyFields_blocks_ButtonBlock_action_EmailAction | JourneyFields_blocks_ButtonBlock_action_ChatAction | JourneyFields_blocks_ButtonBlock_action_PhoneAction;
@@ -97,6 +99,7 @@ export interface JourneyFields_blocks_ButtonBlock {
   submitEnabled: boolean | null;
   action: JourneyFields_blocks_ButtonBlock_action | null;
   settings: JourneyFields_blocks_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_CardBlock {
@@ -134,6 +137,7 @@ export interface JourneyFields_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_IconBlock {
@@ -163,6 +167,7 @@ export interface JourneyFields_blocks_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_blocks_MultiselectOptionBlock {
@@ -223,6 +228,8 @@ export interface JourneyFields_blocks_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type JourneyFields_blocks_RadioOptionBlock_action = JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction | JourneyFields_blocks_RadioOptionBlock_action_LinkAction | JourneyFields_blocks_RadioOptionBlock_action_EmailAction | JourneyFields_blocks_RadioOptionBlock_action_ChatAction | JourneyFields_blocks_RadioOptionBlock_action_PhoneAction;
@@ -240,6 +247,7 @@ export interface JourneyFields_blocks_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface JourneyFields_blocks_RadioQuestionBlock {
@@ -291,6 +299,8 @@ export interface JourneyFields_blocks_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type JourneyFields_blocks_SignUpBlock_action = JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction | JourneyFields_blocks_SignUpBlock_action_LinkAction | JourneyFields_blocks_SignUpBlock_action_EmailAction | JourneyFields_blocks_SignUpBlock_action_ChatAction | JourneyFields_blocks_SignUpBlock_action_PhoneAction;
@@ -472,6 +482,8 @@ export interface JourneyFields_blocks_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type JourneyFields_blocks_VideoBlock_action = JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction | JourneyFields_blocks_VideoBlock_action_LinkAction | JourneyFields_blocks_VideoBlock_action_EmailAction | JourneyFields_blocks_VideoBlock_action_ChatAction | JourneyFields_blocks_VideoBlock_action_PhoneAction;
@@ -551,6 +563,9 @@ export interface JourneyFields_blocks_VideoBlock {
    * action that should be performed when the video ends
    */
   action: JourneyFields_blocks_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -594,6 +609,8 @@ export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_PhoneActio
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type JourneyFields_blocks_VideoTriggerBlock_triggerAction = JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_EmailAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_ChatAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -630,6 +647,7 @@ export interface JourneyFields_primaryImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_creatorImageBlock {
@@ -649,15 +667,23 @@ export interface JourneyFields_creatorImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
-export interface JourneyFields_userJourneys_user {
-  __typename: "User";
+export interface JourneyFields_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface JourneyFields_userJourneys_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type JourneyFields_userJourneys_user = JourneyFields_userJourneys_user_AnonymousUser | JourneyFields_userJourneys_user_AuthenticatedUser;
 
 export interface JourneyFields_userJourneys {
   __typename: "UserJourney";
@@ -675,6 +701,7 @@ export interface JourneyFields_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_host {
@@ -730,6 +757,7 @@ export interface JourneyFields_logoImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface JourneyFields_menuStepBlock {
@@ -824,4 +852,8 @@ export interface JourneyFields {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: JourneyFields_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }

@@ -36,6 +36,7 @@ export const Default: StoryObj<typeof Icon> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       children: [
         {
           id: 'iconBlock.id',
@@ -80,6 +81,7 @@ export const Filled: StoryObj<typeof Icon> = {
       endIconId: null,
       submitEnabled: null,
       action: null,
+      eventLabel: null,
       children: [
         {
           __typename: 'IconBlock',

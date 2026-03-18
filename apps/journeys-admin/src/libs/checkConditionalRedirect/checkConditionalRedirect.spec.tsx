@@ -9,6 +9,7 @@ import { checkConditionalRedirect } from '.'
 
 const meData = {
   me: {
+    __typename: 'AuthenticatedUser',
     emailVerified: true
   }
 }
@@ -38,7 +39,11 @@ describe('checkConditionalRedirect', () => {
       query: jest
         .fn()
         .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: { me: { emailVerified: false } } })
+        .mockResolvedValueOnce({
+          data: {
+            me: { emailVerified: false, __typename: 'AuthenticatedUser' }
+          }
+        })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({
@@ -57,7 +62,11 @@ describe('checkConditionalRedirect', () => {
       query: jest
         .fn()
         .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: { me: { emailVerified: false } } })
+        .mockResolvedValueOnce({
+          data: {
+            me: { emailVerified: false, __typename: 'AuthenticatedUser' }
+          }
+        })
     } as unknown as ApolloClient<NormalizedCacheObject>
     expect(
       await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
@@ -65,6 +74,21 @@ describe('checkConditionalRedirect', () => {
       destination: '/users/verify',
       permanent: false
     })
+  })
+
+  it('does not redirect when user is AnonymousUser and allowGuest is true', async () => {
+    const apolloClient = {
+      query: jest.fn().mockResolvedValueOnce({
+        data: { me: { __typename: 'AnonymousUser' } }
+      })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    const result = await checkConditionalRedirect({
+      apolloClient,
+      resolvedUrl: '/',
+      allowGuest: true
+    })
+    expect(result).toBeUndefined()
+    expect(apolloClient.query).toHaveBeenCalledTimes(1)
   })
 
   it('does not redirect to terms and conditions when resolvedUrl', async () => {

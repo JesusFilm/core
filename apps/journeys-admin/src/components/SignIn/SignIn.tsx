@@ -39,6 +39,9 @@ export function SignIn(): ReactElement {
     case 'facebook.com':
       page = <EmailUsedPage {...props} activePage="facebook.com" />
       break
+    case 'oidc.okta':
+      page = <EmailUsedPage {...props} activePage="oidc.okta" />
+      break
     case 'help':
       page = <PasswordResetPage {...props} />
       break

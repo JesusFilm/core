@@ -1,0 +1,1 @@
+export { useTrendingSearches } from './useTrendingSearches'

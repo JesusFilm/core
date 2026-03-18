@@ -130,7 +130,9 @@ describe('fetchEmailDetails', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    showAssistant: null
+    showAssistant: null,
+    templateSite: null,
+    customizable: null
   }
 
   const event: Event = {

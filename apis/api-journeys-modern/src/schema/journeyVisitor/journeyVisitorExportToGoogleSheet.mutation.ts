@@ -1,112 +1,35 @@
 import { format } from 'date-fns'
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { getIntegrationGoogleAccessToken } from '../../lib/google/googleAuth'
-import {
-  createSpreadsheet,
-  ensureSheet,
-  readValues,
-  writeValues
-} from '../../lib/google/sheets'
+import { createSpreadsheet, ensureSheet } from '../../lib/google/sheets'
 import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { JourneyVisitorExportSelect } from './inputs'
 
-interface JourneyVisitorExportRow {
-  visitorId: string
-  createdAt: string
-  name: string
-  email: string
-  phone: string
-  [key: string]: string
-}
-
-async function* getJourneyVisitors(
-  journeyId: string,
-  eventWhere: Prisma.EventWhereInput,
-  batchSize: number = 1000
-): AsyncGenerator<JourneyVisitorExportRow> {
-  let offset = 0
-  let hasMore = true
-
-  while (hasMore) {
-    const journeyVisitors = await prisma.journeyVisitor.findMany({
-      where: {
-        journeyId,
-        events: {
-          some: eventWhere
-        }
-      },
-      take: batchSize,
-      skip: offset,
-      orderBy: {
-        createdAt: 'desc'
-      },
-      select: {
-        id: true,
-        createdAt: true,
-        visitor: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true
-          }
-        },
-        events: {
-          where: eventWhere,
-          select: {
-            blockId: true,
-            label: true,
-            value: true
-          },
-          orderBy: {
-            createdAt: 'asc'
-          }
-        }
-      }
-    })
-
-    if (journeyVisitors.length === 0) {
-      hasMore = false
-      break
-    }
-
-    for (const journeyVisitor of journeyVisitors) {
-      const row: JourneyVisitorExportRow = {
-        visitorId: journeyVisitor.visitor.id,
-        createdAt: journeyVisitor.createdAt.toISOString(),
-        name: journeyVisitor.visitor.name || '',
-        email: journeyVisitor.visitor.email || '',
-        phone: journeyVisitor.visitor.phone || ''
-      }
-
-      journeyVisitor.events.forEach((event) => {
-        if (event.blockId && event.label && event.value != null) {
-          const val = String(event.value)
-          if (val === '') {
-            return
-          }
-          const key = `${event.blockId}-${event.label}`
-          if (row[key]) {
-            row[key] += `; ${val}`
-          } else {
-            row[key] = val
-          }
-        }
-      })
-
-      yield row
-    }
-
-    offset += batchSize
-    hasMore = journeyVisitors.length === batchSize
+// Queue for Google Sheets sync - lazily loaded to avoid Redis in tests
+let googleSheetsSyncQueue: any
+try {
+  if (process.env.NODE_ENV !== 'test') {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    googleSheetsSyncQueue =
+      require('../../workers/googleSheetsSync/queue').queue
   }
+} catch {
+  googleSheetsSyncQueue = null
 }
+
+// Test helper to inject a mock queue
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export function __setGoogleSheetsSyncQueueForExportTests(mockQueue: any): void {
+  googleSheetsSyncQueue = mockQueue
+}
+
+const ONE_HOUR = 60 * 60 // in seconds
 
 const ExportDestinationInput = builder.inputType(
   'JourneyVisitorGoogleSheetDestinationInput',
@@ -151,6 +74,17 @@ builder.objectType(ExportResultRef, {
   })
 })
 
+/**
+ * Mutation to export journey visitors to a Google Sheet.
+ *
+ * This mutation:
+ * 1. Creates or ensures the spreadsheet/sheet exists
+ * 2. Creates the GoogleSheetsSync record
+ * 3. Enqueues a 'create' job to the worker for async data writing
+ *
+ * The actual data writing happens asynchronously in the worker to prevent
+ * locking issues with concurrent event sync operations.
+ */
 builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: ExportResultRef,
@@ -160,19 +94,35 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       filter: t.arg({ type: JourneyEventsFilter, required: false }),
       select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
       destination: t.arg({ type: ExportDestinationInput, required: true }),
-      integrationId: t.arg.id({ required: true })
+      integrationId: t.arg.id({ required: true }),
+      timezone: t.arg.string({
+        required: false,
+        description:
+          'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
+      })
     },
     resolve: async (
       _parent,
-      { journeyId, filter, select, destination, integrationId },
+      // filter and select are accepted for backward compatibility but not used
+      // Data processing now happens asynchronously in the worker
+      {
+        journeyId,
+        filter: _filter,
+        select: _select,
+        destination,
+        integrationId,
+        timezone
+      },
       context
     ) => {
+      // Use user's timezone or default to UTC
+      const userTimezone = timezone ?? 'UTC'
+
       const journey = await prisma.journey.findUnique({
         where: { id: journeyId },
         include: {
           team: { include: { userTeams: true } },
-          userJourneys: true,
-          blocks: { select: { id: true }, orderBy: { updatedAt: 'asc' } }
+          userJourneys: true
         }
       })
 
@@ -188,54 +138,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         })
       }
 
-      const eventWhere: Prisma.EventWhereInput = {
-        journeyId: journeyId,
-        blockId: { not: null },
-        label: { not: null }
-      }
-      if (filter?.typenames && filter.typenames.length > 0) {
-        eventWhere.typename = { in: filter.typenames }
-      }
-      if (filter?.periodRangeStart || filter?.periodRangeEnd) {
-        eventWhere.createdAt = {}
-        if (filter.periodRangeStart)
-          eventWhere.createdAt.gte = filter.periodRangeStart
-        if (filter.periodRangeEnd)
-          eventWhere.createdAt.lte = filter.periodRangeEnd
-      }
-
-      const blockHeadersResult = await prisma.event.findMany({
-        where: eventWhere,
-        select: { blockId: true, label: true },
-        distinct: ['blockId', 'label']
-      })
-
-      const blockIds = journey.blocks.map((b) => b.id)
-      const blockHeaders = blockHeadersResult
-        .sort(
-          (a, b) =>
-            blockIds.findIndex((id) => id === a.blockId) -
-            blockIds.findIndex((id) => id === b.blockId)
-        )
-        .map((item) => ({
-          key: `${item.blockId!}-${item.label!}`,
-          header: item.label!
-        }))
-
-      const columns = [
-        { key: 'visitorId' },
-        select?.createdAt !== false ? { key: 'createdAt' } : null,
-        select?.name !== false ? { key: 'name' } : null,
-        select?.email !== false ? { key: 'email' } : null,
-        select?.phone !== false ? { key: 'phone' } : null,
-        ...(filter?.typenames == null || filter.typenames.length > 0
-          ? blockHeaders
-          : [])
-      ].filter((v) => v != null) as Array<{ key: string }>
-
-      // Compute the desired header row for this export
-      const desiredHeader = columns.map((c) => c.key)
-
+      // Validate integration
       const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
         .accessToken
 
@@ -291,6 +194,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         destination.sheetName ??
         `${format(new Date(), 'yyyy-MM-dd')} ${journey.slug ?? ''}`.trim()
 
+      // Create spreadsheet or ensure existing sheet exists
       if (destination.mode === 'create') {
         const res = await createSpreadsheet({
           accessToken,
@@ -303,10 +207,11 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       } else {
         spreadsheetId = destination.spreadsheetId!
         spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
+        // Ensure the sheet tab exists
+        await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
       }
 
-      // Check for existing sync immediately after spreadsheetId and sheetName are resolved,
-      // before any Google API calls (ensureSheet, readValues, writeValues)
+      // Check for existing sync
       const existingSync = await prisma.googleSheetsSync.findFirst({
         where: {
           teamId: journey.teamId,
@@ -323,51 +228,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         )
       }
 
-      // Read existing header (for existing sheets) and merge to preserve/extend columns
-      let finalHeader = desiredHeader
-      if (destination.mode === 'existing') {
-        await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
-        const headerRes = await readValues({
-          accessToken,
-          spreadsheetId,
-          range: `${sheetName}!A1:ZZ1`
-        })
-        const existingHeader: string[] = (headerRes[0] ?? []).map(
-          (v) => v ?? ''
-        )
-        if (existingHeader.length > 0) {
-          // Ensure base headers exist in the correct order at start, respecting select preferences
-          const base: string[] = ['visitorId']
-          if (select?.createdAt !== false) base.push('createdAt')
-          if (select?.name !== false) base.push('name')
-          if (select?.email !== false) base.push('email')
-          if (select?.phone !== false) base.push('phone')
-          const merged: string[] = []
-          for (const b of base) if (!merged.includes(b)) merged.push(b)
-          for (const h of existingHeader)
-            if (h !== '' && !merged.includes(h)) merged.push(h)
-          for (const h of desiredHeader)
-            if (h !== '' && !merged.includes(h)) merged.push(h)
-          finalHeader = merged
-        }
-      }
-
-      // Build data rows aligned to finalHeader
-      const values: (string | null)[][] = [finalHeader]
-      for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
-        const aligned = finalHeader.map((k) => row[k] ?? '')
-        values.push(aligned)
-      }
-
-      await writeValues({
-        accessToken,
-        spreadsheetId,
-        sheetTitle: sheetName,
-        values,
-        append: false
-      })
-
-      // Record Google Sheets sync configuration for this journey
+      // Create the sync record first
       const syncData = {
         teamId: journey.teamId,
         journeyId,
@@ -377,10 +238,38 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         folderId:
           destination.mode === 'create' ? (destination.folderId ?? null) : null,
         email: integrationEmail,
+        timezone: userTimezone,
         deletedAt: null
       }
 
-      await prisma.googleSheetsSync.create({ data: syncData })
+      const sync = await prisma.googleSheetsSync.create({ data: syncData })
+
+      // Enqueue the 'create' job to write data asynchronously
+      // This prevents locking issues with concurrent event sync operations
+      if (googleSheetsSyncQueue != null) {
+        await googleSheetsSyncQueue.add(
+          'google-sheets-sync-create',
+          {
+            type: 'create',
+            journeyId,
+            teamId: journey.teamId,
+            syncId: sync.id,
+            spreadsheetId,
+            sheetName,
+            timezone: userTimezone,
+            integrationId: integrationIdUsed
+          },
+          {
+            attempts: 3,
+            backoff: {
+              type: 'exponential',
+              delay: 1000
+            },
+            removeOnComplete: true,
+            removeOnFail: { age: ONE_HOUR }
+          }
+        )
+      }
 
       return { spreadsheetId, spreadsheetUrl, sheetName }
     }

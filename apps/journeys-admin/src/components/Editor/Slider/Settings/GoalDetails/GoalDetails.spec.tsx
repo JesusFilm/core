@@ -35,7 +35,7 @@ describe('GoalDetails', () => {
 
     expect(screen.getByText('Information')).toBeInTheDocument()
     expect(screen.getByText('What are Goals?')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
     expect(screen.getByText('Visit a Website')).toBeInTheDocument()
     expect(screen.getByText('Link to Bible')).toBeInTheDocument()
   })

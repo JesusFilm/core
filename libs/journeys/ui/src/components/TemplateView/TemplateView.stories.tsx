@@ -1,12 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs'
-import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Role } from '../../../__generated__/globalTypes'
+import { AuthUser as User } from '../../libs/auth/types'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
@@ -83,7 +83,8 @@ const primaryImageBlock: PrimaryImageBlock = {
   parentOrder: 1,
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const getJourneysMockEmpty: MockedResponse<GetJourneys> = {

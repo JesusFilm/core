@@ -70,7 +70,8 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 0,
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     },
     {
       __typename: 'RadioOptionBlock',
@@ -80,7 +81,8 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentOrder: 1,
       action: null,
       pollOptionImageBlockId: null,
-      children: []
+      children: [],
+      eventLabel: null
     }
   ]
 }
@@ -106,6 +108,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeName: null,
         fullscreen: false,
         backdropBlur: null,
+        eventLabel: null,
         children: [
           {
             id: 'image0.id',
@@ -120,7 +123,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           heading,
           description,

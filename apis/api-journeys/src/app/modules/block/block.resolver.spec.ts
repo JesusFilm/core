@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import {
   Block,
   Journey,
@@ -10,7 +9,9 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
@@ -19,6 +20,7 @@ describe('BlockResolver', () => {
   let resolver: BlockResolver,
     service: BlockService,
     prismaService: DeepMockProxy<PrismaService>,
+    journeyCustomizableService: DeepMockProxy<JourneyCustomizableService>,
     ability: AppAbility
 
   const journey = {
@@ -50,7 +52,6 @@ describe('BlockResolver', () => {
   }
   const blockService = {
     provide: BlockService,
-    PrismaService,
     useFactory: () => ({
       duplicateBlock: jest.fn((block, _parentOrder) => [block, block]),
       removeBlockAndChildren: jest.fn(() => []),
@@ -77,6 +78,10 @@ describe('BlockResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: JourneyCustomizableService,
+          useValue: mockDeep<JourneyCustomizableService>()
         }
       ]
     }).compile()
@@ -85,6 +90,9 @@ describe('BlockResolver', () => {
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    journeyCustomizableService = module.get<JourneyCustomizableService>(
+      JourneyCustomizableService
+    ) as DeepMockProxy<JourneyCustomizableService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
     prismaService.$transaction.mockImplementation(
       async (callback) => await callback(prismaService)
@@ -201,6 +209,14 @@ describe('BlockResolver', () => {
         ],
         3,
         4
+      )
+    })
+
+    it('should call recalculate after block duplication', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      await resolver.blockDuplicate(ability, 'blockId', 2)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        blockWithUserTeam.journeyId
       )
     })
 
@@ -389,6 +405,16 @@ describe('BlockResolver', () => {
         },
         data: { updatedAt: updatedAt.toISOString() }
       })
+    })
+
+    it('should call recalculate after block restore', async () => {
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
+      prismaService.block.findMany.mockResolvedValue([block, block])
+      await resolver.blockRestore('1', ability)
+      expect(journeyCustomizableService.recalculate).toHaveBeenCalledWith(
+        block.journeyId
+      )
     })
 
     it('should throw error if block not found', async () => {

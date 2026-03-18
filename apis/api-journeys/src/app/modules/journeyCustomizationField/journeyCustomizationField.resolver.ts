@@ -3,18 +3,22 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
-import { JourneyCustomizationField } from '.prisma/api-journeys-client'
-import { CaslAbility } from '@core/nest/common/CaslAuthModule'
+import { JourneyCustomizationField } from '@core/prisma/journeys/client'
 
 import { JourneyCustomizationFieldInput } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
+import { CaslAbility } from '../../lib/CaslAuthModule'
 import { parseCustomizationFieldsFromString } from '../../lib/parseCustomizationFieldsFromString'
 import { PrismaService } from '../../lib/prisma.service'
+import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 @Resolver('JourneyCustomizationField')
 export class JourneyCustomizationFieldResolver {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly journeyCustomizableService: JourneyCustomizableService
+  ) {}
 
   @Mutation()
   @UseGuards(AppCaslGuard)
@@ -66,6 +70,7 @@ export class JourneyCustomizationFieldResolver {
         data: customizationFields
       })
     })
+    await this.journeyCustomizableService.recalculate(journeyId)
 
     return this.prismaService.journeyCustomizationField.findMany({
       where: { journeyId: journey.id }

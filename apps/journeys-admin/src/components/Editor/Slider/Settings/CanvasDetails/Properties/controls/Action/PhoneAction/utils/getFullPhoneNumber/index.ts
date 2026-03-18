@@ -1,0 +1,1 @@
+export { getFullPhoneNumber } from './getFullPhoneNumber'

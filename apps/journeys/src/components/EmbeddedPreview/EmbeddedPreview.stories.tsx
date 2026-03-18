@@ -74,7 +74,8 @@ const journey: Journey = {
       __typename: 'ChatButton',
       id: 'chatButtonId',
       link: 'http://me.com',
-      platform: MessagePlatform.facebook
+      platform: MessagePlatform.facebook,
+      customizable: null
     }
   ],
   host: {
@@ -102,7 +103,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

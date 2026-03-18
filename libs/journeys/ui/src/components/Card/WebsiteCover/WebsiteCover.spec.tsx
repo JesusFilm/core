@@ -27,6 +27,7 @@ describe('WebsiteCover', () => {
     scale: null,
     focalLeft: 50,
     focalTop: 50,
+    customizable: null,
     children: []
   }
 
@@ -52,6 +53,8 @@ describe('WebsiteCover', () => {
     objectFit: null,
     showGeneratedSubtitles: null,
     subtitleLanguage: null,
+    eventLabel: null,
+    endEventLabel: null,
     mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
@@ -75,6 +78,7 @@ describe('WebsiteCover', () => {
       },
       variantLanguages: []
     },
+    customizable: null,
     children: []
   }
 
@@ -97,9 +101,12 @@ describe('WebsiteCover', () => {
 
     expect(cover).toHaveStyle({
       height: '100vh',
-      overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      overflowY: 'scroll',
       overflowX: 'hidden',
-      backgroundColor: '#DDD'
+      backgroundColor: '#DDD',
+      scrollbarWidth: 'none'
     })
   })
 

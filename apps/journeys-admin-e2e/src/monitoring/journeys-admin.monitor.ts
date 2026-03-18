@@ -62,7 +62,7 @@ test('NS Admin Monitoring: Check user can login and see the dashboard', async ({
 
     // Step 3: Wait for and verify dashboard load
     const dashboardStart = Date.now()
-    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible({
+    await expect(page.getByTestId('NavigationListItemProjects')).toBeVisible({
       timeout
     })
     stepTiming['dashboard_load'] = Date.now() - dashboardStart

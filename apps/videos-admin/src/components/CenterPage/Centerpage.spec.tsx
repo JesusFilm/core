@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Breakpoint, ThemeProvider, createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
@@ -43,5 +44,21 @@ describe('CenterPage Component', () => {
 
     const card = screen.getByTestId('CenterPageCard')
     expect(card).toHaveStyle('padding: 16px')
+  })
+
+  it('should display the privacy policy button', () => {
+    render(
+      <MockedProvider>
+        <CenterPage>
+          <div data-testid="child-content">Test Child</div>
+        </CenterPage>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button', { name: 'Privacy Policy' }))
+
+    expect(
+      screen.getByRole('link', { name: 'Privacy Policy' })
+    ).toHaveAttribute('href', 'https://www.cru.org/us/en/about/privacy.html')
   })
 })

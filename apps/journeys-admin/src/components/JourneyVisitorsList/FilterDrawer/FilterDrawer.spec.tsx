@@ -1,9 +1,37 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
 
+import { useIntegrationGoogleCreate } from '../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate'
+
 import { FilterDrawer, GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
+
+const mockGoogleSheetsSyncDialog = jest.fn()
+
+jest.mock('./GoogleSheetsSyncDialog', () => ({
+  GoogleSheetsSyncDialog: (props) => {
+    mockGoogleSheetsSyncDialog(props)
+    return props.open ? (
+      <div data-testid="google-sheets-sync-dialog">
+        Google Sheets Sync Dialog
+      </div>
+    ) : null
+  }
+}))
+
+jest.mock(
+  '../../Google/GoogleCreateIntegration/libs/useIntegrationGoogleCreate',
+  () => ({
+    useIntegrationGoogleCreate: jest.fn()
+  })
+)
+
+const mockUseIntegrationGoogleCreate =
+  useIntegrationGoogleCreate as jest.MockedFunction<
+    typeof useIntegrationGoogleCreate
+  >
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse = {
@@ -31,6 +59,7 @@ const mockJourneyCreatedAt: MockedResponse = {
 
 const props = {
   journeyId: 'journey1',
+  teamId: 'team1',
   chatStarted: false,
   withPollAnswers: false,
   withSubmittedText: false,
@@ -43,8 +72,9 @@ const props = {
 
 describe('FilterDrawer', () => {
   beforeEach(() => {
-    props.handleClearAll.mockClear()
-    props.handleChange.mockClear()
+    jest.clearAllMocks()
+    mockUseIntegrationGoogleCreate.mockReturnValue({ loading: false })
+    mockRouter.setCurrentUrl('/journeys')
   })
 
   it('calls handleClearAll when the clear all button is clicked', async () => {
@@ -161,6 +191,104 @@ describe('FilterDrawer', () => {
       await waitFor(() => {
         expect(screen.queryByText('Export Analytics')).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('google sheets sync dialog interactions', () => {
+    it('opens the sync dialog when the button is clicked', async () => {
+      mockRouter.setCurrentUrl('/journeys')
+      const user = userEvent.setup()
+      render(
+        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByTestId('google-sheets-sync-dialog')
+      ).not.toBeInTheDocument()
+
+      const syncButton = screen.getByRole('button', {
+        name: 'Sync to Google Sheets'
+      })
+      await user.click(syncButton)
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('google-sheets-sync-dialog')
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should automatically open the sync dialog when the URL has openSyncDialog and no code', async () => {
+      mockRouter.setCurrentUrl('/journeys?openSyncDialog=true')
+
+      render(
+        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('google-sheets-sync-dialog')
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('does not open the sync dialog when the URL has both openSyncDialog and code', async () => {
+      mockRouter.setCurrentUrl('/journeys?openSyncDialog=true&code=test-code')
+
+      render(
+        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByTestId('google-sheets-sync-dialog')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should show success snackbar and open sync dialog on integration create success', async () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[mockJourneyCreatedAt]}>
+            <FilterDrawer {...props} />
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      const { onSuccess } = mockUseIntegrationGoogleCreate.mock.calls[0][0]
+
+      await onSuccess?.('integrationId')
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('google-sheets-sync-dialog')
+        ).toBeInTheDocument()
+      )
+      expect(
+        screen.getByText('Google integration created successfully')
+      ).toBeInTheDocument()
+    })
+
+    it('should show error snackbar on integration create error', async () => {
+      render(
+        <SnackbarProvider>
+          <MockedProvider mocks={[mockJourneyCreatedAt]}>
+            <FilterDrawer {...props} />
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+
+      const { onError } = mockUseIntegrationGoogleCreate.mock.calls[0][0]
+
+      await onError?.(new Error('Something went wrong'))
+
+      await waitFor(() =>
+        expect(screen.getByText('Something went wrong')).toBeInTheDocument()
+      )
     })
   })
 })

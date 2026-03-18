@@ -1,10 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
 import { UserTeam, UserTeamRole } from '@core/prisma/journeys/client'
 
 import { UserTeamRole as GraphQlUserTeamRole } from '../../__generated__/graphql'
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { UserTeamResolver } from './userTeam.resolver'
@@ -22,7 +23,11 @@ describe('UserTeamResolver', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
-      providers: [UserTeamResolver, PrismaService, userTeamService]
+      providers: [
+        UserTeamResolver,
+        { provide: PrismaService, useValue: mockDeep<PrismaService>() },
+        userTeamService
+      ]
     }).compile()
     userTeamResolver = module.get<UserTeamResolver>(UserTeamResolver)
     prismaService = module.get<PrismaService>(PrismaService)

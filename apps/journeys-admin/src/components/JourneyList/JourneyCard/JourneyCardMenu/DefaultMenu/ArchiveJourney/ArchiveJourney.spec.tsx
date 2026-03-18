@@ -26,7 +26,7 @@ describe('ArchiveJourney', () => {
   describe("activeTab === 'active'", () => {
     beforeEach(() => {
       mockUseRouter.mockReturnValue({
-        query: { tab: 'active' }
+        query: { status: 'active' }
       })
     })
 
@@ -144,7 +144,7 @@ describe('ArchiveJourney', () => {
   describe("activeTab === 'archived'", () => {
     beforeEach(() => {
       mockUseRouter.mockReturnValue({
-        query: { tab: 'archived' }
+        query: { status: 'archived' }
       })
     })
 

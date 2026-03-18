@@ -10,6 +10,7 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
+      User: ['AuthenticatedUser', 'AnonymousUser'],
       Action: [
         'NavigateToBlockAction',
         'LinkAction',
@@ -55,6 +56,9 @@ export const cache = (): InMemoryCache =>
             merge(existing, incoming) {
               return [...(existing ?? []), ...incoming]
             }
+          },
+          adminJourneys: {
+            keyArgs: ['status', 'template', 'teamId', 'useLastActiveTeamId']
           },
           adminJourney(_, { args, toReference }) {
             if (args?.idType === 'databaseId' && args?.id != null)

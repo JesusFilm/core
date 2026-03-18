@@ -62,7 +62,9 @@ export function Video({
   objectFit,
   videoVariantLanguageId,
   subtitleLanguage,
-  showGeneratedSubtitles
+  showGeneratedSubtitles,
+  eventLabel,
+  endEventLabel
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -136,7 +138,8 @@ export function Video({
     videoFit === 'cover' && source !== VideoBlockSource.youTube
 
   const showVideoImage =
-    (variant === 'admin' && source === VideoBlockSource.youTube) ||
+    ((variant === 'admin' || variant === 'customize') &&
+      source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
     source === VideoBlockSource.mux
 
@@ -213,6 +216,8 @@ export function Video({
             startAt={videoControlsStartAt}
             endAt={videoEndTime}
             action={action}
+            eventLabel={eventLabel}
+            endEventLabel={endEventLabel}
           />
         )}
 

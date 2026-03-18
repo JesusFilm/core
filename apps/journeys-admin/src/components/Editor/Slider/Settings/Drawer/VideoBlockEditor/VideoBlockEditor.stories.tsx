@@ -46,6 +46,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: null,
   fullscreen: true,
   backdropBlur: null,
+  eventLabel: null,
   children: []
 }
 
@@ -94,6 +95,9 @@ const videoInternal: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: 'poster1.id',
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   children: []
 }
 
@@ -110,7 +114,8 @@ const posterInternal: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const videoYouTube: TreeBlock<VideoBlock> = {
@@ -139,7 +144,10 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   objectFit: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: null,
+  eventLabel: null,
+  endEventLabel: null,
   posterBlockId: 'poster1.id',
+  customizable: null,
   children: []
 }
 
@@ -156,7 +164,8 @@ const posterYouTube: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()

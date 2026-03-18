@@ -12,7 +12,11 @@ import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import {
+  actionToTarget,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import { SignUpFields } from './__generated__/SignUpFields'
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
@@ -421,12 +425,19 @@ describe('SignUp', () => {
             stepId: 'step.id',
             event: 'signupSubmit',
             blockId: 'signUp0.id',
-            target: block.action
+            target: block.action,
+            journeyId: 'journey.id'
           }),
           simpleKey: keyify({
             stepId: 'step.id',
             event: 'signupSubmit',
-            blockId: 'signUp0.id'
+            blockId: 'signUp0.id',
+            journeyId: 'journey.id'
+          }),
+          templateKey: templateKeyify({
+            event: 'signupSubmit',
+            target: actionToTarget(block.action),
+            journeyId: 'journey.id'
           })
         }
       })

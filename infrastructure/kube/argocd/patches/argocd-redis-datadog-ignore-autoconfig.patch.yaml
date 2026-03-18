@@ -1,0 +1,7 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        # Tell Datadog Agent to ignore Redis autoconfig for this container.
+        # Container name in the Argo CD install manifest is "redis".
+        ad.datadoghq.com/redis.ignore_autoconfig: 'true'

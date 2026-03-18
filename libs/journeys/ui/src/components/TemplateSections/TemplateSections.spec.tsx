@@ -57,7 +57,11 @@ describe('TemplateSections', () => {
     status: JourneyStatus.published,
     seoTitle: null,
     seoDescription: null,
-    userJourneys: []
+    website: false,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    userJourneys: [],
+    customizable: null
   }
 
   const acceptance: Tag = {
@@ -172,7 +176,8 @@ describe('TemplateSections', () => {
         where: {
           template: true,
           orderByRecent: true,
-          languageIds: ['529']
+          languageIds: ['529'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -192,7 +197,8 @@ describe('TemplateSections', () => {
           template: true,
           orderByRecent: true,
           tagIds: [addiction.id, acceptance.id],
-          languageIds: ['529']
+          languageIds: ['529'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -212,7 +218,8 @@ describe('TemplateSections', () => {
         where: {
           template: true,
           orderByRecent: true,
-          languageIds: ['529', '5441']
+          languageIds: ['529', '5441'],
+          teamId: 'jfp-team'
         }
       }
     },
@@ -350,6 +357,62 @@ describe('TemplateSections', () => {
       expect(
         getByRole('heading', { name: 'Template in different language' })
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('QA template filtering', () => {
+    const qaJourney: Journey = {
+      ...defaultTemplate,
+      id: 'qaId1',
+      title: 'QA Customizable Media Test',
+      slug: 'qa-customizable-media-test-journey',
+      tags: [],
+      featuredAt: '2023-08-14T04:24:24.392Z'
+    }
+
+    it('should not render a template whose slug starts with the QA prefix', async () => {
+      const mockWithQA: MockedResponse<GetJourneys> = {
+        ...getJourneysMock,
+        result: { data: { journeys: [...journeys, qaJourney] } }
+      }
+      const { queryByRole } = render(
+        <MockedProvider mocks={[mockWithQA]}>
+          <TemplateSections languageIds={['529']} />
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          queryByRole('heading', { name: 'Featured Template 2' })
+        ).toBeInTheDocument()
+      )
+      expect(
+        queryByRole('heading', { name: 'QA Customizable Media Test' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render a template whose slug only partially matches the QA prefix', async () => {
+      const partialMatchJourney: Journey = {
+        ...defaultTemplate,
+        id: 'partialId1',
+        title: 'Non-QA Template',
+        slug: 'non-qa-customizable-media-test-journey',
+        tags: [],
+        featuredAt: '2023-08-14T04:24:24.392Z'
+      }
+      const mockWithPartialMatch: MockedResponse<GetJourneys> = {
+        ...getJourneysMock,
+        result: { data: { journeys: [...journeys, partialMatchJourney] } }
+      }
+      const { queryByRole } = render(
+        <MockedProvider mocks={[mockWithPartialMatch]}>
+          <TemplateSections languageIds={['529']} />
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          queryByRole('heading', { name: 'Non-QA Template' })
+        ).toBeInTheDocument()
+      )
     })
   })
 

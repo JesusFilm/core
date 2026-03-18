@@ -7,7 +7,7 @@ import { ButtonClickEventRef } from './buttonClickEvent'
 import { ButtonClickEventCreateInput } from './inputs'
 
 builder.mutationField('buttonClickEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: ButtonClickEventRef,
     args: {
@@ -39,7 +39,6 @@ builder.mutationField('buttonClickEventCreate', (t) =>
       })
 
       const updates: Array<Promise<unknown>> = []
-      // live sync to Google Sheets (fire and forget)
       if (teamId) {
         appendEventToGoogleSheets({
           journeyId,

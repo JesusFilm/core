@@ -1,0 +1,1 @@
+export { TermsOfUseDialog } from './TermsOfUseDialog'

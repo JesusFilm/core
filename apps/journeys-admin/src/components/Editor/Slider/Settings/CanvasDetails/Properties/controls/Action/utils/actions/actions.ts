@@ -23,7 +23,7 @@ export function actions(t: TFunction): Array<{
     },
     {
       value: 'LinkAction',
-      label: t('URL/Website')
+      label: t('Website')
     },
     {
       value: 'EmailAction',

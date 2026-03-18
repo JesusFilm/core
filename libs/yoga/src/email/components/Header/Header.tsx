@@ -3,13 +3,17 @@ import { ReactElement } from 'react'
 
 import { EmailLogo } from '../EmailLogo'
 
-export function Header(): ReactElement {
+export interface HeaderProps {
+  logo?: 'JesusFilmOne' | 'NextSteps'
+}
+
+export function Header({ logo }: HeaderProps): ReactElement {
   return (
     <Section className="h-[72px] w-full bg-[#FFFFFF]">
       <Container>
         <Row className="align-middle">
           <Column align="center">
-            <EmailLogo />
+            <EmailLogo logo={logo} />
           </Column>
         </Row>
       </Container>

@@ -44,7 +44,8 @@ describe('ChatAction', () => {
       parentStepId: null
     },
     children: [],
-    settings: null
+    settings: null,
+    eventLabel: null
   }
 
   const selectedStep = {

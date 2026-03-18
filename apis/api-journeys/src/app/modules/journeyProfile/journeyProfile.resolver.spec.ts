@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
-import { User } from '@core/nest/common/firebaseClient'
 import { JourneyProfile } from '@core/prisma/journeys/client'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
+import { CaslAuthModule } from '../../lib/CaslAuthModule'
+import { User } from '../../lib/firebaseClient'
 import { PrismaService } from '../../lib/prisma.service'
 import { MailChimpService } from '../mailChimp/mailChimp.service'
 
@@ -103,60 +103,6 @@ describe('JourneyProfileResolver', () => {
     it('should return existing profile', async () => {
       prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
       expect(await resolver.journeyProfileCreate(user)).toEqual(profile)
-    })
-  })
-
-  describe('journeyProfileUpdate', () => {
-    it('should update journeyProfile lastTeamId', async () => {
-      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
-      await resolver.journeyProfileUpdate('userId', {
-        lastActiveTeamId: 'lastTeamId'
-      })
-      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
-        where: { id: profile.id },
-        data: {
-          lastActiveTeamId: 'lastTeamId'
-        }
-      })
-    })
-
-    it('should update journeyProfile journeyFlowBackButtonClicked', async () => {
-      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
-      await resolver.journeyProfileUpdate('userId', {
-        journeyFlowBackButtonClicked: true
-      })
-      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
-        where: { id: profile.id },
-        data: {
-          journeyFlowBackButtonClicked: true
-        }
-      })
-    })
-
-    it('should update journeyProfile plausibleJourneyFlowViewed', async () => {
-      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
-      await resolver.journeyProfileUpdate('userId', {
-        plausibleJourneyFlowViewed: true
-      })
-      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
-        where: { id: profile.id },
-        data: {
-          plausibleJourneyFlowViewed: true
-        }
-      })
-    })
-
-    it('should update journeyProfile plausibleDashboardViewed', async () => {
-      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
-      await resolver.journeyProfileUpdate('userId', {
-        plausibleDashboardViewed: true
-      })
-      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
-        where: { id: profile.id },
-        data: {
-          plausibleDashboardViewed: true
-        }
-      })
     })
   })
 })

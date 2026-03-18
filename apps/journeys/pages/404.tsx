@@ -39,7 +39,8 @@ export function Custom404(): ReactElement {
       parentBlockId: '404-stepBlock-id',
       parentOrder: 0,
       themeMode: null,
-      themeName: null
+      themeName: null,
+      eventLabel: null
     },
     {
       __typename: 'ImageBlock',
@@ -53,7 +54,8 @@ export function Custom404(): ReactElement {
       width: 3244,
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'TypographyBlock',
@@ -103,7 +105,8 @@ export function Custom404(): ReactElement {
         customizable: null,
         parentStepId: null
       },
-      settings: null
+      settings: null,
+      eventLabel: null
     },
     {
       __typename: 'IconBlock',

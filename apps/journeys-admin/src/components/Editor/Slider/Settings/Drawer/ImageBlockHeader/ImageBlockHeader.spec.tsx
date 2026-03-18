@@ -17,7 +17,8 @@ describe('ImageBlockHeader', () => {
     blurhash: '',
     scale: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   it('should render selected image block', () => {
@@ -53,11 +54,5 @@ describe('ImageBlockHeader', () => {
     ).toBeInTheDocument()
     expect(screen.getByTestId('Plus2Icon')).toBeInTheDocument()
     expect(screen.getByText('Select Image')).toBeInTheDocument()
-  })
-
-  it('should render error state', () => {
-    render(<ImageBlockHeader selectedBlock={null} error />)
-    expect(screen.getByText('Upload failed')).toBeInTheDocument()
-    expect(screen.getByTestId('ImageXIcon')).toBeInTheDocument()
   })
 })

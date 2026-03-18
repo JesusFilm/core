@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetAdminJourneyWithPlausibleToken
@@ -71,6 +71,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_ac
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_PhoneAction;
@@ -97,6 +99,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock {
   submitEnabled: boolean | null;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action | null;
   settings: GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock {
@@ -134,6 +137,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_IconBlock {
@@ -163,6 +167,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectOptionBlock {
@@ -223,6 +228,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_PhoneAction;
@@ -240,6 +247,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionBlock {
@@ -291,6 +299,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_ac
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_PhoneAction;
@@ -472,6 +482,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_act
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action = GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_PhoneAction;
@@ -551,6 +563,9 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
    * action that should be performed when the video ends
    */
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -594,6 +609,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBl
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction = GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_ChatAction | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -630,6 +647,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_primaryImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
@@ -649,15 +667,23 @@ export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
-export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user {
-  __typename: "User";
+export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type GetAdminJourneyWithPlausibleToken_journey_userJourneys_user = GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AnonymousUser | GetAdminJourneyWithPlausibleToken_journey_userJourneys_user_AuthenticatedUser;
 
 export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys {
   __typename: "UserJourney";
@@ -675,6 +701,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_host {
@@ -730,6 +757,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_logoImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_menuStepBlock {
@@ -824,6 +852,10 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
   /**
    * used in a plausible share link to embed report
    */

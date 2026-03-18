@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockDuplicate
@@ -57,6 +57,8 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockDuplicate_blockDuplicate_ButtonBlock_action = BlockDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_ChatAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction;
@@ -83,6 +85,7 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock {
   submitEnabled: boolean | null;
   action: BlockDuplicate_blockDuplicate_ButtonBlock_action | null;
   settings: BlockDuplicate_blockDuplicate_ButtonBlock_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_CardBlock {
@@ -120,6 +123,7 @@ export interface BlockDuplicate_blockDuplicate_CardBlock {
    * background.
    */
   fullscreen: boolean;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_IconBlock {
@@ -149,6 +153,7 @@ export interface BlockDuplicate_blockDuplicate_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_MultiselectOptionBlock {
@@ -209,6 +214,8 @@ export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneActi
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockDuplicate_blockDuplicate_RadioOptionBlock_action = BlockDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_ChatAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction;
@@ -226,6 +233,7 @@ export interface BlockDuplicate_blockDuplicate_RadioOptionBlock {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioQuestionBlock {
@@ -277,6 +285,8 @@ export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockDuplicate_blockDuplicate_SignUpBlock_action = BlockDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_ChatAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction;
@@ -458,6 +468,8 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockDuplicate_blockDuplicate_VideoBlock_action = BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoBlock_action_LinkAction | BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction | BlockDuplicate_blockDuplicate_VideoBlock_action_ChatAction | BlockDuplicate_blockDuplicate_VideoBlock_action_PhoneAction;
@@ -537,6 +549,9 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
    * action that should be performed when the video ends
    */
   action: BlockDuplicate_blockDuplicate_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -580,6 +595,8 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_P
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_ChatAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction;

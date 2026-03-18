@@ -1,0 +1,1 @@
+export { BibleQuotesCarousel } from './BibleQuotesCarousel'

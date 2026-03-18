@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Jogador",
+    "description": "Navegue até /pl/[playlistId] para visualizar uma lista de reprodução"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Projeto de filme sobre Jesus"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Playlist",
+    "pageTitle": "{title} por {name}",
+    "thisPlaylistIsEmpty": "Esta lista de reprodução está vazia",
+    "defaultDescription": "Seu amigo compartilhou esses vídeos como um incentivo para você. Aperte o play para ver histórias animadoras sobre como encontrar paz em Jesus.",
+    "description": "Seu amigo {name} compartilhou esses vídeos como um incentivo para você. Aperte o play para ver histórias edificantes sobre como encontrar paz em Jesus."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Nenhum vídeo disponível"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Sem miniatura"
+  },
+  "StudyQuestions": {
+    "title": "Questões de estudo"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Para assistir a este vídeo, ative o JavaScript e considere a possibilidade de atualizar para um navegador da Web <link>compatível com vídeo HTML5</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Seu amigo <strong>{name}</strong> compartilhou esses vídeos com você como um incentivo. A melhor maneira de assistir a esses vídeos é fazer o download do nosso aplicativo.",
+    "downloadOnAppStore": "Baixar na App Store",
+    "getItOnGooglePlay": "Baixe-o no Google Play"
+  }
+}

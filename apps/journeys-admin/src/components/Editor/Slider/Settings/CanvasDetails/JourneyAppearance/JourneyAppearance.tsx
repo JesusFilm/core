@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -69,13 +69,6 @@ export function JourneyAppearance(): ReactElement {
       activeSlide: ActiveSlide.JourneyFlow
     })
   }
-
-  useEffect(() => {
-    dispatch({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: undefined
-    })
-  }, [dispatch])
 
   return (
     <Drawer title={t('Journey Appearance')} onClose={onClose}>

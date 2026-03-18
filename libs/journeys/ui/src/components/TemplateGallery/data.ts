@@ -58,7 +58,11 @@ const defaultTemplate: Journey = {
   status: JourneyStatus.published,
   seoTitle: null,
   seoDescription: null,
-  userJourneys: []
+  website: false,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  userJourneys: [],
+  customizable: null
 }
 
 const acceptance: Tag = {
@@ -297,6 +301,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
           '3804',
           '1927',
           '1370',
+          '139081',
           '1254'
         ]
       }

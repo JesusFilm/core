@@ -1,0 +1,1 @@
+export { AlgoliaVideoGrid } from './AlgoliaVideoGrid'

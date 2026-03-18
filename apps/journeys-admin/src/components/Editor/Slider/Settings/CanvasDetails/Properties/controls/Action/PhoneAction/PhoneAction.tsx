@@ -15,17 +15,18 @@ import {
   useRef,
   useState
 } from 'react'
-import { object, string } from 'yup'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ActionBlock, isActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
-import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import type { TextFieldFormRef } from '../../../../../../../../TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 import { countries } from './countriesList'
+import { PhoneField } from './PhoneField/PhoneField'
+import { getFullPhoneNumber } from './utils/getFullPhoneNumber'
+import { normalizeCallingCode } from './utils/normalizeCallingCode'
 
 export function PhoneAction(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -88,12 +89,6 @@ export function PhoneAction(): ReactElement {
   const callingCodeRef = useRef<TextFieldFormRef>(null)
   const phoneNumberRef = useRef<TextFieldFormRef>(null)
 
-  // Get selected country based on current calling code
-  const selectedCountry = useMemo(
-    () => findCountryByCallingCode(callingCode, phoneAction?.countryCode),
-    [callingCode, phoneAction?.countryCode, findCountryByCallingCode]
-  )
-
   // Check if radio buttons should be disabled
   const disableRadioAction = useMemo(
     () => !phoneAction?.phone || phoneAction.phone.trim() === '',
@@ -129,73 +124,6 @@ export function PhoneAction(): ReactElement {
     setPhoneNumber(localNumber)
   }, [phoneAction?.phone, phoneAction?.countryCode])
 
-  // Validation schemas
-  const phoneActionSchema = useMemo(
-    () =>
-      object({
-        phone: string()
-          .required(t('Phone number is required'))
-          .test(
-            'phone-no-leading-zero',
-            t('Phone number cannot start with 0.'),
-            function (value) {
-              if (!value) return true
-              return !value.startsWith('0')
-            }
-          )
-          .test(
-            'phone-format',
-            t('Phone number must use valid digits.'),
-            function (value) {
-              if (!value || !selectedCountry) return false
-              const countryCodeDigits = selectedCountry.callingCode.replace(
-                /[-+]/g,
-                ''
-              )
-              const fullPhoneNumber = `+${countryCodeDigits}${value}`
-              return /^\+[1-9]\d+$/.test(fullPhoneNumber)
-            }
-          )
-          .test(
-            'phone-length',
-            t('Phone number must be under 15 digits.'),
-            function (value) {
-              if (!value || !selectedCountry) return false
-              const countryCodeDigits = selectedCountry.callingCode.replace(
-                /[-+]/g,
-                ''
-              )
-              const fullPhoneNumber = `+${countryCodeDigits}${value}`
-              const totalLength = fullPhoneNumber.length - 1
-              return totalLength >= 3 && totalLength <= 15
-            }
-          )
-      }),
-    [t, selectedCountry]
-  )
-
-  const callingCodeSchema = useMemo(
-    () =>
-      object({
-        callingCode: string()
-          .required(t('Required'))
-          .test('valid-calling-code', t('Invalid code.'), function (value) {
-            if (!value) return false
-            const normalizedValue = value.startsWith('+') ? value : `+${value}`
-            return countries.some(
-              (country) => country.callingCode === normalizedValue
-            )
-          })
-      }),
-    [t]
-  )
-
-  // Normalize calling code by adding + if missing
-  const normalizeCallingCode = useCallback((code: string) => {
-    if (code === '') return ''
-    return code.startsWith('+') ? code : `+${code}`
-  }, [])
-
   // Validate and potentially submit action
   const validateAndSubmit = useCallback(
     (callingCodeValue: string, phoneNumberValue: string) => {
@@ -218,17 +146,15 @@ export function PhoneAction(): ReactElement {
       }
 
       // Submit action if both fields are valid
-      if (hasValidCallingCode && hasValidPhoneNumber) {
+      if (hasValidCallingCode && hasValidPhoneNumber && selectedStep != null) {
         const selectedCountryForAction = findCountryByCallingCode(
           normalizedCallingCode,
           phoneAction?.countryCode
         )
-        const countryCodeDigits = selectedCountryForAction.callingCode.replace(
-          /[^\d]/g,
-          ''
+        const fullPhoneNumber = getFullPhoneNumber(
+          selectedCountryForAction.callingCode,
+          phoneNumberValue
         )
-        const sanitizedLocal = phoneNumberValue.replace(/[^\d]/g, '')
-        const fullPhoneNumber = `+${countryCodeDigits}${sanitizedLocal}`
 
         addAction({
           blockId: selectedBlock.id,
@@ -239,7 +165,9 @@ export function PhoneAction(): ReactElement {
             gtmEventName: '',
             phone: fullPhoneNumber,
             countryCode: selectedCountryForAction.countryCode,
-            contactAction: phoneAction?.contactAction ?? ContactActionType.call
+            contactAction: phoneAction?.contactAction ?? ContactActionType.call,
+            customizable: phoneAction?.customizable ?? false,
+            parentStepId: selectedStep.id
           },
           undoAction: selectedBlock.action,
           editorFocus: {
@@ -251,7 +179,6 @@ export function PhoneAction(): ReactElement {
     },
     [
       selectedBlock,
-      normalizeCallingCode,
       findCountryByCallingCode,
       phoneAction?.countryCode,
       addAction,
@@ -266,7 +193,7 @@ export function PhoneAction(): ReactElement {
       setCallingCode(normalizedCode)
       validateAndSubmit(normalizedCode, phoneNumber)
     },
-    [normalizeCallingCode, phoneNumber, validateAndSubmit]
+    [phoneNumber, validateAndSubmit]
   )
 
   const handlePhoneNumberChange = useCallback(
@@ -280,7 +207,13 @@ export function PhoneAction(): ReactElement {
   // Handle contact action change (Call/Text)
   const handleContactActionChange = useCallback(
     (contactAction: ContactActionType) => {
-      if (!selectedBlock || disableRadioAction || !phoneAction) return
+      if (
+        !selectedBlock ||
+        disableRadioAction ||
+        !phoneAction ||
+        selectedStep == null
+      )
+        return
 
       addAction({
         blockId: selectedBlock.id,
@@ -291,7 +224,9 @@ export function PhoneAction(): ReactElement {
           gtmEventName: '',
           phone: phoneAction.phone,
           countryCode: phoneAction.countryCode ?? 'US',
-          contactAction
+          contactAction,
+          customizable: phoneAction.customizable ?? false,
+          parentStepId: selectedStep.id
         },
         undoAction: selectedBlock.action,
         editorFocus: {
@@ -327,30 +262,14 @@ export function PhoneAction(): ReactElement {
         {t('This will open the phone dialer with the provided phone number.')}
       </Typography>
       <Stack data-testid="PhoneAction" direction="column" spacing={2}>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextFieldForm
-            ref={callingCodeRef}
-            id="callingCode"
-            label={t('Country')}
-            type="text"
-            initialValue={callingCode}
-            validationSchema={callingCodeSchema}
-            onSubmit={handleCallingCodeChange}
-            placeholder="+123"
-            sx={{ maxWidth: 70 }}
-          />
-          <TextFieldForm
-            ref={phoneNumberRef}
-            id="phone"
-            label={t('Phone Number')}
-            type="tel"
-            initialValue={phoneNumber}
-            placeholder="0000000000"
-            validationSchema={phoneActionSchema}
-            onSubmit={handlePhoneNumberChange}
-            sx={{ flex: 1, width: '100%' }}
-          />
-        </Box>
+        <PhoneField
+          callingCodeRef={callingCodeRef}
+          phoneNumberRef={phoneNumberRef}
+          callingCode={callingCode}
+          phoneNumber={phoneNumber}
+          handleCallingCodeChange={handleCallingCodeChange}
+          handlePhoneNumberChange={handlePhoneNumberChange}
+        />
         <FormControl fullWidth>
           <RadioGroup
             aria-label={t('Contact action')}

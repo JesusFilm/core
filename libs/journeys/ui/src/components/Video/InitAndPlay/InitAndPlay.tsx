@@ -280,7 +280,8 @@ export function InitAndPlay({
       const tracks = getCaptionsAndSubtitleTracks(player)
       tracks.forEach((track) => {
         if (
-          track.kind === 'subtitles'
+          track.kind === 'subtitles' ||
+          track.kind === 'captions'
           // add this check in once subtitleLanguage gets mutated
           //  &&
           // track.language === subtitleLanguage?.bcp47
@@ -290,7 +291,13 @@ export function InitAndPlay({
       })
     }
     // player ready state is needed in deps array to ensure useEffect is fired at correct time
-  }, [player, source, subtitleLanguage, player?.readyState()])
+  }, [
+    player,
+    source,
+    subtitleLanguage,
+    player?.readyState(),
+    showGeneratedSubtitles
+  ])
 
   return <></>
 }

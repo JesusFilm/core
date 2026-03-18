@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CoverBlockRestore
@@ -112,6 +112,8 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction | CoverBlockRestore_blockRestore_VideoBlock_action_ChatAction | CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction;
@@ -191,6 +193,9 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
    * action that should be performed when the video ends
    */
   action: CoverBlockRestore_blockRestore_VideoBlock_action | null;
+  eventLabel: BlockEventLabel | null;
+  endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
 }
 
 export interface CoverBlockRestore_blockRestore_ImageBlock {
@@ -210,6 +215,7 @@ export interface CoverBlockRestore_blockRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_StepBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;

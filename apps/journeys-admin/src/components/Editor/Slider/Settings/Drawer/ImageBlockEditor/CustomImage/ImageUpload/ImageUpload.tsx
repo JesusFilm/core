@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
-import { ReactElement, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { ReactElement, useEffect, useState } from 'react'
+import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
@@ -31,29 +31,51 @@ export function ImageUpload({
   loading,
   error
 }: ImageUploadProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
-  const [success, setSuccess] = useState<boolean>()
+  const [success, setSuccess] = useState<boolean | undefined>(undefined)
+  const [errorCode, setErrorCode] = useState<ErrorCode>()
 
-  const onDrop = async (acceptedFiles: File[]): Promise<void> => {
+  useEffect(() => {
+    setErrorCode(undefined)
+  }, [selectedBlock])
+
+  const onDrop = async (
+    acceptedFiles: File[],
+    rejectedFiles: FileRejection[]
+  ): Promise<void> => {
+    if (rejectedFiles.length > 0) {
+      setErrorCode(rejectedFiles[0].errors[0].code as ErrorCode)
+      setUploading?.(false)
+      setSuccess(false)
+      return
+    }
     const { data } = await createCloudflareUploadByFile({})
     setUploading?.(true)
+    setSuccess(undefined)
+    setErrorCode(undefined)
 
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const file = acceptedFiles[0]
       const formData = new FormData()
       formData.append('file', file)
 
+      const uploadUrl = data.createCloudflareUploadByFile.uploadUrl
       try {
         const response = await (
-          await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
+          await fetch(uploadUrl, {
             method: 'POST',
             body: formData as unknown as FormDataType
           })
         ).json()
 
         response.success === true ? setSuccess(true) : setSuccess(false)
-        if (response.errors.length !== 0) {
+        if (response.errors?.length) {
+          const cloudflareError = response.errors[0].code
           setSuccess(false)
+          setUploading?.(false)
+          setErrorCode(cloudflareError as ErrorCode)
+          return
         }
 
         const src = `https://imagedelivery.net/${
@@ -73,16 +95,35 @@ export function ImageUpload({
     noClick: true,
     maxSize: 10485760,
     accept: {
-      'image/*': []
+      'image/png': [],
+      'image/jpeg': [],
+      'image/gif': [],
+      'image/svg+xml': [],
+      'image/heic': []
     }
   })
 
-  const uploadSuccess =
-    success === true && selectedBlock?.src != null && loading === false
-  const uploadError = error === true || success === false
-  const noBorder = uploadSuccess || uploadError || loading === true
+  const uploadSuccess = success === true && selectedBlock?.src != null
+  const hasError = error || errorCode
+  const noBorder = loading || uploadSuccess || hasError
 
-  const { t } = useTranslation('apps-journeys-admin')
+  function getErrorMessage(errorCode: ErrorCode | undefined) {
+    switch (errorCode) {
+      case ErrorCode.FileTooLarge: {
+        return t(
+          'File size exceeds the maximum allowed size (10 MB). Please choose a smaller file'
+        )
+      }
+      case ErrorCode.FileInvalidType: {
+        return t(
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+        )
+      }
+      default: {
+        return t('Something went wrong, try again')
+      }
+    }
+  }
 
   return (
     <Stack
@@ -104,7 +145,7 @@ export function ImageUpload({
           backgroundColor:
             isDragAccept || loading === true
               ? 'rgba(239, 239, 239, 0.9)'
-              : uploadError
+              : hasError
                 ? 'rgba(197, 45, 58, 0.08)'
                 : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
@@ -115,35 +156,37 @@ export function ImageUpload({
           alignItems: 'center'
         }}
       >
-        {uploadSuccess ? (
+        {loading || (!uploadSuccess && !hasError) ? (
+          <Upload1IconIcon
+            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
+          />
+        ) : uploadSuccess ? (
           <CheckBrokenIcon
             sx={{ fontSize: 48, color: 'success.main', mb: 1 }}
           />
-        ) : uploadError ? (
+        ) : (
           <AlertTriangleIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
-          />
-        ) : (
-          <Upload1IconIcon
-            sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }}
           />
         )}
         <Typography
           variant="body1"
           color={
-            uploadSuccess
-              ? 'success.main'
-              : uploadError
-                ? 'error.main'
-                : 'secondary.main'
+            loading
+              ? 'secondary.main'
+              : uploadSuccess
+                ? 'success.main'
+                : hasError
+                  ? 'error.main'
+                  : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
-          {loading === true
+          {loading
             ? t('Uploading...')
             : uploadSuccess
-              ? t('Upload successful!')
-              : uploadError
+              ? t('Upload Successful!')
+              : hasError
                 ? t('Upload Failed!')
                 : t('Drop an image here')}
         </Typography>
@@ -151,18 +194,20 @@ export function ImageUpload({
       <Stack
         direction="row"
         spacing={1}
-        color={uploadError ? 'error.main' : 'secondary.light'}
+        color={hasError ? 'error.main' : 'secondary.light'}
       >
         <AlertTriangleIcon
           fontSize="small"
           sx={{
-            display: uploadError ? 'flex' : 'none'
+            display: hasError ? 'flex' : 'none'
           }}
         />
         <Typography variant="caption">
-          {uploadError
-            ? t('Something went wrong, try again')
-            : t('Max file size: 10 MB')}
+          {hasError
+            ? getErrorMessage(errorCode)
+            : t(
+                'Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB'
+              )}
         </Typography>
       </Stack>
       <Button

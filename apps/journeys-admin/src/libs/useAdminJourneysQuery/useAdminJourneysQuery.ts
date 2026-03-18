@@ -9,11 +9,13 @@ export const GET_ADMIN_JOURNEYS = gql`
   query GetAdminJourneys(
     $status: [JourneyStatus!]
     $template: Boolean
+    $teamId: ID
     $useLastActiveTeamId: Boolean
   ) {
     journeys: adminJourneys(
       status: $status
       template: $template
+      teamId: $teamId
       useLastActiveTeamId: $useLastActiveTeamId
     ) {
       id
@@ -43,9 +45,11 @@ export const GET_ADMIN_JOURNEYS = gql`
         openedAt
         user {
           id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            firstName
+            lastName
+            imageUrl
+          }
         }
       }
       primaryImageBlock {
@@ -58,7 +62,20 @@ export const GET_ADMIN_JOURNEYS = gql`
         height
         blurhash
       }
+      team {
+        id
+      }
       fromTemplateId
+      journeyCustomizationDescription
+      journeyCustomizationFields {
+        id
+        journeyId
+        key
+        value
+        defaultValue
+      }
+      website
+      customizable
     }
   }
 `

@@ -285,6 +285,7 @@ const events = [
   chatOpenedEvent.event,
   textResponseSubmissionEvent.event,
   radioQuestionSubmissionEvent.event,
+  multiselectSubmissionEvent.event,
   signUpSubmissionEvent.event,
   stepNextEvent.event,
   stepViewEvent.event,

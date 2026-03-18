@@ -70,6 +70,9 @@ const selectedVideoBlock: TreeBlock<VideoBlock> = {
   subtitleLanguage: null,
   showGeneratedSubtitles: false,
   mediaVideo: null,
+  eventLabel: null,
+  endEventLabel: null,
+  customizable: null,
   children: []
 }
 
@@ -125,7 +128,8 @@ const mockJourneyWithValidLanguage: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  customizable: null
 }
 
 const mockJourneyWithInvalidLanguage: Journey = {

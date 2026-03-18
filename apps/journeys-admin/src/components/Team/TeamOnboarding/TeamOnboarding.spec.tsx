@@ -2,7 +2,6 @@ import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -16,6 +15,7 @@ import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiv
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
+import { User } from '../../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
 
 import { TeamOnboarding } from '.'
@@ -30,7 +30,7 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
   useCurrentUserLazyQuery: jest.fn().mockReturnValue({
     loadUser: jest.fn(),
     data: {
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: 'userId',
       email: 'siyangguccigang@example.com'
     }
@@ -135,20 +135,16 @@ describe('TeamOnboarding', () => {
 
   it('creates new team and sets it as active', async () => {
     const user: User = {
-      id: null,
+      id: 'userId',
+      uid: 'userId',
       email: null,
-      emailVerified: false,
-      phoneNumber: null,
       displayName: 'User Name',
       photoURL: null,
-      claims: {},
-      tenantId: null,
-      getIdToken: async (forceRefresh?: boolean) => null,
-      clientInitialized: false,
-      firebaseUser: null,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      signOut: async () => {},
-      serialize: (a?: { includeToken?: boolean }) => JSON.stringify({})
+      phoneNumber: null,
+      emailVerified: false,
+      token: 'mock-token',
+      isAnonymous: false,
+      providerId: ''
     }
 
     const cache = new InMemoryCache()

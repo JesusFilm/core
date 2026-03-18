@@ -19,7 +19,9 @@ export const blockActionPhoneUpdateMock: MockedResponse<
       input: {
         phone: '+19876543210',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
   },
@@ -31,7 +33,9 @@ export const blockActionPhoneUpdateMock: MockedResponse<
         gtmEventName: null,
         phone: '+19876543210',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
   }
@@ -48,7 +52,9 @@ export const blockActionPhoneUpdateMockCA: MockedResponse<
       input: {
         phone: '+19876543210',
         countryCode: 'CA',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
   },
@@ -60,7 +66,9 @@ export const blockActionPhoneUpdateMockCA: MockedResponse<
         gtmEventName: null,
         phone: '+19876543210',
         countryCode: 'CA',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
   }

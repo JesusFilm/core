@@ -60,22 +60,6 @@ function getLocaleFromPath(pathname: string): string | undefined {
   return localeEntry?.locale
 }
 
-function getLocaleFromGeoHeaders(req: NextRequest): string | undefined {
-  const country =
-    req.headers.get('cf-ipcountry') ||
-    req.headers.get('x-vercel-ip-country') ||
-    undefined
-
-  if (!country) return undefined
-
-  const countryCode = country.toUpperCase()
-  const localeEntry = Object.values(LANGUAGE_MAPPINGS).find((mapping) =>
-    mapping.geoLocations.includes(countryCode)
-  )
-
-  return localeEntry?.locale
-}
-
 function getBrowserLanguage(req: NextRequest): string {
   const acceptedLanguagesHeader = req.headers.get('accept-language')
   if (acceptedLanguagesHeader == null) return DEFAULT_LOCALE
@@ -107,20 +91,25 @@ function getLocale(
   const browserLocale = getBrowserLanguage(req)
   if (browserLocale != null && browserLocale !== DEFAULT_LOCALE)
     return browserLocale
-
-  // Priority 4: Geolocation (only check if no other locale found)
-  const geoLocale = getLocaleFromGeoHeaders(req)
-  if (geoLocale != null && geoLocale !== DEFAULT_LOCALE) return geoLocale
 }
 
 export const config = {
   matcher: ['/watch/((?!assets).*)', '/watch']
 }
 
+/** Paths that look like static assets; do not rewrite so they are served from public/ */
+const STATIC_ASSET_EXT =
+  /\.(svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|otf|css|js|map)(\?.*)?$/i
+
 export async function middleware(req: NextRequest): Promise<NextResponse> {
+  const pathname = req.nextUrl.pathname
+
+  if (STATIC_ASSET_EXT.test(pathname)) {
+    return NextResponse.next()
+  }
+
   const locale = getLocale(req) ?? DEFAULT_LOCALE
   const rewriteUrl = req.nextUrl.clone()
-  const pathname = req.nextUrl.pathname
 
   if (pathname === '/watch' && locale !== DEFAULT_LOCALE) {
     rewriteUrl.pathname = `/watch/${LANGUAGE_MAPPINGS[locale].languageSlugs[0]}`

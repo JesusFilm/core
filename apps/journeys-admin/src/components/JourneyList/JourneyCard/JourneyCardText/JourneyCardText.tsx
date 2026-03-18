@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import TranslateIcon from '@core/shared/ui/icons/Translate'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 
@@ -45,7 +45,10 @@ export function JourneyCardText({
         spacing={1.5}
         sx={{ width: '100%' }}
       >
-        <Globe1Icon sx={{ fontSize: md ? 14 : 16, color: 'secondary.light' }} />
+        <TranslateIcon
+          data-testid="TranslateIcon"
+          sx={{ fontSize: md ? 14 : 16, color: 'secondary.light' }}
+        />
         <Typography
           variant={md ? 'caption' : 'body2'}
           sx={{

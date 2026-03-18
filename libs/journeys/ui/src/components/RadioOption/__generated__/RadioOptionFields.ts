@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ContactActionType } from "./../../../../__generated__/globalTypes";
+import { ContactActionType, BlockEventLabel } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: RadioOptionFields
@@ -50,6 +50,8 @@ export interface RadioOptionFields_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type RadioOptionFields_action = RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction | RadioOptionFields_action_ChatAction | RadioOptionFields_action_PhoneAction;
@@ -67,4 +69,5 @@ export interface RadioOptionFields {
    *       as a poll option image. Blocks are often of type ImageBlock
    */
   pollOptionImageBlockId: string | null;
+  eventLabel: BlockEventLabel | null;
 }

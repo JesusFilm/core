@@ -28,7 +28,7 @@ export function getGoalDetails(
   switch (goalType) {
     case GoalType.Chat:
       return {
-        label: t('Start a Conversation'),
+        label: t('Start a Chat'),
         icon: <MessageChat1Icon sx={iconStyle} />
       }
     case GoalType.Bible:

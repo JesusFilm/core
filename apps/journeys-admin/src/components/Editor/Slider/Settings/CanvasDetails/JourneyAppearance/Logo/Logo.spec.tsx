@@ -69,13 +69,14 @@ describe('Logo', () => {
     parentBlockId: null,
     src: 'https://imagedelivery.net/cloudflare-key/uploadId/public',
     alt: 'public',
-    scale: 1,
+    scale: 100,
     parentOrder: null,
     width: 1,
     height: 1,
     blurhash: '',
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    customizable: null
   }
 
   function getLogoImageBlockCreateMock(): MockedResponse<

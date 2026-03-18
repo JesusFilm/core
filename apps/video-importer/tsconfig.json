@@ -3,6 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "types": ["node", "bun-types"],
     "outDir": "../../dist/apps/video-importer",
     "rootDir": "src"
   },

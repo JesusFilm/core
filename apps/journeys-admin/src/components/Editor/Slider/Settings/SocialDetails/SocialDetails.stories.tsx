@@ -81,7 +81,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const image: ImageBlock = {
@@ -96,7 +97,8 @@ const image: ImageBlock = {
   blurhash: '',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const Template: StoryObj<typeof SocialDetails> = {

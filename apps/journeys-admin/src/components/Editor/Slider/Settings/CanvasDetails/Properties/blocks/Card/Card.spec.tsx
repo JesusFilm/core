@@ -17,6 +17,7 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Card } from '.'
 
@@ -34,6 +35,7 @@ const createCard = (
   themeName: null,
   fullscreen: false,
   backdropBlur: null,
+  eventLabel: null,
   children: [],
   ...overrides
 })
@@ -68,7 +70,7 @@ const renderWithProviders = (
           <EditorProvider
             initialState={{ selectedBlock: selectedBlock ?? undefined }}
           >
-            {component}
+            <MuxVideoUploadProvider>{component}</MuxVideoUploadProvider>
           </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>
@@ -101,6 +103,19 @@ describe('Card', () => {
       expect(
         screen.getByTestId('Accordion-card1.id-background-color')
       ).toBeInTheDocument()
+    })
+
+    it('shows event label when template', async () => {
+      const card = createCard()
+      renderWithProviders(<Card {...card} />, {
+        selectedBlock: card,
+        journey: { template: true }
+      })
+      const trackingButton = screen.getByText('Tracking')
+      fireEvent.click(trackingButton)
+      await waitFor(() => {
+        expect(screen.getByTestId('EventLabelSelect')).toBeInTheDocument()
+      })
     })
 
     it('shows default attributes when no props provided', () => {
@@ -303,7 +318,8 @@ describe('Card', () => {
             children: [],
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       })
@@ -329,7 +345,8 @@ describe('Card', () => {
             children: [],
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       })
@@ -356,6 +373,7 @@ describe('Card', () => {
             image: null,
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
+            customizable: null,
             mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -381,6 +399,8 @@ describe('Card', () => {
             fullsize: null,
             action: null,
             objectFit: null,
+            eventLabel: null,
+            endEventLabel: null,
             children: []
           }
         ]

@@ -10,8 +10,13 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
@@ -39,6 +44,32 @@ interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   wrappers?: WrappersProps
   addOption?: () => void
 }
+
+/**
+ * RadioQuestion component that renders a radio question with selectable options.
+ *
+ * This component displays radio options in either a grid or list layout based on the
+ * `gridView` property. It handles user interactions, tracks selections, and creates
+ * submission events for analytics. The component supports both default/embed variants
+ * (which track events) and admin variants (which don't).
+ *
+ * Features:
+ * - Renders radio options as either GridVariant or ListVariant
+ * - Tracks user selections and prevents multiple selections
+ * - Creates submission events for analytics (Plausible and GTM)
+ * - Clears selection when navigating away from the block
+ * - Supports custom wrappers for editor mode
+ * - Provides addOption callback for editor functionality
+ *
+ * @param {RadioQuestionProps} props - The component props
+ * @param {string} props.id - The unique identifier of the radio question block (aliased as blockId)
+ * @param {boolean | null} props.gridView - Whether to display options in a grid layout (true) or list layout (false/null)
+ * @param {TreeBlock[]} props.children - Array of child blocks (radio options)
+ * @param {() => string} [props.uuid] - Optional UUID generator function
+ * @param {WrappersProps} [props.wrappers] - Optional wrapper props for block rendering
+ * @param {() => void} [props.addOption] - Optional callback to add a new radio option, omit if the maximum number of options has been reached or pass undefined if the maximum number of options has been reached
+ * @returns {ReactElement} The rendered radio question component (GridVariant or ListVariant)
+ */
 
 export function RadioQuestion({
   id: blockId,
@@ -102,15 +133,47 @@ export function RadioQuestion({
               stepId: input.stepId ?? '',
               event: 'radioQuestionSubmit',
               blockId: radioOptionBlock.id,
-              target: radioOptionBlock.action
+              target: radioOptionBlock.action,
+              journeyId: journey?.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'radioQuestionSubmit',
-              blockId: radioOptionBlock.id
+              blockId: radioOptionBlock.id,
+              journeyId: journey?.id
+            }),
+            templateKey: templateKeyify({
+              event: 'radioQuestionSubmit',
+              target: actionToTarget(radioOptionBlock.action),
+              journeyId: journey?.id
             })
           }
         })
+        if (radioOptionBlock.eventLabel != null) {
+          plausible(radioOptionBlock.eventLabel, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.stepId ?? '',
+                event: radioOptionBlock.eventLabel,
+                blockId: radioOptionBlock.id,
+                target: radioOptionBlock.action,
+                journeyId: journey?.id
+              }),
+              simpleKey: keyify({
+                stepId: input.stepId ?? '',
+                event: radioOptionBlock.eventLabel,
+                blockId: radioOptionBlock.id,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: radioOptionBlock.eventLabel,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'radio_question_submission',

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, BlockEventLabel } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
@@ -50,6 +50,8 @@ export interface ButtonFields_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction | ButtonFields_action_ChatAction | ButtonFields_action_PhoneAction;
@@ -76,4 +78,5 @@ export interface ButtonFields {
   submitEnabled: boolean | null;
   action: ButtonFields_action | null;
   settings: ButtonFields_settings | null;
+  eventLabel: BlockEventLabel | null;
 }
