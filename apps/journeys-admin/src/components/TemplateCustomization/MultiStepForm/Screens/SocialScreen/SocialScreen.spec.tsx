@@ -201,6 +201,18 @@ describe('SocialScreen', () => {
     expect(handleNext).toHaveBeenCalledTimes(1)
   })
 
+  it('should show loading state on the Done button after clicking', () => {
+    renderSocialScreen()
+
+    const doneButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(doneButton).not.toBeDisabled()
+
+    fireEvent.click(doneButton)
+
+    expect(doneButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
   it('should render with correct initial values from journey context', () => {
     renderSocialScreen()
 
