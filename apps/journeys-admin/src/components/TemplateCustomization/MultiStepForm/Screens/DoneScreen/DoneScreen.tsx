@@ -85,8 +85,13 @@ export function DoneScreen(): ReactElement {
     TreeBlock<StepBlock>
   >
 
+  const [navigating, setNavigating] = useState(false)
+
   function handleGoToProjectsDashboard(): void {
-    if (journey?.id != null) void router.push('/')
+    if (journey?.id != null) {
+      setNavigating(true)
+      void router.push('/')
+    }
   }
 
   function handleSyncDialogOpen(): void {
@@ -106,6 +111,7 @@ export function DoneScreen(): ReactElement {
         <Button
           data-testid="ProjectsDashboardButton"
           onClick={handleGoToProjectsDashboard}
+          loading={navigating}
           endIcon={<ArrowRightContained1Icon />}
           sx={{ mt: 4 }}
         >
