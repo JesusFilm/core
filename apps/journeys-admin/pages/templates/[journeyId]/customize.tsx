@@ -61,6 +61,7 @@ function DiagnosticFallback(): ReactElement {
 
   return (
     <Box
+      role="alert"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -124,7 +125,9 @@ function CustomizePage() {
             variant: 'customize'
           }}
         >
-          <DiagnosticErrorBoundary>
+          <DiagnosticErrorBoundary
+            key={router.query.journeyId as string}
+          >
             <MultiStepForm />
           </DiagnosticErrorBoundary>
         </JourneyProvider>
@@ -133,16 +136,46 @@ function CustomizePage() {
   )
 }
 
+function logDiagnosticError(
+  phase: string,
+  error: unknown,
+  ctx: GetServerSidePropsContext,
+  extra?: Record<string, unknown>
+): void {
+  console.error('[NES-1460-diag] customize getServerSideProps failed', {
+    phase,
+    errorMessage: error instanceof Error ? error.message : String(error),
+    errorName: error instanceof Error ? error.name : undefined,
+    url: ctx.resolvedUrl,
+    ...extra
+  })
+}
+
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  const tokens = await getAuthTokens(ctx)
+  let tokens: Awaited<ReturnType<typeof getAuthTokens>>
+  try {
+    tokens = await getAuthTokens(ctx)
+  } catch (error) {
+    logDiagnosticError('getAuthTokens', error, ctx)
+    throw error
+  }
+
   const user = tokens != null ? toUser(tokens) : null
 
-  const { apolloClient, flags, translations } = await initAndAuthApp({
-    user,
-    locale: ctx.locale,
-    resolvedUrl: ctx.resolvedUrl,
-    makeAccountOnAnonymous: true
-  })
+  let initResult: Awaited<ReturnType<typeof initAndAuthApp>>
+  try {
+    initResult = await initAndAuthApp({
+      user,
+      locale: ctx.locale,
+      resolvedUrl: ctx.resolvedUrl,
+      makeAccountOnAnonymous: true
+    })
+  } catch (error) {
+    logDiagnosticError('initAndAuthApp', error, ctx)
+    throw error
+  }
+
+  const { apolloClient, flags, translations } = initResult
 
   const templateCustomizationGuestFlow =
     flags?.templateCustomizationGuestFlow ?? false
@@ -180,13 +213,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
       }
     }
-    console.error('[NES-1460-diag] customize getServerSideProps failed', {
+    logDiagnosticError('journeyQuery', error, ctx, {
       journeyId: journeyId?.toString(),
-      errorMessage: error instanceof Error ? error.message : String(error),
-      errorName: error instanceof Error ? error.name : undefined,
       hasUser: user != null,
-      isAnonymous: user?.isAnonymous,
-      url: ctx.resolvedUrl
+      isAnonymous: user?.isAnonymous
     })
     throw error
   }
