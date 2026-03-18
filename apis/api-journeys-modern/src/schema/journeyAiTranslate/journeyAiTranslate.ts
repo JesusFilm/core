@@ -288,7 +288,7 @@ Return in this format:
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
           targetLanguageName: input.textLanguageName,
-          journeyAnalysis: analysisResult.object.analysis
+          journeyAnalysis: analysisResult.analysis
         })
 
         // Update customization field values in the database
