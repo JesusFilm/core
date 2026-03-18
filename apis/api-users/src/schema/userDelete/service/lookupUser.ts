@@ -14,7 +14,7 @@ export async function lookupUser(
   id: string
 ): Promise<LookupResult> {
   const logs: LogEntry[] = []
-  logs.push(createLog(`Looking for user by ${idType}: ${id}`))
+  logs.push(createLog(`🔍 Looking for user by ${idType}: ${id}`))
 
   const user =
     idType === 'email'
@@ -29,7 +29,7 @@ export async function lookupUser(
 
   logs.push(
     createLog(
-      `User found: ${user.firstName} ${user.lastName ?? ''} (${user.email ?? 'no email'})`
+      `✅ User found: ${user.firstName} ${user.lastName ?? ''} (${user.email ?? 'no email'})`
     )
   )
 

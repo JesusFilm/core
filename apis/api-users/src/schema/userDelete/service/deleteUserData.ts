@@ -32,7 +32,7 @@ export async function deleteUserData(
   // 1. Delete Firebase auth record first
   try {
     await auth.deleteUser(input.firebaseUserId)
-    logs.push(createLog('Firebase auth record deleted'))
+    logs.push(createLog('🔥 Firebase auth record deleted'))
   } catch (error) {
     // auth/user-not-found means no Firebase record exists — safe to proceed
     if (
@@ -41,11 +41,11 @@ export async function deleteUserData(
       'code' in error &&
       error.code === 'auth/user-not-found'
     ) {
-      logs.push(createLog('No Firebase auth record found, proceeding'))
+      logs.push(createLog('⚠️ No Firebase auth record found, proceeding'))
     } else {
       const message = error instanceof Error ? error.message : 'Unknown error'
       logs.push(
-        createLog(`Failed to delete Firebase auth record: ${message}`, 'error')
+        createLog(`❌ Failed to delete Firebase auth record: ${message}`, 'error')
       )
       return { success: false, logs }
     }
@@ -71,12 +71,12 @@ export async function deleteUserData(
         success: false
       }
     })
-    logs.push(createLog('Audit log created'))
+    logs.push(createLog('📝 Audit log created'))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     logs.push(
       createLog(
-        `Failed to create audit log: ${message}. Aborting deletion.`,
+        `❌ Failed to create audit log: ${message}. Aborting deletion.`,
         'error'
       )
     )
@@ -86,7 +86,7 @@ export async function deleteUserData(
   // 3. Delete User record
   try {
     await prisma.user.delete({ where: { id: input.userDbId } })
-    logs.push(createLog('User record deleted from database'))
+    logs.push(createLog('🗑️ User record deleted from database'))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     if (auditLog != null) {
@@ -95,7 +95,7 @@ export async function deleteUserData(
         data: { errorMessage: `Failed to delete user record: ${message}` }
       })
     }
-    logs.push(createLog(`Failed to delete user record: ${message}`, 'error'))
+    logs.push(createLog(`❌ Failed to delete user record: ${message}`, 'error'))
     return { success: false, logs }
   }
 
@@ -107,6 +107,6 @@ export async function deleteUserData(
     })
   }
 
-  logs.push(createLog('User deleted successfully'))
+  logs.push(createLog('✅ User deleted successfully'))
   return { success: true, logs }
 }

@@ -71,7 +71,7 @@ builder.mutationField('userDeleteJourneysCheck', (t) =>
         }
       })
 
-      logs.push(createLog(`${userJourneys.length} journeys found`))
+      logs.push(createLog(`📂 ${userJourneys.length} journeys found`))
 
       let journeysToDelete = 0
       let journeysToTransfer = 0
@@ -123,7 +123,7 @@ builder.mutationField('userDeleteJourneysCheck', (t) =>
         }
       })
 
-      logs.push(createLog(`${userTeams.length} teams found`))
+      logs.push(createLog(`👥 ${userTeams.length} teams found`))
 
       let teamsToDelete = 0
       let teamsToTransfer = 0
@@ -200,10 +200,10 @@ builder.mutationField('userDeleteJourneysCheck', (t) =>
           createLog(`Related records to clean up: ${tablesToClean.join(', ')}`)
         )
       } else {
-        logs.push(createLog('No additional related records found'))
+        logs.push(createLog('✨ No additional related records found'))
       }
 
-      logs.push(createLog('Check complete. Ready for deletion confirmation.'))
+      logs.push(createLog('✅ Check complete. Ready for deletion confirmation.'))
 
       return {
         journeysToDelete,

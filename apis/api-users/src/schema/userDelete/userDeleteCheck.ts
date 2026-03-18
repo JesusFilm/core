@@ -71,7 +71,7 @@ builder.mutationField('userDeleteCheck', (t) =>
       const { user, logs: lookupLogs } = await lookupUser(idType, id)
       allLogs.push(...lookupLogs)
 
-      allLogs.push(createLog('Checking journeys and teams...'))
+      allLogs.push(createLog('📋 Checking journeys and teams...'))
 
       const journeysResult = await callJourneysCheck(user.userId)
       allLogs.push(...journeysResult.logs)

@@ -100,7 +100,7 @@ export async function callJourneysCheck(
         teamsToDelete: 0,
         teamsToTransfer: 0,
         teamsToRemove: 0,
-        logs: [createLog('Failed to get journeys check result', 'error')]
+        logs: [createLog('❌ Failed to get journeys check result', 'error')]
       }
     }
 
@@ -114,7 +114,7 @@ export async function callJourneysCheck(
       teamsToDelete: 0,
       teamsToTransfer: 0,
       teamsToRemove: 0,
-      logs: [createLog(`Journeys check failed: ${message}`, 'error')]
+      logs: [createLog(`❌ Journeys check failed: ${message}`, 'error')]
     }
   }
 }
@@ -137,7 +137,7 @@ export async function callJourneysConfirm(
         deletedTeamIds: [],
         deletedUserJourneyIds: [],
         deletedUserTeamIds: [],
-        logs: [createLog('Failed to get journeys confirm result', 'error')]
+        logs: [createLog('❌ Failed to get journeys confirm result', 'error')]
       }
     }
 
@@ -150,7 +150,7 @@ export async function callJourneysConfirm(
       deletedTeamIds: [],
       deletedUserJourneyIds: [],
       deletedUserTeamIds: [],
-      logs: [createLog(`Journeys confirm failed: ${message}`, 'error')]
+      logs: [createLog(`❌ Journeys confirm failed: ${message}`, 'error')]
     }
   }
 }

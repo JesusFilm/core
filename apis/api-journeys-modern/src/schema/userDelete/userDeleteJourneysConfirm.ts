@@ -100,7 +100,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
                   })
                   logs.push(
                     createLog(
-                      `Transferred ownership of journey "${uj.journey.title}" to user ${nextOwner.userId}`
+                      `🔄 Transferred ownership of journey "${uj.journey.title}" to user ${nextOwner.userId}`
                     )
                   )
                 }
@@ -148,7 +148,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
                   })
                   logs.push(
                     createLog(
-                      `Transferred manager role of team "${ut.team.title}" to user ${nextManager.userId}`
+                      `🔄 Transferred manager role of team "${ut.team.title}" to user ${nextManager.userId}`
                     )
                   )
                 }
@@ -163,7 +163,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
             deletedUserJourneyIds.push(...ujRecords.map((r) => r.id))
             await tx.userJourney.deleteMany({ where: { userId } })
             logs.push(
-              createLog(`Removed ${ujRecords.length} user-journey memberships`)
+              createLog(`🗑️ Removed ${ujRecords.length} user-journey memberships`)
             )
 
             const utRecords = await tx.userTeam.findMany({
@@ -173,7 +173,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
             deletedUserTeamIds.push(...utRecords.map((r) => r.id))
             await tx.userTeam.deleteMany({ where: { userId } })
             logs.push(
-              createLog(`Removed ${utRecords.length} user-team memberships`)
+              createLog(`🗑️ Removed ${utRecords.length} user-team memberships`)
             )
 
             // Delete sole-accessor journeys
@@ -182,7 +182,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
                 where: { id: { in: journeyIdsToDelete } }
               })
               logs.push(
-                createLog(`Deleted ${journeyIdsToDelete.length} journeys`)
+                createLog(`🗑️ Deleted ${journeyIdsToDelete.length} journeys`)
               )
             }
 
@@ -191,7 +191,7 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
               await tx.team.deleteMany({
                 where: { id: { in: teamIdsToDelete } }
               })
-              logs.push(createLog(`Deleted ${teamIdsToDelete.length} teams`))
+              logs.push(createLog(`🗑️ Deleted ${teamIdsToDelete.length} teams`))
             }
 
             // Clean up related records
@@ -272,14 +272,14 @@ builder.mutationField('userDeleteJourneysConfirm', (t) =>
           { timeout: 60000 }
         )
 
-        logs.push(createLog('Journeys database cleanup completed'))
+        logs.push(createLog('✅ Journeys database cleanup completed'))
 
         return { success: true, ...result, logs }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unknown error'
         logs.push(
           createLog(
-            `Journeys database cleanup failed: ${message}. All changes reverted.`,
+            `❌ Journeys database cleanup failed: ${message}. All changes reverted.`,
             'error'
           )
         )
