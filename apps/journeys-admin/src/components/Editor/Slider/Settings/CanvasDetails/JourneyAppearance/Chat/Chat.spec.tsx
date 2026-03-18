@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -197,6 +198,46 @@ describe('Chat', () => {
     expect(
       screen.queryByText('+ Add 2nd Custom Button')
     ).not.toBeInTheDocument()
+  })
+
+  it('should show error snackbar when add 2nd custom button fails', async () => {
+    const createErrorMock: MockedResponse<JourneyChatButtonCreate> = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_CREATE,
+        variables: {
+          journeyId: 'journey-1',
+          input: {
+            link: '',
+            platform: MessagePlatform.custom
+          }
+        }
+      },
+      result: {
+        errors: [new GraphQLError('Error!')]
+      }
+    }
+
+    renderChat(
+      [
+        {
+          __typename: 'ChatButton',
+          id: '1',
+          link: 'https://viber.com/test',
+          platform: MessagePlatform.viber,
+          customizable: null
+        }
+      ],
+      [createErrorMock]
+    )
+
+    const addButton = screen.getByText('+ Add 2nd Custom Button')
+    fireEvent.click(addButton)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Error adding button, please reload and try again.')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should call chatButtonCreate when add 2nd custom button is clicked', async () => {

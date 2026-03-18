@@ -3,6 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -19,6 +20,7 @@ import { JOURNEY_CHAT_BUTTON_CREATE } from './ChatOption/Summary/Summary'
 export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [chatButtonCreate] = useMutation<JourneyChatButtonCreate>(
     JOURNEY_CHAT_BUTTON_CREATE
@@ -44,35 +46,45 @@ export function Chat(): ReactElement {
 
   async function handleAddCustomButton(): Promise<void> {
     if (journey?.id == null) return
-    await chatButtonCreate({
-      variables: {
-        journeyId: journey.id,
-        input: {
-          link: '',
-          platform: MessagePlatform.custom
-        }
-      },
-      update(cache, { data }) {
-        if (data?.chatButtonCreate != null) {
-          cache.modify({
-            id: cache.identify({ __typename: 'Journey', id: journey.id }),
-            fields: {
-              chatButtons(existing = []) {
-                const ref = cache.writeFragment({
-                  data: data.chatButtonCreate,
-                  fragment: gql`
-                    fragment NewChatButton on ChatButton {
-                      id
-                    }
-                  `
-                })
-                return [...existing, ref]
+    try {
+      await chatButtonCreate({
+        variables: {
+          journeyId: journey.id,
+          input: {
+            link: '',
+            platform: MessagePlatform.custom
+          }
+        },
+        update(cache, { data }) {
+          if (data?.chatButtonCreate != null) {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey.id }),
+              fields: {
+                chatButtons(existing = []) {
+                  const ref = cache.writeFragment({
+                    data: data.chatButtonCreate,
+                    fragment: gql`
+                      fragment NewChatButton on ChatButton {
+                        id
+                      }
+                    `
+                  })
+                  return [...existing, ref]
+                }
               }
-            }
-          })
+            })
+          }
         }
-      }
-    })
+      })
+    } catch (error) {
+      enqueueSnackbar(
+        t('Error adding button, please reload and try again.'),
+        {
+          variant: 'error',
+          preventDuplicate: true
+        }
+      )
+    }
   }
 
   return (
