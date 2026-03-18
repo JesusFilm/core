@@ -8,6 +8,7 @@ import {
   clearSheet,
   columnIndexToA1,
   ensureSheet,
+  escapeSheetName,
   readValues,
   writeValues
 } from '../../../lib/google/sheets'
@@ -328,7 +329,8 @@ export async function backfillService(
 
   const writeWidth = finalHeader.length
   const lastColumnA1 = columnIndexToA1(writeWidth - 1)
-  const fullRange = `${sheetName}!A:${lastColumnA1}`
+  const escapedName = escapeSheetName(sheetName)
+  const fullRange = `${escapedName}!A:${lastColumnA1}`
 
   let existingValues: (string | null)[][] = []
   let readFailed = false

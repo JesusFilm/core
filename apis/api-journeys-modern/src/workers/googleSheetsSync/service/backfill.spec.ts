@@ -87,7 +87,7 @@ describe('backfillService', () => {
     expect(mockReadValues).toHaveBeenCalledWith({
       accessToken: 'access-token',
       spreadsheetId: 'spreadsheet-id',
-      range: 'Sheet1!A:B'
+      range: "'Sheet1'!A:B"
     })
     expect(mockClearSheet).not.toHaveBeenCalled()
     expect(mockWriteValues).not.toHaveBeenCalled()
