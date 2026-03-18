@@ -20,7 +20,10 @@ export async function getSimpleJourney(
       }
     }
   })
-  if (!journey) throw new Error('Journey not found')
+  if (!journey)
+    throw new GraphQLError('Journey not found', {
+      extensions: { code: 'NOT_FOUND' }
+    })
 
   const simpleJourney = simplifyJourney(journey)
   const result = journeySimpleSchema.safeParse(simpleJourney)

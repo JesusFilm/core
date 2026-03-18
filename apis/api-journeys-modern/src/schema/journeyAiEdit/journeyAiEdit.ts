@@ -109,7 +109,16 @@ builder.mutationField('journeyAiEdit', (t) =>
       }
 
       // 3. Fetch simple journey representation
-      const currentJourney = await getSimpleJourney(input.journeyId)
+      let currentJourney: JourneySimple
+      try {
+        currentJourney = await getSimpleJourney(input.journeyId)
+      } catch (error) {
+        if (error instanceof GraphQLError) throw error
+        console.error('journeyAiEdit: failed to load journey', error)
+        throw new GraphQLError('Failed to load journey data. Please try again.', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+      }
 
       // 4. Prune history to last 10 turns
       const rawHistory =
