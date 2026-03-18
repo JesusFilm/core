@@ -74,9 +74,7 @@ builder.mutationField('userDeleteCheck', (t) =>
       // Firebase-only account — no DB user, no journeys data
       if (user == null) {
         allLogs.push(
-          createLog(
-            '📋 Skipping journeys check — no database user to look up'
-          )
+          createLog('📋 Skipping journeys check — no database user to look up')
         )
         return {
           userId: firebase.uid ?? '',

@@ -2,8 +2,9 @@ import { builder } from '../builder'
 
 import { type LogEntry, checkJourneysData } from './service'
 
-const UserDeleteJourneysLogEntry =
-  builder.objectRef<LogEntry>('UserDeleteJourneysLogEntry')
+const UserDeleteJourneysLogEntry = builder.objectRef<LogEntry>(
+  'UserDeleteJourneysLogEntry'
+)
 
 builder.objectType(UserDeleteJourneysLogEntry, {
   fields: (t) => ({
