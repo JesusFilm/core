@@ -148,12 +148,10 @@ builder.mutationField('journeyAiEdit', (t) =>
       }
 
       // 4. Prune history to last 10 turns
-      const prunedHistory = (input.history ?? [])
-        .slice(-10)
-        .map((m) => ({
-          role: m.role as 'user' | 'assistant',
-          content: m.content
-        }))
+      const prunedHistory = (input.history ?? []).slice(-10).map((m) => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content
+      }))
 
       // 5. Harden user message
       const hardenedMessage = hardenPrompt(input.message)
