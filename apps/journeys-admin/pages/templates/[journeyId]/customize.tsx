@@ -71,9 +71,7 @@ function DiagnosticFallback(): ReactElement {
         p: 4
       }}
     >
-      <Typography variant="h5">
-        {t('Something went wrong')}
-      </Typography>
+      <Typography variant="h5">{t('Something went wrong')}</Typography>
       <Typography variant="body1" color="text.secondary">
         {t(
           'Please try refreshing the page. If the problem persists, contact support.'
