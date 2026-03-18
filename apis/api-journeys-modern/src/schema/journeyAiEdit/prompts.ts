@@ -24,8 +24,8 @@ IMPORTANT LANGUAGE RULES:
 - Reply in the same language the user writes in
 
 OUTPUT CONTRACT:
-- When making changes, set hasChanges: true and return the COMPLETE updated journey JSON in the journey field
-- When only giving advice or answering questions, set hasChanges: false (no journey field needed)
+- When making changes, return the COMPLETE updated journey JSON in the journey field
+- When only giving advice or answering questions, set journey to null
 - Always include a clear, plain-language explanation in the reply field
 
 CURRENT JOURNEY STATE:

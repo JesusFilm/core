@@ -55,22 +55,19 @@ const JourneyAiEditInput = builder.inputType('JourneyAiEditInput', {
   })
 })
 
-// Discriminated union schema for AI response
-const journeyAiEditSchema = z.discriminatedUnion('hasChanges', [
-  z.object({
-    hasChanges: z.literal(true),
-    reply: z
-      .string()
-      .describe('Plain language explanation of what was changed and why'),
-    journey: journeySimpleSchemaUpdate.describe(
-      'Full updated journey with all changes applied'
+// Flat schema for AI response — avoids boolean enum which Gemini rejects
+const journeyAiEditSchema = z.object({
+  reply: z
+    .string()
+    .describe(
+      'Plain language explanation of what was changed and why, or suggestions/answer if no changes'
+    ),
+  journey: journeySimpleSchemaUpdate
+    .nullable()
+    .describe(
+      'Full updated journey with all changes applied, or null if no structural changes are needed'
     )
-  }),
-  z.object({
-    hasChanges: z.literal(false),
-    reply: z.string().describe('Plain language suggestions or answer')
-  })
-])
+})
 
 builder.mutationField('journeyAiEdit', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -145,7 +142,7 @@ builder.mutationField('journeyAiEdit', (t) =>
       let aiResult: z.infer<typeof journeyAiEditSchema>
       try {
         const { object } = await generateObject({
-          model: google('gemini-2.5-flash-preview-04-17'),
+          model: google('gemini-2.0-flash'),
           system: systemPrompt,
           messages: [
             ...prunedHistory,
@@ -180,20 +177,13 @@ builder.mutationField('journeyAiEdit', (t) =>
         userId: context.user.id,
         journeyId: input.journeyId,
         timestamp: new Date().toISOString(),
-        hadProposal: aiResult.hasChanges
+        hadProposal: aiResult.journey != null
       })
 
       // 9. Return result
-      if (aiResult.hasChanges) {
-        return {
-          reply: aiResult.reply,
-          proposedJourney: aiResult.journey as JourneySimple
-        }
-      }
-
       return {
         reply: aiResult.reply,
-        proposedJourney: null
+        proposedJourney: (aiResult.journey as JourneySimple) ?? null
       }
     }
   })
