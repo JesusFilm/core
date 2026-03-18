@@ -59,12 +59,9 @@ async function deleteFirebaseUser(
       anyDeleted = true
     } catch (error) {
       if (isFirebaseNotFound(error)) {
-        logs.push(
-          createLog(`⚠️ No Firebase auth record for UID: ${uid}`)
-        )
+        logs.push(createLog(`⚠️ No Firebase auth record for UID: ${uid}`))
       } else {
-        const message =
-          error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error ? error.message : 'Unknown error'
         logs.push(
           createLog(
             `❌ Failed to delete Firebase auth record (UID: ${uid}): ${message}`,
@@ -88,12 +85,9 @@ async function deleteFirebaseUser(
       )
     } catch (error) {
       if (isFirebaseNotFound(error)) {
-        logs.push(
-          createLog('🔥 No Firebase auth record found by email either')
-        )
+        logs.push(createLog('🔥 No Firebase auth record found by email either'))
       } else {
-        const message =
-          error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error ? error.message : 'Unknown error'
         logs.push(
           createLog(
             `❌ Failed to delete Firebase auth via email fallback: ${message}`,
@@ -122,9 +116,7 @@ export async function deleteUserData(
   logs.push(...fbLogs)
 
   // Check if any Firebase delete produced a hard error
-  const hasFirebaseError = fbLogs.some(
-    (log) => log.level === 'error'
-  )
+  const hasFirebaseError = fbLogs.some((log) => log.level === 'error')
   if (hasFirebaseError) {
     return { success: false, logs }
   }

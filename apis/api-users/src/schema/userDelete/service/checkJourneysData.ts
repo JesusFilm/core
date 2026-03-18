@@ -40,9 +40,7 @@ export async function checkJourneysData(
   let journeysToRemove = 0
 
   for (const uj of userJourneys) {
-    const others = uj.journey.userJourneys.filter(
-      (j) => j.userId !== userId
-    )
+    const others = uj.journey.userJourneys.filter((j) => j.userId !== userId)
     if (others.length === 0) {
       journeysToDelete++
     } else if (uj.role === 'owner') {
@@ -60,9 +58,7 @@ export async function checkJourneysData(
     )
   if (journeysToTransfer > 0)
     logs.push(
-      createLog(
-        `${journeysToTransfer} journey ownerships will be transferred`
-      )
+      createLog(`${journeysToTransfer} journey ownerships will be transferred`)
     )
   if (journeysToRemove > 0)
     logs.push(
@@ -104,18 +100,14 @@ export async function checkJourneysData(
 
   if (teamsToDelete > 0)
     logs.push(
-      createLog(
-        `${teamsToDelete} teams will be deleted (user is sole member)`
-      )
+      createLog(`${teamsToDelete} teams will be deleted (user is sole member)`)
     )
   if (teamsToTransfer > 0)
     logs.push(
       createLog(`${teamsToTransfer} team manager roles will be transferred`)
     )
   if (teamsToRemove > 0)
-    logs.push(
-      createLog(`${teamsToRemove} team memberships will be removed`)
-    )
+    logs.push(createLog(`${teamsToRemove} team memberships will be removed`))
 
   // Check related records
   const [
@@ -165,9 +157,7 @@ export async function checkJourneysData(
     logs.push(createLog('✨ No additional related records found'))
   }
 
-  logs.push(
-    createLog('✅ Check complete. Ready for deletion confirmation.')
-  )
+  logs.push(createLog('✅ Check complete. Ready for deletion confirmation.'))
 
   return {
     journeysToDelete,

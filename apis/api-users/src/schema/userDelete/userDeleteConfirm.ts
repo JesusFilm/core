@@ -20,9 +20,7 @@ interface UserDeleteConfirmProgressShape {
 }
 
 const UserDeleteConfirmProgress =
-  builder.objectRef<UserDeleteConfirmProgressShape>(
-    'UserDeleteConfirmProgress'
-  )
+  builder.objectRef<UserDeleteConfirmProgressShape>('UserDeleteConfirmProgress')
 
 builder.objectType(UserDeleteConfirmProgress, {
   fields: (t) => ({

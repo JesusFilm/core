@@ -54,10 +54,7 @@ async function checkFirebaseUser(
     if (!isNotFound) {
       const message = error instanceof Error ? error.message : 'Unknown error'
       logs.push(
-        createLog(
-          `⚠️ Firebase lookup by UID failed: ${message}`,
-          'warn'
-        )
+        createLog(`⚠️ Firebase lookup by UID failed: ${message}`, 'warn')
       )
     }
   }
@@ -91,8 +88,7 @@ async function checkFirebaseUser(
         error.code === 'auth/user-not-found'
 
       if (!isNotFound) {
-        const message =
-          error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error ? error.message : 'Unknown error'
         logs.push(
           createLog(
             `⚠️ Firebase lookup by email also failed: ${message}`,

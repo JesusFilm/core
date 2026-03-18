@@ -1,4 +1,10 @@
-import { ApolloError, gql, useMutation, useSubscription, useSuspenseQuery } from '@apollo/client'
+import {
+  ApolloError,
+  gql,
+  useMutation,
+  useSubscription,
+  useSuspenseQuery
+} from '@apollo/client'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
@@ -69,7 +75,10 @@ export const USER_DELETE_CHECK = gql`
 `
 
 export const USER_DELETE_CONFIRM = gql`
-  subscription UserDeleteConfirmSubscription($idType: UserDeleteIdType!, $id: String!) {
+  subscription UserDeleteConfirmSubscription(
+    $idType: UserDeleteIdType!
+    $id: String!
+  ) {
     userDeleteConfirm(idType: $idType, id: $id) {
       log {
         message
