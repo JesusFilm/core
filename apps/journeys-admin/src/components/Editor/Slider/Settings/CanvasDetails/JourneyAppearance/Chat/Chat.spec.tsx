@@ -9,6 +9,7 @@ import { JourneyChatButtonCreate } from '../../../../../../../../__generated__/J
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 
 import { JOURNEY_CHAT_BUTTON_CREATE } from './ChatOption/Summary/Summary'
+
 import { Chat } from '.'
 
 const renderChat = (
@@ -93,9 +94,7 @@ describe('Chat', () => {
 
     expect(screen.getByTestId('checkbox-facebook')).toHaveClass('Mui-checked')
     expect(screen.getByTestId('checkbox-telegram')).toHaveClass('Mui-checked')
-    expect(screen.getByTestId('checkbox-custom')).not.toHaveClass(
-      'Mui-checked'
-    )
+    expect(screen.getByTestId('checkbox-custom')).not.toHaveClass('Mui-checked')
   })
 
   it('should render a single custom button with add 2nd custom button', () => {
@@ -110,9 +109,7 @@ describe('Chat', () => {
     ])
 
     expect(screen.getByTestId('checkbox-viber')).toHaveClass('Mui-checked')
-    expect(
-      screen.getByText('+ Add 2nd Custom Button')
-    ).toBeInTheDocument()
+    expect(screen.getByText('+ Add 2nd Custom Button')).toBeInTheDocument()
   })
 
   it('should show max selection message and disable unchecked rows when 2 buttons exist', () => {
