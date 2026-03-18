@@ -1,4 +1,3 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
@@ -7,7 +6,7 @@ import {
   UserTeamRole,
   prisma
 } from '@core/prisma/journeys/client'
-import { graphql } from '@core/shared/gql'
+import { prisma as prismaUsers } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
 
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'
@@ -28,42 +27,6 @@ import {
   TeamInviteJob,
   TeamRemoved
 } from './prisma.types'
-
-const httpLink = createHttpLink({
-  uri: env.GATEWAY_URL,
-  headers: {
-    'interop-token': env.INTEROP_TOKEN,
-    'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': env.SERVICE_VERSION
-  }
-})
-
-const apollo = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache()
-})
-
-const GET_USER = graphql(`
-  query GetUser($userId: ID!) {
-    user(id: $userId) {
-      id
-      email
-      firstName
-      imageUrl
-    }
-  }
-`)
-
-const GET_USER_BY_EMAIL = graphql(`
-  query GetUserByEmail($email: String!) {
-    userByEmail(email: $email) {
-      id
-      email
-      firstName
-      imageUrl
-    }
-  }
-`)
 
 export async function service(job: Job<ApiJourneysJob>): Promise<void> {
   switch (job.name) {
@@ -89,17 +52,25 @@ export async function service(job: Job<ApiJourneysJob>): Promise<void> {
 }
 
 export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
-  const { data } = await apollo.query({
-    query: GET_USER,
-    variables: { userId: job.data.userId }
+  const recipientUser = await prismaUsers.user.findUnique({
+    where: { userId: job.data.userId }
   })
 
-  if (data.user == null) throw new Error('User not found')
+  const user =
+    recipientUser == null
+      ? null
+      : {
+          ...recipientUser,
+          email: recipientUser.email ?? '',
+          lastName: recipientUser.lastName ?? undefined
+        }
+
+  if (user == null) throw new Error('User not found')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
-      email: data.user.email
+      email: user.email
     }
   })
   // do not send email if team removed notification is not preferred
@@ -112,14 +83,14 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
   const html = await render(
     TeamRemovedEmail({
       teamName: job.data.teamName,
-      recipient: data.user
+      recipient: user
     })
   )
 
   const text = await render(
     TeamRemovedEmail({
       teamName: job.data.teamName,
-      recipient: data.user
+      recipient: user
     }),
     {
       plainText: true
@@ -127,7 +98,7 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
   )
 
   await sendEmail({
-    to: data.user.email,
+    to: user.email,
     subject: `You have been removed from team: ${job.data.teamName}`,
     text,
     html
@@ -149,12 +120,20 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
   )
     return
 
-  const { data } = await apollo.query({
-    query: GET_USER_BY_EMAIL,
-    variables: { email: job.data.email }
+  const recipientUser = await prismaUsers.user.findUnique({
+    where: { email: job.data.email }
   })
 
-  if (data.userByEmail == null) {
+  const user =
+    recipientUser == null
+      ? null
+      : {
+          ...recipientUser,
+          email: recipientUser.email ?? '',
+          lastName: recipientUser.lastName ?? undefined
+        }
+
+  if (user == null) {
     const html = await render(
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
@@ -184,7 +163,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     const html = await render(
       TeamInviteEmail({
         teamName: job.data.team.title,
-        recipient: data.userByEmail,
+        recipient: user,
         inviteLink: url,
         sender: job.data.sender
       })
@@ -193,7 +172,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     const text = await render(
       TeamInviteEmail({
         teamName: job.data.team.title,
-        recipient: data.userByEmail,
+        recipient: user,
         inviteLink: url,
         sender: job.data.sender
       }),
@@ -218,28 +197,42 @@ export async function teamInviteAcceptedEmail(
   const recipientUserTeams = job.data.team.userTeams.filter(
     (userTeam) => userTeam.role === UserTeamRole.manager
   )
+  const recipientUserIds = recipientUserTeams.map((userTeam) => userTeam.userId)
 
-  const recipientEmails = await Promise.all(
-    recipientUserTeams.map(async (userTeam) => {
-      const { data } = await apollo.query({
-        query: GET_USER,
-        variables: { userId: userTeam.userId }
-      })
-      return data
-    })
+  const recipientUsers = await prismaUsers.user.findMany({
+    where: {
+      userId: {
+        in: recipientUserIds
+      }
+    }
+  })
+
+  const recipientUsersByUserId = new Map(
+    recipientUsers.map((user) => [
+      user.userId,
+      {
+        ...user,
+        email: user.email ?? '',
+        lastName: user.lastName ?? undefined
+      }
+    ])
   )
 
-  if (recipientEmails == null || recipientEmails.length === 0) {
+  const recipients = recipientUserIds.map((userId) =>
+    recipientUsersByUserId.get(userId)
+  )
+
+  if (recipients.length === 0) {
     throw new Error('Team Managers not found')
   }
 
-  for (const recipient of recipientEmails) {
-    if (recipient.user == null) throw new Error('User not found')
+  for (const recipient of recipients) {
+    if (recipient == null) throw new Error('User not found')
 
     // check recipient preferences
     const preferences = await prisma.journeysEmailPreference.findFirst({
       where: {
-        email: recipient.user.email
+        email: recipient.email
       }
     })
     // do not send email if team removed notification is not preferred
@@ -254,7 +247,7 @@ export async function teamInviteAcceptedEmail(
         teamName: job.data.team.title,
         inviteLink: url,
         sender: job.data.sender,
-        recipient: recipient.user
+        recipient
       })
     )
 
@@ -263,7 +256,7 @@ export async function teamInviteAcceptedEmail(
         teamName: job.data.team.title,
         inviteLink: url,
         sender: job.data.sender,
-        recipient: recipient.user
+        recipient
       }),
       {
         plainText: true
@@ -271,7 +264,7 @@ export async function teamInviteAcceptedEmail(
     )
 
     await sendEmail({
-      to: recipient.user.email,
+      to: recipient.email,
       subject: `${
         job.data.sender.firstName ?? 'A new member'
       } has been added to your team`,
@@ -290,17 +283,25 @@ export async function journeyAccessRequest(
 
   if (recipientUserId == null) throw new Error('User not found')
 
-  const { data } = await apollo.query({
-    query: GET_USER,
-    variables: { userId: recipientUserId }
+  const recipientUser = await prismaUsers.user.findUnique({
+    where: { userId: recipientUserId }
   })
 
-  if (data.user == null) throw new Error('User not found')
+  const user =
+    recipientUser == null
+      ? null
+      : {
+          ...recipientUser,
+          email: recipientUser.email ?? '',
+          lastName: recipientUser.lastName ?? undefined
+        }
+
+  if (user == null) throw new Error('User not found')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
-      email: data.user.email
+      email: user.email
     }
   })
   // do not send email if team removed notification is not preferred
@@ -314,7 +315,7 @@ export async function journeyAccessRequest(
     JourneyAccessRequestEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
-      recipient: data.user,
+      recipient: user,
       sender: job.data.sender
     })
   )
@@ -322,7 +323,7 @@ export async function journeyAccessRequest(
     JourneyAccessRequestEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
-      recipient: data.user,
+      recipient: user,
       sender: job.data.sender
     }),
     {
@@ -331,7 +332,7 @@ export async function journeyAccessRequest(
   )
 
   await sendEmail({
-    to: data.user.email,
+    to: user.email,
     subject: `${job.data.sender.firstName} requests access to a journey`,
     html,
     text
@@ -341,17 +342,25 @@ export async function journeyAccessRequest(
 export async function journeyRequestApproved(
   job: Job<JourneyRequestApproved>
 ): Promise<void> {
-  const { data } = await apollo.query({
-    query: GET_USER,
-    variables: { userId: job.data.userId }
+  const recipientUser = await prismaUsers.user.findUnique({
+    where: { userId: job.data.userId }
   })
 
-  if (data.user == null) throw new Error('User not found')
+  const user =
+    recipientUser == null
+      ? null
+      : {
+          ...recipientUser,
+          email: recipientUser.email ?? '',
+          lastName: recipientUser.lastName ?? undefined
+        }
+
+  if (user == null) throw new Error('User not found')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
-      email: data.user.email
+      email: user.email
     }
   })
   // do not send email if team removed notification is not preferred
@@ -366,7 +375,7 @@ export async function journeyRequestApproved(
       journey: job.data.journey,
       inviteLink: job.data.url,
       sender: job.data.sender,
-      recipient: data.user
+      recipient: user
     })
   )
 
@@ -375,14 +384,14 @@ export async function journeyRequestApproved(
       journey: job.data.journey,
       inviteLink: job.data.url,
       sender: job.data.sender,
-      recipient: data.user
+      recipient: user
     }),
     {
       plainText: true
     }
   )
   await sendEmail({
-    to: data.user.email,
+    to: user.email,
     subject: `${job.data.journey.title} has been shared with you`,
     html,
     text
@@ -405,12 +414,20 @@ export async function journeyEditInvite(
   )
     return
 
-  const { data } = await apollo.query({
-    query: GET_USER_BY_EMAIL,
-    variables: { email: job.data.email }
+  const recipientUser = await prismaUsers.user.findUnique({
+    where: { email: job.data.email }
   })
 
-  if (data.userByEmail == null) {
+  const user =
+    recipientUser == null
+      ? null
+      : {
+          ...recipientUser,
+          email: recipientUser.email ?? '',
+          lastName: recipientUser.lastName ?? undefined
+        }
+
+  if (user == null) {
     const url = `${env.JOURNEYS_ADMIN_URL}/`
     const html = await render(
       JourneySharedNoAccountEmail({
@@ -443,7 +460,7 @@ export async function journeyEditInvite(
         sender: job.data.sender,
         journey: job.data.journey,
         inviteLink: job.data.url,
-        recipient: data.userByEmail
+        recipient: user
       })
     )
     const text = await render(
@@ -451,7 +468,7 @@ export async function journeyEditInvite(
         journey: job.data.journey,
         inviteLink: job.data.url,
         sender: job.data.sender,
-        recipient: data.userByEmail
+        recipient: user
       }),
       {
         plainText: true
