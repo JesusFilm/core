@@ -1,8 +1,8 @@
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { JourneySimple, JourneySimpleCard } from '@core/shared/ai/journeySimpleTypes'

@@ -42,6 +42,9 @@ function AiEditorPage(): ReactElement {
   const [currentJourney, setCurrentJourney] = useState<JourneySimple | null>(
     null
   )
+  const [proposedJourney, setProposedJourney] = useState<JourneySimple | null>(
+    null
+  )
   const [aiState, setAiState] = useState<AiState>({
     status: 'idle',
     affectedCardIds: []
@@ -58,15 +61,24 @@ function AiEditorPage(): ReactElement {
 
   const journey = data?.journey
 
+  const previewJourney = proposedJourney ?? currentJourney
+
   const selectedCardIndex =
-    currentJourney != null && selectedCardId != null
-      ? currentJourney.cards.findIndex((c) => c.id === selectedCardId) + 1
+    previewJourney != null && selectedCardId != null
+      ? previewJourney.cards.findIndex((c) => c.id === selectedCardId) + 1
       : null
 
   const handleJourneyUpdated = useCallback((updatedJourney: JourneySimple) => {
     setCurrentJourney(updatedJourney)
     setAiState({ status: 'idle', affectedCardIds: [] })
   }, [])
+
+  const handleProposedJourney = useCallback(
+    (journey: JourneySimple | null) => {
+      setProposedJourney(journey)
+    },
+    []
+  )
 
   const handleSelectedCardChange = useCallback(
     (cardId: string | null) => {
@@ -127,6 +139,7 @@ function AiEditorPage(): ReactElement {
             }
             onClearSelectedCard={handleClearSelectedCard}
             onAiState={setAiState}
+            onProposedJourney={handleProposedJourney}
             onJourneyUpdated={handleJourneyUpdated}
             sx={{
               width: { xs: '100%', md: '40%' },
@@ -136,9 +149,9 @@ function AiEditorPage(): ReactElement {
               }
             }}
           />
-          {currentJourney != null ? (
+          {previewJourney != null ? (
             <AiEditorPreview
-              journey={currentJourney}
+              journey={previewJourney}
               aiState={aiState}
               onSelectedCardChange={handleSelectedCardChange}
               sx={{ flex: 1, display: { xs: 'none', md: 'flex' } }}

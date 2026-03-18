@@ -2,8 +2,12 @@ import { gql, useMutation } from '@apollo/client'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useCallback, useEffect, useReducer, useRef } from 'react'
+
+import { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
 
 import {
   JourneyAiEdit,
@@ -13,10 +17,6 @@ import {
   JourneySimpleUpdateFromAiEditor,
   JourneySimpleUpdateFromAiEditorVariables
 } from '../../../../__generated__/JourneySimpleUpdateFromAiEditor'
-import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useReducer, useRef } from 'react'
-
-import { JourneySimple } from '@core/shared/ai/journeySimpleTypes'
 
 import { AiChatInput } from './AiChatInput'
 import { AiChatMessage, ChatMessage } from './AiChatMessage'
@@ -48,6 +48,7 @@ interface AiChatProps {
   selectedCardIndex?: number | null
   onClearSelectedCard?: () => void
   onAiState: (state: AiState) => void
+  onProposedJourney: (journey: JourneySimple | null) => void
   onJourneyUpdated: (journey: JourneySimple) => void
   sx?: SxProps
 }
@@ -207,6 +208,7 @@ export function AiChat({
   selectedCardIndex,
   onClearSelectedCard,
   onAiState,
+  onProposedJourney,
   onJourneyUpdated,
   sx
 }: AiChatProps): ReactElement {
@@ -273,11 +275,12 @@ export function AiChat({
 
       dispatch({
         type: 'RECEIVE',
-        reply: data.reply,
+        reply: data.reply ?? '',
         proposedJourney,
         diffSummary: diff.summary
       })
 
+      onProposedJourney(proposedJourney)
       onAiState({
         status: proposedJourney != null ? 'proposal' : 'idle',
         affectedCardIds: diff.affectedCardIds
@@ -297,6 +300,7 @@ export function AiChat({
     selectedCardId,
     currentJourney,
     journeyAiEdit,
+    onProposedJourney,
     onAiState
   ])
 
@@ -318,6 +322,7 @@ export function AiChat({
           type: 'APPLY_SUCCESS',
           messageGenerationId: message.generationId
         })
+        onProposedJourney(null)
         onJourneyUpdated(message.proposedJourney)
         onAiState({ status: 'idle', affectedCardIds: [] })
       } catch {
@@ -331,6 +336,7 @@ export function AiChat({
       state.generationId,
       journeyId,
       journeySimpleUpdate,
+      onProposedJourney,
       onJourneyUpdated,
       onAiState
     ]
@@ -339,9 +345,10 @@ export function AiChat({
   const handleDismiss = useCallback(
     (message: ChatMessage) => {
       dispatch({ type: 'DISMISS', messageGenerationId: message.generationId })
+      onProposedJourney(null)
       onAiState({ status: 'idle', affectedCardIds: [] })
     },
-    [onAiState]
+    [onProposedJourney, onAiState]
   )
 
   const isEmpty = state.messages.length === 0

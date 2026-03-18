@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -220,7 +220,7 @@ export function AiEditorCardPreview({
                 zIndex: 2
               }}
             >
-              AI CHANGE
+              {t('AI CHANGE')}
             </Box>
           )}
         </Box>
