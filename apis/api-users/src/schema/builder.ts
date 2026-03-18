@@ -98,7 +98,10 @@ export const builder = new SchemaBuilder<{
             isValidInterop: true
           }
         default:
-          console.log('[authScopes] context type=%s — falling through to public', context.type)
+          console.log(
+            '[authScopes] context type=%s — falling through to public',
+            context.type
+          )
           return {
             isAuthenticated: false,
             isAnonymous: false,
