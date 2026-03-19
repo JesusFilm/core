@@ -59,6 +59,9 @@ importers:
       '@crowdin/ota-client':
         specifier: ^2.0.0
         version: 2.0.2
+      '@dagrejs/dagre':
+        specifier: ^2.0.4
+        version: 2.0.4
       '@datadog/browser-rum':
         specifier: ^6.14.0
         version: 6.14.0
@@ -3596,6 +3599,12 @@ packages:
 
   '@dabh/diagnostics@2.0.8':
     resolution: {integrity: sha512-R4MSXTVnuMzGD7bzHdW2ZhhdPC/igELENcq5IjEverBvq5hn1SXCWcsi6eSsdWP0/Ur+SItRRjAktmdoX/8R/Q==}
+
+  '@dagrejs/dagre@2.0.4':
+    resolution: {integrity: sha512-J6vCWTNpicHF4zFlZG1cS5DkGzMr9941gddYkakjrg3ZNev4bbqEgLHFTWiFrcJm7UCRu7olO3K6IRDd9gSGhA==}
+
+  '@dagrejs/graphlib@3.0.4':
+    resolution: {integrity: sha512-HxZ7fCvAwTLCWCO0WjDkzAFQze8LdC6iOpKbetDKHIuDfIgMlIzYzqZ4nxwLlclQX+3ZVeZ1K2OuaOE2WWcyOg==}
 
   '@datadog/browser-core@6.14.0':
     resolution: {integrity: sha512-ZQhLSw+mXxjyWoB0iWDJWncHIJZ4YGr0JMlPw/klK6SiFiqAwZNQu9Wkncch1m3zppgk36KiHKKOK/ThLBZDbg==}
@@ -31152,6 +31161,12 @@ snapshots:
       '@so-ric/colorspace': 1.1.6
       enabled: 2.0.0
       kuler: 2.0.0
+
+  '@dagrejs/dagre@2.0.4':
+    dependencies:
+      '@dagrejs/graphlib': 3.0.4
+
+  '@dagrejs/graphlib@3.0.4': {}
 
   '@datadog/browser-core@6.14.0': {}
 
