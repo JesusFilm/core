@@ -5,6 +5,7 @@ import { createApolloClient } from '@core/yoga/apolloClient'
 import { LogEntry, createLog } from './types'
 
 const apolloClient = createApolloClient('api-users')
+const INTEROP_TIMEOUT_MS = 120_000
 
 interface JourneysCheckResult {
   journeysToDelete: number
@@ -69,7 +70,10 @@ export async function callJourneysCheck(
     }>({
       mutation: USER_DELETE_JOURNEYS_CHECK,
       variables: { userId },
-      fetchPolicy: 'no-cache'
+      fetchPolicy: 'no-cache',
+      context: {
+        fetchOptions: { signal: AbortSignal.timeout(INTEROP_TIMEOUT_MS) }
+      }
     })
 
     if (data?.userDeleteJourneysCheck == null) {
@@ -86,7 +90,7 @@ export async function callJourneysCheck(
 
     return data.userDeleteJourneysCheck
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Journeys check failed:', error)
     return {
       journeysToDelete: 0,
       journeysToTransfer: 0,
@@ -94,7 +98,7 @@ export async function callJourneysCheck(
       teamsToDelete: 0,
       teamsToTransfer: 0,
       teamsToRemove: 0,
-      logs: [createLog(`❌ Journeys check failed: ${message}`, 'error')]
+      logs: [createLog('❌ Journeys check failed', 'error')]
     }
   }
 }
@@ -108,7 +112,10 @@ export async function callJourneysConfirm(
     }>({
       mutation: USER_DELETE_JOURNEYS_CONFIRM,
       variables: { userId },
-      fetchPolicy: 'no-cache'
+      fetchPolicy: 'no-cache',
+      context: {
+        fetchOptions: { signal: AbortSignal.timeout(INTEROP_TIMEOUT_MS) }
+      }
     })
 
     if (data?.userDeleteJourneysConfirm == null) {
@@ -124,14 +131,14 @@ export async function callJourneysConfirm(
 
     return data.userDeleteJourneysConfirm
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Journeys deletion failed:', error)
     return {
       success: false,
       deletedJourneyIds: [],
       deletedTeamIds: [],
       deletedUserJourneyIds: [],
       deletedUserTeamIds: [],
-      logs: [createLog(`❌ Journeys deletion failed: ${message}`, 'error')]
+      logs: [createLog('❌ Journeys deletion failed', 'error')]
     }
   }
 }

@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
-import { LogEntry, createLog } from './types'
+import { LogEntry, createLog, isFirebaseNotFound } from './types'
 
 interface DeleteUserDataInput {
   userDbId: string
@@ -23,15 +23,6 @@ interface DeleteUserDataInput {
 interface DeleteUserDataResult {
   success: boolean
   logs: LogEntry[]
-}
-
-function isFirebaseNotFound(error: unknown): boolean {
-  return (
-    error != null &&
-    typeof error === 'object' &&
-    'code' in error &&
-    error.code === 'auth/user-not-found'
-  )
 }
 
 export async function deleteFirebaseUser(
@@ -61,12 +52,9 @@ export async function deleteFirebaseUser(
       if (isFirebaseNotFound(error)) {
         logs.push(createLog(`⚠️ No Firebase auth record for UID: ${uid}`))
       } else {
-        const message = error instanceof Error ? error.message : 'Unknown error'
+        console.error(`Failed to delete Firebase auth (UID: ${uid}):`, error)
         logs.push(
-          createLog(
-            `❌ Failed to delete Firebase auth record (UID: ${uid}): ${message}`,
-            'error'
-          )
+          createLog('❌ Failed to delete Firebase auth record', 'error')
         )
         return logs
       }
@@ -87,12 +75,9 @@ export async function deleteFirebaseUser(
       if (isFirebaseNotFound(error)) {
         logs.push(createLog('🔥 No Firebase auth record found by email either'))
       } else {
-        const message = error instanceof Error ? error.message : 'Unknown error'
+        console.error('Failed to delete Firebase auth via email fallback:', error)
         logs.push(
-          createLog(
-            `❌ Failed to delete Firebase auth via email fallback: ${message}`,
-            'error'
-          )
+          createLog('❌ Failed to delete Firebase auth via email fallback', 'error')
         )
         return logs
       }
@@ -143,10 +128,10 @@ export async function deleteUserData(
     })
     logs.push(createLog('📝 Audit log created'))
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Failed to create audit log:', error)
     logs.push(
       createLog(
-        `❌ Failed to create audit log: ${message}. Aborting deletion.`,
+        '❌ Failed to create audit log. Aborting deletion.',
         'error'
       )
     )
@@ -165,7 +150,8 @@ export async function deleteUserData(
         data: { errorMessage: `Failed to delete user record: ${message}` }
       })
     }
-    logs.push(createLog(`❌ Failed to delete user record: ${message}`, 'error'))
+    console.error('Failed to delete user record:', error)
+    logs.push(createLog('❌ Failed to delete user record', 'error'))
     return { success: false, logs }
   }
 
