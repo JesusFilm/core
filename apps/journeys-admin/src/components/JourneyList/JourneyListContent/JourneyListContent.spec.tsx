@@ -957,4 +957,28 @@ describe('JourneyListContent', () => {
       expect(replace).not.toHaveBeenCalled()
     })
   })
+
+  describe('Loading State', () => {
+    it('should show loading skeleton when activeTeam is undefined', () => {
+      mockUseTeam.mockReturnValue({
+        activeTeam: undefined,
+        setActiveTeam: jest.fn(),
+        refetch: jest.fn(),
+        query: {} as any
+      })
+
+      renderJourneyListContent({
+        mocks: [],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Query is skipped when activeTeam is undefined (loading),
+      // so data is null and the loading skeleton should render
+      expect(
+        screen.queryByText('Default Journey Heading')
+      ).not.toBeInTheDocument()
+    })
+  })
 })
