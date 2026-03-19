@@ -23,7 +23,7 @@ const mockGetIntegrationGoogleAccessToken =
   >
 
 describe('integrationGooglePickerToken', () => {
-  const mockUser = { id: 'userId' }
+  const mockUser = { id: 'userId', email: 'test@example.com' }
   const authClient = getClient({
     headers: { authorization: 'token' },
     context: { currentUser: mockUser }

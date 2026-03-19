@@ -7,7 +7,7 @@ import { ButtonClickEventRef } from './buttonClickEvent'
 import { ButtonClickEventCreateInput } from './inputs'
 
 builder.mutationField('buttonClickEventCreate', (t) =>
-  t.withAuth({ isAuthenticated: true }).field({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     nullable: false,
     type: ButtonClickEventRef,
     args: {

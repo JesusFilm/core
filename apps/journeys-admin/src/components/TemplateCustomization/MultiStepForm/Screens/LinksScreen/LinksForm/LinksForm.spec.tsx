@@ -1,8 +1,16 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
 
-import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../../../__generated__/globalTypes'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
@@ -30,7 +38,8 @@ describe('LinksForm', () => {
         id: 'chat-1',
         linkType: 'chatButtons',
         url: 'wa.me/123',
-        label: 'Chat Link'
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
       }
     ]
 
@@ -41,7 +50,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -80,7 +89,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -111,7 +120,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -142,7 +151,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': 'example.com' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -179,7 +188,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -216,7 +225,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -239,7 +248,8 @@ describe('LinksForm', () => {
         id: 'chat-1',
         linkType: 'chatButtons',
         url: '',
-        label: 'Chat Link'
+        label: 'Chat Link',
+        platform: MessagePlatform.whatsApp
       }
     ]
     const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
@@ -248,7 +258,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'chat-1': 'wa.me/123' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -285,7 +295,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -321,7 +331,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -354,7 +364,7 @@ describe('LinksForm', () => {
       <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
         {(formik) => (
           <FormikProvider value={{ ...formik, setFieldValue }}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -400,7 +410,7 @@ describe('LinksForm', () => {
       >
         {(formik) => (
           <FormikProvider value={formik}>
-            <LinksForm links={links} />
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
           </FormikProvider>
         )}
       </Formik>
@@ -415,5 +425,103 @@ describe('LinksForm', () => {
 
     const phoneNumberInput = screen.getByLabelText('Phone Number')
     expect(document.activeElement).toBe(phoneNumberInput)
+  })
+
+  describe('chat button icon dropdown', () => {
+    const chatLink: JourneyLink = {
+      id: 'chat-1',
+      linkType: 'chatButtons',
+      url: 'https://wa.me/123',
+      label: 'Chat Widget',
+      platform: MessagePlatform.whatsApp
+    }
+
+    it('should render icon select dropdown for chat button links', () => {
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} onPlatformChange={jest.fn()} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByLabelText('Select chat icon')).toBeInTheDocument()
+    })
+
+    it('should render Chat URL placeholder for chat button links', () => {
+      render(
+        <Formik initialValues={{ 'chat-1': '' }} onSubmit={jest.fn()}>
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[chatLink]} onPlatformChange={jest.fn()} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByPlaceholderText('Chat URL')).toBeInTheDocument()
+    })
+
+    it('should display icon for legacy platform value not in dropdown options', () => {
+      const legacyLink: JourneyLink = {
+        id: 'chat-legacy',
+        linkType: 'chatButtons',
+        url: 'https://vk.com/123',
+        label: 'Legacy Chat',
+        platform: MessagePlatform.vk
+      }
+
+      render(
+        <Formik
+          initialValues={{ 'chat-legacy': 'https://vk.com/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm links={[legacyLink]} onPlatformChange={jest.fn()} />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      expect(screen.getByLabelText('Select chat icon')).toBeInTheDocument()
+      expect(screen.getByTestId('VkIcon')).toBeInTheDocument()
+    })
+
+    it('should call onPlatformChange when a new platform is selected', async () => {
+      const onPlatformChange = jest.fn()
+
+      render(
+        <Formik
+          initialValues={{ 'chat-1': 'https://wa.me/123' }}
+          onSubmit={jest.fn()}
+        >
+          {(formik) => (
+            <FormikProvider value={formik}>
+              <LinksForm
+                links={[chatLink]}
+                onPlatformChange={onPlatformChange}
+              />
+            </FormikProvider>
+          )}
+        </Formik>
+      )
+
+      fireEvent.mouseDown(screen.getByRole('combobox'))
+      await waitFor(() => {
+        expect(screen.getByRole('listbox')).toBeInTheDocument()
+      })
+      fireEvent.click(within(screen.getByRole('listbox')).getByText('Telegram'))
+
+      expect(onPlatformChange).toHaveBeenCalledWith(
+        'chat-1',
+        MessagePlatform.telegram
+      )
+    })
   })
 })

@@ -19,6 +19,7 @@ export const JOURNEY_CHAT_BUTTON_CREATE = gql`
       id
       link
       platform
+      customizable
     }
   }
 `

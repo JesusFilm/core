@@ -62,6 +62,8 @@ describe('Video', () => {
       variantLanguages: []
     },
     posterBlockId: null,
+    customizable: null,
+    notes: null,
     children: []
   }
 

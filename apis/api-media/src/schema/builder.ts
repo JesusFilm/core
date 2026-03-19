@@ -16,7 +16,8 @@ import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 import { BigIntResolver, DateResolver, DateTimeResolver } from 'graphql-scalars'
 
 import type PrismaTypes from '@core/prisma/media/__generated__/pothos-types'
-import { MediaRole, Prisma, prisma } from '@core/prisma/media/client'
+import { getDatamodel } from '@core/prisma/media/__generated__/pothos-types'
+import { MediaRole, prisma } from '@core/prisma/media/client'
 import { User } from '@core/yoga/firebaseClient'
 import { InteropContext } from '@core/yoga/interop'
 
@@ -51,10 +52,12 @@ export const builder = new SchemaBuilder<{
   Context: Context
   AuthScopes: {
     isAuthenticated: boolean
+    isAnonymous: boolean
     isPublisher: boolean
   }
   AuthContexts: {
     isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isAnonymous: Extract<Context, { type: 'authenticated' }>
     isPublisher: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
@@ -87,19 +90,22 @@ export const builder = new SchemaBuilder<{
       switch (context.type) {
         case 'authenticated':
           return {
-            isAuthenticated: true,
+            isAuthenticated: context.user.email != null,
+            isAnonymous: context.user.email == null,
             isPublisher: context.currentRoles.includes('publisher'),
             isValidInterop: false
           }
         case 'interop':
           return {
             isAuthenticated: false,
+            isAnonymous: false,
             isPublisher: false,
             isValidInterop: true
           }
         default:
           return {
             isAuthenticated: false,
+            isAnonymous: false,
             isPublisher: false,
             isValidInterop: false
           }
@@ -108,7 +114,7 @@ export const builder = new SchemaBuilder<{
   },
   prisma: {
     client: prisma,
-    dmmf: Prisma.dmmf,
+    dmmf: getDatamodel(),
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   },
   relay: {

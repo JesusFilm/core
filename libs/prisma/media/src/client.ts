@@ -1,6 +1,16 @@
-import { Prisma, PrismaClient } from '.prisma/api-media-client'
+import { PrismaPg } from '@prisma/adapter-pg'
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient }
+import { PrismaClient } from './__generated__/client/client'
 
-export * from '.prisma/api-media-client'
-export const prisma = globalForPrisma.prisma || new PrismaClient()
+const globalForPrisma = global as unknown as { prismaMedia: PrismaClient }
+
+const adapter = new PrismaPg({
+  connectionString: process.env['PG_DATABASE_URL_MEDIA']!,
+  connectionTimeoutMillis: 5_000,
+  idleTimeoutMillis: 10_000
+})
+
+export * from './__generated__/client/client'
+export const prisma =
+  globalForPrisma.prismaMedia ??
+  (globalForPrisma.prismaMedia = new PrismaClient({ adapter }))

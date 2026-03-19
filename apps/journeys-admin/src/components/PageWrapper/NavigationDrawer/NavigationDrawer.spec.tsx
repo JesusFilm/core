@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { Suspense } from 'react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
@@ -17,6 +16,7 @@ import {
   Role,
   UserJourneyRole
 } from '../../../../__generated__/globalTypes'
+import { User } from '../../../libs/auth/authContext'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 import { GET_ME } from './UserNavigation'
@@ -26,52 +26,48 @@ import { NavigationDrawer } from '.'
 describe('NavigationDrawer', () => {
   it('should show toggle and call onClose with false when open', async () => {
     const handleClose = jest.fn()
-    const { getByTestId } = render(
-      <NavigationDrawer open onClose={handleClose} />
-    )
-    fireEvent.click(getByTestId('NavigationListItemToggle'))
+    render(<NavigationDrawer open onClose={handleClose} />)
+    fireEvent.click(screen.getByTestId('NavigationListItemToggle'))
     expect(handleClose).toHaveBeenCalledWith(false)
   })
 
   it('should show toggle and call onClose with false when not open', async () => {
     const handleClose = jest.fn()
-    const { getByTestId } = render(<NavigationDrawer onClose={handleClose} />)
-    fireEvent.click(getByTestId('NavigationListItemToggle'))
+    render(<NavigationDrawer onClose={handleClose} />)
+    fireEvent.click(screen.getByTestId('NavigationListItemToggle'))
     expect(handleClose).toHaveBeenCalledWith(true)
   })
 
   it('should show selected projects link when selected page empty', async () => {
-    const { getByTestId } = render(<NavigationDrawer open selectedPage="" />)
-    expect(getByTestId('NavigationListItemProjects')).toHaveClass(
+    render(<NavigationDrawer open selectedPage="" />)
+    expect(screen.getByTestId('NavigationListItemProjects')).toHaveClass(
       'Mui-selected'
     )
-    expect(getByTestId('NavigationListItemProjects')).toHaveAttribute(
+    expect(screen.getByTestId('NavigationListItemProjects')).toHaveAttribute(
       'href',
       '/'
     )
   })
 
   it('should show selected projects link when selected page journeys', async () => {
-    const { getByTestId } = render(
-      <NavigationDrawer open selectedPage="journeys" />
-    )
-    expect(getByTestId('NavigationListItemProjects')).toHaveClass(
+    render(<NavigationDrawer open selectedPage="journeys" />)
+    expect(screen.getByTestId('NavigationListItemProjects')).toHaveClass(
       'Mui-selected'
     )
-    expect(getByTestId('NavigationListItemProjects')).toHaveAttribute(
+    expect(screen.getByTestId('NavigationListItemProjects')).toHaveAttribute(
       'href',
       '/'
     )
   })
 
   it('should show selected templates link when selected page templates', async () => {
-    const { getByTestId } = render(
+    render(
       <NavigationDrawer open onClose={jest.fn()} selectedPage="templates" />
     )
-    expect(getByTestId('NavigationListItemTemplates')).toHaveClass(
+    expect(screen.getByTestId('NavigationListItemTemplates')).toHaveClass(
       'Mui-selected'
     )
-    expect(getByTestId('NavigationListItemTemplates')).toHaveAttribute(
+    expect(screen.getByTestId('NavigationListItemTemplates')).toHaveAttribute(
       'href',
       '/templates'
     )
@@ -82,7 +78,11 @@ describe('NavigationDrawer', () => {
       id: 'userId',
       displayName: 'Amin One',
       photoURL: 'https://bit.ly/3Gth4Yf',
-      email: 'amin@email.com'
+      email: 'amin@email.com',
+      phoneNumber: null,
+      emailVerified: true,
+      token: 'mock-token',
+      isAnonymous: false
     } as unknown as User
 
     const getMeMock: MockedResponse<GetMe> = {
@@ -100,7 +100,7 @@ describe('NavigationDrawer', () => {
             email: 'amin@email.com',
             superAdmin: true,
             emailVerified: true,
-            __typename: 'User'
+            __typename: 'AuthenticatedUser'
           }
         }
       }
@@ -157,7 +157,7 @@ describe('NavigationDrawer', () => {
     }
 
     it('should set tooltip to new journey', async () => {
-      const { getByTestId, getByRole } = render(
+      render(
         <MockedProvider
           mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
         >
@@ -166,11 +166,34 @@ describe('NavigationDrawer', () => {
           </Suspense>
         </MockedProvider>
       )
-      fireEvent.mouseOver(getByTestId('NavigationListItemProjects'))
+      fireEvent.mouseOver(screen.getByTestId('NavigationListItemProjects'))
       await waitFor(() =>
         expect(
-          getByRole('tooltip', { name: 'New Journey' })
+          screen.getByRole('tooltip', { name: 'New Journey' })
         ).toBeInTheDocument()
+      )
+    })
+
+    it('should hide user if anonymous', async () => {
+      const anonymousUser = {
+        ...user,
+        isAnonymous: true
+      } as unknown as User
+      render(
+        <MockedProvider
+          mocks={[getMeMock, getUserRoleMock, getAdminJourneysMock]}
+        >
+          <Suspense>
+            <NavigationDrawer user={anonymousUser} />
+          </Suspense>
+        </MockedProvider>
+      )
+
+      fireEvent.mouseOver(screen.getByTestId('NavigationListItemProjects'))
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('NavigationListItemProfile')
+        ).not.toBeInTheDocument()
       )
     })
   })

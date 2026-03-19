@@ -20,11 +20,6 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
-  __esModule: true,
-  useUser: jest.fn(() => ({ id: 'userId', name: 'userName' }))
-}))
-
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('BlockRenderer', () => {
@@ -235,6 +230,7 @@ describe('BlockRenderer', () => {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
     const { getByRole } = render(<BlockRenderer block={block} />)
@@ -260,6 +256,7 @@ describe('BlockRenderer', () => {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -824,6 +821,8 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       fullsize: null,
       action: null,
+      customizable: null,
+      notes: null,
       children: []
     }
     const { getByTestId } = render(
@@ -884,6 +883,8 @@ describe('BlockRenderer', () => {
       fullsize: null,
       action: null,
       parentOrder: 0,
+      customizable: null,
+      notes: null,
       children: []
     }
     const { getByTestId } = render(

@@ -1,6 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 import { Suspense } from 'react'
 
@@ -9,6 +8,7 @@ import {
   Role,
   UserJourneyRole
 } from '../../../../../__generated__/globalTypes'
+import { User } from '../../../../libs/auth/authContext'
 
 import { UserNavigation } from '.'
 
@@ -70,10 +70,14 @@ jest.mock('../../../../libs/useAdminJourneysSuspenseQuery', () => ({
 
 describe('UserNavigation', () => {
   const user = {
+    __typename: 'AuthenticatedUser',
     id: 'userId',
     displayName: 'Amin One',
     photoURL: 'https://bit.ly/3Gth4Yf',
-    email: 'amin@email.com'
+    email: 'amin@email.com',
+    phoneNumber: null,
+    emailVerified: true,
+    token: 'mock-token'
   } as unknown as User
 
   beforeEach(() => {
@@ -84,6 +88,7 @@ describe('UserNavigation', () => {
     mockUseSuspenseQuery.mockReturnValue({
       data: {
         me: {
+          __typename: 'AuthenticatedUser',
           id: 'userId',
           firstName: 'Amin',
           lastName: 'One',
@@ -165,6 +170,7 @@ describe('UserNavigation', () => {
     mockUseSuspenseQuery.mockReturnValueOnce({
       data: {
         me: {
+          __typename: 'AuthenticatedUser',
           id: 'userId',
           firstName: 'Amin',
           lastName: 'One',

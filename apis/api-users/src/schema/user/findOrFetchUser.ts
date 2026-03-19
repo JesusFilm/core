@@ -1,12 +1,14 @@
 import { Prisma, User, prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
+import { type AppType } from './enums/app'
 import { verifyUser } from './verifyUser'
 
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  app?: AppType | undefined
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
@@ -17,7 +19,7 @@ export async function findOrFetchUser(
   if (existingUser != null && existingUser.emailVerified == null) {
     const user = await prisma.user.update({
       where: {
-        id: userId
+        userId
       },
       data: {
         emailVerified: false
@@ -26,8 +28,18 @@ export async function findOrFetchUser(
     return user
   }
 
-  if (existingUser != null && existingUser.emailVerified != null)
+  if (existingUser != null && existingUser.emailVerified != null) {
+    if (existingUser.emailVerified === false) {
+      const { emailVerified } = await auth.getUser(userId)
+      if (emailVerified) {
+        return await prisma.user.update({
+          where: { userId },
+          data: { emailVerified: true }
+        })
+      }
+    }
     return existingUser
+  }
 
   const {
     displayName,
@@ -64,7 +76,7 @@ export async function findOrFetchUser(
     userId,
     firstName,
     lastName,
-    email: email ?? '',
+    email: email ?? null,
     imageUrl,
     emailVerified
   }
@@ -84,7 +96,7 @@ export async function findOrFetchUser(
     do {
       user = await prisma.user.update({
         where: {
-          id: userId
+          userId
         },
         data
       })
@@ -93,6 +105,6 @@ export async function findOrFetchUser(
   }
   // after user create so it is only sent once
   if (email != null && userCreated && !emailVerified)
-    await verifyUser(userId, email, redirect)
+    await verifyUser(userId, email, redirect, app)
   return user
 }

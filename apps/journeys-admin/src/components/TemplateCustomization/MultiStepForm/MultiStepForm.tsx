@@ -1,66 +1,60 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Edit3 from '@core/shared/ui/icons/Edit3'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 
+import { useAuth } from '../../../libs/auth'
+import {
+  CUSTOMIZE_SCREEN_QUERY_KEY,
+  buildCustomizeUrl,
+  getActiveScreenFromQuery
+} from '../utils/customizationRoutes'
 import {
   CustomizationScreen,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
+import { getNextCustomizeScreen } from '../utils/getNextCustomizeScreen'
+import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizationRedirect'
 
 import { ProgressStepper } from './ProgressStepper'
 import {
   DoneScreen,
+  GuestPreviewScreen,
   LanguageScreen,
   LinksScreen,
+  MediaScreen,
   SocialScreen,
   TextScreen
 } from './Screens'
+import { TemplateVideoUploadProvider } from './TemplateVideoUploadProvider'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
-  handleNext: () => void,
-  handleScreenNavigation: (screen: CustomizationScreen) => void
+  screens: CustomizationScreen[],
+  handleNext: (overrideJourneyId?: string) => void
 ): ReactElement {
   switch (screen) {
     case 'language':
-      return (
-        <LanguageScreen
-          handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
-        />
-      )
+      return <LanguageScreen handleNext={handleNext} />
     case 'text':
-      return (
-        <TextScreen
-          handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
-        />
-      )
+      return <TextScreen handleNext={handleNext} />
     case 'links':
-      return (
-        <LinksScreen
-          handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
-        />
-      )
+      return <LinksScreen handleNext={handleNext} />
+    case 'guestPreview':
+      return <GuestPreviewScreen screens={screens} handleNext={handleNext} />
+    case 'media':
+      return <MediaScreen handleNext={handleNext} />
     case 'social':
-      return (
-        <SocialScreen
-          handleNext={handleNext}
-          handleScreenNavigation={handleScreenNavigation}
-        />
-      )
+      return <SocialScreen handleNext={handleNext} />
     case 'done':
-      return <DoneScreen handleScreenNavigation={handleScreenNavigation} />
+      return <DoneScreen />
     default:
       return <></>
   }
@@ -68,82 +62,87 @@ function renderScreen(
 
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const { journey } = useJourney()
+  const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
+  const { user } = useAuth()
 
-  const { screens, totalSteps, hasEditableText, hasCustomizableLinks } =
-    useMemo(() => getCustomizeFlowConfig(journey, t), [])
+  const isGuest = user == null || user.isAnonymous === true
+  const journeyId = journey?.id ?? ''
 
-  const [activeScreen, setActiveScreen] =
-    useState<CustomizationScreen>('language')
+  const {
+    screens,
+    totalSteps,
+    hasEditableText,
+    hasCustomizableLinks,
+    hasCustomizableMedia
+  } = useMemo(
+    () =>
+      getCustomizeFlowConfig(journey, t, {
+        customizableMedia: customizableMedia ?? false,
+        isGuest
+      }),
+    [journey, t, customizableMedia, isGuest]
+  )
 
-  async function handleNext(): Promise<void> {
-    if (activeScreen !== screens[screens.length - 1]) {
-      setActiveScreen(screens[screens.indexOf(activeScreen) + 1])
-    }
+  const activeScreen = getActiveScreenFromQuery(
+    router.query[CUSTOMIZE_SCREEN_QUERY_KEY],
+    screens
+  )
+
+  useTemplateCustomizationRedirect({
+    journeyId,
+    screens,
+    activeScreen,
+    isGuest,
+    guestFlowEnabled: templateCustomizationGuestFlow === true
+  })
+
+  async function handleNext(overrideJourneyId?: string): Promise<void> {
+    const targetJourneyId =
+      typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
+    const nextScreen = getNextCustomizeScreen(screens, activeScreen)
+    if (nextScreen == null) return
+    void router.replace(
+      buildCustomizeUrl(targetJourneyId, nextScreen, undefined)
+    )
   }
 
-  async function handleScreenNavigation(
-    screen: CustomizationScreen
-  ): Promise<void> {
-    setActiveScreen(screen)
-  }
-
-  const link = `/journeys/${journey?.id ?? ''}`
+  const activeStepForStepper =
+    activeScreen === 'guestPreview'
+      ? screens.indexOf('guestPreview') - 1
+      : screens.indexOf(activeScreen)
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        width: '100%',
-        minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
-        backgroundColor: 'background.paper',
-        borderRadius: { xs: '0px', sm: '16px' },
-        mt: { xs: 0, sm: 6 },
-        mb: { xs: 0, sm: 6 },
-        py: 10
-      }}
-    >
-      <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
-        <NextLink href={link} passHref legacyBehavior>
-          <Button
-            variant="text"
-            color="primary"
-            startIcon={<Edit3 />}
-            sx={{
-              alignSelf: 'flex-end',
-              mr: '4px',
-              fontWeight: 'bold',
-              visibility: activeScreen === 'language' ? 'hidden' : 'visible',
-              '& .MuiButton-startIcon': {
-                marginRight: 0.3,
-                marginTop: 1
-              }
-            }}
-            disabled={journey?.id == null}
-          >
-            {t('Edit Manually')}
-          </Button>
-        </NextLink>
-        {(hasEditableText || hasCustomizableLinks) && (
-          <Box sx={{ mt: { xs: 3, sm: 6 } }}>
-            <ProgressStepper
-              activeStepNumber={screens.indexOf(activeScreen)}
-              totalSteps={totalSteps}
-            />
-          </Box>
-        )}
-
-        <Box
-          sx={{
-            alignSelf: 'center',
-            width: '100%',
-            px: '14px',
-            py: { xs: '10px', sm: '24px' }
-          }}
-        >
-          {renderScreen(activeScreen, handleNext, handleScreenNavigation)}
-        </Box>
-      </Stack>
-    </Container>
+    <TemplateVideoUploadProvider>
+      <Container
+        maxWidth="sm"
+        disableGutters
+        sx={{
+          width: '100%',
+          minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
+          backgroundColor: 'background.paper',
+          borderRadius: { xs: '0px', sm: '16px' },
+          mt: { xs: 0, sm: 6 },
+          mb: { xs: 0, sm: 6 },
+          py: 10,
+          overflow: 'hidden'
+        }}
+      >
+        <Stack gap={{ xs: 8, sm: 17 }} data-testid="MultiStepForm">
+          {(hasEditableText ||
+            hasCustomizableLinks ||
+            hasCustomizableMedia) && (
+            <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+              <ProgressStepper
+                activeStepNumber={activeStepForStepper}
+                totalSteps={totalSteps}
+              />
+            </Box>
+          )}
+          {renderScreen(activeScreen, screens, handleNext)}
+        </Stack>
+      </Container>
+    </TemplateVideoUploadProvider>
   )
 }

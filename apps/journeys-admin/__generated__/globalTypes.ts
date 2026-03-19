@@ -7,6 +7,11 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum App {
+  JesusFilmOne = "JesusFilmOne",
+  NextSteps = "NextSteps",
+}
+
 export enum BlockEventLabel {
   custom1 = "custom1",
   custom2 = "custom2",
@@ -184,6 +189,7 @@ export enum MessagePlatform {
   checkBroken = "checkBroken",
   checkContained = "checkContained",
   custom = "custom",
+  discord = "discord",
   facebook = "facebook",
   globe2 = "globe2",
   globe3 = "globe3",
@@ -208,12 +214,14 @@ export enum MessagePlatform {
   send2 = "send2",
   settings = "settings",
   shieldCheck = "shieldCheck",
+  signal = "signal",
   skype = "skype",
   snapchat = "snapchat",
   telegram = "telegram",
   tikTok = "tikTok",
   viber = "viber",
   vk = "vk",
+  weChat = "weChat",
   whatsApp = "whatsApp",
 }
 
@@ -458,6 +466,7 @@ export interface ChatButtonCreateInput {
 export interface ChatButtonUpdateInput {
   link?: string | null;
   platform?: MessagePlatform | null;
+  customizable?: boolean | null;
 }
 
 export interface ChatOpenEventCreateInput {
@@ -469,6 +478,7 @@ export interface ChatOpenEventCreateInput {
 
 export interface CreateVerificationRequestInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface CustomDomainCreateInput {
@@ -537,6 +547,7 @@ export interface ImageBlockCreateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  customizable?: boolean | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -549,6 +560,7 @@ export interface ImageBlockUpdateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+  customizable?: boolean | null;
 }
 
 export interface IntegrationGoogleCreateInput {
@@ -704,6 +716,7 @@ export interface JourneysQueryOptions {
   embedded?: boolean | null;
   journeyCollection?: boolean | null;
   skipRoutingFilter?: boolean | null;
+  status?: JourneyStatus[] | null;
 }
 
 export interface LanguagesFilter {
@@ -722,6 +735,7 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+  app?: App | null;
 }
 
 export interface MultiselectBlockCreateInput {
@@ -995,6 +1009,8 @@ export interface VideoBlockCreateInput {
   posterBlockId?: string | null;
   subtitleLanguageId?: string | null;
   showGeneratedSubtitles?: boolean | null;
+  customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -1017,6 +1033,8 @@ export interface VideoBlockUpdateInput {
   subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
   showGeneratedSubtitles?: boolean | null;
+  customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoCollapseEventCreateInput {

@@ -71,7 +71,8 @@ const journey: Journey = {
       __typename: 'ChatButton',
       id: 'chatButtonId',
       link: 'http://me.com',
-      platform: MessagePlatform.facebook
+      platform: MessagePlatform.facebook,
+      customizable: null
     }
   ],
   host: {
@@ -99,7 +100,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>

@@ -135,6 +135,8 @@ const video: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  customizable: null,
+  notes: null,
   children: [],
   objectFit: null,
   subtitleLanguage: null,
@@ -212,14 +214,17 @@ describe('VideoBlockEditorSettings', () => {
     )
     fireEvent.click(getByRole('checkbox', { name: 'Autoplay' }))
     await waitFor(() =>
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: false,
-        muted: true,
-        endAt: 60,
-        startAt: 0,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: null
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: false,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: null
+        },
+        false
+      )
     )
   })
 
@@ -247,14 +252,17 @@ describe('VideoBlockEditorSettings', () => {
 
     fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: false,
-        endAt: 60,
-        startAt: 0,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: null
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: false,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: null
+        },
+        false
+      )
     })
 
     expect(
@@ -283,14 +291,17 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.change(textbox, { target: { value: '00:00:11' } })
     fireEvent.blur(textbox)
     await waitFor(() =>
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: true,
-        endAt: 60,
-        startAt: 11,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: null
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 11,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: null
+        },
+        false
+      )
     )
   })
 
@@ -313,14 +324,17 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.change(textbox, { target: { value: '00:00:11' } })
     fireEvent.blur(textbox)
     await waitFor(() =>
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: true,
-        endAt: 11,
-        startAt: 0,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: null
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: true,
+          endAt: 11,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: null
+        },
+        false
+      )
     )
   })
 
@@ -341,14 +355,17 @@ describe('VideoBlockEditorSettings', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Fit' }))
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: true,
-        endAt: 60,
-        startAt: 0,
-        objectFit: ObjectFit.fit,
-        subtitleLanguageId: null
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fit,
+          subtitleLanguageId: null
+        },
+        false
+      )
     })
   })
 
@@ -438,14 +455,17 @@ describe('VideoBlockEditorSettings', () => {
     })
     fireEvent.blur(getByRole('textbox', { name: 'Starts At' }))
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: true,
-        endAt: 10,
-        startAt: 0,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: null
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: true,
+          endAt: 10,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: null
+        },
+        false
+      )
     })
     expect(
       getByText('Start time has to be at least 3 seconds less than end time')
@@ -534,14 +554,17 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.click(option)
 
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: true,
-        endAt: 60,
-        startAt: 0,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: 'lang-en'
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: 'lang-en'
+        },
+        false
+      )
     })
   })
 
@@ -583,14 +606,17 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.click(option)
 
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        autoplay: true,
-        muted: true,
-        endAt: 60,
-        startAt: 0,
-        objectFit: ObjectFit.fill,
-        subtitleLanguageId: 'lang-en'
-      })
+      expect(onChange).toHaveBeenCalledWith(
+        {
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: 'lang-en'
+        },
+        false
+      )
     })
   })
 
@@ -829,15 +855,18 @@ describe('VideoBlockEditorSettings', () => {
       await userEvent.click(input)
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith({
-          autoplay: true,
-          muted: true,
-          endAt: 60,
-          startAt: 0,
-          objectFit: ObjectFit.fill,
-          showGeneratedSubtitles: true,
-          subtitleLanguageId: '529'
-        })
+        expect(onChange).toHaveBeenCalledWith(
+          {
+            autoplay: true,
+            muted: true,
+            endAt: 60,
+            startAt: 0,
+            objectFit: ObjectFit.fill,
+            showGeneratedSubtitles: true,
+            subtitleLanguageId: '529'
+          },
+          false
+        )
       })
     })
 
@@ -914,15 +943,18 @@ describe('VideoBlockEditorSettings', () => {
       await userEvent.click(input)
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith({
-          autoplay: true,
-          muted: true,
-          endAt: 60,
-          startAt: 0,
-          objectFit: ObjectFit.fill,
-          showGeneratedSubtitles: false,
-          subtitleLanguageId: null
-        })
+        expect(onChange).toHaveBeenCalledWith(
+          {
+            autoplay: true,
+            muted: true,
+            endAt: 60,
+            startAt: 0,
+            objectFit: ObjectFit.fill,
+            showGeneratedSubtitles: false,
+            subtitleLanguageId: null
+          },
+          false
+        )
       })
     })
 
@@ -1072,14 +1104,17 @@ describe('VideoBlockEditorSettings', () => {
       fireEvent.blur(getByRole('textbox', { name: 'Starts At' }))
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith({
-          autoplay: true,
-          muted: true,
-          endAt: 60,
-          startAt: 5,
-          objectFit: ObjectFit.fill,
-          subtitleLanguageId: null
-        })
+        expect(onChange).toHaveBeenCalledWith(
+          {
+            autoplay: true,
+            muted: true,
+            endAt: 60,
+            startAt: 5,
+            objectFit: ObjectFit.fill,
+            subtitleLanguageId: null
+          },
+          false
+        )
       })
     })
   })
@@ -1165,14 +1200,17 @@ describe('VideoBlockEditorSettings', () => {
       fireEvent.click(getByRole('button', { name: 'Crop' }))
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith({
-          autoplay: true,
-          muted: true,
-          endAt: 60,
-          startAt: 0,
-          objectFit: ObjectFit.zoomed,
-          subtitleLanguageId: null
-        })
+        expect(onChange).toHaveBeenCalledWith(
+          {
+            autoplay: true,
+            muted: true,
+            endAt: 60,
+            startAt: 0,
+            objectFit: ObjectFit.zoomed,
+            subtitleLanguageId: null
+          },
+          false
+        )
       })
     })
 

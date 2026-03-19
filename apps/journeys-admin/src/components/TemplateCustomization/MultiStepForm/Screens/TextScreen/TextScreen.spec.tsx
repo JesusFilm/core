@@ -38,10 +38,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={jest.fn()}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -55,10 +52,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={jest.fn()}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={jest.fn()} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -115,10 +109,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={handleNext}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )
@@ -142,15 +133,31 @@ describe('TextScreen', () => {
     )
   })
 
+  it('should show loading state on the Next button after clicking', () => {
+    const handleNext = jest.fn()
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+          <TextScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+
+    fireEvent.click(nextButton)
+
+    expect(nextButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
   it('does not submit when no changes and still calls handleNext', () => {
     const handleNext = jest.fn()
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-          <TextScreen
-            handleNext={handleNext}
-            handleScreenNavigation={jest.fn()}
-          />
+          <TextScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
     )

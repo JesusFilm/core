@@ -2,26 +2,18 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_JOURNEYS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
+  provider = "prisma-client"
+  output   = "../src/__generated__/client"
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
   output       = "../src/__generated__/pothos-types.ts"
-  clientOutput = ".prisma/api-journeys-client"
+  clientOutput = "./client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_JOURNEYS")
 }
 
 enum MessagePlatform {
@@ -59,6 +51,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 enum VisitorStatus {
@@ -115,8 +110,9 @@ model ChatButton {
   journeyId String
   link      String?
   updatedAt DateTime         @default(now()) @updatedAt
-  platform  MessagePlatform?
-  journey   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  platform     MessagePlatform?
+  customizable Boolean?
+  journey      Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
 }
@@ -424,6 +420,7 @@ model Journey {
   creatorDescription              String?
   template                        Boolean?                    @default(false)
   templateSite                    Boolean?                    @default(false)
+  customizable                    Boolean?                    @default(false)
   teamId                          String
   hostId                          String?
   themeMode                       ThemeMode?                  @default(light)
@@ -631,6 +628,8 @@ model Block {
   max                        Int?
   settings                   Json                 @default("{ }") // block settings
   exportOrder                Int? // column order for CSV exports and Google Sheets syncs
+  customizable               Boolean?
+  notes                      String? // VideoBlock: publisher notes for template adapters (e.g. trailer, intro)
 
   @@unique([slug, journeyId])
   @@index(journeyId)

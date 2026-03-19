@@ -45,9 +45,11 @@ export const GET_ADMIN_JOURNEYS = gql`
         openedAt
         user {
           id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            firstName
+            lastName
+            imageUrl
+          }
         }
       }
       primaryImageBlock {
@@ -73,6 +75,7 @@ export const GET_ADMIN_JOURNEYS = gql`
         defaultValue
       }
       website
+      customizable
     }
   }
 `

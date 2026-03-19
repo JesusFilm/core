@@ -21,13 +21,20 @@ export interface GetAdminJourneys_journeys_language {
   name: GetAdminJourneys_journeys_language_name[];
 }
 
-export interface GetAdminJourneys_journeys_userJourneys_user {
-  __typename: "User";
+export interface GetAdminJourneys_journeys_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type GetAdminJourneys_journeys_userJourneys_user = GetAdminJourneys_journeys_userJourneys_user_AnonymousUser | GetAdminJourneys_journeys_userJourneys_user_AuthenticatedUser;
 
 export interface GetAdminJourneys_journeys_userJourneys {
   __typename: "UserJourney";
@@ -100,15 +107,13 @@ export interface GetAdminJourneys_journeys {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneys_journeys_journeyCustomizationFields[];
   website: boolean | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneys {
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   journeys: GetAdminJourneys_journeys[];
 }
 

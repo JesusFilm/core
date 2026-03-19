@@ -62,6 +62,8 @@ const block: TreeBlock<VideoFields> = {
     },
     variantLanguages: []
   },
+  customizable: null,
+  notes: null,
   children: [
     {
       id: 'posterBlockId',
@@ -76,6 +78,7 @@ const block: TreeBlock<VideoFields> = {
       scale: null,
       focalLeft: 50,
       focalTop: 50,
+      customizable: null,
       children: []
     }
   ]
@@ -105,14 +108,12 @@ describe('Video', () => {
     render(
       <MockedProvider>
         <Video
-          {...{
-            ...block,
-            source: VideoBlockSource.youTube,
-            videoId: 'videoId',
-            mediaVideo: {
-              __typename: 'YouTube',
-              id: 'videoId'
-            }
+          {...block}
+          source={VideoBlockSource.youTube}
+          videoId="videoId"
+          mediaVideo={{
+            __typename: 'YouTube',
+            id: 'videoId'
           }}
         />
       </MockedProvider>
@@ -130,17 +131,15 @@ describe('Video', () => {
     render(
       <MockedProvider>
         <Video
-          {...{
-            ...block,
-            source: VideoBlockSource.mux,
-            videoId: 'videoId',
-            startAt: null,
-            mediaVideo: {
-              __typename: 'MuxVideo',
-              id: 'videoId',
-              assetId: 'videoId',
-              playbackId: 'videoId'
-            }
+          {...block}
+          source={VideoBlockSource.mux}
+          videoId="videoId"
+          startAt={null}
+          mediaVideo={{
+            __typename: 'MuxVideo',
+            id: 'videoId',
+            assetId: 'videoId',
+            playbackId: 'videoId'
           }}
         />
       </MockedProvider>
@@ -160,17 +159,15 @@ describe('Video', () => {
     render(
       <MockedProvider>
         <Video
-          {...{
-            ...block,
-            source: VideoBlockSource.mux,
-            videoId: 'videoId',
-            endAt,
-            mediaVideo: {
-              __typename: 'MuxVideo',
-              id: 'videoId',
-              assetId: 'videoId',
-              playbackId: 'videoId'
-            }
+          {...block}
+          source={VideoBlockSource.mux}
+          videoId="videoId"
+          endAt={endAt}
+          mediaVideo={{
+            __typename: 'MuxVideo',
+            id: 'videoId',
+            assetId: 'videoId',
+            playbackId: 'videoId'
           }}
         />
       </MockedProvider>
@@ -223,11 +220,9 @@ describe('Video', () => {
     render(
       <MockedProvider>
         <Video
-          {...{
-            ...block,
-            source: VideoBlockSource.youTube,
-            videoId: 'videoId'
-          }}
+          {...block}
+          source={VideoBlockSource.youTube}
+          videoId="videoId"
           posterBlockId={null}
         />
       </MockedProvider>
@@ -239,17 +234,30 @@ describe('Video', () => {
     render(
       <JourneyProvider value={{ variant: 'admin' }}>
         <Video
-          {...{
-            ...block,
-            source: VideoBlockSource.youTube,
-            image: 'https://i.ytimg.com/vi/id/hqdefault.jpg'
-          }}
+          {...block}
+          source={VideoBlockSource.youTube}
+          image="https://i.ytimg.com/vi/id/hqdefault.jpg"
           posterBlockId={null}
         />
       </JourneyProvider>
     )
     const videoImage = screen.getByRole('img')
     // video image alt is set to video image
+    expect(videoImage).toHaveAttribute('alt', 'video image')
+  })
+
+  it('should render video image if source is YouTube and variant is customize', () => {
+    render(
+      <JourneyProvider value={{ variant: 'customize' }}>
+        <Video
+          {...block}
+          source={VideoBlockSource.youTube}
+          image="https://i.ytimg.com/vi/id/hqdefault.jpg"
+          posterBlockId={null}
+        />
+      </JourneyProvider>
+    )
+    const videoImage = screen.getByRole('img')
     expect(videoImage).toHaveAttribute('alt', 'video image')
   })
 })

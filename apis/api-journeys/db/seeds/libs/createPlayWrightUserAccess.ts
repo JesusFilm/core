@@ -1,6 +1,4 @@
-import { Prisma, PrismaClient } from '.prisma/api-journeys-client'
-
-const prisma = new PrismaClient()
+import { Prisma, prisma } from '../../../../../libs/prisma/journeys/src/client'
 
 async function upsertTeam(tx: Prisma.TransactionClient, teamData) {
   await tx.team.upsert({

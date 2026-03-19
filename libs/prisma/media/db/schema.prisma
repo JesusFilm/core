@@ -2,27 +2,19 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = env("PRISMA_LOCATION_MEDIA")
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client"
+  output          = "../src/__generated__/client"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-media-client"
+  clientOutput = "./client"
   output       = "../src/__generated__/pothos-types.ts"
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_MEDIA")
 }
 
 enum ImageAspectRatio {
@@ -167,6 +159,7 @@ model Video {
   publishedAt               DateTime?
   createdAt                 DateTime             @default(now())
   updatedAt                 DateTime             @default(now()) @updatedAt
+  userMediaProfiles         UserMediaProfile[]
 
   @@index(label)
   @@index(childIds)
@@ -256,6 +249,7 @@ model VideoVariant {
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
   @@index(videoId(type: Hash))
+  @@index([published, languageId])
 }
 
 model VideoEdition {
@@ -272,7 +266,7 @@ model VideoEdition {
 }
 
 model VideoSubtitle {
-  id String @id @default(uuid())
+  id           String        @id @default(uuid())
   videoId      String
   edition      String        @default("base")
   vttAssetId   String?       @unique
@@ -528,6 +522,16 @@ model UserMediaRole {
   updatedAt DateTime    @default(now()) @updatedAt
 }
 
+model UserMediaProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  userInterests       Video[]
+  languageInterestIds String[]
+  countryInterestIds  String[]
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @default(now()) @updatedAt
+}
+
 model ShortLinkDomain {
   id         String      @id @default(uuid())
   /// the hostname including subdomain, domain, and TLD, but excluding port
@@ -567,9 +571,9 @@ model ShortLink {
 
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
-  hostname   String   @id
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  hostname  String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model VideoOrigin {

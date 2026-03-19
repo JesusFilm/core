@@ -273,6 +273,8 @@ describe('CardIntro', () => {
           showGeneratedSubtitles: null,
           eventLabel: null,
           endEventLabel: null,
+          customizable: null,
+          notes: null,
           mediaVideo: {
             id: '1_jf-0-0',
             title: [

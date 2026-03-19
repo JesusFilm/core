@@ -159,7 +159,8 @@ describe('Card', () => {
         children: [
           {
             __typename: 'VideoBlock',
-            id: 'video1.id'
+            id: 'video1.id',
+            notes: null
           } as unknown as TreeBlock<VideoBlock>
         ]
       })
@@ -203,7 +204,8 @@ describe('Card', () => {
         children: [
           {
             __typename: 'VideoBlock',
-            id: 'video1.id'
+            id: 'video1.id',
+            notes: null
           } as unknown as TreeBlock<VideoBlock>
         ]
       })
@@ -318,7 +320,8 @@ describe('Card', () => {
             children: [],
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       })
@@ -344,7 +347,8 @@ describe('Card', () => {
             children: [],
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           }
         ]
       })
@@ -371,6 +375,7 @@ describe('Card', () => {
             image: null,
             subtitleLanguage: null,
             showGeneratedSubtitles: null,
+            customizable: null,
             mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
@@ -398,6 +403,7 @@ describe('Card', () => {
             objectFit: null,
             eventLabel: null,
             endEventLabel: null,
+            notes: null,
             children: []
           }
         ]

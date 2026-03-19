@@ -11,7 +11,8 @@ import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import type PrismaTypes from '@core/prisma/analytics/__generated__/pothos-types'
-import { Prisma, users as User, prisma } from '@core/prisma/analytics/client'
+import { getDatamodel } from '@core/prisma/analytics/__generated__/pothos-types'
+import { users as User, prisma } from '@core/prisma/analytics/client'
 
 const PrismaPlugin = pluginName
 
@@ -28,9 +29,11 @@ export const builder = new SchemaBuilder<{
   Context: Context
   AuthScopes: {
     isAuthenticated: boolean
+    isAnonymous: boolean
   }
   AuthContexts: {
     isAuthenticated: Context & { currentUser: User; apiKey: string }
+    isAnonymous: Context & { currentUser: User; apiKey: string }
   }
   PrismaTypes: PrismaTypes
   Scalars: {
@@ -50,7 +53,10 @@ export const builder = new SchemaBuilder<{
   ],
   scopeAuth: {
     authScopes: async (context) => ({
-      isAuthenticated: context.currentUser != null
+      isAuthenticated:
+        context.currentUser != null && context.currentUser.email != null,
+      isAnonymous:
+        context.currentUser != null && context.currentUser.email == null
     })
   },
   tracing: {
@@ -59,7 +65,7 @@ export const builder = new SchemaBuilder<{
   },
   prisma: {
     client: prisma,
-    dmmf: Prisma.dmmf,
+    dmmf: getDatamodel(),
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })

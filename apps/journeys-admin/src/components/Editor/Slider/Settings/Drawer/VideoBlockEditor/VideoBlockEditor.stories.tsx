@@ -97,6 +97,8 @@ const videoInternal: TreeBlock<VideoBlock> = {
   posterBlockId: 'poster1.id',
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
+  notes: null,
   children: []
 }
 
@@ -113,7 +115,8 @@ const posterInternal: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const videoYouTube: TreeBlock<VideoBlock> = {
@@ -145,6 +148,8 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   posterBlockId: 'poster1.id',
+  customizable: null,
+  notes: null,
   children: []
 }
 
@@ -161,7 +166,8 @@ const posterYouTube: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()

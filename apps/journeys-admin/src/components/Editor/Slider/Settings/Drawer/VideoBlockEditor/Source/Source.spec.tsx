@@ -230,6 +230,8 @@ describe('Source', () => {
               eventLabel: null,
               endEventLabel: null,
               posterBlockId: 'poster1.id',
+              customizable: null,
+              notes: null,
               children: []
             }}
             onChange={onChange}
@@ -294,6 +296,8 @@ describe('Source', () => {
               eventLabel: null,
               endEventLabel: null,
               posterBlockId: 'poster1.id',
+              customizable: null,
+              notes: null,
               children: []
             }}
             onChange={onChange}
@@ -373,6 +377,8 @@ describe('Source', () => {
                 eventLabel: null,
                 endEventLabel: null,
                 posterBlockId: null,
+                customizable: null,
+                notes: null,
                 children: []
               }}
               onChange={onChange}
@@ -426,6 +432,8 @@ describe('Source', () => {
                 eventLabel: null,
                 endEventLabel: null,
                 posterBlockId: null,
+                customizable: null,
+                notes: null,
                 children: []
               }}
               onChange={onChange}
@@ -501,6 +509,8 @@ describe('Source', () => {
               eventLabel: null,
               endEventLabel: null,
               posterBlockId: null,
+              customizable: null,
+              notes: null,
               children: []
             }}
             onChange={onChange}

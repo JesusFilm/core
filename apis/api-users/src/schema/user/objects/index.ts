@@ -1,3 +1,9 @@
 import './user'
 
-export { AuthenticatedUser, User } from './user'
+export {
+  AuthenticatedUser,
+  AnonymousUser,
+  User,
+  isAuthenticatedUser
+} from './user'
+export type { UserShape } from './user'

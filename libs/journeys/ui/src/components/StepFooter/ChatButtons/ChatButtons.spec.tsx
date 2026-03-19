@@ -34,13 +34,15 @@ describe('ChatButtons', () => {
       __typename: 'ChatButton',
       id: '1',
       link: 'https://m.me/',
-      platform: MessagePlatform.facebook
+      platform: MessagePlatform.facebook,
+      customizable: null
     },
     {
       __typename: 'ChatButton',
       id: '2',
       link: 'https://other.messagingplatform/',
-      platform: MessagePlatform.telegram
+      platform: MessagePlatform.telegram,
+      customizable: null
     }
   ]
 
@@ -107,7 +109,8 @@ describe('ChatButtons', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null
   }
 
   const result = jest.fn(() => ({

@@ -1,7 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
-import { User, useUser } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import {
@@ -16,6 +15,7 @@ import { JourneyDuplicate } from '../../../__generated__/JourneyDuplicate'
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { TeamCreate } from '../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+import { User } from '../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../libs/useTeamCreateMutation/useTeamCreateMutation'
 import { ONBOARDING_TEMPLATE_ID } from '../Team/TeamOnboarding/TeamOnboarding'
 
@@ -28,15 +28,13 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('next-firebase-auth', () => ({
+const mockUseAuth = jest.fn()
+jest.mock('../../libs/auth', () => ({
   __esModule: true,
-  useUser: jest.fn().mockReturnValue({
-    displayName: 'Test User'
-  })
+  useAuth: (...args: unknown[]) => mockUseAuth(...args)
 }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
 
 const journeyProfileCreateMock: MockedResponse<JourneyProfileCreate> = {
   request: {
@@ -135,11 +133,22 @@ const journeyDuplicateMock: MockedResponse<JourneyDuplicate> = {
 describe('TermsAndConditions', () => {
   const push = jest.fn()
 
+  const mockUser: User = {
+    id: 'userId',
+    uid: 'userId',
+    email: 'test@example.com',
+    displayName: 'Test User',
+    photoURL: null,
+    phoneNumber: null,
+    emailVerified: true,
+    token: 'mock-token',
+    isAnonymous: false,
+    providerId: ''
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
-    mockUseUser.mockReturnValue({
-      displayName: 'Test User'
-    } as unknown as User)
+    mockUseAuth.mockReturnValue({ user: mockUser })
   })
 
   afterEach(() => {
@@ -402,10 +411,17 @@ describe('TermsAndConditions', () => {
   })
 
   it('should use email username as displayName fallback when displayName is null', async () => {
-    mockUseUser.mockReturnValue({
-      displayName: null,
-      email: 'testuser@example.com'
-    } as unknown as User)
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: 'userId',
+        email: 'testuser@example.com',
+        displayName: null,
+        photoURL: null,
+        phoneNumber: null,
+        emailVerified: false,
+        token: 'mock-token'
+      } as User
+    })
 
     mockUseRouter.mockReturnValue({
       push,
@@ -478,10 +494,17 @@ describe('TermsAndConditions', () => {
   })
 
   it('should return early when displayName and email are both null', async () => {
-    mockUseUser.mockReturnValue({
-      displayName: null,
-      email: null
-    } as unknown as User)
+    mockUseAuth.mockReturnValue({
+      user: {
+        id: 'userId',
+        email: null,
+        displayName: null,
+        photoURL: null,
+        phoneNumber: null,
+        emailVerified: false,
+        token: 'mock-token'
+      } as User
+    })
 
     const journeyProfileCreateMockResult = jest
       .fn()
@@ -510,6 +533,138 @@ describe('TermsAndConditions', () => {
     // Wait a bit to ensure no mutations are called
     await waitFor(() => {
       expect(journeyProfileCreateMockResult).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should skip team creation and journey duplication when user already has a team', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null }
+    } as unknown as NextRouter)
+
+    const existingTeamId = 'existingTeamId'
+
+    const getTeamsWithExistingTeam: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: {
+          query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+        },
+        result: {
+          data: {
+            teams: [
+              {
+                id: existingTeamId,
+                title: 'Existing Team',
+                publicTitle: 'E Team',
+                __typename: 'Team',
+                userTeams: [],
+                customDomains: []
+              }
+            ],
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: null
+            }
+          }
+        }
+      }
+
+    const updateLastActiveTeamIdForExistingTeamMock: MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: existingTeamId
+            }
+          }
+        },
+        result: {
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: existingTeamId
+            }
+          }
+        }
+      }
+
+    const journeyProfileCreateMockResult = jest
+      .fn()
+      .mockReturnValue(journeyProfileCreateMock.result)
+
+    const teamCreateMockResult = jest
+      .fn()
+      .mockReturnValue(teamCreateMock.result)
+
+    const journeyDuplicateMockResult = jest
+      .fn()
+      .mockReturnValue(journeyDuplicateMock.result)
+
+    const updateLastActiveTeamIdMockResult = jest
+      .fn()
+      .mockReturnValue(updateLastActiveTeamIdForExistingTeamMock.result)
+
+    const { getByRole, queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            ...journeyProfileCreateMock,
+            result: journeyProfileCreateMockResult
+          },
+          {
+            ...teamCreateMock,
+            result: teamCreateMockResult
+          },
+          {
+            ...getTeamsWithExistingTeam
+          },
+          {
+            ...getTeamsWithExistingTeam
+          },
+          {
+            ...updateLastActiveTeamIdForExistingTeamMock,
+            result: updateLastActiveTeamIdMockResult
+          },
+          {
+            ...journeyDuplicateMock,
+            result: journeyDuplicateMockResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TermsAndConditions />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    // Wait for TeamProvider query to resolve with existing team data
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+
+    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(getByRole('button', { name: 'Next' }))
+
+    await waitFor(() => {
+      expect(journeyProfileCreateMockResult).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(updateLastActiveTeamIdMockResult).toHaveBeenCalled()
+    })
+
+    expect(teamCreateMockResult).not.toHaveBeenCalled()
+    expect(journeyDuplicateMockResult).not.toHaveBeenCalled()
+    expect(push).toHaveBeenCalledWith('/')
+
+    await act(async () => {
+      await waitFor(() => {
+        expect(queryByRole('progressbar')).not.toBeInTheDocument()
+      })
     })
   })
 

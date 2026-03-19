@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
+import { mockDeep } from 'jest-mock-extended'
 import omit from 'lodash/omit'
 
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
@@ -69,7 +70,10 @@ describe('JourneyViewEventResolver', () => {
         JourneyViewEventResolver,
         eventService,
         visitorService,
-        PrismaService
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
       ]
     }).compile()
     resolver = module.get<JourneyViewEventResolver>(JourneyViewEventResolver)

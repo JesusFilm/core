@@ -1,3 +1,4 @@
+import { gql, useMutation } from '@apollo/client'
 import Visibility from '@mui/icons-material/Visibility'
 import VisibilityOff from '@mui/icons-material/VisibilityOff'
 import Button from '@mui/material/Button'
@@ -7,8 +8,9 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import {
+  EmailAuthProvider,
   createUserWithEmailAndPassword,
-  getAuth,
+  linkWithCredential,
   signInWithEmailAndPassword,
   updateProfile
 } from 'firebase/auth'
@@ -18,8 +20,18 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
+import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
+import { getJourneyIdFromRedirect } from '../utils'
+
+export const JOURNEY_PUBLISH = gql`
+  mutation JourneyPublish($id: ID!) {
+    journeyPublish(id: $id) {
+      id
+    }
+  }
+`
 
 export function RegisterPage({
   setActivePage,
@@ -28,6 +40,7 @@ export function RegisterPage({
   const { t } = useTranslation('apps-journeys-admin')
   const [showPassword, setShowPassword] = React.useState(false)
   const router = useRouter()
+  const [journeyPublish] = useMutation(JOURNEY_PUBLISH)
 
   useHandleNewAccountRedirect()
 
@@ -60,7 +73,7 @@ export function RegisterPage({
     name: string,
     password: string
   ): Promise<void> {
-    const auth = getAuth()
+    const auth = getFirebaseAuth()
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -69,7 +82,41 @@ export function RegisterPage({
     await updateProfile(userCredential.user, {
       displayName: name
     })
-    await signInWithEmailAndPassword(auth, email, password)
+    const credential = await signInWithEmailAndPassword(auth, email, password)
+    await loginWithCredential(credential)
+  }
+
+  async function convertAnonymousAccountToPermanent(
+    email: string,
+    name: string,
+    password: string
+  ): Promise<void> {
+    const auth = getFirebaseAuth()
+    const currentUser = auth.currentUser
+    if (currentUser == null || !currentUser.isAnonymous) return
+
+    const credential = EmailAuthProvider.credential(email, password)
+    const userCredential = await linkWithCredential(currentUser, credential)
+    await updateProfile(userCredential.user, { displayName: name })
+
+    const nameParts = name.trim().split(/\s+/).filter(Boolean)
+    const firstName = nameParts[0] ?? name.trim()
+    const lastName =
+      nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined
+
+    const journeyId = getJourneyIdFromRedirect(
+      router.query.redirect as string | undefined
+    )
+    if (journeyId != null) {
+      await journeyPublish({ variables: { id: journeyId } })
+    }
+
+    const signInCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    )
+    await loginWithCredential(signInCredential)
   }
 
   async function handleCreateAccount(
@@ -77,7 +124,18 @@ export function RegisterPage({
     { setFieldError }
   ): Promise<void> {
     try {
-      await createAccountAndSignIn(values.email, values.name, values.password)
+      const auth = getFirebaseAuth()
+      const currentUser = auth.currentUser
+
+      if (currentUser?.isAnonymous === true) {
+        await convertAnonymousAccountToPermanent(
+          values.email,
+          values.name,
+          values.password
+        )
+      } else {
+        await createAccountAndSignIn(values.email, values.name, values.password)
+      }
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
         setFieldError(

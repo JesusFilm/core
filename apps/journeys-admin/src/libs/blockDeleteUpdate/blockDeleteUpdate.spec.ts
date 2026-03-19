@@ -39,6 +39,7 @@ const video: TreeBlock<VideoBlock> = {
   showGeneratedSubtitles: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -63,6 +64,7 @@ const video: TreeBlock<VideoBlock> = {
     variantLanguages: []
   },
   posterBlockId: null,
+  notes: null,
   children: []
 }
 
@@ -79,7 +81,8 @@ const image: TreeBlock<ImageBlock> = {
   children: [],
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const journey: Journey = {
@@ -134,7 +137,8 @@ const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

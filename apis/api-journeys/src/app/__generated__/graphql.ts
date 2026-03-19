@@ -221,7 +221,10 @@ export enum MessagePlatform {
     menu1 = "menu1",
     checkBroken = "checkBroken",
     checkContained = "checkContained",
-    settings = "settings"
+    settings = "settings",
+    discord = "discord",
+    signal = "signal",
+    weChat = "weChat"
 }
 
 export enum IntegrationType {
@@ -318,32 +321,6 @@ export class ButtonBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class ButtonBlockCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    parentBlockId: string;
-    eventLabel?: Nullable<BlockEventLabel>;
-    label: string;
-    variant?: Nullable<ButtonVariant>;
-    color?: Nullable<ButtonColor>;
-    size?: Nullable<ButtonSize>;
-    submitEnabled?: Nullable<boolean>;
-    settings?: Nullable<ButtonBlockSettingsInput>;
-}
-
-export class ButtonBlockUpdateInput {
-    parentBlockId?: Nullable<string>;
-    eventLabel?: Nullable<BlockEventLabel>;
-    label?: Nullable<string>;
-    variant?: Nullable<ButtonVariant>;
-    color?: Nullable<ButtonColor>;
-    size?: Nullable<ButtonSize>;
-    startIconId?: Nullable<string>;
-    endIconId?: Nullable<string>;
-    submitEnabled?: Nullable<boolean>;
-    settings?: Nullable<ButtonBlockSettingsInput>;
-}
-
 export class CardBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -395,6 +372,7 @@ export class ImageBlockCreateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class ImageBlockUpdateInput {
@@ -407,6 +385,7 @@ export class ImageBlockUpdateInput {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -530,6 +509,7 @@ export class ChatButtonCreateInput {
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
+    customizable?: Nullable<boolean>;
 }
 
 export class CustomDomainCreateInput {
@@ -680,6 +660,7 @@ export class JourneysQueryOptions {
     embedded?: Nullable<boolean>;
     journeyCollection?: Nullable<boolean>;
     skipRoutingFilter?: Nullable<boolean>;
+    status?: Nullable<JourneyStatus[]>;
 }
 
 export class JourneyCreateInput {
@@ -757,13 +738,6 @@ export class JourneyEventsFilter {
 export class JourneyNotificationUpdateInput {
     journeyId: string;
     visitorInteractionEmail: boolean;
-}
-
-export class JourneyProfileUpdateInput {
-    lastActiveTeamId?: Nullable<string>;
-    journeyFlowBackButtonClicked?: Nullable<boolean>;
-    plausibleJourneyFlowViewed?: Nullable<boolean>;
-    plausibleDashboardViewed?: Nullable<boolean>;
 }
 
 export class JourneyThemeCreateInput {
@@ -963,6 +937,7 @@ export class Journey {
     tags: Tag[];
     journeyCollections: JourneyCollection[];
     templateSite?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;
@@ -1001,8 +976,6 @@ export abstract class IQuery {
 
     abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
 
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
-
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
     abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
@@ -1018,8 +991,6 @@ export abstract class IQuery {
     abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
     abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
-
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
     abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
 
@@ -1038,8 +1009,6 @@ export abstract class IQuery {
     abstract team(id: string): Team | Promise<Team>;
 
     abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
 
     abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
 
@@ -1062,10 +1031,6 @@ export abstract class IMutation {
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract buttonBlockCreate(input: ButtonBlockCreateInput): ButtonBlock | Promise<ButtonBlock>;
-
-    abstract buttonBlockUpdate(id: string, input: ButtonBlockUpdateInput, journeyId?: Nullable<string>): Nullable<ButtonBlock> | Promise<Nullable<ButtonBlock>>;
 
     abstract cardBlockCreate(input: CardBlockCreateInput): CardBlock | Promise<CardBlock>;
 
@@ -1157,7 +1122,7 @@ export abstract class IMutation {
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
-    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>): Journey | Promise<Journey>;
+    abstract journeyDuplicate(id: string, teamId: string, forceNonTemplate?: Nullable<boolean>, duplicateAsDraft?: Nullable<boolean>): Journey | Promise<Journey>;
 
     abstract journeyUpdate(id: string, input: JourneyUpdateInput): Journey | Promise<Journey>;
 
@@ -1188,8 +1153,6 @@ export abstract class IMutation {
     abstract journeyNotificationUpdate(input: JourneyNotificationUpdateInput): JourneyNotification | Promise<JourneyNotification>;
 
     abstract journeyProfileCreate(): JourneyProfile | Promise<JourneyProfile>;
-
-    abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract journeyThemeCreate(input: JourneyThemeCreateInput): JourneyTheme | Promise<JourneyTheme>;
 
@@ -1329,6 +1292,7 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+    customizable?: Nullable<boolean>;
 }
 
 export class MultiselectBlock implements Block {
@@ -1465,6 +1429,8 @@ export class VideoBlock implements Block {
     objectFit?: Nullable<VideoBlockObjectFit>;
     subtitleLanguage?: Nullable<Language>;
     showGeneratedSubtitles?: Nullable<boolean>;
+    customizable?: Nullable<boolean>;
+    notes?: Nullable<string>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1482,6 +1448,7 @@ export class ChatButton {
     id: string;
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
+    customizable?: Nullable<boolean>;
 }
 
 export class CustomDomain {
@@ -1915,6 +1882,11 @@ export class Translation {
     primary: boolean;
 }
 
+export class User {
+    __typename?: 'User';
+    id: string;
+}
+
 export class UserInvite {
     __typename?: 'UserInvite';
     id: string;
@@ -2023,14 +1995,6 @@ export class Tag {
 }
 
 export class ShortLink {
-    id: string;
-}
-
-export class User {
-    id: string;
-}
-
-export class AuthenticatedUser {
     id: string;
 }
 

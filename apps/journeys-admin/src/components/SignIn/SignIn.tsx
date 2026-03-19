@@ -1,4 +1,7 @@
-import { ReactElement, useState } from 'react'
+import { useRouter } from 'next/router'
+import { ReactElement, useEffect, useState } from 'react'
+
+import { useAuth } from '../../libs/auth'
 
 import { EmailUsedPage } from './EmailUsedPage'
 import { HomePage } from './HomePage'
@@ -9,9 +12,24 @@ import { ResetPasswordSentPage } from './ResetPasswordSentPage'
 import { ActivePage, PageProps } from './types'
 
 export function SignIn(): ReactElement {
+  const router = useRouter()
+  const { user } = useAuth()
   const [activePage, setActivePage] = useState<ActivePage>('home')
   const [userEmail, setUserEmail] = useState<string>('')
   const [userPassword, setUserPassword] = useState<string>('')
+
+  function getSearchFromAsPath(asPath: string): string {
+    const index = asPath.indexOf('?')
+    return index === -1 ? '' : asPath.slice(index)
+  }
+
+  useEffect(() => {
+    if (user == null) return
+    if (user.isAnonymous === true) return
+
+    const search = getSearchFromAsPath(router.asPath)
+    void router.replace(`/users/verify${search}`)
+  }, [router, user?.id, user?.isAnonymous])
 
   let page: ReactElement<PageProps>
   const props: PageProps = {
@@ -52,5 +70,5 @@ export function SignIn(): ReactElement {
       page = <></>
       break
   }
-  return <>{page}</>
+  return page
 }

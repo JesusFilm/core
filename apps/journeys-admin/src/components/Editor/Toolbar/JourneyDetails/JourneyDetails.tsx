@@ -91,6 +91,7 @@ export function JourneyDetails(): ReactElement {
             </Box>
             <Typography
               variant="body2"
+              data-testid="JourneyDescription"
               sx={{
                 display: { xs: 'inline', md: 'unset' },
                 color: 'secondary.light',

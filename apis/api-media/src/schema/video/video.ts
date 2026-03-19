@@ -333,8 +333,6 @@ const Video = builder.prismaObject('Video', {
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock = getLanguageIdFromInfo(info, video.id)
-
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
           !isEmpty(variableValueId) &&
@@ -350,8 +348,16 @@ const Video = builder.prismaObject('Video', {
           })
         }
 
+        // Prefer per-block language set by resolveReference over the legacy batch lookup
+        const requestedLanguageId = (video as any)._requestedLanguageId as
+          | string
+          | undefined
+
         const primaryLanguageId =
-          languageId ?? journeysLanguageIdForBlock ?? '529'
+          languageId ??
+          requestedLanguageId ??
+          getLanguageIdFromInfo(info, video.id) ??
+          '529'
 
         return await prisma.videoVariant.findUnique({
           ...query,
@@ -463,8 +469,13 @@ builder.asEntity(Video, {
   key: builder.selection<{ id: string; primaryLanguageId: string }>(
     'id primaryLanguageId'
   ),
-  resolveReference: async ({ id }) =>
-    await prisma.video.findUniqueOrThrow({ where: { id } })
+  // Preserve the per-block videoVariantLanguageId so the variant resolver can use it
+  resolveReference: async (ref) => {
+    const video = await prisma.video.findUniqueOrThrow({
+      where: { id: ref.id }
+    })
+    return { ...video, _requestedLanguageId: ref.primaryLanguageId }
+  }
 })
 
 builder.queryFields((t) => ({

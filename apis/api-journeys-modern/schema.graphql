@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -283,6 +283,7 @@ type ChatButton
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 input ChatButtonCreateInput {
@@ -293,6 +294,7 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 type ChatOpenEvent implements Event
@@ -639,6 +641,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -665,6 +668,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -682,6 +686,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -793,6 +798,7 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   showAssistant: Boolean
+  customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -1179,6 +1185,11 @@ input JourneysQueryOptions {
 
   """skip custom domain routing filter (for admin template customization)"""
   skipRoutingFilter: Boolean
+
+  """
+  when provided, filter the journey to only return if its status is in this list. when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 enum JourneysReportType {
@@ -1257,6 +1268,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 type MultiselectBlock implements Block
@@ -1323,6 +1337,15 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @override(from: "api-journeys")
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock @override(from: "api-journeys")
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!
@@ -1374,6 +1397,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1702,6 +1726,8 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
+  getJourneyProfile: JourneyProfile
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -1760,6 +1786,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  getUserRole: UserRole @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -2252,9 +2279,9 @@ enum TypographyVariant {
 
 type User
   @key(fields: "id")
-  @extends
+  @interfaceObject
 {
-  id: ID! @external
+  id: ID!
 }
 
 type UserAgent
@@ -2387,6 +2414,10 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 input VideoBlockCreateInput {
@@ -2416,6 +2447,10 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 enum VideoBlockObjectFit {
@@ -2456,6 +2491,12 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
+
+  """
+  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
+  """
+  notes: String
 }
 
 type VideoCollapseEvent implements Event

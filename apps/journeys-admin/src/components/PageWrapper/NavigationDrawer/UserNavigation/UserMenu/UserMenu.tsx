@@ -8,7 +8,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -17,7 +16,9 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Logout2Icon from '@core/shared/ui/icons/Logout2'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 
-import { GetMe_me as ApiUser } from '../../../../../../__generated__/GetMe'
+import { GetMe_me_AuthenticatedUser as ApiUser } from '../../../../../../__generated__/GetMe'
+import { User } from '../../../../../libs/auth'
+import { logout } from '../../../../../libs/auth/firebase'
 import { LanguageSwitcher } from '../../../../LanguageSwitcher'
 import { MenuItem } from '../../../../MenuItem'
 
@@ -26,7 +27,7 @@ export interface UserMenuProps {
   profileOpen: boolean
   profileAnchorEl: HTMLElement | null
   handleProfileClose: () => void
-  user: User
+  user: User | null
 }
 
 export function UserMenu({
@@ -75,7 +76,7 @@ export function UserMenu({
             <Typography>
               {compact([apiUser.firstName, apiUser.lastName]).join(' ')}
             </Typography>
-            {user.email != null && (
+            {user?.email != null && (
               <Typography variant="body2" color="textSecondary">
                 {user.email}
               </Typography>
@@ -103,7 +104,7 @@ export function UserMenu({
           onClick={async () => {
             handleProfileClose()
             await client.clearStore()
-            await user.signOut()
+            await logout()
             await enqueueSnackbar(t('Logout successful'), {
               variant: 'success',
               preventDuplicate: true

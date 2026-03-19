@@ -236,6 +236,8 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -387,6 +389,8 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -597,6 +601,8 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -703,6 +709,8 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -764,6 +772,8 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -841,6 +851,8 @@ describe('YouTubeDetails', () => {
       action: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 

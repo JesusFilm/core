@@ -15,8 +15,6 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
-import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Globe from '@core/shared/ui/icons/Globe'
@@ -75,6 +73,7 @@ export function JourneyCard({
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
   const [breakdownDialogOpen, setBreakdownDialogOpen] = useState(false)
+  const [hasOpenDialog, setHasOpenDialog] = useState(false)
 
   const isTemplateCard =
     journey.template === true && journey.team?.id !== 'jfp-team'
@@ -87,6 +86,12 @@ export function JourneyCard({
       })
     }
   }, [duplicatedJourneyId, journey])
+
+  const updateHoverState = (hovered: boolean) => {
+    if (!hasOpenDialog) {
+      setIsCardHovered(hovered)
+    }
+  }
 
   return (
     <Card
@@ -112,8 +117,8 @@ export function JourneyCard({
         boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
-      onMouseEnter={() => setIsCardHovered(true)}
-      onMouseLeave={() => setIsCardHovered(false)}
+      onMouseEnter={() => updateHoverState(true)}
+      onMouseLeave={() => updateHoverState(false)}
     >
       <>
         <Box
@@ -133,8 +138,9 @@ export function JourneyCard({
             refetch={refetch}
             journey={journey}
             hovered={isCardHovered}
-            onMenuClose={() => setIsCardHovered(false)}
+            onMenuClose={() => updateHoverState(false)}
             template={journey.template ?? false}
+            setHasOpenDialog={setHasOpenDialog}
           />
         </Box>
         <CardActionArea
@@ -202,51 +208,50 @@ export function JourneyCard({
                 zIndex: 2
               }}
             >
-              {journey.template &&
-                isJourneyCustomizable(journey as unknown as JourneyFields) && (
+              {journey.customizable === true && (
+                <Box
+                  data-testid="JourneyCardQuickStartBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: '#000000cc',
+                    borderRadius: 11,
+                    padding: 1,
+                    paddingRight: isCardHovered ? 3 : 1,
+                    transition: 'padding 0.3s ease',
+                    boxShadow: `0 3px 4px 0 #0000004D`
+                  }}
+                >
                   <Box
-                    data-testid="JourneyCardQuickStartBadge"
                     sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      background: 'primary.main',
                       display: 'flex',
                       alignItems: 'center',
-                      backgroundColor: '#000000cc',
-                      borderRadius: 11,
-                      padding: 1,
-                      paddingRight: isCardHovered ? 3 : 1,
-                      transition: 'padding 0.3s ease',
-                      boxShadow: `0 3px 4px 0 #0000004D`
+                      justifyContent: 'center',
+                      flexShrink: 0
                     }}
                   >
-                    <Box
-                      sx={{
-                        width: 22,
-                        height: 22,
-                        borderRadius: '50%',
-                        background: 'primary.main',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0
-                      }}
-                    >
-                      <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
-                    </Box>
-                    <Typography
-                      sx={{
-                        ml: isCardHovered ? 1 : 0,
-                        maxWidth: isCardHovered ? 100 : 0,
-                        opacity: isCardHovered ? 1 : 0,
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        transition: 'all 0.3s ease',
-                        color: '#FFD700',
-                        typography: 'overline2'
-                      }}
-                    >
-                      {t('Quick Start')}
-                    </Typography>
+                    <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
                   </Box>
-                )}
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? 100 : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#FFD700',
+                      typography: 'overline2'
+                    }}
+                  >
+                    {t('Quick Start')}
+                  </Typography>
+                </Box>
+              )}
               {journey.website && (
                 <Box
                   data-testid="JourneyCardWebsiteBadge"
@@ -341,6 +346,7 @@ export function JourneyCard({
               />
             )}
             <Box
+              data-testid="JourneyCardOverlayBox"
               aria-hidden
               sx={{
                 position: 'absolute',

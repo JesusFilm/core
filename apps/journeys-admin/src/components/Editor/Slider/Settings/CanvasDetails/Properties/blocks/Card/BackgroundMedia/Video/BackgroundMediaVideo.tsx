@@ -142,7 +142,9 @@ export function BackgroundMediaVideo({
           : null,
       showGeneratedSubtitles: null,
       eventLabel: null,
-      endEventLabel: null
+      endEventLabel: null,
+      customizable: null,
+      notes: null
     }
 
     add({
@@ -373,12 +375,10 @@ export function BackgroundMediaVideo({
     }
   }
 
+  const videoCoverBlock =
+    coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
+
   return (
-    <VideoBlockEditor
-      selectedBlock={
-        coverBlock?.__typename === 'VideoBlock' ? coverBlock : null
-      }
-      onChange={handleChange}
-    />
+    <VideoBlockEditor selectedBlock={videoCoverBlock} onChange={handleChange} />
   )
 }
