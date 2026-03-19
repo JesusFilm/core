@@ -11,6 +11,8 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { User } from '../../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
@@ -115,13 +117,15 @@ export function JourneyListContent({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
+  const { activeTeam } = useTeam()
 
-  // Determine query parameters based on contentType and status
+  // Determine query parameters based on contentType, status, and active team
   const getQueryParams = () => {
     const isTemplate = contentType === 'templates'
     const baseParams: {
       status: JourneyStatus[]
       template?: boolean
+      teamId?: string
       useLastActiveTeamId?: boolean
     } = {
       status: []
@@ -139,15 +143,15 @@ export function JourneyListContent({
         break
     }
 
-    if (isTemplate) {
-      baseParams.template = true
-      // Filter templates by current team to avoid showing templates from other teams
-      baseParams.useLastActiveTeamId = true
-    } else {
-      // Explicitly filter out templates when showing journeys
-      baseParams.template = false
-      baseParams.useLastActiveTeamId = true
+    baseParams.template = isTemplate
+
+    if (activeTeam != null) {
+      // Explicit team selected — filter by team ID
+      baseParams.teamId = activeTeam.id
     }
+    // When activeTeam is null ("Shared With Me"), pass neither teamId nor
+    // useLastActiveTeamId so the backend applies the shared-with-me filter.
+    // When activeTeam is undefined (loading), also omit — the query is skipped.
 
     return baseParams
   }
@@ -275,14 +279,13 @@ export function JourneyListContent({
 
   const getOwnerFilteredIds = (): string[] | undefined => {
     const isTemplate = contentType === 'templates'
-    const isTeamContext = getQueryParams().useLastActiveTeamId
 
     // Templates and team journeys: send all IDs, backend handles permissions
-    if (isTemplate || !user?.id || isTeamContext) {
+    if (isTemplate || !user?.id || activeTeam != null) {
       return data?.journeys?.map((journey) => journey.id)
     }
 
-    // Personal journeys: only include journeys where user is owner
+    // Personal/shared journeys: only include journeys where user is owner
     return data?.journeys
       ?.filter(
         (journey) =>

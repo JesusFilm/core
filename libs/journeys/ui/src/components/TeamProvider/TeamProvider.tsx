@@ -1,12 +1,22 @@
-import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
+import {
+  OperationVariables,
+  QueryResult,
+  gql,
+  useApolloClient,
+  useMutation,
+  useQuery
+} from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
   ReactNode,
   createContext,
   useContext,
+  useRef,
   useState
 } from 'react'
+
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 
 import {
   GetLastActiveTeamIdAndTeams,
@@ -31,6 +41,34 @@ export function useTeam(): Context {
 
 interface TeamProviderProps {
   children: ReactNode
+}
+
+const SESSION_STORAGE_KEY = 'journeys-admin:activeTeamId'
+const SHARED_WITH_ME_SENTINEL = '__shared__'
+
+function getSessionTeamId(): string | null | undefined {
+  if (typeof window === 'undefined') return undefined
+  try {
+    const stored = sessionStorage.getItem(SESSION_STORAGE_KEY)
+    if (stored == null) return undefined
+    if (stored === SHARED_WITH_ME_SENTINEL) return null
+    return stored
+  } catch (error) {
+    console.error('Failed to read activeTeamId from sessionStorage:', error)
+    return undefined
+  }
+}
+
+function setSessionTeamId(teamId: string | null): void {
+  if (typeof window === 'undefined') return
+  try {
+    sessionStorage.setItem(
+      SESSION_STORAGE_KEY,
+      teamId ?? SHARED_WITH_ME_SENTINEL
+    )
+  } catch (error) {
+    console.error('Failed to write activeTeamId to sessionStorage:', error)
+  }
 }
 
 export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
@@ -68,15 +106,54 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null | undefined>(
     undefined
   )
+  const client = useApolloClient()
+  const [updateLastActiveTeamId] = useMutation(UPDATE_LAST_ACTIVE_TEAM_ID)
+  // Capture the session value at mount time (before setActiveTeam writes to it)
+  const initialSessionTeamId = useRef(getSessionTeamId())
+
+  function syncDbAndRefetch(resolvedTeamId: string | null): void {
+    void updateLastActiveTeamId({
+      variables: {
+        input: { lastActiveTeamId: resolvedTeamId }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
+      }
+    })
+  }
 
   function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
-    if (activeTeam != null || data.teams == null) return
+    if (activeTeam !== undefined || data.teams == null) return
     sendGTMEvent({
       event: 'get_teams',
       teams: data.teams.length
     })
+
+    const sessionTeamId = initialSessionTeamId.current
+    const dbTeamId = data.getJourneyProfile?.lastActiveTeamId ?? null
+
+    if (sessionTeamId !== undefined) {
+      // Per-tab session value exists from a previous page load — use it instead of DB value
+      if (sessionTeamId === null) {
+        setActiveTeam(null)
+        if (dbTeamId !== null) {
+          syncDbAndRefetch(null)
+        }
+        return
+      }
+      const sessionTeam = data.teams.find((team) => team.id === sessionTeamId)
+      if (sessionTeam != null) {
+        setActiveTeam(sessionTeam)
+        if (sessionTeamId !== dbTeamId) {
+          syncDbAndRefetch(sessionTeamId)
+        }
+        return
+      }
+      // Session team not found in teams list (deleted/inaccessible) — fall through to DB
+    }
+
     const lastActiveTeam = data.teams.find(
-      (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
+      (team) => team.id === dbTeamId
     )
     setActiveTeam(lastActiveTeam ?? null)
   }
@@ -91,6 +168,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   )
 
   function setActiveTeam(team: Team | null): void {
+    setSessionTeamId(team?.id ?? null)
     if (team == null) {
       setActiveTeamId(null)
     } else {

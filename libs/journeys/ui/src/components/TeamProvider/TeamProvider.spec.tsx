@@ -3,6 +3,8 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
+
 import {
   GetLastActiveTeamIdAndTeams,
   GetLastActiveTeamIdAndTeams_teams as Team
@@ -82,6 +84,10 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
 }
 
 describe('TeamProvider', () => {
+  beforeEach(() => {
+    sessionStorage.clear()
+  })
+
   it('show show list of teams', async () => {
     render(
       <MockedProvider mocks={[getTeamsMock]}>
@@ -178,5 +184,95 @@ describe('TeamProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Refetch' }))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('should persist active team to sessionStorage on set', async () => {
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+    expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+      'teamId1'
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Change active to second team' })
+    )
+    expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+      'teamId2'
+    )
+  })
+
+  it('should use sessionStorage value over database lastActiveTeamId', async () => {
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId2')
+
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId2' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    render(
+      <MockedProvider mocks={[getTeamsMock, updateLastActiveTeamIdMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my second team')).toBeInTheDocument()
+    )
+  })
+
+  it('should store sentinel value for Shared With Me in sessionStorage', async () => {
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+    // setActiveTeam(null) sets "Shared With Me"
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Change active to second team' })
+    )
+    expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+      'teamId2'
+    )
+  })
+
+  it('should fall back to database value when session team is not in teams list', async () => {
+    sessionStorage.setItem('journeys-admin:activeTeamId', 'nonExistentTeamId')
+
+    render(
+      <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
   })
 })
