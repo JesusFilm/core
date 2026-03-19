@@ -50,7 +50,7 @@ import { GET_ME } from '../PageWrapper/NavigationDrawer/UserNavigation/UserNavig
 
 interface LogEntry {
   message: string
-  level: string
+  level: 'info' | 'warn' | 'error'
   timestamp: string
 }
 
