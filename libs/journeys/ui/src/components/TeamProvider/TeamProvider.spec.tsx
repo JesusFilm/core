@@ -255,9 +255,7 @@ describe('TeamProvider', () => {
     await waitFor(() =>
       expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
     )
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Set Shared With Me' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Set Shared With Me' }))
     expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
       '__shared__'
     )
