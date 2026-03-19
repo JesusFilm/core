@@ -393,7 +393,9 @@ describe('WebsiteCover', () => {
       </WebsiteCover>
     )
 
-    expect(queryByRole('region', { name: 'Video Player' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('region', { name: 'Video Player' })
+    ).not.toBeInTheDocument()
   })
 
   it('should pass hasFullscreenVideo prop to OverlayContent', () => {
