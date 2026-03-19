@@ -250,6 +250,37 @@ describe('DoneScreen', () => {
     expect(push).toHaveBeenCalledWith('/')
   })
 
+  it('should show loading state on the dashboard button after clicking', () => {
+    const journeyWithId = {
+      ...journey,
+      id: 'test-journey-id'
+    }
+
+    const syncsForTestJourneyMock: MockedResponse = {
+      request: {
+        query: GET_GOOGLE_SHEETS_SYNCS_FOR_DONE_SCREEN,
+        variables: { filter: { journeyId: 'test-journey-id' } }
+      },
+      result: { data: { googleSheetsSyncs: [] } }
+    }
+
+    render(
+      <MockedProvider mocks={[getCustomDomainsMock, syncsForTestJourneyMock]}>
+        <JourneyProvider value={{ journey: journeyWithId, variant: 'admin' }}>
+          <DoneScreen />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const dashboardButton = screen.getByTestId('ProjectsDashboardButton')
+    expect(dashboardButton).not.toBeDisabled()
+
+    fireEvent.click(dashboardButton)
+
+    expect(dashboardButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
   it('renders notification section heading and label', () => {
     render(
       <SnackbarProvider>

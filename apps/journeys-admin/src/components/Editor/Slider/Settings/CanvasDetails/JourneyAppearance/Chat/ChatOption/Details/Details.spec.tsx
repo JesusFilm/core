@@ -198,6 +198,24 @@ describe('Details', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should display human-readable label for legacy platform in dropdown', () => {
+    const props = {
+      ...defaultProps,
+      currentPlatform: MessagePlatform.messageNotifySquare,
+      enableIconSelect: true
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Details {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Message Notify Square')).toBeInTheDocument()
+  })
+
   describe('customizable toggle', () => {
     const templateJourney = {
       ...defaultJourney,

@@ -3,7 +3,8 @@ export { showImagesSection } from './showImagesSection'
 export {
   showVideosSection,
   getCustomizableCardVideoBlock,
-  getVideoPoster
+  getVideoPoster,
+  extractYouTubeVideoId
 } from './videoSectionUtils'
 export {
   getCustomizableMediaSteps,
