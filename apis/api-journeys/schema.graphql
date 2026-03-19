@@ -1452,6 +1452,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 type ChatOpenEvent implements Event

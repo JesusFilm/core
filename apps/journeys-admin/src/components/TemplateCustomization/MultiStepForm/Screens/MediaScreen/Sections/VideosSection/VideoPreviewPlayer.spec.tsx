@@ -55,6 +55,7 @@ function createBaseVideoBlock(
     eventLabel: null,
     endEventLabel: null,
     customizable: null,
+    notes: null,
     ...overrides
   }
 }

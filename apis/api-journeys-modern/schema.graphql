@@ -1268,6 +1268,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 type MultiselectBlock implements Block

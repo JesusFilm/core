@@ -73,6 +73,7 @@ describe('getCurrentEventLabel', () => {
       mediaVideo: null,
       action: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
