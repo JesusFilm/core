@@ -1,214 +1,195 @@
 import { z } from 'zod'
 
-// --- Poll Option Schemas ---
-export const journeySimplePollOptionSchema = z.object({
-  text: z.string().describe('The text label for the poll option.'),
-  nextCard: z
-    .string()
-    .optional()
-    .describe(
-      'The id of the card to navigate to if this option is selected. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
-    ),
-  url: z
-    .string()
-    .optional()
-    .describe(
-      'A URL to navigate to when the poll option is selected. Should only provide one of url or nextCard.'
-    )
-})
+// --- Shared URL validation ---
+const safeUrl = z
+  .string()
+  .url()
+  .refine(
+    (u) => u.startsWith('https://') || u.startsWith('http://'),
+    'Only https:// and http:// URLs are allowed'
+  )
 
-export const journeySimplePollOptionSchemaUpdate =
-  journeySimplePollOptionSchema.superRefine((data, ctx) => {
-    const hasNextCard = !!data.nextCard
-    const hasUrl = !!data.url
-    if (hasNextCard === hasUrl) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Exactly one of nextCard or url must be provided.'
-      })
-    }
+// --- Actions (discriminated union by `kind`) ---
+export const journeySimpleActionSchema = z.discriminatedUnion('kind', [
+  z.object({
+    kind: z.literal('navigate'),
+    cardId: z.string().describe('The id of the card to navigate to.')
+  }),
+  z.object({
+    kind: z.literal('url'),
+    url: safeUrl.describe('A URL to open in the browser.')
+  }),
+  z.object({
+    kind: z.literal('email'),
+    email: z
+      .string()
+      .email()
+      .describe('An email address to open in the mail client.')
+  }),
+  z.object({
+    kind: z.literal('chat'),
+    chatUrl: safeUrl.describe('A WhatsApp or chat URL.')
+  }),
+  z.object({
+    kind: z.literal('phone'),
+    phone: z.string(),
+    countryCode: z.string().optional(),
+    contactAction: z.enum(['call', 'text']).optional()
   })
+])
 
-export type JourneySimplePollOption = z.infer<
-  typeof journeySimplePollOptionSchema
->
-export type JourneySimplePollOptionUpdate = z.infer<
-  typeof journeySimplePollOptionSchemaUpdate
->
+export type JourneySimpleAction = z.infer<typeof journeySimpleActionSchema>
 
-// --- Button Schemas ---
-export const journeySimpleButtonSchema = z.object({
-  text: z.string().describe('The text label displayed on the button.'),
-  nextCard: z
-    .string()
-    .optional()
-    .describe(
-      'The id of the card to navigate to when the button is pressed. Something like card-1, card-2, etc. Should only provide one of url or nextCard.'
-    ),
-  url: z
-    .string()
-    .optional()
-    .describe(
-      'A URL to navigate to when the button is pressed. Should only provide one of url or nextCard.'
-    )
-})
-
-export const journeySimpleButtonSchemaUpdate =
-  journeySimpleButtonSchema.superRefine((data, ctx) => {
-    const hasNextCard = !!data.nextCard
-    const hasUrl = !!data.url
-    if (hasNextCard === hasUrl) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Exactly one of nextCard or url must be provided.'
-      })
-    }
+// --- Content Blocks (discriminated union by `type`) ---
+export const journeySimpleBlockSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('heading'),
+    text: z.string(),
+    variant: z
+      .enum(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
+      .optional()
+      .default('h3')
+  }),
+  z.object({
+    type: z.literal('text'),
+    text: z.string(),
+    variant: z
+      .enum([
+        'body1',
+        'body2',
+        'subtitle1',
+        'subtitle2',
+        'caption',
+        'overline'
+      ])
+      .optional()
+      .default('body1')
+  }),
+  z.object({
+    type: z.literal('button'),
+    text: z.string().describe('Label displayed on the button.'),
+    action: journeySimpleActionSchema
+  }),
+  z.object({
+    type: z.literal('image'),
+    src: z.string(),
+    alt: z.string(),
+    width: z
+      .number()
+      .int()
+      .nonnegative()
+      .optional()
+      .describe('Omit — server computes from URL.'),
+    height: z
+      .number()
+      .int()
+      .nonnegative()
+      .optional()
+      .describe('Omit — server computes from URL.'),
+    blurhash: z.string().optional().describe('Omit — server computes from URL.')
+  }),
+  z.object({
+    type: z.literal('video'),
+    url: z.string().describe('YouTube URL.'),
+    startAt: z.number().int().nonnegative().optional(),
+    endAt: z.number().int().positive().optional()
+  }),
+  z.object({
+    type: z.literal('poll'),
+    gridView: z.boolean().optional().default(false),
+    options: z
+      .array(
+        z.object({
+          text: z.string(),
+          action: journeySimpleActionSchema
+        })
+      )
+      .min(2)
+  }),
+  z.object({
+    type: z.literal('multiselect'),
+    min: z.number().int().nonnegative().optional(),
+    max: z.number().int().positive().optional(),
+    options: z.array(z.string()).min(2)
+  }),
+  z.object({
+    type: z.literal('textInput'),
+    label: z.string(),
+    inputType: z
+      .enum(['freeForm', 'name', 'email', 'phone'])
+      .optional()
+      .default('freeForm'),
+    placeholder: z.string().optional(),
+    hint: z.string().optional(),
+    required: z.boolean().optional().default(false)
+  }),
+  z.object({
+    type: z.literal('spacer'),
+    spacing: z
+      .number()
+      .int()
+      .positive()
+      .describe('Vertical spacing in pixels.')
   })
+])
 
-export type JourneySimpleButton = z.infer<typeof journeySimpleButtonSchema>
-export type JourneySimpleButtonUpdate = z.infer<
-  typeof journeySimpleButtonSchemaUpdate
->
+export type JourneySimpleBlock = z.infer<typeof journeySimpleBlockSchema>
 
-// --- Image Schema (shared, no update/default distinction needed) ---
+// --- Image Schema (for backgroundImage) ---
 export const journeySimpleImageSchema = z.object({
   src: z.string().describe('A URL for the image.'),
   alt: z.string().describe('Alt text for the image for accessibility.'),
-  width: z.int().positive().describe('Width of the image in pixels.'),
-  height: z.int().positive().describe('Height of the image in pixels.'),
-  blurhash: z
-    .string()
-    .describe('A compact representation of a placeholder for the image.')
-})
-export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
-
-// --- Video Schema ---
-export const journeySimpleVideoSchema = z.object({
-  url: z.string().describe('The YouTube video URL.'),
-  startAt: z
+  width: z
+    .number()
     .int()
     .nonnegative()
     .optional()
-    .describe('Start time in seconds. If not provided, defaults to 0.'),
-  endAt: z
+    .describe('Omit — server computes from URL.'),
+  height: z
+    .number()
     .int()
-    .positive()
+    .nonnegative()
     .optional()
-    .describe(
-      'End time in seconds. If not provided, defaults to the video duration.'
-    )
+    .describe('Omit — server computes from URL.'),
+  blurhash: z.string().optional().describe('Omit — server computes from URL.')
 })
-export type JourneySimpleVideo = z.infer<typeof journeySimpleVideoSchema>
 
-// --- Video Update Schema (with stricter validation) ---
-export const journeySimpleVideoSchemaUpdate =
-  journeySimpleVideoSchema.superRefine((data, ctx) => {
-    if (
-      data.startAt !== undefined &&
-      data.endAt !== undefined &&
-      data.endAt <= data.startAt
-    ) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'endAt must be greater than startAt if both are provided.'
-      })
-    }
-  })
-export type JourneySimpleVideoUpdate = z.infer<
-  typeof journeySimpleVideoSchemaUpdate
->
+export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 
-// --- Card Schemas ---
+// --- Card Schema ---
 export const journeySimpleCardSchema = z.object({
-  id: z
-    .string()
-    .describe('The id of the card. Something like card-1, card-2, etc.'),
-  x: z.number().describe('The x coordinate for the card layout position.'),
-  y: z.number().describe('The y coordinate for the card layout position.'),
-  heading: z
-    .string()
+  id: z.string().describe(
+    'Unique, semantic identifier. Use descriptive names like "card-welcome" or "card-results". Do NOT use positional names like "card-1".'
+  ),
+  x: z
+    .number()
     .optional()
-    .describe('A heading for the card, if present.'),
-  text: z.string().optional().describe('The main text content of the card.'),
-  button: journeySimpleButtonSchema
+    .describe('Canvas x position. Omit to auto-layout (index * 300).'),
+  y: z
+    .number()
     .optional()
-    .describe('A button object for this card, if present.'),
-  poll: z
-    .array(journeySimplePollOptionSchema)
-    .optional()
-    .describe('An array of poll options for this card, if present.'),
-  image: journeySimpleImageSchema
-    .optional()
-    .describe('Image object for the card.'),
-  backgroundImage: journeySimpleImageSchema
-    .optional()
-    .describe('Background image object for the card.'),
-  video: journeySimpleVideoSchema
-    .optional()
-    .describe(
-      'Video segment for this card, if present. If present, only "id", "video", and (optionally) "defaultNextCard" should be set on this card. All other content fields (heading, text, button, poll, image, backgroundImage, etc.) must be omitted.'
-    ),
-  defaultNextCard: z
+    .describe('Canvas y position. Omit to default to 0.'),
+  backgroundColor: z
     .string()
     .optional()
-    .describe(
-      'The id of the card to navigate to after this card by default. Something like card-1, card-2, etc.'
-    )
+    .describe('Hex color for the card background e.g. "#1A1A2E".'),
+  backgroundImage: journeySimpleImageSchema.optional(),
+  backgroundVideo: z
+    .object({
+      url: z.string().describe('YouTube URL.'),
+      startAt: z.number().int().nonnegative().optional(),
+      endAt: z.number().int().positive().optional()
+    })
+    .optional(),
+  content: z
+    .array(journeySimpleBlockSchema)
+    .describe('Ordered array of content blocks on this card.'),
+  defaultNextCard: z.string().optional()
 })
-
-export const journeySimpleCardSchemaUpdate = journeySimpleCardSchema
-  .extend({
-    button: journeySimpleButtonSchemaUpdate.optional(),
-    poll: z.array(journeySimplePollOptionSchemaUpdate).optional(),
-    video: journeySimpleVideoSchemaUpdate.optional()
-  })
-  .superRefine((data, ctx) => {
-    if (data.video !== undefined) {
-      // Enforce only id, video, and defaultNextCard are present
-      const forbiddenFields = [
-        'heading',
-        'text',
-        'button',
-        'poll',
-        'image',
-        'backgroundImage'
-      ]
-      for (const field of forbiddenFields) {
-        if ((data as Record<string, unknown>)[field] !== undefined) {
-          ctx.addIssue({
-            code: 'custom',
-            message: `If video is present, ${field} must not be set.`
-          })
-        }
-      }
-      // Enforce defaultNextCard is required for video cards
-      if (data.defaultNextCard === undefined) {
-        ctx.addIssue({
-          code: 'custom',
-          message: 'If video is present, defaultNextCard is required.'
-        })
-      }
-    } else {
-      // For non-video cards, require at least one navigation option
-      const hasButton = !!data.button
-      const hasPoll = Array.isArray(data.poll) && data.poll.length > 0
-      const hasDefaultNextCard = !!data.defaultNextCard
-      if (!hasButton && !hasPoll && !hasDefaultNextCard) {
-        ctx.addIssue({
-          code: 'custom',
-          message:
-            'At least one of button, poll, or defaultNextCard must be present to provide navigation.'
-        })
-      }
-    }
-  })
 
 export type JourneySimpleCard = z.infer<typeof journeySimpleCardSchema>
-export type JourneySimpleCardUpdate = z.infer<
-  typeof journeySimpleCardSchemaUpdate
->
 
-// --- Journey Schemas ---
+// --- Journey Schema ---
 export const journeySimpleSchema = z.object({
   title: z.string().describe('The title of the journey.'),
   description: z.string().describe('A description of the journey.'),
@@ -217,9 +198,75 @@ export const journeySimpleSchema = z.object({
     .describe('An array of cards that make up the journey.')
 })
 
-export const journeySimpleSchemaUpdate = journeySimpleSchema.extend({
-  cards: z.array(journeySimpleCardSchemaUpdate)
-})
-
 export type JourneySimple = z.infer<typeof journeySimpleSchema>
+
+// --- Write schema (adds cross-card reference validation + video/background rules) ---
+export const journeySimpleSchemaUpdate = journeySimpleSchema.superRefine(
+  (data, ctx) => {
+    const cardIds = new Set(data.cards.map((c) => c.id))
+
+    for (const card of data.cards) {
+      const cardIndex = data.cards.indexOf(card)
+
+      // Cross-card reference validation
+      const checkRef = (ref: string | undefined, path: string): void => {
+        if (ref && !cardIds.has(ref)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['cards', cardIndex, path],
+            message: `Card "${ref}" does not exist. Valid IDs: ${Array.from(cardIds).join(', ')}`
+          })
+        }
+      }
+
+      checkRef(card.defaultNextCard, 'defaultNextCard')
+
+      for (const block of card.content) {
+        if (block.type === 'button' && block.action.kind === 'navigate') {
+          checkRef(block.action.cardId, 'content[button].action.cardId')
+        }
+        if (block.type === 'poll') {
+          block.options.forEach((o, i) => {
+            if (o.action.kind === 'navigate') {
+              checkRef(
+                o.action.cardId,
+                `content[poll].options[${i}].action.cardId`
+              )
+            }
+          })
+        }
+      }
+
+      // Video/background rules
+      const hasContentVideo = card.content.some((b) => b.type === 'video')
+      const hasBgImage = card.backgroundImage != null
+      const hasBgVideo = card.backgroundVideo != null
+
+      if (hasContentVideo && card.content.length > 1) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['cards', cardIndex, 'content'],
+          message: 'Video content must be the only content block on a card.'
+        })
+      }
+      if (hasContentVideo && (hasBgImage || hasBgVideo)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['cards', cardIndex],
+          message:
+            'Video content cards cannot have background image or background video.'
+        })
+      }
+      if (hasBgImage && hasBgVideo) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['cards', cardIndex],
+          message:
+            'Card cannot have both backgroundImage and backgroundVideo.'
+        })
+      }
+    }
+  }
+)
+
 export type JourneySimpleUpdate = z.infer<typeof journeySimpleSchemaUpdate>

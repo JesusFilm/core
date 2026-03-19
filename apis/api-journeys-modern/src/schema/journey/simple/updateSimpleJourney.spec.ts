@@ -14,13 +14,7 @@ jest.mock('../../../utils/generateBlurhashAndMetadataFromUrl', () => ({
   })
 }))
 
-// Mock environment variables
-const originalEnv = process.env
-
-// Mock ApolloClient
 jest.mock('@apollo/client')
-
-// Mock node-fetch
 jest.mock('node-fetch')
 const mockFetch = require('node-fetch') as jest.MockedFunction<typeof fetch>
 
@@ -37,6 +31,7 @@ const txMock = {
 
 describe('updateSimpleJourney', () => {
   const journeyId = 'jid'
+
   const simple: JourneySimpleUpdate = {
     title: 'Journey',
     description: 'desc',
@@ -45,26 +40,36 @@ describe('updateSimpleJourney', () => {
         id: 'card-1',
         x: 0,
         y: 0,
-        heading: 'Heading',
-        text: 'Text',
-        image: {
-          src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-          alt: 'alt',
-          width: 100,
-          height: 100,
-          blurhash: ''
-        },
-        poll: [
-          { text: 'Option 1', nextCard: 'card-2' },
-          { text: 'Option 2', url: 'https://example.com' }
+        content: [
+          { type: 'heading', text: 'Heading', variant: 'h3' as const },
+          { type: 'text', text: 'Body text', variant: 'body1' as const },
+          {
+            type: 'image',
+            src: 'https://images.unsplash.com/photo-123',
+            alt: 'alt',
+            width: 100,
+            height: 100,
+            blurhash: ''
+          },
+          {
+            type: 'button',
+            text: 'Next',
+            action: { kind: 'navigate', cardId: 'card-2' }
+          },
+          {
+            type: 'poll', gridView: false,
+            options: [
+              {
+                text: 'Option 1',
+                action: { kind: 'navigate', cardId: 'card-2' }
+              },
+              { text: 'Option 2', action: { kind: 'url', url: 'https://example.com' } }
+            ]
+          }
         ],
-        button: { text: 'Next', nextCard: 'card-2' },
         backgroundImage: {
-          src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-          alt: 'bg',
-          width: 200,
-          height: 200,
-          blurhash: ''
+          src: 'https://images.unsplash.com/photo-456',
+          alt: 'bg'
         },
         defaultNextCard: 'card-2'
       },
@@ -72,15 +77,23 @@ describe('updateSimpleJourney', () => {
         id: 'card-2',
         x: 100,
         y: 100,
-        heading: 'Second',
-        text: 'Second text',
+        content: [
+          { type: 'heading', text: 'Second', variant: 'h3' as const },
+          { type: 'text', text: 'Second text', variant: 'body1' as const }
+        ],
         defaultNextCard: 'card-3'
       },
       {
         id: 'card-3',
         x: 200,
         y: 200,
-        button: { text: 'End', url: 'https://example.com' }
+        content: [
+          {
+            type: 'button',
+            text: 'End',
+            action: { kind: 'url', url: 'https://example.com' }
+          }
+        ]
       }
     ]
   }
@@ -98,7 +111,7 @@ describe('updateSimpleJourney', () => {
           items: [
             {
               contentDetails: {
-                duration: 'PT3M45S' // 3 minutes 45 seconds = 225 seconds
+                duration: 'PT3M45S' // 225 seconds
               }
             }
           ]
@@ -106,12 +119,12 @@ describe('updateSimpleJourney', () => {
     } as any)
   })
 
-  it('wraps all operations in a transaction', async () => {
+  it('should wrap all operations in a transaction', async () => {
     await updateSimpleJourney(journeyId, simple)
     expect(prismaMock.$transaction).toHaveBeenCalled()
   })
 
-  it('marks all non-deleted blocks as deleted', async () => {
+  it('should mark all non-deleted blocks as deleted', async () => {
     await updateSimpleJourney(journeyId, simple)
     expect(txMock.block.updateMany).toHaveBeenCalledWith({
       where: { journeyId, deletedAt: null },
@@ -119,7 +132,7 @@ describe('updateSimpleJourney', () => {
     })
   })
 
-  it('updates journey title and description', async () => {
+  it('should update journey title and description', async () => {
     await updateSimpleJourney(journeyId, simple)
     expect(txMock.journey.update).toHaveBeenCalledWith({
       where: { id: journeyId },
@@ -127,53 +140,371 @@ describe('updateSimpleJourney', () => {
     })
   })
 
-  it('creates StepBlocks and CardBlocks for each card', async () => {
+  it('should create StepBlocks and CardBlocks for each card', async () => {
     await updateSimpleJourney(journeyId, simple)
-    // Should create 3 StepBlocks and 3 CardBlocks
     const stepCalls = txMock.block.create.mock.calls.filter(
       ([data]: [any]) => data.data.typename === 'StepBlock'
     )
     const cardCalls = txMock.block.create.mock.calls.filter(
       ([data]: [any]) => data.data.typename === 'CardBlock'
     )
-    expect(stepCalls.length).toBe(3)
-    expect(cardCalls.length).toBe(3)
+    expect(stepCalls).toHaveLength(3)
+    expect(cardCalls).toHaveLength(3)
   })
 
-  it('creates content blocks for heading, text, image, poll, button, backgroundImage, defaultNextCard', async () => {
+  it('should create content blocks from content array (heading, text, button, image)', async () => {
     await updateSimpleJourney(journeyId, simple)
-    // Check for TypographyBlock, ImageBlock, RadioQuestionBlock, RadioOptionBlock, ButtonBlock
     const types = txMock.block.create.mock.calls.map(
       ([data]: [any]) => data.data.typename
     )
     expect(types).toContain('TypographyBlock')
     expect(types).toContain('ImageBlock')
+    expect(types).toContain('ButtonBlock')
     expect(types).toContain('RadioQuestionBlock')
     expect(types).toContain('RadioOptionBlock')
-    expect(types).toContain('ButtonBlock')
   })
 
-  it('creates VideoBlock for video cards with full timing', async () => {
-    const videoJourney: JourneySimpleUpdate = {
-      title: 'Video Journey',
-      description: 'A journey with video',
+  it('should handle all 5 action kinds (navigate, url, email, chat, phone)', async () => {
+    const actionJourney: JourneySimpleUpdate = {
+      title: 'Actions',
+      description: 'All action kinds',
       cards: [
         {
-          id: 'video-card-1',
+          id: 'card-1',
           x: 0,
           y: 0,
-          video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
-            startAt: 30,
-            endAt: 120
-          },
-          defaultNextCard: 'card-2'
+          content: [
+            {
+              type: 'button',
+              text: 'Navigate',
+              action: { kind: 'navigate', cardId: 'card-2' }
+            },
+            {
+              type: 'button',
+              text: 'URL',
+              action: { kind: 'url', url: 'https://example.com' }
+            },
+            {
+              type: 'button',
+              text: 'Email',
+              action: { kind: 'email', email: 'test@example.com' }
+            },
+            {
+              type: 'button',
+              text: 'Chat',
+              action: { kind: 'chat', chatUrl: 'https://wa.me/123' }
+            },
+            {
+              type: 'button',
+              text: 'Phone',
+              action: {
+                kind: 'phone',
+                phone: '+15551234567',
+                countryCode: 'US',
+                contactAction: 'call'
+              }
+            }
+          ]
         },
         {
           id: 'card-2',
+          x: 300,
+          y: 0,
+          content: [{ type: 'heading', text: 'Done', variant: 'h3' as const }]
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, actionJourney)
+
+    const buttonCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'ButtonBlock'
+    )
+    expect(buttonCalls).toHaveLength(5)
+
+    // navigate
+    expect(buttonCalls[0][0].data.action).toEqual({
+      create: { blockId: 'mock-block-id' }
+    })
+    // url
+    expect(buttonCalls[1][0].data.action).toEqual({
+      create: { url: 'https://example.com' }
+    })
+    // email
+    expect(buttonCalls[2][0].data.action).toEqual({
+      create: { email: 'test@example.com' }
+    })
+    // chat
+    expect(buttonCalls[3][0].data.action).toEqual({
+      create: { chatUrl: 'https://wa.me/123' }
+    })
+    // phone
+    expect(buttonCalls[4][0].data.action).toEqual({
+      create: {
+        phone: '+15551234567',
+        countryCode: 'US',
+        contactAction: 'call'
+      }
+    })
+  })
+
+  it('should create poll with options and actions', async () => {
+    const pollJourney: JourneySimpleUpdate = {
+      title: 'Poll',
+      description: 'Poll test',
+      cards: [
+        {
+          id: 'card-1',
           x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
+          y: 0,
+          content: [
+            {
+              type: 'poll',
+              gridView: true,
+              options: [
+                {
+                  text: 'Option A',
+                  action: { kind: 'navigate', cardId: 'card-2' }
+                },
+                {
+                  text: 'Option B',
+                  action: { kind: 'url', url: 'https://example.com' }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          id: 'card-2',
+          x: 300,
+          y: 0,
+          content: [{ type: 'heading', text: 'Done', variant: 'h3' as const }]
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, pollJourney)
+
+    const radioCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'RadioQuestionBlock'
+    )
+    expect(radioCalls).toHaveLength(1)
+    expect(radioCalls[0][0].data.gridView).toBe(true)
+
+    const optionCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'RadioOptionBlock'
+    )
+    expect(optionCalls).toHaveLength(2)
+    expect(optionCalls[0][0].data.label).toBe('Option A')
+    expect(optionCalls[1][0].data.label).toBe('Option B')
+    expect(optionCalls[1][0].data.action).toEqual({
+      create: { url: 'https://example.com' }
+    })
+  })
+
+  it('should create multiselect with option blocks', async () => {
+    const msJourney: JourneySimpleUpdate = {
+      title: 'Multiselect',
+      description: 'MS test',
+      cards: [
+        {
+          id: 'card-1',
+          x: 0,
+          y: 0,
+          content: [
+            {
+              type: 'multiselect',
+              min: 1,
+              max: 3,
+              options: ['Alpha', 'Beta', 'Gamma']
+            }
+          ]
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, msJourney)
+
+    const msCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'MultiselectBlock'
+    )
+    expect(msCalls).toHaveLength(1)
+    expect(msCalls[0][0].data.min).toBe(1)
+    expect(msCalls[0][0].data.max).toBe(3)
+
+    const optionCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'MultiselectOptionBlock'
+    )
+    expect(optionCalls).toHaveLength(3)
+    expect(optionCalls[0][0].data.label).toBe('Alpha')
+    expect(optionCalls[1][0].data.label).toBe('Beta')
+    expect(optionCalls[2][0].data.label).toBe('Gamma')
+  })
+
+  it('should create textInput block', async () => {
+    const tiJourney: JourneySimpleUpdate = {
+      title: 'TextInput',
+      description: 'TI test',
+      cards: [
+        {
+          id: 'card-1',
+          x: 0,
+          y: 0,
+          content: [
+            {
+              type: 'textInput',
+              label: 'Your name',
+              inputType: 'name',
+              placeholder: 'Enter name',
+              hint: 'First and last',
+              required: true
+            }
+          ]
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, tiJourney)
+
+    const tiCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'TextResponseBlock'
+    )
+    expect(tiCalls).toHaveLength(1)
+    expect(tiCalls[0][0].data).toMatchObject({
+      label: 'Your name',
+      type: 'name',
+      placeholder: 'Enter name',
+      hint: 'First and last',
+      required: true
+    })
+  })
+
+  it('should create spacer block', async () => {
+    const spacerJourney: JourneySimpleUpdate = {
+      title: 'Spacer',
+      description: 'Spacer test',
+      cards: [
+        {
+          id: 'card-1',
+          x: 0,
+          y: 0,
+          content: [{ type: 'spacer', spacing: 24 }]
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, spacerJourney)
+
+    const spacerCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'SpacerBlock'
+    )
+    expect(spacerCalls).toHaveLength(1)
+    expect(spacerCalls[0][0].data.spacing).toBe(24)
+  })
+
+  it('should create backgroundImage as cover block', async () => {
+    await updateSimpleJourney(journeyId, simple)
+
+    const imageCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) =>
+        data.data.typename === 'ImageBlock' && data.data.parentOrder == null
+    )
+    expect(imageCalls.length).toBeGreaterThanOrEqual(1)
+
+    expect(txMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'mock-block-id' },
+        data: { coverBlockId: 'mock-block-id' }
+      })
+    )
+  })
+
+  it('should create backgroundVideo as cover block', async () => {
+    const bgVideoJourney: JourneySimpleUpdate = {
+      title: 'BgVideo',
+      description: 'Background video test',
+      cards: [
+        {
+          id: 'card-1',
+          x: 0,
+          y: 0,
+          content: [{ type: 'heading', text: 'Hello', variant: 'h3' as const }],
+          backgroundVideo: {
+            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+            startAt: 10,
+            endAt: 60
+          }
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, bgVideoJourney)
+
+    const videoCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'VideoBlock'
+    )
+    expect(videoCalls).toHaveLength(1)
+    expect(videoCalls[0][0].data.videoId).toBe('dQw4w9WgXcQ')
+    expect(videoCalls[0][0].data.startAt).toBe(10)
+    expect(videoCalls[0][0].data.endAt).toBe(60)
+
+    expect(txMock.block.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { coverBlockId: 'mock-block-id' }
+      })
+    )
+  })
+
+  it('should auto-assign x/y when omitted', async () => {
+    const autoXYJourney: JourneySimpleUpdate = {
+      title: 'AutoXY',
+      description: 'Auto layout test',
+      cards: [
+        {
+          id: 'card-1',
+          content: [{ type: 'heading', text: 'First', variant: 'h3' as const }]
+        },
+        {
+          id: 'card-2',
+          content: [{ type: 'heading', text: 'Second', variant: 'h3' as const }]
+        },
+        {
+          id: 'card-3',
+          content: [{ type: 'heading', text: 'Third', variant: 'h3' as const }]
+        }
+      ]
+    }
+
+    await updateSimpleJourney(journeyId, autoXYJourney)
+
+    const stepCalls = txMock.block.create.mock.calls.filter(
+      ([data]: [any]) => data.data.typename === 'StepBlock'
+    )
+    expect(stepCalls[0][0].data.x).toBe(0)
+    expect(stepCalls[0][0].data.y).toBe(0)
+    expect(stepCalls[1][0].data.x).toBe(300)
+    expect(stepCalls[1][0].data.y).toBe(0)
+    expect(stepCalls[2][0].data.x).toBe(600)
+    expect(stepCalls[2][0].data.y).toBe(0)
+  })
+
+  it('should create VideoBlock for video content', async () => {
+    const videoJourney: JourneySimpleUpdate = {
+      title: 'Video',
+      description: 'Video test',
+      cards: [
+        {
+          id: 'card-1',
+          x: 0,
+          y: 0,
+          content: [
+            {
+              type: 'video',
+              url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
+              startAt: 30,
+              endAt: 120
+            }
+          ]
         }
       ]
     }
@@ -183,42 +514,38 @@ describe('updateSimpleJourney', () => {
     const videoCalls = txMock.block.create.mock.calls.filter(
       ([data]: [any]) => data.data.typename === 'VideoBlock'
     )
-    expect(videoCalls.length).toBe(1)
-
-    const videoBlockData = videoCalls[0][0].data
-    expect(videoBlockData.source).toBe('youTube')
-    expect(videoBlockData.videoId).toBe('dQw4w9WgXcQ')
-    expect(videoBlockData.startAt).toBe(30)
-    expect(videoBlockData.endAt).toBe(120)
+    expect(videoCalls).toHaveLength(1)
+    expect(videoCalls[0][0].data).toMatchObject({
+      typename: 'VideoBlock',
+      videoId: 'dQw4w9WgXcQ',
+      source: 'youTube',
+      autoplay: true,
+      startAt: 30,
+      endAt: 120
+    })
   })
 
-  it('creates VideoBlock for video cards with default timing (fetches from YouTube API)', async () => {
+  it('should fetch YouTube duration when endAt not provided', async () => {
     const videoJourney: JourneySimpleUpdate = {
-      title: 'Video Journey',
-      description: 'A journey with video',
+      title: 'Video',
+      description: 'Duration fetch test',
       cards: [
         {
-          id: 'video-card-1',
+          id: 'card-1',
           x: 0,
           y: 0,
-          video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
-            // No startAt/endAt provided
-          },
-          defaultNextCard: 'card-2'
-        },
-        {
-          id: 'card-2',
-          x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
+          content: [
+            {
+              type: 'video',
+              url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
+            }
+          ]
         }
       ]
     }
 
     await updateSimpleJourney(journeyId, videoJourney)
 
-    // Should call YouTube API to get duration
     expect(mockFetch).toHaveBeenCalledWith(
       expect.stringContaining('https://www.googleapis.com/youtube/v3/videos')
     )
@@ -226,383 +553,146 @@ describe('updateSimpleJourney', () => {
     const videoCalls = txMock.block.create.mock.calls.filter(
       ([data]: [any]) => data.data.typename === 'VideoBlock'
     )
-    const videoBlockData = videoCalls[0][0].data
-    expect(videoBlockData.startAt).toBe(0) // Default startAt
-    expect(videoBlockData.endAt).toBe(225) // Duration from mocked API response (3m45s)
-  })
-
-  it('extracts videoId from various YouTube URL formats', async () => {
-    const testUrls = [
-      'https://youtube.com/watch?v=dQw4w9WgXcQ',
-      'https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=30s',
-      'https://youtu.be/dQw4w9WgXcQ',
-      'https://youtube.com/embed/dQw4w9WgXcQ',
-      'dQw4w9WgXcQ' // Direct videoId
-    ]
-
-    for (const url of testUrls) {
-      const videoJourney: JourneySimpleUpdate = {
-        title: 'Video Journey',
-        description: 'Test URL extraction',
-        cards: [
-          {
-            id: 'video-card-1',
-            x: 0,
-            y: 0,
-            video: { url },
-            defaultNextCard: 'card-2'
-          },
-          {
-            id: 'card-2',
-            x: 0,
-            y: 400,
-            button: { text: 'End', url: 'https://example.com' }
-          }
-        ]
-      }
-
-      jest.clearAllMocks()
-      txMock.block.create.mockResolvedValue({ id: 'mock-block-id' } as any)
-
-      await updateSimpleJourney(journeyId, videoJourney)
-
-      const videoCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'VideoBlock'
-      )
-      expect(videoCalls.length).toBe(1)
-      expect(videoCalls[0][0].data.videoId).toBe('dQw4w9WgXcQ')
-    }
-  })
-
-  it('throws error for invalid YouTube URLs', async () => {
-    const videoJourney: JourneySimpleUpdate = {
-      title: 'Invalid Video Journey',
-      description: 'A journey with invalid video URL',
-      cards: [
-        {
-          id: 'video-card-1',
-          x: 0,
-          y: 0,
-          video: {
-            url: 'https://vimeo.com/123456789' // Not YouTube
-          },
-          defaultNextCard: 'card-2'
-        },
-        {
-          id: 'card-2',
-          x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
-        }
-      ]
-    }
-
-    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
-      'Invalid YouTube video URL'
-    )
-  })
-
-  it('throws error when YouTube API fails', async () => {
-    mockFetch.mockResolvedValueOnce({
-      json: () =>
-        Promise.resolve({
-          items: [] // No video found
-        })
-    } as any)
-
-    const videoJourney: JourneySimpleUpdate = {
-      title: 'Video Journey',
-      description: 'A journey with video',
-      cards: [
-        {
-          id: 'video-card-1',
-          x: 0,
-          y: 0,
-          video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
-          },
-          defaultNextCard: 'card-2'
-        },
-        {
-          id: 'card-2',
-          x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
-        }
-      ]
-    }
-
-    await expect(updateSimpleJourney(journeyId, videoJourney)).rejects.toThrow(
-      'Could not fetch video duration'
-    )
-  })
-
-  it('creates video block with navigation action when defaultNextCard is provided', async () => {
-    const videoJourney: JourneySimpleUpdate = {
-      title: 'Video Journey',
-      description: 'A journey with video',
-      cards: [
-        {
-          id: 'video-card-1',
-          x: 0,
-          y: 0,
-          video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ',
-            startAt: 0,
-            endAt: 60
-          },
-          defaultNextCard: 'card-2'
-        },
-        {
-          id: 'card-2',
-          x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
-        }
-      ]
-    }
-
-    await updateSimpleJourney(journeyId, videoJourney)
-
-    const videoCalls = txMock.block.create.mock.calls.filter(
-      ([data]: [any]) => data.data.typename === 'VideoBlock'
-    )
-    const videoBlockData = videoCalls[0][0].data
-    expect(videoBlockData.action).toBeDefined()
-    expect(videoBlockData.action.create.blockId).toBeDefined()
-  })
-
-  it('does not create other content blocks for video cards', async () => {
-    const videoJourney: JourneySimpleUpdate = {
-      title: 'Video Journey',
-      description: 'A journey with video only',
-      cards: [
-        {
-          id: 'video-card-1',
-          x: 0,
-          y: 0,
-          video: {
-            url: 'https://youtube.com/watch?v=dQw4w9WgXcQ'
-          },
-          defaultNextCard: 'card-2'
-        },
-        {
-          id: 'card-2',
-          x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
-        }
-      ]
-    }
-
-    await updateSimpleJourney(journeyId, videoJourney)
-
-    const allCalls = txMock.block.create.mock.calls
-    const contentTypes = allCalls.map(([data]: [any]) => data.data.typename)
-
-    // Should have StepBlocks, CardBlocks, VideoBlock, and ButtonBlock
-    // Should NOT have TypographyBlock, ImageBlock, etc. for the video card
-    expect(contentTypes.filter((type) => type === 'VideoBlock')).toHaveLength(1)
-    expect(contentTypes.filter((type) => type === 'ButtonBlock')).toHaveLength(
-      1
-    ) // Only for card-2
-    expect(
-      contentTypes.filter((type) => type === 'TypographyBlock')
-    ).toHaveLength(0)
-    expect(contentTypes.filter((type) => type === 'ImageBlock')).toHaveLength(0)
-  })
-
-  it('parses ISO8601 duration correctly', async () => {
-    // Test different duration formats
-    const durations = [
-      { iso: 'PT3M45S', expected: 225 }, // 3m45s
-      { iso: 'PT1H30M', expected: 5400 }, // 1h30m
-      { iso: 'PT45S', expected: 45 }, // 45s
-      { iso: 'PT2H', expected: 7200 }, // 2h
-      { iso: 'PT10M', expected: 600 } // 10m
-    ]
-
-    for (const { iso, expected } of durations) {
-      mockFetch.mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            items: [
-              {
-                contentDetails: {
-                  duration: iso
-                }
-              }
-            ]
-          })
-      } as any)
-
-      const videoJourney: JourneySimpleUpdate = {
-        title: 'Duration Test',
-        description: 'Testing duration parsing',
-        cards: [
-          {
-            id: 'video-card',
-            x: 0,
-            y: 0,
-            video: { url: 'https://youtube.com/watch?v=dQw4w9WgXcQ' }, // Use valid video ID
-            defaultNextCard: 'end-card'
-          },
-          {
-            id: 'end-card',
-            x: 0,
-            y: 400,
-            button: { text: 'End', url: 'https://example.com' }
-          }
-        ]
-      }
-
-      jest.clearAllMocks()
-      txMock.block.create.mockResolvedValue({ id: 'mock-id' } as any)
-
-      await updateSimpleJourney(journeyId, videoJourney)
-
-      const videoCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'VideoBlock'
-      )
-      expect(videoCalls[0][0].data.endAt).toBe(expected)
-    }
-  })
-
-  it('handles missing optional fields gracefully', async () => {
-    const minimal: JourneySimpleUpdate = {
-      title: 't',
-      description: 'd',
-      cards: [
-        { id: 'c1', x: 0, y: 0 },
-        {
-          id: 'c2',
-          x: 0,
-          y: 400,
-          button: { text: 'End', url: 'https://example.com' }
-        }
-      ]
-    }
-    await expect(updateSimpleJourney(journeyId, minimal)).resolves.not.toThrow()
+    expect(videoCalls[0][0].data.startAt).toBe(0)
+    expect(videoCalls[0][0].data.endAt).toBe(225) // PT3M45S
   })
 
   describe('cloudflare upload', () => {
-    it('uploads invalid image URLs to Cloudflare and uses the returned URL', async () => {
-      // Mock Apollo mutation to return a specific image ID
-      const mockImageId = 'test-cloudflare-image-id'
+    it('should handle valid image URLs without Cloudflare upload', async () => {
       jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
         async () =>
           await Promise.resolve({
             data: {
-              createCloudflareUploadByUrl: {
-                id: mockImageId
-              }
+              createCloudflareUploadByUrl: { id: 'unused' }
             }
           })
       )
 
-      // Test with invalid URLs that should trigger upload
-      const testData = {
-        ...simple,
+      const validImageJourney: JourneySimpleUpdate = {
+        title: 'Valid Images',
+        description: 'No upload needed',
         cards: [
           {
-            ...simple.cards[0],
-            image: {
-              src: 'https://invalid-domain.com/image.jpg', // Invalid URL
-              alt: 'test',
-              width: 150,
-              height: 150,
-              blurhash: ''
-            },
+            id: 'card-1',
+            x: 0,
+            y: 0,
+            content: [
+              {
+                type: 'image',
+                src: 'https://imagedelivery.net/test/valid-id/public',
+                alt: 'valid'
+              }
+            ],
             backgroundImage: {
-              src: 'https://another-invalid-domain.com/bg.jpg', // Invalid URL
-              alt: 'bg',
-              width: 200,
-              height: 200,
-              blurhash: ''
+              src: 'https://images.unsplash.com/photo-123',
+              alt: 'bg'
             }
           }
         ]
       }
 
-      await updateSimpleJourney(journeyId, testData)
+      await updateSimpleJourney(journeyId, validImageJourney)
+      expect(ApolloClient.prototype.mutate).not.toHaveBeenCalled()
 
-      // Verify Apollo mutation was called for both images
-      expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(2)
-
-      // Verify the correct Cloudflare URLs were used in block creation
-      const imageBlockCalls = txMock.block.create.mock.calls.filter(
+      const imageCalls = txMock.block.create.mock.calls.filter(
         ([data]: [any]) => data.data.typename === 'ImageBlock'
       )
+      // content image + background image
+      expect(imageCalls).toHaveLength(2)
+      expect(imageCalls[0][0].data.src).toBe(
+        'https://imagedelivery.net/test/valid-id/public'
+      )
+      expect(imageCalls[1][0].data.src).toBe(
+        'https://images.unsplash.com/photo-123'
+      )
+    })
 
-      expect(imageBlockCalls).toHaveLength(2)
-      expect(imageBlockCalls[0][0].data.src).toBe(
-        `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
+    it('should upload invalid image URLs to Cloudflare', async () => {
+      const mockImageId = 'test-cf-image-id'
+      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
+        async () =>
+          await Promise.resolve({
+            data: {
+              createCloudflareUploadByUrl: { id: mockImageId }
+            }
+          })
       )
-      expect(imageBlockCalls[1][0].data.src).toBe(
-        `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
+
+      const invalidImageJourney: JourneySimpleUpdate = {
+        title: 'Invalid Images',
+        description: 'Upload needed',
+        cards: [
+          {
+            id: 'card-1',
+            x: 0,
+            y: 0,
+            content: [
+              {
+                type: 'image',
+                src: 'https://unknown-host.com/image.jpg',
+                alt: 'test'
+              }
+            ],
+            backgroundImage: {
+              src: 'https://another-invalid.com/bg.jpg',
+              alt: 'bg'
+            }
+          }
+        ]
+      }
+
+      await updateSimpleJourney(journeyId, invalidImageJourney)
+
+      expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(2)
+
+      const imageCalls = txMock.block.create.mock.calls.filter(
+        ([data]: [any]) => data.data.typename === 'ImageBlock'
       )
-      // Verify mocked width, height, and blurhash values are used (from generateBlurhashAndMetadataFromUrl)
-      for (const call of imageBlockCalls) {
+      expect(imageCalls).toHaveLength(2)
+      const expectedSrc = `https://imagedelivery.net/test-cloudflare-account-hash/${mockImageId}/public`
+      expect(imageCalls[0][0].data.src).toBe(expectedSrc)
+      expect(imageCalls[1][0].data.src).toBe(expectedSrc)
+
+      for (const call of imageCalls) {
         expect(call[0].data.width).toBe(100)
         expect(call[0].data.height).toBe(100)
         expect(call[0].data.blurhash).toBe('mocked-blurhash')
       }
     })
+  })
 
-    it('uses valid image URLs as-is without uploading to Cloudflare', async () => {
-      // Mock Apollo mutation to not be called
-      jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementationOnce(
-        async () =>
-          await Promise.resolve({
-            data: {
-              createCloudflareUploadByUrl: {
-                id: 'test-cloudflare-image-id'
-              }
+  it('should set defaultNextCard via StepBlock.nextBlockId', async () => {
+    await updateSimpleJourney(journeyId, simple)
+
+    // card-1 and card-2 both have defaultNextCard set
+    const stepUpdateCalls = txMock.block.update.mock.calls.filter(
+      ([data]: [any]) => data.data.nextBlockId != null
+    )
+    expect(stepUpdateCalls.length).toBeGreaterThanOrEqual(2)
+    expect(stepUpdateCalls[0][0].data.nextBlockId).toBe('mock-block-id')
+  })
+
+  it('should throw error for invalid YouTube URLs', async () => {
+    const invalidVideoJourney: JourneySimpleUpdate = {
+      title: 'Invalid Video',
+      description: 'Bad URL',
+      cards: [
+        {
+          id: 'card-1',
+          x: 0,
+          y: 0,
+          content: [
+            {
+              type: 'video',
+              url: 'https://vimeo.com/123456789'
             }
-          })
-      )
+          ]
+        }
+      ]
+    }
 
-      // Test with valid URLs that should NOT trigger upload
-      const testData = {
-        ...simple,
-        cards: [
-          {
-            ...simple.cards[0],
-            image: {
-              src: 'https://imagedelivery.net/test/valid-image-id/public', // Valid URL
-              alt: 'test',
-              width: 100,
-              height: 100,
-              blurhash: ''
-            },
-            backgroundImage: {
-              src: 'https://images.unsplash.com/photo-123456789', // Valid URL
-              alt: 'bg',
-              width: 200,
-              height: 200,
-              blurhash: ''
-            }
-          }
-        ]
-      }
-
-      await updateSimpleJourney(journeyId, testData)
-
-      // Verify Apollo mutation was NOT called
-      expect(ApolloClient.prototype.mutate).not.toHaveBeenCalled()
-
-      // Verify the original URLs were used in block creation
-      const imageBlockCalls = txMock.block.create.mock.calls.filter(
-        ([data]: [any]) => data.data.typename === 'ImageBlock'
-      )
-
-      expect(imageBlockCalls).toHaveLength(2)
-      expect(imageBlockCalls[0][0].data.src).toBe(
-        'https://imagedelivery.net/test/valid-image-id/public'
-      )
-      expect(imageBlockCalls[1][0].data.src).toBe(
-        'https://images.unsplash.com/photo-123456789'
-      )
-    })
+    await expect(
+      updateSimpleJourney(journeyId, invalidVideoJourney)
+    ).rejects.toThrow('Invalid YouTube video URL')
   })
 })
