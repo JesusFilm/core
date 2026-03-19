@@ -205,9 +205,7 @@ describe('middleware', () => {
       const result = await middleware(req)
 
       expect(result?.status).toBe(307)
-      expect(result?.headers.get('location')).toBe(
-        'http://localhost:4200/ja/'
-      )
+      expect(result?.headers.get('location')).toBe('http://localhost:4200/ja/')
       expect(result?.headers.get('x-firebase-auth-token')).toBe(
         'cached-token-value'
       )
@@ -224,9 +222,7 @@ describe('middleware', () => {
       const result = await middleware(req)
 
       expect(result?.status).toBe(307)
-      expect(result?.headers.get('location')).toBe(
-        'http://localhost:4200/ko/'
-      )
+      expect(result?.headers.get('location')).toBe('http://localhost:4200/ko/')
       expect(result?.headers.get('x-firebase-auth-token')).toBe(
         'cached-token-value'
       )

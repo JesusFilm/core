@@ -63,9 +63,7 @@ function TemplateIndexPage(): ReactElement {
       })
     } else if (error === SERVER_ERROR) {
       enqueueSnackbar(
-        t(
-          'Something went wrong loading the template. Please try again later.'
-        ),
+        t('Something went wrong loading the template. Please try again later.'),
         { variant: 'error', preventDuplicate: true }
       )
     } else {
