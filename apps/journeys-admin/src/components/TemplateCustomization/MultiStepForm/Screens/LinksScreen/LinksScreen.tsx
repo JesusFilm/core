@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { object, string } from 'yup'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -51,6 +51,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     useBlockActionEmailUpdateMutation()
   const [updatePhoneAction, { loading: phoneLoading }] =
     useBlockActionPhoneUpdateMutation()
+  const [navigating, setNavigating] = useState(false)
 
   const allSteps = transformer(journey?.blocks ?? []).filter(
     (block) => block.__typename === 'StepBlock'
@@ -229,6 +230,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     })
 
     await Promise.allSettled(updatePromises)
+    setNavigating(true)
     handleNext()
   }
 
@@ -310,7 +312,8 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
                   chatLoading ||
                   linkLoading ||
                   emailLoading ||
-                  phoneLoading
+                  phoneLoading ||
+                  navigating
                 }
                 ariaLabel={t('Replace the links')}
               />

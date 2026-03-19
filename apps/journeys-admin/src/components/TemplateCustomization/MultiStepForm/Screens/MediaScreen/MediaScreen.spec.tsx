@@ -242,6 +242,18 @@ describe('MediaScreen', () => {
     expect(handleNext).toHaveBeenCalledTimes(1)
   })
 
+  it('should show loading state on the Next button after clicking', () => {
+    renderMediaScreen()
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+
+    fireEvent.click(nextButton)
+
+    expect(nextButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
   it('should hide LogoSection when logoImageBlock is not customizable', () => {
     const journeyNoLogo = {
       ...baseJourney,
