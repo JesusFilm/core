@@ -61,7 +61,8 @@ const BlockTranslationUpdatesSchema = z
   .object({
     content: z.string().optional(),
     label: z.string().optional(),
-    placeholder: z.string().optional()
+    placeholder: z.string().optional(),
+    hint: z.string().optional()
   })
   .refine((updates) => Object.keys(updates).length > 0, {
     message: 'At least one supported update field is required'
@@ -80,7 +81,8 @@ const allowedTranslationFieldsByBlockType = {
   TypographyBlock: ['content'],
   ButtonBlock: ['label'],
   RadioOptionBlock: ['label'],
-  TextResponseBlock: ['label', 'placeholder']
+  TextResponseBlock: ['label', 'placeholder', 'hint'],
+  MultiselectOptionBlock: ['label']
 } as const satisfies Record<string, readonly TranslatableBlockField[]>
 
 function getValidatedBlockUpdates(

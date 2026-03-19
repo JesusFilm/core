@@ -136,9 +136,9 @@ export function updateCacheWithTranslatedJourney(
         language: translatedJourney.language,
         updatedAt: translatedJourney.updatedAt,
         journeyCustomizationDescription:
-          (translatedJourney as any).journeyCustomizationDescription ?? null,
+          translatedJourney.journeyCustomizationDescription ?? null,
         journeyCustomizationFields:
-          (translatedJourney as any).journeyCustomizationFields ?? [],
+          translatedJourney.journeyCustomizationFields ?? [],
         blocks: translatedJourney.blocks,
         __typename: 'Journey'
       }
