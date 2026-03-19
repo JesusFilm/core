@@ -81,6 +81,7 @@ const mockVideoBlock = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   mediaVideo: {
     __typename: 'MuxVideo' as const,
     id: 'videoId',

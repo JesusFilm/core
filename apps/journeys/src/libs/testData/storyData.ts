@@ -1050,6 +1050,7 @@ export const videoBlocks: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1235,6 +1236,7 @@ export const videoBlocks: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1309,6 +1311,7 @@ export const videoBlocks: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: []
           }
         ]
@@ -1369,6 +1372,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1538,6 +1542,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1612,6 +1617,7 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: []
           }
         ]
@@ -1681,6 +1687,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'trigger.id',
@@ -1850,6 +1857,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'posterBlockId',
@@ -1924,6 +1932,7 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: []
           }
         ]
@@ -2043,6 +2052,7 @@ export const videoLoop: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'image1.id',
@@ -2122,6 +2132,7 @@ export const videoLoop: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'image1.id',
@@ -2196,6 +2207,7 @@ export const videoLoop: TreeBlock[] = [
             eventLabel: null,
             endEventLabel: null,
             customizable: null,
+            notes: null,
             children: [
               {
                 id: 'image1.id',

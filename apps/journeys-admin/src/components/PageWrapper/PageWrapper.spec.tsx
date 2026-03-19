@@ -1,6 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+
+import { User } from '../../libs/auth/authContext'
 
 import { PageWrapper } from '.'
 
@@ -108,6 +110,19 @@ describe('PageWrapper', () => {
   })
 
   describe('Navigation', () => {
+    const user: User = {
+      id: 'userId',
+      uid: 'userId',
+      email: 'user@example.com',
+      displayName: 'Test User',
+      photoURL: null,
+      phoneNumber: null,
+      emailVerified: true,
+      token: 'mock-token',
+      isAnonymous: false,
+      providerId: 'google.com'
+    }
+
     afterEach(() => {
       jest.resetAllMocks()
     })
@@ -126,6 +141,27 @@ describe('PageWrapper', () => {
 
       fireEvent.click(getByTestId('NavigationListItemToggle'))
       expect(getByText('Projects')).toBeInTheDocument()
+    })
+
+    it('should show NavigationDrawer when showNavBar is true and user is provided', () => {
+      render(
+        <MockedProvider>
+          <PageWrapper title="Templates" showNavBar user={user} />
+        </MockedProvider>
+      )
+      expect(screen.getByTestId('NavigationDrawer')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('NavigationListItemTemplates')
+      ).toBeInTheDocument()
+    })
+
+    it('should not show NavigationDrawer when showNavBar is false', () => {
+      render(
+        <MockedProvider>
+          <PageWrapper title="Templates" showNavBar={false} user={user} />
+        </MockedProvider>
+      )
+      expect(screen.queryByTestId('NavigationDrawer')).not.toBeInTheDocument()
     })
   })
 
