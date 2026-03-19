@@ -425,6 +425,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteJourneysCheck(userId: String!) : UserDeleteJourneysCheckResult! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteJourneysConfirm(userId: String!) : UserDeleteJourneysConfirmResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -554,6 +556,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   userImpersonate(email: String!) : String @join__field(graph: API_USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: API_USERS) 
   validateEmail(email: String!, token: String!) : AuthenticatedUser @join__field(graph: API_USERS) 
+  userDeleteCheck(idType: UserDeleteIdType!, id: String!) : UserDeleteCheckResult! @join__field(graph: API_USERS) 
 }
 
 type MutationSiteCreateSuccess @join__type(graph: API_ANALYTICS)  {
@@ -2523,8 +2526,9 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   timeOnPage: Float
 }
 
-type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
-  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+type Subscription @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress! @join__field(graph: API_JOURNEYS_MODERN) 
+  userDeleteConfirm(idType: UserDeleteIdType!, id: String!) : UserDeleteConfirmProgress! @join__field(graph: API_USERS) 
 }
 
 type TemplateFamilyStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2544,6 +2548,31 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
 type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
+}
+
+type UserDeleteJourneysCheckResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry @join__type(graph: API_JOURNEYS_MODERN)  {
+  message: String!
+  level: String!
+  timestamp: String!
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -3288,6 +3317,31 @@ type AnonymousUser implements User @join__type(graph: API_USERS, key: "id")  @jo
   id: ID!
 }
 
+type UserDeleteCheckResult @join__type(graph: API_USERS)  {
+  userId: String!
+  userEmail: String
+  userFirstName: String!
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteLogEntry!]!
+}
+
+type UserDeleteConfirmProgress @join__type(graph: API_USERS)  {
+  log: UserDeleteLogEntry!
+  done: Boolean!
+  success: Boolean
+}
+
+type UserDeleteLogEntry @join__type(graph: API_USERS)  {
+  message: String!
+  level: String!
+  timestamp: String!
+}
+
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
   message: String
 }
@@ -3636,10 +3690,10 @@ enum MessagePlatform @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   menu1 @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   checkBroken @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   checkContained @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  settings @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  discord @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  signal @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  weChat @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  settings @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
+  discord @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
+  signal @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
+  weChat @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)
 }
 
 enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3890,6 +3944,11 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
 enum App @join__type(graph: API_USERS)  {
   NextSteps @join__enumValue(graph: API_USERS) 
   JesusFilmOne @join__enumValue(graph: API_USERS) 
+}
+
+enum UserDeleteIdType @join__type(graph: API_USERS)  {
+  databaseId @join__enumValue(graph: API_USERS) 
+  email @join__enumValue(graph: API_USERS) 
 }
 
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {

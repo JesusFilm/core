@@ -27,3 +27,26 @@ model User {
   superAdmin    Boolean  @default(false)
   emailVerified Boolean  @default(true)
 }
+
+model UserDeleteAuditLog {
+  id                    String   @id @default(uuid())
+  deletedUserId         String
+  deletedUserEmail      String?
+  deletedUserFirstName  String
+  deletedUserLastName   String?
+  callerUserId          String
+  callerEmail           String?
+  callerFirstName       String
+  callerLastName        String?
+  deletedJourneyIds     String[]
+  deletedTeamIds        String[]
+  deletedUserJourneyIds String[]
+  deletedUserTeamIds    String[]
+  success               Boolean  @default(false)
+  errorMessage          String?
+  createdAt             DateTime @default(now())
+
+  @@index(deletedUserId)
+  @@index(callerUserId)
+  @@index(createdAt)
+}

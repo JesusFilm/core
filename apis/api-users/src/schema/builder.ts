@@ -74,6 +74,14 @@ export const builder = new SchemaBuilder<{
           const user = await prisma.user.findUnique({
             where: { userId: context.currentUser.id }
           })
+          console.log(
+            '[authScopes] type=%s firebaseUid=%s email=%s dbUser=%s superAdmin=%s',
+            context.type,
+            context.currentUser.id,
+            context.currentUser.email ?? 'null',
+            user != null ? user.id : 'NOT_FOUND',
+            user?.superAdmin ?? 'N/A'
+          )
           return {
             isAuthenticated: context.currentUser?.email != null,
             isAnonymous:
@@ -90,6 +98,10 @@ export const builder = new SchemaBuilder<{
             isValidInterop: true
           }
         default:
+          console.log(
+            '[authScopes] context type=%s — falling through to public',
+            context.type
+          )
           return {
             isAuthenticated: false,
             isAnonymous: false,
@@ -112,3 +124,4 @@ export const builder = new SchemaBuilder<{
 
 builder.queryType({})
 builder.mutationType({})
+builder.subscriptionType({})
