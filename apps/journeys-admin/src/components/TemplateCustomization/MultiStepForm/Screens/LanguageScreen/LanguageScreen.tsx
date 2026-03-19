@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
-import { Form, Formik, FormikValues } from 'formik'
+import { Form, Formik } from 'formik'
 import uniqBy from 'lodash/uniqBy'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -33,6 +33,15 @@ import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
+interface LanguageFormValues {
+  teamSelect: string
+  languageSelect: {
+    id: string | undefined
+    localName: string | undefined
+    nativeName: string | undefined
+  }
+}
+
 interface LanguageScreenProps {
   handleNext: (overrideJourneyId?: string) => void
 }
@@ -52,6 +61,7 @@ export function LanguageScreen({
   const [teamCreate] = useTeamCreateMutation()
   const [loading, setLoading] = useState(false)
   const isDataReady = query?.data != null && journey != null
+  const hasTeamLoadError = query?.error != null
 
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
@@ -114,8 +124,8 @@ export function LanguageScreen({
       ([langId, journeyId]) =>
         langId !== currentLanguageId || journeyId === currentJourneyId
     )
-    if (isParentTemplate) {
-      mapArray.push([journey?.language?.id as string, journey?.id ?? ''])
+    if (isParentTemplate && journey?.language?.id != null) {
+      mapArray.push([journey.language.id, journey.id ?? ''])
     }
     const map = Object.fromEntries(mapArray)
     return map
@@ -151,12 +161,10 @@ export function LanguageScreen({
       language?: { id: string } | null
       team?: { id: string } | null
     },
-    values: FormikValues
+    values: LanguageFormValues
   ): boolean {
     const selectedTeamId =
-      values.teamSelect != null && values.teamSelect !== ''
-        ? values.teamSelect
-        : null
+      values.teamSelect !== '' ? values.teamSelect : null
     const selectedLanguageId = values.languageSelect?.id ?? ''
 
     const isNotTemplate = journey.template === false
@@ -164,7 +172,7 @@ export function LanguageScreen({
     const teamMatches =
       selectedTeamId != null ? journey.team?.id === selectedTeamId : true
 
-    return Boolean(isNotTemplate && languageMatches && teamMatches)
+    return isNotTemplate && languageMatches && teamMatches
   }
 
   async function createGuestUser(): Promise<{ teamId: string }> {
@@ -249,7 +257,7 @@ export function LanguageScreen({
     return data.journeyDuplicate.id
   }
 
-  async function handleSubmit(values: FormikValues) {
+  async function handleSubmit(values: LanguageFormValues) {
     setLoading(true)
     try {
       if (journey == null) {
@@ -261,32 +269,22 @@ export function LanguageScreen({
       }
 
       const journeyId =
-        languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
+        languagesJourneyMap?.[values.languageSelect?.id ?? ''] ?? journey?.id
 
       if (shouldSkipDuplicate(journey, values)) {
         handleNext()
         return
       }
 
-      if (isSignedIn) {
-        const duplicatedJourneyId = await handleJourneyDuplication(
-          'signedIn',
-          journeyId,
-          values.teamSelect
-        )
+      const type = isSignedIn ? 'signedIn' : 'guest'
+      const duplicatedJourneyId = await handleJourneyDuplication(
+        type,
+        journeyId,
+        isSignedIn ? values.teamSelect : undefined
+      )
 
-        if (duplicatedJourneyId != null) {
-          handleNext(duplicatedJourneyId)
-        }
-      } else {
-        const duplicatedJourneyId = await handleJourneyDuplication(
-          'guest',
-          journeyId
-        )
-
-        if (duplicatedJourneyId != null) {
-          handleNext(duplicatedJourneyId)
-        }
+      if (duplicatedJourneyId != null) {
+        handleNext(duplicatedJourneyId)
       }
     } catch {
       enqueueSnackbar(
@@ -298,6 +296,43 @@ export function LanguageScreen({
     } finally {
       setLoading(false)
     }
+  }
+
+  if (hasTeamLoadError) {
+    return (
+      <ScreenWrapper
+        title={t("Let's Get Started!")}
+        mobileTitle={t('Get Started')}
+        subtitle={t(
+          'A few quick edits and your template will be ready to share.'
+        )}
+        mobileSubtitle={t("A few quick edits and it's ready to share!")}
+        footer={
+          <CustomizeFlowNextButton
+            label={t('Next')}
+            onClick={() => {}}
+            disabled
+            loading={false}
+            ariaLabel={t('Next')}
+          />
+        }
+      >
+        <Stack
+          sx={{
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: 200
+          }}
+        >
+          <Typography color="error" align="center">
+            {t(
+              'Failed to load teams. Please refresh the page and try again.'
+            )}
+          </Typography>
+        </Stack>
+      </ScreenWrapper>
+    )
   }
 
   if (!isDataReady) {
@@ -334,7 +369,7 @@ export function LanguageScreen({
   }
 
   return (
-    <Formik
+    <Formik<LanguageFormValues>
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
