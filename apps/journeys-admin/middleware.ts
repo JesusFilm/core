@@ -131,6 +131,17 @@ function handleLocaleRedirect(
     req.url
   )
   const isSameUrl = redirectUrl.toString() === req.url.toString()
+  const isRedirect = !isSameUrl
+  if (isRedirect && headers != null) {
+    console.warn(
+      '[NES-1460-diag] locale redirect dropping auth-decorated headers',
+      {
+        from: req.nextUrl.pathname,
+        to: redirectUrl.pathname,
+        locale
+      }
+    )
+  }
   const response = isSameUrl
     ? headers != null
       ? NextResponse.next({ request: { headers } })
@@ -174,7 +185,11 @@ export default async function middleware(
     handleInvalidToken: async () => {
       return applyLocale(req) ?? NextResponse.next()
     },
-    handleError: async () => {
+    handleError: async (error) => {
+      console.error('[NES-1460-diag] middleware auth error', {
+        pathname: req.nextUrl.pathname,
+        errorMessage: error instanceof Error ? error.message : String(error)
+      })
       return applyLocale(req) ?? NextResponse.next()
     }
   })

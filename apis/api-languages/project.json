@@ -58,7 +58,7 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true pnpm exec ts-node -P apis/api-languages/tsconfig.app.json -r tsconfig-paths/register apis/api-languages/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec tsx --tsconfig apis/api-languages/tsconfig.app.json -r tsconfig-paths/register apis/api-languages/src/schema/index.ts"
       }
     },
     "subgraph-check": {
@@ -88,13 +88,13 @@
     "data-export": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node apis/api-languages/src/workers/cli.ts data-export"
+        "command": "pnpm exec tsx apis/api-languages/src/workers/cli.ts data-export"
       }
     },
     "data-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node apis/api-languages/src/scripts/data-import.ts"
+        "command": "pnpm exec tsx apis/api-languages/src/scripts/data-import.ts"
       }
     }
   }

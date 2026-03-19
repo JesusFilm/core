@@ -93,6 +93,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -145,6 +146,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -197,6 +199,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -233,6 +236,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 
@@ -280,6 +284,7 @@ describe('cancelUploadForBlock', () => {
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       children: []
     }
 

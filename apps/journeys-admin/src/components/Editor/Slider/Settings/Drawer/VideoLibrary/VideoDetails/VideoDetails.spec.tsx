@@ -66,6 +66,7 @@ describe('VideoDetails', () => {
     eventLabel: null,
     endEventLabel: null,
     customizable: null,
+    notes: null,
     children: [imageBlock]
   }
 

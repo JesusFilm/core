@@ -584,6 +584,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             fullsize: null,
             action: null,
             customizable: null,
+            notes: null,
             children: []
           }
         ]

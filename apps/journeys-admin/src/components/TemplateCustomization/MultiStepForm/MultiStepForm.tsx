@@ -18,6 +18,7 @@ import {
   CustomizationScreen,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
+import { getNextCustomizeScreen } from '../utils/getNextCustomizeScreen'
 import { useTemplateCustomizationRedirect } from '../utils/useTemplateCustomizationRedirect'
 
 import { ProgressStepper } from './ProgressStepper'
@@ -36,6 +37,7 @@ export const MULTI_STEP_FORM_MIN_HEIGHT = 900
 
 function renderScreen(
   screen: CustomizationScreen,
+  screens: CustomizationScreen[],
   handleNext: (overrideJourneyId?: string) => void
 ): ReactElement {
   switch (screen) {
@@ -43,10 +45,10 @@ function renderScreen(
       return <LanguageScreen handleNext={handleNext} />
     case 'text':
       return <TextScreen handleNext={handleNext} />
-    case 'guestPreview':
-      return <GuestPreviewScreen handleNext={handleNext} />
     case 'links':
       return <LinksScreen handleNext={handleNext} />
+    case 'guestPreview':
+      return <GuestPreviewScreen screens={screens} handleNext={handleNext} />
     case 'media':
       return <MediaScreen handleNext={handleNext} />
     case 'social':
@@ -61,14 +63,12 @@ function renderScreen(
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
-  const { user } = useAuth()
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
+  const { user } = useAuth()
 
-  const isAnon = user?.isAnonymous ?? false
+  const isGuest = user == null || user.isAnonymous === true
   const journeyId = journey?.id ?? ''
-
-  const isNotSignedIn = user?.email == null
 
   const {
     screens,
@@ -80,9 +80,9 @@ export function MultiStepForm(): ReactElement {
     () =>
       getCustomizeFlowConfig(journey, t, {
         customizableMedia: customizableMedia ?? false,
-        isNotSignedIn
+        isGuest
       }),
-    [journey, t, customizableMedia, isNotSignedIn]
+    [journey, t, customizableMedia, isGuest]
   )
 
   const activeScreen = getActiveScreenFromQuery(
@@ -94,26 +94,18 @@ export function MultiStepForm(): ReactElement {
     journeyId,
     screens,
     activeScreen,
-    isGuest: isAnon,
+    isGuest,
     guestFlowEnabled: templateCustomizationGuestFlow === true
   })
 
   async function handleNext(overrideJourneyId?: string): Promise<void> {
     const targetJourneyId =
       typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
-    const currentIndex = screens.indexOf(activeScreen)
-    const isLastOrInvalidScreen =
-      currentIndex < 0 || currentIndex >= screens.length - 1
-    if (isLastOrInvalidScreen) return
+    const nextScreen = getNextCustomizeScreen(screens, activeScreen)
+    if (nextScreen == null) return
     void router.replace(
-      buildCustomizeUrl(targetJourneyId, screens[currentIndex + 1], undefined)
+      buildCustomizeUrl(targetJourneyId, nextScreen, undefined)
     )
-  }
-
-  async function handleScreenNavigation(
-    screen: CustomizationScreen
-  ): Promise<void> {
-    void router.replace(buildCustomizeUrl(journeyId, screen, undefined))
   }
 
   const activeStepForStepper =
@@ -148,7 +140,7 @@ export function MultiStepForm(): ReactElement {
               />
             </Box>
           )}
-          {renderScreen(activeScreen, handleNext)}
+          {renderScreen(activeScreen, screens, handleNext)}
         </Stack>
       </Container>
     </TemplateVideoUploadProvider>

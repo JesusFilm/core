@@ -191,6 +191,10 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CoverVideoBlockUpdate {
