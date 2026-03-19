@@ -26,7 +26,7 @@ export function toUser(tokens: Tokens): User {
     phoneNumber: phoneNumber ?? null,
     emailVerified: emailVerified ?? false,
     token: tokens.token,
-    isAnonymous: false,
+    isAnonymous: tokens.decodedToken.firebase.sign_in_provider === 'anonymous',
     providerId: typeof providerId === 'string' ? providerId : ''
   }
 }
