@@ -26,15 +26,13 @@ export function GoogleSheetsSyncButton({
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
       {disabled ? (
         <Tooltip title={disabledTooltip} placement="bottom">
-          <span>
-            <IconButton
-              aria-label={`${t('Sync to Google Sheets')} - ${disabledTooltip}`}
-              onClick={onSyncClick}
-              disabled
-            >
-              <ArrowRefresh6 />
-            </IconButton>
-          </span>
+          <IconButton
+            aria-label={`${t('Sync to Google Sheets')} - ${disabledTooltip}`}
+            onClick={onSyncClick}
+            disabled
+          >
+            <ArrowRefresh6 />
+          </IconButton>
         </Tooltip>
       ) : (
         <IconButton
