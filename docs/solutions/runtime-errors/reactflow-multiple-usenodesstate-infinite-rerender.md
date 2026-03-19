@@ -1,5 +1,5 @@
 ---
-title: "Infinite re-render loop when using multiple useNodesState hooks in ReactFlow v11"
+title: 'Infinite re-render loop when using multiple useNodesState hooks in ReactFlow v11'
 category: runtime-errors
 date: 2026-03-19
 tags:
@@ -80,12 +80,8 @@ useEffect(() => {
 
 const onNodesChange = useCallback<NonNullable<ReactFlowProps['onNodesChange']>>(
   (changes) => {
-    const stepChanges = changes.filter(
-      (c) => !('id' in c && referrerNodeIdsRef.current.has(c.id))
-    )
-    const refChanges = changes.filter(
-      (c) => 'id' in c && referrerNodeIdsRef.current.has(c.id)
-    )
+    const stepChanges = changes.filter((c) => !('id' in c && referrerNodeIdsRef.current.has(c.id)))
+    const refChanges = changes.filter((c) => 'id' in c && referrerNodeIdsRef.current.has(c.id))
     if (stepChanges.length > 0) onStepNodesChange(stepChanges)
     if (refChanges.length > 0) onReferrerNodesChange(refChanges)
   },
@@ -95,11 +91,11 @@ const onNodesChange = useCallback<NonNullable<ReactFlowProps['onNodesChange']>>(
 
 ### Why Routing (Not Dropping) Is Essential
 
-| Approach | Infinite loop? | Flashing? | Why |
-|----------|---------------|-----------|-----|
-| Pass only step handler (original bug) | Yes | N/A | `applyNodeChanges` returns new array for unmatched changes |
-| Drop referrer changes (PR #7649) | No | Yes | ReactFlow can't track referrer dimensions, re-measures endlessly |
-| Route to correct handler (this fix) | No | No | Each handler processes its own nodes — changes match, dimensions tracked |
+| Approach                              | Infinite loop? | Flashing? | Why                                                                      |
+| ------------------------------------- | -------------- | --------- | ------------------------------------------------------------------------ |
+| Pass only step handler (original bug) | Yes            | N/A       | `applyNodeChanges` returns new array for unmatched changes               |
+| Drop referrer changes (PR #7649)      | No             | Yes       | ReactFlow can't track referrer dimensions, re-measures endlessly         |
+| Route to correct handler (this fix)   | No             | No        | Each handler processes its own nodes — changes match, dimensions tracked |
 
 ## Prevention
 
