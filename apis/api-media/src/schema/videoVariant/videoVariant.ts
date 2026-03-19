@@ -450,12 +450,28 @@ builder.queryFields((t) => ({
     type: ['VideoVariant'],
     nullable: false,
     args: {
-      input: t.arg({ type: VideoVariantFilter, required: false })
+      input: t.arg({ type: VideoVariantFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _parent, { input }) =>
+    resolve: async (query, _parent, { input, offset, limit }) =>
       await prisma.videoVariant.findMany({
         ...query,
-
+        where: {
+          published: input?.onlyPublished === false ? undefined : true,
+          languageId: input?.languageId ?? undefined
+        },
+        skip: offset ?? undefined,
+        take: limit ?? undefined
+      })
+  }),
+  videoVariantsCount: t.int({
+    nullable: false,
+    args: {
+      input: t.arg({ type: VideoVariantFilter, required: false })
+    },
+    resolve: async (_parent, { input }) =>
+      await prisma.videoVariant.count({
         where: {
           published: input?.onlyPublished === false ? undefined : true,
           languageId: input?.languageId ?? undefined
