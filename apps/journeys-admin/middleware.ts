@@ -131,22 +131,18 @@ function handleLocaleRedirect(
     req.url
   )
   const isSameUrl = redirectUrl.toString() === req.url.toString()
-  const isRedirect = !isSameUrl
-  if (isRedirect && headers != null) {
-    console.warn(
-      '[NES-1460-diag] locale redirect dropping auth-decorated headers',
-      {
-        from: req.nextUrl.pathname,
-        to: redirectUrl.pathname,
-        locale
-      }
-    )
-  }
   const response = isSameUrl
     ? headers != null
       ? NextResponse.next({ request: { headers } })
       : NextResponse.next()
     : NextResponse.redirect(redirectUrl)
+
+  if (!isSameUrl && headers != null) {
+    headers.forEach((value, key) => {
+      response.headers.set(key, value)
+    })
+  }
+
   response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${locale}`)
   return response
 }

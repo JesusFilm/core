@@ -26,7 +26,10 @@ import { GetTags } from '../../__generated__/GetTags'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
-import { JOURNEY_NOT_FOUND_ERROR } from '../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
+import {
+  JOURNEY_NOT_FOUND_ERROR,
+  SERVER_ERROR
+} from '../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { useAuth } from '../../src/libs/auth'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 
@@ -50,13 +53,25 @@ function TemplateIndexPage(): ReactElement {
   }, [user?.id, query])
 
   useEffect(() => {
-    if (!router.isReady || router.query.error !== JOURNEY_NOT_FOUND_ERROR)
+    if (!router.isReady) return
+    const { error } = router.query
+
+    if (error === JOURNEY_NOT_FOUND_ERROR) {
+      enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
+    } else if (error === SERVER_ERROR) {
+      enqueueSnackbar(
+        t(
+          'Something went wrong loading the template. Please try again later.'
+        ),
+        { variant: 'error', preventDuplicate: true }
+      )
+    } else {
       return
-    enqueueSnackbar(t('Journey not found. Redirected to templates.'), {
-      variant: 'error',
-      preventDuplicate: true
-    })
-    // Clear the error query param so the URL is clean and refresh won't re-show the message
+    }
+
     void router.replace('/templates', undefined, { shallow: true })
   }, [router.isReady, router.query.error, router, enqueueSnackbar, t])
 

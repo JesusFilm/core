@@ -16,7 +16,10 @@ import {
 import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
-import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
+import {
+  JOURNEY_NOT_FOUND_ERROR,
+  SERVER_ERROR
+} from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { useAuth } from '../../../src/libs/auth'
 import {
   getAuthTokens,
@@ -216,7 +219,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       hasUser: user != null,
       isAnonymous: user?.isAnonymous
     })
-    throw error
+    return {
+      redirect: {
+        destination: `/templates?error=${SERVER_ERROR}`,
+        permanent: false
+      }
+    }
   }
 
   return {

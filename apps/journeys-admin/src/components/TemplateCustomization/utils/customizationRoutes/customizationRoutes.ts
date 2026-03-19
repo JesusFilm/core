@@ -2,6 +2,7 @@ import type { CustomizationScreen } from '../getCustomizeFlowConfig'
 
 export const CUSTOMIZE_SCREEN_QUERY_KEY = 'screen'
 export const JOURNEY_NOT_FOUND_ERROR = 'journeyNotFound'
+export const SERVER_ERROR = 'serverError'
 
 /**
  * Screens that a guest user (not signed in) can access when templateCustomizationGuestFlow is on.
