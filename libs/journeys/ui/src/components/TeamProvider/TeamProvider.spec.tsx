@@ -41,6 +41,10 @@ const TestComponent = (): ReactElement => {
         Change active to second team
       </button>
 
+      <button type="button" onClick={() => setActiveTeam(null)}>
+        Set Shared With Me
+      </button>
+
       <button type="button" onClick={async () => await refetch()}>
         Refetch
       </button>
@@ -251,12 +255,11 @@ describe('TeamProvider', () => {
     await waitFor(() =>
       expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
     )
-    // setActiveTeam(null) sets "Shared With Me"
     fireEvent.click(
-      screen.getByRole('button', { name: 'Change active to second team' })
+      screen.getByRole('button', { name: 'Set Shared With Me' })
     )
     expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
-      'teamId2'
+      '__shared__'
     )
   })
 
