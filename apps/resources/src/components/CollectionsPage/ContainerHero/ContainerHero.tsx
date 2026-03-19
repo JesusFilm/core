@@ -2,7 +2,6 @@ import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { getEasterCampaignYear } from '../../../libs/easterDates'
-
 import { ContainerHeroVideo } from '../ContainerHeroVideo'
 
 import { CollectionsHeader } from './CollectionsHeader'
