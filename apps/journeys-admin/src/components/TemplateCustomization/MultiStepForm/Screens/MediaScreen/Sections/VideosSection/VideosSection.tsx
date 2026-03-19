@@ -14,8 +14,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTemplateVideoUpload } from '../../../../TemplateVideoUploadProvider'
 import {
   extractYouTubeVideoId,
-  getCustomizableCardVideoBlock,
-  getVideoBlockDisplayTitle
+  getCustomizableCardVideoBlock
 } from '../../utils'
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
@@ -70,11 +69,11 @@ function UploadButton({
   )
 }
 
-interface VideoTitleProps {
-  title: string
+interface VideoAdapterNoteProps {
+  note: string
 }
 
-function VideoTitle({ title }: VideoTitleProps): ReactElement {
+function VideoAdapterNote({ note }: VideoAdapterNoteProps): ReactElement {
   return (
     <Typography
       variant="subtitle3"
@@ -85,7 +84,7 @@ function VideoTitle({ title }: VideoTitleProps): ReactElement {
         whiteSpace: 'nowrap'
       }}
     >
-      {title}
+      {note}
     </Typography>
   )
 }
@@ -114,8 +113,7 @@ export function VideosSection({
   )
 
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
-  const videoBlockDisplayTitle =
-    videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
+  const adapterNote = videoBlock?.notes?.trim() ?? ''
 
   const uploadStatus =
     videoBlock != null ? getUploadStatus(videoBlock.id) : null
@@ -194,8 +192,8 @@ export function VideosSection({
           ) : (
             videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />
           )}
-          {videoBlock != null && !loading && videoBlockDisplayTitle !== '' && (
-            <VideoTitle title={videoBlockDisplayTitle} />
+          {videoBlock != null && !loading && adapterNote !== '' && (
+            <VideoAdapterNote note={adapterNote} />
           )}
         </Stack>
       </Stack>
