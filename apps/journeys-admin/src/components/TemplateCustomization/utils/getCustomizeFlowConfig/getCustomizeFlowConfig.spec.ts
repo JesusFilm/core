@@ -307,7 +307,7 @@ describe('getCustomizeFlowConfig', () => {
     expect(result.links).toEqual([])
   })
 
-  it('should include guestPreview screen when isNotSignedIn is true', () => {
+  it('should include guestPreview screen when isGuest is true', () => {
     const journey = {
       journeyCustomizationDescription: null,
       journeyCustomizationFields: [],
@@ -315,7 +315,7 @@ describe('getCustomizeFlowConfig', () => {
       blocks: []
     } as unknown as Journey
 
-    const result = getCustomizeFlowConfig(journey, t, { isNotSignedIn: true })
+    const result = getCustomizeFlowConfig(journey, t, { isGuest: true })
 
     expect(result.screens).toEqual([
       'language',
@@ -326,7 +326,7 @@ describe('getCustomizeFlowConfig', () => {
     expect(result.totalSteps).toBe(4)
   })
 
-  it('should not include guestPreview screen when isNotSignedIn is false', () => {
+  it('should not include guestPreview screen when isGuest is false', () => {
     const journey = {
       journeyCustomizationDescription: null,
       journeyCustomizationFields: [],
@@ -334,7 +334,7 @@ describe('getCustomizeFlowConfig', () => {
       blocks: []
     } as unknown as Journey
 
-    const result = getCustomizeFlowConfig(journey, t, { isNotSignedIn: false })
+    const result = getCustomizeFlowConfig(journey, t, { isGuest: false })
 
     expect(result.screens).toEqual(['language', 'social', 'done'])
     expect(result.totalSteps).toBe(3)
