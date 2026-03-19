@@ -140,6 +140,7 @@ const TestWrapper = ({
               subtitleLanguage: null,
               showGeneratedSubtitles: false,
               customizable: null,
+              notes: null,
               mediaVideo: null,
               eventLabel: null,
               endEventLabel: null,

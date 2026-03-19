@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import mockRouter from 'next-router-mock'
 
 import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
@@ -187,5 +187,35 @@ describe('GoogleSheetsSyncDialog', () => {
     expect(
       screen.queryByRole('button', { name: 'Create Sync' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should hide the main syncs list dialog when no syncs exist', async () => {
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await waitFor(() => {
+      expect(loadSyncsMock).toHaveBeenCalled()
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'New Sync' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should call onClose when closing the inner dialog and hideMainDialog is true', async () => {
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(onClose).toHaveBeenCalled()
   })
 })

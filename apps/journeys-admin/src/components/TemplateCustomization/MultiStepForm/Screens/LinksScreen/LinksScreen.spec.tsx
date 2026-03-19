@@ -130,8 +130,27 @@ describe('LinksScreen', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
+  })
+
+  it('should show loading state on the Next button after submitting', async () => {
+    const handleNext = jest.fn()
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    fireEvent.click(nextButton)
+
+    await waitFor(() => {
+      expect(nextButton).toBeDisabled()
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    })
   })
 
   it('calls correct mutations for changed url, email, and chat', async () => {
@@ -297,7 +316,7 @@ describe('LinksScreen', () => {
     const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
 
     await waitFor(() => {
       expect(linkUpdateMock.result).toHaveBeenCalled()
@@ -396,7 +415,7 @@ describe('LinksScreen', () => {
       expect(phoneNumberInput).toHaveValue('987654321')
     })
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
 
     await waitFor(() => {
       expect(phoneUpdateMock.result).toHaveBeenCalled()
@@ -460,7 +479,7 @@ describe('LinksScreen', () => {
       expect(phoneNumberInput).toHaveValue('not-a-phone')
     })
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
     await waitFor(() =>
       expect(
         screen.getByText('Phone number must use valid digits.')

@@ -1,6 +1,6 @@
 export {
   getCustomizableCardVideoBlock,
   showVideosSection,
-  getVideoBlockDisplayTitle,
-  getVideoPoster
+  getVideoPoster,
+  extractYouTubeVideoId
 } from './videoSectionUtils'

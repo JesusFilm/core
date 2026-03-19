@@ -10,14 +10,19 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../__generated__/BlockFields'
+import { buildCustomizeUrl } from '../../../utils/customizationRoutes'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+import { getNextCustomizeScreen } from '../../../utils/getNextCustomizeScreen'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 
 interface GuestPreviewScreenProps {
+  screens: CustomizationScreen[]
   handleNext?: (overrideJourneyId?: string) => void
 }
 
 export function GuestPreviewScreen({
+  screens,
   handleNext
 }: GuestPreviewScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -35,8 +40,17 @@ export function GuestPreviewScreen({
   const displayDesktop = { xs: 'none', sm: 'block' }
   const displayMobile = { xs: 'block', sm: 'none' }
 
-  function handleContinueToPreview(): void {
-    // TODO: Implement continue to preview
+  function handleContinueWithAccount(): void {
+    const nextScreen = getNextCustomizeScreen(screens, 'guestPreview')
+    const redirectUrl =
+      nextScreen != null
+        ? buildCustomizeUrl(journey?.id, nextScreen, undefined)
+        : '/'
+
+    void router.push({
+      pathname: '/users/sign-in',
+      query: { redirect: redirectUrl }
+    })
   }
 
   return (
@@ -124,7 +138,7 @@ export function GuestPreviewScreen({
         </Typography>
         <CustomizeFlowNextButton
           label={t('Continue with account')}
-          onClick={handleContinueToPreview}
+          onClick={handleContinueWithAccount}
           ariaLabel={t('Continue with account')}
           sx={{
             width: { xs: '100%', sm: 'auto' },

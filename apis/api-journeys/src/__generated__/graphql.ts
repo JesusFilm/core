@@ -1699,6 +1699,7 @@ export enum MessagePlatform {
   CheckBroken = 'checkBroken',
   CheckContained = 'checkContained',
   Custom = 'custom',
+  Discord = 'discord',
   Facebook = 'facebook',
   Globe2 = 'globe2',
   Globe3 = 'globe3',
@@ -1723,12 +1724,14 @@ export enum MessagePlatform {
   Send2 = 'send2',
   Settings = 'settings',
   ShieldCheck = 'shieldCheck',
+  Signal = 'signal',
   Skype = 'skype',
   Snapchat = 'snapchat',
   Telegram = 'telegram',
   TikTok = 'tikTok',
   Viber = 'viber',
   Vk = 'vk',
+  WeChat = 'weChat',
   WhatsApp = 'whatsApp'
 }
 
@@ -5392,6 +5395,8 @@ export type VideoBlock = Block & {
   journeyId: Scalars['ID']['output'];
   mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). */
+  notes?: Maybe<Scalars['String']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -5452,6 +5457,8 @@ export type VideoBlockCreateInput = {
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). */
+  notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -5507,6 +5514,8 @@ export type VideoBlockUpdateInput = {
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear. */
+  notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
