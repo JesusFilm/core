@@ -232,6 +232,11 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     locale: ctx.locale
   })
 
+  const destination =
+    typeof ctx.query.redirect === 'string' && ctx.query.redirect.length > 0
+      ? `/?redirect=${encodeURIComponent(ctx.query.redirect)}`
+      : '/'
+
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
@@ -244,7 +249,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     return {
       redirect: {
         permanent: false,
-        destination: `/`
+        destination
       }
     }
   }
@@ -259,14 +264,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         mutation: VALIDATE_EMAIL,
         variables: { email, token }
       })
-      const redirectParam =
-        typeof ctx.query.redirect === 'string' && ctx.query.redirect.length > 0
-          ? `/?redirect=${ctx.query.redirect}`
-          : '/'
       return {
         redirect: {
           permanent: false,
-          destination: redirectParam
+          destination
         }
       }
     } catch (_err) {
