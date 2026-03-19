@@ -152,9 +152,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
       // Session team not found in teams list (deleted/inaccessible) — fall through to DB
     }
 
-    const lastActiveTeam = data.teams.find(
-      (team) => team.id === dbTeamId
-    )
+    const lastActiveTeam = data.teams.find((team) => team.id === dbTeamId)
     setActiveTeam(lastActiveTeam ?? null)
   }
 
