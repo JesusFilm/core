@@ -38,6 +38,8 @@ export async function deleteJourneysData(
         }
       })
 
+      deletedUserJourneyIds.push(...userJourneys.map((uj) => uj.id))
+
       for (const uj of userJourneys) {
         const others = uj.journey.userJourneys.filter(
           (j) => j.userId !== userId
@@ -84,6 +86,8 @@ export async function deleteJourneysData(
         }
       })
 
+      deletedUserTeamIds.push(...userTeams.map((ut) => ut.id))
+
       for (const ut of userTeams) {
         const others = ut.team.userTeams.filter((t) => t.userId !== userId)
         if (others.length === 0) {
@@ -116,51 +120,48 @@ export async function deleteJourneysData(
     })
     logs.push(createLog('✅ Ownership transfers completed'))
 
-    // Phase 2: Remove user memberships
-    const ujRecords = await prisma.userJourney.findMany({
-      where: { userId },
-      select: { id: true }
-    })
-    deletedUserJourneyIds.push(...ujRecords.map((r) => r.id))
+    // Phase 2: Remove user memberships (IDs already collected in Phase 1)
     await prisma.userJourney.deleteMany({ where: { userId } })
     logs.push(
-      createLog(`🗑️ Removed ${ujRecords.length} user-journey memberships`)
+      createLog(
+        `🗑️ Removed ${deletedUserJourneyIds.length} user-journey memberships`
+      )
     )
 
-    const utRecords = await prisma.userTeam.findMany({
-      where: { userId },
-      select: { id: true }
-    })
-    deletedUserTeamIds.push(...utRecords.map((r) => r.id))
     await prisma.userTeam.deleteMany({ where: { userId } })
-    logs.push(createLog(`🗑️ Removed ${utRecords.length} user-team memberships`))
+    logs.push(
+      createLog(
+        `🗑️ Removed ${deletedUserTeamIds.length} user-team memberships`
+      )
+    )
 
     // Phase 3: Delete sole-accessor journeys
     if (journeyIdsToDelete.length > 0) {
-      // Pre-delete heavy child records to avoid slow cascade deletes
-      const eventCount = await prisma.event.deleteMany({
+      // Pre-delete heavy child records in parallel
+      const [eventCount, journeyVisitorCount, actionCount] = await Promise.all([
+        prisma.event.deleteMany({
+          where: { journeyId: { in: journeyIdsToDelete } }
+        }),
+        prisma.journeyVisitor.deleteMany({
+          where: { journeyId: { in: journeyIdsToDelete } }
+        }),
+        prisma.action.deleteMany({
+          where: { journeyId: { in: journeyIdsToDelete } }
+        })
+      ])
+      // Blocks after actions (actions reference blocks)
+      const blockCount = await prisma.block.deleteMany({
         where: { journeyId: { in: journeyIdsToDelete } }
       })
+
       if (eventCount.count > 0)
         logs.push(createLog(`🗑️ Deleted ${eventCount.count} events`))
-
-      const journeyVisitorCount = await prisma.journeyVisitor.deleteMany({
-        where: { journeyId: { in: journeyIdsToDelete } }
-      })
       if (journeyVisitorCount.count > 0)
         logs.push(
           createLog(`🗑️ Deleted ${journeyVisitorCount.count} journey visitors`)
         )
-
-      const actionCount = await prisma.action.deleteMany({
-        where: { journeyId: { in: journeyIdsToDelete } }
-      })
       if (actionCount.count > 0)
         logs.push(createLog(`🗑️ Deleted ${actionCount.count} actions`))
-
-      const blockCount = await prisma.block.deleteMany({
-        where: { journeyId: { in: journeyIdsToDelete } }
-      })
       if (blockCount.count > 0)
         logs.push(createLog(`🗑️ Deleted ${blockCount.count} blocks`))
 
@@ -179,62 +180,49 @@ export async function deleteJourneysData(
       logs.push(createLog(`🗑️ Deleted ${teamIdsToDelete.length} teams`))
     }
 
-    // Phase 5: Clean up related records
-    const journeyNotifications = await prisma.journeyNotification.deleteMany({
-      where: { userId }
-    })
+    // Phase 5: Clean up related records (all independent, run in parallel)
+    const [
+      journeyNotifications,
+      userTeamInvites,
+      userInvites,
+      exportLogs,
+      journeyThemes,
+      journeyProfile,
+      integrations,
+      userRoles,
+      visitors
+    ] = await Promise.all([
+      prisma.journeyNotification.deleteMany({ where: { userId } }),
+      prisma.userTeamInvite.deleteMany({
+        where: { OR: [{ senderId: userId }, { receipientId: userId }] }
+      }),
+      prisma.userInvite.deleteMany({ where: { senderId: userId } }),
+      prisma.journeyEventsExportLog.deleteMany({ where: { userId } }),
+      prisma.journeyTheme.deleteMany({ where: { userId } }),
+      prisma.journeyProfile.deleteMany({ where: { userId } }),
+      prisma.integration.deleteMany({ where: { userId } }),
+      prisma.userRole.deleteMany({ where: { userId } }),
+      prisma.visitor.deleteMany({ where: { userId } })
+    ])
+
     if (journeyNotifications.count > 0)
       logs.push(
         createLog(`Deleted ${journeyNotifications.count} journey notifications`)
       )
-
-    const userTeamInvites = await prisma.userTeamInvite.deleteMany({
-      where: {
-        OR: [{ senderId: userId }, { receipientId: userId }]
-      }
-    })
     if (userTeamInvites.count > 0)
       logs.push(createLog(`Deleted ${userTeamInvites.count} team invites`))
-
-    const userInvites = await prisma.userInvite.deleteMany({
-      where: { senderId: userId }
-    })
     if (userInvites.count > 0)
       logs.push(createLog(`Deleted ${userInvites.count} journey invites`))
-
-    const exportLogs = await prisma.journeyEventsExportLog.deleteMany({
-      where: { userId }
-    })
     if (exportLogs.count > 0)
       logs.push(createLog(`Deleted ${exportLogs.count} export logs`))
-
-    const journeyThemes = await prisma.journeyTheme.deleteMany({
-      where: { userId }
-    })
     if (journeyThemes.count > 0)
       logs.push(createLog(`Deleted ${journeyThemes.count} journey themes`))
-
-    const journeyProfile = await prisma.journeyProfile.deleteMany({
-      where: { userId }
-    })
     if (journeyProfile.count > 0)
       logs.push(createLog(`Deleted ${journeyProfile.count} journey profile`))
-
-    const integrations = await prisma.integration.deleteMany({
-      where: { userId }
-    })
     if (integrations.count > 0)
       logs.push(createLog(`Deleted ${integrations.count} integrations`))
-
-    const userRoles = await prisma.userRole.deleteMany({
-      where: { userId }
-    })
     if (userRoles.count > 0)
       logs.push(createLog(`Deleted ${userRoles.count} user roles`))
-
-    const visitors = await prisma.visitor.deleteMany({
-      where: { userId }
-    })
     if (visitors.count > 0)
       logs.push(createLog(`Deleted ${visitors.count} visitor records`))
 

@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { User, prisma } from '@core/prisma/users/client'
 import { auth } from '@core/yoga/firebaseClient'
 
-import { LogEntry, createLog } from './types'
+import { LogEntry, createLog, isFirebaseNotFound } from './types'
 
 interface FirebaseStatus {
   exists: boolean
@@ -45,17 +45,8 @@ async function checkFirebaseUser(
       logs
     }
   } catch (error) {
-    const isNotFound =
-      error != null &&
-      typeof error === 'object' &&
-      'code' in error &&
-      error.code === 'auth/user-not-found'
-
-    if (!isNotFound) {
-      const message = error instanceof Error ? error.message : 'Unknown error'
-      logs.push(
-        createLog(`⚠️ Firebase lookup by UID failed: ${message}`, 'warn')
-      )
+    if (!isFirebaseNotFound(error)) {
+      logs.push(createLog('⚠️ Firebase lookup by UID failed', 'warn'))
     }
   }
 
@@ -81,20 +72,8 @@ async function checkFirebaseUser(
         logs
       }
     } catch (error) {
-      const isNotFound =
-        error != null &&
-        typeof error === 'object' &&
-        'code' in error &&
-        error.code === 'auth/user-not-found'
-
-      if (!isNotFound) {
-        const message = error instanceof Error ? error.message : 'Unknown error'
-        logs.push(
-          createLog(
-            `⚠️ Firebase lookup by email also failed: ${message}`,
-            'warn'
-          )
-        )
+      if (!isFirebaseNotFound(error)) {
+        logs.push(createLog('⚠️ Firebase lookup by email also failed', 'warn'))
       }
     }
   }

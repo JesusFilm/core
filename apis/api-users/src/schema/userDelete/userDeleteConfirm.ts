@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/users/client'
 
 import { builder } from '../builder'
@@ -47,138 +45,152 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
       id: t.arg.string({ required: true })
     },
     subscribe: async function* (_parent, { idType, id }, ctx) {
-      // Look up the target user (also checks Firebase status)
-      const { user, firebase, logs: lookupLogs } = await lookupUser(idType, id)
-      for (const log of lookupLogs) {
-        yield { log, done: false, success: null }
-      }
+      try {
+        const { user, firebase, logs: lookupLogs } = await lookupUser(
+          idType,
+          id
+        )
+        for (const log of lookupLogs) {
+          yield { log, done: false, success: null }
+        }
 
-      // Firebase-only account — no DB user, just delete Firebase auth
-      if (user == null) {
-        if (!firebase.exists || firebase.uid == null) {
+        // Firebase-only account — no DB user, just delete Firebase auth
+        if (user == null) {
+          if (!firebase.exists || firebase.uid == null) {
+            yield {
+              log: createLog(
+                '❌ No Firebase account found to delete',
+                'error'
+              ),
+              done: true,
+              success: false
+            }
+            return
+          }
+
           yield {
-            log: createLog('❌ No Firebase account found to delete', 'error'),
+            log: createLog('🔥 Deleting Firebase-only account...'),
+            done: false,
+            success: null
+          }
+
+          const fbLogs = await deleteFirebaseUser(
+            firebase.uid,
+            null,
+            firebase.email
+          )
+          for (const log of fbLogs) {
+            yield { log, done: false, success: null }
+          }
+
+          const hasError = fbLogs.some((log) => log.level === 'error')
+          yield {
+            log: createLog(
+              hasError
+                ? '❌ Firebase deletion failed'
+                : '✅ Firebase-only account deleted successfully'
+            ),
+            done: true,
+            success: !hasError
+          }
+          return
+        }
+
+        // Look up the caller (superAdmin) for audit log
+        const caller = await prisma.user.findUnique({
+          where: { userId: ctx.currentUser.id }
+        })
+        if (caller == null) {
+          yield {
+            log: createLog('❌ Caller user not found', 'error'),
             done: true,
             success: false
           }
           return
         }
 
+        // Prevent self-deletion
+        if (user.userId === ctx.currentUser.id) {
+          yield {
+            log: createLog('❌ Cannot delete your own account', 'error'),
+            done: true,
+            success: false
+          }
+          return
+        }
+
+        // Phase 1: Journeys DB cleanup (via interop)
         yield {
-          log: createLog('🔥 Deleting Firebase-only account...'),
+          log: createLog('🔄 Starting journeys database cleanup...'),
           done: false,
           success: null
         }
 
-        const fbLogs = await deleteFirebaseUser(
-          firebase.uid,
-          null,
-          firebase.email
-        )
-        for (const log of fbLogs) {
+        const journeysResult = await callJourneysConfirm(user.userId)
+        for (const log of journeysResult.logs) {
           yield { log, done: false, success: null }
         }
 
-        const hasError = fbLogs.some((log) => log.level === 'error')
-        yield {
-          log: createLog(
-            hasError
-              ? '❌ Firebase deletion failed'
-              : '✅ Firebase-only account deleted successfully'
-          ),
-          done: true,
-          success: !hasError
+        if (!journeysResult.success) {
+          yield {
+            log: createLog('❌ Journeys cleanup failed, aborting', 'error'),
+            done: true,
+            success: false
+          }
+          return
         }
-        return
-      }
 
-      // Look up the caller (superAdmin) for audit log
-      const caller = await prisma.user.findUnique({
-        where: { userId: ctx.currentUser.id }
-      })
-      if (caller == null) {
-        throw new GraphQLError('Caller user not found', {
-          extensions: { code: 'NOT_FOUND' }
+        // Phase 2: Users DB deletion + Firebase cleanup
+        yield {
+          log: createLog('🔄 Starting user record deletion...'),
+          done: false,
+          success: null
+        }
+
+        const firebaseUidOverride =
+          firebase.uid != null && firebase.uid !== user.userId
+            ? firebase.uid
+            : null
+
+        const userResult = await deleteUserData({
+          userDbId: user.id,
+          firebaseUserId: user.userId,
+          firebaseUidOverride,
+          userEmail: user.email,
+          userFirstName: user.firstName,
+          userLastName: user.lastName,
+          callerUserId: caller.id,
+          callerEmail: caller.email,
+          callerFirstName: caller.firstName,
+          callerLastName: caller.lastName,
+          deletedJourneyIds: journeysResult.deletedJourneyIds,
+          deletedTeamIds: journeysResult.deletedTeamIds,
+          deletedUserJourneyIds: journeysResult.deletedUserJourneyIds,
+          deletedUserTeamIds: journeysResult.deletedUserTeamIds
         })
-      }
 
-      // Prevent self-deletion
-      if (user.userId === ctx.currentUser.id) {
+        for (const log of userResult.logs) {
+          yield { log, done: false, success: null }
+        }
+
         yield {
           log: createLog(
-            '❌ Cannot delete your own account',
-            'error'
+            userResult.success
+              ? '✅ User deletion completed successfully'
+              : '❌ User deletion failed'
           ),
           done: true,
-          success: false
+          success: userResult.success
         }
-        return
-      }
-
-      // Phase 1: Journeys DB cleanup (via interop)
-      yield {
-        log: createLog('🔄 Starting journeys database cleanup...'),
-        done: false,
-        success: null
-      }
-
-      const journeysResult = await callJourneysConfirm(user.userId)
-      for (const log of journeysResult.logs) {
-        yield { log, done: false, success: null }
-      }
-
-      if (!journeysResult.success) {
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Unknown error'
+        console.error('userDeleteConfirm subscription error:', error)
         yield {
-          log: createLog('❌ Journeys cleanup failed, aborting', 'error'),
+          log: createLog(`❌ Unexpected error: ${message}`, 'error'),
           done: true,
           success: false
         }
-        return
-      }
-
-      // Phase 2: Users DB deletion + Firebase cleanup
-      yield {
-        log: createLog('🔄 Starting user record deletion...'),
-        done: false,
-        success: null
-      }
-
-      // Use the Firebase UID from lookup if it differs from the DB userId
-      // (e.g. email-based fallback found a different UID)
-      const firebaseUidOverride =
-        firebase.uid != null && firebase.uid !== user.userId
-          ? firebase.uid
-          : null
-
-      const userResult = await deleteUserData({
-        userDbId: user.id,
-        firebaseUserId: user.userId,
-        firebaseUidOverride,
-        userEmail: user.email,
-        userFirstName: user.firstName,
-        userLastName: user.lastName,
-        callerUserId: caller.id,
-        callerEmail: caller.email,
-        callerFirstName: caller.firstName,
-        callerLastName: caller.lastName,
-        deletedJourneyIds: journeysResult.deletedJourneyIds,
-        deletedTeamIds: journeysResult.deletedTeamIds,
-        deletedUserJourneyIds: journeysResult.deletedUserJourneyIds,
-        deletedUserTeamIds: journeysResult.deletedUserTeamIds
-      })
-
-      for (const log of userResult.logs) {
-        yield { log, done: false, success: null }
-      }
-
-      yield {
-        log: createLog(
-          userResult.success
-            ? '✅ User deletion completed successfully'
-            : '❌ User deletion failed'
-        ),
-        done: true,
-        success: userResult.success
       }
     },
     resolve: (progress) => progress

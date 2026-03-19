@@ -10,3 +10,12 @@ export function createLog(
 ): LogEntry {
   return { message, level, timestamp: new Date().toISOString() }
 }
+
+export function isFirebaseNotFound(error: unknown): boolean {
+  return (
+    error != null &&
+    typeof error === 'object' &&
+    'code' in error &&
+    error.code === 'auth/user-not-found'
+  )
+}
