@@ -182,7 +182,7 @@ export default async function middleware(
       return applyLocale(req) ?? NextResponse.next()
     },
     handleError: async (error) => {
-      console.error('[NES-1460-diag] middleware auth error', {
+      console.error('[middleware.ts] auth error', {
         pathname: req.nextUrl.pathname,
         errorMessage: error instanceof Error ? error.message : String(error)
       })

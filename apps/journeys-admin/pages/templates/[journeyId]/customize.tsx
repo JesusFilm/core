@@ -43,7 +43,7 @@ class DiagnosticErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    console.error('[NES-1460-diag] client-side render crash in customize', {
+    console.error('[customize.tsx] client render error', {
       errorMessage: error.message,
       errorName: error.name,
       errorStack: error.stack?.split('\n').slice(0, 5).join('\n'),
@@ -99,7 +99,7 @@ function CustomizePage() {
 
   useEffect(() => {
     if (error == null) return
-    console.error('[NES-1460-diag] client-side useJourneyQuery error', {
+    console.error('[customize.tsx] useJourneyQuery error', {
       journeyId: router.query.journeyId,
       errorMessage: error.message,
       networkError:
@@ -143,7 +143,7 @@ function logDiagnosticError(
   ctx: GetServerSidePropsContext,
   extra?: Record<string, unknown>
 ): void {
-  console.error('[NES-1460-diag] customize getServerSideProps failed', {
+  console.error('[customize.tsx] getServerSideProps failed', {
     phase,
     errorMessage: error instanceof Error ? error.message : String(error),
     errorName: error instanceof Error ? error.name : undefined,
