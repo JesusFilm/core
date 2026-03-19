@@ -182,8 +182,8 @@ export function DoneScreen(): ReactElement {
         >
           <Typography variant="subtitle1">
             {emailResponseToggle === true
-              ? t('Collect your responses:')
-              : t('Choose where responses go:')}
+              ? t('Choose where responses go:')
+              : t('Collect your responses:')}
           </Typography>
           <Stack spacing={2}>
             {emailResponseToggle === true && (

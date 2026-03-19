@@ -297,7 +297,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
+    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
     expect(screen.getByText('Send to my email')).toBeInTheDocument()
   })
 
@@ -316,7 +316,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
+    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
     expect(screen.queryByText('Send to my email')).not.toBeInTheDocument()
   })
 
@@ -333,7 +333,7 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
-    expect(screen.getByText('Choose where responses go:')).toBeInTheDocument()
+    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
     expect(screen.queryByText('Send to my email')).not.toBeInTheDocument()
   })
 
