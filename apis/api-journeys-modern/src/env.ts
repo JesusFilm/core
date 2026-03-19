@@ -9,6 +9,7 @@ export const env = createEnv({
     throw new Error('Invalid environment variables')
   },
   server: {
+    ANTHROPIC_API_KEY: z.string().trim().min(1).optional(),
     CLOUDFLARE_UPLOAD_KEY: z.string().trim().min(1),
     FACEBOOK_APP_ID: z.string().trim().min(1),
     FACEBOOK_APP_SECRET: z.string().trim().min(1),
@@ -29,6 +30,7 @@ export const env = createEnv({
     }),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
-    SERVICE_VERSION: z.string().trim().default('')
+    SERVICE_VERSION: z.string().trim().default(''),
+    UNSPLASH_ACCESS_KEY: z.string().trim().min(1)
   }
 })
