@@ -25,7 +25,7 @@ gh api graphql -f query='
             id
             isResolved
             comments(first:20) {
-              nodes { body author { login } path line createdAt }
+              nodes { id body author { login } path line createdAt }
             }
           }
         }
