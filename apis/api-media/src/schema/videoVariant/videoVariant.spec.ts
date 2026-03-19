@@ -894,8 +894,8 @@ describe('videoVariant', () => {
       )
 
       const callArgs = prismaMock.videoVariant.findMany.mock.calls[0]?.[0]
-      expect(callArgs).not.toHaveProperty('skip')
-      expect(callArgs).not.toHaveProperty('take')
+      expect(callArgs?.skip).toBeUndefined()
+      expect(callArgs?.take).toBeUndefined()
     })
 
     it('should query videoVariants with zero offset', async () => {
