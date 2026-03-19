@@ -130,7 +130,7 @@ describe('LinksScreen', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
   })
 
@@ -316,7 +316,7 @@ describe('LinksScreen', () => {
     const chatInput = within(chatGroup).getByRole('textbox')
     fireEvent.change(chatInput, { target: { value: 'https://wa.me/999' } })
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
 
     await waitFor(() => {
       expect(linkUpdateMock.result).toHaveBeenCalled()
@@ -415,7 +415,7 @@ describe('LinksScreen', () => {
       expect(phoneNumberInput).toHaveValue('987654321')
     })
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
 
     await waitFor(() => {
       expect(phoneUpdateMock.result).toHaveBeenCalled()
@@ -479,7 +479,7 @@ describe('LinksScreen', () => {
       expect(phoneNumberInput).toHaveValue('not-a-phone')
     })
 
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace the links' }))
     await waitFor(() =>
       expect(
         screen.getByText('Phone number must use valid digits.')
