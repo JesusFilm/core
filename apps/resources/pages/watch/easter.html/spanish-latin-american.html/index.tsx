@@ -13,12 +13,12 @@ export default function EasterPage(): ReactElement {
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Pascua 2026: mira gratis la historia de la resurrección | Jesus Film Project"
-        description="Descubre el verdadero significado de la Pascua con videos gratis sobre la resurrección de Jesús. Mira Semana Santa, Viernes Santo y Domingo de Resurrección en más de 2,000 idiomas."
+        defaultTitle="Pascua 2026: mira la historia de la resurrección | Jesus Film Project"
+        description="Descubre el verdadero significado de la Pascua con videos sobre la resurrección de Jesús. Mira Semana Santa, Viernes Santo y Domingo de Resurrección en más de 2,000 idiomas."
         openGraph={{
-          title: 'Pascua 2026: mira gratis la historia de la resurrección',
+          title: 'Pascua 2026: mira la historia de la resurrección',
           description:
-            'Descubre el verdadero significado de la Pascua con videos gratis sobre la resurrección de Jesús. Mira en más de 2,000 idiomas.',
+            'Descubre el verdadero significado de la Pascua con videos sobre la resurrección de Jesús. Mira en más de 2,000 idiomas.',
           url: 'https://www.jesusfilm.org/watch/easter/spanish-latin-american',
           type: 'website',
           locale: 'es_LA',

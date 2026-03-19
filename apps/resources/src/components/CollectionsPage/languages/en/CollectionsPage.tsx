@@ -76,8 +76,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Easter"
-          descriptionBeforeYear="Watch the resurrection story for free"
-          descriptionAfterYear="in 2,000+ languages"
+          descriptionBeforeYear="Easter"
+          descriptionAfterYear="resurrection story videos in 2,000+ languages"
           feedbackButtonLabel="Give Feedback"
         />
       }

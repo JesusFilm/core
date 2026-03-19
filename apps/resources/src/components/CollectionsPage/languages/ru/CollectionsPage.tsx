@@ -20,8 +20,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Пасха"
-          descriptionBeforeYear="Смотрите историю воскресения бесплатно"
-          descriptionAfterYear="более чем на 2 000 языках"
+          descriptionBeforeYear="Пасха"
+          descriptionAfterYear="видео об истории воскресения более чем на 2 000 языках"
           feedbackButtonLabel="Оставить отзыв"
         />
       }

@@ -76,8 +76,8 @@ export function CollectionsPage(): ReactElement {
       hero={
         <ContainerHero
           title="Páscoa"
-          descriptionBeforeYear="Assista grátis à história da ressurreição"
-          descriptionAfterYear="em mais de 2.000 idiomas"
+          descriptionBeforeYear="Páscoa"
+          descriptionAfterYear="vídeos sobre a história da ressurreição em mais de 2.000 idiomas"
           feedbackButtonLabel="Dar Feedback"
         />
       }

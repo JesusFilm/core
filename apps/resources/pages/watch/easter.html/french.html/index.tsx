@@ -13,13 +13,12 @@ export default function EasterPage(): ReactElement {
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Pâques 2026 : regardez gratuitement l’histoire de la résurrection | Jesus Film Project"
-        description="Découvrez le vrai sens de Pâques grâce à des vidéos gratuites sur la résurrection de Jésus. Regardez la Semaine sainte, le Vendredi saint et le dimanche de Pâques dans plus de 2 000 langues."
+        defaultTitle="Pâques 2026 : regardez l’histoire de la résurrection | Jesus Film Project"
+        description="Découvrez le vrai sens de Pâques grâce à des vidéos sur la résurrection de Jésus. Regardez la Semaine sainte, le Vendredi saint et le dimanche de Pâques dans plus de 2 000 langues."
         openGraph={{
-          title:
-            'Pâques 2026 : regardez gratuitement l’histoire de la résurrection',
+          title: 'Pâques 2026 : regardez l’histoire de la résurrection',
           description:
-            'Découvrez le vrai sens de Pâques grâce à des vidéos gratuites sur la résurrection de Jésus. Regardez dans plus de 2 000 langues.',
+            'Découvrez le vrai sens de Pâques grâce à des vidéos sur la résurrection de Jésus. Regardez dans plus de 2 000 langues.',
           url: 'https://www.jesusfilm.org/watch/easter/french',
           type: 'website',
           locale: 'fr_FR',
