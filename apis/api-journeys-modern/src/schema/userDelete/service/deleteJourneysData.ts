@@ -130,9 +130,7 @@ export async function deleteJourneysData(
 
     await prisma.userTeam.deleteMany({ where: { userId } })
     logs.push(
-      createLog(
-        `🗑️ Removed ${deletedUserTeamIds.length} user-team memberships`
-      )
+      createLog(`🗑️ Removed ${deletedUserTeamIds.length} user-team memberships`)
     )
 
     // Phase 3: Delete sole-accessor journeys

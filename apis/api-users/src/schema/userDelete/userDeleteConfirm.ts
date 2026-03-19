@@ -46,10 +46,11 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
     },
     subscribe: async function* (_parent, { idType, id }, ctx) {
       try {
-        const { user, firebase, logs: lookupLogs } = await lookupUser(
-          idType,
-          id
-        )
+        const {
+          user,
+          firebase,
+          logs: lookupLogs
+        } = await lookupUser(idType, id)
         for (const log of lookupLogs) {
           yield { log, done: false, success: null }
         }
@@ -58,10 +59,7 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
         if (user == null) {
           if (!firebase.exists || firebase.uid == null) {
             yield {
-              log: createLog(
-                '❌ No Firebase account found to delete',
-                'error'
-              ),
+              log: createLog('❌ No Firebase account found to delete', 'error'),
               done: true,
               success: false
             }
@@ -183,8 +181,7 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           success: userResult.success
         }
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error ? error.message : 'Unknown error'
         console.error('userDeleteConfirm subscription error:', error)
         yield {
           log: createLog(`❌ Unexpected error: ${message}`, 'error'),
