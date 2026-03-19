@@ -397,10 +397,26 @@ Return in this format:
               radioOptionBlocks.push(...options)
             }
 
-            // All blocks that need translation including radio options
+            // Get multiselect blocks to find their option blocks
+            const multiselectBlocks = cardBlocksChildren.filter(
+              (block) => block.typename === 'MultiselectBlock'
+            )
+
+            const multiselectOptionBlocks = []
+            for (const multiselectBlock of multiselectBlocks) {
+              const options = updatedJourney.blocks.filter(
+                (block) =>
+                  block.parentBlockId === multiselectBlock.id &&
+                  block.typename === 'MultiselectOptionBlock'
+              )
+              multiselectOptionBlocks.push(...options)
+            }
+
+            // All blocks that need translation including radio and multiselect options
             const allBlocksToTranslate = [
               ...cardBlocksChildren,
-              ...radioOptionBlocks
+              ...radioOptionBlocks,
+              ...multiselectOptionBlocks
             ]
 
             // Skip if no blocks to translate
@@ -418,6 +434,7 @@ Return in this format:
                     break
                   case 'ButtonBlock':
                   case 'RadioOptionBlock':
+                  case 'MultiselectOptionBlock':
                     fieldInfo = `Label: "${block.label || ''}"`
                     break
                   case 'TextResponseBlock':
@@ -831,11 +848,7 @@ Return in this format:
         // Use analysisAndTranslation.analysis for card translation context
         const journeyAnalysis = analysisAndTranslation.analysis
 
-        // 5. Translate each card
-        const cardBlocks = journey.blocks.filter(
-          (block) => block.typename === 'CardBlock'
-        )
-
+        // 5. Translate each card (reuses sorted cardBlocks from above)
         await Promise.all(
           cardBlocks.map(async (cardBlock, i) => {
             const cardContent = cardBlocksContent[i]
@@ -866,10 +879,26 @@ Return in this format:
                 radioOptionBlocks.push(...options)
               }
 
-              // All blocks that need translation including radio options
+              // Get multiselect blocks to find their option blocks
+              const multiselectBlocks = cardBlocksChildren.filter(
+                (block) => block.typename === 'MultiselectBlock'
+              )
+
+              const multiselectOptionBlocks = []
+              for (const multiselectBlock of multiselectBlocks) {
+                const options = journey.blocks.filter(
+                  (block) =>
+                    block.parentBlockId === multiselectBlock.id &&
+                    block.typename === 'MultiselectOptionBlock'
+                )
+                multiselectOptionBlocks.push(...options)
+              }
+
+              // All blocks that need translation including radio and multiselect options
               const allBlocksToTranslate = [
                 ...cardBlocksChildren,
-                ...radioOptionBlocks
+                ...radioOptionBlocks,
+                ...multiselectOptionBlocks
               ]
 
               // Skip if no blocks to translate
@@ -891,6 +920,7 @@ Return in this format:
                       break
                     case 'ButtonBlock':
                     case 'RadioOptionBlock':
+                    case 'MultiselectOptionBlock':
                       fieldInfo = `Label: "${block.label || ''}"`
                       break
                     case 'TextResponseBlock':
