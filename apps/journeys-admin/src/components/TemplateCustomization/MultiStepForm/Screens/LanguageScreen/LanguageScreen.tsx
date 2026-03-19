@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -17,6 +18,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { transformer } from '@core/journeys/ui/transformer'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
@@ -45,9 +47,11 @@ export function LanguageScreen({
   const { journey } = useJourney()
   const { query } = useTeam()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
   const { loadUser } = useCurrentUserLazyQuery()
   const [teamCreate] = useTeamCreateMutation()
   const [loading, setLoading] = useState(false)
+  const isDataReady = query?.data != null && journey != null
 
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
@@ -125,8 +129,15 @@ export function LanguageScreen({
     teamSelect: isSignedIn ? string().required() : string()
   })
 
+  const teams = query?.data?.teams ?? []
+  const lastActiveTeamId =
+    query?.data?.getJourneyProfile?.lastActiveTeamId ?? ''
+  const defaultTeamId = teams.some((t) => t.id === lastActiveTeamId)
+    ? lastActiveTeamId
+    : teams[0]?.id ?? ''
+
   const initialValues = {
-    teamSelect: query?.data?.getJourneyProfile?.lastActiveTeamId ?? '',
+    teamSelect: defaultTeamId,
     languageSelect: {
       id: journey?.language?.id,
       localName: journey?.language?.name.find((name) => name.primary)?.value,
@@ -191,12 +202,12 @@ export function LanguageScreen({
 
   async function handleJourneyDuplication(
     type: 'signedIn' | 'guest',
-    journeyId: string
+    journeyId: string,
+    selectedTeamId?: string
   ): Promise<string | null> {
     let teamId
     if (type === 'signedIn') {
-      const teams = query?.data?.teams ?? []
-      teamId = query?.data?.getJourneyProfile?.lastActiveTeamId ?? teams[0]?.id
+      teamId = selectedTeamId
     } else {
       const guestResult = await createGuestUser()
       if (guestResult == null) {
@@ -220,79 +231,112 @@ export function LanguageScreen({
     })
 
     if (data?.journeyDuplicate == null) {
-      switch (type) {
-        case 'signedIn':
-          enqueueSnackbar(
-            t(
-              'Failed to duplicate journey to team, please refresh the page and try again'
-            ),
-            { variant: 'error' }
-          )
-          return null
-        case 'guest':
-          enqueueSnackbar(
-            t(
-              'Failed to duplicate journey to team, please refresh the page and try again'
-            ),
-            { variant: 'error' }
-          )
-          return null
-      }
+      enqueueSnackbar(
+        t(
+          'Failed to duplicate journey to team, please refresh the page and try again'
+        ),
+        { variant: 'error' }
+      )
+      return null
     }
 
-    return data?.journeyDuplicate?.id ?? null
+    if (teamId != null) {
+      void updateLastActiveTeamId({
+        variables: { input: { lastActiveTeamId: teamId } }
+      })
+    }
+
+    return data.journeyDuplicate.id
   }
 
   async function handleSubmit(values: FormikValues) {
     setLoading(true)
-    if (journey == null) {
-      setLoading(false)
+    try {
+      if (journey == null) {
+        enqueueSnackbar(
+          t('Journey failed to load. Please refresh the page and try again.'),
+          { variant: 'error' }
+        )
+        return
+      }
+
+      const journeyId =
+        languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
+
+      if (shouldSkipDuplicate(journey, values)) {
+        handleNext()
+        return
+      }
+
+      if (isSignedIn) {
+        const duplicatedJourneyId = await handleJourneyDuplication(
+          'signedIn',
+          journeyId,
+          values.teamSelect
+        )
+
+        if (duplicatedJourneyId != null) {
+          handleNext(duplicatedJourneyId)
+        }
+      } else {
+        const duplicatedJourneyId = await handleJourneyDuplication(
+          'guest',
+          journeyId
+        )
+
+        if (duplicatedJourneyId != null) {
+          handleNext(duplicatedJourneyId)
+        }
+      }
+    } catch {
       enqueueSnackbar(
-        t('Journey failed to load. Please refresh the page and try again.'),
+        t(
+          'Failed to duplicate journey to team, please refresh the page and try again'
+        ),
         { variant: 'error' }
       )
-      return
+    } finally {
+      setLoading(false)
     }
+  }
 
-    const journeyId =
-      languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
-
-    if (shouldSkipDuplicate(journey, values)) {
-      // Skips journey duplicate
-      handleNext()
-    } else if (isSignedIn) {
-      // Duplicates journey for a signed in user
-      const duplicatedJourneyId = await handleJourneyDuplication(
-        'signedIn',
-        journeyId
-      )
-
-      if (duplicatedJourneyId != null) {
-        handleNext(duplicatedJourneyId)
-      } else {
-        setLoading(false)
-      }
-    } else {
-      // Creates a guest user and duplicates the journey for them
-      const duplicatedJourneyId = await handleJourneyDuplication(
-        'guest',
-        journeyId
-      )
-
-      if (duplicatedJourneyId != null) {
-        handleNext(duplicatedJourneyId)
-      } else {
-        setLoading(false)
-      }
-    }
-    return
+  if (!isDataReady) {
+    return (
+      <ScreenWrapper
+        title={t("Let's Get Started!")}
+        mobileTitle={t('Get Started')}
+        subtitle={t(
+          'A few quick edits and your template will be ready to share.'
+        )}
+        mobileSubtitle={t("A few quick edits and it's ready to share!")}
+        footer={
+          <CustomizeFlowNextButton
+            label={t('Next')}
+            onClick={() => {}}
+            disabled
+            loading={false}
+            ariaLabel={t('Next')}
+          />
+        }
+      >
+        <Stack
+          sx={{
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: 200
+          }}
+        >
+          <CircularProgress />
+        </Stack>
+      </ScreenWrapper>
+    )
   }
 
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      enableReinitialize
       onSubmit={handleSubmit}
     >
       {({ handleSubmit: formikHandleSubmit, setFieldValue, values }) => (
