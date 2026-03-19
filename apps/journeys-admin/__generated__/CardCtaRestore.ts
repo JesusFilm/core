@@ -552,6 +552,10 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1159,6 +1163,10 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1766,6 +1774,10 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2373,6 +2385,10 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2980,6 +2996,10 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3587,6 +3607,10 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4194,6 +4218,10 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4801,6 +4829,10 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -5408,6 +5440,10 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -6015,6 +6051,10 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -6622,6 +6662,10 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -7229,6 +7273,10 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

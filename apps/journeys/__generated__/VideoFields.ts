@@ -191,4 +191,8 @@ export interface VideoFields {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }

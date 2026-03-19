@@ -63,6 +63,7 @@ describe('Video', () => {
     },
     posterBlockId: null,
     customizable: null,
+    notes: null,
     children: []
   }
 
