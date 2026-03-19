@@ -32,6 +32,24 @@ describe('findOrFetchUser', () => {
     })
   })
 
+  it('should sync emailVerified from Firebase when DB says false but Firebase says true', async () => {
+    const { auth } = jest.requireMock('@core/yoga/firebaseClient')
+    auth.getUser.mockReturnValueOnce({
+      emailVerified: true
+    })
+
+    prismaMock.user.findUnique.mockResolvedValueOnce(user)
+    const updatedUser = { ...user, emailVerified: true }
+    prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+
+    const data = await findOrFetchUser({}, 'userId', undefined)
+    expect(data).toEqual(updatedUser)
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { userId: 'userId' },
+      data: { emailVerified: true }
+    })
+  })
+
   it('should update emailverified on existing user', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce({
       ...user,
