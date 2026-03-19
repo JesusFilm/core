@@ -126,6 +126,27 @@ export const Platform = {
         link: 'https://tiktok.com/',
         platform: MessagePlatform.tikTok,
         customizable: null
+      },
+      {
+        __typename: 'ChatButton',
+        id: '11',
+        link: 'https://discord.gg/example',
+        platform: MessagePlatform.discord,
+        customizable: null
+      },
+      {
+        __typename: 'ChatButton',
+        id: '12',
+        link: 'https://signal.me/example',
+        platform: MessagePlatform.signal,
+        customizable: null
+      },
+      {
+        __typename: 'ChatButton',
+        id: '13',
+        link: 'https://u.wechat.com/example',
+        platform: MessagePlatform.weChat,
+        customizable: null
       }
     ]
   }

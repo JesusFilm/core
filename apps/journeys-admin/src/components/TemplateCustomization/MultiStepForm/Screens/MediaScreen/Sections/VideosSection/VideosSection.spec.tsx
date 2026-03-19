@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -26,11 +27,13 @@ jest.mock('./VideoPreviewPlayer', () => ({
 }))
 
 const mockStartUpload = jest.fn()
+const mockStartYouTubeLink = jest.fn()
 const mockGetUploadStatus = jest.fn()
 jest.mock('../../../../TemplateVideoUploadProvider', () => ({
   ...jest.requireActual('../../../../TemplateVideoUploadProvider'),
   useTemplateVideoUpload: () => ({
     startUpload: mockStartUpload,
+    startYouTubeLink: mockStartYouTubeLink,
     getUploadStatus: mockGetUploadStatus
   })
 }))
@@ -87,7 +90,8 @@ const journeyWithMatchingVideoBlock: Journey = {
       action: null,
       eventLabel: null,
       endEventLabel: null,
-      customizable: true
+      customizable: true,
+      notes: null
     }
   ],
   primaryImageBlock: null,
@@ -120,12 +124,12 @@ const journeyWithNoMatchingVideoBlock: Journey = {
   blocks: []
 }
 
-const journeyWithVideoBlockWithDisplayTitle: Journey = {
+const journeyWithVideoBlockWithAdapterNote: Journey = {
   ...journeyWithMatchingVideoBlock,
   blocks: [
     {
       ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
-      title: 'My Video Display Title'
+      notes: 'trailer'
     }
   ]
 }
@@ -154,6 +158,10 @@ describe('VideosSection', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockGetUploadStatus.mockReturnValue(null)
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
   })
 
   it('renders with VideosSection data-testid visible', () => {
@@ -214,20 +222,37 @@ describe('VideosSection', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('shows video display title when video block has a non-empty display title', () => {
+  it('shows adapter note when video block has a non-empty notes field', () => {
     renderVideosSection({
-      journey: journeyWithVideoBlockWithDisplayTitle,
+      journey: journeyWithVideoBlockWithAdapterNote,
       cardBlockId
     })
-    expect(screen.getByText('My Video Display Title')).toBeInTheDocument()
+    expect(screen.getByText('trailer')).toBeInTheDocument()
   })
 
-  it('does not show video title when display title is empty', () => {
+  it('does not show adapter note when notes is null', () => {
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.queryByText('My Video Display Title')).not.toBeInTheDocument()
+    expect(screen.queryByText('trailer')).not.toBeInTheDocument()
+  })
+
+  it('does not show adapter note when notes is empty or whitespace', () => {
+    const journeyWithEmptyNotes: Journey = {
+      ...journeyWithMatchingVideoBlock,
+      blocks: [
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          notes: '   '
+        }
+      ]
+    }
+    renderVideosSection({
+      journey: journeyWithEmptyNotes,
+      cardBlockId
+    })
+    expect(screen.queryByText('   ')).not.toBeInTheDocument()
   })
 
   it('disables upload button when loading', () => {
@@ -278,7 +303,7 @@ describe('VideosSection', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows default message when upload status is uploading', () => {
+  it('does not show max size helper text when upload status is uploading', () => {
     mockGetUploadStatus.mockReturnValue({
       status: 'uploading',
       progress: 50
@@ -287,18 +312,173 @@ describe('VideosSection', () => {
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+    expect(screen.queryByText('Max size is 1 GB')).not.toBeInTheDocument()
     expect(
       screen.queryByText('Upload failed. Please try again')
     ).not.toBeInTheDocument()
   })
 
-  it('shows default message when no upload status', () => {
+  it('does not show max size helper text when no upload status', () => {
     mockGetUploadStatus.mockReturnValue(null)
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+    expect(screen.queryByText('Max size is 1 GB')).not.toBeInTheDocument()
+  })
+
+  it('renders YouTube input with placeholder text', () => {
+    renderVideosSection()
+    expect(
+      screen.getByPlaceholderText('Paste a YouTube link...')
+    ).toBeInTheDocument()
+  })
+
+  it('renders helper caption for supported YouTube link formats', () => {
+    renderVideosSection()
+    expect(
+      screen.getByText('youtube.com, youtu.be and shorts links supported')
+    ).toBeInTheDocument()
+  })
+
+  it('auto-submits valid YouTube URL after 800ms debounce', async () => {
+    mockStartYouTubeLink.mockResolvedValue(true)
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(mockStartYouTubeLink).toHaveBeenCalledWith(
+      'video-block-1',
+      'dQw4w9WgXcQ'
+    )
+  })
+
+  it('shows error for invalid YouTube URL after debounce', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'not-a-valid-url')
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(
+      screen.getByText('Please enter a valid YouTube URL')
+    ).toBeInTheDocument()
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
+  })
+
+  it('clears error immediately when user types after an invalid URL', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'not-a-valid-url')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(
+      screen.getByText('Please enter a valid YouTube URL')
+    ).toBeInTheDocument()
+
+    // Type one more character — error should clear immediately without waiting for debounce
+    await user.type(input, 'x')
+    expect(
+      screen.queryByText('Please enter a valid YouTube URL')
+    ).not.toBeInTheDocument()
+  })
+
+  it('clears error and does not re-submit when re-pasting a previously-submitted valid URL after an error', async () => {
+    mockStartYouTubeLink.mockResolvedValue(true)
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+
+    // First: submit a valid URL — resolves true so dedup map records it
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
+    // Flush the .then() callback that writes to the dedup map
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    // Then: type an invalid URL to trigger the error
+    await user.clear(input)
+    await user.type(input, 'not-valid')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(
+      screen.getByText('Please enter a valid YouTube URL')
+    ).toBeInTheDocument()
+
+    // Finally: re-paste the same valid URL — error should clear, no duplicate submission
+    await user.clear(input)
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(
+      screen.queryByText('Please enter a valid YouTube URL')
+    ).not.toBeInTheDocument()
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1) // no duplicate call
+  })
+
+  it('allows retry of same URL after a failed submission', async () => {
+    mockStartYouTubeLink.mockResolvedValue(false)
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+
+    // First attempt — fails (returns false), so dedup map is NOT written
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(1)
+    await act(async () => {
+      await Promise.resolve()
+    })
+
+    // Re-type same URL — should re-submit since the first attempt failed
+    await user.clear(input)
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+    expect(mockStartYouTubeLink).toHaveBeenCalledTimes(2)
   })
 })

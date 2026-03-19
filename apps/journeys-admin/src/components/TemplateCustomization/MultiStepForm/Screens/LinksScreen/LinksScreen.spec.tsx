@@ -134,6 +134,25 @@ describe('LinksScreen', () => {
     await waitFor(() => expect(handleNext).toHaveBeenCalled())
   })
 
+  it('should show loading state on the Next button after submitting', async () => {
+    const handleNext = jest.fn()
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <LinksScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    fireEvent.click(nextButton)
+
+    await waitFor(() => {
+      expect(nextButton).toBeDisabled()
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    })
+  })
+
   it('calls correct mutations for changed url, email, and chat', async () => {
     const handleNext = jest.fn()
 
