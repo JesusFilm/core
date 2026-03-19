@@ -9,7 +9,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   const shareDataTitle =
@@ -23,6 +27,7 @@ export function CollectionsPage(): ReactElement {
           descriptionBeforeYear="Pâques"
           descriptionAfterYear="vidéos sur l’histoire de la résurrection dans plus de 2 000 langues"
           feedbackButtonLabel="Donner un Avis"
+          year={year}
         />
       }
       hideHeader
@@ -47,6 +52,7 @@ export function CollectionsPage(): ReactElement {
           orthodoxEasterLabel="Orthodoxe"
           passoverLabel="Pâque Juive"
           locale="fr-FR"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/french"

@@ -13,7 +13,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   // Content items data with contentId that will match the CollectionsVideoContent IDs
@@ -79,6 +83,7 @@ export function CollectionsPage(): ReactElement {
           descriptionBeforeYear="Páscoa"
           descriptionAfterYear="vídeos sobre a história da ressurreição em mais de 2.000 idiomas"
           feedbackButtonLabel="Dar Feedback"
+          year={year}
         />
       }
       hideHeader
@@ -103,6 +108,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
           orthodoxEasterLabel="Ortodoxa"
           passoverLabel="Páscoa Judaica"
           locale="pt-BR"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/portuguese-brazil"

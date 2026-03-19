@@ -6,17 +6,24 @@ import type { ReactElement } from 'react'
 
 import i18nConfig from '../../../../next-i18next.config'
 import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/fr'
+import { getEasterCampaignYear } from '../../../../src/libs/easterDates'
 import { getFlags } from '../../../../src/libs/getFlags'
 
-export default function EasterPage(): ReactElement {
+interface EasterPageProps {
+  easterYear: number
+}
+
+export default function EasterPage({
+  easterYear
+}: EasterPageProps): ReactElement {
   return (
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Pâques 2026 : regardez l’histoire de la résurrection | Jesus Film Project"
+        defaultTitle={`Pâques ${easterYear} : regardez l’histoire de la résurrection | Jesus Film Project`}
         description="Découvrez le vrai sens de Pâques grâce à des vidéos sur la résurrection de Jésus. Regardez la Semaine sainte, le Vendredi saint et le dimanche de Pâques dans plus de 2 000 langues."
         openGraph={{
-          title: 'Pâques 2026 : regardez l’histoire de la résurrection',
+          title: `Pâques ${easterYear} : regardez l’histoire de la résurrection`,
           description:
             'Découvrez le vrai sens de Pâques grâce à des vidéos sur la résurrection de Jésus. Regardez dans plus de 2 000 langues.',
           url: 'https://www.jesusfilm.org/watch/easter/french',
@@ -47,21 +54,25 @@ export default function EasterPage(): ReactElement {
         }}
       />
       <SnackbarProvider>
-        <CollectionsPage />
+        <CollectionsPage year={easterYear} />
       </SnackbarProvider>
     </>
   )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps<EasterPageProps> = async (
+  context
+) => {
   return {
     props: {
+      easterYear: getEasterCampaignYear(),
       flags: await getFlags(),
       ...(await serverSideTranslations(
         context.locale ?? 'fr',
         ['apps-resources'],
         i18nConfig
       ))
-    }
+    },
+    revalidate: 60 * 60 * 24
   }
 }

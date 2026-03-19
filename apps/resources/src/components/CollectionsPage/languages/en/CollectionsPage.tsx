@@ -13,7 +13,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   // Content items data with contentId that will match the CollectionsVideoContent IDs
@@ -79,6 +83,7 @@ export function CollectionsPage(): ReactElement {
           descriptionBeforeYear="Easter"
           descriptionAfterYear="resurrection story videos in 2,000+ languages"
           feedbackButtonLabel="Give Feedback"
+          year={year}
         />
       }
       hideHeader
@@ -103,6 +108,7 @@ Because the greatest celebration in human history is about far more than traditi
           orthodoxEasterLabel="Orthodox"
           passoverLabel="Jewish Passover"
           locale="en-US"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/english"

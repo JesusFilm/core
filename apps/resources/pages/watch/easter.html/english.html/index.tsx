@@ -6,17 +6,24 @@ import type { ReactElement } from 'react'
 
 import i18nConfig from '../../../../next-i18next.config'
 import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/en'
+import { getEasterCampaignYear } from '../../../../src/libs/easterDates'
 import { getFlags } from '../../../../src/libs/getFlags'
 
-export default function EasterPage(): ReactElement {
+interface EasterPageProps {
+  easterYear: number
+}
+
+export default function EasterPage({
+  easterYear
+}: EasterPageProps): ReactElement {
   return (
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Easter 2026: Watch the Resurrection Story | Jesus Film Project"
+        defaultTitle={`Easter ${easterYear}: Watch the Resurrection Story | Jesus Film Project`}
         description="Discover the true meaning of Easter through videos about the resurrection of Jesus. Watch Holy Week, Good Friday and Easter Sunday in 2,000+ languages."
         openGraph={{
-          title: 'Easter 2026: Watch the Resurrection Story',
+          title: `Easter ${easterYear}: Watch the Resurrection Story`,
           description:
             'Discover the true meaning of Easter through videos about the resurrection of Jesus. Watch in 2,000+ languages.',
           url: 'https://www.jesusfilm.org/watch/easter/english',
@@ -47,21 +54,25 @@ export default function EasterPage(): ReactElement {
         }}
       />
       <SnackbarProvider>
-        <CollectionsPage />
+        <CollectionsPage year={easterYear} />
       </SnackbarProvider>
     </>
   )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps<EasterPageProps> = async (
+  context
+) => {
   return {
     props: {
+      easterYear: getEasterCampaignYear(),
       flags: await getFlags(),
       ...(await serverSideTranslations(
         context.locale ?? 'en',
         ['apps-resources'],
         i18nConfig
       ))
-    }
+    },
+    revalidate: 60 * 60 * 24
   }
 }
