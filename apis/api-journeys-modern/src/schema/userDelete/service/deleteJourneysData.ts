@@ -165,9 +165,9 @@ export async function deleteJourneysData(
         logs.push(createLog(`🗑️ Deleted ${blockCount.count} blocks`))
 
       // Now delete the journeys (cascades are already cleared)
-      for (const journeyId of journeyIdsToDelete) {
-        await prisma.journey.delete({ where: { id: journeyId } })
-      }
+      await prisma.journey.deleteMany({
+        where: { id: { in: journeyIdsToDelete } }
+      })
       logs.push(createLog(`🗑️ Deleted ${journeyIdsToDelete.length} journeys`))
     }
 

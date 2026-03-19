@@ -113,9 +113,9 @@ describe('lookupUser', () => {
   it('should throw NOT_FOUND when no DB user by databaseId', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
 
-    await expect(
-      lookupUser('databaseId', 'nonexistent-id')
-    ).rejects.toThrow(GraphQLError)
+    await expect(lookupUser('databaseId', 'nonexistent-id')).rejects.toThrow(
+      GraphQLError
+    )
   })
 
   it('should report no firebase record when both UID and email fail', async () => {

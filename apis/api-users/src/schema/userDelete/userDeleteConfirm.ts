@@ -102,6 +102,19 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
         })
       }
 
+      // Prevent self-deletion
+      if (user.userId === ctx.currentUser.id) {
+        yield {
+          log: createLog(
+            '❌ Cannot delete your own account',
+            'error'
+          ),
+          done: true,
+          success: false
+        }
+        return
+      }
+
       // Phase 1: Journeys DB cleanup (via interop)
       yield {
         log: createLog('🔄 Starting journeys database cleanup...'),
