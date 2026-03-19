@@ -54,7 +54,7 @@ describe('callJourneysCheck', () => {
 
     expect(result.journeysToDelete).toBe(0)
     expect(result.logs[0].level).toBe('error')
-    expect(result.logs[0].message).toContain('Network error')
+    expect(result.logs[0].message).toContain('Journeys check failed')
   })
 })
 
@@ -96,6 +96,6 @@ describe('callJourneysConfirm', () => {
     const result = await callJourneysConfirm('user-123')
 
     expect(result.success).toBe(false)
-    expect(result.logs[0].message).toContain('Timeout')
+    expect(result.logs[0].message).toContain('Journeys deletion failed')
   })
 })

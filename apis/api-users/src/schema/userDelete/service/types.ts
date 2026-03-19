@@ -9,3 +9,12 @@ export function isFirebaseNotFound(error: unknown): boolean {
     error.code === 'auth/user-not-found'
   )
 }
+
+export function isFirebaseNotFound(error: unknown): boolean {
+  return (
+    error != null &&
+    typeof error === 'object' &&
+    'code' in error &&
+    error.code === 'auth/user-not-found'
+  )
+}
