@@ -44,6 +44,7 @@ export function DoneScreen(): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
   const { emailResponseToggle } = useFlags()
+  const isEmailResponseEnabled = emailResponseToggle === true
   const router = useRouter()
   const [syncDialogOpen, setSyncDialogOpen] = useState(false)
 
@@ -181,12 +182,12 @@ export function DoneScreen(): ReactElement {
           }}
         >
           <Typography variant="subtitle1">
-            {emailResponseToggle === true
+            {isEmailResponseEnabled
               ? t('Choose where responses go:')
               : t('Collect your responses:')}
           </Typography>
           <Stack spacing={2}>
-            {emailResponseToggle === true && (
+            {isEmailResponseEnabled && (
               <Stack
                 direction="row"
                 justifyContent="space-between"
