@@ -156,7 +156,9 @@ export function JourneyListContent({
     return baseParams
   }
 
-  const { data, refetch } = useAdminJourneysQuery(getQueryParams())
+  const { data, refetch } = useAdminJourneysQuery(getQueryParams(), {
+    skip: activeTeam === undefined
+  })
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   // Determine mutations based on status
