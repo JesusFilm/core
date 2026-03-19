@@ -410,6 +410,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyAiChatUndo(turnId: String!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyAiChatExecutePlan(turnId: String!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -2388,6 +2390,23 @@ type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   journey: Journey!
 }
 
+type JourneyAiChatMessage @join__type(graph: API_JOURNEYS_MODERN)  {
+  type: String
+  text: String
+  operations: String
+  operationId: String
+  status: String
+  turnId: String
+  journeyUpdated: Boolean
+  requiresConfirmation: Boolean
+  name: String
+  args: String
+  summary: String
+  cardId: String
+  error: String
+  validation: String
+}
+
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   Translation progress as a percentage (0-100)
@@ -2524,6 +2543,7 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyAiChatCreateSubscription(input: JourneyAiChatInput!) : JourneyAiChatMessage!
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
 
@@ -3726,6 +3746,11 @@ enum GoogleSheetExportMode @join__type(graph: API_JOURNEYS_MODERN)  {
   existing @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum JourneyAiChatPreferredTier @join__type(graph: API_JOURNEYS_MODERN)  {
+  free @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  premium @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   footerThumbsUpButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
   footerThumbsDownButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -4801,6 +4826,20 @@ input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   code: String!
   redirectUri: String!
+}
+
+input JourneyAiChatHistoryMessage @join__type(graph: API_JOURNEYS_MODERN)  {
+  role: String!
+  content: String!
+}
+
+input JourneyAiChatInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID!
+  message: String!
+  history: [JourneyAiChatHistoryMessage!]!
+  turnId: String
+  contextCardId: String
+  preferredTier: JourneyAiChatPreferredTier
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
