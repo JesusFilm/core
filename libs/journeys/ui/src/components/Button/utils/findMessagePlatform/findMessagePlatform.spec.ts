@@ -147,6 +147,68 @@ describe('findMessagePlatform', () => {
     expect(findMessagePlatform(action)).toEqual(MessagePlatform.tikTok)
   })
 
+  it('should return discord', () => {
+    const action1 = {
+      ...defaultAction,
+      url: 'https://discord.gg/some-server'
+    }
+    const action2 = {
+      ...defaultAction,
+      url: 'https://discord.com/invite/some-server'
+    }
+    const action3 = {
+      ...defaultAction,
+      url: 'https://discord.com/users/12345'
+    }
+    const action4 = {
+      ...defaultAction,
+      url: 'https://discord.com/channels/12345'
+    }
+    const action5 = {
+      ...defaultAction,
+      url: 'discord://some-action'
+    }
+
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.discord)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.discord)
+    expect(findMessagePlatform(action3)).toEqual(MessagePlatform.discord)
+    expect(findMessagePlatform(action4)).toEqual(MessagePlatform.discord)
+    expect(findMessagePlatform(action5)).toEqual(MessagePlatform.discord)
+  })
+
+  it('should return signal', () => {
+    const action1 = {
+      ...defaultAction,
+      url: 'https://signal.me/#p/+1234567890'
+    }
+    const action2 = {
+      ...defaultAction,
+      url: 'https://signal.group/#some-group'
+    }
+    const action3 = {
+      ...defaultAction,
+      url: 'sgnl://some-action'
+    }
+
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.signal)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.signal)
+    expect(findMessagePlatform(action3)).toEqual(MessagePlatform.signal)
+  })
+
+  it('should return weChat', () => {
+    const action1 = {
+      ...defaultAction,
+      url: 'weixin://dl/chat?some-user'
+    }
+    const action2 = {
+      ...defaultAction,
+      url: 'https://u.wechat.com/some-user'
+    }
+
+    expect(findMessagePlatform(action1)).toEqual(MessagePlatform.weChat)
+    expect(findMessagePlatform(action2)).toEqual(MessagePlatform.weChat)
+  })
+
   it('should return undefined', () => {
     expect(findMessagePlatform(defaultAction)).toBeUndefined()
   })

@@ -34,7 +34,7 @@ jobs:
       - id: set-matrix
         name: set matrix worker to affected array
         run: |
-          matrix=$(pnpm -s exec ts-node tools/scripts/deploy-apps.ts --projects workers/*)
+          matrix=$(pnpm -s exec tsx tools/scripts/deploy-apps.ts --projects workers/*)
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
 

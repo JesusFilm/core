@@ -32,6 +32,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { hasActiveUploads } = useTemplateVideoUpload()
+  const [navigating, setNavigating] = useState(false)
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -74,9 +75,12 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       footer={
         <CustomizeFlowNextButton
           label={t('Next')}
-          onClick={() => handleNext()}
+          onClick={() => {
+            setNavigating(true)
+            handleNext()
+          }}
           ariaLabel={t('Next')}
-          loading={hasActiveUploads}
+          loading={hasActiveUploads || navigating}
         />
       }
     >

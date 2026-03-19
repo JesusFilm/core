@@ -1268,6 +1268,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 type MultiselectBlock implements Block
@@ -1342,6 +1345,7 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): ButtonBlock @override(from: "api-journeys")
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!

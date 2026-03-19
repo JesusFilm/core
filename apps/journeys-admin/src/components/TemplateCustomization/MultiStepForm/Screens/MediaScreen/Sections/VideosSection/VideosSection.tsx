@@ -1,18 +1,20 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ChangeEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { useTemplateVideoUpload } from '../../../../TemplateVideoUploadProvider'
 import {
-  getCustomizableCardVideoBlock,
-  getVideoBlockDisplayTitle
+  extractYouTubeVideoId,
+  getCustomizableCardVideoBlock
 } from '../../utils'
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
@@ -22,7 +24,6 @@ interface UploadButtonProps {
   open: () => void
   getInputProps: () => Record<string, unknown>
   label: string
-  defaultMessage: string
   errorMessage?: string
 }
 
@@ -31,23 +32,20 @@ function UploadButton({
   open,
   getInputProps,
   label,
-  defaultMessage,
   errorMessage
 }: UploadButtonProps): ReactElement {
-  const displayMessage = errorMessage ?? defaultMessage
-  const isError = errorMessage != null
-
   return (
     <Box sx={{ py: 2 }}>
       <input {...getInputProps()} />
       <Button
-        size="small"
+        data-testid="VideosSection-upload-button"
+        size="medium"
         color="secondary"
         variant="outlined"
         disabled={loading}
         onClick={open}
         sx={{
-          height: 32,
+          height: 40,
           width: '100%',
           borderRadius: 2
         }}
@@ -56,24 +54,26 @@ function UploadButton({
           {label}
         </Typography>
       </Button>
-      <Typography
-        variant="caption"
-        sx={{
-          color: isError ? 'error.main' : 'text.secondary',
-          mt: 0.5
-        }}
-      >
-        {displayMessage}
-      </Typography>
+      {errorMessage != null && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'error.main',
+            mt: 0.5
+          }}
+        >
+          {errorMessage}
+        </Typography>
+      )}
     </Box>
   )
 }
 
-interface VideoTitleProps {
-  title: string
+interface VideoAdapterNoteProps {
+  note: string
 }
 
-function VideoTitle({ title }: VideoTitleProps): ReactElement {
+function VideoAdapterNote({ note }: VideoAdapterNoteProps): ReactElement {
   return (
     <Typography
       variant="subtitle3"
@@ -84,7 +84,7 @@ function VideoTitle({ title }: VideoTitleProps): ReactElement {
         whiteSpace: 'nowrap'
       }}
     >
-      {title}
+      {note}
     </Typography>
   )
 }
@@ -104,11 +104,16 @@ export function VideosSection({
 }: VideosSectionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const { startUpload, getUploadStatus } = useTemplateVideoUpload()
+  const { startUpload, startYouTubeLink, getUploadStatus } =
+    useTemplateVideoUpload()
+
+  const [youtubeUrl, setYoutubeUrl] = useState('')
+  const [youtubeUrlError, setYoutubeUrlError] = useState<string | undefined>(
+    undefined
+  )
 
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
-  const videoBlockDisplayTitle =
-    videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
+  const adapterNote = videoBlock?.notes?.trim() ?? ''
 
   const uploadStatus =
     videoBlock != null ? getUploadStatus(videoBlock.id) : null
@@ -131,6 +136,35 @@ export function VideosSection({
     accept: { 'video/*': [] },
     disabled: loading
   })
+
+  const lastSubmittedRef = useRef(new Map<string, string>())
+
+  function handleYouTubeUrlChange(event: ChangeEvent<HTMLInputElement>): void {
+    setYoutubeUrl(event.target.value)
+    if (youtubeUrlError != null) setYoutubeUrlError(undefined)
+  }
+
+  useEffect(() => {
+    const trimmedUrl = youtubeUrl.trim()
+    if (trimmedUrl === '' || loading || videoBlock == null) return
+
+    const timer = setTimeout(() => {
+      const extractedId = extractYouTubeVideoId(trimmedUrl)
+      if (extractedId == null) {
+        setYoutubeUrlError(t('Please enter a valid YouTube URL'))
+        return
+      }
+      setYoutubeUrlError(undefined)
+      if (trimmedUrl === lastSubmittedRef.current.get(videoBlock.id)) return
+      void startYouTubeLink(videoBlock.id, extractedId).then((success) => {
+        if (success) {
+          lastSubmittedRef.current.set(videoBlock.id, trimmedUrl)
+        }
+      })
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [youtubeUrl, loading, videoBlock, startYouTubeLink, t])
 
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
@@ -158,8 +192,8 @@ export function VideosSection({
           ) : (
             videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />
           )}
-          {videoBlock != null && !loading && videoBlockDisplayTitle !== '' && (
-            <VideoTitle title={videoBlockDisplayTitle} />
+          {videoBlock != null && !loading && adapterNote !== '' && (
+            <VideoAdapterNote note={adapterNote} />
           )}
         </Stack>
       </Stack>
@@ -168,8 +202,29 @@ export function VideosSection({
         open={open}
         getInputProps={getInputProps}
         label={t('Upload File')}
-        defaultMessage={t('Max size is 1 GB')}
         errorMessage={errorMessage}
+      />
+      <Divider>
+        <Typography variant="caption" color="text.secondary">
+          {t('or')}
+        </Typography>
+      </Divider>
+      <TextField
+        data-testid="VideosSection-youtube-input"
+        variant="filled"
+        hiddenLabel
+        size="small"
+        fullWidth
+        placeholder={t('Paste a YouTube link...')}
+        value={youtubeUrl}
+        onChange={handleYouTubeUrlChange}
+        disabled={loading}
+        error={youtubeUrlError != null}
+        helperText={
+          youtubeUrlError ??
+          t('youtube.com, youtu.be and shorts links supported')
+        }
+        inputProps={{ 'aria-label': t('YouTube URL') }}
       />
     </Stack>
   )

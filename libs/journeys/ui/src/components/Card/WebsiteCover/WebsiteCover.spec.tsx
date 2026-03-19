@@ -79,6 +79,7 @@ describe('WebsiteCover', () => {
       variantLanguages: []
     },
     customizable: null,
+    notes: null,
     children: []
   }
 

@@ -259,6 +259,50 @@ describe('LanguageScreen', () => {
     expect(handleNext).toHaveBeenCalledWith()
   })
 
+  it('should show loading state on the Next button after clicking', async () => {
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          mockJourneyDuplicate
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+
+    fireEvent.click(nextButton)
+
+    await waitFor(() => {
+      expect(nextButton).toBeDisabled()
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    })
+  })
+
   it('duplicates journey to selected team and navigates to customize', async () => {
     const mockJourneyDuplicateMockResult = jest
       .fn()
