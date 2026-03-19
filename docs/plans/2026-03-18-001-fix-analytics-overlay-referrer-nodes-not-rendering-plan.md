@@ -1,13 +1,23 @@
 ---
 title: 'fix: Analytics overlay referrer nodes not rendering'
 type: fix
-status: active
+status: completed
 date: 2026-03-18
 linear: NES-781
 deepened: 2026-03-18
 ---
 
 # fix: Analytics overlay referrer nodes not rendering
+
+## Outcome
+
+**PR:** [#8879](https://github.com/JesusFilm/core/pull/8879)
+**Actual root cause:** ReactFlow's `onNodesChange` handler from the step `useNodesState` received changes for ALL nodes (including referrer nodes). `applyNodeChanges` returns a new array even when no changes match, causing an infinite re-render loop (1000s+ renders/min).
+**Actual fix:** A combined `onNodesChange` handler that routes changes to the correct `useNodesState` handler (step vs referrer) based on node ID. Single-file change to `JourneyFlow.tsx`.
+**What wasn't needed:** The React Compiler, Apollo `onCompleted`, `hideReferrers` mutation, and `JSON.stringify` hypotheses explored below were all investigated and ruled out during implementation. The plan's analysis below is preserved as-is for historical context.
+**Authoritative reference:** [`docs/solutions/runtime-errors/reactflow-multiple-usenodesstate-infinite-rerender.md`](../solutions/runtime-errors/reactflow-multiple-usenodesstate-infinite-rerender.md)
+
+---
 
 ## Enhancement Summary
 

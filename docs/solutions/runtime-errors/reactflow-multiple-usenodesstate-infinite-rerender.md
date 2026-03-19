@@ -131,6 +131,7 @@ it('should not infinite-loop when rendering mixed node types', () => {
 
 ## Related
 
+- **PR:** [#8879](https://github.com/JesusFilm/core/pull/8879)
 - **Linear:** [NES-781](https://linear.app/jesus-film-project/issue/NES-781), [NES-310](https://linear.app/jesus-film-project/issue/NES-310) (parent)
 - **Plan:** `docs/plans/2026-03-18-001-fix-analytics-overlay-referrer-nodes-not-rendering-plan.md`
 - **Previous attempt:** PR #7649 (filtered changes — caused flashing, never merged)
