@@ -328,6 +328,11 @@ export enum TypographyVariant {
   subtitle2 = "subtitle2",
 }
 
+export enum UserDeleteIdType {
+  databaseId = "databaseId",
+  email = "email",
+}
+
 export enum UserJourneyRole {
   editor = "editor",
   inviteRequested = "inviteRequested",
