@@ -126,7 +126,6 @@ export function JourneyListContent({
       status: JourneyStatus[]
       template?: boolean
       teamId?: string
-      useLastActiveTeamId?: boolean
     } = {
       status: []
     }
