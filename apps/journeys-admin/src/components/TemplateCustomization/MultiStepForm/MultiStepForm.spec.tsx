@@ -1005,11 +1005,11 @@ describe('MultiStepForm', () => {
 
         expect(
           await screen.findByText(
-            'This step is not available for guests. You have been redirected.'
+            "The step you're trying to access is not available to guests. Please sign up."
           )
         ).toBeInTheDocument()
         expect(mockReplace).toHaveBeenCalledWith(
-          `/templates/${journeyId}/customize?screen=language`
+          `/templates/${journeyId}/customize?screen=guestPreview`
         )
       })
 
@@ -1039,7 +1039,7 @@ describe('MultiStepForm', () => {
 
         expect(
           await screen.findByText(
-            'This step is not available for guests. You have been redirected.'
+            'This template cannot be customised by a guest.'
           )
         ).toBeInTheDocument()
         expect(mockReplace).toHaveBeenCalledWith(
@@ -1073,7 +1073,7 @@ describe('MultiStepForm', () => {
 
         expect(
           await screen.findByText(
-            'This step is not available for guests. You have been redirected.'
+            'This template cannot be customised by a guest.'
           )
         ).toBeInTheDocument()
         expect(mockReplace).toHaveBeenCalledWith(
