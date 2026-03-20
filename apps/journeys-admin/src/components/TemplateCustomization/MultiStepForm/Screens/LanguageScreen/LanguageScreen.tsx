@@ -310,7 +310,7 @@ export function LanguageScreen({
         footer={
           <CustomizeFlowNextButton
             label={t('Next')}
-            onClick={() => {}}
+            onClick={undefined}
             disabled
             loading={false}
             ariaLabel={t('Next')}
@@ -347,7 +347,7 @@ export function LanguageScreen({
         footer={
           <CustomizeFlowNextButton
             label={t('Next')}
-            onClick={() => {}}
+            onClick={undefined}
             disabled
             loading={false}
             ariaLabel={t('Next')}
