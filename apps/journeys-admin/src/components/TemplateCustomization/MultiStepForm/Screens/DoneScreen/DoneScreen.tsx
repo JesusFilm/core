@@ -12,6 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -42,6 +43,8 @@ export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
+  const { emailResponseToggle } = useFlags()
+  const isEmailResponseEnabled = emailResponseToggle === true
   const router = useRouter()
   const [syncDialogOpen, setSyncDialogOpen] = useState(false)
 
@@ -179,17 +182,21 @@ export function DoneScreen(): ReactElement {
           }}
         >
           <Typography variant="subtitle1">
-            {t('Choose where responses go:')}
+            {isEmailResponseEnabled
+              ? t('Choose where responses go:')
+              : t('Collect your responses:')}
           </Typography>
           <Stack spacing={2}>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Typography variant="body2">{t('Send to my email')}</Typography>
-              <NotificationSwitch journeyId={journey?.id} />
-            </Stack>
+            {isEmailResponseEnabled && (
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography variant="body2">{t('Send to my email')}</Typography>
+                <NotificationSwitch journeyId={journey?.id} />
+              </Stack>
+            )}
             <Stack
               direction="row"
               justifyContent="space-between"

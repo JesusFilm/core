@@ -76,13 +76,13 @@ jest.mock('./ContainerHeroMuteButton', () => ({
 
 describe('ContainerHero', () => {
   let mockPlayer: Partial<Player>
-  const currentYear = new Date().getFullYear()
   const defaultProps: ContainerHeroProps = {
     title: 'Easter',
     descriptionBeforeYear: 'Easter',
     descriptionAfterYear:
       'videos & resources about Lent, Holy Week, Resurrection',
-    feedbackButtonLabel: 'Feedback'
+    feedbackButtonLabel: 'Feedback',
+    year: 2026
   }
 
   beforeEach(() => {
@@ -127,7 +127,8 @@ describe('ContainerHero', () => {
 
     expect(screen.getByText('Easter')).toBeInTheDocument()
 
-    const expectedDescription = `Easter ${currentYear} videos & resources about Lent, Holy Week, Resurrection`
+    const expectedDescription =
+      'Easter 2026 videos & resources about Lent, Holy Week, Resurrection'
     expect(screen.getByTestId('ContainerHeroDescription')).toHaveTextContent(
       expectedDescription
     )

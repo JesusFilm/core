@@ -1726,6 +1726,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  adminJourney(id: ID!, idType: IdType = slug): Journey! @override(from: "api-journeys")
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
   getJourneyProfile: JourneyProfile
 
