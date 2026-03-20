@@ -59,7 +59,7 @@ const CREATE_CLOUDFLARE_IMAGE = graphql(`
   }
 `)
 
-interface ProcessedImage {
+export interface ProcessedImage {
   src: string
   alt: string
   width: number
@@ -67,11 +67,11 @@ interface ProcessedImage {
   blurhash: string
 }
 
-async function processImage(image: JourneySimpleImage): Promise<ProcessedImage> {
+export async function processImage(image: JourneySimpleImage): Promise<ProcessedImage> {
   let src = image.src
   let blurhash = image.blurhash ?? ''
-  let width = image.width ?? 1
-  let height = image.height ?? 1
+  let width = image.width ?? 0
+  let height = image.height ?? 0
 
   if (!isValidImageUrl(src)) {
     const { data } = await apollo.mutate({
@@ -85,6 +85,20 @@ async function processImage(image: JourneySimpleImage): Promise<ProcessedImage> 
       blurhash = metadata.blurhash
       width = metadata.width
       height = metadata.height
+    }
+  }
+
+  // Fetch metadata for valid URLs that are missing dimensions or blurhash
+  if (width <= 1 || height <= 1 || blurhash === '') {
+    try {
+      const metadata = await generateBlurhashAndMetadataFromUrl(src)
+      if (width <= 1) width = metadata.width
+      if (height <= 1) height = metadata.height
+      if (blurhash === '') blurhash = metadata.blurhash
+    } catch {
+      // Fall back to defaults if metadata fetch fails
+      if (width <= 1) width = 1920
+      if (height <= 1) height = 1080
     }
   }
 
@@ -365,7 +379,9 @@ export async function updateSimpleJourney(
                   parentBlockId: radioQuestion.id,
                   parentOrder: j,
                   label: option.text,
-                  action: mapAction(option.action, stepBlocks)
+                  ...(option.action != null
+                    ? { action: mapAction(option.action, stepBlocks) }
+                    : {})
                 }
               })
             }

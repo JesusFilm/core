@@ -3,7 +3,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import type { PlanOperation } from '@core/shared/ai/agentJourneyTypes'
 import type { JourneySimpleAction } from '@core/shared/ai/journeySimpleTypes'
 
-import { updateSimpleJourney } from '../journey/simple/updateSimpleJourney'
+import { processImage, updateSimpleJourney } from '../journey/simple/updateSimpleJourney'
 
 /** Sanitize error messages — strip Prisma internals, connection strings, stack traces */
 export function sanitizeErrorMessage(message: string): string {
@@ -30,30 +30,65 @@ async function validateBlock(
   }
 }
 
-/** Map a JourneySimpleAction to Prisma action create input */
-function mapActionToPrisma(
+/**
+ * Map from simpleId → real stepBlockId, populated by createCard during plan execution.
+ * This allows later operations in the same plan to reference cards created earlier.
+ */
+const cardIdMap = new Map<string, string>()
+
+/** Resolve a cardId to a valid step block ID — handles real IDs, simpleIds, and plan-created cards */
+async function resolveCardId(
+  cardId: string,
+  journeyId: string
+): Promise<string | null> {
+  // Check the plan-local map first (cards created earlier in this plan)
+  const mapped = cardIdMap.get(cardId)
+  if (mapped != null) return mapped
+
+  // Check if it's a real block ID
+  const block = await prisma.block.findFirst({
+    where: { id: cardId, journeyId, typename: 'StepBlock', deletedAt: null },
+    select: { id: true }
+  })
+  if (block != null) return block.id
+
+  return null
+}
+
+/** Map a JourneySimpleAction to Prisma action create/upsert input */
+async function mapActionToPrisma(
   action: JourneySimpleAction,
   journeyId: string
-): Record<string, unknown> | undefined {
+): Promise<Record<string, unknown> | undefined> {
   switch (action.kind) {
-    case 'navigate':
-      // cardId here is a simpleId — we need the actual stepBlockId
-      // For now, caller must resolve this before calling
-      return { create: { blockId: action.cardId } }
+    case 'navigate': {
+      const resolvedId = await resolveCardId(action.cardId, journeyId)
+      if (resolvedId == null) return undefined
+      return { upsert: { create: { blockId: resolvedId }, update: { blockId: resolvedId } } }
+    }
     case 'url':
-      return { create: { url: action.url } }
+      return { upsert: { create: { url: action.url }, update: { url: action.url } } }
     case 'email':
-      return { create: { email: action.email } }
+      return { upsert: { create: { email: action.email }, update: { email: action.email } } }
     case 'chat':
-      return { create: { chatUrl: action.chatUrl } }
+      return { upsert: { create: { chatUrl: action.chatUrl }, update: { chatUrl: action.chatUrl } } }
     case 'phone':
       return {
-        create: {
-          phone: action.phone,
-          ...(action.countryCode ? { countryCode: action.countryCode } : {}),
-          ...(action.contactAction
-            ? { contactAction: action.contactAction }
-            : {})
+        upsert: {
+          create: {
+            phone: action.phone,
+            ...(action.countryCode ? { countryCode: action.countryCode } : {}),
+            ...(action.contactAction
+              ? { contactAction: action.contactAction }
+              : {})
+          },
+          update: {
+            phone: action.phone,
+            ...(action.countryCode ? { countryCode: action.countryCode } : {}),
+            ...(action.contactAction
+              ? { contactAction: action.contactAction }
+              : {})
+          }
         }
       }
   }
@@ -65,6 +100,14 @@ async function createCard(
   journeyId: string,
   args: { card: unknown; insertAfterCard?: string }
 ): Promise<void> {
+  const card = args.card as {
+    id?: string
+    backgroundColor?: string
+    backgroundImage?: { src: string; alt: string }
+    content?: Array<Record<string, unknown>>
+    defaultNextCard?: string
+  }
+
   // Get current step blocks to determine order
   const steps = await prisma.block.findMany({
     where: { journeyId, typename: 'StepBlock', deletedAt: null },
@@ -93,32 +136,75 @@ async function createCard(
       typename: 'StepBlock',
       parentOrder: insertIndex,
       x: insertIndex * 300,
-      y: 0
+      y: 0,
+      nextBlockId: card.defaultNextCard
+        ? (await resolveCardId(card.defaultNextCard, journeyId) ?? null)
+        : null
     }
   })
 
+  // Register simpleId → real ID so later operations can reference this card
+  if (card.id != null) {
+    cardIdMap.set(card.id, stepBlock.id)
+  }
+
   // Create CardBlock
-  await prisma.block.create({
+  const cardBlock = await prisma.block.create({
     data: {
       journeyId,
       typename: 'CardBlock',
       parentBlockId: stepBlock.id,
-      parentOrder: 0
+      parentOrder: 0,
+      backgroundColor: card.backgroundColor ?? null
     }
   })
+
+  // Create content blocks from card spec
+  if (card.content != null) {
+    for (const [blockIndex, block] of card.content.entries()) {
+      await addBlock(journeyId, {
+        cardBlockId: cardBlock.id,
+        block,
+        position: blockIndex
+      })
+    }
+  }
+
+  // Background image
+  if (card.backgroundImage != null) {
+    const processed = await processImage({
+      src: card.backgroundImage.src,
+      alt: card.backgroundImage.alt
+    })
+    const imageBlock = await prisma.block.create({
+      data: {
+        journeyId,
+        typename: 'ImageBlock',
+        parentBlockId: cardBlock.id,
+        parentOrder: null,
+        src: processed.src,
+        alt: processed.alt,
+        width: processed.width,
+        height: processed.height,
+        blurhash: processed.blurhash
+      }
+    })
+    await prisma.block.update({
+      where: { id: cardBlock.id },
+      data: { coverBlockId: imageBlock.id }
+    })
+  }
 
   // Rewire navigation if inserting in the middle
   if (args.insertAfterCard && insertIndex > 0 && insertIndex < steps.length) {
     const prevStep = steps[insertIndex - 1]
     const nextStep = steps[insertIndex] // the one that shifted
 
-    // Previous step now points to new step
     await prisma.block.update({
       where: { id: prevStep.id },
       data: { nextBlockId: stepBlock.id }
     })
 
-    // New step points to what was next
     await prisma.block.update({
       where: { id: stepBlock.id },
       data: { nextBlockId: nextStep.id }
@@ -131,6 +217,46 @@ async function deleteCard(
   args: { cardId: string; redirectTo?: string }
 ): Promise<void> {
   await validateBlock(args.cardId, journeyId)
+
+  // Determine redirect target: explicit > nextBlockId > next card by order
+  const deletedStep = await prisma.block.findFirst({
+    where: { id: args.cardId, journeyId, deletedAt: null },
+    select: { nextBlockId: true, parentOrder: true }
+  })
+
+  let redirectTo: string | null = args.redirectTo ?? deletedStep?.nextBlockId ?? null
+
+  // If no nextBlockId, find the next card by parentOrder
+  if (redirectTo == null && deletedStep?.parentOrder != null) {
+    const nextStep = await prisma.block.findFirst({
+      where: {
+        journeyId,
+        typename: 'StepBlock',
+        deletedAt: null,
+        id: { not: args.cardId },
+        parentOrder: { gt: deletedStep.parentOrder }
+      },
+      orderBy: { parentOrder: 'asc' },
+      select: { id: true }
+    })
+    redirectTo = nextStep?.id ?? null
+  }
+
+  // If still no target, try the previous card
+  if (redirectTo == null && deletedStep?.parentOrder != null) {
+    const prevStep = await prisma.block.findFirst({
+      where: {
+        journeyId,
+        typename: 'StepBlock',
+        deletedAt: null,
+        id: { not: args.cardId },
+        parentOrder: { lt: deletedStep.parentOrder }
+      },
+      orderBy: { parentOrder: 'desc' },
+      select: { id: true }
+    })
+    redirectTo = prevStep?.id ?? null
+  }
 
   const now = new Date().toISOString()
 
@@ -160,18 +286,29 @@ async function deleteCard(
     data: { deletedAt: now }
   })
 
-  // Rewire navigation if redirectTo specified
-  if (args.redirectTo) {
-    // Find all actions that navigate to the deleted card and rewire them
+  // Rewire navigation — always rewire to prevent broken links
+  if (redirectTo != null) {
+    // Rewire actions that navigate to the deleted card
     await prisma.action.updateMany({
       where: { blockId: args.cardId },
-      data: { blockId: args.redirectTo }
+      data: { blockId: redirectTo }
     })
 
-    // Update steps that had nextBlockId pointing to deleted step
+    // Rewire steps that had nextBlockId pointing to deleted step
     await prisma.block.updateMany({
       where: { journeyId, nextBlockId: args.cardId, deletedAt: null },
-      data: { nextBlockId: args.redirectTo }
+      data: { nextBlockId: redirectTo }
+    })
+  } else {
+    // No redirect target — just clear the dangling references
+    await prisma.action.updateMany({
+      where: { blockId: args.cardId },
+      data: { blockId: null }
+    })
+
+    await prisma.block.updateMany({
+      where: { journeyId, nextBlockId: args.cardId, deletedAt: null },
+      data: { nextBlockId: null }
     })
   }
 }
@@ -181,6 +318,7 @@ async function updateCard(
   args: {
     blockId: string
     backgroundColor?: string
+    backgroundImage?: { src: string; alt: string } | null
     defaultNextCard?: string
     x?: number
     y?: number
@@ -193,7 +331,17 @@ async function updateCard(
   if (args.x !== undefined) stepUpdate.x = args.x
   if (args.y !== undefined) stepUpdate.y = args.y
   if (args.defaultNextCard !== undefined) {
-    stepUpdate.nextBlockId = args.defaultNextCard
+    if (args.defaultNextCard === null || args.defaultNextCard === '') {
+      stepUpdate.nextBlockId = null
+    } else {
+      // Validate the target block exists before setting FK
+      const targetBlock = await prisma.block.findFirst({
+        where: { id: args.defaultNextCard, journeyId, deletedAt: null }
+      })
+      if (targetBlock != null) {
+        stepUpdate.nextBlockId = args.defaultNextCard
+      }
+    }
   }
 
   if (Object.keys(stepUpdate).length > 0) {
@@ -203,21 +351,87 @@ async function updateCard(
     })
   }
 
+  const cardBlock = await prisma.block.findFirst({
+    where: {
+      journeyId,
+      parentBlockId: args.blockId,
+      typename: 'CardBlock',
+      deletedAt: null
+    }
+  })
+  if (cardBlock == null) return
+
   // Update CardBlock (backgroundColor)
   if (args.backgroundColor !== undefined) {
-    const cardBlock = await prisma.block.findFirst({
-      where: {
-        journeyId,
-        parentBlockId: args.blockId,
-        typename: 'CardBlock',
-        deletedAt: null
-      }
+    await prisma.block.update({
+      where: { id: cardBlock.id },
+      data: { backgroundColor: args.backgroundColor }
     })
-    if (cardBlock) {
-      await prisma.block.update({
-        where: { id: cardBlock.id },
-        data: { backgroundColor: args.backgroundColor }
+  }
+
+  // Update, create, or remove background image (cover block)
+  if (args.backgroundImage !== undefined) {
+    if (args.backgroundImage === null) {
+      // Remove background image
+      if (cardBlock.coverBlockId != null) {
+        await prisma.block.updateMany({
+          where: { id: cardBlock.coverBlockId, journeyId, deletedAt: null },
+          data: { deletedAt: new Date().toISOString() }
+        })
+        await prisma.block.update({
+          where: { id: cardBlock.id },
+          data: { coverBlockId: null }
+        })
+      }
+    } else {
+      // Set or update background image
+      const processed = await processImage({
+        src: args.backgroundImage.src,
+        alt: args.backgroundImage.alt
       })
+
+      const existingCover =
+        cardBlock.coverBlockId != null
+          ? await prisma.block.findFirst({
+              where: {
+                id: cardBlock.coverBlockId,
+                journeyId,
+                typename: 'ImageBlock',
+                deletedAt: null
+              }
+            })
+          : null
+
+      if (existingCover != null) {
+        await prisma.block.update({
+          where: { id: existingCover.id },
+          data: {
+            src: processed.src,
+            alt: processed.alt,
+            width: processed.width,
+            height: processed.height,
+            blurhash: processed.blurhash
+          }
+        })
+      } else {
+        const imageBlock = await prisma.block.create({
+          data: {
+            journeyId,
+            typename: 'ImageBlock',
+            parentBlockId: cardBlock.id,
+            parentOrder: null,
+            src: processed.src,
+            alt: processed.alt,
+            width: processed.width,
+            height: processed.height,
+            blurhash: processed.blurhash
+          }
+        })
+        await prisma.block.update({
+          where: { id: cardBlock.id },
+          data: { coverBlockId: imageBlock.id }
+        })
+      }
     }
   }
 }
@@ -276,7 +490,7 @@ async function addBlock(
           parentBlockId: args.cardBlockId,
           parentOrder: position,
           label: block.text as string,
-          ...(action ? { action: mapActionToPrisma(action, journeyId) } : {})
+          ...(action ? { action: await mapActionToPrisma(action, journeyId) } : {})
         }
       })
       break
@@ -344,7 +558,7 @@ async function addBlock(
             parentBlockId: pollBlock.id,
             parentOrder: j,
             label: option.text,
-            ...(option.action ? { action: mapActionToPrisma(option.action, journeyId) } : {})
+            ...(option.action ? { action: await mapActionToPrisma(option.action, journeyId) } : {})
           }
         })
       }
@@ -398,19 +612,21 @@ async function updateBlock(
     case 'ButtonBlock':
       if (args.updates.text !== undefined) data.label = args.updates.text
       if (args.updates.action !== undefined) {
-        data.action = mapActionToPrisma(
+        const actionData = await mapActionToPrisma(
           args.updates.action as JourneySimpleAction,
           journeyId
         )
+        if (actionData != null) data.action = actionData
       }
       break
     case 'RadioOptionBlock':
       if (args.updates.text !== undefined) data.label = args.updates.text
       if (args.updates.action !== undefined) {
-        data.action = mapActionToPrisma(
+        const actionData = await mapActionToPrisma(
           args.updates.action as JourneySimpleAction,
           journeyId
         )
+        if (actionData != null) data.action = actionData
       }
       break
     case 'ImageBlock':
@@ -503,6 +719,23 @@ async function updateJourneySettings(
   }
 }
 
+// --- Plan lifecycle ---
+
+/** Seed the card ID map with existing journey card simpleId→blockId mappings */
+export function seedCardIdMap(
+  mappings: Array<{ simpleId: string; blockId: string }>
+): void {
+  cardIdMap.clear()
+  for (const { simpleId, blockId } of mappings) {
+    cardIdMap.set(simpleId, blockId)
+  }
+}
+
+/** Clear the card ID map between plan executions */
+export function clearCardIdMap(): void {
+  cardIdMap.clear()
+}
+
 // --- Main executor ---
 
 export async function executeOperation(
@@ -510,8 +743,15 @@ export async function executeOperation(
   journeyId: string
 ): Promise<void> {
   switch (op.tool) {
-    case 'generate_journey':
-      return updateSimpleJourney(journeyId, op.args.simple)
+    case 'generate_journey': {
+      const simple = op.args.simple
+      if (simple?.cards == null) {
+        throw new Error(
+          'generate_journey requires args.simple with title, description, and cards'
+        )
+      }
+      return updateSimpleJourney(journeyId, simple)
+    }
     case 'create_card':
       return createCard(journeyId, op.args as any)
     case 'delete_card':

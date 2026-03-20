@@ -1,24 +1,32 @@
 import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
-import { type ReactElement, useCallback } from 'react'
+import { type ReactElement, useCallback, useMemo } from 'react'
 import { Handle, type NodeProps, Position } from 'reactflow'
 
 import { type TreeBlock } from '@core/journeys/ui/block'
 import { type BlockFields_StepBlock as StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { FramePortal } from '@core/journeys/ui/FramePortal'
+import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
 
-const CARD_PREVIEW_SCALE = 0.55
-const CARD_FULL_WIDTH = 324
-const CARD_FULL_HEIGHT = 500
+import { GetAdminJourney_journey as Journey } from '../../../../../../__generated__/GetAdminJourney'
 
-export const NODE_WIDTH = Math.round(CARD_FULL_WIDTH * CARD_PREVIEW_SCALE)
-export const NODE_HEIGHT = Math.round(CARD_FULL_HEIGHT * CARD_PREVIEW_SCALE)
+const CARD_FULL_WIDTH = 380
+const CARD_FULL_HEIGHT = 674
+const SCALE = 0.35
+
+const SCALED_WIDTH = Math.round(CARD_FULL_WIDTH * SCALE)
+const SCALED_HEIGHT = Math.round(CARD_FULL_HEIGHT * SCALE)
+
+export const NODE_WIDTH = SCALED_WIDTH + 8
+export const NODE_HEIGHT = SCALED_HEIGHT + 8
 
 const SELECTED_COLOR = '#4c9bf8'
 const EDITING_COLOR = '#C52D3A'
-const COMPLETED_COLOR = '#3AA74A'
 
 interface AiCardPreviewNodeData {
   step: TreeBlock<StepBlock>
@@ -26,13 +34,12 @@ interface AiCardPreviewNodeData {
   isBeingEdited: boolean
   isCompleted: boolean
   onCardSelect: (cardId: string | null) => void
-  sourceHandleCount: number
+  journey?: Journey
 }
 
 function getBorderColor(data: AiCardPreviewNodeData): string | undefined {
   if (data.isBeingEdited) return EDITING_COLOR
   if (data.isSelected) return SELECTED_COLOR
-  if (data.isCompleted) return COMPLETED_COLOR
   return undefined
 }
 
@@ -56,43 +63,21 @@ export function AiCardPreviewNode({
     data.onCardSelect(id)
   }, [id, data])
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        data.onCardSelect(id)
-      }
-    },
-    [id, data]
+  const stepTheme = useMemo(
+    () => getStepTheme(data.step, data.journey ?? undefined),
+    [data.step, data.journey]
   )
-
-  const sourceHandleCount = data.sourceHandleCount ?? 1
 
   return (
     <Box
       data-testid={`AiCardPreviewNode-${id}`}
       onClick={handleClick}
-      onKeyDown={handleKeyDown}
       tabIndex={0}
-      aria-label={`Card ${id}`}
       sx={{
         position: 'relative',
         width: NODE_WIDTH,
-        cursor: 'pointer',
-        borderRadius: 2,
-        border: borderColor != null ? `2px solid ${borderColor}` : '2px solid',
-        borderColor: borderColor ?? 'divider',
-        bgcolor: 'background.paper',
-        boxShadow,
-        overflow: 'hidden',
-        transition: theme.transitions.create([
-          'border-color',
-          'box-shadow'
-        ]),
-        '&:hover': {
-          borderColor: borderColor ?? SELECTED_COLOR,
-          boxShadow: boxShadow ?? `0 0 8px 1px ${SELECTED_COLOR}20`
-        }
+        height: NODE_HEIGHT,
+        cursor: 'pointer'
       }}
     >
       {data.isBeingEdited && <ShimmerOverlay />}
@@ -111,48 +96,78 @@ export function AiCardPreviewNode({
 
       <Box
         sx={{
-          maxHeight: 400,
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          '&::-webkit-scrollbar': { display: 'none' },
-          scrollbarWidth: 'none'
+          width: SCALED_WIDTH,
+          height: SCALED_HEIGHT,
+          m: 0.5,
+          borderRadius: 2,
+          borderWidth: 2,
+          borderStyle: 'solid',
+          borderColor: borderColor ?? 'divider',
+          boxShadow: boxShadow ?? 1,
+          overflow: 'hidden',
+          transition: theme.transitions.create([
+            'border-color',
+            'box-shadow'
+          ]),
+          '&:hover': {
+            borderColor: borderColor ?? SELECTED_COLOR,
+            boxShadow: boxShadow ?? `0 0 8px 1px ${SELECTED_COLOR}20`
+          }
         }}
       >
         <Box
           sx={{
             width: CARD_FULL_WIDTH,
-            transform: `scale(${CARD_PREVIEW_SCALE})`,
-            transformOrigin: 'top left',
-            pointerEvents: 'none'
+            height: CARD_FULL_HEIGHT,
+            transform: `scale(${SCALE})`,
+            transformOrigin: 'top left'
           }}
         >
-          <JourneyProvider value={{ variant: 'embed' }}>
-            <BlockRenderer block={data.step} />
-          </JourneyProvider>
+          <FramePortal
+            width={CARD_FULL_WIDTH}
+            height={CARD_FULL_HEIGHT}
+            scrolling="no"
+            style={{ pointerEvents: 'none' }}
+          >
+            {({ document: _doc }) => (
+              <ThemeProvider {...stepTheme}>
+                <JourneyProvider value={{ variant: 'embed' }}>
+                  <Stack
+                    justifyContent="center"
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      bottom: 0,
+                      left: 0
+                    }}
+                  >
+                    <ThemeProvider
+                      themeName={ThemeName.journeyUi}
+                      themeMode={stepTheme.themeMode}
+                      nested
+                    >
+                      <BlockRenderer block={data.step} />
+                    </ThemeProvider>
+                  </Stack>
+                </JourneyProvider>
+              </ThemeProvider>
+            )}
+          </FramePortal>
         </Box>
       </Box>
 
-      {Array.from({ length: sourceHandleCount }).map((_, index) => {
-        const spacing = NODE_HEIGHT / (sourceHandleCount + 1)
-        const topOffset = spacing * (index + 1)
-
-        return (
-          <Handle
-            key={`source-${index}`}
-            type="source"
-            position={Position.Right}
-            id={`source-${index}`}
-            style={{
-              width: 8,
-              height: 8,
-              background: theme.palette.grey[400],
-              border: `2px solid ${theme.palette.background.paper}`,
-              right: -5,
-              top: topOffset
-            }}
-          />
-        )
-      })}
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{
+          width: 8,
+          height: 8,
+          background: theme.palette.grey[400],
+          border: `2px solid ${theme.palette.background.paper}`,
+          right: -5
+        }}
+      />
     </Box>
   )
 }
@@ -163,42 +178,19 @@ function ShimmerOverlay(): ReactElement {
       data-testid="ShimmerOverlay"
       sx={{
         position: 'absolute',
-        inset: 0,
+        top: 4,
+        left: 4,
+        right: 4,
+        bottom: 4,
         zIndex: 10,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'rgba(197, 45, 58, 0.08)',
-        overflow: 'hidden',
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          inset: 0,
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(197, 45, 58, 0.06) 50%, transparent 100%)',
-          animation: 'shimmer 2s infinite linear',
-          '@keyframes shimmer': {
-            '0%': { transform: 'translateX(-100%)' },
-            '100%': { transform: 'translateX(100%)' }
-          }
-        }
+        borderRadius: 2,
+        animation: 'pulse 2s infinite ease-in-out',
+        '@keyframes pulse': {
+          '0%, 100%': { bgcolor: 'rgba(197, 45, 58, 0.06)' },
+          '50%': { bgcolor: 'rgba(197, 45, 58, 0.15)' }
+        },
+        bgcolor: 'rgba(197, 45, 58, 0.06)'
       }}
-    >
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 0.5,
-          bgcolor: EDITING_COLOR,
-          color: 'common.white',
-          borderRadius: 10,
-          px: 1,
-          py: 0.25,
-          zIndex: 11
-        }}
-      >
-        <CircularProgress size={10} sx={{ color: 'common.white' }} />
-      </Box>
-    </Box>
+    />
   )
 }

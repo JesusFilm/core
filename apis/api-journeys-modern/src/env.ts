@@ -31,6 +31,6 @@ export const env = createEnv({
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default(''),
-    UNSPLASH_ACCESS_KEY: z.string().trim().min(1)
+    UNSPLASH_ACCESS_KEY: z.string().trim().min(1).optional()
   }
 })

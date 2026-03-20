@@ -1,13 +1,10 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import StopIcon from '@mui/icons-material/Stop'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -16,16 +13,12 @@ import { ReactElement, useCallback, useState } from 'react'
 
 interface AiEditorToolbarProps {
   journeyTitle?: string
-  isAiActive: boolean
   hasMessages: boolean
-  onStopGeneration: () => void
 }
 
 export function AiEditorToolbar({
   journeyTitle,
-  isAiActive,
-  hasMessages,
-  onStopGeneration
+  hasMessages
 }: AiEditorToolbarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -109,26 +102,7 @@ export function AiEditorToolbar({
           {journeyTitle ?? ''}
         </Typography>
 
-        <Box sx={{ minWidth: 40 }}>
-          {isAiActive && (
-            <IconButton
-              data-testid="AiEditorToolbar-stop"
-              onClick={onStopGeneration}
-              aria-label={t('Stop AI generation')}
-              tabIndex={0}
-              sx={{
-                bgcolor: 'error.main',
-                color: 'white',
-                borderRadius: '8px',
-                width: 36,
-                height: 36,
-                '&:hover': { bgcolor: 'error.dark' }
-              }}
-            >
-              <StopIcon sx={{ fontSize: 18 }} />
-            </IconButton>
-          )}
-        </Box>
+        <div />
       </Stack>
 
       <Dialog

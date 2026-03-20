@@ -56,19 +56,14 @@ function buildNodesAndEdges(
   steps: TreeStepBlock[],
   activeCardIds: Set<string>,
   selectedCardId: string | null,
-  onCardSelect: (cardId: string | null) => void
+  onCardSelect: (cardId: string | null) => void,
+  journey?: Journey
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = []
   const edges: Edge[] = []
 
   for (const step of steps) {
     const actionBlocks = filterActionBlocks(step)
-    const sourceHandleCount = Math.max(
-      1,
-      actionBlocks.filter(
-        (b) => b.action?.__typename === 'NavigateToBlockAction'
-      ).length + (step.nextBlockId != null ? 1 : 0)
-    )
 
     nodes.push({
       id: step.id,
@@ -80,7 +75,7 @@ function buildNodesAndEdges(
         isBeingEdited: activeCardIds.has(step.id),
         isCompleted: false,
         onCardSelect,
-        sourceHandleCount
+        journey
       }
     })
 
@@ -113,7 +108,6 @@ function buildNodesAndEdges(
       edges.push({
         id: `${block.id}->${targetId}`,
         source: step.id,
-        sourceHandle: block.id,
         target: targetId,
         type: 'Custom',
         data: {
@@ -157,6 +151,7 @@ export function AiJourneyFlow({
     onCardSelect(null)
   }, [onCardSelect])
 
+  // Full layout rebuild when steps change
   useEffect(() => {
     if (steps.length === 0) {
       setNodes([])
@@ -168,7 +163,8 @@ export function AiJourneyFlow({
       steps,
       activeCardIds,
       selectedCardId,
-      onCardSelect
+      onCardSelect,
+      journey
     )
 
     const laidOutNodes = layoutNodes(rawNodes, newEdges, {
@@ -182,14 +178,24 @@ export function AiJourneyFlow({
     if (reactFlowRef.current != null) {
       setTimeout(() => reactFlowRef.current?.fitView({ padding: 0.2 }), 100)
     }
-  }, [
-    steps,
-    activeCardIds,
-    selectedCardId,
-    onCardSelect,
-    setNodes,
-    setEdges
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [steps, setNodes, setEdges])
+
+  // Update node data in-place when selection or active editing changes (no re-layout)
+  useEffect(() => {
+    setNodes((prev) =>
+      prev.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          isSelected: selectedCardId === node.id,
+          isBeingEdited: activeCardIds.has(node.id),
+          onCardSelect,
+          journey
+        }
+      }))
+    )
+  }, [selectedCardId, activeCardIds, onCardSelect, journey, setNodes])
 
   return (
     <Box
@@ -203,15 +209,15 @@ export function AiJourneyFlow({
         onEdgesChange={onEdgesChange}
         onInit={handleInit}
         onPaneClick={handlePaneClick}
+        onNodeClick={(_event, node) => onCardSelect(node.id)}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         nodesDraggable={false}
         nodesConnectable={false}
-        elementsSelectable={false}
         panOnScroll
         zoomOnScroll
         minZoom={0.2}
-        maxZoom={1.5}
+        maxZoom={4}
         fitView
         proOptions={{ hideAttribution: true }}
       >

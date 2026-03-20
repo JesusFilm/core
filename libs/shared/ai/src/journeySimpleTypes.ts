@@ -101,7 +101,7 @@ export const journeySimpleBlockSchema = z.discriminatedUnion('type', [
       .array(
         z.object({
           text: z.string(),
-          action: journeySimpleActionSchema
+          action: journeySimpleActionSchema.optional()
         })
       )
       .min(2)
@@ -227,7 +227,7 @@ export const journeySimpleSchemaUpdate = journeySimpleSchema.superRefine(
         }
         if (block.type === 'poll') {
           block.options.forEach((o, i) => {
-            if (o.action.kind === 'navigate') {
+            if (o.action?.kind === 'navigate') {
               checkRef(
                 o.action.cardId,
                 `content[poll].options[${i}].action.cardId`

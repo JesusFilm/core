@@ -14,6 +14,7 @@ interface ChatInputProps {
   inputRef: RefObject<HTMLInputElement | null>
   status: AiChatStatus
   selectedCardId: string | null
+  selectedCardLabel?: string
   onSendMessage: (content: string) => void
   onStopGeneration: () => void
   onDismissContext: () => void
@@ -23,6 +24,7 @@ export function ChatInput({
   inputRef,
   status,
   selectedCardId,
+  selectedCardLabel,
   onSendMessage,
   onStopGeneration,
   onDismissContext
@@ -53,7 +55,7 @@ export function ChatInput({
       {selectedCardId != null && (
         <Chip
           data-testid="ChatInput-contextPill"
-          label={`Card: ${selectedCardId}`}
+          label={selectedCardLabel ?? `Card: ${selectedCardId}`}
           size="small"
           onDelete={onDismissContext}
           deleteIcon={

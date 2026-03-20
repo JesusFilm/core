@@ -16,7 +16,7 @@ import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { getSimpleJourney, updateSimpleJourney } from '../journey/simple'
 
-import { executeOperation, sanitizeErrorMessage } from './executeOperation'
+import { clearCardIdMap, executeOperation, sanitizeErrorMessage, seedCardIdMap } from './executeOperation'
 import { getAgentJourney } from './getAgentJourney'
 import {
   deleteSnapshot,
@@ -184,7 +184,8 @@ const JourneyAiChatInput = builder.inputType('JourneyAiChatInput', {
     }),
     turnId: t.string({ required: false }),
     contextCardId: t.string({ required: false }),
-    preferredTier: t.field({ type: PreferredTierEnum, required: false })
+    preferredTier: t.field({ type: PreferredTierEnum, required: false }),
+    languageName: t.string({ required: false })
   })
 })
 
@@ -211,6 +212,52 @@ function msg(
     validation: null,
     ...overrides
   }
+}
+
+// ---------------------------------------------------------------------------
+// Helpers: resolve block IDs for UI highlighting
+// ---------------------------------------------------------------------------
+
+/** Extract the most relevant block ID from an operation's args */
+function resolveTargetBlockId(op: PlanOperation): string | null {
+  switch (op.tool) {
+    case 'update_block':
+    case 'delete_block':
+      return op.args.blockId
+    case 'add_block':
+      return op.args.cardBlockId
+    case 'update_card':
+      return op.args.blockId
+    case 'delete_card':
+      return op.args.cardId
+    case 'create_card':
+    case 'generate_journey':
+    case 'reorder_cards':
+    case 'update_journey_settings':
+    case 'translate':
+      return null
+  }
+}
+
+/** Walk up the block tree to find the StepBlock ancestor */
+async function resolveStepBlockId(
+  blockId: string,
+  journeyId: string
+): Promise<string | null> {
+  const maxDepth = 5
+  let currentId: string | null = blockId
+
+  for (let i = 0; i < maxDepth && currentId != null; i++) {
+    const block: { id: string; typename: string; parentBlockId: string | null } | null = await prisma.block.findFirst({
+      where: { id: currentId, journeyId, deletedAt: null },
+      select: { id: true, typename: true, parentBlockId: true }
+    })
+    if (block == null) return null
+    if (block.typename === 'StepBlock') return block.id
+    currentId = block.parentBlockId
+  }
+
+  return null
 }
 
 // ---------------------------------------------------------------------------
@@ -282,14 +329,18 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
       ) as Parameters<typeof streamText>[0]['model']
 
       // --- System prompt with journey state ---
-      const agentJourney = await getAgentJourney(input.journeyId)
+      const agentJourney = await getAgentJourney(input.journeyId, input.languageName)
 
       const contextCard = input.contextCardId
-        ? agentJourney.cards.find((c) => c.simpleId === input.contextCardId)
+        ? agentJourney.cards.find(
+            (c) =>
+              c.simpleId === input.contextCardId ||
+              c.blockId === input.contextCardId
+          )
         : null
 
       const contextSuffix = contextCard
-        ? `\n\nThe user is referring to: "${contextCard.heading ?? 'Untitled'}" card (blockId: ${contextCard.blockId}) — contains ${contextCard.content.length} blocks.`
+        ? `\n\n## SELECTED CARD CONTEXT\nThe user has selected the "${contextCard.heading ?? 'Untitled'}" card (stepBlockId: ${contextCard.blockId}, cardBlockId: ${contextCard.cardBlockId}). Their next message refers specifically to THIS card. Apply changes ONLY to this card unless the user explicitly asks for changes to other cards or the whole journey.`
         : ''
 
       const fullSystemPrompt = `${preSystemPrompt}\n\n${systemPrompt}\n\n## Current Journey State\n${hardenPrompt(JSON.stringify(agentJourney))}\n\nSummary: ${agentJourney.cards.length} cards, ${countBlocks(agentJourney)} blocks.${contextSuffix}`
@@ -299,13 +350,18 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
         (input.history ?? []) as HistoryMessage[]
       )
 
+      // --- Prefix user message with card context ---
+      const userMessage = contextCard
+        ? `[Selected card: "${contextCard.heading ?? 'Untitled'}" (stepBlockId: ${contextCard.blockId}, cardBlockId: ${contextCard.cardBlockId})]\n${input.message}`
+        : input.message
+
       // --- Phase 1: Plan (streamText with tools) ---
       const result = streamText({
         model,
         system: fullSystemPrompt,
         messages: [
           ...condensedHistory,
-          { role: 'user' as const, content: input.message }
+          { role: 'user' as const, content: userMessage }
         ],
         tools: {
           search_images: searchImagesTool,
@@ -359,7 +415,6 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
 
       // --- Server-derived confirmation ---
       const requiresConfirmation =
-        plan.some((o) => o.tool === 'generate_journey') ||
         plan.filter((o) => o.tool === 'delete_card').length > 3
 
       yield msg({
@@ -376,16 +431,25 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
       }
 
       // --- Phase 2: Server-driven execution ---
+      seedCardIdMap(
+        agentJourney.cards.map((c) => ({ simpleId: c.simpleId, blockId: c.blockId }))
+      )
       let journeyUpdated = false
 
       for (const op of plan) {
         if (abort.signal.aborted) break
 
+        // Resolve the step block ID for UI highlighting
+        const targetBlockId = resolveTargetBlockId(op)
+        const stepBlockId = targetBlockId != null
+          ? await resolveStepBlockId(targetBlockId, input.journeyId)
+          : null
+
         yield msg({
           type: 'plan_progress',
           operationId: op.id,
           status: 'running',
-          cardId: op.cardId ?? null
+          cardId: stepBlockId ?? op.cardId ?? null
         })
 
         try {
@@ -393,7 +457,9 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
           yield msg({
             type: 'plan_progress',
             operationId: op.id,
-            status: 'done'
+            status: 'done',
+            cardId: stepBlockId ?? op.cardId ?? null,
+            journeyUpdated: true
           })
           journeyUpdated = true
         } catch (err) {
@@ -527,6 +593,12 @@ builder.mutationField('journeyAiChatExecutePlan', (t) =>
       ) {
         throw new GraphQLError('Permission denied.')
       }
+
+      // Seed card ID map from current journey state
+      const planJourney = await getAgentJourney(entry.journeyId)
+      seedCardIdMap(
+        planJourney.cards.map((c) => ({ simpleId: c.simpleId, blockId: c.blockId }))
+      )
 
       // Execute all plan operations
       for (const op of entry.plan) {

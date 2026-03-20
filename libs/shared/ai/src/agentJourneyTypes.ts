@@ -74,6 +74,10 @@ export const planOperationSchema = z.discriminatedUnion('tool', [
     args: z.object({
       blockId: z.string(),
       backgroundColor: z.string().optional(),
+      backgroundImage: z.object({
+        src: z.string(),
+        alt: z.string()
+      }).nullable().optional(),
       defaultNextCard: z.string().optional(),
       x: z.number().optional(),
       y: z.number().optional()

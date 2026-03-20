@@ -25,6 +25,7 @@ interface JourneyAiChatInput {
   turnId?: string
   contextCardId?: string
   preferredTier?: 'free' | 'premium'
+  languageName?: string
 }
 
 interface UseJourneyAiChatSubscriptionReturn {
@@ -62,10 +63,10 @@ function coalesceTextDelta(
   messages: JourneyAiChatMessage[],
   incoming: JourneyAiChatMessage
 ): JourneyAiChatMessage[] {
-  if (incoming.type !== 'text-delta') return [...messages, incoming]
+  if (incoming.type !== 'text') return [...messages, incoming]
 
   const last = messages[messages.length - 1]
-  if (last?.type === 'text-delta') {
+  if (last?.type === 'text') {
     const merged: JourneyAiChatMessage = {
       ...last,
       text: (last.text ?? '') + (incoming.text ?? '')
@@ -122,11 +123,10 @@ export function useJourneyAiChatSubscription(): UseJourneyAiChatSubscriptionRetu
       }
 
       if (
-        message.type === 'done' &&
         message.journeyUpdated === true &&
         subscriptionInput != null
       ) {
-        void client.refetchQueries({ include: ['GetJourney'] })
+        void client.refetchQueries({ include: ['GetAdminJourney'] })
       }
 
       if (message.type === 'done' || message.type === 'error') {

@@ -49,7 +49,7 @@ async function searchUnsplash(
 
 export const searchImagesTool = tool({
   description:
-    'Search for images on Unsplash. Use before adding any image to a journey. Accepts up to 5 search queries at once.',
+    'Search for images on Unsplash. Use before adding any image to a journey. Accepts up to 5 search queries at once. Returns an error if the image service is unavailable.',
   inputSchema: z.object({
     queries: z
       .array(z.string())
@@ -61,7 +61,11 @@ export const searchImagesTool = tool({
     queries
   }: {
     queries: string[]
-  }): Promise<SearchImagesResult> => {
+  }): Promise<SearchImagesResult | { error: string }> => {
+    if (env.UNSPLASH_ACCESS_KEY == null) {
+      return { error: 'Image search is not available. Do not retry — suggest the user add images manually.' }
+    }
+
     const settled = await Promise.allSettled(
       queries.map(async (query) => {
         const data = await searchUnsplash(query)

@@ -597,6 +597,7 @@ export interface JourneyAiChatInput {
   turnId?: string | null;
   contextCardId?: string | null;
   preferredTier?: JourneyAiChatPreferredTier | null;
+  languageName?: string | null;
 }
 
 export interface JourneyCollectionCreateInput {

@@ -4840,6 +4840,7 @@ input JourneyAiChatInput @join__type(graph: API_JOURNEYS_MODERN)  {
   turnId: String
   contextCardId: String
   preferredTier: JourneyAiChatPreferredTier
+  languageName: String
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -1,6 +1,5 @@
 import type { Prisma } from '@core/prisma/journeys/client'
 import { prisma } from '@core/prisma/journeys/client'
-import { prisma as prismaLanguages } from '@core/prisma/languages/client'
 import type {
   AgentJourney,
   AgentJourneyCard,
@@ -148,20 +147,14 @@ function mapContentBlocks(
               b.parentBlockId === block.id
           )
         )
-        const options = optionBlocks
-          .map((opt) => {
-            const action = mapAction(opt.action, stepBlocks, cardIds)
-            if (!action) return null
-            return { text: opt.label ?? '', action }
-          })
-          .filter(
-            (
-              o
-            ): o is {
-              text: string
-              action: NonNullable<ReturnType<typeof mapAction>>
-            } => o != null
-          )
+        const options = optionBlocks.map((opt) => {
+          const action = mapAction(opt.action, stepBlocks, cardIds)
+          return {
+            text: opt.label ?? '',
+            blockId: opt.id,
+            ...(action != null ? { action } : {})
+          }
+        })
         if (options.length >= 2) {
           content.push({
             blockId: block.id,
@@ -282,22 +275,10 @@ function mapAction(
   return undefined
 }
 
-/** Resolve journey languageId to a human-readable language name */
-async function resolveLanguageName(languageId: string): Promise<string> {
-  const languageName = await prismaLanguages.languageName.findFirst({
-    where: {
-      parentLanguageId: languageId,
-      primary: true,
-      languageId: '529' // English name
-    },
-    select: { value: true }
-  })
-  return languageName?.value ?? 'English'
-}
-
 /** Read a journey from Prisma and map it to AgentJourney for the AI system prompt */
 export async function getAgentJourney(
-  journeyId: string
+  journeyId: string,
+  languageName?: string | null
 ): Promise<AgentJourney> {
   const journey = await prisma.journey.findUniqueOrThrow({
     where: { id: journeyId },
@@ -308,8 +289,6 @@ export async function getAgentJourney(
       }
     }
   })
-
-  const languageName = await resolveLanguageName(journey.languageId)
 
   const stepBlocks = journey.blocks.filter(
     (block): block is StepBlock => block.typename === 'StepBlock'
@@ -464,7 +443,7 @@ export async function getAgentJourney(
   return {
     title: journey.title,
     description: journey.description ?? '',
-    language: languageName,
+    language: languageName ?? 'English',
     cards,
     navigationMap
   }

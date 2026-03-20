@@ -835,6 +835,7 @@ input JourneyAiChatInput {
   turnId: String
   contextCardId: String
   preferredTier: JourneyAiChatPreferredTier
+  languageName: String
 }
 
 type JourneyAiChatMessage {
