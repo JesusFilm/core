@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { getEasterCampaignYear } from '../../../../libs/easterDates'
+
 import { EasterDates, EasterDatesProps } from './EasterDates'
 
 describe('EasterDates', () => {
@@ -40,5 +42,10 @@ describe('EasterDates', () => {
     render(<EasterDates {...defaultProps} />)
     fireEvent.click(screen.getByText('Easter Dates 2024'))
     expect(screen.getByText('Sunday, May 5, 2024')).toBeInTheDocument()
+  })
+
+  it('rolls the campaign year forward after Orthodox Easter', () => {
+    expect(getEasterCampaignYear(new Date(2024, 4, 5))).toBe(2024)
+    expect(getEasterCampaignYear(new Date(2024, 4, 6))).toBe(2025)
   })
 })

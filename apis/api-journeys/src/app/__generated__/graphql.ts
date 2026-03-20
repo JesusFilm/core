@@ -221,7 +221,10 @@ export enum MessagePlatform {
     menu1 = "menu1",
     checkBroken = "checkBroken",
     checkContained = "checkContained",
-    settings = "settings"
+    settings = "settings",
+    discord = "discord",
+    signal = "signal",
+    weChat = "weChat"
 }
 
 export enum IntegrationType {
@@ -494,6 +497,7 @@ export class ChatButtonCreateInput {
 export class ChatButtonUpdateInput {
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
+    customizable?: Nullable<boolean>;
 }
 
 export class CustomDomainCreateInput {
@@ -1412,6 +1416,7 @@ export class VideoBlock implements Block {
     subtitleLanguage?: Nullable<Language>;
     showGeneratedSubtitles?: Nullable<boolean>;
     customizable?: Nullable<boolean>;
+    notes?: Nullable<string>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1429,6 +1434,7 @@ export class ChatButton {
     id: string;
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
+    customizable?: Nullable<boolean>;
 }
 
 export class CustomDomain {

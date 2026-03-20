@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
 import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
@@ -15,6 +15,7 @@ interface SocialScreenProps {
 
 export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [loading, setLoading] = useState(false)
 
   return (
     <ScreenWrapper
@@ -23,7 +24,11 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
       footer={
         <CustomizeFlowNextButton
           label={t('Done')}
-          onClick={() => handleNext()}
+          onClick={() => {
+            setLoading(true)
+            handleNext()
+          }}
+          loading={loading}
           ariaLabel={t('Done')}
         />
       }

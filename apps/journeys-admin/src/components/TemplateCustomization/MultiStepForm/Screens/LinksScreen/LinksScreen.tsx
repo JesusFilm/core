@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import { object, string } from 'yup'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -16,7 +16,10 @@ import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../__generated__/BlockFields'
-import { ContactActionType } from '../../../../../../__generated__/globalTypes'
+import {
+  ContactActionType,
+  MessagePlatform
+} from '../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
@@ -48,8 +51,13 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     useBlockActionEmailUpdateMutation()
   const [updatePhoneAction, { loading: phoneLoading }] =
     useBlockActionPhoneUpdateMutation()
+  const [navigating, setNavigating] = useState(false)
 
-  const treeBlocks = transformer(journey?.blocks ?? []).filter((block) =>
+  const allSteps = transformer(journey?.blocks ?? []).filter(
+    (block) => block.__typename === 'StepBlock'
+  ) as Array<TreeBlock<StepBlock>>
+
+  const stepsWithLinks = allSteps.filter((block) =>
     links?.some(
       (link) =>
         (link.linkType === 'url' ||
@@ -57,7 +65,47 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
           link.linkType === 'phone') &&
         link.parentStepId === block.id
     )
-  ) as Array<TreeBlock<StepBlock>>
+  )
+
+  const hasChatButtonLinks = links.some(
+    (link) => link.linkType === 'chatButtons'
+  )
+
+  // Show first step as fallback when only chat button links exist,
+  // so the user can see the chat widget in the card footer
+  const previewSteps =
+    stepsWithLinks.length > 0
+      ? stepsWithLinks
+      : hasChatButtonLinks
+        ? allSteps.slice(0, 1)
+        : []
+
+  function handlePlatformChange(
+    chatButtonId: string,
+    platform: MessagePlatform
+  ): void {
+    const chatButton = journey?.chatButtons?.find(
+      (button: JourneyChatButton) => button.id === chatButtonId
+    )
+    if (chatButton == null) return
+
+    void journeyChatButtonUpdate({
+      variables: {
+        chatButtonUpdateId: chatButtonId,
+        journeyId: journey?.id,
+        input: { link: chatButton.link ?? '', platform }
+      },
+      optimisticResponse: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton',
+          id: chatButtonId,
+          link: chatButton.link ?? '',
+          platform,
+          customizable: chatButton.customizable ?? null
+        }
+      }
+    })
+  }
 
   async function handleFormSubmit(
     values: Record<string, string>,
@@ -123,7 +171,8 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
               __typename: 'ChatButton',
               id: chatButton.id,
               link: normalizedLink,
-              platform: chatButton.platform
+              platform: chatButton.platform,
+              customizable: chatButton.customizable ?? null
             }
           }
         })
@@ -181,6 +230,7 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
     })
 
     await Promise.allSettled(updatePromises)
+    setNavigating(true)
     handleNext()
   }
 
@@ -262,14 +312,15 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
                   chatLoading ||
                   linkLoading ||
                   emailLoading ||
-                  phoneLoading
+                  phoneLoading ||
+                  navigating
                 }
                 ariaLabel={t('Replace the links')}
               />
             }
           >
-            <CardsPreview steps={treeBlocks} />
-            <LinksForm links={links} />
+            <CardsPreview steps={previewSteps} />
+            <LinksForm links={links} onPlatformChange={handlePlatformChange} />
           </ScreenWrapper>
         </FormikProvider>
       )}

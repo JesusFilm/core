@@ -51,6 +51,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 enum VisitorStatus {
@@ -107,8 +110,9 @@ model ChatButton {
   journeyId String
   link      String?
   updatedAt DateTime         @default(now()) @updatedAt
-  platform  MessagePlatform?
-  journey   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  platform     MessagePlatform?
+  customizable Boolean?
+  journey      Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index(journeyId)
 }
@@ -625,6 +629,7 @@ model Block {
   settings                   Json                 @default("{ }") // block settings
   exportOrder                Int? // column order for CSV exports and Google Sheets syncs
   customizable               Boolean?
+  notes                      String? // VideoBlock: publisher notes for template adapters (e.g. trailer, intro)
 
   @@unique([slug, journeyId])
   @@index(journeyId)

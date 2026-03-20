@@ -76,6 +76,7 @@ export function NewVideoButton({
       eventLabel: null,
       endEventLabel: null,
       customizable: null,
+      notes: null,
       __typename: 'VideoBlock',
       children: []
     }

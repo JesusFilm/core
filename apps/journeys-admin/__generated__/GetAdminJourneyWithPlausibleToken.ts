@@ -566,6 +566,10 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
   customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -701,6 +705,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_host {
