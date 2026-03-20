@@ -1,119 +1,358 @@
 import { prisma } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
-import { videoCacheReset } from '../../lib/videoCacheReset'
+import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
+import { videoCacheReset, videoVariantCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
+import { logger } from '../logger'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
-const VideoPublishChildrenResult = builder.objectRef<{
+import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
+
+type PublishValidationVideo = {
+  id: string
+  label: string
+  title: Array<{ value: string }>
+  snippet: Array<{ value: string }>
+  description: Array<{ value: string }>
+  imageAlt: Array<{ value: string }>
+  images: Array<{ id: string }>
+  variants: Array<{ id: string }>
+}
+
+type VideoPublishValidationFailure = {
+  videoId: string
+  missingFields: string[]
+  message: string
+}
+
+type VideoPublishParent = {
+  id: string
+  label: string
+  publishedAt: Date | null
+  children: Array<{ id: string; published: boolean }>
+}
+
+type VideoPublishPlan = {
+  videoIdsToPublish: string[]
+  shouldPublishParent: boolean
+  videosFailedValidation: VideoPublishValidationFailure[]
+}
+
+type VideoPublishChildrenResultType = {
   parentId: string
-  publishedChildIds: string[]
-  publishedChildrenCount: number
-}>('VideoPublishChildrenResult')
+  publishedVideoIds: string[]
+  publishedVideoCount: number
+  publishedVariantIds: string[]
+  publishedVariantsCount: number
+  dryRun: boolean
+  videosFailedValidation: VideoPublishValidationFailure[]
+}
+
+function getMissingRequiredFields(video: PublishValidationVideo): string[] {
+  const missingFields: string[] = []
+  const isContainerVideo = video.label === 'collection' || video.label === 'series'
+
+  if (!video.title[0]?.value?.trim()) {
+    missingFields.push('Title')
+  }
+  if (!video.snippet[0]?.value?.trim()) {
+    missingFields.push('Short Description')
+  }
+  if (!video.description[0]?.value?.trim()) {
+    missingFields.push('Description')
+  }
+  if (!video.imageAlt[0]?.value?.trim()) {
+    missingFields.push('Image Alt Text')
+  }
+  if (video.images.length === 0) {
+    missingFields.push('Banner Image')
+  }
+  if (!isContainerVideo && video.variants.length === 0) {
+    missingFields.push('Video Variant')
+  }
+
+  return missingFields
+}
+
+async function getVideoPublishParent(id: string): Promise<VideoPublishParent> {
+  const parent = await prisma.video.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      label: true,
+      publishedAt: true,
+      children: {
+        select: { id: true, published: true }
+      }
+    }
+  })
+
+  if (parent == null) {
+    throw new Error(`Video with id ${id} not found`)
+  }
+
+  return parent
+}
+
+async function buildVideoPublishPlan(
+  parent: VideoPublishParent
+): Promise<VideoPublishPlan> {
+  const unpublishedChildIds = parent.children
+    .filter((child) => !child.published)
+    .map((child) => child.id)
+  const candidateVideoIds = [parent.id, ...unpublishedChildIds]
+
+  const videosForValidation = await prisma.video.findMany({
+    where: { id: { in: candidateVideoIds } },
+    select: {
+      id: true,
+      label: true,
+      title: {
+        where: { primary: true },
+        select: { value: true },
+        take: 1
+      },
+      snippet: {
+        where: { primary: true },
+        select: { value: true },
+        take: 1
+      },
+      description: {
+        where: { primary: true },
+        select: { value: true },
+        take: 1
+      },
+      imageAlt: {
+        where: { primary: true },
+        select: { value: true },
+        take: 1
+      },
+      images: {
+        where: { aspectRatio: 'banner' },
+        select: { id: true },
+        take: 1
+      },
+      variants: {
+        select: { id: true },
+        take: 1
+      }
+    }
+  })
+
+  const validationResults: VideoPublishValidationFailure[] = videosForValidation.map((video: PublishValidationVideo) => {
+    const missingFields = getMissingRequiredFields(video)
+    return {
+      videoId: video.id,
+      missingFields,
+      message: `${video.id} not published, missing: ${missingFields.join(', ')}`
+    }
+  })
+
+  const videosFailedValidation = validationResults.filter(
+    (video) => video.missingFields.length > 0
+  )
+  const videoIdsToPublish = validationResults
+    .filter((video) => video.missingFields.length === 0)
+    .map((video) => video.videoId)
+
+  return {
+    videoIdsToPublish,
+    shouldPublishParent: videoIdsToPublish.includes(parent.id),
+    videosFailedValidation
+  }
+}
+
+async function ensureParentEmptyVariantsForPublishedChildren(
+  parent: VideoPublishParent,
+  shouldPublishParent: boolean
+): Promise<void> {
+  if (!shouldPublishParent || parent.label === 'featureFilm') {
+    return
+  }
+
+  const publishedChildVariants = await prisma.videoVariant.findMany({
+    where: {
+      videoId: { in: parent.children.map((child) => child.id) },
+      published: true
+    },
+    select: { videoId: true, languageId: true }
+  })
+
+  await Promise.all(
+    publishedChildVariants.map(({ videoId, languageId }: { videoId: string; languageId: string }) =>
+      handleParentVariantCreation(videoId, languageId).catch((error) => {
+        logger.error({ error, videoId, languageId }, 'Parent variant creation failed')
+      })
+    )
+  )
+}
+
+const VideoPublishModeEnum = builder.enumType('VideoPublishMode', {
+  values: [
+    'childrenVideosOnly',
+    'childrenVideosAndVariants',
+    'variantsOnly'
+  ] as const
+})
+
+const VideoPublishChildrenUnpublishedVideo = builder.objectRef<{
+  videoId: string
+  missingFields: string[]
+  message: string
+}>('VideoPublishChildrenUnpublishedVideo')
+VideoPublishChildrenUnpublishedVideo.implement({
+  fields: (t) => ({
+    videoId: t.id({ resolve: (obj) => obj.videoId }),
+    missingFields: t.stringList({ resolve: (obj) => obj.missingFields }),
+    message: t.string({ resolve: (obj) => obj.message })
+  })
+})
+
+const VideoPublishChildrenResult =
+  builder.objectRef<VideoPublishChildrenResultType>(
+    'VideoPublishChildrenResult'
+  )
 VideoPublishChildrenResult.implement({
   fields: (t) => ({
     parentId: t.id({ resolve: (obj) => obj.parentId }),
-    publishedChildIds: t.idList({ resolve: (obj) => obj.publishedChildIds }),
-    publishedChildrenCount: t.int({
-      resolve: (obj) => obj.publishedChildrenCount
+    publishedVideoIds: t.idList({ resolve: (obj) => obj.publishedVideoIds }),
+    publishedVideoCount: t.int({
+      resolve: (obj) => obj.publishedVideoCount
+    }),
+    publishedVariantIds: t.idList({
+      resolve: (obj) => obj.publishedVariantIds
+    }),
+    publishedVariantsCount: t.int({
+      resolve: (obj) => obj.publishedVariantsCount
+    }),
+    dryRun: t.boolean({
+      resolve: (obj) => obj.dryRun
+    }),
+    videosFailedValidation: t.field({
+      type: [VideoPublishChildrenUnpublishedVideo],
+      nullable: false,
+      resolve: (obj) => obj.videosFailedValidation
     })
   })
 })
+
+export type VideoPublishMode = 'childrenVideosOnly' | 'childrenVideosAndVariants' | 'variantsOnly'
+
+export async function executeVideoPublishChildren(
+  id: string,
+  mode: VideoPublishMode,
+  dryRun: boolean
+): Promise<VideoPublishChildrenResultType> {
+  const parent = mode !== 'variantsOnly' ? await getVideoPublishParent(id) : undefined
+  const plan = parent != null ? await buildVideoPublishPlan(parent) : undefined
+  const videoIdsToPublish = plan?.videoIdsToPublish ?? []
+  const shouldPublishParent = plan?.shouldPublishParent ?? false
+  const videosFailedValidation = plan?.videosFailedValidation ?? []
+
+  let variantVideoIds: string[] = []
+  if (mode === 'childrenVideosAndVariants') {
+    variantVideoIds = videoIdsToPublish
+  } else if (mode === 'variantsOnly') {
+    variantVideoIds = [id]
+  }
+
+  let variantIdsToPublish: string[] = []
+  if (variantVideoIds.length > 0) {
+    const unpublishedVariants = await prisma.videoVariant.findMany({
+      where: {
+        videoId: { in: variantVideoIds },
+        published: false
+      },
+      select: { id: true }
+    })
+    variantIdsToPublish = unpublishedVariants.map((variant) => variant.id)
+  }
+
+  if (dryRun || (videoIdsToPublish.length === 0 && variantIdsToPublish.length === 0)) {
+    return {
+      parentId: id,
+      publishedVideoIds: videoIdsToPublish,
+      publishedVideoCount: videoIdsToPublish.length,
+      publishedVariantIds: variantIdsToPublish,
+      publishedVariantsCount: variantIdsToPublish.length,
+      dryRun,
+      videosFailedValidation
+    }
+  }
+
+  await prisma.$transaction(async (tx) => {
+    if (videoIdsToPublish.length > 0) {
+      await tx.video.updateMany({
+        where: { id: { in: videoIdsToPublish } },
+        data: { published: true, publishedAt: new Date() }
+      })
+    }
+
+    if (variantIdsToPublish.length > 0) {
+      await tx.videoVariant.updateMany({
+        where: { id: { in: variantIdsToPublish } },
+        data: { published: true }
+      })
+    }
+  })
+
+  const affectedVideoIds = [...new Set([id, ...videoIdsToPublish])]
+
+  try {
+    await Promise.all(
+      affectedVideoIds.map(async (videoId) => {
+        await updateVideoAvailableLanguages(videoId, {
+          skipAlgolia: true,
+          skipCache: true
+        })
+      })
+    )
+  } catch (error) {
+    logger.error({ error, videoIds: affectedVideoIds }, 'Language sync failed during publish')
+  }
+
+  if (mode !== 'variantsOnly') {
+    await ensureParentEmptyVariantsForPublishedChildren(
+      parent!,
+      shouldPublishParent
+    )
+  }
+
+  await Promise.all(
+    variantIdsToPublish.map(async (variantId) => {
+      await updateVideoVariantInAlgolia(variantId)
+      void videoVariantCacheReset(variantId)
+    })
+  )
+  await Promise.all(
+    affectedVideoIds.map(async (videoId) => {
+      await updateVideoInAlgolia(videoId)
+      void videoCacheReset(videoId)
+    })
+  )
+
+  return {
+    parentId: id,
+    publishedVideoIds: videoIdsToPublish,
+    publishedVideoCount: videoIdsToPublish.length,
+    publishedVariantIds: variantIdsToPublish,
+    publishedVariantsCount: variantIdsToPublish.length,
+    dryRun: false,
+    videosFailedValidation
+  }
+}
 
 builder.mutationFields((t) => ({
   videoPublishChildren: t.withAuth({ isPublisher: true }).field({
     type: VideoPublishChildrenResult,
     nullable: false,
     args: {
-      id: t.arg.id({ required: true })
+      id: t.arg.id({ required: true }),
+      mode: t.arg({ type: VideoPublishModeEnum, required: true }),
+      dryRun: t.arg.boolean({ required: true })
     },
-    resolve: async (_parent, { id }) => {
-      // Fetch parent and children
-      const parent = await prisma.video.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          publishedAt: true,
-          children: {
-            select: { id: true, published: true }
-          }
-        }
-      })
-
-      if (parent == null) {
-        throw new Error(`Video with id ${id} not found`)
-      }
-
-      const childIdsToPublish = parent.children
-        .filter((c) => !c.published)
-        .map((c) => c.id)
-
-      // Publish parent and unpublished children together
-      const now = new Date()
-      await prisma.$transaction(async (tx) => {
-        await tx.video.update({
-          where: { id: parent.id },
-          data: {
-            published: true,
-            publishedAt: parent.publishedAt ?? now
-          }
-        })
-
-        if (childIdsToPublish.length > 0) {
-          await tx.video.updateMany({
-            where: { id: { in: childIdsToPublish } },
-            data: { published: true, publishedAt: now }
-          })
-        }
-      })
-
-      // For all published child variants, ensure parent has empty variants
-      if (childIdsToPublish.length > 0 || parent.publishedAt == null) {
-        const publishedChildVariants = await prisma.videoVariant.findMany({
-          where: {
-            videoId: { in: parent.children.map((c) => c.id) },
-            published: true
-          },
-          select: { videoId: true, languageId: true }
-        })
-
-        await Promise.all(
-          publishedChildVariants.map(({ videoId, languageId }) =>
-            handleParentVariantCreation(videoId, languageId).catch((error) => {
-              console.error('Parent variant creation error:', error)
-            })
-          )
-        )
-      }
-
-      try {
-        await updateVideoInAlgolia(parent.id)
-      } catch (error) {
-        console.error('Algolia update error:', error)
-      }
-
-      try {
-        await videoCacheReset(parent.id)
-        // Also reset caches for affected children
-        await Promise.all(
-          parent.children.map(async (c) => {
-            try {
-              await videoCacheReset(c.id)
-            } catch (error) {
-              console.error('Cache reset error:', error)
-            }
-          })
-        )
-      } catch (error) {
-        console.error('Cache reset error:', error)
-      }
-
-      const publishedChildrenCount = childIdsToPublish.length
-      return {
-        parentId: parent.id,
-        publishedChildIds: childIdsToPublish,
-        publishedChildrenCount
-      }
-    }
+    resolve: async (_parent, { id, mode, dryRun }) =>
+      executeVideoPublishChildren(id, mode, dryRun)
   })
 }))
