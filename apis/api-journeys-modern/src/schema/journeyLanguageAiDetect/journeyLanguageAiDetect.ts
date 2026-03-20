@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { generateObject } from 'ai'
+import { Output, generateText } from 'ai'
 import { z } from 'zod'
 
 import { prisma } from '@core/prisma/journeys/client'
@@ -72,11 +72,13 @@ builder.mutationFields((t) => ({
       }`
 
         try {
-          const { object: detectedLanguage } = await generateObject({
-            model: google('gemini-2.0-flash'),
-            schema: z.object({
-              language: z.string(),
-              isSameLanguage: z.boolean()
+          const { output: detectedLanguage } = await generateText({
+            model: google('gemini-2.5-flash'),
+            output: Output.object({
+              schema: z.object({
+                language: z.string(),
+                isSameLanguage: z.boolean()
+              })
             }),
             prompt: languageDetectionPrompt
           })

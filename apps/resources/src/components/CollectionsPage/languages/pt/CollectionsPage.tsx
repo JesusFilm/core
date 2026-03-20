@@ -13,7 +13,11 @@ import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCaro
 import { ContainerHero } from '../../ContainerHero'
 import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
-export function CollectionsPage(): ReactElement {
+interface CollectionsPageProps {
+  year: number
+}
+
+export function CollectionsPage({ year }: CollectionsPageProps): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
   // Content items data with contentId that will match the CollectionsVideoContent IDs
@@ -77,8 +81,9 @@ export function CollectionsPage(): ReactElement {
         <ContainerHero
           title="Páscoa"
           descriptionBeforeYear="Páscoa"
-          descriptionAfterYear="vídeos e recursos sobre a Quaresma, Semana Santa e Ressurreição"
+          descriptionAfterYear="vídeos sobre a história da ressurreição em mais de 2.000 idiomas"
           feedbackButtonLabel="Dar Feedback"
+          year={year}
         />
       }
       hideHeader
@@ -87,7 +92,7 @@ export function CollectionsPage(): ReactElement {
       <CollectionsPageContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
-          title="A verdadeira história da Páscoa"
+          title="Qual é o verdadeiro significado da Páscoa?"
           subtitle="Questionando? Buscando? Descubra o verdadeiro poder da Páscoa."
           firstParagraph={{
             beforeHighlight: 'Além dos ovos e coelhos está a história da ',
@@ -103,6 +108,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
           orthodoxEasterLabel="Ortodoxa"
           passoverLabel="Páscoa Judaica"
           locale="pt-BR"
+          year={year}
         />
         <CollectionsVideoContent
           contentId="easter-explained/portuguese-brazil"
@@ -112,7 +118,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
           mutePage={mutePage}
           setMutePage={setMutePage}
           showDivider={false}
-          questionsTitle="Perguntas relacionadas"
+          questionsTitle="Perguntas frequentes sobre a Páscoa"
           askButtonText="Faça a sua"
           bibleQuotesTitle="Citações bíblicas"
           quizButtonText="Qual é seu próximo passo de fé?"
