@@ -1,5 +1,5 @@
 ---
-title: "Add global dismiss button to SnackbarProvider in journeys-admin"
+title: 'Add global dismiss button to SnackbarProvider in journeys-admin'
 category: ui-bugs
 date: 2026-03-20
 tags:
@@ -12,10 +12,10 @@ tags:
   - scroll-blocking
   - dismissibility
 module: apps/journeys-admin
-symptom: "Snackbars block critical UI elements on mobile (add button, max platforms message) and prevent scrolling on Android during 5s auto-dismiss window"
-root_cause: "SnackbarProvider in _app.tsx lacked a global action prop, leaving snackbars with no manual dismiss mechanism"
+symptom: 'Snackbars block critical UI elements on mobile (add button, max platforms message) and prevent scrolling on Android during 5s auto-dismiss window'
+root_cause: 'SnackbarProvider in _app.tsx lacked a global action prop, leaving snackbars with no manual dismiss mechanism'
 severity: medium
-resolution_time_estimate: "1-2 hours"
+resolution_time_estimate: '1-2 hours'
 ---
 
 # Mobile Snackbar Blocking UI — No Dismiss Button
@@ -102,6 +102,7 @@ Treat `SnackbarProvider` as the canonical configuration point. Any behavior that
 ### 2. Mobile UX Review Checklist for Overlay Components
 
 Any component that overlays content (snackbar, toast, dialog, bottom sheet) should be evaluated:
+
 - **Dismissable:** Can the user close it without waiting?
 - **Non-blocking:** Does it obstruct interactive elements?
 - **Timed appropriately:** Is the auto-hide duration reasonable?
