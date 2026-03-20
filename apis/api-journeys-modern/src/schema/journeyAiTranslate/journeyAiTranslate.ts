@@ -320,6 +320,7 @@ Return in this format:
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
           targetLanguageName: customizationLanguageName,
+          defaultValueTargetLanguageName: input.textLanguageName,
           journeyAnalysis: analysisResult.analysis
         })
 
@@ -830,6 +831,7 @@ Return in this format:
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
           targetLanguageName: customizationLanguageName,
+          defaultValueTargetLanguageName: input.textLanguageName,
           journeyAnalysis: analysisAndTranslation.analysis
         })
 

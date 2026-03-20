@@ -380,6 +380,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       journeyCustomizationFields: mockJourney.journeyCustomizationFields,
       sourceLanguageName: mockInput.journeyLanguageName,
       targetLanguageName: mockInput.textLanguageName,
+      defaultValueTargetLanguageName: mockInput.textLanguageName,
       journeyAnalysis: expect.any(String)
     })
 
@@ -557,6 +558,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       journeyCustomizationFields: mockJourney.journeyCustomizationFields,
       sourceLanguageName: inputWithUserLanguage.journeyLanguageName,
       targetLanguageName: 'French',
+      defaultValueTargetLanguageName: inputWithUserLanguage.textLanguageName,
       journeyAnalysis: expect.any(String)
     })
   })
@@ -575,6 +577,7 @@ describe('journeyAiTranslateCreate mutation', () => {
       journeyCustomizationFields: mockJourney.journeyCustomizationFields,
       sourceLanguageName: mockInput.journeyLanguageName,
       targetLanguageName: mockInput.textLanguageName,
+      defaultValueTargetLanguageName: mockInput.textLanguageName,
       journeyAnalysis: expect.any(String)
     })
   })

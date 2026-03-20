@@ -373,6 +373,121 @@ describe('translateCustomizationFields', () => {
     expect(promptText).toContain('onboarding')
   })
 
+  it('should translate defaultValue to defaultValueTargetLanguageName when provided', async () => {
+    const fields = [
+      {
+        id: 'field1',
+        journeyId: 'journey123',
+        key: 'greeting',
+        value: 'Hello',
+        defaultValue: 'Welcome',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
+
+      if (prompt.includes('Hello')) {
+        expect(prompt).toContain('French')
+        return {
+          output: { translatedValue: 'Bonjour' },
+          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
+          finishReason: 'stop',
+          warnings: [],
+          request: {} as any,
+          response: {} as any,
+          id: 'mock-id',
+          createdAt: new Date()
+        } as any
+      }
+      if (prompt.includes('Welcome')) {
+        expect(prompt).toContain('Spanish')
+        return {
+          output: { translatedValue: 'Bienvenido' },
+          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
+          finishReason: 'stop',
+          warnings: [],
+          request: {} as any,
+          response: {} as any,
+          id: 'mock-id',
+          createdAt: new Date()
+        } as any
+      }
+
+      return {
+        output: { translatedValue: 'Translated' },
+        usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
+        finishReason: 'stop',
+        warnings: [],
+        request: {} as any,
+        response: {} as any,
+        id: 'mock-id',
+        createdAt: new Date()
+      } as any
+    })
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: fields,
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French',
+      defaultValueTargetLanguageName: 'Spanish'
+    })
+
+    expect(result.translatedFields[0]).toEqual({
+      id: 'field1',
+      key: 'greeting',
+      translatedValue: 'Bonjour',
+      translatedDefaultValue: 'Bienvenido'
+    })
+    expect(mockGenerateText).toHaveBeenCalledTimes(2)
+  })
+
+  it('should fall back to targetLanguageName for defaultValue when defaultValueTargetLanguageName not provided', async () => {
+    const fields = [
+      {
+        id: 'field1',
+        journeyId: 'journey123',
+        key: 'greeting',
+        value: null,
+        defaultValue: 'Welcome',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
+      expect(prompt).toContain('French')
+      return {
+        output: { translatedValue: 'Bienvenue' },
+        usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
+        finishReason: 'stop',
+        warnings: [],
+        request: {} as any,
+        response: {} as any,
+        id: 'mock-id',
+        createdAt: new Date()
+      } as any
+    })
+
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: fields,
+      sourceLanguageName: 'English',
+      targetLanguageName: 'French'
+    })
+
+    expect(result.translatedFields[0]).toEqual({
+      id: 'field1',
+      key: 'greeting',
+      translatedValue: null,
+      translatedDefaultValue: 'Bienvenue'
+    })
+  })
+
   it('should not translate addresses, times, or locations in field values', async () => {
     const fieldsWithAddresses = [
       {

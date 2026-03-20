@@ -27,7 +27,9 @@ const CustomizationDescriptionTranslationSchema = z.object({
 
 /**
  * Extracts and translates customization fields and description.
- * - Translates field values but keeps keys unchanged
+ * - Translates field values to targetLanguageName (user-facing customization text)
+ * - Translates field defaultValues to defaultValueTargetLanguageName (journey content language),
+ *   falling back to targetLanguageName if not provided
  * - All {{ ... }} blocks in the description are preserved verbatim (no conversion or rewriting)
  * - Does NOT translate addresses, times, or locations
  * - Only translates text outside of {{ }} brackets in the description
@@ -35,7 +37,8 @@ const CustomizationDescriptionTranslationSchema = z.object({
  * @param journeyCustomizationDescription - The customization description string
  * @param journeyCustomizationFields - Array of customization field objects
  * @param sourceLanguageName - Source language name
- * @param targetLanguageName - Target language name
+ * @param targetLanguageName - Target language name for values and description
+ * @param defaultValueTargetLanguageName - Target language name for default values (falls back to targetLanguageName)
  * @param journeyAnalysis - Optional journey analysis context for better translation
  * @returns Object with translated description and fields
  */
@@ -44,12 +47,14 @@ export async function translateCustomizationFields({
   journeyCustomizationFields,
   sourceLanguageName,
   targetLanguageName,
+  defaultValueTargetLanguageName,
   journeyAnalysis
 }: {
   journeyCustomizationDescription: string | null
   journeyCustomizationFields: JourneyCustomizationField[]
   sourceLanguageName: string
   targetLanguageName: string
+  defaultValueTargetLanguageName?: string
   journeyAnalysis?: string
 }): Promise<{
   translatedDescription: string | null
@@ -60,6 +65,9 @@ export async function translateCustomizationFields({
     translatedDefaultValue: string | null
   }>
 }> {
+  const effectiveDefaultValueTarget =
+    defaultValueTargetLanguageName ?? targetLanguageName
+
   // Extract values that need translation from fields
   const valuesToTranslate: Array<{
     id: string
@@ -95,7 +103,7 @@ export async function translateCustomizationFields({
         ? await translateValue({
             value: field.defaultValue,
             sourceLanguageName,
-            targetLanguageName,
+            targetLanguageName: effectiveDefaultValueTarget,
             journeyAnalysis
           })
         : null
