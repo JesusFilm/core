@@ -189,6 +189,7 @@ export enum MessagePlatform {
   checkBroken = "checkBroken",
   checkContained = "checkContained",
   custom = "custom",
+  discord = "discord",
   facebook = "facebook",
   globe2 = "globe2",
   globe3 = "globe3",
@@ -213,12 +214,14 @@ export enum MessagePlatform {
   send2 = "send2",
   settings = "settings",
   shieldCheck = "shieldCheck",
+  signal = "signal",
   skype = "skype",
   snapchat = "snapchat",
   telegram = "telegram",
   tikTok = "tikTok",
   viber = "viber",
   vk = "vk",
+  weChat = "weChat",
   whatsApp = "whatsApp",
 }
 
@@ -463,6 +466,7 @@ export interface ChatButtonCreateInput {
 export interface ChatButtonUpdateInput {
   link?: string | null;
   platform?: MessagePlatform | null;
+  customizable?: boolean | null;
 }
 
 export interface ChatOpenEventCreateInput {
@@ -1006,6 +1010,7 @@ export interface VideoBlockCreateInput {
   subtitleLanguageId?: string | null;
   showGeneratedSubtitles?: boolean | null;
   customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -1029,6 +1034,7 @@ export interface VideoBlockUpdateInput {
   source?: VideoBlockSource | null;
   showGeneratedSubtitles?: boolean | null;
   customizable?: boolean | null;
+  notes?: string | null;
 }
 
 export interface VideoCollapseEventCreateInput {

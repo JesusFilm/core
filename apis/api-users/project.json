@@ -57,7 +57,7 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true pnpm exec ts-node -P apis/api-users/tsconfig.app.json -r tsconfig-paths/register apis/api-users/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true pnpm exec tsx --tsconfig apis/api-users/tsconfig.app.json -r tsconfig-paths/register apis/api-users/src/schema/index.ts"
       }
     },
     "subgraph-check": {

@@ -159,7 +159,8 @@ describe('Card', () => {
         children: [
           {
             __typename: 'VideoBlock',
-            id: 'video1.id'
+            id: 'video1.id',
+            notes: null
           } as unknown as TreeBlock<VideoBlock>
         ]
       })
@@ -203,7 +204,8 @@ describe('Card', () => {
         children: [
           {
             __typename: 'VideoBlock',
-            id: 'video1.id'
+            id: 'video1.id',
+            notes: null
           } as unknown as TreeBlock<VideoBlock>
         ]
       })
@@ -401,6 +403,7 @@ describe('Card', () => {
             objectFit: null,
             eventLabel: null,
             endEventLabel: null,
+            notes: null,
             children: []
           }
         ]

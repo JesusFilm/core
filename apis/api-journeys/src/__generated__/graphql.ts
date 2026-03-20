@@ -376,6 +376,7 @@ export type ChatActionInput = {
 
 export type ChatButton = {
   __typename?: 'ChatButton';
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   id: Scalars['ID']['output'];
   link?: Maybe<Scalars['String']['output']>;
   platform?: Maybe<MessagePlatform>;
@@ -387,6 +388,7 @@ export type ChatButtonCreateInput = {
 };
 
 export type ChatButtonUpdateInput = {
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   link?: InputMaybe<Scalars['String']['input']>;
   platform?: InputMaybe<MessagePlatform>;
 };
@@ -1697,6 +1699,7 @@ export enum MessagePlatform {
   CheckBroken = 'checkBroken',
   CheckContained = 'checkContained',
   Custom = 'custom',
+  Discord = 'discord',
   Facebook = 'facebook',
   Globe2 = 'globe2',
   Globe3 = 'globe3',
@@ -1721,12 +1724,14 @@ export enum MessagePlatform {
   Send2 = 'send2',
   Settings = 'settings',
   ShieldCheck = 'shieldCheck',
+  Signal = 'signal',
   Skype = 'skype',
   Snapchat = 'snapchat',
   Telegram = 'telegram',
   TikTok = 'tikTok',
   Viber = 'viber',
   Vk = 'vk',
+  WeChat = 'weChat',
   WhatsApp = 'whatsApp'
 }
 
@@ -1959,8 +1964,6 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
-  /** Updates the current user's firstName, lastName, and email. Only callable by anonymous users. */
-  updateMe?: Maybe<AuthenticatedUser>;
   updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
   updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
@@ -2813,11 +2816,6 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
-};
-
-
-export type MutationUpdateMeArgs = {
-  input: UpdateMeInput;
 };
 
 
@@ -3717,12 +3715,6 @@ export type QrCodesFilter = {
 export type Query = {
   __typename?: 'Query';
   adminJourney: Journey;
-  /**
-   * returns all journeys that match the provided filters
-   * If no team id is provided and template is not true then only returns journeys
-   * where the user is not a member of a team but is an editor or owner of the
-   * journey
-   */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
   adminVideo: Video;
@@ -5151,12 +5143,6 @@ export type UnsplashUserLinks = {
   self: Scalars['String']['output'];
 };
 
-export type UpdateMeInput = {
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type User = {
   id: Scalars['ID']['output'];
 };
@@ -5409,6 +5395,8 @@ export type VideoBlock = Block & {
   journeyId: Scalars['ID']['output'];
   mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). */
+  notes?: Maybe<Scalars['String']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
@@ -5469,6 +5457,8 @@ export type VideoBlockCreateInput = {
   isCover?: InputMaybe<Scalars['Boolean']['input']>;
   journeyId: Scalars['ID']['input'];
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). */
+  notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
@@ -5524,6 +5514,8 @@ export type VideoBlockUpdateInput = {
   fullsize?: InputMaybe<Scalars['Boolean']['input']>;
   image?: InputMaybe<Scalars['String']['input']>;
   muted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear. */
+  notes?: InputMaybe<Scalars['String']['input']>;
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;

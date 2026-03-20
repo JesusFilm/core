@@ -2,27 +2,19 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = env("PRISMA_LOCATION_MEDIA")
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client"
+  output          = "../src/__generated__/client"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
 generator pothos {
   provider     = "prisma-pothos-types"
-  clientOutput = ".prisma/api-media-client"
+  clientOutput = "./client"
   output       = "../src/__generated__/pothos-types.ts"
-}
-
-generator erd {
-  provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_DATABASE_URL_MEDIA")
 }
 
 enum ImageAspectRatio {
@@ -257,6 +249,7 @@ model VideoVariant {
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
   @@index(videoId(type: Hash))
+  @@index([published, languageId])
 }
 
 model VideoEdition {

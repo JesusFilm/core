@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common'
 
 import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { CaslAuthModule } from '../../lib/CaslAuthModule'
-import { PrismaService } from '../../lib/prisma.service'
+import { prismaServiceProvider } from '../../lib/prisma.service'
 import { JourneyCustomizableService } from '../journey/journeyCustomizable.service'
 
 import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
-import { ButtonBlockResolver } from './button/button.resolver'
 import { CardBlockResolver } from './card/card.resolver'
 import { IconBlockResolver } from './icon/icon.resolver'
 import { ImageBlockResolver } from './image/image.resolver'
@@ -26,12 +25,11 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
   providers: [
     BlockService,
     BlockResolver,
-    ButtonBlockResolver,
     CardBlockResolver,
     IconBlockResolver,
     ImageBlockResolver,
     JourneyCustomizableService,
-    PrismaService,
+    prismaServiceProvider,
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,
     SignUpBlockResolver,

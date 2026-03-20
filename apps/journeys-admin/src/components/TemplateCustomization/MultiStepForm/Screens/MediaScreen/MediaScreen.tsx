@@ -1,3 +1,4 @@
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -31,6 +32,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { hasActiveUploads } = useTemplateVideoUpload()
+  const [navigating, setNavigating] = useState(false)
   const steps =
     journey != null
       ? (transformer(journey.blocks ?? []) as Array<TreeBlock<StepBlock>>)
@@ -53,6 +55,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   const showLogo = showLogoSection(journey)
   const showImages = showImagesSection(journey, selectedCardBlockId)
   const showVideos = showVideosSection(journey, selectedCardBlockId)
+  const showMediaLabels = showImages && showVideos
 
   useEffect(() => {
     if (customizableSteps.length > 0 && selectedStep == null) {
@@ -72,22 +75,37 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       footer={
         <CustomizeFlowNextButton
           label={t('Next')}
-          onClick={() => handleNext()}
+          onClick={() => {
+            setNavigating(true)
+            handleNext()
+          }}
           ariaLabel={t('Next')}
-          loading={hasActiveUploads}
+          loading={hasActiveUploads || navigating}
         />
       }
     >
-      {showLogo && <LogoSection />}
-      <CardsSection
-        customizableSteps={customizableSteps}
-        selectedStep={selectedStep}
-        handleStepClick={handleStepClick}
-      />
-      {showImages && (
-        <ImagesSection journey={journey} cardBlockId={selectedCardBlockId} />
-      )}
-      {showVideos && <VideosSection cardBlockId={selectedCardBlockId} />}
+      <Stack sx={{ width: '100%', gap: 6 }}>
+        {showLogo && <LogoSection />}
+        <CardsSection
+          customizableSteps={customizableSteps}
+          selectedStep={selectedStep}
+          handleStepClick={handleStepClick}
+          showLabel={journey?.website === true}
+        />
+        {showImages && (
+          <ImagesSection
+            journey={journey}
+            cardBlockId={selectedCardBlockId}
+            showLabel={showMediaLabels}
+          />
+        )}
+        {showVideos && (
+          <VideosSection
+            cardBlockId={selectedCardBlockId}
+            showLabel={showMediaLabels}
+          />
+        )}
+      </Stack>
     </ScreenWrapper>
   )
 }

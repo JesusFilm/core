@@ -233,21 +233,6 @@ extend type Query {
   customDomains(teamId: ID!): [CustomDomain!]!
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
-
-  """
-  returns all journeys that match the provided filters
-  If no team id is provided and template is not true then only returns journeys
-  where the user is not a member of a team but is an editor or owner of the
-  journey
-  """
-  adminJourneys(
-    status: [JourneyStatus!]
-    template: Boolean
-    teamId: ID
-
-    """Use Last Active Team Id from JourneyProfile (if null will error)"""
-    useLastActiveTeamId: Boolean
-  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
@@ -354,14 +339,6 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
-  buttonBlockUpdate(
-    id: ID!
-    input: ButtonBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
@@ -586,32 +563,6 @@ type ButtonBlock implements Block
   action: Action
   submitEnabled: Boolean @shareable
   settings: ButtonBlockSettings! @shareable
-}
-
-input ButtonBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  label: String!
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
-}
-
-input ButtonBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  startIconId: ID
-  endIconId: ID
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
 }
 
 type CardBlock implements Block
@@ -1354,6 +1305,7 @@ type ChatButton
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 input ChatButtonCreateInput {
@@ -1364,6 +1316,7 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 type CustomDomain
@@ -1499,6 +1452,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 type ChatOpenEvent implements Event

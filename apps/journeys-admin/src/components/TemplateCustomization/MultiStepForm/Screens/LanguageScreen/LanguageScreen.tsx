@@ -259,7 +259,6 @@ export function LanguageScreen({
 
     if (shouldSkipDuplicate(journey, values)) {
       // Skips journey duplicate
-      setLoading(false)
       handleNext()
     } else if (isSignedIn) {
       // Duplicates journey for a signed in user
@@ -269,8 +268,9 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
-        setLoading(false)
         handleNext(duplicatedJourneyId)
+      } else {
+        setLoading(false)
       }
     } else {
       // Creates a guest user and duplicates the journey for them
@@ -280,8 +280,9 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
-        setLoading(false)
         handleNext(duplicatedJourneyId)
+      } else {
+        setLoading(false)
       }
     }
     return
@@ -307,6 +308,7 @@ export function LanguageScreen({
               label={t('Next')}
               onClick={() => formikHandleSubmit()}
               disabled={isNextDisabled}
+              loading={loading}
               ariaLabel={t('Next')}
             />
           }
@@ -371,7 +373,6 @@ export function LanguageScreen({
                       >
                         {t('Select a team')}
                       </Typography>
-
                       <Typography
                         variant="body2"
                         display={{ xs: 'block', sm: 'none' }}

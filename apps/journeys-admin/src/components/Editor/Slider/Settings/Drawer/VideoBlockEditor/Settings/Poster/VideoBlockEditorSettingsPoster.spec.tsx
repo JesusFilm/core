@@ -64,6 +64,7 @@ const video: VideoBlock = {
     variantLanguages: []
   },
   customizable: null,
+  notes: null,
   posterBlockId: null
 }
 

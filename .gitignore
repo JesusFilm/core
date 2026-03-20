@@ -6,7 +6,7 @@
 /out-tsc
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -91,6 +91,7 @@ terraform.tfstate.backup
 .claude/rules/preferences.md
 .claude/rules/workflows.md
 .claude/rules/*.dev.md
+.claude/worktrees
 
 # ignore exports
 /exports/*

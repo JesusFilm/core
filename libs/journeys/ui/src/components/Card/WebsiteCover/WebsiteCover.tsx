@@ -83,12 +83,14 @@ export function WebsiteCover({
         overflow: 'hidden'
       }}
     >
-      <BackgroundVideo
-        {...videoBlock}
-        setLoading={setLoading}
-        cardColor={backgroundColor}
-      />
-      {posterImage != null && loading && (
+      {videoBlock.videoId != null && (
+        <BackgroundVideo
+          {...videoBlock}
+          setLoading={setLoading}
+          cardColor={backgroundColor}
+        />
+      )}
+      {posterImage != null && (videoBlock.videoId == null || loading) && (
         <NextImage
           data-testid="video-poster-image"
           className="vjs-poster"

@@ -133,6 +133,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
     useMutation<JourneyCustomizationFieldUpdate>(
       JOURNEY_CUSTOMIZATION_FIELD_UPDATE
     )
+  const [navigating, setNavigating] = useState(false)
   const [replacementItems, setReplacementItems] = useState<
     JourneyCustomizationField[]
   >(journey?.journeyCustomizationFields ?? [])
@@ -184,6 +185,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         }
       })
     }
+    setNavigating(true)
     handleNext()
   }
 
@@ -198,7 +200,7 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
         <CustomizeFlowNextButton
           label={t('Next')}
           onClick={handleSubmit}
-          loading={isSubmitting}
+          loading={isSubmitting || navigating}
           ariaLabel={t('Save and continue')}
         />
       }

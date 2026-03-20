@@ -28,8 +28,18 @@ export async function findOrFetchUser(
     return user
   }
 
-  if (existingUser != null && existingUser.emailVerified != null)
+  if (existingUser != null && existingUser.emailVerified != null) {
+    if (existingUser.emailVerified === false) {
+      const { emailVerified } = await auth.getUser(userId)
+      if (emailVerified) {
+        return await prisma.user.update({
+          where: { userId },
+          data: { emailVerified: true }
+        })
+      }
+    }
     return existingUser
+  }
 
   const {
     displayName,

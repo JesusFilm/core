@@ -1,12 +1,9 @@
-import { PrismaClient } from '.prisma/api-journeys-client'
-
+import { prisma } from '../../../../libs/prisma/journeys/src/client'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../src/app/__generated__/graphql'
-
-const prisma = new PrismaClient()
 
 const QUICK_START_TEMPLATE = {
   id: 'b4a4e122-2b7f-4e6f-a2d1-81c1f792c92b',
@@ -14,7 +11,7 @@ const QUICK_START_TEMPLATE = {
 }
 
 const CUSTOMIZATION_DESCRIPTION =
-  'Hi {{ name }}, welcome to your journey! We are glad you are here.'
+  'Hi {{ name: Friend }}, welcome to your journey! We are glad you are here.'
 
 export async function quickStartTemplate(action?: 'reset'): Promise<void> {
   if (action === 'reset') {
@@ -45,7 +42,8 @@ export async function quickStartTemplate(action?: 'reset'): Promise<void> {
       createdAt: new Date(),
       publishedAt: new Date(),
       teamId: 'jfp-team',
-      journeyCustomizationDescription: CUSTOMIZATION_DESCRIPTION
+      journeyCustomizationDescription: CUSTOMIZATION_DESCRIPTION,
+      customizable: true
     }
   })
 
@@ -55,7 +53,7 @@ export async function quickStartTemplate(action?: 'reset'): Promise<void> {
       journeyId: journey.id,
       key: 'name',
       value: null,
-      defaultValue: null
+      defaultValue: 'Friend'
     }
   })
 
