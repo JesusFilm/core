@@ -4804,11 +4804,34 @@ input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The ID of the journey to translate
+  """
   journeyId: ID!
+  """
+  The journey name to translate
+  """
   name: String!
+  """
+  The source language name of the journey content
+  """
   journeyLanguageName: String!
+  """
+  The target language ID for journey content (blocks, title, description)
+  """
   textLanguageId: ID!
+  """
+  The target language name for journey content (blocks, title, description)
+  """
   textLanguageName: String!
+  """
+  Language ID for customization text translation. Falls back to textLanguageId if not provided.
+  """
+  userLanguageId: ID
+  """
+  Language name for customization text translation. Falls back to textLanguageName if not provided.
+  """
+  userLanguageName: String
 }
 
 input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {

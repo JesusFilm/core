@@ -537,6 +537,48 @@ describe('journeyAiTranslateCreate mutation', () => {
     )
   })
 
+  it('should use userLanguageName for customization translation when provided', async () => {
+    const inputWithUserLanguage = {
+      ...mockInput,
+      userLanguageId: 'userLang789',
+      userLanguageName: 'French'
+    }
+
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: {
+        input: inputWithUserLanguage
+      }
+    })
+
+    expect(mockTranslateCustomizationFields).toHaveBeenCalledWith({
+      journeyCustomizationDescription:
+        mockJourney.journeyCustomizationDescription,
+      journeyCustomizationFields: mockJourney.journeyCustomizationFields,
+      sourceLanguageName: inputWithUserLanguage.journeyLanguageName,
+      targetLanguageName: 'French',
+      journeyAnalysis: expect.any(String)
+    })
+  })
+
+  it('should fall back to textLanguageName for customization translation when userLanguageName not provided', async () => {
+    await authClient({
+      document: JOURNEY_AI_TRANSLATE_CREATE_MUTATION,
+      variables: {
+        input: mockInput
+      }
+    })
+
+    expect(mockTranslateCustomizationFields).toHaveBeenCalledWith({
+      journeyCustomizationDescription:
+        mockJourney.journeyCustomizationDescription,
+      journeyCustomizationFields: mockJourney.journeyCustomizationFields,
+      sourceLanguageName: mockInput.journeyLanguageName,
+      targetLanguageName: mockInput.textLanguageName,
+      journeyAnalysis: expect.any(String)
+    })
+  })
+
   it('should not require description translation if original has no description', async () => {
     // Update mock journey to have no description
     prismaMock.journey.findUnique.mockResolvedValueOnce({

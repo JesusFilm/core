@@ -111,11 +111,38 @@ function getValidatedBlockUpdates(
 // Define the shared input type
 const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
   fields: (t) => ({
-    journeyId: t.id({ required: true }),
-    name: t.string({ required: true }),
-    journeyLanguageName: t.string({ required: true }),
-    textLanguageId: t.id({ required: true }),
-    textLanguageName: t.string({ required: true })
+    journeyId: t.id({
+      required: true,
+      description: 'The ID of the journey to translate'
+    }),
+    name: t.string({
+      required: true,
+      description: 'The journey name to translate'
+    }),
+    journeyLanguageName: t.string({
+      required: true,
+      description: 'The source language name of the journey content'
+    }),
+    textLanguageId: t.id({
+      required: true,
+      description:
+        'The target language ID for journey content (blocks, title, description)'
+    }),
+    textLanguageName: t.string({
+      required: true,
+      description:
+        'The target language name for journey content (blocks, title, description)'
+    }),
+    userLanguageId: t.id({
+      required: false,
+      description:
+        'Language ID for customization text translation. Falls back to textLanguageId if not provided.'
+    }),
+    userLanguageName: t.string({
+      required: false,
+      description:
+        'Language name for customization text translation. Falls back to textLanguageName if not provided.'
+    })
   })
 })
 
@@ -283,13 +310,16 @@ Return in this format:
           journey: null
         }
 
+        const customizationLanguageName =
+          input.userLanguageName ?? input.textLanguageName
+
         // Translate customization fields and description
         const customizationTranslation = await translateCustomizationFields({
           journeyCustomizationDescription:
             journey.journeyCustomizationDescription,
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: input.textLanguageName,
+          targetLanguageName: customizationLanguageName,
           journeyAnalysis: analysisResult.analysis
         })
 
@@ -790,13 +820,16 @@ Return in this format:
         if (journey.seoDescription && !analysisAndTranslation.seoDescription)
           throw new Error('Failed to translate journey seo description')
 
+        const customizationLanguageName =
+          input.userLanguageName ?? input.textLanguageName
+
         // Translate customization fields and description
         const customizationTranslation = await translateCustomizationFields({
           journeyCustomizationDescription:
             journey.journeyCustomizationDescription,
           journeyCustomizationFields: journey.journeyCustomizationFields,
           sourceLanguageName: input.journeyLanguageName,
-          targetLanguageName: input.textLanguageName,
+          targetLanguageName: customizationLanguageName,
           journeyAnalysis: analysisAndTranslation.analysis
         })
 

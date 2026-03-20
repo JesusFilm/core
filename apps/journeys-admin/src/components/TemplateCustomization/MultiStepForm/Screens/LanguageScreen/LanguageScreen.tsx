@@ -281,6 +281,8 @@ export function LanguageScreen({
         journeyLanguageName: string
         textLanguageId: string
         textLanguageName: string
+        userLanguageId?: string
+        userLanguageName?: string
       }
     | undefined
   >(undefined)
@@ -368,13 +370,20 @@ export function LanguageScreen({
           const targetLanguageName =
             translateLanguage.nativeName ?? translateLanguage.localName ?? ''
 
+          const userLanguageName =
+            values.languageSelect?.nativeName ??
+            values.languageSelect?.localName ??
+            ''
+
           setTranslationCompleted(false)
           setTranslationVariables({
             journeyId: duplicatedJourneyId,
             name: journey.title,
             journeyLanguageName: sourceLanguageName,
             textLanguageId: translateLanguage.id,
-            textLanguageName: targetLanguageName
+            textLanguageName: targetLanguageName,
+            userLanguageId: values.languageSelect?.id,
+            userLanguageName
           })
         } else {
           setLoading(false)

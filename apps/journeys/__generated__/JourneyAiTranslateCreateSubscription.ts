@@ -103,4 +103,6 @@ export interface JourneyAiTranslateCreateSubscriptionVariables {
   journeyLanguageName: string;
   textLanguageId: string;
   textLanguageName: string;
+  userLanguageId?: string | null;
+  userLanguageName?: string | null;
 }

@@ -17,6 +17,8 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
     $journeyLanguageName: String!
     $textLanguageId: ID!
     $textLanguageName: String!
+    $userLanguageId: ID
+    $userLanguageName: String
   ) {
     journeyAiTranslateCreateSubscription(
       input: {
@@ -25,6 +27,8 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
         journeyLanguageName: $journeyLanguageName
         textLanguageId: $textLanguageId
         textLanguageName: $textLanguageName
+        userLanguageId: $userLanguageId
+        userLanguageName: $userLanguageName
       }
     ) {
       progress
