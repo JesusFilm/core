@@ -249,6 +249,7 @@ model VideoVariant {
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
   @@index(videoId(type: Hash))
+  @@index([published, languageId])
 }
 
 model VideoEdition {
