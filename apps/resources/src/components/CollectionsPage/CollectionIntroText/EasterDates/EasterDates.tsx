@@ -6,43 +6,12 @@ import AccordionSummary from '@mui/material/AccordionSummary'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement, useEffect, useState } from 'react'
 
-const calculateWesternEaster = (year: number): Date => {
-  const a = year % 19
-  const b = Math.floor(year / 100)
-  const c = year % 100
-  const d = Math.floor(b / 4)
-  const e = b % 4
-  const f = Math.floor((b + 8) / 25)
-  const g = Math.floor((b - f + 1) / 3)
-  const h = (19 * a + b - d - g + 15) % 30
-  const i = Math.floor(c / 4)
-  const k = c % 4
-  const l = (32 + 2 * e + 2 * i - h - k) % 7
-  const m = Math.floor((a + 11 * h + 22 * l) / 451)
-  const month = Math.floor((h + l - 7 * m + 114) / 31)
-  const day = ((h + l - 7 * m + 114) % 31) + 1
-
-  return new Date(year, month - 1, day)
-}
-
-const calculateOrthodoxEaster = (year: number): Date => {
-  const a = year % 4
-  const b = year % 7
-  const c = year % 19
-  const d = (19 * c + 15) % 30
-  const e = (2 * a + 4 * b - d + 34) % 7
-  const month = Math.floor((d + e + 114) / 31)
-  const day = ((d + e + 114) % 31) + 1
-
-  const julianDate = new Date(year, month - 1, day)
-  return new Date(julianDate.getTime() + 13 * 24 * 60 * 60 * 1000) // Add 13 days for Gregorian calendar
-}
-
-const calculatePassover = (year: number): Date => {
-  // Approximation of Jewish Passover (usually starts on the evening before Western Easter)
-  const westernEaster = calculateWesternEaster(year)
-  return new Date(westernEaster.getTime() - 24 * 60 * 60 * 1000)
-}
+import {
+  calculateOrthodoxEaster,
+  calculatePassover,
+  calculateWesternEaster,
+  getEasterCampaignYear
+} from '../../../../libs/easterDates'
 
 export interface EasterDatesProps {
   title: string
@@ -50,6 +19,7 @@ export interface EasterDatesProps {
   orthodoxEasterLabel: string
   passoverLabel: string
   locale?: string
+  year?: number
 }
 
 export const EasterDates = ({
@@ -57,12 +27,12 @@ export const EasterDates = ({
   westernEasterLabel,
   orthodoxEasterLabel,
   passoverLabel,
-  locale = 'en-US'
+  locale = 'en-US',
+  year = getEasterCampaignYear()
 }: EasterDatesProps): ReactElement => {
-  const currentYear = new Date().getFullYear()
-  const westernEaster = calculateWesternEaster(currentYear)
-  const orthodoxEaster = calculateOrthodoxEaster(currentYear)
-  const passover = calculatePassover(currentYear)
+  const westernEaster = calculateWesternEaster(year)
+  const orthodoxEaster = calculateOrthodoxEaster(year)
+  const passover = calculatePassover(year)
   const smUp = useMediaQuery('(min-width: 640px)')
   const [expanded, setExpanded] = useState<boolean>(smUp)
 
@@ -118,7 +88,7 @@ export const EasterDates = ({
             }}
           >
             <h4 className="text-opacity-90 text-2xl font-bold text-black/85 xl:text-3xl">
-              {title.replace('{year}', currentYear.toString())}
+              {title.replace('{year}', year.toString())}
             </h4>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: '0 1.5rem 1.5rem' }}>

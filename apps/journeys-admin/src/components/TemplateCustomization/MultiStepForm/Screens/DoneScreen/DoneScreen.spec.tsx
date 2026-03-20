@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   ThemeMode,
@@ -281,15 +282,17 @@ describe('DoneScreen', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('renders notification section heading and label', () => {
+  it('should show notification section heading and email label when emailResponseToggle is true', () => {
     render(
       <SnackbarProvider>
         <MockedProvider
           mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <DoneScreen />
-          </JourneyProvider>
+          <FlagsProvider flags={{ emailResponseToggle: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -298,7 +301,26 @@ describe('DoneScreen', () => {
     expect(screen.getByText('Send to my email')).toBeInTheDocument()
   })
 
-  it('renders notification switch unchecked by default', () => {
+  it('should hide email toggle when emailResponseToggle is false', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <FlagsProvider flags={{ emailResponseToggle: false }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
+    expect(screen.queryByText('Send to my email')).not.toBeInTheDocument()
+  })
+
+  it('should hide email toggle when emailResponseToggle flag is not set', () => {
     render(
       <SnackbarProvider>
         <MockedProvider
@@ -311,11 +333,30 @@ describe('DoneScreen', () => {
       </SnackbarProvider>
     )
 
+    expect(screen.getByText('Collect your responses:')).toBeInTheDocument()
+    expect(screen.queryByText('Send to my email')).not.toBeInTheDocument()
+  })
+
+  it('should render notification switch unchecked by default when emailResponseToggle is true', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider
+          mocks={[getCustomDomainsMock, googleSheetsSyncsNoActiveMock]}
+        >
+          <FlagsProvider flags={{ emailResponseToggle: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
     const checkbox = screen.getByRole('checkbox')
     expect(checkbox).not.toBeChecked()
   })
 
-  it('fires notification update mutation when switch is toggled', async () => {
+  it('should fire notification update mutation when switch is toggled', async () => {
     const result = jest
       .fn()
       .mockReturnValueOnce(useJourneyNotifcationUpdateMock.result)
@@ -328,9 +369,11 @@ describe('DoneScreen', () => {
             { ...useJourneyNotifcationUpdateMock, result }
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <DoneScreen />
-          </JourneyProvider>
+          <FlagsProvider flags={{ emailResponseToggle: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <DoneScreen />
+            </JourneyProvider>
+          </FlagsProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
