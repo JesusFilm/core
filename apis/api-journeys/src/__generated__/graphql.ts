@@ -1825,7 +1825,6 @@ export type Mutation = {
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
   cardBlockCreate: CardBlock;
-  cardBlockUpdate: CardBlock;
   chatButtonCreate: ChatButton;
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
@@ -2160,13 +2159,6 @@ export type MutationButtonClickEventCreateArgs = {
 
 export type MutationCardBlockCreateArgs = {
   input: CardBlockCreateInput;
-};
-
-
-export type MutationCardBlockUpdateArgs = {
-  id: Scalars['ID']['input'];
-  input: CardBlockUpdateInput;
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -3828,6 +3820,7 @@ export type Query = {
   videoOrigins: Array<VideoOrigin>;
   videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
+  videoVariantsCount: Scalars['Int']['output'];
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
   /** Get a single visitor */
@@ -4267,6 +4260,13 @@ export type QueryVideoVariantArgs = {
 
 
 export type QueryVideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryVideoVariantsCountArgs = {
   input?: InputMaybe<VideoVariantFilter>;
 };
 
