@@ -144,7 +144,7 @@ export function LanguageScreen({
     query?.data?.getJourneyProfile?.lastActiveTeamId ?? ''
   const defaultTeamId = teams.some((t) => t.id === lastActiveTeamId)
     ? lastActiveTeamId
-    : teams[0]?.id ?? ''
+    : (teams[0]?.id ?? '')
 
   const initialValues = {
     teamSelect: defaultTeamId,
@@ -163,8 +163,7 @@ export function LanguageScreen({
     },
     values: LanguageFormValues
   ): boolean {
-    const selectedTeamId =
-      values.teamSelect !== '' ? values.teamSelect : null
+    const selectedTeamId = values.teamSelect !== '' ? values.teamSelect : null
     const selectedLanguageId = values.languageSelect?.id ?? ''
 
     const isNotTemplate = journey.template === false
@@ -326,9 +325,7 @@ export function LanguageScreen({
           }}
         >
           <Typography color="error" align="center">
-            {t(
-              'Failed to load teams. Please refresh the page and try again.'
-            )}
+            {t('Failed to load teams. Please refresh the page and try again.')}
           </Typography>
         </Stack>
       </ScreenWrapper>

@@ -1293,7 +1293,9 @@ describe('LanguageScreen', () => {
     const combobox = screen.getByRole('combobox', { name: 'Team' })
     fireEvent.mouseDown(combobox)
     await waitFor(() =>
-      expect(screen.getByRole('option', { name: 'Team Two' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('option', { name: 'Team Two' })
+      ).toBeInTheDocument()
     )
     fireEvent.click(screen.getByRole('option', { name: 'Team Two' }))
 
