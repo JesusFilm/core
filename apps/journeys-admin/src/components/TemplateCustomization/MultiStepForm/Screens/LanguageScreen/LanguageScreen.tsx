@@ -36,9 +36,9 @@ import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 interface LanguageFormValues {
   teamSelect: string
   languageSelect: {
-    id: string | undefined
-    localName: string | undefined
-    nativeName: string | undefined
+    id: string
+    localName?: string
+    nativeName?: string
   }
 }
 
@@ -149,7 +149,7 @@ export function LanguageScreen({
   const initialValues = {
     teamSelect: defaultTeamId,
     languageSelect: {
-      id: journey?.language?.id,
+      id: journey?.language?.id ?? '',
       localName: journey?.language?.name.find((name) => name.primary)?.value,
       nativeName: journey?.language?.name.find((name) => !name.primary)?.value
     }
