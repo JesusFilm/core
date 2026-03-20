@@ -1,5 +1,5 @@
 ---
-title: "fix: Snackbar auto-dismiss and close button for mobile UX"
+title: 'fix: Snackbar auto-dismiss and close button for mobile UX'
 type: fix
 status: completed
 date: 2026-03-20
@@ -14,12 +14,14 @@ date: 2026-03-20
 **Research agents used:** Framework docs (notistack v3), UX best practices, frontend races, pattern recognition, performance, code simplicity, TypeScript
 
 ### Key Improvements
+
 1. Dropped `autoHideDuration` change — the 5s default is fine; close button alone solves the problem
 2. Added `aria-label` for accessibility compliance (WCAG)
 3. Extracted action function to module scope for stable reference
 4. Confirmed zero risk: no race conditions, no duplicate buttons, no test breakage, no bundle impact
 
 ### New Considerations Discovered
+
 - notistack pauses auto-dismiss timer on hover (built-in) — users aiming for the close button won't have the snackbar vanish
 - Per-snackbar `action` completely overrides provider-level `action` (no merging, no duplicates)
 - `showSnackbar` utility's close button is redundant once global action is added (future cleanup opportunity)
@@ -49,12 +51,14 @@ Add a **global close button** on the `SnackbarProvider` in `_app.tsx` so users c
 ### Research Insights
 
 **Why close button only (not autoHideDuration):**
+
 - notistack's 5000ms default falls within M3's recommended 4-10s range
 - Error snackbars ideally should persist longer, not shorter — reducing global duration would make error messages harder to read
 - The `showSnackbar` utility already defaults to 4000ms; adding a global 4000ms creates a confusing "two sources of truth" for the same behavior
 - The close button directly solves the reported problem (can't dismiss on Android) without side effects
 
 **Hover pauses timer (built-in):**
+
 - notistack pauses the auto-hide timer on `mouseenter` and restarts at **50% duration** on `mouseleave`
 - This means users aiming for the close button won't have the snackbar vanish mid-interaction
 - No additional implementation needed for this behavior
@@ -63,19 +67,20 @@ Add a **global close button** on the `SnackbarProvider` in `_app.tsx` so users c
 
 Full audit of all 39 snackbar callsites in `apps/journeys-admin/`:
 
-| Category | Count | Explicit Duration | persist | Custom Action | Risk |
-|----------|-------|-------------------|---------|---------------|------|
-| Chat Widget (Chat.tsx, Details.tsx, Summary.tsx) | 4 | None | false | None | LOW |
-| Google Integration | 5 | None | false | None | LOW |
-| Growth Spaces Integration | 7 | None | false | None | LOW |
-| Team/Domain Management | 7 | None | false | None | LOW |
-| Journey Copy/Translate | 4 | None | false | None | LOW |
-| Share/Link Management | 7 | None | false | None | LOW |
-| Template Video Upload | 5 | 2000ms | false | None | SAFE (overrides global) |
-| MUX Video Upload (showSnackbar) | 3 | 4000ms | false | Close button | SAFE (per-snackbar action overrides) |
-| YouTube Integration | 1 | 4000ms | false | "Dismiss" button | SAFE (per-snackbar action overrides) |
+| Category                                         | Count | Explicit Duration | persist | Custom Action    | Risk                                 |
+| ------------------------------------------------ | ----- | ----------------- | ------- | ---------------- | ------------------------------------ |
+| Chat Widget (Chat.tsx, Details.tsx, Summary.tsx) | 4     | None              | false   | None             | LOW                                  |
+| Google Integration                               | 5     | None              | false   | None             | LOW                                  |
+| Growth Spaces Integration                        | 7     | None              | false   | None             | LOW                                  |
+| Team/Domain Management                           | 7     | None              | false   | None             | LOW                                  |
+| Journey Copy/Translate                           | 4     | None              | false   | None             | LOW                                  |
+| Share/Link Management                            | 7     | None              | false   | None             | LOW                                  |
+| Template Video Upload                            | 5     | 2000ms            | false   | None             | SAFE (overrides global)              |
+| MUX Video Upload (showSnackbar)                  | 3     | 4000ms            | false   | Close button     | SAFE (per-snackbar action overrides) |
+| YouTube Integration                              | 1     | 4000ms            | false   | "Dismiss" button | SAFE (per-snackbar action overrides) |
 
 **Key findings:**
+
 - 0 snackbars use `persist: true`
 - 0 snackbars have undo/retry action buttons
 - 8 already set explicit `autoHideDuration` (will override any global change)
@@ -140,6 +145,7 @@ const snackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
 ```
 
 **Full corrected import order:**
+
 ```tsx
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
