@@ -1,1 +1,4 @@
-export { translateCustomizationFields } from './translateCustomizationFields'
+export {
+  translateCustomizationDescription,
+  translateCustomizationFields
+} from './translateCustomizationFields'

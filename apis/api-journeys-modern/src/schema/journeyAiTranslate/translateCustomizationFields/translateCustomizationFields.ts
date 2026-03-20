@@ -195,7 +195,7 @@ Return only the translated value, maintaining the same meaning and cultural appr
  * All {{ key }} and {{ key: value }} blocks are preserved exactly as-is without any conversion or rewriting.
  * Only text outside of {{ }} brackets is translated.
  */
-async function translateCustomizationDescription({
+export async function translateCustomizationDescription({
   description,
   sourceLanguageName,
   targetLanguageName,

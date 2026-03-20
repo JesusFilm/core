@@ -3,9 +3,10 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo, useRef } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useJourneyCustomizationDescriptionTranslateMutation } from '@core/journeys/ui/useJourneyCustomizationDescriptionTranslateMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { useAuth } from '../../../libs/auth'
@@ -58,12 +59,46 @@ function renderScreen(
   }
 }
 
+function getLanguageDisplayName(localeCode: string): string {
+  return (
+    new Intl.DisplayNames(['en'], { type: 'language' }).of(localeCode) ??
+    localeCode
+  )
+}
+
 export function MultiStepForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { user } = useAuth()
   const { journey } = useJourney()
   const { customizableMedia, templateCustomizationGuestFlow } = useFlags()
+  const [translateDescription] =
+    useJourneyCustomizationDescriptionTranslateMutation()
+
+  const previousLocaleRef = useRef(router.locale)
+
+  useEffect(() => {
+    const currentLocale = router.locale ?? 'en'
+    const previousLocale = previousLocaleRef.current ?? 'en'
+
+    if (
+      currentLocale !== previousLocale &&
+      journey?.id != null &&
+      journey.journeyCustomizationDescription != null
+    ) {
+      void translateDescription({
+        variables: {
+          input: {
+            journeyId: journey.id,
+            sourceLanguageName: getLanguageDisplayName(previousLocale),
+            targetLanguageName: getLanguageDisplayName(currentLocale)
+          }
+        }
+      })
+    }
+
+    previousLocaleRef.current = currentLocale
+  }, [router.locale, journey?.id, journey?.journeyCustomizationDescription, translateDescription])
 
   const isAnon = user?.isAnonymous ?? false
   const journeyId = journey?.id ?? ''
