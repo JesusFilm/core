@@ -1825,6 +1825,7 @@ export type Mutation = {
   buttonBlockUpdate?: Maybe<ButtonBlock>;
   buttonClickEventCreate: ButtonClickEvent;
   cardBlockCreate: CardBlock;
+  cardBlockUpdate: CardBlock;
   chatButtonCreate: ChatButton;
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
@@ -2159,6 +2160,13 @@ export type MutationButtonClickEventCreateArgs = {
 
 export type MutationCardBlockCreateArgs = {
   input: CardBlockCreateInput;
+};
+
+
+export type MutationCardBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: CardBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
