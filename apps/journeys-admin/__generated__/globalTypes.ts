@@ -592,6 +592,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
+}
+
 export interface JourneyCustomizationFieldInput {
   id: string;
   key: string;

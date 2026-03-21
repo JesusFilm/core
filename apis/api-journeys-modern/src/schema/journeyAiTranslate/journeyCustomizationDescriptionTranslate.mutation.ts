@@ -13,7 +13,8 @@ const JourneyCustomizationDescriptionTranslateInput = builder.inputType(
     fields: (t) => ({
       journeyId: t.id({
         required: true,
-        description: 'The ID of the journey whose customization description to translate'
+        description:
+          'The ID of the journey whose customization description to translate'
       }),
       sourceLanguageName: t.string({
         required: true,
@@ -21,16 +22,17 @@ const JourneyCustomizationDescriptionTranslateInput = builder.inputType(
       }),
       targetLanguageName: t.string({
         required: true,
-        description: 'The language to translate the customization description into'
+        description:
+          'The language to translate the customization description into'
       })
     })
   }
 )
 
-builder.mutationField(
-  'journeyCustomizationDescriptionTranslate',
-  (t) =>
-    t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).prismaField({
+builder.mutationField('journeyCustomizationDescriptionTranslate', (t) =>
+  t
+    .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
+    .prismaField({
       type: 'Journey',
       nullable: false,
       args: {
