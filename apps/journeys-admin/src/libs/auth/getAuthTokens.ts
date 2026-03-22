@@ -46,7 +46,7 @@ export function redirectToLogin(ctx: GetServerSidePropsContext): {
 } {
   const url = new URL(ctx.resolvedUrl, 'https://admin.nextstep.is')
   const existingRedirect = url.searchParams.get('redirect')
-  const redirectTarget = existingRedirect ?? url.pathname
+  const redirectTarget = existingRedirect ?? `${url.pathname}${url.search}`
 
   return {
     redirect: {
