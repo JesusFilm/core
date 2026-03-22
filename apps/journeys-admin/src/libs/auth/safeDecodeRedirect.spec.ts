@@ -18,7 +18,8 @@ describe('safeDecodeRedirect', () => {
   })
 
   it('decodes a complex double-encoded redirect with query params', () => {
-    const doubleEncoded = '%252Fusers%252Fverify%253Fredirect%253D%25252Fsome-page'
+    const doubleEncoded =
+      '%252Fusers%252Fverify%253Fredirect%253D%25252Fsome-page'
     expect(safeDecodeRedirect(doubleEncoded)).toBe(
       '/users/verify?redirect=/some-page'
     )
