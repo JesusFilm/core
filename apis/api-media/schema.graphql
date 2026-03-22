@@ -749,7 +749,8 @@ type Query {
   ): QueryShortLinksConnection!
   userMediaProfile: UserMediaProfile
   videoVariant(id: ID!): VideoVariant!
-  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
+  videoVariants(input: VideoVariantFilter, offset: Int, limit: Int): [VideoVariant!]!
+  videoVariantsCount(input: VideoVariantFilter): Int!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!

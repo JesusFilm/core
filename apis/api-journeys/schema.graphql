@@ -339,13 +339,6 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  buttonBlockUpdate(
-    id: ID!
-    input: ButtonBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): ButtonBlock
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
@@ -570,19 +563,6 @@ type ButtonBlock implements Block
   action: Action
   submitEnabled: Boolean @shareable
   settings: ButtonBlockSettings! @shareable
-}
-
-input ButtonBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  label: String
-  variant: ButtonVariant
-  color: ButtonColor
-  size: ButtonSize
-  startIconId: ID
-  endIconId: ID
-  submitEnabled: Boolean
-  settings: ButtonBlockSettingsInput
 }
 
 type CardBlock implements Block
