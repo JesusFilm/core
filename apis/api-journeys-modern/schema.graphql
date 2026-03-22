@@ -1346,6 +1346,13 @@ type Mutation {
     journeyId: ID
   ): ButtonBlock @override(from: "api-journeys")
   cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock! @override(from: "api-journeys")
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!
