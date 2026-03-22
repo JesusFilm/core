@@ -533,9 +533,9 @@ describe('VideosSection', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.getByPlaceholderText('Paste a YouTube link...')
-    ).toHaveValue('')
+    expect(screen.getByPlaceholderText('Paste a YouTube link...')).toHaveValue(
+      ''
+    )
 
     act(() => {
       jest.advanceTimersByTime(800)
@@ -550,9 +550,9 @@ describe('VideosSection', () => {
       cardBlockId
     })
 
-    expect(
-      screen.getByPlaceholderText('Paste a YouTube link...')
-    ).toHaveValue('https://www.youtube.com/watch?v=youtube-id')
+    expect(screen.getByPlaceholderText('Paste a YouTube link...')).toHaveValue(
+      'https://www.youtube.com/watch?v=youtube-id'
+    )
   })
 
   it('does not re-submit hydrated YouTube URL', () => {
