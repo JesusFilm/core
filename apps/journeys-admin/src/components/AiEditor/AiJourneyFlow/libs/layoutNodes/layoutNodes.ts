@@ -2,8 +2,9 @@ import dagre from '@dagrejs/dagre'
 import { type Edge, type Node, Position } from 'reactflow'
 
 const RANK_DIR = 'LR'
-const RANK_SEP = 120
-const NODE_SEP = 40
+const RANK_SEP = 180
+const NODE_SEP = 60
+const EDGE_SEP = 30
 
 interface LayoutNodesOptions {
   nodeWidth: number
@@ -22,7 +23,8 @@ export function layoutNodes(
   graph.setGraph({
     rankdir: RANK_DIR,
     ranksep: RANK_SEP,
-    nodesep: NODE_SEP
+    nodesep: NODE_SEP,
+    edgesep: EDGE_SEP
   })
 
   for (const node of nodes) {

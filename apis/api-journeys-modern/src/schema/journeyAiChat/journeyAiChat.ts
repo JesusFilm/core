@@ -371,7 +371,7 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
             execute: async (args: { operations: PlanOperation[] }) => args
           })
         },
-        stopWhen: stepCountIs(5),
+        stopWhen: stepCountIs(8),
         abortSignal: abort.signal
       })
 
@@ -404,6 +404,50 @@ builder.subscriptionField('journeyAiChatCreateSubscription', (t) =>
               summary: summarizeToolResult(event.output)
             })
             break
+        }
+      }
+
+      // --- If AI searched images but didn't submit a plan, nudge it to continue ---
+      if (plan == null) {
+        const calledSearchImages = result.steps.some(
+          (step) => step.toolCalls?.some((tc) => tc.toolName === 'search_images')
+        )
+
+        if (calledSearchImages && !abort.signal.aborted) {
+          // Re-run with the accumulated messages to get the plan
+          const continueResult = streamText({
+            model,
+            system: fullSystemPrompt,
+            messages: [
+              ...condensedHistory,
+              { role: 'user' as const, content: userMessage },
+              ...await result.response.then(r => r.messages)
+            ],
+            tools: {
+              search_images: searchImagesTool,
+              submit_plan: tool({
+                description: 'Submit your execution plan as a list of operations.',
+                inputSchema: planOperationArraySchema,
+                execute: async (args: { operations: PlanOperation[] }) => args
+              })
+            },
+            toolChoice: { type: 'tool', toolName: 'submit_plan' },
+            abortSignal: abort.signal
+          })
+
+          for await (const event of continueResult.fullStream) {
+            if (abort.signal.aborted) break
+            switch (event.type) {
+              case 'text-delta':
+                yield msg({ type: 'text', text: event.text })
+                break
+              case 'tool-call':
+                if (event.toolName === 'submit_plan') {
+                  plan = (event.input as { operations: PlanOperation[] }).operations
+                }
+                break
+            }
+          }
         }
       }
 
