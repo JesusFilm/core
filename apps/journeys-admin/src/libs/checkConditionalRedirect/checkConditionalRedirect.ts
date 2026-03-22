@@ -8,6 +8,7 @@ import {
   TeamCreateVariables
 } from '../../../__generated__/TeamCreate'
 import { GET_ME } from '../../components/PageWrapper/NavigationDrawer/UserNavigation'
+import { safeDecodeRedirect } from '../auth/safeDecodeRedirect'
 import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 export const GET_JOURNEY_PROFILE_AND_TEAMS = gql`
@@ -36,10 +37,12 @@ export async function checkConditionalRedirect({
   teamName,
   allowGuest = false
 }: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
-  const currentRedirect = new URL(
+  const rawRedirect = new URL(
     resolvedUrl,
     'https://admin.nextstep.is'
   ).searchParams.get('redirect')
+  const currentRedirect =
+    rawRedirect != null ? safeDecodeRedirect(rawRedirect) : null
   let redirect = ''
 
   if (currentRedirect != null) {

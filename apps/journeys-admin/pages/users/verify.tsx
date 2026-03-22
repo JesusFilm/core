@@ -30,6 +30,7 @@ import {
   redirectToLogin,
   toUser
 } from '../../src/libs/auth/getAuthTokens'
+import { safeDecodeRedirect } from '../../src/libs/auth/safeDecodeRedirect'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../../src/libs/useRedirectNewAccount'
 
@@ -232,10 +233,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     locale: ctx.locale
   })
 
-  const destination =
+  const rawRedirect =
     typeof ctx.query.redirect === 'string' && ctx.query.redirect.length > 0
-      ? `/?redirect=${encodeURIComponent(ctx.query.redirect)}`
-      : '/'
+      ? safeDecodeRedirect(ctx.query.redirect)
+      : null
+  const destination =
+    rawRedirect != null ? `/?redirect=${encodeURIComponent(rawRedirect)}` : '/'
 
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({

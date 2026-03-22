@@ -44,11 +44,14 @@ export async function getAuthTokens(
 export function redirectToLogin(ctx: GetServerSidePropsContext): {
   redirect: { permanent: false; destination: string }
 } {
-  const redirectUrl = ctx.resolvedUrl
+  const url = new URL(ctx.resolvedUrl, 'https://admin.nextstep.is')
+  const existingRedirect = url.searchParams.get('redirect')
+  const redirectTarget = existingRedirect ?? url.pathname
+
   return {
     redirect: {
       permanent: false,
-      destination: `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+      destination: `/users/sign-in?redirect=${encodeURIComponent(redirectTarget)}`
     }
   }
 }
