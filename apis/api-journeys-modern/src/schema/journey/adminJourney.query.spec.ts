@@ -247,9 +247,7 @@ describe('adminJourney', () => {
       variables: { id: 'test-journey' }
     })
 
-    expect(
-      (prismaMock.journey as any).findUniqueOrThrow
-    ).not.toHaveBeenCalled()
+    expect((prismaMock.journey as any).findUniqueOrThrow).not.toHaveBeenCalled()
   })
 
   it('should spread Pothos query into findUniqueOrThrow', async () => {
@@ -268,9 +266,7 @@ describe('adminJourney', () => {
       variables: { id: 'test-journey' }
     })
 
-    expect(
-      (prismaMock.journey as any).findUniqueOrThrow
-    ).toHaveBeenCalledWith(
+    expect((prismaMock.journey as any).findUniqueOrThrow).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { slug: 'test-journey' }
       })

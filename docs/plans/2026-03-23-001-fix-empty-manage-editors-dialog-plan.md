@@ -1,11 +1,11 @@
 ---
-title: "fix: empty Manage Editors dialog due to Pothos _query bypass in adminJourney resolver"
+title: 'fix: empty Manage Editors dialog due to Pothos _query bypass in adminJourney resolver'
 type: fix
 status: active
 date: 2026-03-23
 ---
 
-# fix: empty Manage Editors dialog due to Pothos _query bypass in adminJourney resolver
+# fix: empty Manage Editors dialog due to Pothos \_query bypass in adminJourney resolver
 
 ## Enhancement Summary
 
@@ -14,12 +14,14 @@ date: 2026-03-23
 **Research agents used:** Architecture Strategist, Performance Oracle, Security Sentinel, Code Simplicity Reviewer, Data Integrity Guardian, Best Practices Researcher, Context7 (Pothos docs)
 
 ### Key Improvements
+
 1. Confirmed two-query approach is architecturally sound via Pothos docs (no built-in mechanism to merge auth includes with `query`)
 2. Identified response cache fix as a **security requirement** (not optional) — `session: () => null` leaks data across users
 3. Added error handling for `findUniqueOrThrow` TOCTOU edge case
 4. Documented why `select`-based fields crash but `t.relation` fields don't (Pothos fallback behavior)
 
 ### New Considerations Discovered
+
 - The `session: () => null` response cache pattern is a systemic vulnerability affecting all unlisted authenticated queries — recommend separate audit ticket
 - `journeyAiTranslate.ts` has the same `_query` ignore pattern — flag as tech debt
 - A comment explaining the two-query pattern is needed to prevent future "simplification" that reintroduces the bug
@@ -76,9 +78,11 @@ This matches the established codebase pattern where `adminJourneys` (plural) at 
 **Refactor to `journeyReadAccessWhere` in WHERE clause (rejected):** This is Pattern B in the Pothos community, preferred for list queries. For single-entity lookups, it conflates NOT_FOUND and FORBIDDEN into one error, losing diagnostic value. The `adminJourneys` (plural) query correctly uses Pattern B; `adminJourney` (singular) should use the two-query pattern (Pattern A) — which is what this fix implements.
 
 **Single query with merged includes (security reviewer suggestion):**
+
 ```typescript
 prisma.journey.findUnique({ ...query, where, include: { ...query.include, userJourneys: true, ... } })
 ```
+
 This would fail if Pothos generates `select` instead of `include` — Prisma throws when both are present at the same level. The two-query approach avoids this structural conflict entirely.
 
 ### Research Insights: Performance Impact
@@ -96,6 +100,7 @@ The ACL check (`journeyAcl`) depends on `journey.userJourneys[].userId` and `jou
 ### UserJourney.journeyNotification vs UserTeam.journeyNotification
 
 These use different Pothos mechanisms:
+
 - `UserTeam.journeyNotification` — uses `select:` directive (requires `query` propagation) — **this is what breaks**
 - `UserJourney.journeyNotification` — uses `t.relation()` (triggers a separate Prisma query) — **works independently**
 
@@ -230,12 +235,12 @@ Add tests:
 
 ## Dependencies & Risks
 
-| Risk | Severity | Mitigation |
-|------|----------|-----------|
-| Extra DB round-trip per `adminJourney` call | Low | Expected low overhead (single additional indexed lookup on hot page); validate via APM if needed |
-| `findUniqueOrThrow` throws if journey deleted between queries | Low | Let it throw naturally (INTERNAL_SERVER_ERROR); microsecond TOCTOU window, matches codebase conventions |
-| Cached error responses persist after fix deployed | Medium | TTL 0 prevents future caching; existing cached errors expire with default TTL |
-| Response cache leaks data across users (pre-existing) | **Critical** | TTL 0 fixes `adminJourney`; recommend separate audit for all unlisted authenticated queries |
+| Risk                                                          | Severity     | Mitigation                                                                                              |
+| ------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------- |
+| Extra DB round-trip per `adminJourney` call                   | Low          | Expected low overhead (single additional indexed lookup on hot page); validate via APM if needed        |
+| `findUniqueOrThrow` throws if journey deleted between queries | Low          | Let it throw naturally (INTERNAL_SERVER_ERROR); microsecond TOCTOU window, matches codebase conventions |
+| Cached error responses persist after fix deployed             | Medium       | TTL 0 prevents future caching; existing cached errors expire with default TTL                           |
+| Response cache leaks data across users (pre-existing)         | **Critical** | TTL 0 fixes `adminJourney`; recommend separate audit for all unlisted authenticated queries             |
 
 ## Out of Scope
 
