@@ -622,7 +622,17 @@ export class JourneyResolver {
               !ability.can(Action.Create, subject('Journey', duplicateJourney))
             )
               throw new GraphQLError(
-                `user is not allowed to duplicate journey (userId: ${userId}, teamRoles: [${duplicateJourney.team?.userTeams?.filter((ut) => ut.userId === userId).map((ut) => ut.role).join(',') ?? ''}], journeyRoles: [${duplicateJourney.userJourneys?.filter((uj) => uj.userId === userId).map((uj) => uj.role).join(',') ?? ''}])`,
+                `user is not allowed to duplicate journey (userId: ${userId}, teamRoles: [${
+                  duplicateJourney.team?.userTeams
+                    ?.filter((ut) => ut.userId === userId)
+                    .map((ut) => ut.role)
+                    .join(',') ?? ''
+                }], journeyRoles: [${
+                  duplicateJourney.userJourneys
+                    ?.filter((uj) => uj.userId === userId)
+                    .map((uj) => uj.role)
+                    .join(',') ?? ''
+                }])`,
                 {
                   extensions: { code: 'FORBIDDEN' }
                 }

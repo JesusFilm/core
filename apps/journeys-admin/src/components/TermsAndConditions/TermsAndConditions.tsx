@@ -108,16 +108,44 @@ export function TermsAndConditions(): ReactElement {
           console.log('[DIAG] journeyDuplicate: SUCCESS', result.data)
         } catch (error: unknown) {
           console.error('[DIAG] journeyDuplicate: FAILED')
-          console.error('[DIAG] Error name:', error instanceof Error ? error.name : 'unknown')
-          console.error('[DIAG] Error message:', error instanceof Error ? error.message : String(error))
-          if (error != null && typeof error === 'object' && 'graphQLErrors' in error) {
-            const gqlErrors = (error as { graphQLErrors: Array<{ message: string; extensions?: Record<string, unknown> }> }).graphQLErrors
+          console.error(
+            '[DIAG] Error name:',
+            error instanceof Error ? error.name : 'unknown'
+          )
+          console.error(
+            '[DIAG] Error message:',
+            error instanceof Error ? error.message : String(error)
+          )
+          if (
+            error != null &&
+            typeof error === 'object' &&
+            'graphQLErrors' in error
+          ) {
+            const gqlErrors = (
+              error as {
+                graphQLErrors: Array<{
+                  message: string
+                  extensions?: Record<string, unknown>
+                }>
+              }
+            ).graphQLErrors
             gqlErrors.forEach((gqlErr, i) => {
-              console.error(`[DIAG] GraphQL error ${i}:`, gqlErr.message, gqlErr.extensions)
+              console.error(
+                `[DIAG] GraphQL error ${i}:`,
+                gqlErr.message,
+                gqlErr.extensions
+              )
             })
           }
-          if (error != null && typeof error === 'object' && 'networkError' in error) {
-            console.error('[DIAG] Network error:', (error as { networkError: unknown }).networkError)
+          if (
+            error != null &&
+            typeof error === 'object' &&
+            'networkError' in error
+          ) {
+            console.error(
+              '[DIAG] Network error:',
+              (error as { networkError: unknown }).networkError
+            )
           }
         }
       }
