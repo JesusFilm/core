@@ -15,6 +15,7 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getNextCustomizeScreen } from '../../../utils/getNextCustomizeScreen'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
+import { TemplateCardPreviewDialog } from '../LinksScreen/CardsPreview/TemplateCardPreviewDialog'
 
 interface GuestPreviewScreenProps {
   screens: CustomizationScreen[]
@@ -37,8 +38,21 @@ export function GuestPreviewScreen({
     [journey]
   )
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [clickedStepId, setClickedStepId] = useState<string | null>(null)
+
   const displayDesktop = { xs: 'none', sm: 'block' }
   const displayMobile = { xs: 'block', sm: 'none' }
+
+  function handleCardClick(step: TreeBlock<StepBlock>): void {
+    setClickedStepId(step.id)
+    setDialogOpen(true)
+  }
+
+  function handleDialogClose(): void {
+    setDialogOpen(false)
+    setClickedStepId(null)
+  }
 
   function handleContinueWithAccount(): void {
     const nextScreen = getNextCustomizeScreen(screens, 'guestPreview')
@@ -105,7 +119,13 @@ export function GuestPreviewScreen({
       <Typography variant="subtitle2" color="text.secondary">
         &quot;{journey?.title ?? ''}&quot;
       </Typography>
-      <CardsPreview steps={steps} />
+      <CardsPreview steps={steps} onCardClick={handleCardClick} />
+      <TemplateCardPreviewDialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        steps={steps}
+        initialStepId={clickedStepId}
+      />
       <Card
         variant="outlined"
         sx={{
