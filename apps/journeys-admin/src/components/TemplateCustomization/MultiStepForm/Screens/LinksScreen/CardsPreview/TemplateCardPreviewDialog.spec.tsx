@@ -7,8 +7,18 @@ import {
   TemplateCardPreviewDialogProps
 } from './TemplateCardPreviewDialog'
 
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+
 jest.mock('@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview', () => ({
-  TemplateCardPreview: ({ steps, variant, initialStepId }: any) => (
+  TemplateCardPreview: ({
+    steps,
+    variant,
+    initialStepId
+  }: {
+    steps: unknown[]
+    variant: string
+    initialStepId: string | null
+  }) => (
     <div
       data-testid="TemplateCardPreview"
       data-variant={variant}
@@ -19,14 +29,17 @@ jest.mock('@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPrevie
   )
 }))
 
-function buildSteps(count: number): Array<TreeBlock<any>> {
+function buildSteps(count: number): Array<TreeBlock<StepBlock>> {
   return Array.from({ length: count }, (_, i) => ({
     id: `step-${i}`,
-    __typename: 'StepBlock',
+    __typename: 'StepBlock' as const,
     parentBlockId: null,
     parentOrder: i,
+    locked: false,
+    nextBlockId: null,
+    slug: null,
     children: []
-  })) as Array<TreeBlock<any>>
+  })) as Array<TreeBlock<StepBlock>>
 }
 
 describe('TemplateCardPreviewDialog', () => {
@@ -60,12 +73,12 @@ describe('TemplateCardPreviewDialog', () => {
       <TemplateCardPreviewDialog {...defaultProps} onClose={handleClose} />
     )
 
-    const backdrop = screen.getByTestId('TemplateCardPreviewDialog')
+    const backdrop = screen
+      .getByTestId('TemplateCardPreviewDialog')
       .parentElement?.querySelector('.MuiBackdrop-root')
 
-    if (backdrop != null) {
-      fireEvent.click(backdrop)
-      expect(handleClose).toHaveBeenCalledTimes(1)
-    }
+    expect(backdrop).not.toBeNull()
+    fireEvent.click(backdrop!)
+    expect(handleClose).toHaveBeenCalledTimes(1)
   })
 })

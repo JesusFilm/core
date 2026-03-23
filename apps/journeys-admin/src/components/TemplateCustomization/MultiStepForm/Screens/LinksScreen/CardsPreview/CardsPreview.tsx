@@ -15,9 +15,6 @@ import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
-import { StepFooter } from '@core/journeys/ui/StepFooter'
-import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
@@ -38,7 +35,6 @@ interface CardsPreviewProps {
 interface CardsPreviewItemProps {
   step: TreeBlock<StepBlock>
   onClick?: (step: TreeBlock<StepBlock>) => void
-  steps?: Array<TreeBlock<StepBlock>> | null
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
@@ -60,8 +56,7 @@ export const EDGE_FADE_PX = 40
 
 function CardsPreviewItem({
   step,
-  onClick,
-  steps
+  onClick
 }: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -118,10 +113,6 @@ function CardsPreviewItem({
                 borderRadius: 4
               }}
             >
-              <StepHeader
-                steps={steps as unknown as Array<TreeBlock<StepFields>>}
-                selectedStep={step as unknown as TreeBlock<StepFields>}
-              />
               <BlockRenderer
                 block={step}
                 wrappers={{
@@ -129,7 +120,6 @@ function CardsPreviewItem({
                   CardWrapper
                 }}
               />
-              <StepFooter selectedStep={step as unknown as TreeBlock<StepFields>} />
             </Box>
           </ThemeProvider>
         </FramePortal>
@@ -198,7 +188,7 @@ export function CardsPreview({
               width: 'unset !important'
             }}
           >
-            <CardsPreviewItem step={step} onClick={onCardClick} steps={slidesToRender} />
+            <CardsPreviewItem step={step} onClick={onCardClick} />
           </StyledSwiperSlide>
         ))}
         {steps.length > slidesToRender.length && (

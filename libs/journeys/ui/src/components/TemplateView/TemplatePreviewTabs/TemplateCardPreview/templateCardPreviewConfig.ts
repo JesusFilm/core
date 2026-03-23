@@ -16,7 +16,7 @@ interface FramePortalConfig {
 
 export type BreakpointSwiperOptions = Pick<
   SwiperOptions,
-  'spaceBetween' | 'slidesOffsetBefore' | 'slidesOffsetAfter'
+  'spaceBetween' | 'slidesOffsetBefore'
 >
 
 export interface VariantConfig {
@@ -28,9 +28,9 @@ export interface VariantConfig {
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
   breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
+  maxSlides?: number
   cardSx: SxProps<Theme>
   slideSx: SxProps<Theme>
-  selectedSlideSx: SxProps<Theme>
   swiperSx: SxProps<Theme>
   modules?: SwiperModule[]
   opacity?: number
@@ -50,6 +50,7 @@ const STANDARD_VARIANT_CONFIG: VariantConfig = {
   swiperHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
   showMoreCardsSlide: true,
   showStepHeaderFooter: false,
+  maxSlides: 7,
   framePortal: {
     width: { xs: 485, sm: 445 },
     height: { xs: 738, sm: 673 },
@@ -70,7 +71,6 @@ const STANDARD_VARIANT_CONFIG: VariantConfig = {
     mr: { xs: 3, sm: 7 },
     width: 'unset !important'
   },
-  selectedSlideSx: {},
   swiperSx: {
     overflow: 'visible',
     zIndex: 2
@@ -129,11 +129,6 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
     justifyContent: 'center',
     borderRadius: '12px'
   },
-  selectedSlideSx: {
-    width: COMPACT_CARD_WIDTH * SELECTED_SCALE,
-    height: COMPACT_CARD_HEIGHT * SELECTED_SCALE,
-    zIndex: 1
-  },
   selectedBoxShadow: `0px 1px 8px 0px rgba(0, 0, 0, 0.2),
     0px 3px 3px 0px rgba(0, 0, 0, 0.12),
     0px 3px 4px 0px rgba(0, 0, 0, 0.14)`,
@@ -162,8 +157,8 @@ const GUEST_PREVIEW_VARIANT_CONFIG: VariantConfig = {
     borderRadius: 4
   },
   breakpoints: {
-    xs: { spaceBetween: 16, slidesOffsetAfter: 0 },
-    sm: { spaceBetween: 16, slidesOffsetAfter: 0 }
+    xs: { spaceBetween: 16 },
+    sm: { spaceBetween: 16 }
   },
   cardSx: {
     position: 'relative',
@@ -175,7 +170,6 @@ const GUEST_PREVIEW_VARIANT_CONFIG: VariantConfig = {
     width: 'auto',
     flexShrink: 0
   },
-  selectedSlideSx: {},
   swiperSx: {
     overflow: 'visible',
     zIndex: 2

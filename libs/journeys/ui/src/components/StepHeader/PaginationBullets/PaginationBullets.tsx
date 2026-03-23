@@ -18,11 +18,11 @@ interface PaginationBulletsProps {
 export function PaginationBullets({
   steps: stepsProp,
   selectedStep: selectedStepProp
-}: PaginationBulletsProps = {}): ReactElement {
+}: PaginationBulletsProps): ReactElement {
   const { treeBlocks, blockHistory } = useBlocks()
   const { variant } = useJourney()
 
-  const isPreviewMode = stepsProp != null && selectedStepProp !== undefined
+  const isPreviewMode = stepsProp != null && selectedStepProp != null
 
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const [activeBlock, setActiveBlock] = useState<TreeBlock<StepFields>>(
