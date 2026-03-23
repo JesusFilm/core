@@ -94,17 +94,19 @@ export function TemplateCardPreviewItem({
           borderRadius: framePortal.borderRadius
         }}
       >
-        <Box
-          sx={{
-            position: 'absolute',
-            display: 'block',
-            width: framePortal.width,
-            height: framePortal.height,
-            zIndex: 2,
-            cursor: 'grab',
-            borderRadius: framePortal.borderRadius
-          }}
-        />
+        {variant !== 'guestPreview' && (
+          <Box
+            sx={{
+              position: 'absolute',
+              display: 'block',
+              width: framePortal.width,
+              height: framePortal.height,
+              zIndex: 2,
+              cursor: 'grab',
+              borderRadius: framePortal.borderRadius
+            }}
+          />
+        )}
         <FramePortal
           sx={{
             width: framePortal.width,
@@ -125,6 +127,12 @@ export function TemplateCardPreviewItem({
                 height: '100%',
                 borderRadius: framePortal.borderRadius
               }}
+              {...(variant === 'guestPreview' && {
+                onClickCapture: (e: React.MouseEvent) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }
+              })}
             >
               {config.showStepHeaderFooter && (
                 <StepHeader
