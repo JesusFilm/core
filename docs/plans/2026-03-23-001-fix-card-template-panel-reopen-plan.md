@@ -1,5 +1,5 @@
 ---
-title: "fix: Card template panel fails to reopen after dismissal"
+title: 'fix: Card template panel fails to reopen after dismissal'
 type: fix
 status: active
 date: 2026-03-23
@@ -20,11 +20,11 @@ The "Card Templates" selection panel becomes permanently unavailable after being
 
 **Affected flows:**
 
-| Ticket | Platform | Reproduction |
-|--------|----------|--------------|
-| NES-1320 | Desktop | Close templates on Card A → navigate to empty Card B → templates don't appear |
-| NES-225 | Desktop | Click between blank cards → card properties/templates alternate unpredictably |
-| ENG-1259 | Mobile | Close templates via X → tap "Select Card Template" button again → shows card properties |
+| Ticket   | Platform | Reproduction                                                                            |
+| -------- | -------- | --------------------------------------------------------------------------------------- |
+| NES-1320 | Desktop  | Close templates on Card A → navigate to empty Card B → templates don't appear           |
+| NES-225  | Desktop  | Click between blank cards → card properties/templates alternate unpredictably           |
+| ENG-1259 | Mobile   | Close templates via X → tap "Select Card Template" button again → shows card properties |
 
 **Why local state fails:**
 
@@ -34,11 +34,11 @@ The "Card Templates" selection panel becomes permanently unavailable after being
 
 ### Why simpler alternatives don't work
 
-| Alternative | Handles desktop? | Handles mobile? | Why it fails |
-|-------------|-----------------|-----------------|--------------|
-| `useEffect(() => setShowCardTemplates(true), [selectedStep?.id])` | Yes | **No** | Mobile button doesn't change `selectedStep` — same step, so effect never fires |
-| `<Properties key={selectedStep?.id} />` | Yes | **No** | Same step = same key = no remount. Also discards all other local state on step change |
-| Callback prop from Properties to CardWrapper | N/A | N/A | Components are in entirely different branches of the tree — impractical |
+| Alternative                                                       | Handles desktop? | Handles mobile? | Why it fails                                                                          |
+| ----------------------------------------------------------------- | ---------------- | --------------- | ------------------------------------------------------------------------------------- |
+| `useEffect(() => setShowCardTemplates(true), [selectedStep?.id])` | Yes              | **No**          | Mobile button doesn't change `selectedStep` — same step, so effect never fires        |
+| `<Properties key={selectedStep?.id} />`                           | Yes              | **No**          | Same step = same key = no remount. Also discards all other local state on step change |
+| Callback prop from Properties to CardWrapper                      | N/A              | N/A             | Components are in entirely different branches of the tree — impractical               |
 
 ## Proposed Solution
 
@@ -232,6 +232,7 @@ Add tests following existing patterns (direct `reducer()` calls with `toEqual`):
 **File:** `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/Properties.spec.tsx`
 
 Update existing tests:
+
 - Tests that previously relied on local `useState` toggling now verify dispatched actions via `TestEditorState`
 - Add test: closing Card Templates dispatches `SetShowCardTemplatesAction(false)`
 - Add test: with `showCardTemplates: false` in EditorProvider `initialState`, empty card shows Card Properties
@@ -257,28 +258,28 @@ Add a line to render `showCardTemplates` (use `String()` since boolean `false` r
 
 ## Edge Cases Considered
 
-| Edge Case | Behavior | Why |
-|-----------|----------|-----|
-| Re-click same step after dismissing templates | Card Properties stays (no reset) | `useStepAndBlockSelection` dispatches `SetSelectedBlockAction`, not `SetSelectedStepAction`, for same-step clicks |
-| Undo template selection (card becomes empty) | Card Templates reappear | Undo dispatches `SetEditorFocusAction` → `SetSelectedStepByIdAction` → resets `showCardTemplates: true` |
-| Remove all blocks from card manually | Card Properties stays | No step change occurs; `showCardTemplates` retains current value. Navigate away and back to see templates |
-| `SetStepsAction` changes selected step | No reset | Indirect step change from mutations; not user navigation |
-| `SetEditorFocusAction` with step | Resets to `true` | Delegates to `SetSelectedStepAction` internally |
-| Non-empty card navigation | Card Properties shown | `card.children.length > 0` short-circuits before `showCardTemplates` is checked |
-| Recursive `<Properties block={card}>` call | `showCardTemplates` irrelevant | Inner instance receives CardBlock, not StepBlock — the StepBlock guard doesn't match |
-| `showAnalytics: true` + mobile button | Button unreachable | `SetActiveSlideAction` reducer (line 211) forces `activeSlide` to `0` when analytics are visible, silently overriding `Drawer`. Safe because analytics overlay hides the card preview and template button. **Verify during testing.** |
+| Edge Case                                     | Behavior                         | Why                                                                                                                                                                                                                                   |
+| --------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Re-click same step after dismissing templates | Card Properties stays (no reset) | `useStepAndBlockSelection` dispatches `SetSelectedBlockAction`, not `SetSelectedStepAction`, for same-step clicks                                                                                                                     |
+| Undo template selection (card becomes empty)  | Card Templates reappear          | Undo dispatches `SetEditorFocusAction` → `SetSelectedStepByIdAction` → resets `showCardTemplates: true`                                                                                                                               |
+| Remove all blocks from card manually          | Card Properties stays            | No step change occurs; `showCardTemplates` retains current value. Navigate away and back to see templates                                                                                                                             |
+| `SetStepsAction` changes selected step        | No reset                         | Indirect step change from mutations; not user navigation                                                                                                                                                                              |
+| `SetEditorFocusAction` with step              | Resets to `true`                 | Delegates to `SetSelectedStepAction` internally                                                                                                                                                                                       |
+| Non-empty card navigation                     | Card Properties shown            | `card.children.length > 0` short-circuits before `showCardTemplates` is checked                                                                                                                                                       |
+| Recursive `<Properties block={card}>` call    | `showCardTemplates` irrelevant   | Inner instance receives CardBlock, not StepBlock — the StepBlock guard doesn't match                                                                                                                                                  |
+| `showAnalytics: true` + mobile button         | Button unreachable               | `SetActiveSlideAction` reducer (line 211) forces `activeSlide` to `0` when analytics are visible, silently overriding `Drawer`. Safe because analytics overlay hides the card preview and template button. **Verify during testing.** |
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `libs/journeys/ui/src/libs/EditorProvider/EditorProvider.tsx` | Add `showCardTemplates` to state, action, reducer; clean up duplicate union member |
-| `libs/journeys/ui/src/libs/EditorProvider/EditorProvider.spec.tsx` | Add reducer tests |
-| `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/Properties.tsx` | Replace `useState` with editor state, simplify `onClose` toggle to explicit branches |
-| `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/Properties.spec.tsx` | Update tests for new dispatch pattern |
-| `apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/CardWrapper/CardWrapper.tsx` | Add `SetShowCardTemplatesAction` dispatch with ordering comment |
-| `apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/CardWrapper/CardWrapper.spec.tsx` | Add test for new dispatch |
-| `apps/journeys-admin/src/libs/TestEditorState/TestEditorState.tsx` | Add `showCardTemplates` rendering |
+| File                                                                                                     | Change                                                                               |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `libs/journeys/ui/src/libs/EditorProvider/EditorProvider.tsx`                                            | Add `showCardTemplates` to state, action, reducer; clean up duplicate union member   |
+| `libs/journeys/ui/src/libs/EditorProvider/EditorProvider.spec.tsx`                                       | Add reducer tests                                                                    |
+| `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/Properties.tsx`      | Replace `useState` with editor state, simplify `onClose` toggle to explicit branches |
+| `apps/journeys-admin/src/components/Editor/Slider/Settings/CanvasDetails/Properties/Properties.spec.tsx` | Update tests for new dispatch pattern                                                |
+| `apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/CardWrapper/CardWrapper.tsx`            | Add `SetShowCardTemplatesAction` dispatch with ordering comment                      |
+| `apps/journeys-admin/src/components/Editor/Slider/Content/Canvas/CardWrapper/CardWrapper.spec.tsx`       | Add test for new dispatch                                                            |
+| `apps/journeys-admin/src/libs/TestEditorState/TestEditorState.tsx`                                       | Add `showCardTemplates` rendering                                                    |
 
 ## Sources
 
