@@ -123,6 +123,12 @@ Reviewers should leave questions, comments, and suggestions. Reviewers can comme
 
 You can continue to commit and push changes in response to the reviews. Your pull request will update automatically.
 
+:::tip Cursor Skill
+
+If you use Cursor, the **handle-pr-review** skill can automate this step. Say "handle review feedback" and the agent will fetch unresolved threads, triage each one (fix, challenge, or skip), apply holistic fixes, resolve threads via GraphQL, and post a summary comment — all without blindly accepting every suggestion.
+
+:::
+
 ### Squash and merge your pull request
 
 Once your pull request is approved and all [checks have passed](#our-checks), click the "Squash and merge" button on your pull request. This will automatically merge your branch so that your changes appear on the `main` branch. GitHub retains the history of comments and commits in the pull request to help future contributors understand your changes. For more information, see "[Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request)."
