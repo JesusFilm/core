@@ -617,11 +617,12 @@ export class JourneyResolver {
               throw new GraphQLError('journey not found', {
                 extensions: { code: 'NOT_FOUND' }
               })
+
             if (
               !ability.can(Action.Create, subject('Journey', duplicateJourney))
             )
               throw new GraphQLError(
-                'user is not allowed to duplicate journey',
+                `user is not allowed to duplicate journey (userId: ${userId}, teamRoles: [${duplicateJourney.team?.userTeams?.filter((ut) => ut.userId === userId).map((ut) => ut.role).join(',') ?? ''}], journeyRoles: [${duplicateJourney.userJourneys?.filter((uj) => uj.userId === userId).map((uj) => uj.role).join(',') ?? ''}])`,
                 {
                   extensions: { code: 'FORBIDDEN' }
                 }
@@ -756,7 +757,17 @@ export class JourneyResolver {
           slug = slugify(`${slug}-${duplicateJourneyId}`)
         } else {
           retry = false
-          throw err
+          throw new GraphQLError(
+            `journeyDuplicate failed: ${err instanceof Error ? err.message : String(err)}`,
+            {
+              extensions: {
+                code: err?.extensions?.code ?? 'INTERNAL_SERVER_ERROR',
+                sourceJourneyId: id,
+                teamId,
+                originalError: err instanceof Error ? err.name : typeof err
+              }
+            }
+          )
         }
       }
     }

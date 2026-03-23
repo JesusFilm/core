@@ -93,12 +93,33 @@ export function TermsAndConditions(): ReactElement {
         teamId = newTeam.id
         team = newTeam
 
-        await journeyDuplicate({
-          variables: {
-            id: ONBOARDING_TEMPLATE_ID,
+        // DIAGNOSTIC: Wrap in try-catch to see the exact error in browser console
+        try {
+          console.log('[DIAG] journeyDuplicate: calling with', {
+            templateId: ONBOARDING_TEMPLATE_ID,
             teamId: newTeam.id
+          })
+          const result = await journeyDuplicate({
+            variables: {
+              id: ONBOARDING_TEMPLATE_ID,
+              teamId: newTeam.id
+            }
+          })
+          console.log('[DIAG] journeyDuplicate: SUCCESS', result.data)
+        } catch (error: unknown) {
+          console.error('[DIAG] journeyDuplicate: FAILED')
+          console.error('[DIAG] Error name:', error instanceof Error ? error.name : 'unknown')
+          console.error('[DIAG] Error message:', error instanceof Error ? error.message : String(error))
+          if (error != null && typeof error === 'object' && 'graphQLErrors' in error) {
+            const gqlErrors = (error as { graphQLErrors: Array<{ message: string; extensions?: Record<string, unknown> }> }).graphQLErrors
+            gqlErrors.forEach((gqlErr, i) => {
+              console.error(`[DIAG] GraphQL error ${i}:`, gqlErr.message, gqlErr.extensions)
+            })
           }
-        })
+          if (error != null && typeof error === 'object' && 'networkError' in error) {
+            console.error('[DIAG] Network error:', (error as { networkError: unknown }).networkError)
+          }
+        }
       }
     }
 
