@@ -1,5 +1,5 @@
 ---
-title: "fix: inviteRequested role bypasses journey read ACL in modern API"
+title: 'fix: inviteRequested role bypasses journey read ACL in modern API'
 type: fix
 status: completed
 date: 2026-03-23
@@ -13,6 +13,7 @@ date: 2026-03-23
 **Agents used:** security-sentinel, architecture-strategist, pattern-recognition-specialist, kieran-typescript-reviewer, code-simplicity-reviewer, git-history-analyzer, performance-oracle, best-practices-researcher, codebase-wide ACL auditor
 
 ### Key Improvements from Deepening
+
 1. **Defense-in-depth**: Add explicit role checks on the `userTeam` path too (not just `userJourney`), matching the `update()` pattern exactly — consensus from security, architecture, pattern, and TypeScript reviewers
 2. **Historical context**: Bug is an original oversight from May 2025 when the modern API was written, not a regression. The implicit default-deny of CASL was lost during the imperative port
 3. **Additional affected code path**: `addPermissionsWithNames` in template family stats also routes through the buggy `read()` — automatically fixed by this change
@@ -33,30 +34,27 @@ The `read()` function at `apis/api-journeys-modern/src/schema/journey/journey.ac
 
 ```typescript
 function read(journey: Partial<Journey>, user: User): boolean {
-  const userJourney = journey?.userJourneys?.find(
-    (userJourney) => userJourney.userId === user.id
-  )
-  const userTeam = journey?.team?.userTeams.find(
-    (userTeam) => userTeam.userId === user.id
-  )
-  return userTeam != null || userJourney != null  // ← BUG: doesn't check role
+  const userJourney = journey?.userJourneys?.find((userJourney) => userJourney.userId === user.id)
+  const userTeam = journey?.team?.userTeams.find((userTeam) => userTeam.userId === user.id)
+  return userTeam != null || userJourney != null // ← BUG: doesn't check role
 }
 ```
 
-The comment on line 172 says *"team managers/members and journeys owners/editors can read the journey"* — but the implementation accepts **any** `userJourney` record, including `inviteRequested`.
+The comment on line 172 says _"team managers/members and journeys owners/editors can read the journey"_ — but the implementation accepts **any** `userJourney` record, including `inviteRequested`.
 
 This creates a "half-authorized" state:
 
-| Query | Permission Check | `inviteRequested` Result |
-|-------|-----------------|--------------------------|
-| SSR `adminJourney` | `Action.Read` via `journeyAcl` | **Passes** (bug) — editor shell loads |
-| Plausible stats | `Action.Update` via `journeyAcl` | **Fails** — "User is not allowed to view journey" |
-| `GET_STEP_BLOCKS_WITH_POSITION` | `@CaslAccessible('Block')` | **Fails silently** — returns empty array → blank canvas |
-| Template family stats `addPermissionsWithNames` | `Action.Read` via `ability()` | **Passes** (bug) — leaks journey names/team data |
+| Query                                           | Permission Check                 | `inviteRequested` Result                                |
+| ----------------------------------------------- | -------------------------------- | ------------------------------------------------------- |
+| SSR `adminJourney`                              | `Action.Read` via `journeyAcl`   | **Passes** (bug) — editor shell loads                   |
+| Plausible stats                                 | `Action.Update` via `journeyAcl` | **Fails** — "User is not allowed to view journey"       |
+| `GET_STEP_BLOCKS_WITH_POSITION`                 | `@CaslAccessible('Block')`       | **Fails silently** — returns empty array → blank canvas |
+| Template family stats `addPermissionsWithNames` | `Action.Read` via `ability()`    | **Passes** (bug) — leaks journey names/team data        |
 
 ### Inconsistency with other access paths
 
 `journeyReadAccessWhere()` (same file, lines 36-58) correctly filters by `UserJourneyRole.owner` and `UserJourneyRole.editor` only. This means:
+
 - The `adminJourneys` **list** query excludes `inviteRequested` journeys (user can't see it in the list)
 - But the `adminJourney` **singular** query via direct URL lets them in
 
@@ -77,29 +75,17 @@ Fix the `read()` function to check for specific allowed roles on **both** the jo
 ```typescript
 // Before (buggy):
 function read(journey: Partial<Journey>, user: User): boolean {
-  const userJourney = journey?.userJourneys?.find(
-    (userJourney) => userJourney.userId === user.id
-  )
-  const userTeam = journey?.team?.userTeams.find(
-    (userTeam) => userTeam.userId === user.id
-  )
+  const userJourney = journey?.userJourneys?.find((userJourney) => userJourney.userId === user.id)
+  const userTeam = journey?.team?.userTeams.find((userTeam) => userTeam.userId === user.id)
   return userTeam != null || userJourney != null
 }
 
 // After (fixed):
 function read(journey: Partial<Journey>, user: User): boolean {
-  const userJourney = journey?.userJourneys?.find(
-    (uj) => uj.userId === user.id
-  )
-  const userTeam = journey?.team?.userTeams.find(
-    (ut) => ut.userId === user.id
-  )
-  const hasJourneyReadAccess =
-    userJourney?.role === UserJourneyRole.owner ||
-    userJourney?.role === UserJourneyRole.editor
-  const hasTeamReadAccess =
-    userTeam?.role === UserTeamRole.manager ||
-    userTeam?.role === UserTeamRole.member
+  const userJourney = journey?.userJourneys?.find((uj) => uj.userId === user.id)
+  const userTeam = journey?.team?.userTeams.find((ut) => ut.userId === user.id)
+  const hasJourneyReadAccess = userJourney?.role === UserJourneyRole.owner || userJourney?.role === UserJourneyRole.editor
+  const hasTeamReadAccess = userTeam?.role === UserTeamRole.manager || userTeam?.role === UserTeamRole.member
   return hasJourneyReadAccess || hasTeamReadAccess
 }
 ```
@@ -180,6 +166,7 @@ A user could be a team member (via `userTeam`) AND have an `inviteRequested` `us
 ### User experience after fix
 
 When an `inviteRequested` user navigates to `/journeys/{journeyId}`:
+
 1. `adminJourney` query returns FORBIDDEN error
 2. Frontend catches `'user is not allowed to view journey'` at `pages/journeys/[journeyId].tsx:178`
 3. `AccessDenied` component renders with "Request Access" messaging
@@ -205,7 +192,7 @@ To prevent future drift between `journeyReadAccessWhere()` (Prisma filter) and `
 // journey.acl.roles.ts - single source of truth
 export const JOURNEY_READ_ROLES = {
   userJourney: [UserJourneyRole.owner, UserJourneyRole.editor] as const,
-  userTeam: [UserTeamRole.manager, UserTeamRole.member] as const,
+  userTeam: [UserTeamRole.manager, UserTeamRole.member] as const
 }
 ```
 

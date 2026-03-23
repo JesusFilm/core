@@ -137,9 +137,9 @@ describe('journeyAcl', () => {
     })
 
     it('denies when user has inviteRequested role', () => {
-      expect(
-        can(Action.Manage, journeyUserJourneyInviteRequested, user)
-      ).toBe(false)
+      expect(can(Action.Manage, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {
@@ -235,9 +235,9 @@ describe('journeyAcl', () => {
     })
 
     it('denies when user has inviteRequested role', () => {
-      expect(
-        can(Action.Read, journeyUserJourneyInviteRequested, user)
-      ).toBe(false)
+      expect(can(Action.Read, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {
@@ -263,9 +263,9 @@ describe('journeyAcl', () => {
     })
 
     it('denies when user has inviteRequested role', () => {
-      expect(
-        can(Action.Update, journeyUserJourneyInviteRequested, user)
-      ).toBe(false)
+      expect(can(Action.Update, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {
@@ -300,9 +300,9 @@ describe('journeyAcl', () => {
     })
 
     it('denies when user has inviteRequested role', () => {
-      expect(
-        can(Action.Delete, journeyUserJourneyInviteRequested, user)
-      ).toBe(false)
+      expect(can(Action.Delete, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
   })
 
@@ -324,9 +324,9 @@ describe('journeyAcl', () => {
     })
 
     it('denies when user has inviteRequested role', () => {
-      expect(
-        can(Action.Export, journeyUserJourneyInviteRequested, user)
-      ).toBe(false)
+      expect(can(Action.Export, journeyUserJourneyInviteRequested, user)).toBe(
+        false
+      )
     })
 
     it('denies when user has no userTeam or userJourneys', () => {
