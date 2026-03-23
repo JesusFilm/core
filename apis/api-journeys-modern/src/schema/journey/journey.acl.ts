@@ -172,14 +172,18 @@ function create(journey: Partial<Journey>, user: User): boolean {
 // team managers/members and journeys owners/editors can read the journey
 function read(journey: Partial<Journey>, user: User): boolean {
   const userJourney = journey?.userJourneys?.find(
-    (userJourney) => userJourney.userId === user.id
+    (uj) => uj.userId === user.id
   )
-
   const userTeam = journey?.team?.userTeams.find(
-    (userTeam) => userTeam.userId === user.id
+    (ut) => ut.userId === user.id
   )
-
-  return userTeam != null || userJourney != null
+  const hasJourneyReadAccess =
+    userJourney?.role === UserJourneyRole.owner ||
+    userJourney?.role === UserJourneyRole.editor
+  const hasTeamReadAccess =
+    userTeam?.role === UserTeamRole.manager ||
+    userTeam?.role === UserTeamRole.member
+  return hasJourneyReadAccess || hasTeamReadAccess
 }
 
 // team managers/members and journeys owners/editors can update the journey
