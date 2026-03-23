@@ -56,8 +56,8 @@ const FRAME_HEIGHT = 773
 const IFRAME_SCALE = CONTAINER_WIDTH / FRAME_WIDTH
 const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 
-// Spacing and offsets
-export const EDGE_FADE_PX = 40
+// TODO: Decide if edge fade is needed based on feedback — uncomment to restore
+// export const EDGE_FADE_PX = 40
 
 function CardsPreviewItem({
   step,
@@ -202,7 +202,8 @@ export function CardsPreview({
       centerInsufficientSlides
       slidesPerView="auto"
       spaceBetween={12}
-      slidesOffsetBefore={EDGE_FADE_PX}
+      // TODO: Decide if edge fade is needed based on feedback — uncomment to restore
+      // slidesOffsetBefore={EDGE_FADE_PX}
       observer
       observeParents
       sx={{
@@ -210,9 +211,10 @@ export function CardsPreview({
         overflow: 'hidden',
         zIndex: 2,
         height: CONTAINER_HEIGHT + 15,
-        width: '100%',
-        maskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`,
-        WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
+        width: '100%'
+        // TODO: Decide if edge fade is needed based on feedback — uncomment to restore
+        // maskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`,
+        // WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
       }}
     >
       {slidesToRender.map((step) => (
