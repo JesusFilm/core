@@ -35,3 +35,25 @@ type CardBlock implements Block @shareable {
   """
   themeName: ThemeName @shareable
 }
+
+input CardBlockUpdateInput {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  coverBlockId: ID
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+extend type Mutation {
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): CardBlock!
+}
