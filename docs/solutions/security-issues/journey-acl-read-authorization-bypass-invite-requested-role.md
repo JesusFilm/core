@@ -40,7 +40,7 @@ This created a confusing "half-authorized" state: the page loaded but nothing in
 The `read()` function in `apis/api-journeys-modern/src/schema/journey/journey.acl.ts` checked only for the **existence** of `userJourney` and `userTeam` records:
 
 ```typescript
-return userTeam != null || userJourney != null  // BUG
+return userTeam != null || userJourney != null // BUG
 ```
 
 It did not validate the role value. Since `inviteRequested` creates a `userJourney` record, the null check passed, granting read access to users who should have been denied.
@@ -58,16 +58,13 @@ Replace the permissive null check with explicit role validation, matching the pa
 return userTeam != null || userJourney != null
 
 // After (fixed):
-const hasJourneyReadAccess =
-  userJourney?.role === UserJourneyRole.owner ||
-  userJourney?.role === UserJourneyRole.editor
-const hasTeamReadAccess =
-  userTeam?.role === UserTeamRole.manager ||
-  userTeam?.role === UserTeamRole.member
+const hasJourneyReadAccess = userJourney?.role === UserJourneyRole.owner || userJourney?.role === UserJourneyRole.editor
+const hasTeamReadAccess = userTeam?.role === UserTeamRole.manager || userTeam?.role === UserTeamRole.member
 return hasJourneyReadAccess || hasTeamReadAccess
 ```
 
 **Tests added** (`journey.acl.spec.ts`):
+
 - `inviteRequested` denied for all 5 actions (Read, Update, Manage, Delete, Export)
 - Dual-role edge case: user with `inviteRequested` journey role + `member` team role = allowed via team path
 
@@ -82,8 +79,7 @@ The anti-pattern to watch for in ACL code:
 return userJourney != null
 
 // CORRECT — checks the role explicitly
-return userJourney?.role === UserJourneyRole.owner ||
-       userJourney?.role === UserJourneyRole.editor
+return userJourney?.role === UserJourneyRole.owner || userJourney?.role === UserJourneyRole.editor
 ```
 
 ## Prevention
@@ -91,6 +87,7 @@ return userJourney?.role === UserJourneyRole.owner ||
 1. **Test every enum value against every ACL function.** The bug survived because no test exercised `inviteRequested` against `read()`. Use a role-exhaustive test matrix.
 
 2. **Keep enforcement paths in sync.** The Prisma filter (`journeyReadAccessWhere`) and runtime check (`read()`) must agree. Consider shared role constants:
+
    ```typescript
    const JOURNEY_READ_ROLES = [UserJourneyRole.owner, UserJourneyRole.editor] as const
    ```
