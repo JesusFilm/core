@@ -84,6 +84,7 @@ export const yoga = createYoga<
           cache,
           ttlPerSchemaCoordinate: {
             'Journey.blockTypenames': 0,
+            'Query.adminJourney': 0,
             'Query.adminJourneys': 0,
             'Query.getJourneyProfile': 1000,
             'Query.getUserRole': 0,
