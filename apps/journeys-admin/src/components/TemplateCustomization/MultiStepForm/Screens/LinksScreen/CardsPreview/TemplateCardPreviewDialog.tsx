@@ -24,6 +24,7 @@ export function TemplateCardPreviewDialog({
     <Dialog
       open={open}
       onClose={onClose}
+      aria-label="Card preview"
       data-testid="TemplateCardPreviewDialog"
       fullWidth
       maxWidth={false}

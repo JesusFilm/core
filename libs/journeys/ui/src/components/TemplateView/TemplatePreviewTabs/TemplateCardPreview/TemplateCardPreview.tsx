@@ -196,7 +196,8 @@ export function TemplateCardPreview({
               height: {
                 xs: cardHeight.xs * SELECTED_SCALE,
                 sm: cardHeight.sm * SELECTED_SCALE
-              }
+              },
+              zIndex: 1
             }
           : {}
         return (

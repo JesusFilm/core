@@ -73,6 +73,19 @@ function CardsPreviewItem({
   return (
     <Box
       onClick={onClick != null ? () => onClick(step) : undefined}
+      onKeyDown={
+        onClick != null
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick(step)
+              }
+            }
+          : undefined
+      }
+      role={onClick != null ? 'button' : undefined}
+      tabIndex={onClick != null ? 0 : undefined}
+      aria-label={onClick != null ? `Open preview for card ${step.id}` : undefined}
       sx={{
         position: 'relative',
         width: CONTAINER_WIDTH,

@@ -11,6 +11,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
+import { VARIANT_CONFIGS } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/templateCardPreviewConfig'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -130,7 +131,10 @@ export function DoneScreen(): ReactElement {
           sx={{
             transform: 'scale(0.7)',
             transformOrigin: 'top center',
-            height: { xs: 520 * 0.7, sm: 640 * 0.7 }
+            height: {
+              xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * 0.7,
+              sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * 0.7
+            }
           }}
         >
           <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
