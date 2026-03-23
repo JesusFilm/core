@@ -2,32 +2,35 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+
 import {
   TemplateCardPreviewDialog,
   TemplateCardPreviewDialogProps
 } from './TemplateCardPreviewDialog'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-
-jest.mock('@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview', () => ({
-  TemplateCardPreview: ({
-    steps,
-    variant,
-    initialStepId
-  }: {
-    steps: unknown[]
-    variant: string
-    initialStepId: string | null
-  }) => (
-    <div
-      data-testid="TemplateCardPreview"
-      data-variant={variant}
-      data-initial-step-id={initialStepId}
-    >
-      {steps?.length ?? 0} steps
-    </div>
-  )
-}))
+jest.mock(
+  '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview',
+  () => ({
+    TemplateCardPreview: ({
+      steps,
+      variant,
+      initialStepId
+    }: {
+      steps: unknown[]
+      variant: string
+      initialStepId: string | null
+    }) => (
+      <div
+        data-testid="TemplateCardPreview"
+        data-variant={variant}
+        data-initial-step-id={initialStepId}
+      >
+        {steps?.length ?? 0} steps
+      </div>
+    )
+  })
+)
 
 function buildSteps(count: number): Array<TreeBlock<StepBlock>> {
   return Array.from({ length: count }, (_, i) => ({
@@ -78,7 +81,7 @@ describe('TemplateCardPreviewDialog', () => {
       .parentElement?.querySelector('.MuiBackdrop-root')
 
     expect(backdrop).not.toBeNull()
-    fireEvent.click(backdrop!)
+    fireEvent.click(backdrop)
     expect(handleClose).toHaveBeenCalledTimes(1)
   })
 })

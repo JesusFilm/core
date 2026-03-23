@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
-import { useEditor } from '../../libs/EditorProvider'
 import { TreeBlock } from '../../libs/block'
+import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import {
@@ -17,8 +17,8 @@ import {
   hasHostAvatar,
   hasHostDetails
 } from '../Card/utils/getFooterElements'
-import { InformationButton } from '../StepHeader/InformationButton'
 import { StepFields } from '../Step/__generated__/StepFields'
+import { InformationButton } from '../StepHeader/InformationButton'
 
 import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'

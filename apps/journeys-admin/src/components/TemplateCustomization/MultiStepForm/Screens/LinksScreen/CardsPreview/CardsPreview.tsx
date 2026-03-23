@@ -170,84 +170,84 @@ export function CardsPreview({
       observer
       observeParents
       sx={{
-          pr: 2,
-          overflow: 'hidden',
-          zIndex: 2,
-          height: CONTAINER_HEIGHT + 15,
-          width: '100%',
-          maskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`,
-          WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
-        }}
-      >
-        {slidesToRender.map((step) => (
-          <StyledSwiperSlide
-            data-testid="CardsSwiperSlide"
-            key={step.id}
+        pr: 2,
+        overflow: 'hidden',
+        zIndex: 2,
+        height: CONTAINER_HEIGHT + 15,
+        width: '100%',
+        maskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`,
+        WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
+      }}
+    >
+      {slidesToRender.map((step) => (
+        <StyledSwiperSlide
+          data-testid="CardsSwiperSlide"
+          key={step.id}
+          sx={{
+            zIndex: 2,
+            width: 'unset !important'
+          }}
+        >
+          <CardsPreviewItem step={step} onClick={onCardClick} />
+        </StyledSwiperSlide>
+      ))}
+      {steps.length > slidesToRender.length && (
+        <StyledSwiperSlide
+          data-testid="CardsRemainingSlide"
+          sx={{
+            width: 'unset !important',
+            cursor: 'grab',
+            zIndex: 2
+          }}
+        >
+          <Stack
+            alignItems="center"
+            justifyContent="center"
+            gap={2}
             sx={{
-              zIndex: 2,
-              width: 'unset !important'
+              width: CONTAINER_WIDTH,
+              height: CONTAINER_HEIGHT,
+              borderRadius: 2,
+              backgroundColor: 'secondary.main',
+              px: 1
             }}
           >
-            <CardsPreviewItem step={step} onClick={onCardClick} />
-          </StyledSwiperSlide>
-        ))}
-        {steps.length > slidesToRender.length && (
-          <StyledSwiperSlide
-            data-testid="CardsRemainingSlide"
-            sx={{
-              width: 'unset !important',
-              cursor: 'grab',
-              zIndex: 2
-            }}
-          >
-            <Stack
-              alignItems="center"
-              justifyContent="center"
-              gap={2}
-              sx={{
-                width: CONTAINER_WIDTH,
-                height: CONTAINER_HEIGHT,
-                borderRadius: 2,
-                backgroundColor: 'secondary.main',
-                px: 1
-              }}
+            <Typography
+              variant="overline2"
+              color="background.paper"
+              textAlign="center"
             >
-              <Typography
-                variant="overline2"
-                color="background.paper"
-                textAlign="center"
-              >
-                {t('{{count}} more cards', {
-                  count: steps.length - slidesToRender.length
-                })}
-              </Typography>
-            </Stack>
-            <Box
-              sx={{
-                position: 'relative',
-                bottom: CONTAINER_HEIGHT - 5,
-                left: 10,
-                zIndex: -1,
-                minWidth: CONTAINER_WIDTH,
-                height: CONTAINER_HEIGHT,
-                borderRadius: 2,
-                backgroundColor: 'secondary.light'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                left: 21,
-                top: 11,
-                zIndex: -2,
-                minWidth: CONTAINER_WIDTH,
-                height: CONTAINER_HEIGHT,
-                borderRadius: 2,
-                backgroundColor: 'divider'
-              }}
-            />
-          </StyledSwiperSlide>
-        )}
+              {t('{{count}} more cards', {
+                count: steps.length - slidesToRender.length
+              })}
+            </Typography>
+          </Stack>
+          <Box
+            sx={{
+              position: 'relative',
+              bottom: CONTAINER_HEIGHT - 5,
+              left: 10,
+              zIndex: -1,
+              minWidth: CONTAINER_WIDTH,
+              height: CONTAINER_HEIGHT,
+              borderRadius: 2,
+              backgroundColor: 'secondary.light'
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              left: 21,
+              top: 11,
+              zIndex: -2,
+              minWidth: CONTAINER_WIDTH,
+              height: CONTAINER_HEIGHT,
+              borderRadius: 2,
+              backgroundColor: 'divider'
+            }}
+          />
+        </StyledSwiperSlide>
+      )}
     </StyledSwiper>
   )
 }

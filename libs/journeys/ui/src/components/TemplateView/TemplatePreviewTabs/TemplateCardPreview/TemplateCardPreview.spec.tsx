@@ -240,7 +240,9 @@ describe('TemplateCardPreview', () => {
         </MockedProvider>
       )
       await waitFor(() =>
-        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(3)
+        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
+          3
+        )
       )
     })
   })

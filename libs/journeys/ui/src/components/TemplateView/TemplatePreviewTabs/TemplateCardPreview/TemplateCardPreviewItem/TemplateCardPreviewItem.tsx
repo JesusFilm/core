@@ -17,9 +17,9 @@ import {
 import { BlockRenderer } from '../../../../BlockRenderer'
 import { CardWrapper } from '../../../../CardWrapper'
 import { FramePortal } from '../../../../FramePortal'
+import { StepFields } from '../../../../Step/__generated__/StepFields'
 import { StepFooter } from '../../../../StepFooter'
 import { StepHeader } from '../../../../StepHeader'
-import { StepFields } from '../../../../Step/__generated__/StepFields'
 import { VideoWrapper } from '../../../../VideoWrapper'
 import {
   SELECTED_SCALE,

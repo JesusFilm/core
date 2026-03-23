@@ -2,10 +2,7 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import type { SwiperModule, SwiperOptions } from 'swiper/types'
 
-export type TemplateCardPreviewVariant =
-  | 'standard'
-  | 'compact'
-  | 'guestPreview'
+export type TemplateCardPreviewVariant = 'standard' | 'compact' | 'guestPreview'
 
 interface FramePortalConfig {
   width: { xs: number; sm: number }

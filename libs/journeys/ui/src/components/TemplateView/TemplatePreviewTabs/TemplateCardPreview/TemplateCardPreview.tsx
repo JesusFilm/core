@@ -188,17 +188,17 @@ export function TemplateCardPreview({
         const isSelected =
           config.selectedBoxShadow != null && selectedStep?.id === step.id
         const selectedSlideStyles = isSelected
-            ? {
-                width: {
-                  xs: cardWidth.xs * SELECTED_SCALE,
-                  sm: cardWidth.sm * SELECTED_SCALE
-                },
-                height: {
-                  xs: cardHeight.xs * SELECTED_SCALE,
-                  sm: cardHeight.sm * SELECTED_SCALE
-                }
+          ? {
+              width: {
+                xs: cardWidth.xs * SELECTED_SCALE,
+                sm: cardWidth.sm * SELECTED_SCALE
+              },
+              height: {
+                xs: cardHeight.xs * SELECTED_SCALE,
+                sm: cardHeight.sm * SELECTED_SCALE
               }
-            : {}
+            }
+          : {}
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
