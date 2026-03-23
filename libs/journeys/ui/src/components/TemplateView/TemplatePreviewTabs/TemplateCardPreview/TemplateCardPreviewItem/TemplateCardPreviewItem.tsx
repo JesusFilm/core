@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
+import { ThemeName } from '@core/shared/ui/themes'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
-  ThemeMode,
-  ThemeName
+  ThemeMode
 } from '../../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../../libs/block'
 import { useJourney } from '../../../../../libs/JourneyProvider'
@@ -116,7 +116,7 @@ export function TemplateCardPreviewItem({
           dir={rtl ? 'rtl' : 'ltr'}
         >
           <ThemeProvider
-            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeName={ThemeName.journeyUi}
             themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
@@ -134,13 +134,21 @@ export function TemplateCardPreviewItem({
                   selectedStep={step as unknown as TreeBlock<StepFields>}
                 />
               )}
-              <BlockRenderer
-                block={step}
-                wrappers={{
-                  VideoWrapper,
-                  CardWrapper
-                }}
-              />
+              <ThemeProvider
+                themeName={cardBlock?.themeName ?? ThemeName.base}
+                themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+                rtl={rtl}
+                locale={locale}
+                nested
+              >
+                <BlockRenderer
+                  block={step}
+                  wrappers={{
+                    VideoWrapper,
+                    CardWrapper
+                  }}
+                />
+              </ThemeProvider>
               {config.showStepHeaderFooter && (
                 <StepFooter
                   selectedStep={step as unknown as TreeBlock<StepFields>}

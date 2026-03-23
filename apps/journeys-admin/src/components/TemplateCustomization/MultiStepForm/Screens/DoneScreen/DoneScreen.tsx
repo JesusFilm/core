@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -125,7 +126,15 @@ export function DoneScreen(): ReactElement {
       }
     >
       {steps.length > 0 && (
-        <TemplateCardPreviewItem step={steps[0]} variant="standard" />
+        <Box
+          sx={{
+            transform: 'scale(0.7)',
+            transformOrigin: 'top center',
+            height: { xs: 520 * 0.7, sm: 640 * 0.7 }
+          }}
+        >
+          <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
+        </Box>
       )}
 
       <Stack

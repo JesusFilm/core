@@ -15,7 +15,11 @@ import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
+import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
+import { ThemeName as SharedThemeName } from '@core/shared/ui/themes'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import {
@@ -35,6 +39,7 @@ interface CardsPreviewProps {
 interface CardsPreviewItemProps {
   step: TreeBlock<StepBlock>
   onClick?: (step: TreeBlock<StepBlock>) => void
+  steps?: Array<TreeBlock<StepBlock>>
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
@@ -56,7 +61,8 @@ export const EDGE_FADE_PX = 40
 
 function CardsPreviewItem({
   step,
-  onClick
+  onClick,
+  steps
 }: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
@@ -101,7 +107,7 @@ function CardsPreviewItem({
           dir={rtl ? 'rtl' : 'ltr'}
         >
           <ThemeProvider
-            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeName={SharedThemeName.journeyUi}
             themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
@@ -113,12 +119,33 @@ function CardsPreviewItem({
                 borderRadius: 4
               }}
             >
-              <BlockRenderer
-                block={step}
-                wrappers={{
-                  VideoWrapper,
-                  CardWrapper
-                }}
+              <StepHeader
+                steps={
+                  steps as unknown as Array<TreeBlock<StepFields>>
+                }
+                selectedStep={
+                  step as unknown as TreeBlock<StepFields>
+                }
+              />
+              <ThemeProvider
+                themeName={cardBlock?.themeName ?? ThemeName.base}
+                themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+                rtl={rtl}
+                locale={locale}
+                nested
+              >
+                <BlockRenderer
+                  block={step}
+                  wrappers={{
+                    VideoWrapper,
+                    CardWrapper
+                  }}
+                />
+              </ThemeProvider>
+              <StepFooter
+                selectedStep={
+                  step as unknown as TreeBlock<StepFields>
+                }
               />
             </Box>
           </ThemeProvider>
@@ -188,7 +215,7 @@ export function CardsPreview({
             width: 'unset !important'
           }}
         >
-          <CardsPreviewItem step={step} onClick={onCardClick} />
+          <CardsPreviewItem step={step} onClick={onCardClick} steps={slidesToRender} />
         </StyledSwiperSlide>
       ))}
       {steps.length > slidesToRender.length && (

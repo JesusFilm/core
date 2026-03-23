@@ -28,7 +28,7 @@ export function TemplateCardPreviewDialog({
       fullWidth
       maxWidth={false}
       slotProps={{
-        backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.7)' } },
+        backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.85)' } },
         paper: {
           sx: {
             background: 'transparent',

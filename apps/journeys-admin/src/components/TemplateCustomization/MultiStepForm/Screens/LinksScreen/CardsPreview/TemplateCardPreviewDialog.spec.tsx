@@ -80,8 +80,8 @@ describe('TemplateCardPreviewDialog', () => {
       .getByTestId('TemplateCardPreviewDialog')
       .parentElement?.querySelector('.MuiBackdrop-root')
 
-    expect(backdrop).not.toBeNull()
-    fireEvent.click(backdrop)
+    expect(backdrop).toBeDefined()
+    fireEvent.click(backdrop as Element)
     expect(handleClose).toHaveBeenCalledTimes(1)
   })
 })
