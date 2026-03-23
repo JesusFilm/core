@@ -126,7 +126,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
 
   if (selectedBlock?.__typename === 'StepBlock') {
     const card = selectedBlock.children[0]
-    if (card?.children.length > 0 || !state.showCardTemplates) {
+    if (card?.children.length > 0 || state.showCardTemplates === false) {
       return <Properties block={card} step={selectedStep} />
     }
   }
