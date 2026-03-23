@@ -168,6 +168,15 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockRestore is used for redo/undo
   """
   blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
+  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   iconBlockUpdate(
     id: ID!
@@ -351,15 +360,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): ButtonBlock @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  cardBlockCreate(input: CardBlockCreateInput!) : CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectBlockCreate(input: MultiselectBlockCreateInput!) : MultiselectBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   multiselectBlockUpdate(
     id: ID!
@@ -1319,11 +1319,11 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   subtitleLanguage: Language
   showGeneratedSubtitles: Boolean
   customizable: Boolean
+  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Publisher notes for template adapters (e.g. trailer, intro).
   """
-  notes: String
-  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
+  notes: String @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -3914,6 +3914,29 @@ input ButtonBlockSettingsInput @join__type(graph: API_JOURNEYS)  @join__type(gra
   color: String
 }
 
+input CardBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  eventLabel: BlockEventLabel
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  parentBlockId: ID
+  eventLabel: BlockEventLabel
+  coverBlockId: ID
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
 input IconBlockCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   ID should be unique Response UUID (Provided for optimistic mutation result matching)
@@ -4724,29 +4747,6 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   LinkAction - url of the link
   """
   actionValue: String
-}
-
-input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input CardBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  coverBlockId: ID
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
 }
 
 input ChatActionInput @join__type(graph: API_JOURNEYS_MODERN)  {

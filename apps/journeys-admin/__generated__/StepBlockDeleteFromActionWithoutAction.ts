@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock {
-  __typename: "ImageBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "CardBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "ButtonBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
@@ -27,7 +27,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromActionWithoutAction_blockDelete = StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "IconBlock" | "RadioQuestionBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "CardBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
