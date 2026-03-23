@@ -153,6 +153,8 @@ export function VideosSection({
       setYoutubeUrl(canonicalUrl)
       lastSubmittedRef.current.set(videoBlock.id, canonicalUrl)
     }
+    // Only reset on card switch — adding videoBlock deps would re-fire
+    // after every YouTube mutation (journey context updates videoId).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardBlockId])
 
