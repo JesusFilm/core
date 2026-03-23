@@ -240,6 +240,19 @@ describe('journeyAcl', () => {
       )
     })
 
+    it('allows when user has inviteRequested role but is team member', () => {
+      const journey = {
+        id: 'journeyId',
+        userJourneys: [
+          { userId: user.id, role: UserJourneyRole.inviteRequested }
+        ],
+        team: {
+          userTeams: [{ userId: user.id, role: UserTeamRole.member }]
+        }
+      } as unknown as Journey
+      expect(can(Action.Read, journey, user)).toBe(true)
+    })
+
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Read, journeyEmpty, user)).toBe(false)
     })
