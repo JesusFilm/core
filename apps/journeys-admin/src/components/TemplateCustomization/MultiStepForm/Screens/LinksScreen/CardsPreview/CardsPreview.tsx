@@ -15,6 +15,7 @@ import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
@@ -118,8 +119,8 @@ function CardsPreviewItem({
               }}
             >
               <StepHeader
-                steps={steps as any}
-                selectedStep={step as any}
+                steps={steps as unknown as Array<TreeBlock<StepFields>>}
+                selectedStep={step as unknown as TreeBlock<StepFields>}
               />
               <BlockRenderer
                 block={step}
@@ -128,7 +129,7 @@ function CardsPreviewItem({
                   CardWrapper
                 }}
               />
-              <StepFooter selectedStep={step as any} />
+              <StepFooter selectedStep={step as unknown as TreeBlock<StepFields>} />
             </Box>
           </ThemeProvider>
         </FramePortal>

@@ -62,16 +62,9 @@ describe('TemplateCardPreviewItem', () => {
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })
 
-  it('should render guestPreviewDesktop variant', () => {
+  it('should render guestPreview variant', () => {
     const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="guestPreviewDesktop" />
-    )
-    expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
-  })
-
-  it('should render guestPreviewMobile variant', () => {
-    const { getByTestId } = renderWithProviders(
-      <TemplateCardPreviewItem step={step} variant="guestPreviewMobile" />
+      <TemplateCardPreviewItem step={step} variant="guestPreview" />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
   })

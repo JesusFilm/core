@@ -67,14 +67,10 @@ export function TemplateCardPreviewItem({
   } = config
   const isSelected = selectedStep?.id === step.id
 
-  const baseTransform =
-    framePortal.transform ??
-    (framePortal.scale != null
-      ? {
-          xs: `scale(${framePortal.scale.xs})`,
-          sm: `scale(${framePortal.scale.sm})`
-        }
-      : { xs: 'scale(1)', sm: 'scale(1)' })
+  const baseTransform = {
+    xs: `scale(${framePortal.scale.xs})`,
+    sm: `scale(${framePortal.scale.sm})`
+  }
 
   return (
     <Box
@@ -132,10 +128,12 @@ export function TemplateCardPreviewItem({
                 borderRadius: framePortal.borderRadius
               }}
             >
-              <StepHeader
-                steps={steps}
-                selectedStep={step as unknown as TreeBlock<StepFields>}
-              />
+              {config.showStepHeaderFooter && (
+                <StepHeader
+                  steps={steps}
+                  selectedStep={step as unknown as TreeBlock<StepFields>}
+                />
+              )}
               <BlockRenderer
                 block={step}
                 wrappers={{
@@ -143,9 +141,11 @@ export function TemplateCardPreviewItem({
                   CardWrapper
                 }}
               />
-              <StepFooter
-                selectedStep={step as unknown as TreeBlock<StepFields>}
-              />
+              {config.showStepHeaderFooter && (
+                <StepFooter
+                  selectedStep={step as unknown as TreeBlock<StepFields>}
+                />
+              )}
             </Box>
           </ThemeProvider>
         </FramePortal>

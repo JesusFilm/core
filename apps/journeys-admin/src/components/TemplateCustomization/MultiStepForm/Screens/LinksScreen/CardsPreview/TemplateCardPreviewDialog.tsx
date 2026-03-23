@@ -49,34 +49,17 @@ export function TemplateCardPreviewDialog({
       <Box
         sx={{
           pointerEvents: 'auto',
-          position: 'relative'
+          position: 'relative',
+          width: '100%',
+          py: 8,
+          px: 2
         }}
       >
-        <Box
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            width: '100%',
-            py: 8,
-            px: 2
-          }}
-        >
-          <TemplateCardPreview
-            steps={steps}
-            variant="guestPreviewDesktop"
-            initialStepId={initialStepId}
-          />
-        </Box>
-        <Box
-          sx={{
-            display: { xs: 'block', sm: 'none' }
-          }}
-        >
-          <TemplateCardPreview
-            steps={steps}
-            variant="guestPreviewMobile"
-            initialStepId={initialStepId}
-          />
-        </Box>
+        <TemplateCardPreview
+          steps={steps}
+          variant="guestPreview"
+          initialStepId={initialStepId}
+        />
       </Box>
     </Dialog>
   )

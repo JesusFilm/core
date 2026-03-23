@@ -89,13 +89,13 @@ function getSpacerWidth(
 /**
  * Horizontal carousel of template step cards with optional "more cards" slide.
  *
- * TemplateCardPreview has four variants:
+ * TemplateCardPreview has three variants:
  *
  * 'standard': Renders the first 7 steps plus a "use this template" call-to-action. Used on the /templates page.
  *
  * 'compact': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
  *
- * 'guestPreviewDesktop' / 'guestPreviewMobile': Full-size single-card preview used in the guest preview dialog.
+ * 'guestPreview': Full-size responsive preview used in the guest preview dialog.
  *
  * @param props - Component props
  * @param props.steps - Journey step blocks to display as cards
@@ -125,30 +125,21 @@ export function TemplateCardPreview({
     showMoreCardsSlide,
     swiperProps,
     slideSx,
-    selectedSlideSx,
     swiperSx,
-    modules
+    modules,
+    breakpoints: variantBreakpoints
   } = config
 
-  const isGuestPreviewVariant =
-    variant === 'guestPreviewDesktop' || variant === 'guestPreviewMobile'
-
-  const variantBreakpoints = VARIANT_CONFIGS[variant].breakpoints
-  const swiperBreakpoints: SwiperOptions['breakpoints'] | undefined =
-    variantBreakpoints != null
-      ? {
-          [breakpoints.values.xs]: variantBreakpoints.xs,
-          [breakpoints.values.sm]: variantBreakpoints.sm
-        }
-      : undefined
+  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
+    [breakpoints.values.xs]: variantBreakpoints.xs,
+    [breakpoints.values.sm]: variantBreakpoints.sm
+  }
 
   const slidesToRender =
     steps != null
-      ? isGuestPreviewVariant
-        ? steps
-        : variant === 'compact'
-          ? steps
-          : take(steps, 7)
+      ? variant === 'standard'
+        ? take(steps, 7)
+        : steps
       : []
 
   const initialSlide =
@@ -172,16 +163,11 @@ export function TemplateCardPreview({
   }, [swiper, selectedStep])
 
   if (steps == null) {
-    const placeholderBreakpoints =
-      config.breakpoints ?? {
-        xs: { spaceBetween: 0, slidesOffsetBefore: 0 },
-        sm: { spaceBetween: 0, slidesOffsetBefore: 0 }
-      }
     return (
       <TemplateCardPreviewPlaceholder
         cardWidth={cardWidth}
         cardHeight={cardHeight}
-        breakpoints={placeholderBreakpoints}
+        breakpoints={variantBreakpoints}
       />
     )
   }
@@ -191,7 +177,7 @@ export function TemplateCardPreview({
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
-      initialSlide={isGuestPreviewVariant ? initialSlide : undefined}
+      initialSlide={initialStepId != null ? initialSlide : undefined}
       {...swiperProps}
         sx={{
           ...swiperSx,
@@ -229,13 +215,13 @@ export function TemplateCardPreview({
             </StyledSwiperSlide>
           )
         })}
-        {variant === 'compact' && config.breakpoints != null && (
+        {variant === 'compact' && (
           <StyledSwiperSlide
             data-testid="MediaSpacerSlide"
             sx={{
               width: {
-                xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
-                sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
+                xs: getSpacerWidth(cardWidth.xs, variantBreakpoints.xs),
+                sm: getSpacerWidth(cardWidth.sm, variantBreakpoints.sm)
               }
             }}
           />

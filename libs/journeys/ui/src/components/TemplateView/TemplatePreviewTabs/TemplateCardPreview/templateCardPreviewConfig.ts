@@ -5,14 +5,12 @@ import type { SwiperModule, SwiperOptions } from 'swiper/types'
 export type TemplateCardPreviewVariant =
   | 'standard'
   | 'compact'
-  | 'guestPreviewDesktop'
-  | 'guestPreviewMobile'
+  | 'guestPreview'
 
 interface FramePortalConfig {
   width: { xs: number; sm: number }
   height: { xs: number; sm: number }
-  scale?: { xs: number; sm: number }
-  transform?: { xs: string; sm: string }
+  scale: { xs: number; sm: number }
   borderRadius?: number | string
 }
 
@@ -25,10 +23,11 @@ export interface VariantConfig {
   cardWidth: { xs: number; sm: number }
   cardHeight: { xs: number; sm: number }
   swiperHeight: { xs: number; sm: number }
-  showMoreCardsSlide?: boolean
+  showMoreCardsSlide: boolean
+  showStepHeaderFooter: boolean
   framePortal: FramePortalConfig
   swiperProps?: Partial<SwiperOptions>
-  breakpoints?: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
+  breakpoints: { xs: BreakpointSwiperOptions; sm: BreakpointSwiperOptions }
   cardSx: SxProps<Theme>
   slideSx: SxProps<Theme>
   selectedSlideSx: SxProps<Theme>
@@ -50,6 +49,7 @@ const STANDARD_VARIANT_CONFIG: VariantConfig = {
   cardHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
   swiperHeight: { xs: STANDARD_CARD_HEIGHT_XS, sm: STANDARD_CARD_HEIGHT_SM },
   showMoreCardsSlide: true,
+  showStepHeaderFooter: false,
   framePortal: {
     width: { xs: 485, sm: 445 },
     height: { xs: 738, sm: 673 },
@@ -95,6 +95,7 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
     sm: COMPACT_CARD_HEIGHT * SELECTED_SCALE
   },
   showMoreCardsSlide: false,
+  showStepHeaderFooter: false,
   framePortal: {
     width: { xs: 300, sm: 300 },
     height: { xs: 523, sm: 523 },
@@ -148,91 +149,21 @@ const COMPACT_VARIANT_CONFIG: VariantConfig = {
   opacity: 0.75
 }
 
-const GUEST_PREVIEW_DESKTOP_CARD_WIDTH = 360
-const GUEST_PREVIEW_DESKTOP_CARD_HEIGHT = 640
-
-const GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG: VariantConfig = {
-  cardWidth: {
-    xs: GUEST_PREVIEW_DESKTOP_CARD_WIDTH,
-    sm: GUEST_PREVIEW_DESKTOP_CARD_WIDTH
-  },
-  cardHeight: {
-    xs: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT,
-    sm: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT
-  },
-  swiperHeight: {
-    xs: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT,
-    sm: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT
-  },
+const GUEST_PREVIEW_VARIANT_CONFIG: VariantConfig = {
+  cardWidth: { xs: 300, sm: 360 },
+  cardHeight: { xs: 520, sm: 640 },
+  swiperHeight: { xs: 520, sm: 640 },
   showMoreCardsSlide: false,
+  showStepHeaderFooter: true,
   framePortal: {
-    width: {
-      xs: GUEST_PREVIEW_DESKTOP_CARD_WIDTH,
-      sm: GUEST_PREVIEW_DESKTOP_CARD_WIDTH
-    },
-    height: {
-      xs: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT,
-      sm: GUEST_PREVIEW_DESKTOP_CARD_HEIGHT
-    },
+    width: { xs: 300, sm: 360 },
+    height: { xs: 520, sm: 640 },
+    scale: { xs: 1, sm: 1 },
     borderRadius: 4
   },
   breakpoints: {
     xs: { spaceBetween: 16, slidesOffsetAfter: 0 },
     sm: { spaceBetween: 16, slidesOffsetAfter: 0 }
-  },
-  cardSx: {
-    position: 'relative',
-    backgroundColor: 'background.transparent',
-    borderRadius: 12
-  },
-  slideSx: {
-    zIndex: 2,
-    width: 'auto',
-    flexShrink: 0
-  },
-  selectedSlideSx: {},
-  swiperSx: {
-    overflow: 'visible',
-    zIndex: 2
-  },
-  swiperProps: {
-    mousewheel: { forceToAxis: true },
-    watchOverflow: true,
-    slidesPerView: 'auto',
-    spaceBetween: 16,
-    centeredSlides: true,
-    observer: true,
-    observeParents: true
-  },
-  modules: [Mousewheel, A11y]
-}
-
-const GUEST_PREVIEW_MOBILE_CARD_WIDTH = 300
-const GUEST_PREVIEW_MOBILE_CARD_HEIGHT = 520
-
-const GUEST_PREVIEW_MOBILE_VARIANT_CONFIG: VariantConfig = {
-  cardWidth: {
-    xs: GUEST_PREVIEW_MOBILE_CARD_WIDTH,
-    sm: GUEST_PREVIEW_MOBILE_CARD_WIDTH
-  },
-  cardHeight: {
-    xs: GUEST_PREVIEW_MOBILE_CARD_HEIGHT,
-    sm: GUEST_PREVIEW_MOBILE_CARD_HEIGHT
-  },
-  swiperHeight: {
-    xs: GUEST_PREVIEW_MOBILE_CARD_HEIGHT,
-    sm: GUEST_PREVIEW_MOBILE_CARD_HEIGHT
-  },
-  framePortal: {
-    width: {
-      xs: GUEST_PREVIEW_MOBILE_CARD_WIDTH,
-      sm: GUEST_PREVIEW_MOBILE_CARD_WIDTH
-    },
-    height: {
-      xs: GUEST_PREVIEW_MOBILE_CARD_HEIGHT,
-      sm: GUEST_PREVIEW_MOBILE_CARD_HEIGHT
-    },
-    borderRadius: 4
   },
   cardSx: {
     position: 'relative',
@@ -267,6 +198,5 @@ export const VARIANT_CONFIGS: Record<
 > = {
   standard: STANDARD_VARIANT_CONFIG,
   compact: COMPACT_VARIANT_CONFIG,
-  guestPreviewDesktop: GUEST_PREVIEW_DESKTOP_VARIANT_CONFIG,
-  guestPreviewMobile: GUEST_PREVIEW_MOBILE_VARIANT_CONFIG
+  guestPreview: GUEST_PREVIEW_VARIANT_CONFIG
 }
