@@ -85,7 +85,9 @@ function CardsPreviewItem({
       }
       role={onClick != null ? 'button' : undefined}
       tabIndex={onClick != null ? 0 : undefined}
-      aria-label={onClick != null ? `Open preview for card ${step.id}` : undefined}
+      aria-label={
+        onClick != null ? `Open preview for card ${step.id}` : undefined
+      }
       sx={{
         position: 'relative',
         width: CONTAINER_WIDTH,
