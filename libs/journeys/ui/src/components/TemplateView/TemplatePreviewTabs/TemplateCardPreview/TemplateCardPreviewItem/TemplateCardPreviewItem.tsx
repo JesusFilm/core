@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { ThemeName } from '@core/shared/ui/themes'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
 
-import {
-  ThemeMode
-} from '../../../../../../__generated__/globalTypes'
+import { ThemeMode } from '../../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../../libs/block'
 import { useJourney } from '../../../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../../../libs/rtl'

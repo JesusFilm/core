@@ -19,8 +19,8 @@ import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
-import { ThemeName as SharedThemeName } from '@core/shared/ui/themes'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName as SharedThemeName } from '@core/shared/ui/themes'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -120,12 +120,8 @@ function CardsPreviewItem({
               }}
             >
               <StepHeader
-                steps={
-                  steps as unknown as Array<TreeBlock<StepFields>>
-                }
-                selectedStep={
-                  step as unknown as TreeBlock<StepFields>
-                }
+                steps={steps as unknown as Array<TreeBlock<StepFields>>}
+                selectedStep={step as unknown as TreeBlock<StepFields>}
               />
               <ThemeProvider
                 themeName={cardBlock?.themeName ?? ThemeName.base}
@@ -143,9 +139,7 @@ function CardsPreviewItem({
                 />
               </ThemeProvider>
               <StepFooter
-                selectedStep={
-                  step as unknown as TreeBlock<StepFields>
-                }
+                selectedStep={step as unknown as TreeBlock<StepFields>}
               />
             </Box>
           </ThemeProvider>
@@ -215,7 +209,11 @@ export function CardsPreview({
             width: 'unset !important'
           }}
         >
-          <CardsPreviewItem step={step} onClick={onCardClick} steps={slidesToRender} />
+          <CardsPreviewItem
+            step={step}
+            onClick={onCardClick}
+            steps={slidesToRender}
+          />
         </StyledSwiperSlide>
       ))}
       {steps.length > slidesToRender.length && (
