@@ -1,5 +1,5 @@
 ---
-title: "adminJourney resolver ignores Pothos query parameter causing empty Manage Editors dialog"
+title: 'adminJourney resolver ignores Pothos query parameter causing empty Manage Editors dialog'
 category: logic-errors
 date: 2026-03-23
 tags:
@@ -11,8 +11,8 @@ tags:
   - apollo-client
   - journeys-admin
 module: apis/api-journeys-modern
-symptom: "Manage Editors dialog shows empty editor list for all users — no errors visible in UI"
-root_cause: "adminJourney resolver prefixed query param with underscore (_query), preventing Pothos select directive propagation; UserTeam.journeyNotification crashed on undefined; Apollo Client errorPolicy discarded entire response"
+symptom: 'Manage Editors dialog shows empty editor list for all users — no errors visible in UI'
+root_cause: 'adminJourney resolver prefixed query param with underscore (_query), preventing Pothos select directive propagation; UserTeam.journeyNotification crashed on undefined; Apollo Client errorPolicy discarded entire response'
 severity: high
 ---
 
@@ -53,6 +53,7 @@ The `adminJourney` resolver in `adminJourney.query.ts` ignored the Pothos `_quer
 6. `AccessDialog` receives `data === undefined` → renders empty lists
 
 **Key insight — `select` vs `t.relation` fallback behavior:**
+
 - **`select` on a field:** Tells Pothos to add data to the parent's `query`. If parent ignores `query`, data is simply **missing** — no fallback, no separate query. Crashes.
 - **`t.relation`:** Has automatic fallback — Pothos issues efficient `findUnique` queries to resolve missing data, batched for performance. Works even if `query` is ignored.
 
@@ -64,10 +65,7 @@ This is why `UserTeam.journeyNotification` (select) crashed while `UserJourney.j
 
 ```typescript
 resolve: async (query, _parent, args, context) => {
-  const where: Prisma.JourneyWhereUniqueInput =
-    args.idType === 'slug'
-      ? { slug: String(args.id) }
-      : { id: String(args.id) }
+  const where: Prisma.JourneyWhereUniqueInput = args.idType === 'slug' ? { slug: String(args.id) } : { id: String(args.id) }
 
   // Fetch with ACL-required includes for authorization check.
   // This is intentionally a separate query from the data fetch below
