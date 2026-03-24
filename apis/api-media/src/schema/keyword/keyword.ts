@@ -27,11 +27,9 @@ builder.queryFields((t) => ({
     type: ['Keyword'],
     nullable: false,
     args: {
-      where: t.arg({ type: KeywordsFilter, required: false }),
-      offset: t.arg.int({ required: false }),
-      limit: t.arg.int({ required: false })
+      where: t.arg({ type: KeywordsFilter, required: false })
     },
-    resolve: async (query, _parent, { where, offset, limit }) =>
+    resolve: async (query, _parent, { where }) =>
       await prisma.keyword.findMany({
         ...query,
         where: {
@@ -39,9 +37,7 @@ builder.queryFields((t) => ({
             where?.updatedSince != null
               ? { gte: where.updatedSince }
               : undefined
-        },
-        skip: offset ?? undefined,
-        take: limit ?? 250
+        }
       })
   })
 }))

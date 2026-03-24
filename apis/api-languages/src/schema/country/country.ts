@@ -71,8 +71,6 @@ builder.asEntity(Country, {
 
 const CountriesFilter = builder.inputType('CountriesFilter', {
   fields: (t) => ({
-    ids: t.idList(),
-    term: t.string(),
     updatedSince: t.field({ type: 'DateTime', required: false })
   })
 })
@@ -99,20 +97,18 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { term, ids, where }) => {
       const filter: Prisma.CountryWhereInput = {}
-      const effectiveTerm = where?.term ?? term
-      const effectiveIds = where?.ids ?? ids
-      if (effectiveTerm != null) {
+      if (term != null) {
         filter.name = {
           some: {
             value: {
-              contains: parseFullTextSearch(effectiveTerm),
+              contains: parseFullTextSearch(term),
               mode: 'insensitive'
             }
           }
         }
       }
-      if (effectiveIds != null) {
-        filter.id = { in: effectiveIds }
+      if (ids != null) {
+        filter.id = { in: ids }
       }
       if (where?.updatedSince != null) {
         filter.updatedAt = { gte: where.updatedSince }

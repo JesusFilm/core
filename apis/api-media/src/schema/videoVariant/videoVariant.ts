@@ -467,7 +467,7 @@ builder.queryFields((t) => ({
               : undefined
         },
         skip: offset ?? undefined,
-        take: limit ?? 100
+        take: limit ?? undefined
       })
   }),
   videoVariantsCount: t.int({
