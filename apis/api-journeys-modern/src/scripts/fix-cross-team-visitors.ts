@@ -44,46 +44,55 @@ export async function findMismatchedRecords(
   `
 }
 
-export async function fixMismatchedRecord(
+async function fixWithVisitorCreation(
   db: PrismaClient,
   record: MismatchedRecord,
+  result: FixResult,
   dryRun: boolean
 ): Promise<FixResult> {
-  const result: FixResult = {
-    journeyVisitorId: record.journeyVisitorId,
-    journeyId: record.journeyId,
-    wrongVisitorId: record.wrongVisitorId,
-    correctVisitorId: null,
-    action: 'skipped',
-    eventsUpdated: 0
+  result.action = 'created_visitor_and_reassigned'
+
+  if (dryRun) {
+    const eventCount = await db.event.count({
+      where: {
+        journeyId: record.journeyId,
+        visitorId: record.wrongVisitorId
+      }
+    })
+    result.eventsUpdated = eventCount
+    result.correctVisitorId = '<would-be-created>'
+    return result
   }
 
-  let correctVisitor: Visitor | null = await db.visitor.findFirst({
+  const wrongVisitor = await db.visitor.findUnique({
+    where: { id: record.wrongVisitorId }
+  })
+
+  if (wrongVisitor == null) {
+    result.action = 'skipped'
+    return result
+  }
+
+  const wrongJV = await db.journeyVisitor.findUnique({
+    where: { id: record.journeyVisitorId }
+  })
+
+  if (wrongJV == null) {
+    result.action = 'skipped'
+    return result
+  }
+
+  const eventCount = await db.event.count({
     where: {
-      teamId: record.journeyTeamId,
-      userId: record.userId
+      journeyId: record.journeyId,
+      visitorId: record.wrongVisitorId
     }
   })
 
-  const needsVisitorCreation = correctVisitor == null
+  result.eventsUpdated = eventCount
 
-  if (needsVisitorCreation) {
-    if (dryRun) {
-      result.action = 'created_visitor_and_reassigned'
-      result.correctVisitorId = '<would-be-created>'
-      return result
-    }
-
-    const wrongVisitor = await db.visitor.findUnique({
-      where: { id: record.wrongVisitorId }
-    })
-
-    if (wrongVisitor == null) {
-      result.action = 'skipped'
-      return result
-    }
-
-    correctVisitor = await db.visitor.create({
+  const createdVisitor = await db.$transaction(async (tx) => {
+    const visitor = await tx.visitor.create({
       data: {
         teamId: record.journeyTeamId,
         userId: record.userId,
@@ -98,9 +107,69 @@ export async function fixMismatchedRecord(
         userAgent: wrongVisitor.userAgent ?? undefined
       }
     })
+
+    await tx.event.updateMany({
+      where: {
+        journeyId: record.journeyId,
+        visitorId: record.wrongVisitorId
+      },
+      data: {
+        visitorId: visitor.id
+      }
+    })
+
+    await tx.journeyVisitor.delete({
+      where: { id: record.journeyVisitorId }
+    })
+
+    await tx.journeyVisitor.create({
+      data: {
+        journeyId: record.journeyId,
+        visitorId: visitor.id,
+        duration: wrongJV.duration,
+        activityCount: wrongJV.activityCount,
+        lastChatStartedAt: wrongJV.lastChatStartedAt,
+        lastChatPlatform: wrongJV.lastChatPlatform,
+        lastStepViewedAt: wrongJV.lastStepViewedAt,
+        lastLinkAction: wrongJV.lastLinkAction,
+        lastTextResponse: wrongJV.lastTextResponse,
+        lastRadioQuestion: wrongJV.lastRadioQuestion,
+        lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission,
+        lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
+      }
+    })
+
+    return visitor
+  })
+
+  result.correctVisitorId = createdVisitor.id
+  return result
+}
+
+export async function fixMismatchedRecord(
+  db: PrismaClient,
+  record: MismatchedRecord,
+  dryRun: boolean
+): Promise<FixResult> {
+  const result: FixResult = {
+    journeyVisitorId: record.journeyVisitorId,
+    journeyId: record.journeyId,
+    wrongVisitorId: record.wrongVisitorId,
+    correctVisitorId: null,
+    action: 'skipped',
+    eventsUpdated: 0
   }
 
-  if (correctVisitor == null) return result
+  const correctVisitor: Visitor | null = await db.visitor.findFirst({
+    where: {
+      teamId: record.journeyTeamId,
+      userId: record.userId
+    }
+  })
+
+  if (correctVisitor == null) {
+    return await fixWithVisitorCreation(db, record, result, dryRun)
+  }
 
   result.correctVisitorId = correctVisitor.id
 
@@ -198,11 +267,18 @@ export async function fixMismatchedRecord(
       })
     ])
   } else {
-    result.action = needsVisitorCreation
-      ? 'created_visitor_and_reassigned'
-      : 'reassigned'
+    result.action = 'reassigned'
 
     if (dryRun) return result
+
+    const wrongJV = await db.journeyVisitor.findUnique({
+      where: { id: record.journeyVisitorId }
+    })
+
+    if (wrongJV == null) {
+      result.action = 'skipped'
+      return result
+    }
 
     await db.$transaction([
       db.event.updateMany({
@@ -220,7 +296,17 @@ export async function fixMismatchedRecord(
       db.journeyVisitor.create({
         data: {
           journeyId: record.journeyId,
-          visitorId: correctVisitor.id
+          visitorId: correctVisitor.id,
+          duration: wrongJV.duration,
+          activityCount: wrongJV.activityCount,
+          lastChatStartedAt: wrongJV.lastChatStartedAt,
+          lastChatPlatform: wrongJV.lastChatPlatform,
+          lastStepViewedAt: wrongJV.lastStepViewedAt,
+          lastLinkAction: wrongJV.lastLinkAction,
+          lastTextResponse: wrongJV.lastTextResponse,
+          lastRadioQuestion: wrongJV.lastRadioQuestion,
+          lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission,
+          lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
         }
       })
     ])

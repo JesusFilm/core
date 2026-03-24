@@ -152,16 +152,33 @@ describe('fix-cross-team-visitors', () => {
     })
 
     describe('when correct visitor exists but no correct JourneyVisitor (reassign)', () => {
-      it('should move events and recreate JourneyVisitor with correct visitor', async () => {
+      it('should move events and recreate JourneyVisitor preserving aggregate fields', async () => {
         const record = makeMismatchedRecord()
         const correctVisitor = {
           id: 'visitor-correct',
           teamId: 'team-correct',
           userId: 'user-1'
         }
+        const wrongJV = {
+          id: 'jv-wrong',
+          journeyId: 'journey-1',
+          visitorId: 'visitor-wrong-team',
+          activityCount: 4,
+          duration: 120,
+          lastStepViewedAt: new Date('2025-09-26'),
+          lastChatStartedAt: null,
+          lastChatPlatform: null,
+          lastTextResponse: 'hello',
+          lastRadioQuestion: 'Q1',
+          lastRadioOptionSubmission: 'A1',
+          lastLinkAction: null,
+          lastMultiselectSubmission: null
+        }
 
         prismaMock.visitor.findFirst.mockResolvedValue(correctVisitor as any)
-        prismaMock.journeyVisitor.findUnique.mockResolvedValue(null)
+        prismaMock.journeyVisitor.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce(wrongJV as any)
         prismaMock.event.count.mockResolvedValue(2)
         prismaMock.$transaction.mockResolvedValue([])
 
@@ -179,8 +196,41 @@ describe('fix-cross-team-visitors', () => {
           where: { id: 'jv-wrong' }
         })
         expect(prismaMock.journeyVisitor.create).toHaveBeenCalledWith({
-          data: { journeyId: 'journey-1', visitorId: 'visitor-correct' }
+          data: {
+            journeyId: 'journey-1',
+            visitorId: 'visitor-correct',
+            duration: 120,
+            activityCount: 4,
+            lastStepViewedAt: new Date('2025-09-26'),
+            lastChatStartedAt: null,
+            lastChatPlatform: null,
+            lastTextResponse: 'hello',
+            lastRadioQuestion: 'Q1',
+            lastRadioOptionSubmission: 'A1',
+            lastLinkAction: null,
+            lastMultiselectSubmission: null
+          }
         })
+      })
+
+      it('should skip when wrong JourneyVisitor disappeared during reassign', async () => {
+        const record = makeMismatchedRecord()
+        const correctVisitor = {
+          id: 'visitor-correct',
+          teamId: 'team-correct',
+          userId: 'user-1'
+        }
+
+        prismaMock.visitor.findFirst.mockResolvedValue(correctVisitor as any)
+        prismaMock.journeyVisitor.findUnique
+          .mockResolvedValueOnce(null)
+          .mockResolvedValueOnce(null)
+        prismaMock.event.count.mockResolvedValue(0)
+
+        const result = await fixMismatchedRecord(prismaMock, record, false)
+
+        expect(result.action).toBe('skipped')
+        expect(prismaMock.$transaction).not.toHaveBeenCalled()
       })
 
       it('should report reassign in dry run without modifying data', async () => {
@@ -203,7 +253,7 @@ describe('fix-cross-team-visitors', () => {
     })
 
     describe('when no correct visitor exists (create + reassign)', () => {
-      it('should create visitor and reassign JourneyVisitor', async () => {
+      it('should create visitor and reassign in a single interactive transaction', async () => {
         const record = makeMismatchedRecord()
         const wrongVisitor = {
           id: 'visitor-wrong-team',
@@ -219,6 +269,21 @@ describe('fix-cross-team-visitors', () => {
           messagePlatformId: null,
           userAgent: null
         }
+        const wrongJV = {
+          id: 'jv-wrong',
+          journeyId: 'journey-1',
+          visitorId: 'visitor-wrong-team',
+          activityCount: 2,
+          duration: 60,
+          lastStepViewedAt: null,
+          lastChatStartedAt: null,
+          lastChatPlatform: null,
+          lastTextResponse: 'response',
+          lastRadioQuestion: null,
+          lastRadioOptionSubmission: null,
+          lastLinkAction: null,
+          lastMultiselectSubmission: null
+        }
         const createdVisitor = {
           id: 'visitor-new',
           teamId: 'team-correct',
@@ -227,15 +292,20 @@ describe('fix-cross-team-visitors', () => {
 
         prismaMock.visitor.findFirst.mockResolvedValue(null)
         prismaMock.visitor.findUnique.mockResolvedValue(wrongVisitor as any)
-        prismaMock.visitor.create.mockResolvedValue(createdVisitor as any)
-        prismaMock.journeyVisitor.findUnique.mockResolvedValue(null)
+        prismaMock.journeyVisitor.findUnique.mockResolvedValue(wrongJV as any)
         prismaMock.event.count.mockResolvedValue(1)
-        prismaMock.$transaction.mockResolvedValue([])
+        prismaMock.visitor.create.mockResolvedValue(createdVisitor as any)
+        prismaMock.$transaction.mockImplementation(async (fn: any) =>
+          fn(prismaMock)
+        )
 
         const result = await fixMismatchedRecord(prismaMock, record, false)
 
         expect(result.action).toBe('created_visitor_and_reassigned')
         expect(result.correctVisitorId).toBe('visitor-new')
+        expect(prismaMock.$transaction).toHaveBeenCalledWith(
+          expect.any(Function)
+        )
         expect(prismaMock.visitor.create).toHaveBeenCalledWith({
           data: expect.objectContaining({
             teamId: 'team-correct',
@@ -244,17 +314,35 @@ describe('fix-cross-team-visitors', () => {
             email: 'test@example.com'
           })
         })
+        expect(prismaMock.journeyVisitor.create).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            journeyId: 'journey-1',
+            visitorId: 'visitor-new',
+            lastTextResponse: 'response',
+            duration: 60,
+            activityCount: 2
+          })
+        })
+        expect(prismaMock.event.updateMany).toHaveBeenCalledWith({
+          where: { journeyId: 'journey-1', visitorId: 'visitor-wrong-team' },
+          data: { visitorId: 'visitor-new' }
+        })
+        expect(prismaMock.journeyVisitor.delete).toHaveBeenCalledWith({
+          where: { id: 'jv-wrong' }
+        })
       })
 
       it('should report creation in dry run and return early', async () => {
         const record = makeMismatchedRecord()
 
         prismaMock.visitor.findFirst.mockResolvedValue(null)
+        prismaMock.event.count.mockResolvedValue(3)
 
         const result = await fixMismatchedRecord(prismaMock, record, true)
 
         expect(result.action).toBe('created_visitor_and_reassigned')
         expect(result.correctVisitorId).toBe('<would-be-created>')
+        expect(result.eventsUpdated).toBe(3)
         expect(prismaMock.visitor.create).not.toHaveBeenCalled()
         expect(prismaMock.$transaction).not.toHaveBeenCalled()
       })
@@ -271,6 +359,33 @@ describe('fix-cross-team-visitors', () => {
 
         expect(result.action).toBe('skipped')
         expect(prismaMock.visitor.create).not.toHaveBeenCalled()
+      })
+
+      it('should skip creation when wrong JourneyVisitor disappeared', async () => {
+        const record = makeMismatchedRecord()
+        const wrongVisitor = {
+          id: 'visitor-wrong-team',
+          teamId: 'team-wrong',
+          userId: 'user-1',
+          name: null,
+          email: null,
+          phone: null,
+          countryCode: null,
+          referrer: null,
+          status: null,
+          messagePlatform: null,
+          messagePlatformId: null,
+          userAgent: null
+        }
+
+        prismaMock.visitor.findFirst.mockResolvedValue(null)
+        prismaMock.visitor.findUnique.mockResolvedValue(wrongVisitor as any)
+        prismaMock.journeyVisitor.findUnique.mockResolvedValue(null)
+
+        const result = await fixMismatchedRecord(prismaMock, record, false)
+
+        expect(result.action).toBe('skipped')
+        expect(prismaMock.$transaction).not.toHaveBeenCalled()
       })
 
       it('should skip merge when wrong JourneyVisitor disappeared', async () => {
