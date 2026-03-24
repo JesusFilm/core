@@ -18,7 +18,8 @@ interface MismatchedRecord {
 interface FixResult {
   journeyVisitorId: string
   journeyId: string
-  action: 'merged' | 'reassigned' | 'created_visitor_and_reassigned' | 'skipped'
+  action: 'merged' | 'skipped'
+  skipReason?: string
   wrongVisitorId: string
   correctVisitorId: string | null
   eventsUpdated: number
@@ -44,106 +45,46 @@ export async function findMismatchedRecords(
   `
 }
 
-async function fixWithVisitorCreation(
-  db: PrismaClient,
-  record: MismatchedRecord,
-  result: FixResult,
-  dryRun: boolean
-): Promise<FixResult> {
-  result.action = 'created_visitor_and_reassigned'
-
-  if (dryRun) {
-    const eventCount = await db.event.count({
-      where: {
-        journeyId: record.journeyId,
-        visitorId: record.wrongVisitorId
-      }
-    })
-    result.eventsUpdated = eventCount
-    result.correctVisitorId = '<would-be-created>'
-    return result
+function buildMergeData(
+  wrongJV: JourneyVisitor,
+  correctJV: JourneyVisitor
+): Record<string, unknown> {
+  return {
+    activityCount: { increment: wrongJV.activityCount },
+    duration: { increment: wrongJV.duration },
+    ...(wrongJV.lastStepViewedAt != null &&
+    (correctJV.lastStepViewedAt == null ||
+      wrongJV.lastStepViewedAt > correctJV.lastStepViewedAt)
+      ? { lastStepViewedAt: wrongJV.lastStepViewedAt }
+      : {}),
+    ...(wrongJV.lastChatStartedAt != null &&
+    (correctJV.lastChatStartedAt == null ||
+      wrongJV.lastChatStartedAt > correctJV.lastChatStartedAt)
+      ? {
+          lastChatStartedAt: wrongJV.lastChatStartedAt,
+          lastChatPlatform: wrongJV.lastChatPlatform
+        }
+      : {}),
+    ...(wrongJV.lastTextResponse != null &&
+    correctJV.lastTextResponse == null
+      ? { lastTextResponse: wrongJV.lastTextResponse }
+      : {}),
+    ...(wrongJV.lastRadioQuestion != null &&
+    correctJV.lastRadioQuestion == null
+      ? { lastRadioQuestion: wrongJV.lastRadioQuestion }
+      : {}),
+    ...(wrongJV.lastRadioOptionSubmission != null &&
+    correctJV.lastRadioOptionSubmission == null
+      ? { lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission }
+      : {}),
+    ...(wrongJV.lastLinkAction != null && correctJV.lastLinkAction == null
+      ? { lastLinkAction: wrongJV.lastLinkAction }
+      : {}),
+    ...(wrongJV.lastMultiselectSubmission != null &&
+    correctJV.lastMultiselectSubmission == null
+      ? { lastMultiselectSubmission: wrongJV.lastMultiselectSubmission }
+      : {})
   }
-
-  const wrongVisitor = await db.visitor.findUnique({
-    where: { id: record.wrongVisitorId }
-  })
-
-  if (wrongVisitor == null) {
-    result.action = 'skipped'
-    return result
-  }
-
-  const wrongJV = await db.journeyVisitor.findUnique({
-    where: { id: record.journeyVisitorId }
-  })
-
-  if (wrongJV == null) {
-    result.action = 'skipped'
-    return result
-  }
-
-  const eventCount = await db.event.count({
-    where: {
-      journeyId: record.journeyId,
-      visitorId: record.wrongVisitorId
-    }
-  })
-
-  result.eventsUpdated = eventCount
-
-  const createdVisitor = await db.$transaction(async (tx) => {
-    const visitor = await tx.visitor.create({
-      data: {
-        teamId: record.journeyTeamId,
-        userId: record.userId,
-        name: wrongVisitor.name,
-        email: wrongVisitor.email,
-        phone: wrongVisitor.phone,
-        countryCode: wrongVisitor.countryCode,
-        referrer: wrongVisitor.referrer,
-        status: wrongVisitor.status,
-        messagePlatform: wrongVisitor.messagePlatform,
-        messagePlatformId: wrongVisitor.messagePlatformId,
-        userAgent: wrongVisitor.userAgent ?? undefined
-      }
-    })
-
-    await tx.journeyVisitor.create({
-      data: {
-        journeyId: record.journeyId,
-        visitorId: visitor.id,
-        duration: wrongJV.duration,
-        activityCount: wrongJV.activityCount,
-        lastChatStartedAt: wrongJV.lastChatStartedAt,
-        lastChatPlatform: wrongJV.lastChatPlatform,
-        lastStepViewedAt: wrongJV.lastStepViewedAt,
-        lastLinkAction: wrongJV.lastLinkAction,
-        lastTextResponse: wrongJV.lastTextResponse,
-        lastRadioQuestion: wrongJV.lastRadioQuestion,
-        lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission,
-        lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
-      }
-    })
-
-    await tx.event.updateMany({
-      where: {
-        journeyId: record.journeyId,
-        visitorId: record.wrongVisitorId
-      },
-      data: {
-        visitorId: visitor.id
-      }
-    })
-
-    await tx.journeyVisitor.delete({
-      where: { id: record.journeyVisitorId }
-    })
-
-    return visitor
-  })
-
-  result.correctVisitorId = createdVisitor.id
-  return result
 }
 
 export async function fixMismatchedRecord(
@@ -168,12 +109,13 @@ export async function fixMismatchedRecord(
   })
 
   if (correctVisitor == null) {
-    return await fixWithVisitorCreation(db, record, result, dryRun)
+    result.skipReason = 'no correct visitor found — requires manual review'
+    return result
   }
 
   result.correctVisitorId = correctVisitor.id
 
-  const existingCorrectJV: JourneyVisitor | null =
+  const correctJV: JourneyVisitor | null =
     await db.journeyVisitor.findUnique({
       where: {
         journeyId_visitorId: {
@@ -183,6 +125,12 @@ export async function fixMismatchedRecord(
       }
     })
 
+  if (correctJV == null) {
+    result.skipReason =
+      'correct visitor exists but no correct JourneyVisitor — requires manual review'
+    return result
+  }
+
   const eventCount = await db.event.count({
     where: {
       journeyId: record.journeyId,
@@ -191,126 +139,38 @@ export async function fixMismatchedRecord(
   })
 
   result.eventsUpdated = eventCount
+  result.action = 'merged'
 
-  if (existingCorrectJV != null) {
-    result.action = 'merged'
+  if (dryRun) return result
 
-    if (dryRun) return result
+  const wrongJV = await db.journeyVisitor.findUnique({
+    where: { id: record.journeyVisitorId }
+  })
 
-    const wrongJV = await db.journeyVisitor.findUnique({
-      where: { id: record.journeyVisitorId }
-    })
-
-    if (wrongJV == null) {
-      result.action = 'skipped'
-      return result
-    }
-
-    await db.$transaction([
-      db.event.updateMany({
-        where: {
-          journeyId: record.journeyId,
-          visitorId: record.wrongVisitorId
-        },
-        data: {
-          visitorId: correctVisitor.id
-        }
-      }),
-      db.journeyVisitor.update({
-        where: { id: existingCorrectJV.id },
-        data: {
-          activityCount: {
-            increment: wrongJV.activityCount
-          },
-          duration: {
-            increment: wrongJV.duration
-          },
-          ...(wrongJV.lastStepViewedAt != null &&
-          (existingCorrectJV.lastStepViewedAt == null ||
-            wrongJV.lastStepViewedAt > existingCorrectJV.lastStepViewedAt)
-            ? { lastStepViewedAt: wrongJV.lastStepViewedAt }
-            : {}),
-          ...(wrongJV.lastChatStartedAt != null &&
-          (existingCorrectJV.lastChatStartedAt == null ||
-            wrongJV.lastChatStartedAt > existingCorrectJV.lastChatStartedAt)
-            ? {
-                lastChatStartedAt: wrongJV.lastChatStartedAt,
-                lastChatPlatform: wrongJV.lastChatPlatform
-              }
-            : {}),
-          ...(wrongJV.lastTextResponse != null &&
-          existingCorrectJV.lastTextResponse == null
-            ? { lastTextResponse: wrongJV.lastTextResponse }
-            : {}),
-          ...(wrongJV.lastRadioQuestion != null &&
-          existingCorrectJV.lastRadioQuestion == null
-            ? { lastRadioQuestion: wrongJV.lastRadioQuestion }
-            : {}),
-          ...(wrongJV.lastRadioOptionSubmission != null &&
-          existingCorrectJV.lastRadioOptionSubmission == null
-            ? { lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission }
-            : {}),
-          ...(wrongJV.lastLinkAction != null &&
-          existingCorrectJV.lastLinkAction == null
-            ? { lastLinkAction: wrongJV.lastLinkAction }
-            : {}),
-          ...(wrongJV.lastMultiselectSubmission != null &&
-          existingCorrectJV.lastMultiselectSubmission == null
-            ? {
-                lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
-              }
-            : {})
-        }
-      }),
-      db.journeyVisitor.delete({
-        where: { id: record.journeyVisitorId }
-      })
-    ])
-  } else {
-    result.action = 'reassigned'
-
-    if (dryRun) return result
-
-    const wrongJV = await db.journeyVisitor.findUnique({
-      where: { id: record.journeyVisitorId }
-    })
-
-    if (wrongJV == null) {
-      result.action = 'skipped'
-      return result
-    }
-
-    await db.$transaction([
-      db.journeyVisitor.create({
-        data: {
-          journeyId: record.journeyId,
-          visitorId: correctVisitor.id,
-          duration: wrongJV.duration,
-          activityCount: wrongJV.activityCount,
-          lastChatStartedAt: wrongJV.lastChatStartedAt,
-          lastChatPlatform: wrongJV.lastChatPlatform,
-          lastStepViewedAt: wrongJV.lastStepViewedAt,
-          lastLinkAction: wrongJV.lastLinkAction,
-          lastTextResponse: wrongJV.lastTextResponse,
-          lastRadioQuestion: wrongJV.lastRadioQuestion,
-          lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission,
-          lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
-        }
-      }),
-      db.event.updateMany({
-        where: {
-          journeyId: record.journeyId,
-          visitorId: record.wrongVisitorId
-        },
-        data: {
-          visitorId: correctVisitor.id
-        }
-      }),
-      db.journeyVisitor.delete({
-        where: { id: record.journeyVisitorId }
-      })
-    ])
+  if (wrongJV == null) {
+    result.action = 'skipped'
+    result.skipReason = 'wrong JourneyVisitor disappeared before fix'
+    return result
   }
+
+  await db.$transaction([
+    db.event.updateMany({
+      where: {
+        journeyId: record.journeyId,
+        visitorId: record.wrongVisitorId
+      },
+      data: {
+        visitorId: correctVisitor.id
+      }
+    }),
+    db.journeyVisitor.update({
+      where: { id: correctJV.id },
+      data: buildMergeData(wrongJV, correctJV)
+    }),
+    db.journeyVisitor.delete({
+      where: { id: record.journeyVisitorId }
+    })
+  ])
 
   return result
 }
@@ -341,11 +201,12 @@ export async function fixCrossTeamVisitors(
       const fixResult = await fixMismatchedRecord(db, record, dryRun)
       results.push(fixResult)
 
-      console.log(
-        `  Action: ${fixResult.action}`,
-        `| Correct Visitor: ${fixResult.correctVisitorId ?? 'N/A'}`,
-        `| Events updated: ${fixResult.eventsUpdated}`
-      )
+      const statusLine =
+        fixResult.action === 'merged'
+          ? `  Action: merged | Correct Visitor: ${fixResult.correctVisitorId} | Events updated: ${fixResult.eventsUpdated}`
+          : `  SKIPPED: ${fixResult.skipReason}`
+
+      console.log(statusLine)
     } catch (error) {
       console.error(
         `  ERROR processing ${record.journeyVisitorId}:`,
@@ -357,29 +218,31 @@ export async function fixCrossTeamVisitors(
         wrongVisitorId: record.wrongVisitorId,
         correctVisitorId: null,
         action: 'skipped',
+        skipReason: error instanceof Error ? error.message : 'unknown error',
         eventsUpdated: 0
       })
     }
   }
 
-  const summary = {
-    total: results.length,
-    merged: results.filter((r) => r.action === 'merged').length,
-    reassigned: results.filter((r) => r.action === 'reassigned').length,
-    createdAndReassigned: results.filter(
-      (r) => r.action === 'created_visitor_and_reassigned'
-    ).length,
-    skipped: results.filter((r) => r.action === 'skipped').length,
-    totalEventsUpdated: results.reduce((sum, r) => sum + r.eventsUpdated, 0)
-  }
+  const merged = results.filter((r) => r.action === 'merged')
+  const skipped = results.filter((r) => r.action === 'skipped')
 
   console.log('\n--- Summary ---')
-  console.log(`Total mismatched records: ${summary.total}`)
-  console.log(`Merged (correct JV existed): ${summary.merged}`)
-  console.log(`Reassigned (JV moved to correct visitor): ${summary.reassigned}`)
-  console.log(`Created visitor + reassigned: ${summary.createdAndReassigned}`)
-  console.log(`Skipped: ${summary.skipped}`)
-  console.log(`Total events updated: ${summary.totalEventsUpdated}`)
+  console.log(`Total mismatched records: ${results.length}`)
+  console.log(`Merged: ${merged.length}`)
+  console.log(`Skipped: ${skipped.length}`)
+  console.log(
+    `Total events updated: ${results.reduce((sum, r) => sum + r.eventsUpdated, 0)}`
+  )
+
+  if (skipped.length > 0) {
+    console.log('\n--- Skipped Records (require manual review) ---')
+    for (const s of skipped) {
+      console.log(
+        `  JV: ${s.journeyVisitorId} | Journey: ${s.journeyId} | Reason: ${s.skipReason}`
+      )
+    }
+  }
 
   return results
 }
