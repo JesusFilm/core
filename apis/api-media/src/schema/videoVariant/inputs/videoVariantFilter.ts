@@ -1,4 +1,4 @@
-import { builder, DateTimeFilter } from '../../builder'
+import { DateTimeFilter, builder } from '../../builder'
 
 export const VideoVariantFilter = builder.inputType('VideoVariantFilter', {
   fields: (t) => ({

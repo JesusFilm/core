@@ -1,6 +1,6 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { builder, DateTimeFilter, toPrismaDateTimeFilter } from '../builder'
+import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language'
 
 builder.prismaObject('Keyword', {

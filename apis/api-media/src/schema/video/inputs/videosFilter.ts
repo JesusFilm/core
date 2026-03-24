@@ -1,4 +1,4 @@
-import { builder, DateTimeFilter } from '../../builder'
+import { DateTimeFilter, builder } from '../../builder'
 import { VideoLabel } from '../enums/videoLabel'
 
 export const VideosFilter = builder.inputType('VideosFilter', {
