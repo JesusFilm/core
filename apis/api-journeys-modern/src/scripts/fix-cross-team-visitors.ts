@@ -108,20 +108,6 @@ async function fixWithVisitorCreation(
       }
     })
 
-    await tx.event.updateMany({
-      where: {
-        journeyId: record.journeyId,
-        visitorId: record.wrongVisitorId
-      },
-      data: {
-        visitorId: visitor.id
-      }
-    })
-
-    await tx.journeyVisitor.delete({
-      where: { id: record.journeyVisitorId }
-    })
-
     await tx.journeyVisitor.create({
       data: {
         journeyId: record.journeyId,
@@ -137,6 +123,20 @@ async function fixWithVisitorCreation(
         lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission,
         lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
       }
+    })
+
+    await tx.event.updateMany({
+      where: {
+        journeyId: record.journeyId,
+        visitorId: record.wrongVisitorId
+      },
+      data: {
+        visitorId: visitor.id
+      }
+    })
+
+    await tx.journeyVisitor.delete({
+      where: { id: record.journeyVisitorId }
     })
 
     return visitor
@@ -281,18 +281,6 @@ export async function fixMismatchedRecord(
     }
 
     await db.$transaction([
-      db.event.updateMany({
-        where: {
-          journeyId: record.journeyId,
-          visitorId: record.wrongVisitorId
-        },
-        data: {
-          visitorId: correctVisitor.id
-        }
-      }),
-      db.journeyVisitor.delete({
-        where: { id: record.journeyVisitorId }
-      }),
       db.journeyVisitor.create({
         data: {
           journeyId: record.journeyId,
@@ -308,6 +296,18 @@ export async function fixMismatchedRecord(
           lastRadioOptionSubmission: wrongJV.lastRadioOptionSubmission,
           lastMultiselectSubmission: wrongJV.lastMultiselectSubmission
         }
+      }),
+      db.event.updateMany({
+        where: {
+          journeyId: record.journeyId,
+          visitorId: record.wrongVisitorId
+        },
+        data: {
+          visitorId: correctVisitor.id
+        }
+      }),
+      db.journeyVisitor.delete({
+        where: { id: record.journeyVisitorId }
       })
     ])
   }
