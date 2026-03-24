@@ -135,4 +135,24 @@ describe('videosFilter', () => {
       locked: true
     })
   })
+
+  it('should filter with updatedSince', () => {
+    const date = new Date('2025-01-01T00:00:00Z')
+    expect(videosFilter({ updatedSince: date })).toEqual({
+      id: undefined,
+      label: undefined,
+      title: undefined,
+      variants: undefined,
+      updatedAt: { gte: date }
+    })
+  })
+
+  it('should not include updatedAt when updatedSince is not provided', () => {
+    expect(videosFilter({})).toEqual({
+      id: undefined,
+      label: undefined,
+      title: undefined,
+      variants: undefined
+    })
+  })
 })

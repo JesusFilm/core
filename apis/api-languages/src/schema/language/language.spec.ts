@@ -13,6 +13,7 @@ const LANGUAGE_QUERY = graphql(`
   query Language($languageId: ID, $primary: Boolean) {
     language(id: "529") {
       id
+      updatedAt
       bcp47
       iso3
       slug
@@ -31,6 +32,24 @@ const LANGUAGE_QUERY = graphql(`
         }
       }
     }
+  }
+`)
+
+const LANGUAGES_QUERY = graphql(`
+  query Languages($where: LanguagesFilter) {
+    languages(where: $where) {
+      id
+      updatedAt
+      bcp47
+      iso3
+      slug
+    }
+  }
+`)
+
+const LANGUAGES_COUNT_QUERY = graphql(`
+  query LanguagesCount($where: LanguagesFilter) {
+    languagesCount(where: $where)
   }
 `)
 
@@ -74,7 +93,8 @@ describe('language', () => {
       }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+      ...omit(language, ['createdAt', 'hasVideos']),
+      updatedAt: language.updatedAt.toISOString(),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
@@ -122,7 +142,8 @@ describe('language', () => {
       }
     })
     expect(data).toHaveProperty('data.language', {
-      ...omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+      ...omit(language, ['createdAt', 'hasVideos']),
+      updatedAt: language.updatedAt.toISOString(),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
@@ -139,5 +160,66 @@ describe('language', () => {
       document: LANGUAGE_QUERY
     })
     expect(data).toHaveProperty('data.language', null)
+  })
+})
+
+describe('languages', () => {
+  const client = getClient()
+
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }])
+  })
+
+  it('should query languages with updatedSince filter', async () => {
+    prismaMock.language.findMany.mockResolvedValue([language])
+
+    const updatedSince = '2021-01-01T00:00:00.000Z'
+    const data = await client({
+      document: LANGUAGES_QUERY,
+      variables: {
+        where: { updatedSince }
+      }
+    })
+
+    expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      where: {
+        hasVideos: true,
+        updatedAt: { gte: new Date(updatedSince) }
+      }
+    })
+    expect(data).toHaveProperty('data.languages', [
+      {
+        ...omit(language, ['createdAt', 'hasVideos']),
+        updatedAt: language.updatedAt.toISOString()
+      }
+    ])
+  })
+})
+
+describe('languagesCount', () => {
+  const client = getClient()
+
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }])
+  })
+
+  it('should query languagesCount with updatedSince filter', async () => {
+    prismaMock.language.count.mockResolvedValue(5)
+
+    const updatedSince = '2021-01-01T00:00:00.000Z'
+    const data = await client({
+      document: LANGUAGES_COUNT_QUERY,
+      variables: {
+        where: { updatedSince }
+      }
+    })
+
+    expect(prismaMock.language.count).toHaveBeenCalledWith({
+      where: {
+        hasVideos: true,
+        updatedAt: { gte: new Date(updatedSince) }
+      }
+    })
+    expect(data).toHaveProperty('data.languagesCount', 5)
   })
 })

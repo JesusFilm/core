@@ -9,6 +9,7 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
+import { DateTimeResolver } from 'graphql-scalars'
 
 import type PrismaTypes from '@core/prisma/languages/__generated__/pothos-types'
 import { getDatamodel } from '@core/prisma/languages/__generated__/pothos-types'
@@ -57,6 +58,7 @@ export const builder = new SchemaBuilder<{
   }
   PrismaTypes: PrismaTypes
   Scalars: {
+    DateTime: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
   }
 }>({
@@ -105,6 +107,8 @@ export const builder = new SchemaBuilder<{
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   }
 })
+
+builder.addScalarType('DateTime', DateTimeResolver)
 
 builder.queryType({})
 

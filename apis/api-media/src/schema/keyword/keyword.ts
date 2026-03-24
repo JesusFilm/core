@@ -6,6 +6,7 @@ import { Language } from '../language'
 builder.prismaObject('Keyword', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     value: t.exposeString('value', { nullable: false }),
     language: t.field({
       type: Language,
@@ -15,11 +16,33 @@ builder.prismaObject('Keyword', {
   })
 })
 
+const KeywordsFilter = builder.inputType('KeywordsFilter', {
+  fields: (t) => ({
+    updatedSince: t.field({ type: 'DateTime', required: false })
+  })
+})
+
 builder.queryFields((t) => ({
   keywords: t.prismaField({
     type: ['Keyword'],
     nullable: false,
-    resolve: async (query) => await prisma.keyword.findMany({ ...query })
+    args: {
+      where: t.arg({ type: KeywordsFilter, required: false }),
+      offset: t.arg.int({ required: false }),
+      limit: t.arg.int({ required: false })
+    },
+    resolve: async (query, _parent, { where, offset, limit }) =>
+      await prisma.keyword.findMany({
+        ...query,
+        where: {
+          updatedAt:
+            where?.updatedSince != null
+              ? { gte: where.updatedSince }
+              : undefined
+        },
+        skip: offset ?? undefined,
+        take: limit ?? 250
+      })
   })
 }))
 // createKeyword mutation

@@ -324,6 +324,7 @@ async function checkAndRemoveEmptyParentVariant(
 export const VideoVariant = builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     asset: t
       .withAuth({ isPublisher: true })
       .relation('asset', { nullable: true, description: 'master video file' }),
@@ -459,10 +460,14 @@ builder.queryFields((t) => ({
         ...query,
         where: {
           published: input?.onlyPublished === false ? undefined : true,
-          languageId: input?.languageId ?? undefined
+          languageId: input?.languageId ?? undefined,
+          updatedAt:
+            input?.updatedSince != null
+              ? { gte: input.updatedSince }
+              : undefined
         },
         skip: offset ?? undefined,
-        take: limit ?? undefined
+        take: limit ?? 100
       })
   }),
   videoVariantsCount: t.int({
@@ -474,7 +479,11 @@ builder.queryFields((t) => ({
       await prisma.videoVariant.count({
         where: {
           published: input?.onlyPublished === false ? undefined : true,
-          languageId: input?.languageId ?? undefined
+          languageId: input?.languageId ?? undefined,
+          updatedAt:
+            input?.updatedSince != null
+              ? { gte: input.updatedSince }
+              : undefined
         }
       })
   })

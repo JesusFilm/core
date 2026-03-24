@@ -15,6 +15,7 @@ builder.prismaObject('CountryName', {
 const Country = builder.prismaObject('Country', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     population: t.exposeInt('population'),
     latitude: t.exposeFloat('latitude'),
     longitude: t.exposeFloat('longitude'),
@@ -68,6 +69,14 @@ builder.asEntity(Country, {
     await prisma.country.findUnique({ where: { id } })
 })
 
+const CountriesFilter = builder.inputType('CountriesFilter', {
+  fields: (t) => ({
+    ids: t.idList(),
+    term: t.string(),
+    updatedSince: t.field({ type: 'DateTime', required: false })
+  })
+})
+
 builder.queryFields((t) => ({
   country: t.prismaField({
     type: 'Country',
@@ -85,22 +94,28 @@ builder.queryFields((t) => ({
     nullable: false,
     args: {
       term: t.arg.string({ required: false }),
-      ids: t.arg.idList({ required: false })
+      ids: t.arg.idList({ required: false }),
+      where: t.arg({ type: CountriesFilter, required: false })
     },
-    resolve: async (query, _parent, { term, ids }) => {
+    resolve: async (query, _parent, { term, ids, where }) => {
       const filter: Prisma.CountryWhereInput = {}
-      if (term != null) {
+      const effectiveTerm = where?.term ?? term
+      const effectiveIds = where?.ids ?? ids
+      if (effectiveTerm != null) {
         filter.name = {
           some: {
             value: {
-              contains: parseFullTextSearch(term),
+              contains: parseFullTextSearch(effectiveTerm),
               mode: 'insensitive'
             }
           }
         }
       }
-      if (ids != null) {
-        filter.id = { in: ids }
+      if (effectiveIds != null) {
+        filter.id = { in: effectiveIds }
+      }
+      if (where?.updatedSince != null) {
+        filter.updatedAt = { gte: where.updatedSince }
       }
       return await prisma.country.findMany({
         ...query,

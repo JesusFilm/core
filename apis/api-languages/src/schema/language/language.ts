@@ -20,7 +20,8 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
     }),
     iso3: t.field({
       type: ['String']
-    })
+    }),
+    updatedSince: t.field({ type: 'DateTime', required: false })
   })
 })
 
@@ -35,6 +36,7 @@ builder.prismaObject('LanguageName', {
 export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     bcp47: t.exposeString('bcp47'),
     iso3: t.exposeString('iso3'),
     slug: t.exposeString('slug'),
@@ -108,6 +110,8 @@ builder.queryFields((t) => ({
       if (where?.ids != null) filter.id = { in: where.ids }
       if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
       if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+      if (where?.updatedSince != null)
+        filter.updatedAt = { gte: where.updatedSince }
       if (term != null) {
         const searchQuery = parseFullTextSearch(term)
         filter.name = {
@@ -141,6 +145,8 @@ builder.queryFields((t) => ({
       if (where?.ids != null) filter.id = { in: where.ids }
       if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
       if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+      if (where?.updatedSince != null)
+        filter.updatedAt = { gte: where.updatedSince }
       if (term != null) {
         const searchQuery = parseFullTextSearch(term)
         filter.name = {

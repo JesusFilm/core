@@ -20,6 +20,7 @@ builder.prismaObject('BibleBookName', {
 builder.prismaObject('BibleBook', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     name: t.relation('name', {
       nullable: false,
       args: {
@@ -46,13 +47,28 @@ builder.prismaObject('BibleBook', {
   })
 })
 
+const BibleBooksFilter = builder.inputType('BibleBooksFilter', {
+  fields: (t) => ({
+    updatedSince: t.field({ type: 'DateTime', required: false })
+  })
+})
+
 builder.queryFields((t) => ({
   bibleBooks: t.prismaField({
     type: ['BibleBook'],
     nullable: false,
-    resolve: async (query) =>
+    args: {
+      where: t.arg({ type: BibleBooksFilter, required: false })
+    },
+    resolve: async (query, _parent, { where }) =>
       await prisma.bibleBook.findMany({
         ...query,
+        where: {
+          updatedAt:
+            where?.updatedSince != null
+              ? { gte: where.updatedSince }
+              : undefined
+        },
         orderBy: { order: 'asc' }
       })
   })

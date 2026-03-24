@@ -9,6 +9,7 @@ export const VideosFilter = builder.inputType('VideosFilter', {
     ids: t.idList(),
     subtitleLanguageIds: t.idList(),
     published: t.boolean(),
-    locked: t.boolean()
+    locked: t.boolean(),
+    updatedSince: t.field({ type: 'DateTime', required: false })
   })
 })
