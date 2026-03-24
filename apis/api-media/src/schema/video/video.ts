@@ -349,7 +349,7 @@ const Video = builder.prismaObject('Video', {
         }
 
         // Prefer per-block language set by resolveReference over the legacy batch lookup
-        const requestedLanguageId = video._requestedLanguageId as
+        const requestedLanguageId = (video as any)._requestedLanguageId as
           | string
           | undefined
 
