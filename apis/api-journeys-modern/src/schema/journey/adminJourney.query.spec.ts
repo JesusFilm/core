@@ -107,6 +107,9 @@ describe('adminJourney', () => {
       team: { id: 'teamId', userTeams: [] }
     }
     prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
 
     const result = (await authClient({
       document: ADMIN_JOURNEY_QUERY,
@@ -135,6 +138,9 @@ describe('adminJourney', () => {
       team: { id: 'teamId', userTeams: [] }
     }
     prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
 
     const result = (await authClient({
       document: ADMIN_JOURNEY_QUERY,
@@ -211,6 +217,74 @@ describe('adminJourney', () => {
       }
     }
     prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
+
+    const result = (await authClient({
+      document: ADMIN_JOURNEY_QUERY,
+      variables: { id: 'test-journey' }
+    })) as ExecutionResult<{
+      adminJourney: typeof mockJourney & { status: string }
+    }>
+
+    expect(result.data?.adminJourney).toMatchObject({
+      id: 'journeyId',
+      title: 'Test Journey'
+    })
+  })
+
+  it('should not call findUniqueOrThrow when ACL denies access', async () => {
+    const journeyWithAcl = {
+      ...mockJourney,
+      userJourneys: [],
+      team: { id: 'teamId', userTeams: [] }
+    }
+    prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+
+    await authClient({
+      document: ADMIN_JOURNEY_QUERY,
+      variables: { id: 'test-journey' }
+    })
+
+    expect((prismaMock.journey as any).findUniqueOrThrow).not.toHaveBeenCalled()
+  })
+
+  it('should spread Pothos query into findUniqueOrThrow', async () => {
+    const journeyWithAcl = {
+      ...mockJourney,
+      userJourneys: [{ userId: 'userId', role: 'owner' }],
+      team: { id: 'teamId', userTeams: [] }
+    }
+    prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.(
+      mockJourney as any
+    )
+
+    await authClient({
+      document: ADMIN_JOURNEY_QUERY,
+      variables: { id: 'test-journey' }
+    })
+
+    expect((prismaMock.journey as any).findUniqueOrThrow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { slug: 'test-journey' }
+      })
+    )
+  })
+
+  it('should return journey without team', async () => {
+    const journeyWithAcl = {
+      ...mockJourney,
+      teamId: null,
+      userJourneys: [{ userId: 'userId', role: 'owner' }],
+      team: null
+    }
+    prismaMock.journey.findUnique.mockResolvedValue(journeyWithAcl as any)
+    ;(prismaMock.journey as any).findUniqueOrThrow?.mockResolvedValue?.({
+      ...mockJourney,
+      teamId: null
+    } as any)
 
     const result = (await authClient({
       document: ADMIN_JOURNEY_QUERY,

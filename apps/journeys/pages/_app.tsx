@@ -3,7 +3,7 @@ import type { EmotionCache } from '@emotion/cache'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager, sendGTMEvent } from '@next/third-parties/google'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged } from 'firebase/auth'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
@@ -18,7 +18,7 @@ import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
 import i18nConfig from '../next-i18next.config'
 import { useApollo } from '../src/libs/apolloClient'
-import { firebaseClient } from '../src/libs/firebaseClient'
+import { firebaseAuth } from '../src/libs/firebaseClient'
 
 import './globals.css'
 
@@ -41,8 +41,7 @@ function JourneysApp({
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
-    const auth = getAuth(firebaseClient)
-    return onAuthStateChanged(auth, (user) => {
+    return onAuthStateChanged(firebaseAuth, (user) => {
       if (user != null) {
         sendGTMEvent({
           userId: user.uid
