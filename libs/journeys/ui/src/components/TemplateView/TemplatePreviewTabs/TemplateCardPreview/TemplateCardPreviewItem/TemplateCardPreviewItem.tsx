@@ -156,52 +156,52 @@ export function TemplateCardPreviewItem({
             }}
             dir={rtl ? 'rtl' : 'ltr'}
           >
-          <ThemeProvider
-            themeName={ThemeName.journeyUi}
-            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-            rtl={rtl}
-            locale={locale}
-          >
-            <Box
-              sx={{
-                position: 'relative',
-                height: '100%',
-                borderRadius: framePortal.borderRadius,
-                overflow: 'hidden',
-                '--card-border-radius':
-                  typeof framePortal.borderRadius === 'number'
-                    ? `${framePortal.borderRadius * 4}px`
-                    : framePortal.borderRadius
-              }}
+            <ThemeProvider
+              themeName={ThemeName.journeyUi}
+              themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+              rtl={rtl}
+              locale={locale}
             >
-              {config.showStepHeaderFooter && (
-                <StepHeader
-                  steps={steps}
-                  selectedStep={step as unknown as TreeBlock<StepFields>}
-                />
-              )}
-              <ThemeProvider
-                themeName={cardBlock?.themeName ?? ThemeName.base}
-                themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-                rtl={rtl}
-                locale={locale}
-                nested
+              <Box
+                sx={{
+                  position: 'relative',
+                  height: '100%',
+                  borderRadius: framePortal.borderRadius,
+                  overflow: 'hidden',
+                  '--card-border-radius':
+                    typeof framePortal.borderRadius === 'number'
+                      ? `${framePortal.borderRadius * 4}px`
+                      : framePortal.borderRadius
+                }}
               >
-                <BlockRenderer
-                  block={step}
-                  wrappers={{
-                    VideoWrapper,
-                    CardWrapper
-                  }}
-                />
-              </ThemeProvider>
-              {config.showStepHeaderFooter && (
-                <StepFooter
-                  selectedStep={step as unknown as TreeBlock<StepFields>}
-                />
-              )}
-            </Box>
-          </ThemeProvider>
+                {config.showStepHeaderFooter && (
+                  <StepHeader
+                    steps={steps}
+                    selectedStep={step as unknown as TreeBlock<StepFields>}
+                  />
+                )}
+                <ThemeProvider
+                  themeName={cardBlock?.themeName ?? ThemeName.base}
+                  themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+                  rtl={rtl}
+                  locale={locale}
+                  nested
+                >
+                  <BlockRenderer
+                    block={step}
+                    wrappers={{
+                      VideoWrapper,
+                      CardWrapper
+                    }}
+                  />
+                </ThemeProvider>
+                {config.showStepHeaderFooter && (
+                  <StepFooter
+                    selectedStep={step as unknown as TreeBlock<StepFields>}
+                  />
+                )}
+              </Box>
+            </ThemeProvider>
           </FramePortal>
         </Box>
       </Box>
