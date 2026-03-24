@@ -1,5 +1,4 @@
 import Card from '@mui/material/Card'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -16,6 +15,7 @@ import { getNextCustomizeScreen } from '../../../utils/getNextCustomizeScreen'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { TemplateCardPreviewDialog } from '../LinksScreen/CardsPreview/TemplateCardPreviewDialog'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 interface GuestPreviewScreenProps {
   screens: CustomizationScreen[]
@@ -41,9 +41,6 @@ export function GuestPreviewScreen({
   const [dialogOpen, setDialogOpen] = useState(false)
   const [clickedStepId, setClickedStepId] = useState<string | null>(null)
 
-  const displayDesktop = { xs: 'none', sm: 'block' }
-  const displayMobile = { xs: 'block', sm: 'none' }
-
   function handleCardClick(step: TreeBlock<StepBlock>): void {
     setClickedStepId(step.id)
     setDialogOpen(true)
@@ -68,54 +65,13 @@ export function GuestPreviewScreen({
   }
 
   return (
-    <Stack
-      alignItems="center"
-      gap={6}
-      sx={{
-        px: { xs: 2, sm: 18 },
-        width: '100%',
-        textAlign: 'center'
-      }}
+    <ScreenWrapper
+      title={t('Almost there!')}
+      subtitle={t(
+        'This content contains buttons linking to external sites. Check them and update the links below.'
+      )}
+      mobileSubtitle={t('Tap on a card to zoom it in')}
     >
-      <Stack alignItems="center" sx={{ pb: 1 }}>
-        <Typography
-          variant="h3"
-          display={displayDesktop}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Almost there!')}
-        </Typography>
-        <Typography
-          variant="h5"
-          display={displayMobile}
-          gutterBottom
-          sx={{
-            mb: { xs: 0, sm: 2 }
-          }}
-        >
-          {t('Almost there!')}
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          display={displayDesktop}
-          color="text.secondary"
-          fontWeight={400}
-        >
-          {t(
-            'This content contains buttons linking to external sites. Check them and update the links below.'
-          )}
-        </Typography>
-        <Typography
-          variant="body2"
-          display={displayMobile}
-          color="text.secondary"
-        >
-          {t('Tap on a card to zoom it in')}
-        </Typography>
-      </Stack>
       <Typography variant="subtitle2" color="text.secondary">
         &quot;{journey?.title ?? ''}&quot;
       </Typography>
@@ -141,7 +97,7 @@ export function GuestPreviewScreen({
         <Typography
           variant="body2"
           color="text.secondary"
-          display={displayMobile}
+          display={{ xs: 'block', sm: 'none' }}
         >
           {t(
             "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
@@ -150,7 +106,7 @@ export function GuestPreviewScreen({
         <Typography
           variant="body1"
           color="text.secondary"
-          display={displayDesktop}
+          display={{ xs: 'none', sm: 'block' }}
         >
           {t(
             "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
@@ -174,6 +130,6 @@ export function GuestPreviewScreen({
           {t('100% FREE. No payment required.')}
         </Typography>
       </Card>
-    </Stack>
+    </ScreenWrapper>
   )
 }
