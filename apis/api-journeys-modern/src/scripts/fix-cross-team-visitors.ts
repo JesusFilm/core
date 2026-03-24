@@ -289,15 +289,9 @@ export async function fixCrossTeamVisitors(
 
   console.log('\n--- Summary ---')
   console.log(`Total mismatched records: ${summary.total}`)
-  console.log(
-    `Merged (correct JV existed): ${summary.merged}`
-  )
-  console.log(
-    `Reassigned (JV moved to correct visitor): ${summary.reassigned}`
-  )
-  console.log(
-    `Created visitor + reassigned: ${summary.createdAndReassigned}`
-  )
+  console.log(`Merged (correct JV existed): ${summary.merged}`)
+  console.log(`Reassigned (JV moved to correct visitor): ${summary.reassigned}`)
+  console.log(`Created visitor + reassigned: ${summary.createdAndReassigned}`)
   console.log(`Skipped: ${summary.skipped}`)
   console.log(`Total events updated: ${summary.totalEventsUpdated}`)
 
