@@ -65,12 +65,10 @@ function buildMergeData(
           lastChatPlatform: wrongJV.lastChatPlatform
         }
       : {}),
-    ...(wrongJV.lastTextResponse != null &&
-    correctJV.lastTextResponse == null
+    ...(wrongJV.lastTextResponse != null && correctJV.lastTextResponse == null
       ? { lastTextResponse: wrongJV.lastTextResponse }
       : {}),
-    ...(wrongJV.lastRadioQuestion != null &&
-    correctJV.lastRadioQuestion == null
+    ...(wrongJV.lastRadioQuestion != null && correctJV.lastRadioQuestion == null
       ? { lastRadioQuestion: wrongJV.lastRadioQuestion }
       : {}),
     ...(wrongJV.lastRadioOptionSubmission != null &&
@@ -115,15 +113,14 @@ export async function fixMismatchedRecord(
 
   result.correctVisitorId = correctVisitor.id
 
-  const correctJV: JourneyVisitor | null =
-    await db.journeyVisitor.findUnique({
-      where: {
-        journeyId_visitorId: {
-          journeyId: record.journeyId,
-          visitorId: correctVisitor.id
-        }
+  const correctJV: JourneyVisitor | null = await db.journeyVisitor.findUnique({
+    where: {
+      journeyId_visitorId: {
+        journeyId: record.journeyId,
+        visitorId: correctVisitor.id
       }
-    })
+    }
+  })
 
   if (correctJV == null) {
     result.skipReason =

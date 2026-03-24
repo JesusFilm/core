@@ -143,9 +143,7 @@ describe('fix-cross-team-visitors', () => {
         const record = makeMismatchedRecord()
 
         prismaMock.visitor.findFirst.mockResolvedValue(correctVisitor as any)
-        prismaMock.journeyVisitor.findUnique.mockResolvedValue(
-          correctJV as any
-        )
+        prismaMock.journeyVisitor.findUnique.mockResolvedValue(correctJV as any)
         prismaMock.event.count.mockResolvedValue(3)
 
         const result = await fixMismatchedRecord(prismaMock, record, true)
