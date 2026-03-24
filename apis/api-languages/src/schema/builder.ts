@@ -123,10 +123,7 @@ export function toPrismaDateTimeFilter(
   filter: DateTimeFilterInput | null | undefined
 ): { gte?: Date; lte?: Date } | undefined {
   if (filter == null) return undefined
-  const result: { gte?: Date; lte?: Date } = {}
-  if (filter.gte != null) result.gte = filter.gte
-  if (filter.lte != null) result.lte = filter.lte
-  return Object.keys(result).length > 0 ? result : undefined
+  return { gte: filter.gte ?? undefined, lte: filter.lte ?? undefined }
 }
 
 builder.queryType({})

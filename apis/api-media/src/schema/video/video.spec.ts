@@ -1539,7 +1539,7 @@ describe('video', () => {
       )
     })
 
-    it('should query videos with updatedSince filter', async () => {
+    it('should query videos with updatedAt filter', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({

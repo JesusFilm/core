@@ -1,6 +1,6 @@
 import compact from 'lodash/compact'
 
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language'
@@ -61,10 +61,11 @@ builder.queryFields((t) => ({
       where: t.arg({ type: BibleBooksFilter, required: false })
     },
     resolve: async (query, _parent, { where }) => {
-      const updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      const filter: Prisma.BibleBookWhereInput = {}
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
       return await prisma.bibleBook.findMany({
         ...query,
-        where: updatedAt != null ? { updatedAt } : undefined,
+        where: filter,
         orderBy: { order: 'asc' }
       })
     }

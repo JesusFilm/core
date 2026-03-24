@@ -184,7 +184,7 @@ describe('countries', () => {
     ])
   })
 
-  it('should query countries with updatedSince via CountriesFilter', async () => {
+  it('should query countries with updatedAt via CountriesFilter', async () => {
     const filterResult = {
       ...country,
       name: [countryName],
