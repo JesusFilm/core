@@ -1,7 +1,7 @@
 ---
 title: "feat: Add updatedAt to Gateway API Entities"
 type: feat
-status: active
+status: completed
 date: 2026-03-24
 ---
 
