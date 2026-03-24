@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeName } from '@core/shared/ui/themes'
@@ -70,6 +70,39 @@ export function TemplateCardPreviewItem({
     sm: `scale(${framePortal.scale.sm})`
   }
 
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (variant !== 'guestPreview') return
+    const overlay = overlayRef.current
+    if (overlay == null) return
+
+    function handleWheel(e: WheelEvent): void {
+      const iframe = overlay?.parentElement?.querySelector('iframe')
+      if (iframe?.contentDocument == null) return
+
+      const doc = iframe.contentDocument
+      const allElements = Array.from(doc.querySelectorAll('*'))
+      const scrollable = allElements.find((el) => {
+        const style = doc.defaultView?.getComputedStyle(el)
+        return (
+          style != null &&
+          (style.overflowY === 'scroll' || style.overflowY === 'auto') &&
+          el.scrollHeight > el.clientHeight
+        )
+      })
+
+      if (scrollable != null) {
+        let deltaY = e.deltaY
+        if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) deltaY *= 16
+        scrollable.scrollBy({ top: deltaY, behavior: 'auto' })
+      }
+    }
+
+    overlay.addEventListener('wheel', handleWheel, { passive: true })
+    return () => overlay.removeEventListener('wheel', handleWheel)
+  }, [variant])
+
   return (
     <Box
       sx={{
@@ -94,19 +127,21 @@ export function TemplateCardPreviewItem({
           borderRadius: framePortal.borderRadius
         }}
       >
-        {variant !== 'guestPreview' && (
-          <Box
-            sx={{
-              position: 'absolute',
-              display: 'block',
-              width: framePortal.width,
-              height: framePortal.height,
-              zIndex: 2,
-              cursor: 'grab',
-              borderRadius: framePortal.borderRadius
-            }}
-          />
-        )}
+        <Box
+          ref={variant === 'guestPreview' ? overlayRef : undefined}
+          sx={{
+            position: 'absolute',
+            display: 'block',
+            width: framePortal.width,
+            height: framePortal.height,
+            zIndex: 2,
+            cursor: 'grab',
+            borderRadius: framePortal.borderRadius,
+            ...(variant === 'guestPreview' && {
+              touchAction: 'pan-y'
+            })
+          }}
+        />
         <FramePortal
           sx={{
             width: framePortal.width,
@@ -127,12 +162,6 @@ export function TemplateCardPreviewItem({
                 height: '100%',
                 borderRadius: framePortal.borderRadius
               }}
-              {...(variant === 'guestPreview' && {
-                onClickCapture: (e: React.MouseEvent) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                }
-              })}
             >
               {config.showStepHeaderFooter && (
                 <StepHeader

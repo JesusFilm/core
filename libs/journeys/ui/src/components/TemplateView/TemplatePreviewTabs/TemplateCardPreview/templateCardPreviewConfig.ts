@@ -172,7 +172,6 @@ const GUEST_PREVIEW_VARIANT_CONFIG: VariantConfig = {
     zIndex: 2
   },
   swiperProps: {
-    mousewheel: { forceToAxis: true },
     watchOverflow: true,
     slidesPerView: 'auto',
     spaceBetween: 16,
@@ -180,7 +179,7 @@ const GUEST_PREVIEW_VARIANT_CONFIG: VariantConfig = {
     observer: true,
     observeParents: true
   },
-  modules: [Mousewheel, A11y]
+  modules: [A11y]
 }
 
 export const VARIANT_CONFIGS: Record<
