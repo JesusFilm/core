@@ -124,7 +124,8 @@ export function TemplateCardPreviewItem({
         sx={{
           transform: baseTransform,
           transformOrigin: 'top left',
-          borderRadius: framePortal.borderRadius
+          borderRadius: framePortal.borderRadius,
+          overflow: 'hidden'
         }}
       >
         <Box
@@ -137,19 +138,24 @@ export function TemplateCardPreviewItem({
             zIndex: 2,
             cursor: 'grab',
             borderRadius: framePortal.borderRadius,
-            ...(variant === 'guestPreview' && {
-              touchAction: 'pan-y'
-            })
+            touchAction: 'pan-y'
           }}
         />
-        <FramePortal
+        <Box
           sx={{
             width: framePortal.width,
             height: framePortal.height,
-            borderRadius: framePortal.borderRadius
+            borderRadius: framePortal.borderRadius,
+            overflow: 'hidden'
           }}
-          dir={rtl ? 'rtl' : 'ltr'}
         >
+          <FramePortal
+            sx={{
+              width: framePortal.width,
+              height: framePortal.height
+            }}
+            dir={rtl ? 'rtl' : 'ltr'}
+          >
           <ThemeProvider
             themeName={ThemeName.journeyUi}
             themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
@@ -160,7 +166,12 @@ export function TemplateCardPreviewItem({
               sx={{
                 position: 'relative',
                 height: '100%',
-                borderRadius: framePortal.borderRadius
+                borderRadius: framePortal.borderRadius,
+                overflow: 'hidden',
+                '--card-border-radius':
+                  typeof framePortal.borderRadius === 'number'
+                    ? `${framePortal.borderRadius * 4}px`
+                    : framePortal.borderRadius
               }}
             >
               {config.showStepHeaderFooter && (
@@ -191,7 +202,8 @@ export function TemplateCardPreviewItem({
               )}
             </Box>
           </ThemeProvider>
-        </FramePortal>
+          </FramePortal>
+        </Box>
       </Box>
     </Box>
   )

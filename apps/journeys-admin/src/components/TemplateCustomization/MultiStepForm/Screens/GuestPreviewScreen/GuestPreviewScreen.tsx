@@ -1,4 +1,5 @@
 import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -66,70 +67,85 @@ export function GuestPreviewScreen({
 
   return (
     <ScreenWrapper
-      title={t('Almost there!')}
+      title={t('Your preview is ready')}
+      mobileTitle={t('Preview ready')}
       subtitle={t(
         'This content contains buttons linking to external sites. Check them and update the links below.'
       )}
       mobileSubtitle={t('Tap on a card to zoom it in')}
     >
-      <Typography variant="subtitle2" color="text.secondary">
-        &quot;{journey?.title ?? ''}&quot;
-      </Typography>
-      <CardsPreview steps={steps} onCardClick={handleCardClick} />
-      <TemplateCardPreviewDialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        steps={steps}
-        initialStepId={clickedStepId}
-      />
-      <Card
-        variant="outlined"
+      <Stack
         sx={{
           width: '100%',
-          borderRadius: 2,
-          p: 4,
-          display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          gap: 2
+          gap: { xs: 3, sm: 4 }
         }}
       >
         <Typography
-          variant="body2"
-          color="text.secondary"
-          display={{ xs: 'block', sm: 'none' }}
+          variant="subtitle2"
+          gutterBottom
+          sx={{ mb: { xs: 0, sm: 2 } }}
         >
-          {t(
-            "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
-          )}
+          {`'${journey?.title ?? ''}'`}
         </Typography>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          display={{ xs: 'none', sm: 'block' }}
-        >
-          {t(
-            "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
-          )}
-        </Typography>
-        <CustomizeFlowNextButton
-          label={t('Continue with account')}
-          onClick={handleContinueWithAccount}
-          ariaLabel={t('Continue with account')}
-          sx={{
-            width: { xs: '100%', sm: 'auto' },
-            backgroundColor: 'secondary.dark',
-            mt: 0
-          }}
+        {steps.length > 0 && (
+          <CardsPreview steps={steps} onCardClick={handleCardClick} />
+        )}
+        <TemplateCardPreviewDialog
+          open={dialogOpen}
+          onClose={handleDialogClose}
+          steps={steps}
+          initialStepId={clickedStepId}
         />
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ fontStyle: 'italic', fontWeight: 700 }}
+        <Card
+          variant="outlined"
+          sx={{
+            width: '100%',
+            borderRadius: 2,
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2
+          }}
         >
-          {t('100% FREE. No payment required.')}
-        </Typography>
-      </Card>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            display={{ xs: 'block', sm: 'none' }}
+          >
+            {t(
+              "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
+            )}
+          </Typography>
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            display={{ xs: 'none', sm: 'block' }}
+          >
+            {t(
+              "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
+            )}
+          </Typography>
+          <CustomizeFlowNextButton
+            label={t('Continue with account')}
+            onClick={handleContinueWithAccount}
+            ariaLabel={t('Continue with account')}
+            sx={{
+              width: { xs: '100%', sm: 'auto' },
+              backgroundColor: 'secondary.dark',
+              mt: 0
+            }}
+          />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ fontStyle: 'italic', fontWeight: 700 }}
+          >
+            {t('100% FREE. No payment required.')}
+          </Typography>
+        </Card>
+      </Stack>
     </ScreenWrapper>
   )
 }
