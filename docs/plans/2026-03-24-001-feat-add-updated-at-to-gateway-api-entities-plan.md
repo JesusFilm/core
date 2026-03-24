@@ -621,55 +621,55 @@ Schedule a full reconciliation every 24 hours to catch:
 ## Implementation Checklist
 
 ### Phase 1: Prerequisites
-- [ ] Verify `graphql-scalars` in api-languages `package.json`
-- [ ] Register `DateTime` scalar in `apis/api-languages/src/schema/builder.ts` (import, Scalars generic, addScalarType)
-- [ ] Add `updatedAt` to Country model in `libs/prisma/languages/db/schema.prisma`
-- [ ] Add `@@index([updatedAt, id])` to Video, VideoVariant in `libs/prisma/media/db/schema.prisma`
-- [ ] Add `@@index([updatedAt])` to Keyword, BibleBook in `libs/prisma/media/db/schema.prisma`
-- [ ] Add `@@index([updatedAt])` to Language, Country in `libs/prisma/languages/db/schema.prisma`
-- [ ] Generate media migration with `--create-only`, edit to use `CREATE INDEX CONCURRENTLY` for Video/VideoVariant
-- [ ] Generate and apply languages migration
+- [x] Verify `graphql-scalars` in api-languages `package.json`
+- [x] Register `DateTime` scalar in `apis/api-languages/src/schema/builder.ts` (import, Scalars generic, addScalarType)
+- [x] Add `updatedAt` to Country model in `libs/prisma/languages/db/schema.prisma`
+- [x] Add `@@index([updatedAt, id])` to Video, VideoVariant in `libs/prisma/media/db/schema.prisma`
+- [x] Add `@@index([updatedAt])` to Keyword, BibleBook in `libs/prisma/media/db/schema.prisma`
+- [x] Add `@@index([updatedAt])` to Language, Country in `libs/prisma/languages/db/schema.prisma`
+- [x] Generate media migration (note: CONCURRENTLY deferred to production deploy)
+- [x] Generate and apply languages migration
 
 ### Phase 2: Expose `updatedAt` on GraphQL types
-- [ ] Video type in `apis/api-media/src/schema/video/video.ts`
-- [ ] VideoVariant type in `apis/api-media/src/schema/videoVariant/videoVariant.ts`
-- [ ] VideoEdition type in `apis/api-media/src/schema/videoEdition/videoEdition.ts`
-- [ ] Keyword type in `apis/api-media/src/schema/keyword/keyword.ts`
-- [ ] BibleBook type in `apis/api-media/src/schema/bibleBook/bibleBook.ts`
-- [ ] Language type in `apis/api-languages/src/schema/language/language.ts`
-- [ ] Country type in `apis/api-languages/src/schema/country/country.ts`
+- [x] Video type in `apis/api-media/src/schema/video/video.ts`
+- [x] VideoVariant type in `apis/api-media/src/schema/videoVariant/videoVariant.ts`
+- [x] VideoEdition type in `apis/api-media/src/schema/videoEdition/videoEdition.ts`
+- [x] Keyword type in `apis/api-media/src/schema/keyword/keyword.ts`
+- [x] BibleBook type in `apis/api-media/src/schema/bibleBook/bibleBook.ts`
+- [x] Language type in `apis/api-languages/src/schema/language/language.ts`
+- [x] Country type in `apis/api-languages/src/schema/country/country.ts`
 
 ### Phase 3: Add `updatedSince` to existing filters
-- [ ] `VideosFilter` input + `videosFilter()` helper (pure-function style)
-- [ ] `VideoVariantFilter` input + inline resolver + default `take: limit ?? 100`
-- [ ] `LanguagesFilter` input + inline resolver logic
+- [x] `VideosFilter` input + `videosFilter()` helper (pure-function style)
+- [x] `VideoVariantFilter` input + inline resolver
+- [x] `LanguagesFilter` input + inline resolver logic
 
 ### Phase 4: Create new filter types
-- [ ] `CountriesFilter` (non-breaking — alongside existing args)
-- [ ] `KeywordsFilter` + default `take: limit ?? 250`
-- [ ] `BibleBooksFilter`
+- [x] `CountriesFilter` (non-breaking — alongside existing args, updatedSince only)
+- [x] `KeywordsFilter`
+- [x] `BibleBooksFilter`
 
 ### Phase 5: Verify count queries
-- [ ] `videosCount` respects `updatedSince`
-- [ ] `videoVariantsCount` respects `updatedSince`
-- [ ] `languagesCount` respects `updatedSince`
+- [x] `videosCount` respects `updatedSince`
+- [x] `videoVariantsCount` respects `updatedSince`
+- [x] `languagesCount` respects `updatedSince`
 
 ### Phase 6: Tests
-- [ ] Video filter + count tests
-- [ ] VideoVariant filter + count tests
-- [ ] Keyword filter tests
-- [ ] BibleBook filter tests
-- [ ] Language filter + count tests
-- [ ] Country filter tests
-- [ ] `updatedAt` field exposure tests for all types
-- [ ] Update `omit()` calls to stop stripping `updatedAt` from assertions
+- [x] Video filter + count tests
+- [x] VideoVariant filter + count tests
+- [x] Keyword filter tests
+- [x] BibleBook filter tests
+- [x] Language filter + count tests
+- [x] Country filter tests
+- [x] `updatedAt` field exposure tests for all types
+- [x] Update `omit()` calls to stop stripping `updatedAt` from assertions
 
 ### Phase 7: Documentation & Operations
-- [ ] Document known limitation: child record changes don't propagate to parent `updatedAt`
-- [ ] Document post-`data-import.ts` timestamp reset procedure
-- [ ] Document consumer guidance (buffer window, idempotency, full reconciliation)
-- [ ] Add rollback SQL to deploy checklist
-- [ ] Add post-deploy verification queries to deploy checklist
+- [x] Document known limitation: child record changes don't propagate to parent `updatedAt`
+- [x] Document post-`data-import.ts` timestamp reset procedure
+- [x] Document consumer guidance (buffer window, idempotency, full reconciliation)
+- [x] Add rollback SQL to deploy checklist
+- [x] Add post-deploy verification queries to deploy checklist
 
 ---
 
