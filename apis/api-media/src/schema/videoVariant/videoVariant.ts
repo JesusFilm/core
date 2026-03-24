@@ -9,7 +9,7 @@ import {
   videoCacheReset,
   videoVariantCacheReset
 } from '../../lib/videoCacheReset'
-import { builder } from '../builder'
+import { builder, toPrismaDateTimeFilter } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { deleteVideo } from '../mux/video/service'
@@ -461,10 +461,7 @@ builder.queryFields((t) => ({
         where: {
           published: input?.onlyPublished === false ? undefined : true,
           languageId: input?.languageId ?? undefined,
-          updatedAt:
-            input?.updatedSince != null
-              ? { gte: input.updatedSince }
-              : undefined
+          updatedAt: toPrismaDateTimeFilter(input?.updatedAt)
         },
         skip: offset ?? undefined,
         take: limit ?? undefined
@@ -480,10 +477,7 @@ builder.queryFields((t) => ({
         where: {
           published: input?.onlyPublished === false ? undefined : true,
           languageId: input?.languageId ?? undefined,
-          updatedAt:
-            input?.updatedSince != null
-              ? { gte: input.updatedSince }
-              : undefined
+          updatedAt: toPrismaDateTimeFilter(input?.updatedAt)
         }
       })
   })

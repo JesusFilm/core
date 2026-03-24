@@ -1,7 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
-import { builder } from '../builder'
+import { builder, DateTimeFilter, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language/language'
 
 builder.prismaObject('CountryName', {
@@ -71,7 +71,7 @@ builder.asEntity(Country, {
 
 const CountriesFilter = builder.inputType('CountriesFilter', {
   fields: (t) => ({
-    updatedSince: t.field({ type: 'DateTime', required: false })
+    updatedAt: t.field({ type: DateTimeFilter, required: false })
   })
 })
 
@@ -110,9 +110,7 @@ builder.queryFields((t) => ({
       if (ids != null) {
         filter.id = { in: ids }
       }
-      if (where?.updatedSince != null) {
-        filter.updatedAt = { gte: where.updatedSince }
-      }
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
       return await prisma.country.findMany({
         ...query,
         where: filter

@@ -1014,14 +1014,14 @@ describe('videoVariant', () => {
       )
     })
 
-    it('should query videoVariants with updatedSince filter', async () => {
+    it('should query videoVariants with updatedAt filter', async () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
 
       await client({
         document: VIDEO_VARIANTS_QUERY,
         variables: {
           input: {
-            updatedSince: '2025-01-01T00:00:00.000Z'
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
           }
         }
       })
@@ -1104,14 +1104,14 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariantsCount', 100)
     })
 
-    it('should return count with updatedSince filter', async () => {
+    it('should return count with updatedAt filter', async () => {
       prismaMock.videoVariant.count.mockResolvedValueOnce(25)
 
       const data = await client({
         document: VIDEO_VARIANTS_COUNT_QUERY,
         variables: {
           input: {
-            updatedSince: '2025-01-01T00:00:00.000Z'
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
           }
         }
       })

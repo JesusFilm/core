@@ -205,7 +205,7 @@ describe('countries', () => {
       variables: {
         languageId: '529',
         primary: true,
-        where: { updatedSince }
+        where: { updatedAt: { gte: updatedSince } }
       }
     })
 

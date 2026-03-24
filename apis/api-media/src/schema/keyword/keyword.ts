@@ -1,6 +1,6 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { builder } from '../builder'
+import { builder, DateTimeFilter, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language'
 
 builder.prismaObject('Keyword', {
@@ -18,7 +18,7 @@ builder.prismaObject('Keyword', {
 
 const KeywordsFilter = builder.inputType('KeywordsFilter', {
   fields: (t) => ({
-    updatedSince: t.field({ type: 'DateTime', required: false })
+    updatedAt: t.field({ type: DateTimeFilter, required: false })
   })
 })
 
@@ -29,16 +29,13 @@ builder.queryFields((t) => ({
     args: {
       where: t.arg({ type: KeywordsFilter, required: false })
     },
-    resolve: async (query, _parent, { where }) =>
-      await prisma.keyword.findMany({
+    resolve: async (query, _parent, { where }) => {
+      const updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.keyword.findMany({
         ...query,
-        where: {
-          updatedAt:
-            where?.updatedSince != null
-              ? { gte: where.updatedSince }
-              : undefined
-        }
+        where: updatedAt != null ? { updatedAt } : undefined
       })
+    }
   })
 }))
 // createKeyword mutation

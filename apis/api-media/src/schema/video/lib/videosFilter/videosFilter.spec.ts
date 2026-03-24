@@ -136,9 +136,9 @@ describe('videosFilter', () => {
     })
   })
 
-  it('should filter with updatedSince', () => {
+  it('should filter with updatedAt gte', () => {
     const date = new Date('2025-01-01T00:00:00Z')
-    expect(videosFilter({ updatedSince: date })).toEqual({
+    expect(videosFilter({ updatedAt: { gte: date } })).toEqual({
       id: undefined,
       label: undefined,
       title: undefined,
@@ -147,7 +147,19 @@ describe('videosFilter', () => {
     })
   })
 
-  it('should not include updatedAt when updatedSince is not provided', () => {
+  it('should filter with updatedAt gte and lte', () => {
+    const gte = new Date('2025-01-01T00:00:00Z')
+    const lte = new Date('2025-02-01T00:00:00Z')
+    expect(videosFilter({ updatedAt: { gte, lte } })).toEqual({
+      id: undefined,
+      label: undefined,
+      title: undefined,
+      variants: undefined,
+      updatedAt: { gte, lte }
+    })
+  })
+
+  it('should not include updatedAt when not provided', () => {
     expect(videosFilter({})).toEqual({
       id: undefined,
       label: undefined,

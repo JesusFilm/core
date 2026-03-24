@@ -1,4 +1,4 @@
-import { builder } from '../../builder'
+import { builder, DateTimeFilter } from '../../builder'
 import { VideoLabel } from '../enums/videoLabel'
 
 export const VideosFilter = builder.inputType('VideosFilter', {
@@ -10,6 +10,6 @@ export const VideosFilter = builder.inputType('VideosFilter', {
     subtitleLanguageIds: t.idList(),
     published: t.boolean(),
     locked: t.boolean(),
-    updatedSince: t.field({ type: 'DateTime', required: false })
+    updatedAt: t.field({ type: DateTimeFilter, required: false })
   })
 })

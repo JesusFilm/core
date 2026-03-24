@@ -1550,7 +1550,7 @@ describe('video', () => {
         document: VIDEOS_QUERY,
         variables: {
           where: {
-            updatedSince: '2025-01-01T00:00:00.000Z'
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
           }
         }
       })
@@ -1689,13 +1689,13 @@ describe('video', () => {
       expect(data).toHaveProperty('data.videosCount', 1)
     })
 
-    it('should return a count of videos with updatedSince filter', async () => {
+    it('should return a count of videos with updatedAt filter', async () => {
       prismaMock.video.count.mockResolvedValueOnce(5)
       const data = await client({
         document: VIDEO_COUNT,
         variables: {
           where: {
-            updatedSince: '2025-01-01T00:00:00.000Z'
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
           }
         }
       })

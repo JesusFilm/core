@@ -88,6 +88,11 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  @join__type(graph: API_LANGUAGES)
 
+input DateTimeFilter @join__type(graph: API_MEDIA)  @join__type(graph: API_LANGUAGES)  {
+  gte: DateTime
+  lte: DateTime
+}
+
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
@@ -5087,19 +5092,19 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   ids: [ID!]
   bcp47: [String!]
   iso3: [String!]
-  updatedSince: DateTime
+  updatedAt: DateTimeFilter
 }
 
 input CountriesFilter @join__type(graph: API_LANGUAGES)  {
-  updatedSince: DateTime
+  updatedAt: DateTimeFilter
 }
 
 input KeywordsFilter @join__type(graph: API_MEDIA)  {
-  updatedSince: DateTime
+  updatedAt: DateTimeFilter
 }
 
 input BibleBooksFilter @join__type(graph: API_MEDIA)  {
-  updatedSince: DateTime
+  updatedAt: DateTimeFilter
 }
 
 input MutationAudioPreviewCreateInput @join__type(graph: API_LANGUAGES)  {
@@ -5505,7 +5510,7 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
 input VideoVariantFilter @join__type(graph: API_MEDIA)  {
   onlyPublished: Boolean = true
   languageId: ID
-  updatedSince: DateTime
+  updatedAt: DateTimeFilter
 }
 
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
@@ -5535,7 +5540,7 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   subtitleLanguageIds: [ID!]
   published: Boolean
   locked: Boolean
-  updatedSince: DateTime
+  updatedAt: DateTimeFilter
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {

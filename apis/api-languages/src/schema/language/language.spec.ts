@@ -170,14 +170,14 @@ describe('languages', () => {
     await cache.invalidate([{ typename: 'Language' }])
   })
 
-  it('should query languages with updatedSince filter', async () => {
+  it('should query languages with updatedAt filter', async () => {
     prismaMock.language.findMany.mockResolvedValue([language])
 
     const updatedSince = '2021-01-01T00:00:00.000Z'
     const data = await client({
       document: LANGUAGES_QUERY,
       variables: {
-        where: { updatedSince }
+        where: { updatedAt: { gte: updatedSince } }
       }
     })
 
@@ -203,14 +203,14 @@ describe('languagesCount', () => {
     await cache.invalidate([{ typename: 'Language' }])
   })
 
-  it('should query languagesCount with updatedSince filter', async () => {
+  it('should query languagesCount with updatedAt filter', async () => {
     prismaMock.language.count.mockResolvedValue(5)
 
     const updatedSince = '2021-01-01T00:00:00.000Z'
     const data = await client({
       document: LANGUAGES_COUNT_QUERY,
       variables: {
-        where: { updatedSince }
+        where: { updatedAt: { gte: updatedSince } }
       }
     })
 
