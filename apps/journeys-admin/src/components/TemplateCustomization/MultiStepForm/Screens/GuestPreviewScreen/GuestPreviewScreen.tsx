@@ -100,7 +100,7 @@ export function GuestPreviewScreen({
           display={{ xs: 'block', sm: 'none' }}
         >
           {t(
-            "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
+            "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
           )}
         </Typography>
         <Typography
@@ -109,7 +109,7 @@ export function GuestPreviewScreen({
           display={{ xs: 'none', sm: 'block' }}
         >
           {t(
-            "To keep going, save your progress, customise media, and get a sharing link, you'll need an account."
+            "To keep going, save your progress, customize media, and get a sharing link, you'll need an account."
           )}
         </Typography>
         <CustomizeFlowNextButton
