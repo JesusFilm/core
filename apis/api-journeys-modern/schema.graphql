@@ -823,6 +823,43 @@ type Journey
   journeyCollections: [JourneyCollection!]!
 }
 
+input JourneyAiChatHistoryMessage {
+  role: String!
+  content: String!
+}
+
+input JourneyAiChatInput {
+  journeyId: ID!
+  message: String!
+  history: [JourneyAiChatHistoryMessage!]!
+  turnId: String
+  contextCardId: String
+  preferredTier: JourneyAiChatPreferredTier
+  languageName: String
+}
+
+type JourneyAiChatMessage {
+  type: String
+  text: String
+  operations: String
+  operationId: String
+  status: String
+  turnId: String
+  journeyUpdated: Boolean
+  requiresConfirmation: Boolean
+  name: String
+  args: String
+  summary: String
+  cardId: String
+  error: String
+  validation: String
+}
+
+enum JourneyAiChatPreferredTier {
+  free
+  premium
+}
+
 input JourneyAiTranslateInput {
   journeyId: ID!
   name: String!
@@ -1401,6 +1438,8 @@ type Mutation {
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
+  journeyAiChatUndo(turnId: String!): Boolean!
+  journeyAiChatExecutePlan(turnId: String!): Boolean!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
@@ -2081,6 +2120,7 @@ input StepViewEventCreateInput {
 }
 
 type Subscription {
+  journeyAiChatCreateSubscription(input: JourneyAiChatInput!): JourneyAiChatMessage!
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
 

@@ -43,6 +43,7 @@ import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 
 import { Items } from './Items'
+import { AIEditorItem } from './Items/AIEditorItem'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
@@ -345,6 +346,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         alignItems="center"
       >
         <Items />
+        <AIEditorItem variant="button" />
         <PreviewItem variant="icon-button" />
         <Box ref={menuRef}>
           <Menu user={user} />

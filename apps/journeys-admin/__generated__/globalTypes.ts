@@ -153,6 +153,11 @@ export enum IntegrationType {
   growthSpaces = "growthSpaces",
 }
 
+export enum JourneyAiChatPreferredTier {
+  free = "free",
+  premium = "premium",
+}
+
 export enum JourneyMenuButtonIcon {
   chevronDown = "chevronDown",
   ellipsis = "ellipsis",
@@ -578,6 +583,21 @@ export interface IntegrationGrowthSpacesCreateInput {
 export interface IntegrationGrowthSpacesUpdateInput {
   accessId: string;
   accessSecret: string;
+}
+
+export interface JourneyAiChatHistoryMessage {
+  role: string;
+  content: string;
+}
+
+export interface JourneyAiChatInput {
+  journeyId: string;
+  message: string;
+  history: JourneyAiChatHistoryMessage[];
+  turnId?: string | null;
+  contextCardId?: string | null;
+  preferredTier?: JourneyAiChatPreferredTier | null;
+  languageName?: string | null;
 }
 
 export interface JourneyCollectionCreateInput {
