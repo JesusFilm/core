@@ -1,10 +1,10 @@
+import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import CloseIcon from '@mui/icons-material/Close'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
