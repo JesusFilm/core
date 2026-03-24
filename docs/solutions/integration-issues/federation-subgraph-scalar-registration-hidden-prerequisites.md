@@ -1,7 +1,7 @@
 ---
-title: "Adding updatedAt timestamps and updatedSince filtering to GraphQL subgraphs"
+title: 'Adding updatedAt timestamps and updatedSince filtering to GraphQL subgraphs'
 category: integration-issues
-date: "2026-03-24"
+date: '2026-03-24'
 tags:
   - graphql
   - pothos
@@ -10,8 +10,8 @@ tags:
   - datetime-scalar
   - schema-migration
   - backward-compatibility
-module: "apis/api-languages, apis/api-media"
-symptom: "DateTime fields fail to serialize in api-languages subgraph; spec overclaims migration scope; breaking changes introduced silently via arg replacement and default limits"
+module: 'apis/api-languages, apis/api-media'
+symptom: 'DateTime fields fail to serialize in api-languages subgraph; spec overclaims migration scope; breaking changes introduced silently via arg replacement and default limits'
 root_cause: >
   The api-languages Pothos builder lacked a DateTime scalar registration
   (DateTimeResolver import, Scalars generic entry, and addScalarType call),
@@ -49,7 +49,10 @@ import { DateTimeResolver } from 'graphql-scalars'
 
 // 2. Declare the scalar in the builder's generic type map
 Scalars: {
-  DateTime: { Input: Date; Output: Date }
+  DateTime: {
+    Input: Date
+    Output: Date
+  }
 }
 
 // 3. Register the scalar on the builder instance
@@ -97,9 +100,7 @@ Before committing, inspect the full diff for changes introduced by auto-formatti
 
 ```typescript
 // SAFETY: _requestedLanguageId is injected at runtime in resolveReference
-const requestedLanguageId = (video as any)._requestedLanguageId as
-  | string
-  | undefined
+const requestedLanguageId = (video as any)._requestedLanguageId as string | undefined
 ```
 
 Run `git diff --staged` and scan for removals or modifications you did not make yourself.
@@ -118,7 +119,7 @@ Run `git diff --staged` and scan for removals or modifications you did not make 
 
 ## Prevention Checklist
 
-- [ ] If a new field type (DateTime, BigInt, etc.) is introduced in a subgraph, confirm the Pothos builder in *that specific subgraph* has the scalar registered
+- [ ] If a new field type (DateTime, BigInt, etc.) is introduced in a subgraph, confirm the Pothos builder in _that specific subgraph_ has the scalar registered
 - [ ] For every migration in a spec, verify the column/table doesn't already exist in the actual Prisma schema before writing the migration
 - [ ] Any modification to existing query arguments must be classified as breaking or non-breaking before implementation
 - [ ] Compare the PR diff against the original ticket -- flag any behavioral change not explicitly requested and split into a separate PR

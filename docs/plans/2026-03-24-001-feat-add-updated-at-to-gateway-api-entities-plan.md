@@ -1,5 +1,5 @@
 ---
-title: "feat: Add updatedAt to Gateway API Entities"
+title: 'feat: Add updatedAt to Gateway API Entities'
 type: feat
 status: completed
 date: 2026-03-24
@@ -14,6 +14,7 @@ date: 2026-03-24
 **Agents used:** Architecture Strategist, Performance Oracle, Security Sentinel, Data Migration Expert, Data Integrity Guardian, Pattern Recognition Specialist, Code Simplicity Reviewer, TypeScript Reviewer, Best Practices Researcher, Framework Docs Researcher, Schema Drift Detector
 
 ### Key Improvements from Deepening
+
 1. **Compound indexes** `@@index([updatedAt, id])` for large tables (Video, VideoVariant) to support efficient paginated sync
 2. **`CREATE INDEX CONCURRENTLY`** required for Video/VideoVariant to avoid write-locks in production
 3. **Critical data integrity gap**: `data-import.ts` uses raw `psql` restore which bypasses `@updatedAt` — requires post-import timestamp reset
@@ -23,6 +24,7 @@ date: 2026-03-24
 7. **`videosFilter()` helper** should use pure-function return pattern (not mutation) for consistency
 
 ### New Considerations Discovered
+
 - `graphql-scalars` must be verified as a dependency in api-languages `package.json`
 - Use `'DateTime'` scalar type (not `'Date'`) — older types use `'Date'` but that loses time precision
 - Test `omit()` calls must be updated to stop stripping `updatedAt` from assertions
@@ -45,17 +47,17 @@ Downstream consumers currently must re-fetch every record to detect changes. The
 
 ### What Already Exists
 
-| Entity | `updatedAt` in Prisma? | Exposed in GraphQL? | Filter type exists? |
-|--------|:----------------------:|:-------------------:|:-------------------:|
-| Video | Yes (`schema.prisma:161`) | No | `VideosFilter` exists |
-| VideoVariant | Yes (`:247`) | No | `VideoVariantFilter` exists |
-| VideoSubtitle | Yes | No | No filter type |
-| VideoEdition | Yes (`:263`) | No | No filter type |
-| BibleCitation | Yes (`:382`) | No | No filter type |
-| Keyword | Yes (`:423`) | No | No filter type |
-| BibleBook | Yes (`:398`) | No | No filter type |
-| Language | Yes (`:22`) | No | `LanguagesFilter` exists |
-| **Country** | **No** | No | No filter type |
+| Entity        |  `updatedAt` in Prisma?   | Exposed in GraphQL? |     Filter type exists?     |
+| ------------- | :-----------------------: | :-----------------: | :-------------------------: |
+| Video         | Yes (`schema.prisma:161`) |         No          |    `VideosFilter` exists    |
+| VideoVariant  |       Yes (`:247`)        |         No          | `VideoVariantFilter` exists |
+| VideoSubtitle |            Yes            |         No          |       No filter type        |
+| VideoEdition  |       Yes (`:263`)        |         No          |       No filter type        |
+| BibleCitation |       Yes (`:382`)        |         No          |       No filter type        |
+| Keyword       |       Yes (`:423`)        |         No          |       No filter type        |
+| BibleBook     |       Yes (`:398`)        |         No          |       No filter type        |
+| Language      |        Yes (`:22`)        |         No          |  `LanguagesFilter` exists   |
+| **Country**   |          **No**           |         No          |       No filter type        |
 
 ### Key Codebase Facts
 
@@ -134,6 +136,7 @@ erDiagram
 File: `apis/api-languages/src/schema/builder.ts`
 
 Three changes required:
+
 1. Import `DateTimeResolver` from `graphql-scalars`
 2. Add `DateTime: { Input: Date; Output: Date }` to the `Scalars` generic parameter
 3. Call `builder.addScalarType('DateTime', DateTimeResolver)`
@@ -168,6 +171,7 @@ Run: `npx prisma migrate dev --name add-country-updated-at` from the languages p
 **For large tables (Video, VideoVariant)** — use compound indexes for future cursor-based pagination:
 
 File: `libs/prisma/media/db/schema.prisma`
+
 ```prisma
 model Video {
   // ...
@@ -180,6 +184,7 @@ model VideoVariant {
 ```
 
 **Migration procedure for large tables:**
+
 1. Generate migration with `prisma migrate dev --create-only --name add-updated-at-indexes`
 2. Edit the generated SQL to use `CREATE INDEX CONCURRENTLY`
 3. Note: `CONCURRENTLY` cannot run inside a transaction — the migration must be split or run outside Prisma's transaction wrapper
@@ -198,6 +203,7 @@ model BibleBook {
 ```
 
 File: `libs/prisma/languages/db/schema.prisma`
+
 ```prisma
 model Language {
   // ...
@@ -229,6 +235,7 @@ updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false })
 > **Important: Use `'DateTime'` not `'Date'`.** The codebase has an inconsistency — older types (Video's `publishedAt`, CloudflareR2) use `'Date'` which loses the time component. Newer types (Playlist, PlaylistItem) use `'DateTime'`. For `updatedAt` timestamps, `'DateTime'` is semantically correct and matches the newer codebase pattern.
 
 Files to modify:
+
 - `apis/api-media/src/schema/video/video.ts` — `Video` type
 - `apis/api-media/src/schema/videoVariant/videoVariant.ts` — `VideoVariant` type
 - `apis/api-media/src/schema/videoEdition/videoEdition.ts` — `VideoEdition` type
@@ -366,6 +373,7 @@ For each entity with `updatedSince` support, add tests:
 4. **Count queries** — verify count queries also respect `updatedSince`
 
 Test files to create/modify:
+
 - `apis/api-media/src/schema/video/__tests__/video.spec.ts`
 - `apis/api-media/src/schema/videoVariant/__tests__/videoVariant.spec.ts`
 - `apis/api-media/src/schema/keyword/__tests__/keyword.spec.ts`
@@ -406,6 +414,7 @@ Test files to create/modify:
 #### `@updatedAt` does NOT cascade to parent records
 
 When a child record changes (e.g., `VideoTitle`, `VideoSnippet`, `CountryName`), the parent's `updatedAt` is **NOT** automatically updated. This means:
+
 - A `VideoTitle` update will NOT bump `Video.updatedAt`
 - A `CountryName` update will NOT bump `Country.updatedAt`
 
@@ -414,6 +423,7 @@ When a child record changes (e.g., `VideoTitle`, `VideoSnippet`, `CountryName`),
 **Mitigation for v1:** Document this as a **known limitation**. Consumers should do periodic full reconciliation (recommended every 24h) to catch changes that didn't propagate.
 
 **Future mitigation options:**
+
 1. Database triggers on child tables that touch parent `updatedAt`
 2. Application-level middleware that explicitly updates parent in the same transaction
 3. Sync on child tables directly (increases query complexity)
@@ -425,6 +435,7 @@ The `apis/api-media/src/scripts/data-import.ts` script does a full database rest
 **Impact:** If the backup is hours/days old, sync consumers' cursors could be ahead of restored data, causing them to **miss all restored records**.
 
 **Mitigation:** After any `psql`-based data import, either:
+
 1. Run `UPDATE "Video" SET "updatedAt" = NOW()` on all affected tables
 2. Reset all sync consumer cursors to force full re-sync
 3. Document this in the data import runbook
@@ -579,16 +590,16 @@ Plus revert Prisma schema changes and run `prisma migrate resolve --rolled-back 
 
 ## Dependencies & Risks
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Country migration on production DB | Brief lock on Country table (~250 rows) | Table is small; completes in milliseconds |
-| Index creation on large tables | SHARE lock blocks writes during build | Use `CREATE INDEX CONCURRENTLY` for Video/VideoVariant |
-| Breaking `countries` query signature | Downstream consumer failures | Keep existing args; add `where` alongside |
-| DateTime scalar missing in api-languages | Build failure | Add as first prerequisite in Phase 1a |
-| `graphql-scalars` not in api-languages deps | Import failure | Verify `package.json` before implementation |
-| `data-import.ts` resets all timestamps | Sync consumers miss restored records | Document post-import timestamp reset procedure |
-| Child changes don't propagate to parent | Sync consumers get stale parent records | Document limitation; recommend 24h full reconciliation |
-| Unbounded `videoVariants`/`keywords` queries | Large payloads, high DB load | Add default `take` limits |
+| Risk                                         | Impact                                  | Mitigation                                             |
+| -------------------------------------------- | --------------------------------------- | ------------------------------------------------------ |
+| Country migration on production DB           | Brief lock on Country table (~250 rows) | Table is small; completes in milliseconds              |
+| Index creation on large tables               | SHARE lock blocks writes during build   | Use `CREATE INDEX CONCURRENTLY` for Video/VideoVariant |
+| Breaking `countries` query signature         | Downstream consumer failures            | Keep existing args; add `where` alongside              |
+| DateTime scalar missing in api-languages     | Build failure                           | Add as first prerequisite in Phase 1a                  |
+| `graphql-scalars` not in api-languages deps  | Import failure                          | Verify `package.json` before implementation            |
+| `data-import.ts` resets all timestamps       | Sync consumers miss restored records    | Document post-import timestamp reset procedure         |
+| Child changes don't propagate to parent      | Sync consumers get stale parent records | Document limitation; recommend 24h full reconciliation |
+| Unbounded `videoVariants`/`keywords` queries | Large payloads, high DB load            | Add default `take` limits                              |
 
 ---
 
@@ -612,6 +623,7 @@ Due to the buffer window, consumers will re-receive some records on each sync cy
 ### Full Reconciliation
 
 Schedule a full reconciliation every 24 hours to catch:
+
 - Records missed due to the parent-child propagation gap
 - Data restored via `data-import.ts` that bypassed `@updatedAt`
 - Any edge cases around long-running transactions
@@ -621,6 +633,7 @@ Schedule a full reconciliation every 24 hours to catch:
 ## Implementation Checklist
 
 ### Phase 1: Prerequisites
+
 - [x] Verify `graphql-scalars` in api-languages `package.json`
 - [x] Register `DateTime` scalar in `apis/api-languages/src/schema/builder.ts` (import, Scalars generic, addScalarType)
 - [x] Add `updatedAt` to Country model in `libs/prisma/languages/db/schema.prisma`
@@ -631,6 +644,7 @@ Schedule a full reconciliation every 24 hours to catch:
 - [x] Generate and apply languages migration
 
 ### Phase 2: Expose `updatedAt` on GraphQL types
+
 - [x] Video type in `apis/api-media/src/schema/video/video.ts`
 - [x] VideoVariant type in `apis/api-media/src/schema/videoVariant/videoVariant.ts`
 - [x] VideoEdition type in `apis/api-media/src/schema/videoEdition/videoEdition.ts`
@@ -640,21 +654,25 @@ Schedule a full reconciliation every 24 hours to catch:
 - [x] Country type in `apis/api-languages/src/schema/country/country.ts`
 
 ### Phase 3: Add `updatedSince` to existing filters
+
 - [x] `VideosFilter` input + `videosFilter()` helper (pure-function style)
 - [x] `VideoVariantFilter` input + inline resolver
 - [x] `LanguagesFilter` input + inline resolver logic
 
 ### Phase 4: Create new filter types
+
 - [x] `CountriesFilter` (non-breaking — alongside existing args, updatedSince only)
 - [x] `KeywordsFilter`
 - [x] `BibleBooksFilter`
 
 ### Phase 5: Verify count queries
+
 - [x] `videosCount` respects `updatedSince`
 - [x] `videoVariantsCount` respects `updatedSince`
 - [x] `languagesCount` respects `updatedSince`
 
 ### Phase 6: Tests
+
 - [x] Video filter + count tests
 - [x] VideoVariant filter + count tests
 - [x] Keyword filter tests
@@ -665,6 +683,7 @@ Schedule a full reconciliation every 24 hours to catch:
 - [x] Update `omit()` calls to stop stripping `updatedAt` from assertions
 
 ### Phase 7: Documentation & Operations
+
 - [x] Document known limitation: child record changes don't propagate to parent `updatedAt`
 - [x] Document post-`data-import.ts` timestamp reset procedure
 - [x] Document consumer guidance (buffer window, idempotency, full reconciliation)

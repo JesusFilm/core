@@ -330,6 +330,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+  updatedSince?: any | null;
 }
 
 export interface MultiselectSubmissionEventCreateInput {
