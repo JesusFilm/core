@@ -64,6 +64,7 @@ describe('BibleBook', () => {
             }
           }
         },
+        where: { updatedAt: undefined },
         orderBy: { order: 'asc' }
       })
       expect(data).toHaveProperty('data.bibleBooks', [
@@ -130,6 +131,7 @@ describe('BibleBook', () => {
             }
           }
         },
+        where: { updatedAt: undefined },
         orderBy: { order: 'asc' }
       })
       expect(data).toHaveProperty('data.bibleBooks', [
@@ -152,6 +154,57 @@ describe('BibleBook', () => {
           paratextAbbreviation: 'GEN',
           isNewTestament: false,
           order: 1
+        }
+      ])
+    })
+
+    it('should query bibleBooks with updatedAt filter', async () => {
+      prismaMock.bibleBook.findMany.mockResolvedValue([
+        {
+          id: '1',
+          name: [
+            {
+              value: 'Genesis',
+              primary: true,
+              languageId: '529'
+            }
+          ],
+          osisId: 'Gen',
+          alternateName: 'First Book of Moses',
+          paratextAbbreviation: 'GEN',
+          isNewTestament: false,
+          order: 1,
+          updatedAt: new Date('2025-01-01T00:00:00.000Z')
+        }
+      ] as Array<BibleBook & { name: BibleBookName[] }>)
+
+      const BIBLE_BOOKS_FILTER_QUERY = graphql(`
+        query BibleBooksWithFilter($where: BibleBooksFilter) {
+          bibleBooks(where: $where) {
+            id
+            updatedAt
+          }
+        }
+      `)
+
+      const data = await client({
+        document: BIBLE_BOOKS_FILTER_QUERY,
+        variables: {
+          where: { updatedAt: { gte: '2025-01-01T00:00:00.000Z' } }
+        }
+      })
+
+      expect(prismaMock.bibleBook.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+          }
+        })
+      )
+      expect(data).toHaveProperty('data.bibleBooks', [
+        {
+          id: '1',
+          updatedAt: '2025-01-01T00:00:00.000Z'
         }
       ])
     })

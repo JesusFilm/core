@@ -3828,6 +3828,7 @@ export type Query = {
   videoOrigins: Array<VideoOrigin>;
   videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
+  videoVariantsCount: Scalars['Int']['output'];
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
   /** Get a single visitor */
@@ -4267,6 +4268,13 @@ export type QueryVideoVariantArgs = {
 
 
 export type QueryVideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryVideoVariantsCountArgs = {
   input?: InputMaybe<VideoVariantFilter>;
 };
 

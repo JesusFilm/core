@@ -165,6 +165,7 @@ model Video {
   @@index(childIds)
   @@index(published(type: Hash))
   @@index(originId(type: Hash))
+  @@index([updatedAt, id])
 }
 
 model VideoTitle {
@@ -250,6 +251,7 @@ model VideoVariant {
   @@index(languageId(type: Hash))
   @@index(videoId(type: Hash))
   @@index([published, languageId])
+  @@index([updatedAt, id])
 }
 
 model VideoEdition {
@@ -396,6 +398,8 @@ model BibleBook {
   bibleCitation        BibleCitation[]
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @default(now()) @updatedAt
+
+  @@index([updatedAt])
 }
 
 model BibleBookName {
@@ -424,6 +428,7 @@ model Keyword {
 
   @@unique([value, languageId])
   @@index([value(type: Hash)])
+  @@index([updatedAt])
 }
 
 enum Service {

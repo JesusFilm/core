@@ -41,6 +41,11 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 # install global node modules
 RUN su node -c "npm install -g npm@latest"
 
+# Install Claude Code CLI (as node user so binary lands in /home/node/.local/bin)
+USER node
+RUN curl -fsSL https://claude.ai/install.sh | bash
+USER root
+
 WORKDIR /home/node
 
 # install github action runner
