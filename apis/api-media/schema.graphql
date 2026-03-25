@@ -29,12 +29,17 @@ type BibleBook {
   paratextAbbreviation: String!
   isNewTestament: Boolean!
   order: Int!
+  updatedAt: DateTime!
 }
 
 type BibleBookName {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input BibleBooksFilter {
+  updatedAt: DateTimeFilter
 }
 
 type BibleCitation {
@@ -206,6 +211,11 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input DateTimeFilter {
+  gte: DateTime
+  lte: DateTime
+}
+
 enum DefaultPlatform {
   ios
   android
@@ -259,6 +269,11 @@ type Keyword {
   id: ID!
   value: String!
   language: Language!
+  updatedAt: DateTime!
+}
+
+input KeywordsFilter {
+  updatedAt: DateTimeFilter
 }
 
 type LabeledVideoCounts {
@@ -702,10 +717,10 @@ type Query {
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
-  bibleBooks: [BibleBook!]!
+  bibleBooks(where: BibleBooksFilter): [BibleBook!]!
   bibleCitations(videoId: ID): [BibleCitation!]!
   bibleCitation(id: ID!): BibleCitation!
-  keywords: [Keyword!]!
+  keywords(where: KeywordsFilter): [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
@@ -1122,6 +1137,7 @@ type Video
   publishedAt: Date
   children: [Video!]!
   parents: [Video!]!
+  updatedAt: DateTime!
 }
 
 enum VideoBlockSource {
@@ -1155,6 +1171,7 @@ type VideoEdition {
   name: String
   videoVariants: [VideoVariant!]!
   videoSubtitles: [VideoSubtitle!]!
+  updatedAt: DateTime!
 }
 
 input VideoEditionCreateInput {
@@ -1365,6 +1382,7 @@ type VideoVariant {
   """version control for master video file"""
   version: Int!
   video: Video
+  updatedAt: DateTime!
 }
 
 input VideoVariantCreateInput {
@@ -1444,6 +1462,7 @@ input VideoVariantDownloadUpdateInput {
 input VideoVariantFilter {
   onlyPublished: Boolean = true
   languageId: ID
+  updatedAt: DateTimeFilter
 }
 
 input VideoVariantUpdateInput {
@@ -1473,6 +1492,7 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
   published: Boolean
   locked: Boolean
+  updatedAt: DateTimeFilter
 }
 
 type Youtube
