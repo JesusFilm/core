@@ -29,6 +29,7 @@ import {
   ErrorInfo,
   ReactElement,
   ReactNode,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -50,7 +51,7 @@ import { GET_ME } from '../PageWrapper/NavigationDrawer/UserNavigation/UserNavig
 
 interface LogEntry {
   message: string
-  level: 'info' | 'warn' | 'error'
+  level: string
   timestamp: string
 }
 
@@ -147,7 +148,9 @@ function UserDeleteErrorFallback({
 export function UserDeleteWithErrorBoundary(): ReactElement {
   return (
     <UserDeleteErrorBoundary>
-      <UserDeleteContent />
+      <Suspense>
+        <UserDeleteContent />
+      </Suspense>
     </UserDeleteErrorBoundary>
   )
 }
@@ -170,7 +173,6 @@ function UserDeleteContent(): ReactElement {
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [checkComplete, setCheckComplete] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [deleteComplete, setDeleteComplete] = useState(false)
   const [confirmVars, setConfirmVars] = useState<ConfirmVars | null>(null)
 
   const [userDeleteCheck, { loading: checkLoading }] = useMutation<
@@ -191,7 +193,6 @@ function UserDeleteContent(): ReactElement {
       setLogs((prev) => [...prev, progress.log])
 
       if (progress.done) {
-        setDeleteComplete(true)
         setConfirmVars(null)
 
         if (progress.success === true) {
@@ -221,7 +222,7 @@ function UserDeleteContent(): ReactElement {
     }
   })
 
-  const confirmLoading = confirmVars != null && !deleteComplete
+  const confirmLoading = confirmVars != null
 
   const isSuperAdmin =
     data.me?.__typename === 'AuthenticatedUser' && data.me.superAdmin === true
@@ -241,29 +242,24 @@ function UserDeleteContent(): ReactElement {
     }
   }, [logs])
 
-  const logText = useMemo(
-    () =>
-      logs
-        .map((log) => {
-          const time = new Date(log.timestamp).toLocaleTimeString()
-          const prefix =
-            log.level === 'error'
-              ? 'ERROR'
-              : log.level === 'warn'
-                ? 'WARN'
-                : 'INFO'
-          return `[${time}] ${prefix}: ${log.message}`
-        })
-        .join('\n'),
-    [logs]
-  )
+  const levelLabel: Record<string, string> = {
+    error: 'ERROR',
+    warn: 'WARN',
+    info: 'INFO'
+  }
+
+  const logText = logs
+    .map((log) => {
+      const time = new Date(log.timestamp).toLocaleTimeString()
+      return `[${time}] ${levelLabel[log.level] ?? log.level.toUpperCase()}: ${log.message}`
+    })
+    .join('\n')
 
   const handleCheck = useCallback(async () => {
     if (userId.trim() === '') return
 
     setLogs([])
     setCheckComplete(false)
-    setDeleteComplete(false)
 
     try {
       const { data: checkData } = await userDeleteCheck({
@@ -292,7 +288,6 @@ function UserDeleteContent(): ReactElement {
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmOpen(false)
-    setDeleteComplete(false)
     setConfirmVars({ idType, id: userId.trim() })
   }, [idType, userId])
 
@@ -396,7 +391,7 @@ function UserDeleteContent(): ReactElement {
           variant="contained"
           color="error"
           onClick={() => setConfirmOpen(true)}
-          disabled={!checkComplete || confirmLoading || deleteComplete}
+          disabled={!checkComplete || confirmLoading}
         >
           {confirmLoading ? t('Deleting...') : t('Delete User')}
         </Button>
