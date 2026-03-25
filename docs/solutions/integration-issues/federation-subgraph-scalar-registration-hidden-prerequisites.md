@@ -67,7 +67,8 @@ Run a direct check against the Prisma schema files to determine which models gen
 
 ```bash
 # For each model, check whether updatedAt already exists
-grep -A 20 'model Country {' schema.prisma | grep updatedAt
+# Use sed to extract the full model block (handles models of any length)
+sed -n '/^model Country {/,/^}/p' schema.prisma | grep updatedAt
 ```
 
 In this case, only 1 of 9 models (Country) was missing `updatedAt`. The remaining 8 already had `updatedAt DateTime @default(now()) @updatedAt`, eliminating 8 unnecessary migrations.
