@@ -351,6 +351,7 @@ describe('VideosSection', () => {
     })
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
     act(() => {
@@ -372,6 +373,7 @@ describe('VideosSection', () => {
     })
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
     await user.type(input, 'not-a-valid-url')
 
     act(() => {
@@ -393,6 +395,7 @@ describe('VideosSection', () => {
     })
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
     await user.type(input, 'not-a-valid-url')
     act(() => {
       jest.advanceTimersByTime(800)
@@ -420,6 +423,7 @@ describe('VideosSection', () => {
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
 
     // First: submit a valid URL — resolves true so dedup map records it
+    await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
       jest.advanceTimersByTime(800)
@@ -464,6 +468,7 @@ describe('VideosSection', () => {
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
 
     // First attempt — fails (returns false), so dedup map is NOT written
+    await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
       jest.advanceTimersByTime(800)
@@ -480,5 +485,87 @@ describe('VideosSection', () => {
       jest.advanceTimersByTime(800)
     })
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(2)
+  })
+
+  it('resets YouTube URL when cardBlockId changes', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+
+    const cardBlockIdB = 'card-block-2'
+    const journey: Journey = {
+      ...journeyWithMatchingVideoBlock,
+      blocks: [
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          source: VideoBlockSource.internal,
+          videoId: null
+        },
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          id: 'video-block-2',
+          parentBlockId: cardBlockIdB,
+          source: VideoBlockSource.internal,
+          videoId: null
+        }
+      ]
+    }
+
+    const { rerender } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <VideosSection cardBlockId={cardBlockId} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+    rerender(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <VideosSection cardBlockId={cardBlockIdB} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByPlaceholderText('Paste a YouTube link...')).toHaveValue(
+      ''
+    )
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
+  })
+
+  it('hydrates YouTube URL from existing video block', () => {
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    expect(screen.getByPlaceholderText('Paste a YouTube link...')).toHaveValue(
+      'https://www.youtube.com/watch?v=youtube-id'
+    )
+  })
+
+  it('does not re-submit hydrated YouTube URL', () => {
+    jest.useFakeTimers()
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
   })
 })

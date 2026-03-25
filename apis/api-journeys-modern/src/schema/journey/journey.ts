@@ -55,7 +55,10 @@ export const JourneyRef = builder.prismaObject('Journey', {
       resolve: (journey) => ({ id: journey.languageId ?? '529' })
     }),
     blocks: t.relation('blocks', {
-      nullable: true
+      nullable: true,
+      query: () => ({
+        where: { deletedAt: null }
+      })
     }),
     chatButtons: t.relation('chatButtons', {
       nullable: false

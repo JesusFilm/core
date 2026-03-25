@@ -8,6 +8,7 @@ import { VideoEditionCreateInput } from './inputs/videoEditionCreate'
 builder.prismaObject('VideoEdition', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     name: t.exposeString('name'),
     videoVariants: t.relation('videoVariants', { nullable: false }),
     videoSubtitles: t.relation('videoSubtitles', { nullable: false })
