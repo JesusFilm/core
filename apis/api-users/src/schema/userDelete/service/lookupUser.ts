@@ -25,32 +25,40 @@ async function checkFirebaseUser(
 ): Promise<{ status: FirebaseStatus; logs: LogEntry[] }> {
   const logs: LogEntry[] = []
 
-  // Try by UID first
-  try {
-    const fbUser = await auth.getUser(userId)
-    const providerIds = fbUser.providerData.map((p) => p.providerId)
-    logs.push(
-      createLog(
-        `🔥 Firebase user found by UID: ${fbUser.email ?? 'no email'} (providers: ${providerIds.join(', ') || 'none'}, disabled: ${fbUser.disabled})`
+  // Comment 6: skip UID lookup when userId is empty — an empty string triggers
+  // auth/invalid-uid in Firebase which is NOT a not-found error and would
+  // previously be swallowed (treated as absent). This path is hit when we call
+  // checkFirebaseUser('', email) for a firebase-only email lookup.
+  if (userId !== '') {
+    try {
+      const fbUser = await auth.getUser(userId)
+      const providerIds = fbUser.providerData.map((p) => p.providerId)
+      logs.push(
+        createLog(
+          `🔥 Firebase user found by UID: ${fbUser.email ?? 'no email'} (providers: ${providerIds.join(', ') || 'none'}, disabled: ${fbUser.disabled})`
+        )
       )
-    )
-    return {
-      status: {
-        exists: true,
-        uid: fbUser.uid,
-        email: fbUser.email ?? null,
-        disabled: fbUser.disabled,
-        providerIds
-      },
-      logs
-    }
-  } catch (error) {
-    if (!isFirebaseNotFound(error)) {
-      logs.push(createLog('⚠️ Firebase lookup by UID failed', 'warn'))
+      return {
+        status: {
+          exists: true,
+          uid: fbUser.uid,
+          email: fbUser.email ?? null,
+          disabled: fbUser.disabled,
+          providerIds
+        },
+        logs
+      }
+    } catch (error) {
+      if (!isFirebaseNotFound(error)) {
+        // Comment 6: rethrow unexpected errors — only user-not-found should
+        // continue to the email fallback; transient failures (network, auth
+        // permissions) should not be silently treated as "user absent".
+        throw error
+      }
     }
   }
 
-  // UID not found — try by email as fallback
+  // UID not found or skipped — try by email as fallback
   if (email != null) {
     try {
       const fbUser = await auth.getUserByEmail(email)
@@ -73,7 +81,8 @@ async function checkFirebaseUser(
       }
     } catch (error) {
       if (!isFirebaseNotFound(error)) {
-        logs.push(createLog('⚠️ Firebase lookup by email also failed', 'warn'))
+        // Comment 6: same as above — rethrow unexpected errors
+        throw error
       }
     }
   }
@@ -137,7 +146,10 @@ export async function lookupUser(
     }
   }
 
-  throw new GraphQLError(`User not found with ${idType}: ${id}`, {
+  // Comment 7: log identifying details server-side only; do not expose the
+  // raw id value in the client-facing error message.
+  console.error(`User not found with ${idType}:`, id)
+  throw new GraphQLError('User not found', {
     extensions: { code: 'NOT_FOUND' }
   })
 }

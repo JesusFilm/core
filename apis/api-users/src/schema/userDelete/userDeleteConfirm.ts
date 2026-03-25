@@ -55,11 +55,66 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           yield { log, done: false, success: null }
         }
 
+        // Comment 8: look up caller before the firebase-only branch so audit
+        // logging is available for all deletion paths.
+        const caller = await prisma.user.findUnique({
+          where: { userId: ctx.currentUser.id }
+        })
+        if (caller == null) {
+          yield {
+            log: createLog('❌ Caller user not found', 'error'),
+            done: true,
+            success: false
+          }
+          return
+        }
+
         // Firebase-only account — no DB user, just delete Firebase auth
         if (user == null) {
           if (!firebase.exists || firebase.uid == null) {
             yield {
               log: createLog('❌ No Firebase account found to delete', 'error'),
+              done: true,
+              success: false
+            }
+            return
+          }
+
+          // Comment 8: create audit log before deletion so there is always a
+          // durable record, matching the behaviour of the full-user path.
+          let auditLog: { id: string } | null = null
+          try {
+            auditLog = await prisma.userDeleteAuditLog.create({
+              data: {
+                deletedUserId: firebase.uid,
+                deletedUserEmail: firebase.email,
+                deletedUserFirstName: '(Firebase only)',
+                callerUserId: caller.id,
+                callerEmail: caller.email,
+                callerFirstName: caller.firstName,
+                callerLastName: caller.lastName,
+                deletedJourneyIds: [],
+                deletedTeamIds: [],
+                deletedUserJourneyIds: [],
+                deletedUserTeamIds: [],
+                success: false
+              }
+            })
+            yield {
+              log: createLog('📝 Audit log created'),
+              done: false,
+              success: null
+            }
+          } catch (auditError) {
+            console.error(
+              'Failed to create audit log for firebase-only deletion:',
+              auditError
+            )
+            yield {
+              log: createLog(
+                '❌ Failed to create audit log. Aborting deletion.',
+                'error'
+              ),
               done: true,
               success: false
             }
@@ -82,6 +137,20 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           }
 
           const hasError = fbLogs.some((log) => log.level === 'error')
+
+          // Best-effort audit log update
+          try {
+            await prisma.userDeleteAuditLog.update({
+              where: { id: auditLog.id },
+              data: {
+                success: !hasError,
+                ...(hasError ? { errorMessage: 'Firebase deletion failed' } : {})
+              }
+            })
+          } catch {
+            // best-effort
+          }
+
           yield {
             log: createLog(
               hasError
@@ -90,19 +159,6 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
             ),
             done: true,
             success: !hasError
-          }
-          return
-        }
-
-        // Look up the caller (superAdmin) for audit log
-        const caller = await prisma.user.findUnique({
-          where: { userId: ctx.currentUser.id }
-        })
-        if (caller == null) {
-          yield {
-            log: createLog('❌ Caller user not found', 'error'),
-            done: true,
-            success: false
           }
           return
         }

@@ -3,6 +3,11 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { deleteJourneysData } from './deleteJourneysData'
 
 describe('deleteJourneysData', () => {
+  // Nitpick: added beforeEach to prevent cross-test mock contamination
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should complete all phases successfully with no data', async () => {
     const txMock = {
       userJourney: { findMany: jest.fn().mockResolvedValue([]) },

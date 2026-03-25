@@ -98,21 +98,9 @@ export async function deleteUserData(
 ): Promise<DeleteUserDataResult> {
   const logs: LogEntry[] = []
 
-  // 1. Delete Firebase auth record(s)
-  const fbLogs = await deleteFirebaseUser(
-    input.firebaseUserId,
-    input.firebaseUidOverride,
-    input.userEmail
-  )
-  logs.push(...fbLogs)
-
-  // Check if any Firebase delete produced a hard error
-  const hasFirebaseError = fbLogs.some((log) => log.level === 'error')
-  if (hasFirebaseError) {
-    return { success: false, logs }
-  }
-
-  // 2. Create audit log with success: false
+  // Comment 3: create audit log FIRST — before any irreversible action so
+  // there is always a durable record of the deletion attempt even if a
+  // subsequent step fails.
   let auditLog: { id: string } | null = null
   try {
     auditLog = await prisma.userDeleteAuditLog.create({
@@ -141,29 +129,60 @@ export async function deleteUserData(
     return { success: false, logs }
   }
 
+  // 2. Delete Firebase auth record(s)
+  const fbLogs = await deleteFirebaseUser(
+    input.firebaseUserId,
+    input.firebaseUidOverride,
+    input.userEmail
+  )
+  logs.push(...fbLogs)
+
+  const hasFirebaseError = fbLogs.some((log) => log.level === 'error')
+  if (hasFirebaseError) {
+    // Comment 4: best-effort update — the user is NOT yet deleted, so a
+    // failure here just leaves the audit record with success: false (correct).
+    try {
+      await prisma.userDeleteAuditLog.update({
+        where: { id: auditLog.id },
+        data: { errorMessage: 'Firebase deletion failed' }
+      })
+    } catch {
+      // best-effort
+    }
+    return { success: false, logs }
+  }
+
   // 3. Delete User record
   try {
     await prisma.user.delete({ where: { id: input.userDbId } })
     logs.push(createLog('🗑️ User record deleted from database'))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    if (auditLog != null) {
+    // Comment 4: best-effort update — don't let an audit log write failure
+    // mask the real error or report the deletion as failed twice.
+    try {
       await prisma.userDeleteAuditLog.update({
         where: { id: auditLog.id },
         data: { errorMessage: `Failed to delete user record: ${message}` }
       })
+    } catch {
+      // best-effort
     }
     console.error('Failed to delete user record:', error)
     logs.push(createLog('❌ Failed to delete user record', 'error'))
     return { success: false, logs }
   }
 
-  // 4. Update audit log to success
-  if (auditLog != null) {
+  // 4. Update audit log to success (best-effort — user is already deleted)
+  // Comment 4: wrapped in try/catch so a transient DB write failure here does
+  // not incorrectly surface as a deletion failure to the caller.
+  try {
     await prisma.userDeleteAuditLog.update({
       where: { id: auditLog.id },
       data: { success: true }
     })
+  } catch (error) {
+    console.error('Failed to update audit log to success:', error)
   }
 
   logs.push(createLog('✅ User deleted successfully'))

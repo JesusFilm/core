@@ -90,16 +90,11 @@ export async function callJourneysCheck(
 
     return data.userDeleteJourneysCheck
   } catch (error) {
+    // Comment 5: rethrow so callers can distinguish a network/API failure from
+    // a legitimate "nothing to clean up" result (all-zero counts with an error
+    // log were indistinguishable to callers).
     console.error('Journeys check failed:', error)
-    return {
-      journeysToDelete: 0,
-      journeysToTransfer: 0,
-      journeysToRemove: 0,
-      teamsToDelete: 0,
-      teamsToTransfer: 0,
-      teamsToRemove: 0,
-      logs: [createLog('❌ Journeys check failed', 'error')]
-    }
+    throw error
   }
 }
 
@@ -131,14 +126,9 @@ export async function callJourneysConfirm(
 
     return data.userDeleteJourneysConfirm
   } catch (error) {
+    // Comment 5: rethrow — callers use success:false to abort; swallowing the
+    // error here made interop failures indistinguishable from successful no-ops.
     console.error('Journeys deletion failed:', error)
-    return {
-      success: false,
-      deletedJourneyIds: [],
-      deletedTeamIds: [],
-      deletedUserJourneyIds: [],
-      deletedUserTeamIds: [],
-      logs: [createLog('❌ Journeys deletion failed', 'error')]
-    }
+    throw error
   }
 }
