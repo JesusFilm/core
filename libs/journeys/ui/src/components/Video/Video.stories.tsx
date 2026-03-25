@@ -46,6 +46,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   children: []
 }
 

@@ -26,7 +26,7 @@ export function toUser(tokens: Tokens): User {
     phoneNumber: phoneNumber ?? null,
     emailVerified: emailVerified ?? false,
     token: tokens.token,
-    isAnonymous: false,
+    isAnonymous: tokens.decodedToken.firebase.sign_in_provider === 'anonymous',
     providerId: typeof providerId === 'string' ? providerId : ''
   }
 }
@@ -44,11 +44,14 @@ export async function getAuthTokens(
 export function redirectToLogin(ctx: GetServerSidePropsContext): {
   redirect: { permanent: false; destination: string }
 } {
-  const redirectUrl = ctx.resolvedUrl
+  const url = new URL(ctx.resolvedUrl, 'https://admin.nextstep.is')
+  const existingRedirect = url.searchParams.get('redirect')
+  const redirectTarget = existingRedirect ?? `${url.pathname}${url.search}`
+
   return {
     redirect: {
       permanent: false,
-      destination: `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+      destination: `/users/sign-in?redirect=${encodeURIComponent(redirectTarget)}`
     }
   }
 }

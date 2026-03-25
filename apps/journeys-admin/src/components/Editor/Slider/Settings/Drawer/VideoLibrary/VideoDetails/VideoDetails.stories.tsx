@@ -203,6 +203,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
   eventLabel: null,
   endEventLabel: null,
   customizable: null,
+  notes: null,
   children: [imageBlock]
 }
 

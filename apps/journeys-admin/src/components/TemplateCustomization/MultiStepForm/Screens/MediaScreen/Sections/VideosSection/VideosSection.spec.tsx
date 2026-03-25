@@ -90,7 +90,8 @@ const journeyWithMatchingVideoBlock: Journey = {
       action: null,
       eventLabel: null,
       endEventLabel: null,
-      customizable: true
+      customizable: true,
+      notes: null
     }
   ],
   primaryImageBlock: null,
@@ -123,12 +124,12 @@ const journeyWithNoMatchingVideoBlock: Journey = {
   blocks: []
 }
 
-const journeyWithVideoBlockWithDisplayTitle: Journey = {
+const journeyWithVideoBlockWithAdapterNote: Journey = {
   ...journeyWithMatchingVideoBlock,
   blocks: [
     {
       ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
-      title: 'My Video Display Title'
+      notes: 'trailer'
     }
   ]
 }
@@ -221,20 +222,37 @@ describe('VideosSection', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
   })
 
-  it('shows video display title when video block has a non-empty display title', () => {
+  it('shows adapter note when video block has a non-empty notes field', () => {
     renderVideosSection({
-      journey: journeyWithVideoBlockWithDisplayTitle,
+      journey: journeyWithVideoBlockWithAdapterNote,
       cardBlockId
     })
-    expect(screen.getByText('My Video Display Title')).toBeInTheDocument()
+    expect(screen.getByText('trailer')).toBeInTheDocument()
   })
 
-  it('does not show video title when display title is empty', () => {
+  it('does not show adapter note when notes is null', () => {
     renderVideosSection({
       journey: journeyWithMatchingVideoBlock,
       cardBlockId
     })
-    expect(screen.queryByText('My Video Display Title')).not.toBeInTheDocument()
+    expect(screen.queryByText('trailer')).not.toBeInTheDocument()
+  })
+
+  it('does not show adapter note when notes is empty or whitespace', () => {
+    const journeyWithEmptyNotes: Journey = {
+      ...journeyWithMatchingVideoBlock,
+      blocks: [
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          notes: '   '
+        }
+      ]
+    }
+    renderVideosSection({
+      journey: journeyWithEmptyNotes,
+      cardBlockId
+    })
+    expect(screen.queryByText('   ')).not.toBeInTheDocument()
   })
 
   it('disables upload button when loading', () => {
@@ -333,6 +351,7 @@ describe('VideosSection', () => {
     })
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
 
     act(() => {
@@ -354,6 +373,7 @@ describe('VideosSection', () => {
     })
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
     await user.type(input, 'not-a-valid-url')
 
     act(() => {
@@ -375,6 +395,7 @@ describe('VideosSection', () => {
     })
 
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
     await user.type(input, 'not-a-valid-url')
     act(() => {
       jest.advanceTimersByTime(800)
@@ -402,6 +423,7 @@ describe('VideosSection', () => {
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
 
     // First: submit a valid URL — resolves true so dedup map records it
+    await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
       jest.advanceTimersByTime(800)
@@ -446,6 +468,7 @@ describe('VideosSection', () => {
     const input = screen.getByPlaceholderText('Paste a YouTube link...')
 
     // First attempt — fails (returns false), so dedup map is NOT written
+    await user.clear(input)
     await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     act(() => {
       jest.advanceTimersByTime(800)
@@ -462,5 +485,87 @@ describe('VideosSection', () => {
       jest.advanceTimersByTime(800)
     })
     expect(mockStartYouTubeLink).toHaveBeenCalledTimes(2)
+  })
+
+  it('resets YouTube URL when cardBlockId changes', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+
+    const cardBlockIdB = 'card-block-2'
+    const journey: Journey = {
+      ...journeyWithMatchingVideoBlock,
+      blocks: [
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          source: VideoBlockSource.internal,
+          videoId: null
+        },
+        {
+          ...(journeyWithMatchingVideoBlock.blocks![0] as VideoBlock),
+          id: 'video-block-2',
+          parentBlockId: cardBlockIdB,
+          source: VideoBlockSource.internal,
+          videoId: null
+        }
+      ]
+    }
+
+    const { rerender } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <VideosSection cardBlockId={cardBlockId} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.type(input, 'https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+
+    rerender(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <VideosSection cardBlockId={cardBlockIdB} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByPlaceholderText('Paste a YouTube link...')).toHaveValue(
+      ''
+    )
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
+  })
+
+  it('hydrates YouTube URL from existing video block', () => {
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    expect(screen.getByPlaceholderText('Paste a YouTube link...')).toHaveValue(
+      'https://www.youtube.com/watch?v=youtube-id'
+    )
+  })
+
+  it('does not re-submit hydrated YouTube URL', () => {
+    jest.useFakeTimers()
+    renderVideosSection({
+      journey: journeyWithMatchingVideoBlock,
+      cardBlockId
+    })
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
   })
 })

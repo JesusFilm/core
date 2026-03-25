@@ -378,7 +378,8 @@ export const blocks: Block[] = [
     posterBlockId: 'image0.id',
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     id: 'image0.id',
@@ -766,7 +767,8 @@ export const blocks: Block[] = [
     posterBlockId: 'posterBlockId',
     eventLabel: null,
     endEventLabel: null,
-    customizable: null
+    customizable: null,
+    notes: null
   },
   {
     id: 'posterBlockId',

@@ -81,12 +81,14 @@ export const GET_ADMIN_JOURNEYS = gql`
 `
 
 export function useAdminJourneysQuery(
-  variables?: GetAdminJourneysVariables
+  variables?: GetAdminJourneysVariables,
+  options?: { skip?: boolean }
 ): QueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
   const query = useQuery<GetAdminJourneys, GetAdminJourneysVariables>(
     GET_ADMIN_JOURNEYS,
     {
-      variables
+      variables,
+      skip: options?.skip
     }
   )
 
