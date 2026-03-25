@@ -612,7 +612,9 @@ describe('LanguageScreen', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('LanguageAutocompleteInput')
+      ).toBeInTheDocument()
     )
 
     expect(screen.queryByText('Select a team')).not.toBeInTheDocument()
@@ -718,28 +720,29 @@ describe('LanguageScreen', () => {
   it('for anonymous user with stale lastActiveTeamId: falls back to first existing team', async () => {
     mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
-    const mockStaleGuestTeamData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-      result: {
-        data: {
-          getJourneyProfile: {
-            id: 'profile-id',
-            lastActiveTeamId: 'deleted-team-id',
-            __typename: 'JourneyProfile'
-          },
-          teams: [
-            {
-              __typename: 'Team',
-              id: 'teamId1',
-              title: 'Team One',
-              publicTitle: 'Team 1',
-              userTeams: [],
-              customDomains: []
-            }
-          ]
+    const mockStaleGuestTeamData: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            getJourneyProfile: {
+              id: 'profile-id',
+              lastActiveTeamId: 'deleted-team-id',
+              __typename: 'JourneyProfile'
+            },
+            teams: [
+              {
+                __typename: 'Team',
+                id: 'teamId1',
+                title: 'Team One',
+                publicTitle: 'Team 1',
+                userTeams: [],
+                customDomains: []
+              }
+            ]
+          }
         }
       }
-    }
 
     const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
       request: { query: GET_CURRENT_USER },
