@@ -499,6 +499,11 @@ export interface CustomDomainUpdateInput {
   routeAllTeamJourneys?: boolean | null;
 }
 
+export interface DateTimeFilter {
+  gte?: any | null;
+  lte?: any | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -728,7 +733,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
-  updatedAt?: any | null;
+  updatedAt?: DateTimeFilter | null;
 }
 
 export interface LinkActionInput {
