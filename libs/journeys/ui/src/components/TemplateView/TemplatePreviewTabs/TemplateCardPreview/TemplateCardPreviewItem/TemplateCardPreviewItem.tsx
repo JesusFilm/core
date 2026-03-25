@@ -65,6 +65,8 @@ export function TemplateCardPreviewItem({
   } = config
   const isSelected = selectedStep?.id === step.id
 
+  const isGuestPreview = variant === 'guestPreview'
+
   const baseTransform = {
     xs: `scale(${framePortal.scale.xs})`,
     sm: `scale(${framePortal.scale.sm})`
@@ -73,7 +75,7 @@ export function TemplateCardPreviewItem({
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (variant !== 'guestPreview') return
+    if (!isGuestPreview) return
     const overlay = overlayRef.current
     if (overlay == null) return
 
@@ -101,7 +103,69 @@ export function TemplateCardPreviewItem({
 
     overlay.addEventListener('wheel', handleWheel, { passive: true })
     return () => overlay.removeEventListener('wheel', handleWheel)
-  }, [variant])
+  }, [isGuestPreview])
+
+  const framePortalContent = (
+    <FramePortal
+      sx={{
+        width: framePortal.width,
+        height: framePortal.height,
+        ...(!isGuestPreview && {
+          borderRadius: framePortal.borderRadius
+        })
+      }}
+      dir={rtl ? 'rtl' : 'ltr'}
+    >
+      <ThemeProvider
+        themeName={ThemeName.journeyUi}
+        themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+        rtl={rtl}
+        locale={locale}
+      >
+        <Box
+          sx={{
+            position: 'relative',
+            height: '100%',
+            borderRadius: framePortal.borderRadius,
+            ...(isGuestPreview && {
+              overflow: 'hidden',
+              '--card-border-radius':
+                typeof framePortal.borderRadius === 'number'
+                  ? `${framePortal.borderRadius * 4}px`
+                  : framePortal.borderRadius
+            })
+          }}
+        >
+          {config.showStepHeaderFooter && (
+            <StepHeader
+              steps={steps}
+              selectedStep={step as unknown as TreeBlock<StepFields>}
+            />
+          )}
+          <ThemeProvider
+            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+            rtl={rtl}
+            locale={locale}
+            nested
+          >
+            <BlockRenderer
+              block={step}
+              wrappers={{
+                VideoWrapper,
+                CardWrapper
+              }}
+            />
+          </ThemeProvider>
+          {config.showStepHeaderFooter && (
+            <StepFooter
+              selectedStep={step as unknown as TreeBlock<StepFields>}
+            />
+          )}
+        </Box>
+      </ThemeProvider>
+    </FramePortal>
+  )
 
   return (
     <Box
@@ -125,85 +189,51 @@ export function TemplateCardPreviewItem({
           transform: baseTransform,
           transformOrigin: 'top left',
           borderRadius: framePortal.borderRadius,
-          overflow: 'hidden'
+          ...(isGuestPreview && { overflow: 'hidden' })
         }}
       >
-        <Box
-          ref={variant === 'guestPreview' ? overlayRef : undefined}
-          sx={{
-            position: 'absolute',
-            display: 'block',
-            width: framePortal.width,
-            height: framePortal.height,
-            zIndex: 2,
-            cursor: 'grab',
-            borderRadius: framePortal.borderRadius,
-            touchAction: 'pan-y'
-          }}
-        />
-        <Box
-          sx={{
-            width: framePortal.width,
-            height: framePortal.height,
-            borderRadius: framePortal.borderRadius,
-            overflow: 'hidden'
-          }}
-        >
-          <FramePortal
-            sx={{
-              width: framePortal.width,
-              height: framePortal.height
-            }}
-            dir={rtl ? 'rtl' : 'ltr'}
-          >
-            <ThemeProvider
-              themeName={ThemeName.journeyUi}
-              themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-              rtl={rtl}
-              locale={locale}
+        {isGuestPreview ? (
+          <>
+            <Box
+              ref={overlayRef}
+              sx={{
+                position: 'absolute',
+                display: 'block',
+                width: framePortal.width,
+                height: framePortal.height,
+                zIndex: 2,
+                cursor: 'grab',
+                borderRadius: framePortal.borderRadius,
+                touchAction: 'pan-y'
+              }}
+            />
+            <Box
+              sx={{
+                width: framePortal.width,
+                height: framePortal.height,
+                borderRadius: framePortal.borderRadius,
+                overflow: 'hidden'
+              }}
             >
-              <Box
-                sx={{
-                  position: 'relative',
-                  height: '100%',
-                  borderRadius: framePortal.borderRadius,
-                  overflow: 'hidden',
-                  '--card-border-radius':
-                    typeof framePortal.borderRadius === 'number'
-                      ? `${framePortal.borderRadius * 4}px`
-                      : framePortal.borderRadius
-                }}
-              >
-                {config.showStepHeaderFooter && (
-                  <StepHeader
-                    steps={steps}
-                    selectedStep={step as unknown as TreeBlock<StepFields>}
-                  />
-                )}
-                <ThemeProvider
-                  themeName={cardBlock?.themeName ?? ThemeName.base}
-                  themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
-                  rtl={rtl}
-                  locale={locale}
-                  nested
-                >
-                  <BlockRenderer
-                    block={step}
-                    wrappers={{
-                      VideoWrapper,
-                      CardWrapper
-                    }}
-                  />
-                </ThemeProvider>
-                {config.showStepHeaderFooter && (
-                  <StepFooter
-                    selectedStep={step as unknown as TreeBlock<StepFields>}
-                  />
-                )}
-              </Box>
-            </ThemeProvider>
-          </FramePortal>
-        </Box>
+              {framePortalContent}
+            </Box>
+          </>
+        ) : (
+          <>
+            <Box
+              sx={{
+                position: 'absolute',
+                display: 'block',
+                width: framePortal.width,
+                height: framePortal.height,
+                zIndex: 2,
+                cursor: 'grab',
+                borderRadius: framePortal.borderRadius
+              }}
+            />
+            {framePortalContent}
+          </>
+        )}
       </Box>
     </Box>
   )
