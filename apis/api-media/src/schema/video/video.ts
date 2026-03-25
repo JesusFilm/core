@@ -396,7 +396,8 @@ const Video = builder.prismaObject('Video', {
       nullable: false,
       resolve: ({ restrictViewPlatforms }) => restrictViewPlatforms
     }),
-    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true })
+    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false })
   })
 })
 

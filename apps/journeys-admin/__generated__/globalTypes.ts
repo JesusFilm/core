@@ -723,6 +723,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
+  updatedAt?: any | null;
 }
 
 export interface LinkActionInput {
