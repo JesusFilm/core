@@ -61,8 +61,7 @@ const BlockTranslationUpdatesSchema = z
   .object({
     content: z.string().optional(),
     label: z.string().optional(),
-    placeholder: z.string().optional(),
-    hint: z.string().optional()
+    placeholder: z.string().optional()
   })
   .refine((updates) => Object.keys(updates).length > 0, {
     message: 'At least one supported update field is required'
@@ -81,8 +80,7 @@ const allowedTranslationFieldsByBlockType = {
   TypographyBlock: ['content'],
   ButtonBlock: ['label'],
   RadioOptionBlock: ['label'],
-  TextResponseBlock: ['label', 'placeholder', 'hint'],
-  MultiselectOptionBlock: ['label']
+  TextResponseBlock: ['label', 'placeholder']
 } as const satisfies Record<string, readonly TranslatableBlockField[]>
 
 function getValidatedBlockUpdates(
@@ -428,26 +426,10 @@ Return in this format:
               radioOptionBlocks.push(...options)
             }
 
-            // Get multiselect blocks to find their option blocks
-            const multiselectBlocks = cardBlocksChildren.filter(
-              (block) => block.typename === 'MultiselectBlock'
-            )
-
-            const multiselectOptionBlocks = []
-            for (const multiselectBlock of multiselectBlocks) {
-              const options = updatedJourney.blocks.filter(
-                (block) =>
-                  block.parentBlockId === multiselectBlock.id &&
-                  block.typename === 'MultiselectOptionBlock'
-              )
-              multiselectOptionBlocks.push(...options)
-            }
-
-            // All blocks that need translation including radio and multiselect options
+            // All blocks that need translation including radio options
             const allBlocksToTranslate = [
               ...cardBlocksChildren,
-              ...radioOptionBlocks,
-              ...multiselectOptionBlocks
+              ...radioOptionBlocks
             ]
 
             // Skip if no blocks to translate
@@ -465,11 +447,10 @@ Return in this format:
                     break
                   case 'ButtonBlock':
                   case 'RadioOptionBlock':
-                  case 'MultiselectOptionBlock':
                     fieldInfo = `Label: "${block.label || ''}"`
                     break
                   case 'TextResponseBlock':
-                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}", Hint: "${(block as any).hint || ''}"`
+                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
                     break
                 }
 
@@ -502,8 +483,7 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- TextResponseBlock: "label", "placeholder", and "hint" fields
-- MultiselectOptionBlock: "label" field
+- TextResponseBlock: "label" and "placeholder" fields
 
 HANDLING CURLY BRACES {{ }} IN TEXT:
 When translating block content, you may encounter text with curly braces like {{ key }} or {{ key: value }}.
@@ -914,26 +894,10 @@ Return in this format:
                 radioOptionBlocks.push(...options)
               }
 
-              // Get multiselect blocks to find their option blocks
-              const multiselectBlocks = cardBlocksChildren.filter(
-                (block) => block.typename === 'MultiselectBlock'
-              )
-
-              const multiselectOptionBlocks = []
-              for (const multiselectBlock of multiselectBlocks) {
-                const options = journey.blocks.filter(
-                  (block) =>
-                    block.parentBlockId === multiselectBlock.id &&
-                    block.typename === 'MultiselectOptionBlock'
-                )
-                multiselectOptionBlocks.push(...options)
-              }
-
-              // All blocks that need translation including radio and multiselect options
+              // All blocks that need translation including radio options
               const allBlocksToTranslate = [
                 ...cardBlocksChildren,
-                ...radioOptionBlocks,
-                ...multiselectOptionBlocks
+                ...radioOptionBlocks
               ]
 
               // Skip if no blocks to translate
@@ -955,11 +919,10 @@ Return in this format:
                       break
                     case 'ButtonBlock':
                     case 'RadioOptionBlock':
-                    case 'MultiselectOptionBlock':
                       fieldInfo = `Label: "${block.label || ''}"`
                       break
                     case 'TextResponseBlock':
-                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}", Hint: "${(block as any).hint || ''}"`
+                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
                       break
                   }
 
@@ -993,8 +956,7 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- TextResponseBlock: "label", "placeholder", and "hint" fields
-- MultiselectOptionBlock: "label" field
+- TextResponseBlock: "label" and "placeholder" fields
 
 HANDLING CURLY BRACES {{ }} IN TEXT:
 When translating block content, you may encounter text with curly braces like {{ key }} or {{ key: value }}.

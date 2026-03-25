@@ -1,10 +1,6 @@
 import Box from '@mui/material/Box'
-import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
@@ -23,6 +19,7 @@ import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyA
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -136,20 +133,7 @@ export function LanguageScreen({
   })
 
   const validationSchema = object({
-    teamSelect: isSignedIn ? string().required() : string(),
-    translateLanguage: object()
-      .nullable()
-      .test(
-        'translateLanguage-required',
-        'Please select a translation language',
-        function (value) {
-          const { translateWithAI } = this.parent
-          if (translateWithAI) {
-            return value != null && typeof value === 'object' && 'id' in value
-          }
-          return true
-        }
-      )
+    teamSelect: isSignedIn ? string().required() : string()
   })
 
   const initialValues = {
@@ -158,11 +142,7 @@ export function LanguageScreen({
       id: journey?.language?.id,
       localName: journey?.language?.name.find((name) => name.primary)?.value,
       nativeName: journey?.language?.name.find((name) => !name.primary)?.value
-    },
-    translateWithAI: false,
-    translateLanguage: undefined as
-      | { id: string; localName?: string; nativeName?: string }
-      | undefined
+    }
   }
 
   function shouldSkipDuplicate(
@@ -342,23 +322,18 @@ export function LanguageScreen({
       return
     }
 
-    const { translateWithAI, translateLanguage } = values
-
-    if (translateWithAI && !translateLanguage?.id) {
-      enqueueSnackbar(t('Please select a translation language'), {
-        variant: 'error'
-      })
-      setLoading(false)
-      return
-    }
+    const selectedLanguageId = values.languageSelect?.id
+    const needsTranslation =
+      languagesJourneyMap?.[selectedLanguageId] == null &&
+      selectedLanguageId !== journey?.language?.id
 
     const journeyId =
-      languagesJourneyMap?.[values.languageSelect?.id] ?? journey?.id
+      languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
 
-    if (shouldSkipDuplicate(journey, values) && !translateWithAI) {
+    if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
       handleNext()
     } else if (isSignedIn) {
-      if (translateWithAI && translateLanguage) {
+      if (needsTranslation) {
         const duplicatedJourneyId = await handleJourneyDuplication(
           'signedIn',
           journeyId
@@ -368,9 +343,6 @@ export function LanguageScreen({
           const sourceLanguageName =
             journey.language.name.find((name) => !name.primary)?.value ?? ''
           const targetLanguageName =
-            translateLanguage.nativeName ?? translateLanguage.localName ?? ''
-
-          const userLanguageName =
             values.languageSelect?.nativeName ??
             values.languageSelect?.localName ??
             ''
@@ -380,10 +352,10 @@ export function LanguageScreen({
             journeyId: duplicatedJourneyId,
             name: journey.title,
             journeyLanguageName: sourceLanguageName,
-            textLanguageId: translateLanguage.id,
+            textLanguageId: selectedLanguageId,
             textLanguageName: targetLanguageName,
-            userLanguageId: values.languageSelect?.id,
-            userLanguageName
+            userLanguageId: selectedLanguageId,
+            userLanguageName: targetLanguageName
           })
         } else {
           setLoading(false)
@@ -484,48 +456,10 @@ export function LanguageScreen({
                   </Typography>
                   <LanguageAutocomplete
                     value={values.languageSelect}
-                    languages={languages.map((language) => ({
-                      id: language?.id,
-                      name: language?.name,
-                      slug: language?.slug
-                    }))}
+                    languages={languagesData?.languages}
+                    loading={languagesLoading}
                     onChange={(value) => setFieldValue('languageSelect', value)}
                   />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={values.translateWithAI}
-                        onChange={async (e) => {
-                          await setFieldValue(
-                            'translateWithAI',
-                            e.target.checked
-                          )
-                          if (!e.target.checked) {
-                            await setFieldValue('translateLanguage', undefined)
-                          }
-                        }}
-                      />
-                    }
-                    label={t('Translate with AI')}
-                  />
-                  {values.translateWithAI && (
-                    <LanguageAutocomplete
-                      value={values.translateLanguage}
-                      languages={languagesData?.languages}
-                      loading={languagesLoading}
-                      onChange={(value) =>
-                        setFieldValue('translateLanguage', value)
-                      }
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          placeholder={t('Search Language')}
-                          label={t('Select Translation Language')}
-                          variant="filled"
-                        />
-                      )}
-                    />
-                  )}
                   {isSignedIn && (
                     <>
                       <Typography
@@ -545,54 +479,21 @@ export function LanguageScreen({
                       <JourneyCustomizeTeamSelect />
                     </>
                   )}
-                  {translationProgress && (
-                    <Box
-                      sx={{
-                        width: '100%',
-                        mt: 2,
-                        p: 3,
-                        borderRadius: 2,
-                        backgroundColor: 'background.paper',
-                        border: '1px solid',
-                        borderColor: 'divider'
-                      }}
-                    >
-                      <Box sx={{ width: '100%', textAlign: 'center' }}>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            mb: 2,
-                            color: 'text.primary',
-                            fontWeight: 500
-                          }}
-                        >
-                          {translationProgress.message}
-                        </Typography>
-                        <LinearProgress
-                          variant="determinate"
-                          value={translationProgress.progress}
-                          sx={{
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                            '& .MuiLinearProgress-bar': {
-                              borderRadius: 4
-                            }
-                          }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            mt: 1,
-                            display: 'block',
-                            color: 'text.secondary'
-                          }}
-                        >
-                          {Math.round(translationProgress.progress)}%
-                        </Typography>
-                      </Box>
-                    </Box>
-                  )}
+                  <TranslationDialogWrapper
+                    open={translationVariables != null}
+                    onClose={() => {
+                      setTranslationVariables(undefined)
+                      setLoading(false)
+                    }}
+                    onTranslate={async () => {}}
+                    title={t('Translating')}
+                    loading={translationVariables != null}
+                    isTranslation
+                    translationProgress={translationProgress}
+                    testId="LanguageScreenTranslationDialog"
+                  >
+                    <></>
+                  </TranslationDialogWrapper>
                 </Stack>
               </FormControl>
             </Form>

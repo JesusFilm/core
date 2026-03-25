@@ -1,2 +1,2 @@
 import './journeyAiTranslate'
-import './journeyCustomizationDescriptionTranslate.mutation'
+// import './journeyCustomizationDescriptionTranslate.mutation'

@@ -6,9 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MultiselectOption } from '@core/journeys/ui/MultiselectOption/MultiselectOption'
-import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 import {
   MultiselectOptionBlockUpdate,
@@ -40,16 +38,7 @@ export function MultiselectOptionEdit({
     MultiselectOptionBlockUpdateVariables
   >(MULTISELECT_OPTION_BLOCK_UPDATE)
 
-  const { journey } = useJourney()
-
-  const resolvedLabel = !journey?.template
-    ? (resolveJourneyCustomizationString(
-        label,
-        journey?.journeyCustomizationFields ?? []
-      ) ?? label)
-    : label
-
-  const [value, setValue] = useState(resolvedLabel)
+  const [value, setValue] = useState(label)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
 
@@ -69,9 +58,9 @@ export function MultiselectOptionEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    if (value !== resolvedLabel) setValue(resolvedLabel)
+    if (value !== label) setValue(label)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolvedLabel])
+  }, [label])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })

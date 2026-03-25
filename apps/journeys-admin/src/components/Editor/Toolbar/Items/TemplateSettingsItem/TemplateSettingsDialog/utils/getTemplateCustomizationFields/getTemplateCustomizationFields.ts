@@ -13,7 +13,6 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
  * - TextResponseBlock: label, placeholder, hint
  * - RadioOptionBlock: label
  * - SignUpBlock: submitLabel
- * - MultiselectOptionBlock: label
  *
  * @param journey Optional journey whose blocks may contain template strings.
  * @returns Array of unique template field names. Returns [] when none are found
@@ -70,9 +69,6 @@ export function getTemplateCustomizationFields(journey?: Journey): string[] {
           break
         case 'SignUpBlock':
           extractTemplateStrings(block.submitLabel)
-          break
-        case 'MultiselectOptionBlock':
-          extractTemplateStrings(block.label)
           break
         default:
           break
