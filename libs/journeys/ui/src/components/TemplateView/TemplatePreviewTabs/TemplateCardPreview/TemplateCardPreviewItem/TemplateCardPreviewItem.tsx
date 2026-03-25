@@ -168,7 +168,7 @@ export function TemplateCardPreviewItem({
 
       const now = Date.now()
       const dt = now - lastTouchTime
-      if (dt > 0) velocity = deltaY / dt * 16
+      if (dt > 0) velocity = (deltaY / dt) * 16
       lastTouchTime = now
 
       const atTop = scrollable.scrollTop <= 0 && deltaY < 0
