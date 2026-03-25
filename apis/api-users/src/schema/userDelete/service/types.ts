@@ -7,10 +7,7 @@ export interface LogEntry {
   timestamp: string
 }
 
-export function createLog(
-  message: string,
-  level: LogLevel = 'info'
-): LogEntry {
+export function createLog(message: string, level: LogLevel = 'info'): LogEntry {
   return { message, level, timestamp: new Date().toISOString() }
 }
 

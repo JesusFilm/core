@@ -144,7 +144,9 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
               where: { id: auditLog.id },
               data: {
                 success: !hasError,
-                ...(hasError ? { errorMessage: 'Firebase deletion failed' } : {})
+                ...(hasError
+                  ? { errorMessage: 'Firebase deletion failed' }
+                  : {})
               }
             })
           } catch {
