@@ -123,10 +123,7 @@ describe('videoPublishChildren', () => {
         }
       })
 
-      expect(res).toHaveProperty(
-        'data.videoPublishChildren.parentId',
-        'parent'
-      )
+      expect(res).toHaveProperty('data.videoPublishChildren.parentId', 'parent')
       expect(res).toHaveProperty(
         'data.videoPublishChildren.publishedVideoCount',
         3
@@ -169,9 +166,7 @@ describe('videoPublishChildren', () => {
       expect(
         (res as any).data.videoPublishChildren.publishedVariantIds
       ).toEqual([])
-      expect(
-        (res as any).data.videoPublishChildren.publishedVideoCount
-      ).toBe(3)
+      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(3)
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
   })
@@ -201,13 +196,8 @@ describe('videoPublishChildren', () => {
         }
       })
 
-      expect(res).toHaveProperty(
-        'data.videoPublishChildren.parentId',
-        'parent'
-      )
-      expect(
-        (res as any).data.videoPublishChildren.publishedVideoCount
-      ).toBe(3)
+      expect(res).toHaveProperty('data.videoPublishChildren.parentId', 'parent')
+      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(3)
       expect(
         (res as any).data.videoPublishChildren.publishedVariantsCount
       ).toBe(2)
@@ -340,16 +330,11 @@ describe('videoPublishChildren', () => {
         }
       })
 
-      expect(res).toHaveProperty(
-        'data.videoPublishChildren.parentId',
-        'parent'
+      expect(res).toHaveProperty('data.videoPublishChildren.parentId', 'parent')
+      expect((res as any).data.videoPublishChildren.publishedVideoIds).toEqual(
+        []
       )
-      expect(
-        (res as any).data.videoPublishChildren.publishedVideoIds
-      ).toEqual([])
-      expect(
-        (res as any).data.videoPublishChildren.publishedVideoCount
-      ).toBe(0)
+      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(0)
       expect(
         (res as any).data.videoPublishChildren.publishedVariantsCount
       ).toBe(2)
@@ -388,9 +373,9 @@ describe('videoPublishChildren', () => {
       expect(
         (res as any).data.videoPublishChildren.publishedVariantIds
       ).toEqual(['v1'])
-      expect(
-        (res as any).data.videoPublishChildren.publishedVideoIds
-      ).toEqual([])
+      expect((res as any).data.videoPublishChildren.publishedVideoIds).toEqual(
+        []
+      )
       expect(prismaMock.videoVariant.updateMany).not.toHaveBeenCalled()
     })
   })
@@ -456,8 +441,7 @@ describe('videoPublishChildren', () => {
           {
             videoId: 'c1',
             missingFields: ['Published Video Variant'],
-            message:
-              'c1 not published, missing: Published Video Variant'
+            message: 'c1 not published, missing: Published Video Variant'
           }
         ])
       )

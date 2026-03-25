@@ -2,7 +2,10 @@ import { prisma } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
-import { videoCacheReset, videoVariantCacheReset } from '../../lib/videoCacheReset'
+import {
+  videoCacheReset,
+  videoVariantCacheReset
+} from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { logger } from '../logger'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
@@ -56,7 +59,8 @@ function getMissingRequiredFields(
   planMode: VideoPublishPlanMode
 ): string[] {
   const missingFields: string[] = []
-  const isContainerVideo = video.label === 'collection' || video.label === 'series'
+  const isContainerVideo =
+    video.label === 'collection' || video.label === 'series'
 
   if (!video.title[0]?.value?.trim()) {
     missingFields.push('Title')
@@ -159,14 +163,15 @@ async function buildVideoPublishPlan(
     }
   })
 
-  const validationResults: VideoPublishValidationFailure[] = videosForValidation.map((video: PublishValidationVideo) => {
-    const missingFields = getMissingRequiredFields(video, planMode)
-    return {
-      videoId: video.id,
-      missingFields,
-      message: `${video.id} not published, missing: ${missingFields.join(', ')}`
-    }
-  })
+  const validationResults: VideoPublishValidationFailure[] =
+    videosForValidation.map((video: PublishValidationVideo) => {
+      const missingFields = getMissingRequiredFields(video, planMode)
+      return {
+        videoId: video.id,
+        missingFields,
+        message: `${video.id} not published, missing: ${missingFields.join(', ')}`
+      }
+    })
 
   const videosFailedValidation = validationResults.filter(
     (video) => video.missingFields.length > 0
@@ -199,10 +204,14 @@ async function ensureParentEmptyVariantsForPublishedChildren(
   })
 
   await Promise.all(
-    publishedChildVariants.map(({ videoId, languageId }: { videoId: string; languageId: string }) =>
-      handleParentVariantCreation(videoId, languageId).catch((error) => {
-        logger.error({ error, videoId, languageId }, 'Parent variant creation failed')
-      })
+    publishedChildVariants.map(
+      ({ videoId, languageId }: { videoId: string; languageId: string }) =>
+        handleParentVariantCreation(videoId, languageId).catch((error) => {
+          logger.error(
+            { error, videoId, languageId },
+            'Parent variant creation failed'
+          )
+        })
     )
   )
 }
@@ -256,14 +265,18 @@ VideoPublishChildrenResult.implement({
   })
 })
 
-export type VideoPublishMode = 'childrenVideosOnly' | 'childrenVideosAndVariants' | 'variantsOnly'
+export type VideoPublishMode =
+  | 'childrenVideosOnly'
+  | 'childrenVideosAndVariants'
+  | 'variantsOnly'
 
 export async function executeVideoPublishChildren(
   id: string,
   mode: VideoPublishMode,
   dryRun: boolean
 ): Promise<VideoPublishChildrenResultType> {
-  const parent = mode !== 'variantsOnly' ? await getVideoPublishParent(id) : undefined
+  const parent =
+    mode !== 'variantsOnly' ? await getVideoPublishParent(id) : undefined
   const plan =
     parent != null && mode !== 'variantsOnly'
       ? await buildVideoPublishPlan(parent, mode)
@@ -291,7 +304,10 @@ export async function executeVideoPublishChildren(
     variantIdsToPublish = unpublishedVariants.map((variant) => variant.id)
   }
 
-  if (dryRun || (videoIdsToPublish.length === 0 && variantIdsToPublish.length === 0)) {
+  if (
+    dryRun ||
+    (videoIdsToPublish.length === 0 && variantIdsToPublish.length === 0)
+  ) {
     return {
       parentId: id,
       publishedVideoIds: videoIdsToPublish,
@@ -331,7 +347,10 @@ export async function executeVideoPublishChildren(
       })
     )
   } catch (error) {
-    logger.error({ error, videoIds: affectedVideoIds }, 'Language sync failed during publish')
+    logger.error(
+      { error, videoIds: affectedVideoIds },
+      'Language sync failed during publish'
+    )
   }
 
   if (mode !== 'variantsOnly') {
