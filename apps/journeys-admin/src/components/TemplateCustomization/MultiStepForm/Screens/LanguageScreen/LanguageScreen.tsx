@@ -54,7 +54,7 @@ export function LanguageScreen({
   const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()
   const { journey } = useJourney()
-  const { query } = useTeam()
+  const { query, setActiveTeam } = useTeam()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
   const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
   const { loadUser } = useCurrentUserLazyQuery()
@@ -246,6 +246,10 @@ export function LanguageScreen({
     }
 
     if (teamId != null) {
+      const selectedTeam = teams.find((t) => t.id === teamId)
+      if (selectedTeam != null) {
+        setActiveTeam(selectedTeam)
+      }
       void updateLastActiveTeamId({
         variables: { input: { lastActiveTeamId: teamId } }
       })
