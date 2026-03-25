@@ -54,14 +54,15 @@ export function PaginationBullets({
     }
   }, [isPreviewMode, stepsProp, treeBlocks, variant, adminBullets])
 
-  // Preview mode: derive active index from selectedStep prop
   useEffect(() => {
     if (!isPreviewMode) return
     const index = stepsProp.findIndex((s) => s.id === selectedStepProp?.id)
     setActiveIndex(index >= 0 ? index : 0)
-  }, [isPreviewMode, stepsProp, selectedStepProp])
+    // selectedStepProp?.id is used intentionally over selectedStepProp to avoid
+    // re-running when a new object reference is passed for the same step
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPreviewMode, stepsProp, selectedStepProp?.id])
 
-  // Default mode: derive active index from blockHistory
   useEffect(() => {
     if (isPreviewMode) return
     const currentActiveBlock = blockHistory[

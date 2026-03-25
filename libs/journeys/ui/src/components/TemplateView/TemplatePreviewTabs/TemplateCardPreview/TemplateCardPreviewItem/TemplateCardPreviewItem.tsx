@@ -79,8 +79,18 @@ export function TemplateCardPreviewItem({
     const overlay = overlayRef.current
     if (overlay == null) return
 
-    function findScrollable(doc: Document): Element | undefined {
-      return Array.from(doc.querySelectorAll('*')).find((el) => {
+    let cachedScrollable: Element | null = null
+
+    function getIframeDoc(): Document | null {
+      const iframe = overlay?.parentElement?.querySelector('iframe')
+      return iframe?.contentDocument ?? null
+    }
+
+    function getScrollable(): Element | null {
+      if (cachedScrollable != null) return cachedScrollable
+      const doc = getIframeDoc()
+      if (doc == null) return null
+      const found = Array.from(doc.querySelectorAll('*')).find((el) => {
         const style = doc.defaultView?.getComputedStyle(el)
         return (
           style != null &&
@@ -88,17 +98,12 @@ export function TemplateCardPreviewItem({
           el.scrollHeight > el.clientHeight
         )
       })
-    }
-
-    function getIframeDoc(): Document | null {
-      const iframe = overlay?.parentElement?.querySelector('iframe')
-      return iframe?.contentDocument ?? null
+      cachedScrollable = found ?? null
+      return cachedScrollable
     }
 
     function handleWheel(e: WheelEvent): void {
-      const doc = getIframeDoc()
-      if (doc == null) return
-      const scrollable = findScrollable(doc)
+      const scrollable = getScrollable()
       if (scrollable != null) {
         let deltaY = e.deltaY
         if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) deltaY *= 16
@@ -157,9 +162,7 @@ export function TemplateCardPreviewItem({
     }
 
     function handleTouchMove(e: TouchEvent): void {
-      const doc = getIframeDoc()
-      if (doc == null) return
-      const scrollable = findScrollable(doc)
+      const scrollable = getScrollable()
       if (scrollable == null) return
 
       const touchY = e.touches[0].clientY
@@ -183,9 +186,7 @@ export function TemplateCardPreviewItem({
     }
 
     function handleTouchEnd(): void {
-      const doc = getIframeDoc()
-      if (doc == null) return
-      const scrollable = findScrollable(doc)
+      const scrollable = getScrollable()
       if (scrollable != null && Math.abs(velocity) > MIN_VELOCITY) {
         startMomentum(scrollable)
       }

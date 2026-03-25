@@ -39,16 +39,13 @@ export function GuestPreviewScreen({
     [journey]
   )
 
-  const [dialogOpen, setDialogOpen] = useState(false)
   const [clickedStepId, setClickedStepId] = useState<string | null>(null)
 
   function handleCardClick(step: TreeBlock<StepBlock>): void {
     setClickedStepId(step.id)
-    setDialogOpen(true)
   }
 
   function handleDialogClose(): void {
-    setDialogOpen(false)
     setClickedStepId(null)
   }
 
@@ -92,7 +89,7 @@ export function GuestPreviewScreen({
           <CardsPreview steps={steps} onCardClick={handleCardClick} />
         )}
         <TemplateCardPreviewDialog
-          open={dialogOpen}
+          open={clickedStepId !== null}
           onClose={handleDialogClose}
           steps={steps}
           initialStepId={clickedStepId}

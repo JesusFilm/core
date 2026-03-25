@@ -41,6 +41,8 @@ interface GoogleSheetsSyncsForDoneScreenVariables {
   filter: { journeyId: string }
 }
 
+const PREVIEW_SCALE = 0.7
+
 export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -129,11 +131,11 @@ export function DoneScreen(): ReactElement {
       {steps.length > 0 && (
         <Box
           sx={{
-            transform: 'scale(0.7)',
+            transform: `scale(${PREVIEW_SCALE})`,
             transformOrigin: 'top center',
             height: {
-              xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * 0.7,
-              sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * 0.7
+              xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
+              sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
             }
           }}
         >
