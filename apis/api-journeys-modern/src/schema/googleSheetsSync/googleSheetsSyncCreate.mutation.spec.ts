@@ -48,14 +48,9 @@ describe('googleSheetsSyncCreate', () => {
       userId: mockUser.id,
       roles: []
     } as any)
-    // Default auth: user is integration owner for provided integrationId
-    prismaMock.integration.findUnique.mockResolvedValue({
-      id: 'integration-id',
-      userId: 'userId'
-    } as any)
   })
 
-  it('should create Google Sheets sync', async () => {
+  it('should create Google Sheets sync when user is integration owner', async () => {
     const mockJourney = {
       id: 'journey-id',
       teamId: 'team-id',
@@ -245,14 +240,73 @@ describe('googleSheetsSyncCreate', () => {
     })
   })
 
-  it('should throw error when user is not the integration owner', async () => {
+  it('should create sync when user is team manager but not integration owner', async () => {
     const mockJourney = {
       id: 'journey-id',
       teamId: 'team-id',
       team: {
         id: 'team-id',
         integrations: [],
-        userTeams: []
+        userTeams: [{ userId: 'userId', role: 'manager' }]
+      }
+    }
+
+    const mockIntegration = {
+      id: 'integration-id',
+      userId: 'other-user-id',
+      teamId: 'team-id',
+      type: 'google' as const,
+      accountEmail: 'other@example.com'
+    }
+
+    const mockSync = {
+      id: 'sync-id',
+      journeyId: 'journey-id',
+      teamId: 'team-id',
+      integrationId: 'integration-id',
+      spreadsheetId: 'spreadsheet-id',
+      sheetName: 'Sheet1',
+      folderId: null,
+      email: 'other@example.com',
+      deletedAt: null
+    }
+
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
+    prismaMock.googleSheetsSync.create.mockResolvedValue(mockSync as any)
+
+    const result = await authClient({
+      document: GOOGLE_SHEETS_SYNC_CREATE_MUTATION,
+      variables: {
+        input: {
+          journeyId: 'journey-id',
+          integrationId: 'integration-id',
+          spreadsheetId: 'spreadsheet-id',
+          sheetName: 'Sheet1'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: {
+        googleSheetsSyncCreate: expect.objectContaining({
+          id: 'sync-id',
+          journeyId: 'journey-id',
+          spreadsheetId: 'spreadsheet-id',
+          sheetName: 'Sheet1'
+        })
+      }
+    })
+  })
+
+  it('should throw Forbidden when user is neither integration owner nor team manager', async () => {
+    const mockJourney = {
+      id: 'journey-id',
+      teamId: 'team-id',
+      team: {
+        id: 'team-id',
+        integrations: [],
+        userTeams: [{ userId: 'other-user-id', role: 'manager' }]
       }
     }
 
@@ -265,11 +319,6 @@ describe('googleSheetsSyncCreate', () => {
 
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
     prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
-    // Auth guard denies ownership
-    prismaMock.integration.findUnique.mockResolvedValue({
-      id: 'integration-id',
-      userId: 'other-user-id'
-    } as any)
 
     const result = await authClient({
       document: GOOGLE_SHEETS_SYNC_CREATE_MUTATION,
@@ -287,10 +336,55 @@ describe('googleSheetsSyncCreate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: expect.stringContaining('Not authorized')
+          message: 'Forbidden'
         })
       ]
     })
+    expect(prismaMock.googleSheetsSync.create).not.toHaveBeenCalled()
+  })
+
+  it('should throw Forbidden when user is a team member but not manager or owner', async () => {
+    const mockJourney = {
+      id: 'journey-id',
+      teamId: 'team-id',
+      team: {
+        id: 'team-id',
+        integrations: [],
+        userTeams: [{ userId: 'userId', role: 'member' }]
+      }
+    }
+
+    const mockIntegration = {
+      id: 'integration-id',
+      userId: 'other-user-id',
+      teamId: 'team-id',
+      type: 'google' as const
+    }
+
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: GOOGLE_SHEETS_SYNC_CREATE_MUTATION,
+      variables: {
+        input: {
+          journeyId: 'journey-id',
+          integrationId: 'integration-id',
+          spreadsheetId: 'spreadsheet-id',
+          sheetName: 'Sheet1'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'Forbidden'
+        })
+      ]
+    })
+    expect(prismaMock.googleSheetsSync.create).not.toHaveBeenCalled()
   })
 
   it('should throw error when user lacks export permission', async () => {

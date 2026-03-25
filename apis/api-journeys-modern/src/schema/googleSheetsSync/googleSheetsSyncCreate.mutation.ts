@@ -12,14 +12,7 @@ export const GoogleSheetsSyncCreateMutation = builder.mutationField(
   'googleSheetsSyncCreate',
   (t) =>
     t
-      .withAuth((_parent, args) => ({
-        $all: {
-          isAuthenticated: true,
-          isIntegrationOwner: (
-            args.input as typeof CreateGoogleSheetsSyncInput.$inferInput
-          ).integrationId
-        }
-      }))
+      .withAuth({ isAuthenticated: true })
       .prismaField({
         type: GoogleSheetsSync,
         nullable: false,
@@ -49,6 +42,21 @@ export const GoogleSheetsSyncCreateMutation = builder.mutationField(
             throw new GraphQLError('Google integration not found for team', {
               extensions: { code: 'BAD_REQUEST' }
             })
+
+          // Check permissions: must be team manager or integration owner
+          const userId = context.user.id
+          const isTeamManager =
+            journey.team?.userTeams?.some(
+              (userTeam) =>
+                userTeam.userId === userId && userTeam.role === 'manager'
+            ) ?? false
+          const isIntegrationOwner = googleIntegration.userId === userId
+
+          if (!(isIntegrationOwner || isTeamManager)) {
+            throw new GraphQLError('Forbidden', {
+              extensions: { code: 'FORBIDDEN' }
+            })
+          }
 
           // Must also have export ability on the journey
           if (
