@@ -56,10 +56,22 @@ rm argocd-linux-amd64
 # Configure Claude Code with bypassPermissions (container is the sandbox boundary)
 echo "Configuring Claude Code..."
 mkdir -p /home/node/.claude
-echo '{ "permissions": { "defaultMode": "bypassPermissions" } }' > /home/node/.claude/settings.json
+cat > /home/node/.claude/settings.json << 'SETTINGS'
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "deny": [
+      "Read(**/.env*)",
+      "Read(**/.env.*)",
+      "Bash(docker run*-v /*)",
+      "Bash(docker run*--privileged*)"
+    ]
+  }
+}
+SETTINGS
 
 # Skip onboarding wizard when auth token is pre-configured
-if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ] || [ -n "${ANTHROPIC_API_KEY:-}" ]; then
   echo '{ "hasCompletedOnboarding": true }' > /home/node/.claude.json
 fi
 echo "Claude Code configured!"
