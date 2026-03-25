@@ -1,5 +1,5 @@
 ---
-title: "Pothos-to-Prisma DateTimeFilter null type mismatch"
+title: 'Pothos-to-Prisma DateTimeFilter null type mismatch'
 category: integration-issues
 date: 2026-03-24
 severity: medium
@@ -28,10 +28,10 @@ to type 'DateTimeFilter<"Video">'.
 
 Pothos and Prisma have different nullable semantics for optional fields:
 
-| Library | `required: false` infers as | Meaning |
-|---------|----------------------------|---------|
-| **Pothos** | `T \| null \| undefined` | Field can be absent, explicitly null, or a value |
-| **Prisma** | `T \| undefined` | Field can be absent or a value; `null` is **not** accepted in filter inputs |
+| Library    | `required: false` infers as | Meaning                                                                     |
+| ---------- | --------------------------- | --------------------------------------------------------------------------- |
+| **Pothos** | `T \| null \| undefined`    | Field can be absent, explicitly null, or a value                            |
+| **Prisma** | `T \| undefined`            | Field can be absent or a value; `null` is **not** accepted in filter inputs |
 
 A simple `!= null` guard on the outer filter object is insufficient because the **inner fields** (`gte`, `lte`) can still be `null` after the guard passes.
 
@@ -50,9 +50,7 @@ export const DateTimeFilter = builder.inputType('DateTimeFilter', {
 
 type DateTimeFilterInput = typeof DateTimeFilter.$inferInput
 
-export function toPrismaDateTimeFilter(
-  filter: DateTimeFilterInput | null | undefined
-): { gte?: Date; lte?: Date } | undefined {
+export function toPrismaDateTimeFilter(filter: DateTimeFilterInput | null | undefined): { gte?: Date; lte?: Date } | undefined {
   if (filter == null) return undefined
   return { gte: filter.gte ?? undefined, lte: filter.lte ?? undefined }
 }
