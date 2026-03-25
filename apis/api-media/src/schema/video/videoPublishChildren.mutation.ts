@@ -49,7 +49,12 @@ type VideoPublishChildrenResultType = {
   videosFailedValidation: VideoPublishValidationFailure[]
 }
 
-function getMissingRequiredFields(video: PublishValidationVideo): string[] {
+type VideoPublishPlanMode = 'childrenVideosOnly' | 'childrenVideosAndVariants'
+
+function getMissingRequiredFields(
+  video: PublishValidationVideo,
+  planMode: VideoPublishPlanMode
+): string[] {
   const missingFields: string[] = []
   const isContainerVideo = video.label === 'collection' || video.label === 'series'
 
@@ -69,7 +74,11 @@ function getMissingRequiredFields(video: PublishValidationVideo): string[] {
     missingFields.push('Banner Image')
   }
   if (!isContainerVideo && video.variants.length === 0) {
-    missingFields.push('Video Variant')
+    missingFields.push(
+      planMode === 'childrenVideosOnly'
+        ? 'Published Video Variant'
+        : 'Video Variant'
+    )
   }
 
   return missingFields
@@ -96,12 +105,25 @@ async function getVideoPublishParent(id: string): Promise<VideoPublishParent> {
 }
 
 async function buildVideoPublishPlan(
-  parent: VideoPublishParent
+  parent: VideoPublishParent,
+  planMode: VideoPublishPlanMode
 ): Promise<VideoPublishPlan> {
   const unpublishedChildIds = parent.children
     .filter((child) => !child.published)
     .map((child) => child.id)
   const candidateVideoIds = [parent.id, ...unpublishedChildIds]
+
+  const variantSelect =
+    planMode === 'childrenVideosOnly'
+      ? ({
+          where: { published: true },
+          select: { id: true },
+          take: 1
+        } as const)
+      : ({
+          select: { id: true },
+          take: 1
+        } as const)
 
   const videosForValidation = await prisma.video.findMany({
     where: { id: { in: candidateVideoIds } },
@@ -133,15 +155,12 @@ async function buildVideoPublishPlan(
         select: { id: true },
         take: 1
       },
-      variants: {
-        select: { id: true },
-        take: 1
-      }
+      variants: variantSelect
     }
   })
 
   const validationResults: VideoPublishValidationFailure[] = videosForValidation.map((video: PublishValidationVideo) => {
-    const missingFields = getMissingRequiredFields(video)
+    const missingFields = getMissingRequiredFields(video, planMode)
     return {
       videoId: video.id,
       missingFields,
@@ -245,7 +264,10 @@ export async function executeVideoPublishChildren(
   dryRun: boolean
 ): Promise<VideoPublishChildrenResultType> {
   const parent = mode !== 'variantsOnly' ? await getVideoPublishParent(id) : undefined
-  const plan = parent != null ? await buildVideoPublishPlan(parent) : undefined
+  const plan =
+    parent != null && mode !== 'variantsOnly'
+      ? await buildVideoPublishPlan(parent, mode)
+      : undefined
   const videoIdsToPublish = plan?.videoIdsToPublish ?? []
   const shouldPublishParent = plan?.shouldPublishParent ?? false
   const videosFailedValidation = plan?.videosFailedValidation ?? []

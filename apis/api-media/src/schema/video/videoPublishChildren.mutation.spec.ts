@@ -248,6 +248,73 @@ describe('videoPublishChildren', () => {
       ).toEqual(['cv1', 'pv1'])
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
+
+    it('does not require a published variant when variants are published in the same flow', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.video.findMany.mockResolvedValue([
+        {
+          id: 'parent',
+          label: 'collection',
+          title: [{ value: 'Parent title' }],
+          snippet: [{ value: 'Parent snippet' }],
+          description: [{ value: 'Parent description' }],
+          imageAlt: [{ value: 'Parent image alt' }],
+          images: [{ id: 'parent-banner' }],
+          variants: []
+        },
+        {
+          id: 'c1',
+          label: 'featureFilm',
+          title: [{ value: 'Child title 1' }],
+          snippet: [{ value: 'Child snippet 1' }],
+          description: [{ value: 'Child description 1' }],
+          imageAlt: [{ value: 'Child image alt 1' }],
+          images: [{ id: 'c1-banner' }],
+          variants: [{ id: 'c1-unpublished-variant' }]
+        },
+        {
+          id: 'c3',
+          label: 'featureFilm',
+          title: [{ value: 'Child title 3' }],
+          snippet: [{ value: 'Child snippet 3' }],
+          description: [{ value: 'Child description 3' }],
+          imageAlt: [{ value: 'Child image alt 3' }],
+          images: [{ id: 'c3-banner' }],
+          variants: [{ id: 'c3-variant' }]
+        }
+      ] as any)
+      prismaMock.videoVariant.findMany
+        .mockResolvedValueOnce([
+          { id: 'pv1', videoId: 'parent' },
+          { id: 'c1-unpublished-variant', videoId: 'c1' }
+        ] as any)
+        .mockResolvedValueOnce([] as any)
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'childrenVideosAndVariants',
+          dryRun: false
+        }
+      })
+
+      expect(
+        (res as any).data.videoPublishChildren.videosFailedValidation
+      ).toEqual([])
+      expect(
+        (res as any).data.videoPublishChildren.publishedVideoIds.sort()
+      ).toEqual(['c1', 'c3', 'parent'])
+      expect(
+        (res as any).data.videoPublishChildren.publishedVariantIds.sort()
+      ).toEqual(['c1-unpublished-variant', 'pv1'])
+    })
   })
 
   describe('variantsOnly mode', () => {
@@ -329,6 +396,76 @@ describe('videoPublishChildren', () => {
   })
 
   describe('validation', () => {
+    it('fails when a feature film child has no published variants', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.video.findMany.mockResolvedValue([
+        {
+          id: 'parent',
+          label: 'collection',
+          title: [{ value: 'Parent title' }],
+          snippet: [{ value: 'Parent snippet' }],
+          description: [{ value: 'Parent description' }],
+          imageAlt: [{ value: 'Parent image alt' }],
+          images: [{ id: 'parent-banner' }],
+          variants: []
+        },
+        {
+          id: 'c1',
+          label: 'featureFilm',
+          title: [{ value: 'Child title 1' }],
+          snippet: [{ value: 'Child snippet 1' }],
+          description: [{ value: 'Child description 1' }],
+          imageAlt: [{ value: 'Child image alt 1' }],
+          images: [{ id: 'c1-banner' }],
+          variants: []
+        },
+        {
+          id: 'c3',
+          label: 'featureFilm',
+          title: [{ value: 'Child title 3' }],
+          snippet: [{ value: 'Child snippet 3' }],
+          description: [{ value: 'Child description 3' }],
+          imageAlt: [{ value: 'Child image alt 3' }],
+          images: [{ id: 'c3-banner' }],
+          variants: [{ id: 'c3-published-variant' }]
+        }
+      ] as any)
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'childrenVideosOnly',
+          dryRun: false
+        }
+      })
+
+      const failures = (res as any).data.videoPublishChildren
+        .videosFailedValidation as Array<{
+        videoId: string
+        missingFields: string[]
+      }>
+      expect(failures).toEqual(
+        expect.arrayContaining([
+          {
+            videoId: 'c1',
+            missingFields: ['Published Video Variant'],
+            message:
+              'c1 not published, missing: Published Video Variant'
+          }
+        ])
+      )
+      expect(
+        (res as any).data.videoPublishChildren.publishedVideoIds.sort()
+      ).toEqual(['c3', 'parent'])
+    })
+
     it('returns failed validation videos when required fields are missing', async () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
@@ -382,10 +519,10 @@ describe('videoPublishChildren', () => {
             'Description',
             'Image Alt Text',
             'Banner Image',
-            'Video Variant'
+            'Published Video Variant'
           ],
           message:
-            'parent not published, missing: Title, Short Description, Description, Image Alt Text, Banner Image, Video Variant'
+            'parent not published, missing: Title, Short Description, Description, Image Alt Text, Banner Image, Published Video Variant'
         }
       ])
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
