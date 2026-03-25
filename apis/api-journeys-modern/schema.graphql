@@ -904,6 +904,17 @@ input JourneyCreateInput {
   slug: String
 }
 
+input JourneyCustomizationDescriptionTranslateInput {
+  """The ID of the journey whose customization description to translate"""
+  journeyId: ID!
+
+  """The current language of the customization description"""
+  sourceLanguageName: String!
+
+  """The language to translate the customization description into"""
+  targetLanguageName: String!
+}
+
 type JourneyEvent implements Event & Node
   @shareable
 {
@@ -1425,6 +1436,7 @@ type Mutation {
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
+  journeyCustomizationDescriptionTranslate(input: JourneyCustomizationDescriptionTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")

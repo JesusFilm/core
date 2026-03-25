@@ -16,11 +16,11 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { transformer } from '@core/journeys/ui/transformer'
+import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -329,8 +329,7 @@ export function LanguageScreen({
       languagesJourneyMap?.[selectedLanguageId] == null &&
       selectedLanguageId !== journey?.language?.id
 
-    const journeyId =
-      languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
+    const journeyId = languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
 
     if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
       handleNext()
@@ -492,7 +491,9 @@ export function LanguageScreen({
                       setTranslationVariables(undefined)
                       setLoading(false)
                     }}
-                    onTranslate={async () => {}}
+                    onTranslate={async () => {
+                      // Do nothing
+                    }}
                     title={t('Translating')}
                     loading={translationVariables != null}
                     isTranslation
