@@ -1013,6 +1013,29 @@ describe('videoVariant', () => {
         })
       )
     })
+
+    it('should query videoVariants with updatedAt filter', async () => {
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
+
+      await client({
+        document: VIDEO_VARIANTS_QUERY,
+        variables: {
+          input: {
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            published: true,
+            languageId: undefined,
+            updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+          }
+        })
+      )
+    })
   })
 
   describe('videoVariantsCount', () => {
@@ -1079,6 +1102,29 @@ describe('videoVariant', () => {
       })
 
       expect(data).toHaveProperty('data.videoVariantsCount', 100)
+    })
+
+    it('should return count with updatedAt filter', async () => {
+      prismaMock.videoVariant.count.mockResolvedValueOnce(25)
+
+      const data = await client({
+        document: VIDEO_VARIANTS_COUNT_QUERY,
+        variables: {
+          input: {
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
+          }
+        }
+      })
+
+      expect(prismaMock.videoVariant.count).toHaveBeenCalledWith({
+        where: {
+          published: true,
+          languageId: undefined,
+          updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+        }
+      })
+
+      expect(data).toHaveProperty('data.videoVariantsCount', 25)
     })
   })
 
