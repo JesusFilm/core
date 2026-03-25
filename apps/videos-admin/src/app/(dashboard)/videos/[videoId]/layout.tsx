@@ -101,7 +101,7 @@ export default function VideoViewLayout({
     }
   })
 
-  const { data: childrenData, refetch: refetchChildren } = useSuspenseQuery(
+  const { data: childrenData } = useSuspenseQuery(
     GET_VIDEO_CHILDREN_FOR_PUBLISH,
     {
       variables: { id: videoId }

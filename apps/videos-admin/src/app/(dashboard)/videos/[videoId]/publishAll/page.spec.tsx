@@ -7,7 +7,6 @@ const mockPush = jest.fn()
 const mockRefresh = jest.fn()
 const mockEnqueueSnackbar = jest.fn()
 const mockPublishChildren = jest.fn()
-const mockPublishChildrenAndLanguages = jest.fn()
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -62,23 +61,38 @@ describe('PublishAllChildrenDialog (route)', () => {
       }
     })
 
-    // Mutations: first for publishChildren, second for publishChildrenAndLanguages
-    mockPublishChildren.mockResolvedValue({
-      data: { videoPublishChildren: { publishedChildrenCount: 2 } }
-    })
-    mockPublishChildrenAndLanguages.mockResolvedValue({
-      data: {
-        videoPublishChildrenAndLanguages: {
-          publishedChildrenCount: 2,
-          publishedVariantsCount: 3
+    mockPublishChildren.mockImplementation(async ({ variables }) => {
+      if (variables.mode === 'childrenVideosOnly') {
+        return {
+          data: {
+            videoPublishChildren: {
+              dryRun: variables.dryRun,
+              publishedVideoCount: 3,
+              publishedVideoIds: ['parent', 'child1', 'child2'],
+              publishedVariantsCount: 0,
+              publishedVariantIds: [],
+              videosFailedValidation: []
+            }
+          }
         }
       }
+      if (variables.mode === 'childrenVideosAndVariants') {
+        return {
+          data: {
+            videoPublishChildren: {
+              dryRun: variables.dryRun,
+              publishedVideoCount: 3,
+              publishedVideoIds: ['parent', 'child1', 'child2'],
+              publishedVariantsCount: 3,
+              publishedVariantIds: ['va', 'vb', 'vc'],
+              videosFailedValidation: []
+            }
+          }
+        }
+      }
+      return { data: { videoPublishChildren: null } }
     })
-    ;(useMutation as jest.Mock).mockReturnValueOnce([mockPublishChildren, {}])
-    ;(useMutation as jest.Mock).mockReturnValue([
-      mockPublishChildrenAndLanguages,
-      {}
-    ])
+    ;(useMutation as jest.Mock).mockReturnValue([mockPublishChildren, {}])
   })
 
   it('renders dialog with actions', () => {
@@ -89,25 +103,35 @@ describe('PublishAllChildrenDialog (route)', () => {
     )
 
     expect(screen.getByText('Publish All Children')).toBeInTheDocument()
-    expect(screen.getByText('Publish Children Only')).toBeInTheDocument()
-    expect(screen.getByText('Publish Children + Languages')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Publish Videos Only' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', {
+        name: 'Publish Videos and Audio Languages'
+      })
+    ).toBeInTheDocument()
   })
 
-  it('publishes parent and children when choosing Publish Children Only', async () => {
+  it('publishes parent and children when choosing Publish Videos Only', async () => {
     render(
       <MockedProvider>
         <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByText('Publish Children Only'))
+    fireEvent.click(screen.getByRole('button', { name: 'Publish Videos Only' }))
 
     await waitFor(() => {
       expect(mockPublishChildren).toHaveBeenCalledWith({
-        variables: { id: 'video123' }
+        variables: {
+          id: 'video123',
+          mode: 'childrenVideosOnly',
+          dryRun: false
+        }
       })
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Successfully published 2 children',
+        'Successfully published 3 videos',
         { variant: 'success' }
       )
       expect(mockPush).toHaveBeenCalledWith('/videos/video123', {
@@ -116,21 +140,29 @@ describe('PublishAllChildrenDialog (route)', () => {
     })
   })
 
-  it('publishes parent, children, and languages when choosing Publish Children + Languages', async () => {
+  it('publishes parent, children, and languages when choosing Publish Videos and Audio Languages', async () => {
     render(
       <MockedProvider>
         <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByText('Publish Children + Languages'))
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Publish Videos and Audio Languages'
+      })
+    )
 
     await waitFor(() => {
-      expect(mockPublishChildrenAndLanguages).toHaveBeenCalledWith({
-        variables: { id: 'video123' }
+      expect(mockPublishChildren).toHaveBeenCalledWith({
+        variables: {
+          id: 'video123',
+          mode: 'childrenVideosAndVariants',
+          dryRun: false
+        }
       })
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Successfully published 2 children and 3 languages',
+        'Successfully published 3 videos and 3 audio language variant(s)',
         { variant: 'success' }
       )
       expect(mockPush).toHaveBeenCalledWith('/videos/video123', {
@@ -171,5 +203,40 @@ describe('PublishAllChildrenDialog (route)', () => {
         scroll: false
       })
     })
+  })
+
+  it('shows latest dry run in results panel without closing', async () => {
+    render(
+      <MockedProvider>
+        <PublishAllChildrenDialog params={{ videoId: 'video123' }} />
+      </MockedProvider>
+    )
+
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Dry Run' })[0] as HTMLElement
+    )
+
+    await waitFor(() => {
+      expect(mockPublishChildren).toHaveBeenCalledWith({
+        variables: {
+          id: 'video123',
+          mode: 'childrenVideosOnly',
+          dryRun: true
+        }
+      })
+      expect(screen.getByText(/Would publish:/)).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: /Open video parent in a new tab/
+        })
+      ).toHaveAttribute('href', '/videos/parent')
+      expect(
+        screen.getByRole('link', { name: /Open video child1 in a new tab/ })
+      ).toHaveAttribute('href', '/videos/child1')
+      expect(
+        screen.getByRole('link', { name: /Open video child2 in a new tab/ })
+      ).toHaveAttribute('href', '/videos/child2')
+    })
+    expect(mockPush).not.toHaveBeenCalled()
   })
 })

@@ -6,7 +6,7 @@ import PublishAllAudioDialog from './page'
 const mockPush = jest.fn()
 const mockRefresh = jest.fn()
 const mockEnqueueSnackbar = jest.fn()
-const mockUpdateVariant = jest.fn()
+const mockPublishVariantsOnly = jest.fn()
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -46,7 +46,10 @@ describe('PublishAllAudioDialog (route)', () => {
         }
       }
     })
-    ;(useMutation as jest.Mock).mockReturnValue([mockUpdateVariant, {}])
+    mockPublishVariantsOnly.mockResolvedValue({
+      data: { videoPublishChildren: { publishedVariantsCount: 2 } }
+    })
+    ;(useMutation as jest.Mock).mockReturnValue([mockPublishVariantsOnly, {}])
   })
 
   it('renders dialog and confirms', () => {
@@ -72,14 +75,15 @@ describe('PublishAllAudioDialog (route)', () => {
     fireEvent.click(screen.getByText('Publish All'))
 
     await waitFor(() => {
-      expect(mockUpdateVariant).toHaveBeenCalledWith({
-        variables: { input: { id: 'v1', published: true } }
-      })
-      expect(mockUpdateVariant).toHaveBeenCalledWith({
-        variables: { input: { id: 'v3', published: true } }
+      expect(mockPublishVariantsOnly).toHaveBeenCalledWith({
+        variables: {
+          id: 'video123',
+          mode: 'variantsOnly',
+          dryRun: false
+        }
       })
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Successfully published all draft audio languages',
+        'Successfully published 2 draft audio language variant(s)',
         { variant: 'success' }
       )
       expect(mockPush).toHaveBeenCalledWith('/videos/video123/audio', {

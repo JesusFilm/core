@@ -27,11 +27,14 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
   }
 `)
 
-const UPDATE_VIDEO_VARIANT = graphql(`
-  mutation UpdateVideoVariant($input: VideoVariantUpdateInput!) {
-    videoVariantUpdate(input: $input) {
-      id
-      published
+const PUBLISH_VIDEO_VARIANTS_ONLY = graphql(`
+  mutation PublishVideoVariantsOnly(
+    $id: ID!
+    $mode: VideoPublishMode!
+    $dryRun: Boolean!
+  ) {
+    videoPublishChildren(id: $id, mode: $mode, dryRun: $dryRun) {
+      publishedVariantsCount
     }
   }
 `)
@@ -49,7 +52,7 @@ export default function PublishAllAudioDialog({
     variables: { id: videoId }
   })
 
-  const [updateVariant] = useMutation(UPDATE_VIDEO_VARIANT)
+  const [publishVariantsOnly] = useMutation(PUBLISH_VIDEO_VARIANTS_ONLY)
 
   const draftVariants = useMemo(() => {
     return (
@@ -70,23 +73,37 @@ export default function PublishAllAudioDialog({
   const handleConfirmPublishAll = useCallback(async () => {
     setIsSubmitting(true)
     try {
-      await Promise.all(
-        draftVariants.map((variant) =>
-          updateVariant({
-            variables: { input: { id: variant.id, published: true } }
-          })
-        )
-      )
-      enqueueSnackbar('Successfully published all draft audio languages', {
-        variant: 'success'
+      const { data: mutationData, errors } = await publishVariantsOnly({
+        variables: {
+          id: videoId,
+          mode: 'variantsOnly',
+          dryRun: false
+        }
       })
+      if (errors != null && errors.length > 0) {
+        throw new Error('Failed to publish variants')
+      }
+      const count =
+        mutationData?.videoPublishChildren.publishedVariantsCount ??
+        draftVariants.length
+      enqueueSnackbar(
+        `Successfully published ${count} draft audio language variant(s)`,
+        { variant: 'success' }
+      )
       router.refresh()
       handleClose()
     } catch {
       enqueueSnackbar('Failed to publish audio languages', { variant: 'error' })
       setIsSubmitting(false)
     }
-  }, [draftVariants, enqueueSnackbar, handleClose, router, updateVariant])
+  }, [
+    draftVariants.length,
+    enqueueSnackbar,
+    handleClose,
+    publishVariantsOnly,
+    router,
+    videoId
+  ])
 
   return (
     <Dialog
