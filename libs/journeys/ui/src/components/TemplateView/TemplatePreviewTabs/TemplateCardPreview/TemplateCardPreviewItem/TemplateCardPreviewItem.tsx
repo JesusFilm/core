@@ -79,13 +79,8 @@ export function TemplateCardPreviewItem({
     const overlay = overlayRef.current
     if (overlay == null) return
 
-    function handleWheel(e: WheelEvent): void {
-      const iframe = overlay?.parentElement?.querySelector('iframe')
-      if (iframe?.contentDocument == null) return
-
-      const doc = iframe.contentDocument
-      const allElements = Array.from(doc.querySelectorAll('*'))
-      const scrollable = allElements.find((el) => {
+    function findScrollable(doc: Document): Element | undefined {
+      return Array.from(doc.querySelectorAll('*')).find((el) => {
         const style = doc.defaultView?.getComputedStyle(el)
         return (
           style != null &&
@@ -93,7 +88,17 @@ export function TemplateCardPreviewItem({
           el.scrollHeight > el.clientHeight
         )
       })
+    }
 
+    function getIframeDoc(): Document | null {
+      const iframe = overlay?.parentElement?.querySelector('iframe')
+      return iframe?.contentDocument ?? null
+    }
+
+    function handleWheel(e: WheelEvent): void {
+      const doc = getIframeDoc()
+      if (doc == null) return
+      const scrollable = findScrollable(doc)
       if (scrollable != null) {
         let deltaY = e.deltaY
         if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) deltaY *= 16
@@ -101,8 +106,43 @@ export function TemplateCardPreviewItem({
       }
     }
 
+    let touchStartY = 0
+
+    function handleTouchStart(e: TouchEvent): void {
+      touchStartY = e.touches[0].clientY
+    }
+
+    function handleTouchMove(e: TouchEvent): void {
+      const doc = getIframeDoc()
+      if (doc == null) return
+      const scrollable = findScrollable(doc)
+      if (scrollable == null) return
+
+      const touchY = e.touches[0].clientY
+      const deltaY = touchStartY - touchY
+      touchStartY = touchY
+
+      const atTop = scrollable.scrollTop <= 0 && deltaY < 0
+      const atBottom =
+        scrollable.scrollTop + scrollable.clientHeight >=
+          scrollable.scrollHeight && deltaY > 0
+
+      if (!atTop && !atBottom) {
+        e.preventDefault()
+        scrollable.scrollBy({ top: deltaY, behavior: 'auto' })
+      }
+    }
+
     overlay.addEventListener('wheel', handleWheel, { passive: true })
-    return () => overlay.removeEventListener('wheel', handleWheel)
+    overlay.addEventListener('touchstart', handleTouchStart, {
+      passive: true
+    })
+    overlay.addEventListener('touchmove', handleTouchMove, { passive: false })
+    return () => {
+      overlay.removeEventListener('wheel', handleWheel)
+      overlay.removeEventListener('touchstart', handleTouchStart)
+      overlay.removeEventListener('touchmove', handleTouchMove)
+    }
   }, [isGuestPreview])
 
   const framePortalContent = (
@@ -204,7 +244,7 @@ export function TemplateCardPreviewItem({
                 zIndex: 2,
                 cursor: 'grab',
                 borderRadius: framePortal.borderRadius,
-                touchAction: 'pan-y'
+                touchAction: 'none'
               }}
             />
             <Box
