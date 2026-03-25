@@ -1342,6 +1342,15 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): ButtonBlock @override(from: "api-journeys")
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock! @override(from: "api-journeys")
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @override(from: "api-journeys")
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!
@@ -1724,6 +1733,7 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  adminJourney(id: ID!, idType: IdType = slug): Journey! @override(from: "api-journeys")
   adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
   getJourneyProfile: JourneyProfile
 

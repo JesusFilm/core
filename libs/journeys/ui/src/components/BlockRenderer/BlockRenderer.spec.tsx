@@ -822,6 +822,7 @@ describe('BlockRenderer', () => {
       fullsize: null,
       action: null,
       customizable: null,
+      notes: null,
       children: []
     }
     const { getByTestId } = render(
@@ -883,6 +884,7 @@ describe('BlockRenderer', () => {
       action: null,
       parentOrder: 0,
       customizable: null,
+      notes: null,
       children: []
     }
     const { getByTestId } = render(

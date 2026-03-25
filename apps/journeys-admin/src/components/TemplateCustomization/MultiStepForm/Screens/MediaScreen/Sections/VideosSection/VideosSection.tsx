@@ -11,11 +11,11 @@ import { useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { useTemplateVideoUpload } from '../../../../TemplateVideoUploadProvider'
 import {
   extractYouTubeVideoId,
-  getCustomizableCardVideoBlock,
-  getVideoBlockDisplayTitle
+  getCustomizableCardVideoBlock
 } from '../../utils'
 
 import { VideoPreviewPlayer } from './VideoPreviewPlayer'
@@ -70,11 +70,11 @@ function UploadButton({
   )
 }
 
-interface VideoTitleProps {
-  title: string
+interface VideoAdapterNoteProps {
+  note: string
 }
 
-function VideoTitle({ title }: VideoTitleProps): ReactElement {
+function VideoAdapterNote({ note }: VideoAdapterNoteProps): ReactElement {
   return (
     <Typography
       variant="subtitle3"
@@ -85,7 +85,7 @@ function VideoTitle({ title }: VideoTitleProps): ReactElement {
         whiteSpace: 'nowrap'
       }}
     >
-      {title}
+      {note}
     </Typography>
   )
 }
@@ -114,8 +114,7 @@ export function VideosSection({
   )
 
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
-  const videoBlockDisplayTitle =
-    videoBlock != null ? getVideoBlockDisplayTitle(videoBlock) : ''
+  const adapterNote = videoBlock?.notes?.trim() ?? ''
 
   const uploadStatus =
     videoBlock != null ? getUploadStatus(videoBlock.id) : null
@@ -140,6 +139,24 @@ export function VideosSection({
   })
 
   const lastSubmittedRef = useRef(new Map<string, string>())
+
+  useEffect(() => {
+    setYoutubeUrl('')
+    setYoutubeUrlError(undefined)
+
+    if (
+      videoBlock != null &&
+      videoBlock.source === VideoBlockSource.youTube &&
+      videoBlock.videoId != null
+    ) {
+      const canonicalUrl = `https://www.youtube.com/watch?v=${videoBlock.videoId}`
+      setYoutubeUrl(canonicalUrl)
+      lastSubmittedRef.current.set(videoBlock.id, canonicalUrl)
+    }
+    // Only reset on card switch — adding videoBlock deps would re-fire
+    // after every YouTube mutation (journey context updates videoId).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardBlockId])
 
   function handleYouTubeUrlChange(event: ChangeEvent<HTMLInputElement>): void {
     setYoutubeUrl(event.target.value)
@@ -194,8 +211,8 @@ export function VideosSection({
           ) : (
             videoBlock != null && <VideoPreviewPlayer videoBlock={videoBlock} />
           )}
-          {videoBlock != null && !loading && videoBlockDisplayTitle !== '' && (
-            <VideoTitle title={videoBlockDisplayTitle} />
+          {videoBlock != null && !loading && adapterNote !== '' && (
+            <VideoAdapterNote note={adapterNote} />
           )}
         </Stack>
       </Stack>
