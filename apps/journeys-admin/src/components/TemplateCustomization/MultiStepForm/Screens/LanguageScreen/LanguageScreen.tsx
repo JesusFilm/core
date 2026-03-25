@@ -188,10 +188,8 @@ export function LanguageScreen({
     await loadUser()
 
     const existingTeams = query?.data?.teams ?? []
-    if (existingTeams.length > 0) {
-      const teamId =
-        query?.data?.getJourneyProfile?.lastActiveTeamId ?? existingTeams[0].id
-      return { teamId }
+    if (existingTeams.length > 0 && defaultTeamId !== '') {
+      return { teamId: defaultTeamId }
     }
 
     const teamResult = await teamCreate({
@@ -297,42 +295,15 @@ export function LanguageScreen({
     }
   }
 
-  if (hasTeamLoadError) {
-    return (
-      <ScreenWrapper
-        title={t("Let's Get Started!")}
-        mobileTitle={t('Get Started')}
-        subtitle={t(
-          'A few quick edits and your template will be ready to share.'
-        )}
-        mobileSubtitle={t("A few quick edits and it's ready to share!")}
-        footer={
-          <CustomizeFlowNextButton
-            label={t('Next')}
-            onClick={undefined}
-            disabled
-            loading={false}
-            ariaLabel={t('Next')}
-          />
-        }
-      >
-        <Stack
-          sx={{
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: 200
-          }}
-        >
-          <Typography color="error" align="center">
-            {t('Failed to load teams. Please refresh the page and try again.')}
-          </Typography>
-        </Stack>
-      </ScreenWrapper>
+  if (hasTeamLoadError || !isDataReady) {
+    const loadingContent = hasTeamLoadError ? (
+      <Typography color="error" align="center" role="alert">
+        {t('Failed to load teams. Please refresh the page and try again.')}
+      </Typography>
+    ) : (
+      <CircularProgress />
     )
-  }
 
-  if (!isDataReady) {
     return (
       <ScreenWrapper
         title={t("Let's Get Started!")}
@@ -359,7 +330,7 @@ export function LanguageScreen({
             minHeight: 200
           }}
         >
-          <CircularProgress />
+          {loadingContent}
         </Stack>
       </ScreenWrapper>
     )
