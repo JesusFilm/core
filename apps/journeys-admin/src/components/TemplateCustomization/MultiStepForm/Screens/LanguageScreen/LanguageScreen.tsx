@@ -6,6 +6,7 @@ import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
 import { Form, Formik, FormikValues } from 'formik'
 import uniqBy from 'lodash/uniqBy'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -43,6 +44,7 @@ export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
   const { t } = useTranslation('journeys-ui')
+  const router = useRouter()
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()
@@ -347,6 +349,12 @@ export function LanguageScreen({
             values.languageSelect?.localName ??
             ''
 
+          const currentLocale = router.locale ?? 'en'
+          const userLanguageName =
+            new Intl.DisplayNames([currentLocale], {
+              type: 'language'
+            }).of(currentLocale) ?? currentLocale
+
           setTranslationCompleted(false)
           setTranslationVariables({
             journeyId: duplicatedJourneyId,
@@ -354,8 +362,7 @@ export function LanguageScreen({
             journeyLanguageName: sourceLanguageName,
             textLanguageId: selectedLanguageId,
             textLanguageName: targetLanguageName,
-            userLanguageId: selectedLanguageId,
-            userLanguageName: targetLanguageName
+            userLanguageName
           })
         } else {
           setLoading(false)
