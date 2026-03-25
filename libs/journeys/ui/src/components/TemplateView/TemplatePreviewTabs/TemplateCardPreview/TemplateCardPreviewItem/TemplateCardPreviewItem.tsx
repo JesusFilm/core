@@ -106,10 +106,54 @@ export function TemplateCardPreviewItem({
       }
     }
 
+    const SCROLL_SPEED = 0.7
+    const FRICTION = 0.95
+    const MIN_VELOCITY = 0.5
+
     let touchStartY = 0
+    let velocity = 0
+    let lastTouchTime = 0
+    let momentumFrame = 0
+
+    function stopMomentum(): void {
+      if (momentumFrame !== 0) {
+        cancelAnimationFrame(momentumFrame)
+        momentumFrame = 0
+      }
+    }
+
+    function startMomentum(scrollable: Element): void {
+      stopMomentum()
+
+      function tick(): void {
+        velocity *= FRICTION
+        if (Math.abs(velocity) < MIN_VELOCITY) {
+          momentumFrame = 0
+          return
+        }
+
+        const atTop = scrollable.scrollTop <= 0 && velocity < 0
+        const atBottom =
+          scrollable.scrollTop + scrollable.clientHeight >=
+            scrollable.scrollHeight && velocity > 0
+
+        if (atTop || atBottom) {
+          momentumFrame = 0
+          return
+        }
+
+        scrollable.scrollBy({ top: velocity, behavior: 'auto' })
+        momentumFrame = requestAnimationFrame(tick)
+      }
+
+      momentumFrame = requestAnimationFrame(tick)
+    }
 
     function handleTouchStart(e: TouchEvent): void {
+      stopMomentum()
       touchStartY = e.touches[0].clientY
+      velocity = 0
+      lastTouchTime = Date.now()
     }
 
     function handleTouchMove(e: TouchEvent): void {
@@ -119,8 +163,13 @@ export function TemplateCardPreviewItem({
       if (scrollable == null) return
 
       const touchY = e.touches[0].clientY
-      const deltaY = touchStartY - touchY
+      const deltaY = (touchStartY - touchY) * SCROLL_SPEED
       touchStartY = touchY
+
+      const now = Date.now()
+      const dt = now - lastTouchTime
+      if (dt > 0) velocity = deltaY / dt * 16
+      lastTouchTime = now
 
       const atTop = scrollable.scrollTop <= 0 && deltaY < 0
       const atBottom =
@@ -133,15 +182,27 @@ export function TemplateCardPreviewItem({
       }
     }
 
+    function handleTouchEnd(): void {
+      const doc = getIframeDoc()
+      if (doc == null) return
+      const scrollable = findScrollable(doc)
+      if (scrollable != null && Math.abs(velocity) > MIN_VELOCITY) {
+        startMomentum(scrollable)
+      }
+    }
+
     overlay.addEventListener('wheel', handleWheel, { passive: true })
     overlay.addEventListener('touchstart', handleTouchStart, {
       passive: true
     })
     overlay.addEventListener('touchmove', handleTouchMove, { passive: false })
+    overlay.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
+      stopMomentum()
       overlay.removeEventListener('wheel', handleWheel)
       overlay.removeEventListener('touchstart', handleTouchStart)
       overlay.removeEventListener('touchmove', handleTouchMove)
+      overlay.removeEventListener('touchend', handleTouchEnd)
     }
   }, [isGuestPreview])
 
