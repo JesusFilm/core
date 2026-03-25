@@ -1,5 +1,5 @@
 ---
-title: "feat: Add sandboxed Claude Code to devcontainer"
+title: 'feat: Add sandboxed Claude Code to devcontainer'
 type: feat
 status: completed
 date: 2026-03-25
@@ -85,6 +85,7 @@ app:
 **Auth mechanism:** `remoteEnv` with `${localEnv:...}` reads from the host's environment variables. Developers set `CLAUDE_CODE_OAUTH_TOKEN` or `ANTHROPIC_API_KEY` in their shell profile (`~/.bashrc`, `~/.zshrc`, etc.) or use Codespaces secrets. The `:` suffix provides an empty default, so the container builds fine without tokens set.
 
 **NPM security defaults — scoped conservatively:**
+
 - `NPM_CONFIG_AUDIT=true` — enables audit on install
 - `NPM_CONFIG_FUND=false` — suppresses funding messages
 - **NOT** setting `NPM_CONFIG_IGNORE_SCRIPTS=true` — this project uses native modules (`libpixman`, `libcairo`, `libpango`) that require install scripts. Setting `ignore-scripts` would break `pnpm install`.
@@ -151,6 +152,7 @@ echo "Claude Code configured!"
 **This is the most important technical consideration.**
 
 The existing devcontainer includes the `docker-outside-of-docker` feature, which gives the container access to the host's Docker daemon. Combined with `bypassPermissions`, Claude Code could theoretically:
+
 - Mount the host filesystem via `docker run -v /:/host ...`
 - Start privileged containers on the host
 - Access other containers' data
@@ -162,6 +164,7 @@ The existing devcontainer includes the `docker-outside-of-docker` feature, which
 1. **Accept the risk for local dev** — The container is already trusted with Docker access. `bypassPermissions` doesn't meaningfully increase the blast radius since Claude could already be given Docker commands via the allowlist. Document the risk.
 
 2. **Add Docker command restrictions to `.claude/settings.json`** — Add deny rules for `docker run` with host mounts:
+
    ```json
    { "permissions": { "deny": ["Bash(docker run*-v /*)"] } }
    ```
@@ -172,30 +175,30 @@ The existing devcontainer includes the `docker-outside-of-docker` feature, which
 
 ### Codespaces vs Local Docker
 
-| Aspect | Local | Codespaces |
-|--------|-------|------------|
-| Auth tokens | Host env vars via `${localEnv:...}` | Codespaces secrets (same `remoteEnv` syntax works) |
-| `cap_add` | Works directly | May require org policy approval |
-| Docker socket | Host Docker daemon | Codespaces VM Docker |
-| Network isolation | iptables available | May be restricted |
+| Aspect            | Local                               | Codespaces                                         |
+| ----------------- | ----------------------------------- | -------------------------------------------------- |
+| Auth tokens       | Host env vars via `${localEnv:...}` | Codespaces secrets (same `remoteEnv` syntax works) |
+| `cap_add`         | Works directly                      | May require org policy approval                    |
+| Docker socket     | Host Docker daemon                  | Codespaces VM Docker                               |
+| Network isolation | iptables available                  | May be restricted                                  |
 
 The proposed changes work in both environments. `cap_add` in Codespaces may need org-level approval — document this.
 
 ### What's NOT included (and why)
 
-| ToB Feature | Decision | Reason |
-|-------------|----------|--------|
-| Separate `~/.claude` volume | Skip | Existing `core-node-user` volume already persists `/home/node` |
-| Separate command history volume | Skip | Same reason — already persisted |
-| `~/.gitconfig` read-only bind mount | Skip | Not relevant; git config is inside the container |
-| Oh My Zsh / Powerlevel10k | Skip | Not relevant to Claude sandboxing |
-| Python 3.13 via uv | Skip | Python feature already included in devcontainer features |
-| ast-grep / fzf / git-delta / tmux | Skip | Nice-to-haves, not related to sandboxing. Can be added later. |
-| bubblewrap (bwrap) | Skip | Used by Claude Code internally for filesystem sandboxing; Claude's install script handles this if needed |
-| `devc` CLI helper | Skip | Designed for the standalone ToB workflow, not applicable to an existing docker-compose setup |
-| Global gitignore setup | Skip | Project already has `.gitignore`; not needed for sandboxing |
-| `NPM_CONFIG_IGNORE_SCRIPTS` | Skip | Would break native module builds in this project |
-| `NPM_CONFIG_MINIMUM_RELEASE_AGE` | Skip | Overly restrictive for active development |
+| ToB Feature                         | Decision | Reason                                                                                                   |
+| ----------------------------------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| Separate `~/.claude` volume         | Skip     | Existing `core-node-user` volume already persists `/home/node`                                           |
+| Separate command history volume     | Skip     | Same reason — already persisted                                                                          |
+| `~/.gitconfig` read-only bind mount | Skip     | Not relevant; git config is inside the container                                                         |
+| Oh My Zsh / Powerlevel10k           | Skip     | Not relevant to Claude sandboxing                                                                        |
+| Python 3.13 via uv                  | Skip     | Python feature already included in devcontainer features                                                 |
+| ast-grep / fzf / git-delta / tmux   | Skip     | Nice-to-haves, not related to sandboxing. Can be added later.                                            |
+| bubblewrap (bwrap)                  | Skip     | Used by Claude Code internally for filesystem sandboxing; Claude's install script handles this if needed |
+| `devc` CLI helper                   | Skip     | Designed for the standalone ToB workflow, not applicable to an existing docker-compose setup             |
+| Global gitignore setup              | Skip     | Project already has `.gitignore`; not needed for sandboxing                                              |
+| `NPM_CONFIG_IGNORE_SCRIPTS`         | Skip     | Would break native module builds in this project                                                         |
+| `NPM_CONFIG_MINIMUM_RELEASE_AGE`    | Skip     | Overly restrictive for active development                                                                |
 
 ## System-Wide Impact
 
@@ -230,12 +233,12 @@ The proposed changes work in both environments. `cap_add` in Codespaces may need
 
 ## Dependencies & Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Claude Code install script changes or becomes unavailable | Low | Build fails | Pin a fallback: `npm install -g @anthropic-ai/claude-code` |
-| `cap_add` blocked in Codespaces | Medium | NET_ADMIN/NET_RAW unavailable | Document as optional; core functionality works without it |
-| Docker socket + bypassPermissions escape | Low | Host compromise | Document risk; add deny rules for dangerous Docker patterns |
-| Post-create script timeout increases | Low | Slower first build | Claude setup is fast (~5s); onboarding bypass has 30s timeout |
+| Risk                                                      | Likelihood | Impact                        | Mitigation                                                    |
+| --------------------------------------------------------- | ---------- | ----------------------------- | ------------------------------------------------------------- |
+| Claude Code install script changes or becomes unavailable | Low        | Build fails                   | Pin a fallback: `npm install -g @anthropic-ai/claude-code`    |
+| `cap_add` blocked in Codespaces                           | Medium     | NET_ADMIN/NET_RAW unavailable | Document as optional; core functionality works without it     |
+| Docker socket + bypassPermissions escape                  | Low        | Host compromise               | Document risk; add deny rules for dangerous Docker patterns   |
+| Post-create script timeout increases                      | Low        | Slower first build            | Claude setup is fast (~5s); onboarding bypass has 30s timeout |
 
 ## Implementation Phases
 

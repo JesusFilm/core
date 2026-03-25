@@ -1,5 +1,5 @@
 ---
-title: "Integrating Sandboxed Claude Code into an Existing Multi-Service Devcontainer"
+title: 'Integrating Sandboxed Claude Code into an Existing Multi-Service Devcontainer'
 category: integration-issues
 date: 2026-03-25
 tags:
@@ -76,12 +76,7 @@ fi
 ```json
 {
   "permissions": {
-    "deny": [
-      "Read(**/.env*)",
-      "Read(**/.env.*)",
-      "Bash(docker run*-v /*)",
-      "Bash(docker run*--privileged*)"
-    ]
+    "deny": ["Read(**/.env*)", "Read(**/.env.*)", "Bash(docker run*-v /*)", "Bash(docker run*--privileged*)"]
   }
 }
 ```
@@ -90,16 +85,16 @@ The devcontainer mounts the Docker socket via `docker-outside-of-docker`. With `
 
 ## What Was Intentionally Skipped (and Why)
 
-| Trail of Bits Feature | Reason Skipped |
-|---|---|
-| Separate `~/.claude` volume | Existing `core-node-user` volume already persists `/home/node` |
-| `NET_ADMIN` / `NET_RAW` capabilities | No iptables rules configured; adds attack surface with no benefit |
+| Trail of Bits Feature                                    | Reason Skipped                                                    |
+| -------------------------------------------------------- | ----------------------------------------------------------------- |
+| Separate `~/.claude` volume                              | Existing `core-node-user` volume already persists `/home/node`    |
+| `NET_ADMIN` / `NET_RAW` capabilities                     | No iptables rules configured; adds attack surface with no benefit |
 | `containerEnv` NPM defaults (`audit=true`, `fund=false`) | `audit=true` is already the npm default; `fund=false` is cosmetic |
-| `NPM_CONFIG_IGNORE_SCRIPTS=true` | Would break native module builds (libpixman, libcairo, libpango) |
-| `CLAUDE_CONFIG_DIR` env var | Redundant when `$HOME` is already `/home/node` |
-| Node.js JSON manipulation in post-install | Simple `echo` produces identical result in 90% less code |
-| Oh My Zsh / git-delta / tmux / fzf | Nice-to-haves unrelated to sandboxing |
-| bubblewrap / `devc` CLI helper | Designed for standalone workflow, not docker-compose setups |
+| `NPM_CONFIG_IGNORE_SCRIPTS=true`                         | Would break native module builds (libpixman, libcairo, libpango)  |
+| `CLAUDE_CONFIG_DIR` env var                              | Redundant when `$HOME` is already `/home/node`                    |
+| Node.js JSON manipulation in post-install                | Simple `echo` produces identical result in 90% less code          |
+| Oh My Zsh / git-delta / tmux / fzf                       | Nice-to-haves unrelated to sandboxing                             |
+| bubblewrap / `devc` CLI helper                           | Designed for standalone workflow, not docker-compose setups       |
 
 ## Prevention Strategies
 
