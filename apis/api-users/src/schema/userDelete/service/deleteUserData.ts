@@ -75,9 +75,15 @@ export async function deleteFirebaseUser(
       if (isFirebaseNotFound(error)) {
         logs.push(createLog('🔥 No Firebase auth record found by email either'))
       } else {
-        console.error('Failed to delete Firebase auth via email fallback:', error)
+        console.error(
+          'Failed to delete Firebase auth via email fallback:',
+          error
+        )
         logs.push(
-          createLog('❌ Failed to delete Firebase auth via email fallback', 'error')
+          createLog(
+            '❌ Failed to delete Firebase auth via email fallback',
+            'error'
+          )
         )
         return logs
       }
@@ -130,10 +136,7 @@ export async function deleteUserData(
   } catch (error) {
     console.error('Failed to create audit log:', error)
     logs.push(
-      createLog(
-        '❌ Failed to create audit log. Aborting deletion.',
-        'error'
-      )
+      createLog('❌ Failed to create audit log. Aborting deletion.', 'error')
     )
     return { success: false, logs }
   }
