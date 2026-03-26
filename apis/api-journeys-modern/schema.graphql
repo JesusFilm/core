@@ -1337,15 +1337,15 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
-  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @override(from: "api-journeys")
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock!
   buttonBlockUpdate(
     id: ID!
     input: ButtonBlockUpdateInput!
 
     """drop this parameter after merging teams"""
     journeyId: ID
-  ): ButtonBlock @override(from: "api-journeys")
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
+  ): ButtonBlock
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
@@ -1405,7 +1405,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
-  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1795,7 +1795,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
-  getUserRole: UserRole @override(from: "api-journeys")
+  getUserRole: UserRole
 }
 
 type RadioOptionBlock implements Block
