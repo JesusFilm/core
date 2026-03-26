@@ -287,12 +287,9 @@ export async function executeVideoPublishChildren(
   mode: VideoPublishMode,
   dryRun: boolean
 ): Promise<VideoPublishChildrenResultType> {
-  const parent =
-    mode !== 'variantsOnly' ? await getVideoPublishParent(id) : undefined
+  const parent = await getVideoPublishParent(id)
   const plan =
-    parent != null && mode !== 'variantsOnly'
-      ? await buildVideoPublishPlan(parent, mode)
-      : undefined
+    mode !== 'variantsOnly' ? await buildVideoPublishPlan(parent, mode) : undefined
   const videoIdsToPublish = plan?.videoIdsToPublish ?? []
   const videosFailedValidation = plan?.videosFailedValidation ?? []
 
@@ -365,15 +362,15 @@ export async function executeVideoPublishChildren(
   }
 
   if (mode !== 'variantsOnly') {
-    const publishedChildIds = parent!.children
+    const publishedChildIds = parent.children
       .filter(
         (child) => child.published || videoIdsToPublish.includes(child.id)
       )
       .map((child) => child.id)
 
     await ensureParentEmptyVariantsForPublishedChildren(
-      parent!,
-      videoIdsToPublish.includes(parent!.id),
+      parent,
+      videoIdsToPublish.includes(parent.id),
       publishedChildIds
     )
   }
