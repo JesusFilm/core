@@ -35,19 +35,21 @@ export class LoginPage {
       this.page.getByTestId('NavigationListItemProjects')
     ).toBeVisible({ timeout: 65000 })
 
-    // CreateJourneyButton is only rendered when an active team exists. If the user
-    // has no active team (TeamSelect shows "Shared With Me"), select the first real
-    // team so the button appears.
-    const containedIconButton = this.page.locator(
-      'div[data-testid="JourneysAdminContainedIconButton"]'
-    )
-    const isVisible = await containedIconButton.isVisible().catch(() => false)
+    // "Create Custom Journey" is only rendered when an active team exists. If the
+    // user has no active team (team selector shows "Shared With Me"), select the
+    // first real team so the button appears.
+    const createCustomJourneyButton = this.page.getByRole('heading', {
+      name: 'Create Custom Journey'
+    })
+    const isVisible = await createCustomJourneyButton
+      .isVisible()
+      .catch(() => false)
 
     if (!isVisible) {
       await this.selectFirstAvailableTeam()
     }
 
-    await expect(containedIconButton).toBeVisible({ timeout: 65000 })
+    await expect(createCustomJourneyButton).toBeVisible({ timeout: 65000 })
   }
 
   private async selectFirstAvailableTeam() {
