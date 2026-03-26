@@ -46,20 +46,15 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
     },
     subscribe: async function* (_parent, { idType, id }, ctx) {
       try {
-        const {
-          user,
-          firebase,
-          logs: lookupLogs
-        } = await lookupUser(idType, id)
+        const [{ user, firebase, logs: lookupLogs }, caller] = await Promise.all(
+          [
+            lookupUser(idType, id),
+            prisma.user.findUnique({ where: { userId: ctx.currentUser.id } })
+          ]
+        )
         for (const log of lookupLogs) {
           yield { log, done: false, success: null }
         }
-
-        // Comment 8: look up caller before the firebase-only branch so audit
-        // logging is available for all deletion paths.
-        const caller = await prisma.user.findUnique({
-          where: { userId: ctx.currentUser.id }
-        })
         if (caller == null) {
           yield {
             log: createLog('❌ Caller user not found', 'error'),
@@ -80,8 +75,8 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
             return
           }
 
-          // Comment 8: create audit log before deletion so there is always a
-          // durable record, matching the behaviour of the full-user path.
+          // Create audit log before deletion so there is always a durable
+          // record, matching the behaviour of the full-user path.
           let auditLog: { id: string } | null = null
           try {
             auditLog = await prisma.userDeleteAuditLog.create({

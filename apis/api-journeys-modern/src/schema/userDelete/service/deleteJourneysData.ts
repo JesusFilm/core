@@ -41,9 +41,9 @@ export async function deleteJourneysData(
       deletedUserJourneyIds.push(...userJourneys.map((uj) => uj.id))
 
       for (const uj of userJourneys) {
-        // Comment 1: exclude inviteRequested — pending invites are not accepted
-        // collaborators and should not be considered as transfer candidates or
-        // block the journey from being marked for deletion.
+        // Exclude inviteRequested — pending invites are not accepted
+        // collaborators and must not be counted when deciding whether to
+        // transfer ownership or mark a journey for deletion.
         const others = uj.journey.userJourneys.filter(
           (j) => j.userId !== userId && j.role !== 'inviteRequested'
         )
