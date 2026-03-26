@@ -41,9 +41,7 @@ export class LoginPage {
     const containedIconButton = this.page.locator(
       'div[data-testid="JourneysAdminContainedIconButton"]'
     )
-    const isVisible = await containedIconButton
-      .isVisible()
-      .catch(() => false)
+    const isVisible = await containedIconButton.isVisible().catch(() => false)
 
     if (!isVisible) {
       await this.selectFirstAvailableTeam()

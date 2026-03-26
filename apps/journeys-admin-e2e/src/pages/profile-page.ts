@@ -102,10 +102,14 @@ export class ProfilePage {
     // verifyloggedOut() is the real guard that confirms logout succeeded.
     try {
       await expect(
-        this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
+        this.page.locator('#notistack-snackbar', {
+          hasText: 'Logout successful'
+        })
       ).toBeVisible({ timeout: 10000 })
       await expect(
-        this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
+        this.page.locator('#notistack-snackbar', {
+          hasText: 'Logout successful'
+        })
       ).toBeHidden({ timeout: 30000 })
     } catch {
       // Toast may have already disappeared if page navigation completed first.
