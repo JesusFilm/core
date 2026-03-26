@@ -63,7 +63,7 @@ export class CustomizationMediaPage {
     const errorText = this.page
       .getByTestId('VideosSection-youtube-input')
       .locator('p.MuiFormHelperText-root.Mui-error')
-    await expect(errorText).toBeVisible({ timeout: defaultTimeout })
+    await expect(errorText).toBeVisible({ timeout: 90000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {

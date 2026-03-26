@@ -8,8 +8,6 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const seventySecondsTimeout = 70000
-
 export class Register {
   readonly page: Page
   name: string
@@ -162,9 +160,10 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >70s on first run
     await expect(
-      this.page.getByRole('heading', { name: 'Create Custom Journey' })
-    ).toBeVisible({ timeout: seventySecondsTimeout })
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
   }
 
   async waitUntilTheToestMsgDisappear() {

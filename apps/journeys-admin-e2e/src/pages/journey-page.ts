@@ -240,32 +240,16 @@ export class JourneyPage {
   }
 
   async clickCreateCustomJourney(): Promise<void> {
-    const createJourneyLoaderPath = this.page.locator(
+    const createButton = this.page.getByRole('button', {
+      name: 'Create Custom Journey'
+    })
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take time on first load
+    await expect(createButton).toBeEnabled({ timeout: 90000 })
+    await createButton.click()
+    const journeyImageLoader = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
     )
-    await this.page
-      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
-      .waitFor({ state: 'visible', timeout: 150000 })
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminContainedIconButton"] button'
-      )
-    ).toBeVisible({ timeout: 150000 })
-    await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
-    await this.page
-      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
-      .click()
-    try {
-      await expect(createJourneyLoaderPath, 'Ignore if not found').toBeVisible({
-        timeout: 5000
-      })
-    } catch {
-      // Ignore if not found
-    }
-    await expect(createJourneyLoaderPath).toBeHidden({
-      timeout: sixtySecondsTimeout
-    })
-    //await this.page.waitForLoadState('networkidle')
+    await expect(journeyImageLoader).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
   async setJourneyName(journey: string) {

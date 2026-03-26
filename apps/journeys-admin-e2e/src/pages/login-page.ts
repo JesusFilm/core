@@ -30,9 +30,10 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
     await expect(
-      this.page.getByRole('heading', { name: 'Create Custom Journey' })
-    ).toBeVisible({ timeout: 65000 })
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
   }
 
   async login(accountKey: string = 'admin'): Promise<void> {

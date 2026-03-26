@@ -25,6 +25,21 @@ If a required element is not visible, the test must FAIL and surface the bug.
 - BAD: loop over multiple fallback CSS selectors
 - BAD: `try/catch` that swallows an assertion failure
 
+## Wait times must be short, justified, and commented
+
+Default timeout (30s) is enough for stable app states. Only exceed it for known slow operations (cold Vercel SSR, Apollo queries on first load, multi-step server chains). Hard limit is 90s — never set a timeout higher than 90000ms.
+
+When a timeout exceeds the default, ALWAYS add an inline comment explaining why:
+
+```typescript
+// 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
+await expect(createButton).toBeEnabled({ timeout: 90000 })
+```
+
+- BAD: `{ timeout: 150000 }` with no comment
+- BAD: `{ timeout: 60000 }` as the only value tried when it keeps failing — raise it to 90s and comment
+- GOOD: `{ timeout: 30000 }` with a comment explaining the slow operation
+
 ## Scope selectors to the user's visual context
 
 Use the narrowest container that reflects what the user sees. If strict mode fires (multiple matches), that is a real data/state problem — fix the root cause, don't add `.first()`.
