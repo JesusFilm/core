@@ -375,16 +375,30 @@ export async function executeVideoPublishChildren(
     )
   }
 
-  await Promise.all(
+  await Promise.allSettled(
     variantIdsToPublish.map(async (variantId) => {
-      await updateVideoVariantInAlgolia(variantId)
-      void videoVariantCacheReset(variantId)
+      try {
+        await updateVideoVariantInAlgolia(variantId)
+      } catch (error) {
+        logger.error({ error, variantId }, 'Variant Algolia update failed')
+      }
+
+      await videoVariantCacheReset(variantId).catch((error) => {
+        logger.error({ error, variantId }, 'Variant cache reset failed')
+      })
     })
   )
-  await Promise.all(
+  await Promise.allSettled(
     affectedVideoIds.map(async (videoId) => {
-      await updateVideoInAlgolia(videoId)
-      void videoCacheReset(videoId)
+      try {
+        await updateVideoInAlgolia(videoId)
+      } catch (error) {
+        logger.error({ error, videoId }, 'Video Algolia update failed')
+      }
+
+      await videoCacheReset(videoId).catch((error) => {
+        logger.error({ error, videoId }, 'Video cache reset failed')
+      })
     })
   )
 
