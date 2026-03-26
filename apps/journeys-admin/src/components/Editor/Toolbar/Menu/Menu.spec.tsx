@@ -643,6 +643,9 @@ describe('Toolbar Menu', () => {
         screen.getByRole('menuitem', { name: 'Analytics 0 visitors' })
       ).toBeInTheDocument()
       expect(
+        screen.getByRole('menuitem', { name: 'Analytics 0 visitors' })
+      ).toHaveAttribute('href', '/journeys/journeyId/reports')
+      expect(
         screen.getByRole('menuitem', { name: 'Strategy' })
       ).toBeInTheDocument()
       expect(
