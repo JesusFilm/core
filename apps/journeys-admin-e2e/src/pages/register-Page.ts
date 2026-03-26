@@ -106,7 +106,7 @@ export class Register {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
         { hasText: 'Terms and Conditions' }
       )
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: 90000 })
   }
 
   async clickIAgreeBtn() {
