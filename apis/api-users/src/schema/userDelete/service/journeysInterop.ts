@@ -90,9 +90,9 @@ export async function callJourneysCheck(
 
     return data.userDeleteJourneysCheck
   } catch (error) {
-    // Comment 5: rethrow so callers can distinguish a network/API failure from
-    // a legitimate "nothing to clean up" result (all-zero counts with an error
-    // log were indistinguishable to callers).
+    // Rethrow so callers can distinguish a network/API failure from a
+    // legitimate "nothing to clean up" result (returning all-zero counts
+    // made interop failures indistinguishable from a clean empty result).
     console.error('Journeys check failed:', error)
     throw error
   }
@@ -126,8 +126,9 @@ export async function callJourneysConfirm(
 
     return data.userDeleteJourneysConfirm
   } catch (error) {
-    // Comment 5: rethrow — callers use success:false to abort; swallowing the
-    // error here made interop failures indistinguishable from successful no-ops.
+    // Rethrow so callers can distinguish a network/API failure from a
+    // legitimate empty result — swallowing here made interop failures
+    // indistinguishable from a successful no-op deletion.
     console.error('Journeys deletion failed:', error)
     throw error
   }
