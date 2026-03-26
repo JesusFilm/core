@@ -46,12 +46,11 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
     },
     subscribe: async function* (_parent, { idType, id }, ctx) {
       try {
-        const [{ user, firebase, logs: lookupLogs }, caller] = await Promise.all(
-          [
+        const [{ user, firebase, logs: lookupLogs }, caller] =
+          await Promise.all([
             lookupUser(idType, id),
             prisma.user.findUnique({ where: { userId: ctx.currentUser.id } })
-          ]
-        )
+          ])
         for (const log of lookupLogs) {
           yield { log, done: false, success: null }
         }
