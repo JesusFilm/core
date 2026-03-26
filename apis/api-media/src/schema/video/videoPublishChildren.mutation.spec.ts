@@ -13,7 +13,9 @@ const authClient = getClient({
 })
 
 describe('videoPublishChildren', () => {
-  const VIDEO_PUBLISH_CHILDREN = parse(/* GraphQL */ `
+  type AuthClientDocument = Parameters<typeof authClient>[0]['document']
+
+  const VIDEO_PUBLISH_CHILDREN: AuthClientDocument = parse(/* GraphQL */ `
     mutation VideoPublishChildren(
       $id: ID!
       $mode: VideoPublishMode!
@@ -33,7 +35,7 @@ describe('videoPublishChildren', () => {
         }
       }
     }
-  `)
+  `) as AuthClientDocument
 
   beforeEach(() => {
     ;(prismaMock.video.findUnique as any).mockImplementation(
