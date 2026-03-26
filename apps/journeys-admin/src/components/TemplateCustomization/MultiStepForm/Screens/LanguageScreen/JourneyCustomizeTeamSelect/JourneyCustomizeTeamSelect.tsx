@@ -14,7 +14,7 @@ interface FormValues {
 
 export function JourneyCustomizeTeamSelect(): ReactElement {
   const { values, handleChange } = useFormikContext<FormValues>()
-  const { query, setActiveTeam } = useTeam()
+  const { query } = useTeam()
   const teams = query?.data?.teams ?? []
 
   return (
@@ -23,13 +23,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
         variant="filled"
         name="teamSelect"
         value={values.teamSelect}
-        onChange={(e) => {
-          handleChange(e)
-          const selected = teams.find(
-            (t) => t.id === (e.target as HTMLInputElement).value
-          )
-          setActiveTeam(selected ?? null)
-        }}
+        onChange={handleChange}
         displayEmpty
         inputProps={{ 'aria-label': 'Team', sx: { py: 4 } }}
         renderValue={(selected) => {

@@ -86,7 +86,12 @@ enum join__Graph {
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
-scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA) 
+scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  @join__type(graph: API_LANGUAGES)
+
+input DateTimeFilter @join__type(graph: API_MEDIA)  @join__type(graph: API_LANGUAGES)  {
+  gte: DateTime
+  lte: DateTime
+}
 
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
@@ -177,7 +182,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): CardBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS) 
+  iconBlockCreate(input: IconBlockCreateInput!) : IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
@@ -849,7 +854,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
-  countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  countries(term: String, ids: [ID!], where: CountriesFilter) : [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
@@ -868,10 +873,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     color: UnsplashColor
     orientation: UnsplashPhotoOrientation
   ): UnsplashQueryResponse! @join__field(graph: API_MEDIA) 
-  bibleBooks: [BibleBook!]! @join__field(graph: API_MEDIA) 
+  bibleBooks(where: BibleBooksFilter): [BibleBook!]! @join__field(graph: API_MEDIA) 
   bibleCitations(videoId: ID) : [BibleCitation!]! @join__field(graph: API_MEDIA) 
   bibleCitation(id: ID!) : BibleCitation! @join__field(graph: API_MEDIA) 
-  keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
+  keywords(where: KeywordsFilter): [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
@@ -1232,9 +1237,10 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
-  publishedAt: Date @join__field(graph: API_MEDIA) 
-  children: [Video!]! @join__field(graph: API_MEDIA) 
-  parents: [Video!]! @join__field(graph: API_MEDIA) 
+  publishedAt: Date @join__field(graph: API_MEDIA)
+  children: [Video!]! @join__field(graph: API_MEDIA)
+  parents: [Video!]! @join__field(graph: API_MEDIA)
+  updatedAt: DateTime! @join__field(graph: API_MEDIA)
 }
 
 type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -1474,7 +1480,8 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: API_LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
-  labeledVideoCounts: LabeledVideoCounts! @join__field(graph: API_MEDIA) 
+  labeledVideoCounts: LabeledVideoCounts! @join__field(graph: API_MEDIA)
+  updatedAt: DateTime! @join__field(graph: API_LANGUAGES)
 }
 
 type JourneyViewEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
@@ -2600,6 +2607,7 @@ type Country @join__type(graph: API_LANGUAGES, key: "id")  {
   countryLanguages: [CountryLanguage!]!
   languageCount: Int!
   languageHavingMediaCount: Int!
+  updatedAt: DateTime! @join__field(graph: API_LANGUAGES)
 }
 
 type CountryLanguage @join__type(graph: API_LANGUAGES)  {
@@ -2639,6 +2647,7 @@ type BibleBook @join__type(graph: API_MEDIA)  {
   paratextAbbreviation: String!
   isNewTestament: Boolean!
   order: Int!
+  updatedAt: DateTime! @join__field(graph: API_MEDIA)
 }
 
 type BibleBookName @join__type(graph: API_MEDIA)  {
@@ -2773,6 +2782,7 @@ type Keyword @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
   language: Language!
+  updatedAt: DateTime! @join__field(graph: API_MEDIA)
 }
 
 type LabeledVideoCounts @join__type(graph: API_MEDIA)  {
@@ -3138,6 +3148,7 @@ type VideoEdition @join__type(graph: API_MEDIA)  {
   name: String
   videoVariants: [VideoVariant!]!
   videoSubtitles: [VideoSubtitle!]!
+  updatedAt: DateTime! @join__field(graph: API_MEDIA)
 }
 
 type VideoImageAlt @join__type(graph: API_MEDIA)  {
@@ -3249,6 +3260,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   """
   version: Int!
   video: Video
+  updatedAt: DateTime! @join__field(graph: API_MEDIA)
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
@@ -5080,6 +5092,19 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   ids: [ID!]
   bcp47: [String!]
   iso3: [String!]
+  updatedAt: DateTimeFilter
+}
+
+input CountriesFilter @join__type(graph: API_LANGUAGES)  {
+  updatedAt: DateTimeFilter
+}
+
+input KeywordsFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
+}
+
+input BibleBooksFilter @join__type(graph: API_MEDIA)  {
+  updatedAt: DateTimeFilter
 }
 
 input MutationAudioPreviewCreateInput @join__type(graph: API_LANGUAGES)  {
@@ -5485,6 +5510,7 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
 input VideoVariantFilter @join__type(graph: API_MEDIA)  {
   onlyPublished: Boolean = true
   languageId: ID
+  updatedAt: DateTimeFilter
 }
 
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
@@ -5514,6 +5540,7 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   subtitleLanguageIds: [ID!]
   published: Boolean
   locked: Boolean
+  updatedAt: DateTimeFilter
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {

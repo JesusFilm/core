@@ -10,6 +10,7 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
@@ -190,6 +191,16 @@ const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
   }
 }
 
+const mockUpdateLastActiveTeamId = {
+  request: {
+    query: UPDATE_LAST_ACTIVE_TEAM_ID,
+    variables: { input: { lastActiveTeamId: 'teamId1' } }
+  },
+  result: {
+    data: { journeyProfileUpdate: { id: 'profile-id' } }
+  }
+}
+
 describe('LanguageScreen', () => {
   let handleNext: jest.Mock
   let push: jest.Mock
@@ -273,7 +284,8 @@ describe('LanguageScreen', () => {
           },
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
-          mockJourneyDuplicate
+          mockJourneyDuplicate,
+          mockUpdateLastActiveTeamId
         ]}
       >
         <SnackbarProvider>
@@ -321,7 +333,8 @@ describe('LanguageScreen', () => {
           },
           mockGetChildJourneysFromTemplateId,
           mockGetParentJourneysFromTemplateId,
-          { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult }
+          { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult },
+          mockUpdateLastActiveTeamId
         ]}
       >
         <SnackbarProvider>
@@ -420,7 +433,8 @@ describe('LanguageScreen', () => {
           {
             ...mockParentJourneysForTest,
             result: mockGetParentJourneysFromTemplateIdMockResult
-          }
+          },
+          mockUpdateLastActiveTeamId
         ]}
       >
         <SnackbarProvider>
@@ -528,6 +542,17 @@ describe('LanguageScreen', () => {
           {
             ...mockJourneyDuplicateForGuest,
             result: mockJourneyDuplicateForGuestResult
+          },
+          {
+            request: {
+              query: UPDATE_LAST_ACTIVE_TEAM_ID,
+              variables: {
+                input: { lastActiveTeamId: guestTeamIdFromCreate }
+              }
+            },
+            result: {
+              data: { journeyProfileUpdate: { id: 'profile-id' } }
+            }
           }
         ]}
       >
@@ -543,6 +568,9 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
+    await waitFor(() =>
+      expect(screen.getByTestId('CustomizeFlowNextButton')).not.toBeDisabled()
+    )
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
 
     await waitFor(() => expect(mockTeamCreateResult).toHaveBeenCalled())
@@ -558,6 +586,41 @@ describe('LanguageScreen', () => {
       )
     )
     expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('hides team select for guests', async () => {
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockGetLastActiveTeamIdAndTeams,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId('LanguageAutocompleteInput')
+      ).toBeInTheDocument()
+    )
+
+    expect(screen.queryByText('Select a team')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('combobox', { name: 'Team' })
+    ).not.toBeInTheDocument()
   })
 
   it('for anonymous user with existing team: reuses existing team and does not create a new one', async () => {
@@ -620,7 +683,8 @@ describe('LanguageScreen', () => {
           {
             ...mockJourneyDuplicateForExistingGuest,
             result: mockJourneyDuplicateForExistingGuestResult
-          }
+          },
+          mockUpdateLastActiveTeamId
         ]}
       >
         <SnackbarProvider>
@@ -651,6 +715,112 @@ describe('LanguageScreen', () => {
       )
     )
     expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('for anonymous user with stale lastActiveTeamId: falls back to first existing team', async () => {
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
+
+    const mockStaleGuestTeamData: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            getJourneyProfile: {
+              id: 'profile-id',
+              lastActiveTeamId: 'deleted-team-id',
+              __typename: 'JourneyProfile'
+            },
+            teams: [
+              {
+                __typename: 'Team',
+                id: 'teamId1',
+                title: 'Team One',
+                publicTitle: 'Team 1',
+                userTeams: [],
+                customDomains: []
+              }
+            ]
+          }
+        }
+      }
+
+    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+      request: { query: GET_CURRENT_USER },
+      result: {
+        data: {
+          me: {
+            __typename: 'AuthenticatedUser',
+            id: 'anon-user-id',
+            email: ''
+          }
+        }
+      }
+    }
+
+    const mockDuplicateForGuestStaleTeam: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId1',
+          forceNonTemplate: true,
+          duplicateAsDraft: true
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockDuplicateResult = jest.fn(() => ({
+      ...mockDuplicateForGuestStaleTeam.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockStaleGuestTeamData,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          mockGetCurrentUser,
+          { ...mockDuplicateForGuestStaleTeam, result: mockDuplicateResult },
+          mockUpdateLastActiveTeamId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CustomizeFlowNextButton')).not.toBeDisabled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() => expect(mockDuplicateResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
   })
 
   it('should use the current journey when multiple child journeys share the same language id', async () => {
@@ -803,7 +973,8 @@ describe('LanguageScreen', () => {
           mockGetLastActiveTeamIdAndTeams,
           mockChildJourneysWithDuplicateLanguage,
           mockParentJourneysForDuplicateLanguage,
-          mockJourneyDuplicateForDuplicateLanguage
+          mockJourneyDuplicateForDuplicateLanguage,
+          mockUpdateLastActiveTeamId
         ]}
       >
         <SnackbarProvider>
@@ -941,7 +1112,9 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
+    )
   })
 
   it('enables Next button for signed-in users when guest flow flag is off', async () => {
@@ -1007,6 +1180,427 @@ describe('LanguageScreen', () => {
     expect(screen.getByTestId('CustomizeFlowNextButton')).toBeDisabled()
   })
 
+  it('falls back to first team when lastActiveTeamId references a nonexistent team', async () => {
+    const mockStaleTeamData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+      result: {
+        data: {
+          getJourneyProfile: {
+            id: 'profile-id',
+            lastActiveTeamId: 'deleted-team-id',
+            __typename: 'JourneyProfile'
+          },
+          teams: [
+            {
+              __typename: 'Team',
+              id: 'teamId1',
+              title: 'Team One',
+              publicTitle: 'Team 1',
+              userTeams: [],
+              customDomains: []
+            }
+          ]
+        }
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockStaleTeamData,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+  })
+
+  it('calls updateLastActiveTeamId after successful duplication', async () => {
+    const mockJourneyDuplicateMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockJourneyDuplicate.result })
+
+    const mockUpdateLastActiveTeamIdResult = jest.fn().mockReturnValue({
+      data: { journeyProfileUpdate: { id: 'profile-id' } }
+    })
+
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult },
+          {
+            request: {
+              query: UPDATE_LAST_ACTIVE_TEAM_ID,
+              variables: { input: { lastActiveTeamId: 'teamId1' } }
+            },
+            result: mockUpdateLastActiveTeamIdResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    await waitFor(() =>
+      expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(mockUpdateLastActiveTeamIdResult).toHaveBeenCalled()
+    )
+  })
+
+  it('shows error snackbar and resets loading on network error', async () => {
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          {
+            ...mockJourneyDuplicate,
+            error: new Error('Network error')
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(
+          'Failed to duplicate journey to team, please refresh the page and try again'
+        )
+      ).toBeInTheDocument()
+    )
+
+    expect(screen.getByTestId('CustomizeFlowNextButton')).not.toBeDisabled()
+  })
+
+  it('renders team load error as an accessible alert', async () => {
+    const mockTeamsQueryError: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+      error: new Error('Team query failed')
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockTeamsQueryError,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        'Failed to load teams. Please refresh the page and try again.'
+      )
+    )
+  })
+
+  it('duplicates journey to the user-selected team, not lastActiveTeamId', async () => {
+    const mockTeamsData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+      result: {
+        data: {
+          getJourneyProfile: {
+            id: 'profile-id',
+            lastActiveTeamId: 'teamId1',
+            __typename: 'JourneyProfile'
+          },
+          teams: [
+            {
+              __typename: 'Team',
+              id: 'teamId1',
+              title: 'Team One',
+              publicTitle: 'Team 1',
+              userTeams: [],
+              customDomains: []
+            },
+            {
+              __typename: 'Team',
+              id: 'teamId2',
+              title: 'Team Two',
+              publicTitle: 'Team 2',
+              userTeams: [],
+              customDomains: []
+            }
+          ]
+        }
+      }
+    }
+
+    const mockDuplicateToTeam2: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId2',
+          forceNonTemplate: true,
+          duplicateAsDraft: false
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockDuplicateResult = jest
+      .fn()
+      .mockReturnValue({ ...mockDuplicateToTeam2.result })
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockTeamsData,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          { ...mockDuplicateToTeam2, result: mockDuplicateResult },
+          {
+            request: {
+              query: UPDATE_LAST_ACTIVE_TEAM_ID,
+              variables: { input: { lastActiveTeamId: 'teamId2' } }
+            },
+            result: {
+              data: { journeyProfileUpdate: { id: 'profile-id' } }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+
+    const combobox = screen.getByRole('combobox', { name: 'Team' })
+    fireEvent.mouseDown(combobox)
+    await waitFor(() =>
+      expect(
+        screen.getByRole('option', { name: 'Team Two' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('option', { name: 'Team Two' }))
+
+    expect(combobox).toHaveTextContent('Team Two')
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    await waitFor(() => expect(mockDuplicateResult).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+  })
+
+  it('updates active team in session storage after duplication', async () => {
+    const mockTeamsData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+      result: {
+        data: {
+          getJourneyProfile: {
+            id: 'profile-id',
+            lastActiveTeamId: 'teamId1',
+            __typename: 'JourneyProfile'
+          },
+          teams: [
+            {
+              __typename: 'Team',
+              id: 'teamId1',
+              title: 'Team One',
+              publicTitle: 'Team 1',
+              userTeams: [],
+              customDomains: []
+            },
+            {
+              __typename: 'Team',
+              id: 'teamId2',
+              title: 'Team Two',
+              publicTitle: 'Team 2',
+              userTeams: [],
+              customDomains: []
+            }
+          ]
+        }
+      }
+    }
+
+    const mockDuplicateToTeam2: MockedResponse<
+      JourneyDuplicate,
+      JourneyDuplicateVariables
+    > = {
+      request: {
+        query: JOURNEY_DUPLICATE,
+        variables: {
+          id: 'journeyId',
+          teamId: 'teamId2',
+          forceNonTemplate: true,
+          duplicateAsDraft: false
+        }
+      },
+      result: {
+        data: {
+          journeyDuplicate: {
+            id: 'new-journey-id',
+            __typename: 'Journey',
+            template: false
+          }
+        }
+      }
+    }
+
+    const mockDuplicateResult = jest
+      .fn()
+      .mockReturnValue({ ...mockDuplicateToTeam2.result })
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockTeamsData,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          { ...mockDuplicateToTeam2, result: mockDuplicateResult },
+          {
+            request: {
+              query: UPDATE_LAST_ACTIVE_TEAM_ID,
+              variables: { input: { lastActiveTeamId: 'teamId2' } }
+            },
+            result: {
+              data: { journeyProfileUpdate: { id: 'profile-id' } }
+            }
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox', { name: 'Team' })).toHaveTextContent(
+        'Team One'
+      )
+    )
+
+    const combobox = screen.getByRole('combobox', { name: 'Team' })
+    fireEvent.mouseDown(combobox)
+    await waitFor(() =>
+      expect(
+        screen.getByRole('option', { name: 'Team Two' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('option', { name: 'Team Two' }))
+
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+    await waitFor(() => expect(mockDuplicateResult).toHaveBeenCalled())
+
+    await waitFor(() =>
+      expect(sessionStorage.getItem('journeys-admin:activeTeamId')).toBe(
+        'teamId2'
+      )
+    )
+  })
+
   it('renders all required components correctly for desktop', async () => {
     render(
       <MockedProvider
@@ -1028,6 +1622,10 @@ describe('LanguageScreen', () => {
       </MockedProvider>
     )
 
+    await waitFor(() =>
+      expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
+    )
+
     expect(screen.getByText("Let's Get Started!")).toBeInTheDocument()
     expect(screen.getByText('Get Started')).toBeInTheDocument()
     expect(
@@ -1040,14 +1638,11 @@ describe('LanguageScreen', () => {
     ).toBeInTheDocument()
 
     expect(screen.getByText(`'${journey.title}'`)).toBeInTheDocument()
-    expect(screen.getByTestId('CardsSwiperSlide')).toBeInTheDocument()
 
     expect(screen.getAllByText('Select a language')).toHaveLength(2)
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
     expect(screen.getAllByText('Select a team')).toHaveLength(2)
-    await waitFor(() => {
-      expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
-    })
+    expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
 
     expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
     expect(screen.getByTestId('CustomizeFlowNextButton')).toHaveTextContent(

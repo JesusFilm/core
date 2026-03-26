@@ -1,7 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
-import { builder } from '../builder'
+import { DateTimeFilter, builder, toPrismaDateTimeFilter } from '../builder'
 import { Language } from '../language/language'
 
 builder.prismaObject('CountryName', {
@@ -15,6 +15,7 @@ builder.prismaObject('CountryName', {
 const Country = builder.prismaObject('Country', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     population: t.exposeInt('population'),
     latitude: t.exposeFloat('latitude'),
     longitude: t.exposeFloat('longitude'),
@@ -68,6 +69,12 @@ builder.asEntity(Country, {
     await prisma.country.findUnique({ where: { id } })
 })
 
+const CountriesFilter = builder.inputType('CountriesFilter', {
+  fields: (t) => ({
+    updatedAt: t.field({ type: DateTimeFilter, required: false })
+  })
+})
+
 builder.queryFields((t) => ({
   country: t.prismaField({
     type: 'Country',
@@ -85,9 +92,10 @@ builder.queryFields((t) => ({
     nullable: false,
     args: {
       term: t.arg.string({ required: false }),
-      ids: t.arg.idList({ required: false })
+      ids: t.arg.idList({ required: false }),
+      where: t.arg({ type: CountriesFilter, required: false })
     },
-    resolve: async (query, _parent, { term, ids }) => {
+    resolve: async (query, _parent, { term, ids, where }) => {
       const filter: Prisma.CountryWhereInput = {}
       if (term != null) {
         filter.name = {
@@ -102,6 +110,7 @@ builder.queryFields((t) => ({
       if (ids != null) {
         filter.id = { in: ids }
       }
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
       return await prisma.country.findMany({
         ...query,
         where: filter
