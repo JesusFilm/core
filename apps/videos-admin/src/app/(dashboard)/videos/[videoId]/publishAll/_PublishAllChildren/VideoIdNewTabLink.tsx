@@ -79,9 +79,7 @@ export function VideoIdNewTabLink({
       component="span"
       sx={{ maxWidth: '100%' }}
       aria-label={
-        status === 'success'
-          ? `Published: ${id}`
-          : `Could not publish: ${id}`
+        status === 'success' ? `Published: ${id}` : `Could not publish: ${id}`
       }
     >
       {statusIcon}

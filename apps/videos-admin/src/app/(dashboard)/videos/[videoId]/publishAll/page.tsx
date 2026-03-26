@@ -7,7 +7,6 @@ import { ReactElement, use, useCallback, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { PublishAllDialogBody } from './_PublishAllChildren/PublishAllDialogBody'
 import {
   GET_VIDEO_CHILDREN_FOR_PUBLISH,
   PUBLISH_CHILDREN
@@ -16,6 +15,7 @@ import type {
   PublishSummaryEntry,
   VideoPublishMode
 } from './_PublishAllChildren/publishAll.types'
+import { PublishAllDialogBody } from './_PublishAllChildren/PublishAllDialogBody'
 
 interface PublishAllChildrenDialogProps {
   params: Promise<{ videoId: string }> | { videoId: string }

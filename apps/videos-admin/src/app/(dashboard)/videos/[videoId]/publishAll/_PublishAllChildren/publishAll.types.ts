@@ -1,4 +1,6 @@
-export type VideoPublishMode = 'childrenVideosOnly' | 'childrenVideosAndVariants'
+export type VideoPublishMode =
+  | 'childrenVideosOnly'
+  | 'childrenVideosAndVariants'
 
 export type PublishSummaryEntry = {
   dryRun: boolean

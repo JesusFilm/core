@@ -43,9 +43,9 @@ export function PublishAllDialogBody({
         audio language variants are published.
       </Typography>
       <Typography variant="body2" color="text.secondary">
-        • <strong>Publish Videos and Audio Languages</strong>{' '}
-        (<code>childrenVideosAndVariants</code>): publishes validated videos
-        and all unpublished audio language variants attached to those videos.
+        • <strong>Publish Videos and Audio Languages</strong> (
+        <code>childrenVideosAndVariants</code>): publishes validated videos and
+        all unpublished audio language variants attached to those videos.
       </Typography>
       <Typography variant="body2" color="text.secondary">
         Dry run previews counts and validation failures without writing to the
