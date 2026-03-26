@@ -169,6 +169,76 @@ describe('videoPublishChildren', () => {
       expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(3)
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
+
+    it('republishes parent while preserving existing publishedAt', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      prismaMock.video.findUnique.mockResolvedValue({
+        id: 'parent',
+        label: 'collection',
+        publishedAt: new Date('2024-01-01T00:00:00.000Z'),
+        children: [
+          { id: 'c1', published: false },
+          { id: 'c2', published: true },
+          { id: 'c3', published: false }
+        ]
+      } as any)
+      ;(prismaMock.video.findMany as any).mockImplementation(async (args: any) => {
+        const candidateIds = args?.where?.id?.in ?? []
+        return [
+          {
+            id: 'c1',
+            label: 'featureFilm',
+            title: [{ value: 'Child title 1' }],
+            snippet: [{ value: 'Child snippet 1' }],
+            description: [{ value: 'Child description 1' }],
+            imageAlt: [{ value: 'Child image alt 1' }],
+            images: [{ id: 'c1-banner' }],
+            variants: [{ id: 'c1-variant' }]
+          },
+          {
+            id: 'c3',
+            label: 'featureFilm',
+            title: [{ value: 'Child title 3' }],
+            snippet: [{ value: 'Child snippet 3' }],
+            description: [{ value: 'Child description 3' }],
+            imageAlt: [{ value: 'Child image alt 3' }],
+            images: [{ id: 'c3-banner' }],
+            variants: [{ id: 'c3-variant' }]
+          }
+        ].filter((video) => candidateIds.includes(video.id))
+      })
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: 'parent',
+          mode: 'childrenVideosOnly',
+          dryRun: false
+        }
+      })
+
+      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(3)
+      expect(
+        (res as any).data.videoPublishChildren.publishedVideoIds.sort()
+      ).toEqual(['c1', 'c3', 'parent'])
+      expect(prismaMock.video.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['c1', 'c3'] } },
+        data: { published: true, publishedAt: expect.any(Date) }
+      })
+      expect(prismaMock.video.update).toHaveBeenCalledWith({
+        where: { id: 'parent' },
+        data: {
+          published: true,
+          publishedAt: new Date('2024-01-01T00:00:00.000Z')
+        }
+      })
+    })
   })
 
   describe('childrenVideosAndVariants mode', () => {

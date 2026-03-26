@@ -32,13 +32,13 @@ type VideoPublishValidationFailure = {
 type VideoPublishParent = {
   id: string
   label: string
+  published: boolean
   publishedAt: Date | null
   children: Array<{ id: string; published: boolean }>
 }
 
 type VideoPublishPlan = {
   videoIdsToPublish: string[]
-  shouldPublishParent: boolean
   videosFailedValidation: VideoPublishValidationFailure[]
 }
 
@@ -94,6 +94,7 @@ async function getVideoPublishParent(id: string): Promise<VideoPublishParent> {
     select: {
       id: true,
       label: true,
+      published: true,
       publishedAt: true,
       children: {
         select: { id: true, published: true }
@@ -176,22 +177,28 @@ async function buildVideoPublishPlan(
   const videosFailedValidation = validationResults.filter(
     (video) => video.missingFields.length > 0
   )
-  const videoIdsToPublish = validationResults
+  let candidateVideoIdsToPublish = validationResults
     .filter((video) => video.missingFields.length === 0)
     .map((video) => video.videoId)
 
+  // If the parent is already published, we don't need to publish it again
+  if (parent.published) {
+    candidateVideoIdsToPublish = candidateVideoIdsToPublish.filter(
+      (videoId) => videoId !== parent.id
+    )
+  }
+
   return {
-    videoIdsToPublish,
-    shouldPublishParent: videoIdsToPublish.includes(parent.id),
+    videoIdsToPublish: candidateVideoIdsToPublish,
     videosFailedValidation
   }
 }
 
 async function ensureParentEmptyVariantsForPublishedChildren(
   parent: VideoPublishParent,
-  shouldPublishParent: boolean
+  publishParentNow: boolean
 ): Promise<void> {
-  if (!shouldPublishParent || parent.label === 'featureFilm') {
+  if (!publishParentNow || parent.label === 'featureFilm') {
     return
   }
 
@@ -282,7 +289,6 @@ export async function executeVideoPublishChildren(
       ? await buildVideoPublishPlan(parent, mode)
       : undefined
   const videoIdsToPublish = plan?.videoIdsToPublish ?? []
-  const shouldPublishParent = plan?.shouldPublishParent ?? false
   const videosFailedValidation = plan?.videosFailedValidation ?? []
 
   let variantVideoIds: string[] = []
@@ -356,7 +362,7 @@ export async function executeVideoPublishChildren(
   if (mode !== 'variantsOnly') {
     await ensureParentEmptyVariantsForPublishedChildren(
       parent!,
-      shouldPublishParent
+      videoIdsToPublish.includes(parent!.id)
     )
   }
 
