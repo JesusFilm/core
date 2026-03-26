@@ -96,15 +96,6 @@ export class ProfilePage {
       .click()
   }
 
-  async verifyLogoutToastMsg() {
-    await expect(
-      this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
-    ).toBeVisible({ timeout: 10000 })
-    await expect(
-      this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
-    ).toBeHidden({ timeout: 30000 })
-  }
-
   async verifyloggedOut() {
     await expect(this.page.locator('input#username')).toBeVisible({
       timeout: 30000
