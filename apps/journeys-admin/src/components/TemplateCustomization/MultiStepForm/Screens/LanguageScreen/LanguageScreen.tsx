@@ -423,15 +423,19 @@ export function LanguageScreen({
           userLanguage?.name?.find((n) => n.primary)?.value ?? ''
 
         if (sourceLanguageName !== '' && targetLanguageName !== '') {
-          await descriptionTranslate({
-            variables: {
-              input: {
-                journeyId: duplicatedJourneyId,
-                sourceLanguageName,
-                targetLanguageName
+          try {
+            await descriptionTranslate({
+              variables: {
+                input: {
+                  journeyId: duplicatedJourneyId,
+                  sourceLanguageName,
+                  targetLanguageName
+                }
               }
-            }
-          })
+            })
+          } catch {
+            // Best-effort — don't block navigation if description translation fails
+          }
         }
       }
 
