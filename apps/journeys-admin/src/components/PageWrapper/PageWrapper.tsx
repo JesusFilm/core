@@ -128,7 +128,8 @@ export function PageWrapper({
                     position: 'fixed',
                     bottom: 16,
                     right: 16,
-                    zIndex: (theme) => theme.zIndex.modal + 3
+                    // Below modals (1300) so FAB doesn't overlap dialog buttons (NES-1474)
+                    zIndex: (theme) => theme.zIndex.fab
                   }}
                 >
                   <HelpScoutBeacon variant="fab" userInfo={userInfo} />
