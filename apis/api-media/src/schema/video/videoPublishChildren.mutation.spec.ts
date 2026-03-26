@@ -1,4 +1,4 @@
-import { graphql } from '@core/shared/gql'
+import { parse } from 'graphql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -13,7 +13,7 @@ const authClient = getClient({
 })
 
 describe('videoPublishChildren', () => {
-  const VIDEO_PUBLISH_CHILDREN = graphql(`
+  const VIDEO_PUBLISH_CHILDREN = parse(/* GraphQL */ `
     mutation VideoPublishChildren(
       $id: ID!
       $mode: VideoPublishMode!
@@ -170,7 +170,7 @@ describe('videoPublishChildren', () => {
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
 
-    it('republishes parent while preserving existing publishedAt', async () => {
+    it('skips already published parent and only publishes unpublished children', async () => {
       prismaMock.userMediaRole.findUnique.mockResolvedValue({
         id: 'userId',
         userId: 'userId',
@@ -225,21 +225,15 @@ describe('videoPublishChildren', () => {
         }
       })
 
-      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(3)
+      expect((res as any).data.videoPublishChildren.publishedVideoCount).toBe(2)
       expect(
         (res as any).data.videoPublishChildren.publishedVideoIds.sort()
-      ).toEqual(['c1', 'c3', 'parent'])
+      ).toEqual(['c1', 'c3'])
       expect(prismaMock.video.updateMany).toHaveBeenCalledWith({
         where: { id: { in: ['c1', 'c3'] } },
         data: { published: true, publishedAt: expect.any(Date) }
       })
-      expect(prismaMock.video.update).toHaveBeenCalledWith({
-        where: { id: 'parent' },
-        data: {
-          published: true,
-          publishedAt: new Date('2024-01-01T00:00:00.000Z')
-        }
-      })
+      expect(prismaMock.video.update).not.toHaveBeenCalled()
     })
   })
 
