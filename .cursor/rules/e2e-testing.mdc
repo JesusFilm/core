@@ -1,0 +1,33 @@
+---
+description: Requirement-driven e2e test writing — no defensive code
+globs: apps/**/*e2e*/**/*.ts
+alwaysApply: false
+---
+
+# E2E Testing Standards
+
+Write tests that reflect exact user requirements. A failing test means a real bug — never hide it.
+
+## Reference elements by the label the user sees in the UI
+
+- GOOD: `getByRole('heading', { name: 'Create Custom Journey' })`
+- GOOD: `getByRole('link', { name: 'Analytics' })`
+- GOOD: `getByPlaceholder('Paste a YouTube link...')`
+- BAD: `locator('div[data-testid="JourneysAdminContainedIconButton"]')`
+- BAD: `locator('.MuiCardActionArea-root')`
+
+## Assert exactly what the user should see — no fallbacks
+
+If a required element is not visible, the test must FAIL and surface the bug.
+
+- GOOD: `await expect(page.getByRole('heading', { name: 'Create Custom Journey' })).toBeVisible()`
+- BAD: check visibility first and only assert if it happens to be present
+- BAD: loop over multiple fallback CSS selectors
+- BAD: `try/catch` that swallows an assertion failure
+
+## Scope selectors to the user's visual context
+
+Use the narrowest container that reflects what the user sees. If strict mode fires (multiple matches), that is a real data/state problem — fix the root cause, don't add `.first()`.
+
+- GOOD: `page.locator('div[aria-label="journey-card"]', { hasText: journeyName }).getByRole('link', { name: 'Analytics' })`
+- BAD: `page.locator('div[data-testid="AnalyticsItem"] a').first()`

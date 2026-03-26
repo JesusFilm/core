@@ -30,51 +30,9 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // Wait for the nav shell to be present – a reliable signal that the app has loaded.
     await expect(
-      this.page.getByTestId('NavigationListItemProjects')
+      this.page.getByRole('heading', { name: 'Create Custom Journey' })
     ).toBeVisible({ timeout: 65000 })
-
-    // "Create Custom Journey" is only rendered when an active team exists. If the
-    // user has no active team (team selector shows "Shared With Me"), select the
-    // first real team so the button appears.
-    const createCustomJourneyButton = this.page.getByRole('heading', {
-      name: 'Create Custom Journey'
-    })
-    const isVisible = await createCustomJourneyButton
-      .isVisible()
-      .catch(() => false)
-
-    if (!isVisible) {
-      await this.selectFirstAvailableTeam()
-    }
-
-    await expect(createCustomJourneyButton).toBeVisible({ timeout: 65000 })
-  }
-
-  private async selectFirstAvailableTeam() {
-    const teamSelectDropdown = this.page
-      .getByTestId('TeamSelect')
-      .locator('div[aria-haspopup="listbox"]')
-
-    // Only attempt if the team dropdown is present (e.g. admin users may not have it)
-    const dropdownVisible = await teamSelectDropdown
-      .isVisible()
-      .catch(() => false)
-    if (!dropdownVisible) return
-
-    await teamSelectDropdown.click()
-    const firstRealTeam = this.page
-      .locator('ul[role="listbox"] li[role="option"]')
-      .filter({ hasNotText: 'Shared With Me' })
-      .first()
-    const hasRealTeam = await firstRealTeam.isVisible().catch(() => false)
-    if (hasRealTeam) {
-      await firstRealTeam.click()
-    } else {
-      // Dismiss the listbox if no real team exists
-      await this.page.keyboard.press('Escape')
-    }
   }
 
   async login(accountKey: string = 'admin'): Promise<void> {
