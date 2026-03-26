@@ -20,6 +20,7 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { TranslationDialogWrapper } from '@core/journeys/ui/TranslationDialogWrapper'
 import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
+import { useJourneyCustomizationDescriptionTranslateMutation } from '@core/journeys/ui/useJourneyCustomizationDescriptionTranslateMutation'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
@@ -63,6 +64,8 @@ export function LanguageScreen({
   const { journey } = useJourney()
   const { query, setActiveTeam } = useTeam()
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+  const [descriptionTranslate] =
+    useJourneyCustomizationDescriptionTranslateMutation()
   const updateLastActiveTeamId = useUpdateLastActiveTeamIdMutation()
   const { loadUser } = useCurrentUserLazyQuery()
   const [teamCreate] = useTeamCreateMutation()
@@ -402,6 +405,32 @@ export function LanguageScreen({
           userLanguageName
         })
         return
+      }
+
+      const currentLocale = router.locale ?? 'en'
+      const userLocaleLanguageId = LOCALE_LANGUAGES[currentLocale]
+      if (userLocaleLanguageId != null && userLocaleLanguageId !== selectedLanguageId) {
+        const sourceLanguageName =
+          values.languageSelect?.nativeName ??
+          values.languageSelect?.localName ??
+          ''
+        const userLanguage = languagesData?.languages?.find(
+          (l) => l.id === userLocaleLanguageId
+        )
+        const targetLanguageName =
+          userLanguage?.name?.find((n) => n.primary)?.value ?? ''
+
+        if (sourceLanguageName !== '' && targetLanguageName !== '') {
+          await descriptionTranslate({
+            variables: {
+              input: {
+                journeyId: duplicatedJourneyId,
+                sourceLanguageName,
+                targetLanguageName
+              }
+            }
+          })
+        }
       }
 
       handleNext(duplicatedJourneyId)

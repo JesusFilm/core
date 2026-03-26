@@ -10,6 +10,7 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
+import { JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE } from '@core/journeys/ui/useJourneyCustomizationDescriptionTranslateMutation'
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
@@ -1659,6 +1660,173 @@ describe('LanguageScreen', () => {
         'teamId2'
       )
     )
+  })
+
+  it('calls descriptionTranslate when user locale differs from journey language after duplication', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null },
+      locale: 'es'
+    } as unknown as NextRouter)
+
+    const mockJourneyDuplicateMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockJourneyDuplicate.result })
+
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    const mockDescriptionTranslateResult = jest.fn().mockReturnValue({
+      data: {
+        journeyCustomizationDescriptionTranslate: {
+          id: 'new-journey-id',
+          __typename: 'Journey'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          createGetLanguagesMock([
+            { id: '21028', slug: 'spanish', value: 'Spanish' }
+          ]),
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult },
+          mockUpdateLastActiveTeamId,
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
+              variables: {
+                input: {
+                  journeyId: 'new-journey-id',
+                  sourceLanguageName: 'English',
+                  targetLanguageName: 'Spanish'
+                }
+              }
+            },
+            result: mockDescriptionTranslateResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(mockDescriptionTranslateResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(handleNext).toHaveBeenCalled()
+  })
+
+  it('does not call descriptionTranslate when user locale matches journey language', async () => {
+    mockUseRouter.mockReturnValue({
+      push,
+      query: { redirect: null },
+      locale: 'en'
+    } as unknown as NextRouter)
+
+    const mockJourneyDuplicateMockResult = jest
+      .fn()
+      .mockReturnValue({ ...mockJourneyDuplicate.result })
+
+    const mockGetLastActiveTeamIdAndTeamsResult = jest.fn(() => ({
+      ...mockGetLastActiveTeamIdAndTeams.result
+    }))
+
+    const mockDescriptionTranslateResult = jest.fn().mockReturnValue({
+      data: {
+        journeyCustomizationDescriptionTranslate: {
+          id: 'new-journey-id',
+          __typename: 'Journey'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...mockGetLastActiveTeamIdAndTeams,
+            result: mockGetLastActiveTeamIdAndTeamsResult
+          },
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId,
+          { ...mockJourneyDuplicate, result: mockJourneyDuplicateMockResult },
+          mockUpdateLastActiveTeamId,
+          {
+            request: {
+              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_TRANSLATE,
+              variables: {
+                input: {
+                  journeyId: 'new-journey-id',
+                  sourceLanguageName: 'English',
+                  targetLanguageName: 'English'
+                }
+              }
+            },
+            result: mockDescriptionTranslateResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(mockGetLastActiveTeamIdAndTeamsResult).toHaveBeenCalled()
+    )
+    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
+
+    await waitFor(() =>
+      expect(mockJourneyDuplicateMockResult).toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        '/templates/new-journey-id/customize',
+        undefined,
+        { shallow: true }
+      )
+    )
+    expect(mockDescriptionTranslateResult).not.toHaveBeenCalled()
+    expect(handleNext).toHaveBeenCalled()
   })
 
   it('renders all required components correctly for desktop', async () => {
