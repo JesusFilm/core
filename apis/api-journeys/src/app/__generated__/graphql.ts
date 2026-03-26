@@ -321,15 +321,6 @@ export class ButtonBlockSettingsInput {
     color?: Nullable<string>;
 }
 
-export class IconBlockCreateInput {
-    id?: Nullable<string>;
-    parentBlockId: string;
-    journeyId: string;
-    name?: Nullable<IconName>;
-    color?: Nullable<IconColor>;
-    size?: Nullable<IconSize>;
-}
-
 export class IconBlockUpdateInput {
     name?: Nullable<IconName>;
     color?: Nullable<IconColor>;
@@ -1006,8 +997,6 @@ export abstract class IMutation {
     abstract blockOrderUpdate(id: string, parentOrder: number, journeyId?: Nullable<string>): Block[] | Promise<Block[]>;
 
     abstract blockRestore(id: string): Block[] | Promise<Block[]>;
-
-    abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
     abstract iconBlockUpdate(id: string, input: IconBlockUpdateInput, journeyId?: Nullable<string>): IconBlock | Promise<IconBlock>;
 

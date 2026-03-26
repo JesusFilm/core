@@ -2,14 +2,10 @@ import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-import omit from 'lodash/omit'
 
 import { Block } from '@core/prisma/journeys/client'
 
-import {
-  IconBlockCreateInput,
-  IconBlockUpdateInput
-} from '../../../__generated__/graphql'
+import { IconBlockUpdateInput } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { CaslAbility } from '../../../lib/CaslAuthModule'
