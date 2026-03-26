@@ -249,7 +249,9 @@ export class JourneyPage {
     const journeyImageLoader = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
     )
-    await expect(journeyImageLoader).toBeHidden({ timeout: sixtySecondsTimeout })
+    await expect(journeyImageLoader).toBeHidden({
+      timeout: sixtySecondsTimeout
+    })
   }
 
   async setJourneyName(journey: string) {
