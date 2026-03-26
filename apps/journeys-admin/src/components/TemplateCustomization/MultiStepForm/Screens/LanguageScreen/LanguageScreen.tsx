@@ -28,12 +28,12 @@ import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLa
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { LOCALE_LANGUAGES } from '../../../../../../middleware'
 import { useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
-import { LOCALE_LANGUAGES } from '../../../../../../middleware'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
@@ -360,8 +360,7 @@ export function LanguageScreen({
         languagesJourneyMap?.[selectedLanguageId] == null &&
         selectedLanguageId !== journey?.language?.id
 
-      const journeyId =
-        languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
+      const journeyId = languagesJourneyMap?.[selectedLanguageId] ?? journey?.id
 
       if (shouldSkipDuplicate(journey, values) && !needsTranslation) {
         handleNext()
@@ -409,7 +408,10 @@ export function LanguageScreen({
 
       const currentLocale = router.locale ?? 'en'
       const userLocaleLanguageId = LOCALE_LANGUAGES[currentLocale]
-      if (userLocaleLanguageId != null && userLocaleLanguageId !== selectedLanguageId) {
+      if (
+        userLocaleLanguageId != null &&
+        userLocaleLanguageId !== selectedLanguageId
+      ) {
         const sourceLanguageName =
           values.languageSelect?.nativeName ??
           values.languageSelect?.localName ??

@@ -494,6 +494,11 @@ export interface CustomDomainUpdateInput {
   routeAllTeamJourneys?: boolean | null;
 }
 
+export interface DateTimeFilter {
+  gte?: any | null;
+  lte?: any | null;
+}
+
 export interface EmailActionInput {
   gtmEventName?: string | null;
   email: string;
@@ -590,6 +595,12 @@ export interface JourneyCollectionCreateInput {
 export interface JourneyCollectionUpdateInput {
   title?: string | null;
   journeyIds?: string[] | null;
+}
+
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
 }
 
 export interface JourneyCustomizationFieldInput {
@@ -723,7 +734,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
-  updatedAt?: any | null;
+  updatedAt?: DateTimeFilter | null;
 }
 
 export interface LinkActionInput {

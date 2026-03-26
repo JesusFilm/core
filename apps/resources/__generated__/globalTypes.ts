@@ -298,6 +298,17 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface DateTimeFilter {
+  gte?: any | null;
+  lte?: any | null;
+}
+
+export interface JourneyCustomizationDescriptionTranslateInput {
+  journeyId: string;
+  sourceLanguageName: string;
+  targetLanguageName: string;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
@@ -329,7 +340,7 @@ export interface LanguagesFilter {
   ids?: string[] | null;
   bcp47?: string[] | null;
   iso3?: string[] | null;
-  updatedAt?: any | null;
+  updatedAt?: DateTimeFilter | null;
 }
 
 export interface MultiselectSubmissionEventCreateInput {
@@ -459,7 +470,7 @@ export interface VideosFilter {
   subtitleLanguageIds?: string[] | null;
   published?: boolean | null;
   locked?: boolean | null;
-  updatedAt?: any | null;
+  updatedAt?: DateTimeFilter | null;
 }
 
 //==============================================================
