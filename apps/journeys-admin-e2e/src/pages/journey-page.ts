@@ -1156,10 +1156,12 @@ export class JourneyPage {
   }
 
   async clickShareButtonInJourneyPage() {
-    await this.page
+    const shareButton = this.page
       .locator('div[data-testid="ShareItem"]')
       .getByRole('button', { name: 'Share' })
-      .click()
+    // 90s: cold Vercel SSR can delay journey page render after navigation from card click
+    await expect(shareButton).toBeVisible({ timeout: 90000 })
+    await shareButton.click()
   }
 
   async clickCopyIconInShareDialog() {
