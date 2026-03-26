@@ -1232,9 +1232,9 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   restrictDownloadPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   restrictViewPlatforms: [Platform!]! @join__field(graph: API_MEDIA) 
   publishedAt: Date @join__field(graph: API_MEDIA) 
+  updatedAt: DateTime! @join__field(graph: API_MEDIA) 
   children: [Video!]! @join__field(graph: API_MEDIA) 
   parents: [Video!]! @join__field(graph: API_MEDIA) 
-  updatedAt: DateTime! @join__field(graph: API_MEDIA) 
 }
 
 type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -2635,13 +2635,13 @@ type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
 
 type BibleBook @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
   name(languageId: ID, primary: Boolean) : [BibleBookName!]!
   osisId: String!
   alternateName: String
   paratextAbbreviation: String!
   isNewTestament: Boolean!
   order: Int!
-  updatedAt: DateTime!
 }
 
 type BibleBookName @join__type(graph: API_MEDIA)  {
@@ -2774,9 +2774,9 @@ type ForeignKeyConstraintErrorLocation @join__type(graph: API_MEDIA)  {
 
 type Keyword @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
   value: String!
   language: Language!
-  updatedAt: DateTime!
 }
 
 type LabeledVideoCounts @join__type(graph: API_MEDIA)  {
@@ -3139,10 +3139,10 @@ type VideoDescription @join__type(graph: API_MEDIA)  {
 
 type VideoEdition @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
   name: String
   videoVariants: [VideoVariant!]!
   videoSubtitles: [VideoSubtitle!]!
-  updatedAt: DateTime!
 }
 
 type VideoImageAlt @join__type(graph: API_MEDIA)  {
@@ -3228,6 +3228,7 @@ type VideoTitle @join__type(graph: API_MEDIA)  {
 
 type VideoVariant @join__type(graph: API_MEDIA)  {
   id: ID!
+  updatedAt: DateTime!
   """
   master video file
   """
@@ -3256,7 +3257,6 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   """
   version: Int!
   video: Video
-  updatedAt: DateTime!
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
