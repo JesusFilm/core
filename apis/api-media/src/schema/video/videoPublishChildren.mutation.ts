@@ -196,15 +196,20 @@ async function buildVideoPublishPlan(
 
 async function ensureParentEmptyVariantsForPublishedChildren(
   parent: VideoPublishParent,
-  publishParentNow: boolean
+  publishParentNow: boolean,
+  publishedChildIds: string[]
 ): Promise<void> {
-  if (!publishParentNow || parent.label === 'featureFilm') {
+  if (
+    !publishParentNow ||
+    parent.label === 'featureFilm' ||
+    publishedChildIds.length === 0
+  ) {
     return
   }
 
   const publishedChildVariants = await prisma.videoVariant.findMany({
     where: {
-      videoId: { in: parent.children.map((child) => child.id) },
+      videoId: { in: publishedChildIds },
       published: true
     },
     select: { videoId: true, languageId: true }
@@ -360,9 +365,16 @@ export async function executeVideoPublishChildren(
   }
 
   if (mode !== 'variantsOnly') {
+    const publishedChildIds = parent!.children
+      .filter(
+        (child) => child.published || videoIdsToPublish.includes(child.id)
+      )
+      .map((child) => child.id)
+
     await ensureParentEmptyVariantsForPublishedChildren(
       parent!,
-      videoIdsToPublish.includes(parent!.id)
+      videoIdsToPublish.includes(parent!.id),
+      publishedChildIds
     )
   }
 
