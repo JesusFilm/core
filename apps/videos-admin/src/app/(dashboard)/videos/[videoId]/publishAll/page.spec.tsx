@@ -212,9 +212,7 @@ describe('PublishAllChildrenDialog (route)', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getAllByRole('button', { name: 'Dry Run' })[0]
-    )
+    fireEvent.click(screen.getAllByRole('button', { name: 'Dry Run' })[0])
 
     await waitFor(() => {
       expect(mockPublishChildren).toHaveBeenCalledWith({
