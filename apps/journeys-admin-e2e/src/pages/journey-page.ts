@@ -1075,7 +1075,17 @@ export class JourneyPage {
   }
 
   async clickAnalyticsIconInCustomJourneyPage() {
-    await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
+    // Scope to the card matching the selected journey name to avoid strict mode
+    // violations when multiple journeys are present on the page.
+    const cardLocator =
+      this.existingJourneyName != null && this.existingJourneyName !== ''
+        ? this.page
+            .locator('div[aria-label="journey-card"]', {
+              hasText: this.existingJourneyName
+            })
+            .first()
+        : this.page.locator('div[aria-label="journey-card"]').first()
+    await cardLocator.locator('div[data-testid="AnalyticsItem"] a').click()
   }
 
   async verifyAnalyticsPageNavigation() {

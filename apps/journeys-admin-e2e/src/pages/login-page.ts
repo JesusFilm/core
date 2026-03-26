@@ -30,28 +30,52 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
+    // Wait for the nav shell to be present – a reliable signal that the app has loaded.
     await expect(
-      this.page.locator('div[data-testid="JourneysAdminContainedIconButton"]')
+      this.page.getByTestId('NavigationListItemProjects')
     ).toBeVisible({ timeout: 65000 })
+
+    // CreateJourneyButton is only rendered when an active team exists. If the user
+    // has no active team (TeamSelect shows "Shared With Me"), select the first real
+    // team so the button appears.
+    const containedIconButton = this.page.locator(
+      'div[data-testid="JourneysAdminContainedIconButton"]'
+    )
+    const isVisible = await containedIconButton
+      .isVisible()
+      .catch(() => false)
+
+    if (!isVisible) {
+      await this.selectFirstAvailableTeam()
+    }
+
+    await expect(containedIconButton).toBeVisible({ timeout: 65000 })
   }
 
-  // async verifyCreateCustomJourneyBtn() {
-  //   await expect(this.page.locator('div[aria-haspopup="listbox"]')).toBeVisible({ timeout: 60000 })
-  //   await this.page.reload({ waitUntil: 'domcontentloaded', timeout: 120000 })
-  //   // verifying 'Create custom journey' button is display. if not, then select first team in the catch block to display 'Create custom journey' button.
-  //   await expect(this.page.locator('div[data-testid="JourneysAdminContainedIconButton"] button')).toBeVisible().catch(async () => {
-  //     await this.selectFirstTeam()
-  //   })
-  //   // verifying whether the 'Shared With Me' option is selected or. if it is, then select first team in the catch block to display 'Create custom journey' button.
-  //   await expect(this.page.locator('div[aria-haspopup="listbox"]', { hasText: 'Shared With Me' })).toBeHidden().catch(async () => {
-  //     await this.selectFirstTeam()
-  //   })
+  private async selectFirstAvailableTeam() {
+    const teamSelectDropdown = this.page
+      .getByTestId('TeamSelect')
+      .locator('div[aria-haspopup="listbox"]')
 
-  // }
-  // async selectFirstTeam() {
-  //   await this.page.locator('div[aria-haspopup="listbox"]').click({ timeout: 60000 })
-  //   await this.page.locator('ul[role="listbox"] li[role="option"]').first().click()
-  // }
+    // Only attempt if the team dropdown is present (e.g. admin users may not have it)
+    const dropdownVisible = await teamSelectDropdown
+      .isVisible()
+      .catch(() => false)
+    if (!dropdownVisible) return
+
+    await teamSelectDropdown.click()
+    const firstRealTeam = this.page
+      .locator('ul[role="listbox"] li[role="option"]')
+      .filter({ hasNotText: 'Shared With Me' })
+      .first()
+    const hasRealTeam = await firstRealTeam.isVisible().catch(() => false)
+    if (hasRealTeam) {
+      await firstRealTeam.click()
+    } else {
+      // Dismiss the listbox if no real team exists
+      await this.page.keyboard.press('Escape')
+    }
+  }
 
   async login(accountKey: string = 'admin'): Promise<void> {
     const email = await getEmail(accountKey)
