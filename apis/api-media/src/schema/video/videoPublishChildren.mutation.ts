@@ -289,7 +289,9 @@ export async function executeVideoPublishChildren(
 ): Promise<VideoPublishChildrenResultType> {
   const parent = await getVideoPublishParent(id)
   const plan =
-    mode !== 'variantsOnly' ? await buildVideoPublishPlan(parent, mode) : undefined
+    mode !== 'variantsOnly'
+      ? await buildVideoPublishPlan(parent, mode)
+      : undefined
   const videoIdsToPublish = plan?.videoIdsToPublish ?? []
   const videosFailedValidation = plan?.videosFailedValidation ?? []
 

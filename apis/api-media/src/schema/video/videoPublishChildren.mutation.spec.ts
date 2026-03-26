@@ -188,31 +188,33 @@ describe('videoPublishChildren', () => {
           { id: 'c3', published: false }
         ]
       } as any)
-      ;(prismaMock.video.findMany as any).mockImplementation(async (args: any) => {
-        const candidateIds = args?.where?.id?.in ?? []
-        return [
-          {
-            id: 'c1',
-            label: 'featureFilm',
-            title: [{ value: 'Child title 1' }],
-            snippet: [{ value: 'Child snippet 1' }],
-            description: [{ value: 'Child description 1' }],
-            imageAlt: [{ value: 'Child image alt 1' }],
-            images: [{ id: 'c1-banner' }],
-            variants: [{ id: 'c1-variant' }]
-          },
-          {
-            id: 'c3',
-            label: 'featureFilm',
-            title: [{ value: 'Child title 3' }],
-            snippet: [{ value: 'Child snippet 3' }],
-            description: [{ value: 'Child description 3' }],
-            imageAlt: [{ value: 'Child image alt 3' }],
-            images: [{ id: 'c3-banner' }],
-            variants: [{ id: 'c3-variant' }]
-          }
-        ].filter((video) => candidateIds.includes(video.id))
-      })
+      ;(prismaMock.video.findMany as any).mockImplementation(
+        async (args: any) => {
+          const candidateIds = args?.where?.id?.in ?? []
+          return [
+            {
+              id: 'c1',
+              label: 'featureFilm',
+              title: [{ value: 'Child title 1' }],
+              snippet: [{ value: 'Child snippet 1' }],
+              description: [{ value: 'Child description 1' }],
+              imageAlt: [{ value: 'Child image alt 1' }],
+              images: [{ id: 'c1-banner' }],
+              variants: [{ id: 'c1-variant' }]
+            },
+            {
+              id: 'c3',
+              label: 'featureFilm',
+              title: [{ value: 'Child title 3' }],
+              snippet: [{ value: 'Child snippet 3' }],
+              description: [{ value: 'Child description 3' }],
+              imageAlt: [{ value: 'Child image alt 3' }],
+              images: [{ id: 'c3-banner' }],
+              variants: [{ id: 'c3-variant' }]
+            }
+          ].filter((video) => candidateIds.includes(video.id))
+        }
+      )
 
       const res = await authClient({
         document: VIDEO_PUBLISH_CHILDREN,
