@@ -20,6 +20,9 @@ builder.mutationField('cardBlockCreate', (t) =>
     args: {
       input: t.arg({ type: CardBlockCreateInput, required: true })
     },
+    override: {
+      from: 'api-journeys'
+    },
     resolve: async (_parent, args, context) => {
       const { input: initialInput } = args
       const input = { ...initialInput }
