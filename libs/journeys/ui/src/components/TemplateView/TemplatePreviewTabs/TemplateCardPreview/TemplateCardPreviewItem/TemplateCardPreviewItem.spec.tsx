@@ -1,5 +1,5 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, act } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import {
@@ -137,5 +137,69 @@ describe('TemplateCardPreviewItem', () => {
       <TemplateCardPreviewItem step={step} variant="standard" steps={[step]} />
     )
     expect(getByTestId('TemplateCardPreviewItem')).toBeInTheDocument()
+  })
+
+  describe('iframe tab focus prevention', () => {
+    it('should set tabIndex -1 on iframe for guestPreview variant', () => {
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreview" />
+      )
+      const iframe = container.querySelector('iframe')
+      expect(iframe).toHaveAttribute('tabindex', '-1')
+    })
+
+    it('should not set tabIndex on iframe for standard variant', () => {
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="standard" />
+      )
+      const iframe = container.querySelector('iframe')
+      expect(iframe).not.toHaveAttribute('tabindex')
+    })
+
+    it('should not set tabIndex on iframe for compact variant', () => {
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="compact" />
+      )
+      const iframe = container.querySelector('iframe')
+      expect(iframe).not.toHaveAttribute('tabindex')
+    })
+
+    it('should disable focusable elements inside iframe for guestPreview', () => {
+      jest.useFakeTimers()
+
+      const { container } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreview" />
+      )
+
+      const iframe = container.querySelector('iframe')
+      if (iframe?.contentDocument?.body != null) {
+        const button = iframe.contentDocument.createElement('button')
+        button.textContent = 'Click me'
+        iframe.contentDocument.body.appendChild(button)
+
+        act(() => {
+          jest.advanceTimersByTime(100)
+        })
+
+        expect(button.getAttribute('tabindex')).toBe('-1')
+      }
+
+      jest.useRealTimers()
+    })
+
+    it('should clean up interval and observer on unmount', () => {
+      jest.useFakeTimers()
+      const clearIntervalSpy = jest.spyOn(global, 'clearInterval')
+
+      const { unmount } = renderWithProviders(
+        <TemplateCardPreviewItem step={step} variant="guestPreview" />
+      )
+
+      unmount()
+      expect(clearIntervalSpy).toHaveBeenCalled()
+
+      clearIntervalSpy.mockRestore()
+      jest.useRealTimers()
+    })
   })
 })

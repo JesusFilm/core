@@ -207,8 +207,42 @@ export function TemplateCardPreviewItem({
     }
   }, [isGuestPreview])
 
+  useEffect(() => {
+    if (!isGuestPreview) return
+    const overlay = overlayRef.current
+    if (overlay == null) return
+
+    const FOCUSABLE =
+      'a[href], button, input, textarea, select, [tabindex]:not([tabindex="-1"]), [contenteditable]'
+
+    let observer: MutationObserver | null = null
+
+    function disableFocus(doc: Document): void {
+      doc.body.querySelectorAll(FOCUSABLE).forEach((el) => {
+        ;(el as HTMLElement).setAttribute('tabindex', '-1')
+      })
+    }
+
+    const interval = setInterval(() => {
+      const iframe = overlay.parentElement?.querySelector('iframe')
+      const doc = iframe?.contentDocument
+      if (doc?.body == null || doc.body.childElementCount === 0) return
+
+      clearInterval(interval)
+      disableFocus(doc)
+      observer = new MutationObserver(() => disableFocus(doc))
+      observer.observe(doc.body, { childList: true, subtree: true })
+    }, 50)
+
+    return () => {
+      clearInterval(interval)
+      observer?.disconnect()
+    }
+  }, [isGuestPreview])
+
   const framePortalContent = (
     <FramePortal
+      tabIndex={isGuestPreview ? -1 : undefined}
       sx={{
         width: framePortal.width,
         height: framePortal.height,
