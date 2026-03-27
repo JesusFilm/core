@@ -62,7 +62,8 @@ export async function deleteJourneysData(
               )
             )
           } else {
-            const nextOwner = others.find((o) => o.role === 'editor') ?? others[0]
+            const nextOwner =
+              others.find((o) => o.role === 'editor') ?? others[0]
             await tx.userJourney.updateMany({
               where: {
                 journeyId: uj.journey.id,
