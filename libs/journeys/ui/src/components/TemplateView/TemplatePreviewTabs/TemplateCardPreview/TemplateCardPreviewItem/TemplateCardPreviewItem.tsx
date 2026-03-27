@@ -242,6 +242,7 @@ export function TemplateCardPreviewItem({
             <StepHeader
               steps={steps}
               selectedStep={step as unknown as TreeBlock<StepFields>}
+              sx={isGuestPreview ? { mt: 2, px: 3 } : undefined}
             />
           )}
           <ThemeProvider

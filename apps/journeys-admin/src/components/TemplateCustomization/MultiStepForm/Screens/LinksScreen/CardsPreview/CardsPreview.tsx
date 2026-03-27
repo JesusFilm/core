@@ -137,6 +137,7 @@ function CardsPreviewItem({
               <StepHeader
                 steps={steps as unknown as Array<TreeBlock<StepFields>>}
                 selectedStep={step as unknown as TreeBlock<StepFields>}
+                sx={{ mt: 2, px: 3 }}
               />
               <ThemeProvider
                 themeName={cardBlock?.themeName ?? ThemeName.base}
