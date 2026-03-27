@@ -27,8 +27,6 @@ import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetC
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-// TODO: Decide if edge fade is needed based on feedback — uncomment EDGE_FADE_PX import to restore
-// import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
 
@@ -379,10 +377,7 @@ export function LanguageScreen({
             >
               {`'${journey?.title ?? ''}'`}
             </Typography>
-            {/* TODO: Decide if edge fade is needed based on feedback — uncomment Box wrapper to restore */}
-            {/* <Box sx={{ mx: `-${EDGE_FADE_PX}px`, width: `calc(100% + ${EDGE_FADE_PX * 2}px)` }}> */}
             {steps.length > 0 && <CardsPreview steps={steps} />}
-            {/* </Box> */}
             <Form style={{ width: '100%' }}>
               <FormControl
                 sx={{
