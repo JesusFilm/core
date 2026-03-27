@@ -8,8 +8,6 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
-const seventySecondsTimeout = 70000
-
 export class Register {
   readonly page: Page
   name: string
@@ -106,7 +104,7 @@ export class Register {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
         { hasText: 'Terms and Conditions' }
       )
-    ).toBeVisible({ timeout: 60000 })
+    ).toBeVisible({ timeout: 90000 })
   }
 
   async clickIAgreeBtn() {
@@ -162,53 +160,10 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // Wait for page navigation to complete
-    await this.page.waitForLoadState('domcontentloaded', { timeout: 30000 })
-
-    // Try multiple selectors for different MUI versions and component structures
-    const selectors = [
-      // Primary data-testid selectors
-      'div[data-testid="JourneysAdminContainedIconButton"]',
-      '[data-testid="JourneysAdminContainedIconButton"]',
-
-      // With nested elements
-      'div[data-testid="JourneysAdminContainedIconButton"] button',
-      '[data-testid="JourneysAdminContainedIconButton"] button',
-      'div[data-testid="JourneysAdminContainedIconButton"] [role="button"]',
-
-      // CardActionArea based (MUI Card structure)
-      'div[data-testid="JourneysAdminContainedIconButton"] .MuiCardActionArea-root',
-      '[data-testid="JourneysAdminContainedIconButton"] .MuiButtonBase-root',
-
-      // Fallback to any clickable element with the testid
-      '[data-testid*="ContainedIconButton"]',
-      'div[data-testid*="ContainedIconButton"]'
-    ]
-
-    let found = false
-    for (const selector of selectors) {
-      try {
-        await expect(this.page.locator(selector)).toBeVisible({
-          timeout: 3000
-        })
-        found = true
-        break
-      } catch (error) {
-        continue
-      }
-    }
-
-    if (!found) {
-      // Get all elements with data-testid for debugging
-      const allTestIds = await this.page.$$eval(
-        '[data-testid]',
-        (elements) => elements.length
-      )
-
-      throw new Error(
-        `ContainedIconButton not found. Found ${allTestIds} elements with data-testid on the page`
-      )
-    }
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >70s on first run
+    await expect(
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
   }
 
   async waitUntilTheToestMsgDisappear() {
