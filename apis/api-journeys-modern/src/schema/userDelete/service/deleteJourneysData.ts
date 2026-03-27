@@ -22,7 +22,11 @@ export async function deleteJourneysData(
 
   try {
     // Phase 1: Analyze and transfer ownership (lightweight, use transaction)
-    await prisma.$transaction(async (tx) => {
+    // Logs are buffered inside the transaction and only merged after commit so
+    // a rollback doesn't leave misleading "transferred ownership" entries.
+    const txLogs = await prisma.$transaction(async (tx) => {
+      const localLogs: LogEntry[] = []
+
       const userJourneys = await tx.userJourney.findMany({
         where: { userId },
         include: {
@@ -50,14 +54,15 @@ export async function deleteJourneysData(
         if (others.length === 0) {
           journeyIdsToDelete.push(uj.journey.id)
         } else if (uj.role === 'owner') {
-          const nextOwner = others.find((o) => o.role === 'editor') ?? others[0]
-          if (nextOwner.role === 'owner') {
-            logs.push(
+          const existingOwner = others.find((o) => o.role === 'owner')
+          if (existingOwner != null) {
+            localLogs.push(
               createLog(
-                `Journey "${uj.journey.title}" already has another owner (${nextOwner.userId}), skipping transfer`
+                `Journey "${uj.journey.title}" already has another owner (${existingOwner.userId}), skipping transfer`
               )
             )
           } else {
+            const nextOwner = others.find((o) => o.role === 'editor') ?? others[0]
             await tx.userJourney.updateMany({
               where: {
                 journeyId: uj.journey.id,
@@ -65,7 +70,7 @@ export async function deleteJourneysData(
               },
               data: { role: 'owner' }
             })
-            logs.push(
+            localLogs.push(
               createLog(
                 `🔄 Transferred ownership of journey "${uj.journey.title}" to user ${nextOwner.userId}`
               )
@@ -98,7 +103,7 @@ export async function deleteJourneysData(
         } else if (ut.role === 'manager') {
           const existingManager = others.find((o) => o.role === 'manager')
           if (existingManager != null) {
-            logs.push(
+            localLogs.push(
               createLog(
                 `Team "${ut.team.title}" already has another manager (${existingManager.userId}), skipping transfer`
               )
@@ -112,7 +117,7 @@ export async function deleteJourneysData(
               },
               data: { role: 'manager' }
             })
-            logs.push(
+            localLogs.push(
               createLog(
                 `🔄 Transferred manager role of team "${ut.team.title}" to user ${nextManager.userId}`
               )
@@ -120,7 +125,10 @@ export async function deleteJourneysData(
           }
         }
       }
+
+      return localLogs
     })
+    logs.push(...txLogs)
     logs.push(createLog('✅ Ownership transfers completed'))
 
     // Phase 2: Remove user memberships (IDs already collected in Phase 1)

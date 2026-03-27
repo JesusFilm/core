@@ -151,7 +151,8 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
             log: createLog(
               hasError
                 ? '❌ Firebase deletion failed'
-                : '✅ Firebase-only account deleted successfully'
+                : '✅ Firebase-only account deleted successfully',
+              hasError ? 'error' : 'info'
             ),
             done: true,
             success: !hasError
@@ -227,7 +228,8 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           log: createLog(
             userResult.success
               ? '✅ User deletion completed successfully'
-              : '❌ User deletion failed'
+              : '❌ User deletion failed',
+            userResult.success ? 'info' : 'error'
           ),
           done: true,
           success: userResult.success
