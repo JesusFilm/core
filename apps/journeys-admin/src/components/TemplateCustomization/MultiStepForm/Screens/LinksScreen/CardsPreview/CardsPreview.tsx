@@ -56,7 +56,6 @@ const FRAME_HEIGHT = 773
 const IFRAME_SCALE = CONTAINER_WIDTH / FRAME_WIDTH
 const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 
-
 function CardsPreviewItem({
   step,
   onClick,

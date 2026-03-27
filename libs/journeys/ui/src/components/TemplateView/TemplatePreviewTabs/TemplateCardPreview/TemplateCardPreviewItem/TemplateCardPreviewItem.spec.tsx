@@ -1,5 +1,5 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import { fireEvent, render, act } from '@testing-library/react'
+import { act, fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import {
