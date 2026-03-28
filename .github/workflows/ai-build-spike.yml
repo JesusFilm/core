@@ -1,0 +1,81 @@
+name: AI Build (Spike)
+on:
+  workflow_dispatch:
+    inputs:
+      spec:
+        description: "Feature spec to implement"
+        required: true
+        type: string
+      branch_name:
+        description: "Branch name for changes"
+        required: true
+        type: string
+      model:
+        description: "Claude model to use"
+        required: true
+        type: choice
+        default: sonnet
+        options:
+          - opus
+          - sonnet
+          - haiku
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Fetch main ref for nx affected
+        run: git fetch origin main:main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma clients
+        run: npx nx run-many --target=prisma-generate --all
+
+      - name: Create branch
+        run: git checkout -b ${{ github.event.inputs.branch_name }}
+
+      - name: Run Claude
+        run: npx -y @anthropic-ai/claude-code -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
+          MODEL: ${{ github.event.inputs.model }}
+          SPEC: |
+            Implement the following spec. After making changes:
+            1. Run `npx nx affected --target=lint --base=main` to verify
+            2. Run `npx nx affected --target=type-check --base=main` to verify
+            If checks fail, attempt to fix. If you cannot fix after 2 attempts, stop and describe what failed.
+
+            Spec:
+            ${{ github.event.inputs.spec }}
+
+      - name: Push and create PR
+        run: |
+          git config user.name "ai-build-spike"
+          git config user.email "noreply@spike.local"
+          git add -A
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "ai-build: ${{ github.event.inputs.branch_name }}"
+          git push origin ${{ github.event.inputs.branch_name }}
+          gh pr create \
+            --title "AI Build: ${{ github.event.inputs.branch_name }}" \
+            --body "Automated build from spec via GitHub Actions spike." \
+            --base main
+        env:
+          GH_TOKEN: ${{ github.token }}
