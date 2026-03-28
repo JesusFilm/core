@@ -59,8 +59,8 @@ jobs:
             exit 1
           fi
 
-          # Replace the username prefix with ai-build
-          BRANCH_NAME=$(echo "$GIT_BRANCH" | sed 's|^[^/]*/|ai-build/|')
+          # Replace the username prefix with aibuild (no hyphen — branch naming rules require [a-z]+ before /)
+          BRANCH_NAME=$(echo "$GIT_BRANCH" | sed 's|^[^/]*/|aibuild/|')
 
           echo "title=$TITLE" >> "$GITHUB_OUTPUT"
           echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
