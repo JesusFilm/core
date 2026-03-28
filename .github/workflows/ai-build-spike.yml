@@ -10,11 +10,20 @@ on:
         description: "Linear ticket ID (e.g. NES-777)"
         required: true
         type: string
-      model:
-        description: "Claude model to use"
+      validation_model:
+        description: "Claude model for spec validation"
         required: true
         type: choice
-        default: sonnet
+        default: haiku
+        options:
+          - opus
+          - sonnet
+          - haiku
+      build_model:
+        description: "Claude model for implementation"
+        required: true
+        type: choice
+        default: haiku
         options:
           - opus
           - sonnet
@@ -75,7 +84,7 @@ jobs:
           fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
-          MODEL: ${{ github.event.inputs.model }}
+          MODEL: ${{ github.event.inputs.validation_model }}
           PROMPT: |
             You are a spec validator for the Next Steps (journeys-admin) application.
             Validate the following spec against these rules:
@@ -112,8 +121,53 @@ jobs:
       - name: Generate Prisma clients
         run: npx nx run-many --target=prisma-generate
 
-      - name: Create branch
-        run: git checkout -b ${{ steps.ticket.outputs.branch }}
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create branch and draft PR
+        id: draft-pr
+        run: |
+          # Handle re-runs: check if branch already exists
+          if git ls-remote --exit-code origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+            git commit --allow-empty -m "ai-build($TICKET): starting implementation"
+            git push -u origin "$BRANCH"
+          fi
+
+          # Handle re-runs: check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --json url --jq '.[0].url // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "pr_url=$EXISTING_PR" >> "$GITHUB_OUTPUT"
+            echo "Reusing existing PR: $EXISTING_PR"
+          else
+            PR_BODY=$(cat <<EOF
+          🤖 AI build in progress...
+
+          Ticket: $TICKET
+          Spec: $SPEC
+          Model: $BUILD_MODEL
+          EOF
+            )
+            PR_URL=$(gh pr create \
+              --draft \
+              --title "ai-build($TICKET): $TITLE" \
+              --body "$PR_BODY" \
+              --base main)
+            echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+            echo "Draft PR created: $PR_URL"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.ticket.outputs.branch }}
+          TITLE: ${{ steps.ticket.outputs.title }}
+          TICKET: ${{ github.event.inputs.ticket }}
+          SPEC: ${{ github.event.inputs.spec }}
+          BUILD_MODEL: ${{ github.event.inputs.build_model }}
 
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
@@ -123,37 +177,46 @@ jobs:
         run: claude -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
-          MODEL: ${{ github.event.inputs.model }}
+          MODEL: ${{ github.event.inputs.build_model }}
           SPEC: |
-            Implement the following spec. After making changes:
+            You are implementing a spec in an Nx monorepo. Git is already configured
+            and you are on a feature branch with a draft PR open.
+
+            IMPORTANT — commit and push your work frequently:
+            - After each meaningful change (new file, updated component, added test), run:
+              git add -A && git commit -m "type(scope): short description" && git push
+            - Use conventional commit format: feat, fix, refactor, test, chore as the type.
+              Scope should be the affected project or area (e.g. journeys-admin, journeys-ui).
+              Subject must be lowercase, not sentence-case or start-case.
+              Example: git commit -m "feat(journeys-admin): add duplicate card button to step editor"
+            - This gives visibility to engineers watching the draft PR.
+            - Do NOT wait until the end to commit everything at once.
+
+            After all changes are complete:
             1. Run `npx nx affected --target=lint --base=origin/main` to verify
             2. Run `npx nx affected --target=type-check --base=origin/main` to verify
-            If checks fail, attempt to fix. If you cannot fix after 2 attempts, stop and describe what failed.
+            If checks fail, attempt to fix, commit, and push the fix.
+            If you cannot fix after 2 attempts, commit what you have, push, and describe what failed.
 
             Spec:
             ${{ github.event.inputs.spec }}
 
-      - name: Push and create PR
+      - name: Mark PR ready for review
+        if: success()
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --staged --quiet && echo "No changes to commit" && exit 0
-          git commit -m "ai-build($TICKET): $TITLE"
-          git fetch origin "$BRANCH" 2>/dev/null || true
-          git push --force-with-lease origin "$BRANCH"
-          if ! gh pr list --head "$BRANCH" --json number --jq '.[0].number' | grep -q .; then
-            PR_BODY=$(printf "Automated build from spec via GitHub Actions spike.\n\nTicket: %s\nSpec: %s" "$TICKET" "$SPEC")
-            gh pr create \
-              --title "ai-build($TICKET): $TITLE" \
-              --body "$PR_BODY" \
-              --base main
-          else
-            echo "PR already exists for this branch"
-          fi
+          gh pr ready "$PR_URL"
+          PR_BODY=$(cat <<EOF
+          🤖 AI build complete.
+
+          Ticket: $TICKET
+          Spec: $SPEC
+          Model: $BUILD_MODEL
+          EOF
+          )
+          gh pr edit "$PR_URL" --body "$PR_BODY"
         env:
           GH_TOKEN: ${{ github.token }}
-          BRANCH: ${{ steps.ticket.outputs.branch }}
-          TITLE: ${{ steps.ticket.outputs.title }}
+          PR_URL: ${{ steps.draft-pr.outputs.pr_url }}
           TICKET: ${{ github.event.inputs.ticket }}
           SPEC: ${{ github.event.inputs.spec }}
+          BUILD_MODEL: ${{ github.event.inputs.build_model }}
