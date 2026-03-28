@@ -7,6 +7,7 @@ import { ReactElement, useEffect, useMemo } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
@@ -69,6 +70,7 @@ interface DefaultMenuProps {
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
+  setOpenBlockStatsDialog: () => void
   setOpenTranslateDialog: () => void
   handleKeepMounted?: () => void
   template?: boolean
@@ -109,6 +111,7 @@ export function DefaultMenu({
   handleCloseMenu,
   setOpenTrashDialog,
   setOpenDetailsDialog,
+  setOpenBlockStatsDialog,
   setOpenTranslateDialog,
   handleKeepMounted,
   template,
@@ -207,6 +210,15 @@ export function DefaultMenu({
         icon={<Edit2Icon color="secondary" />}
         onClick={() => {
           setOpenDetailsDialog()
+          handleCloseMenu()
+          setHasOpenDialog?.(true)
+        }}
+      />
+      <MenuItem
+        label={t('Block Stats')}
+        icon={<BarGroup3Icon color="secondary" />}
+        onClick={() => {
+          setOpenBlockStatsDialog()
           handleCloseMenu()
           setHasOpenDialog?.(true)
         }}
