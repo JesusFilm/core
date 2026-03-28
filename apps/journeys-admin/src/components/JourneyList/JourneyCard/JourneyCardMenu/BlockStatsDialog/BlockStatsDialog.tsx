@@ -29,8 +29,8 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
 import {
   GetJourneyBlockStats,
-  GetJourneyBlockStats_blocks,
-  GetJourneyBlockStatsVariables
+  GetJourneyBlockStatsVariables,
+  GetJourneyBlockStats_blocks
 } from '../../../../../../__generated__/GetJourneyBlockStats'
 
 export const GET_JOURNEY_BLOCK_STATS = gql`
