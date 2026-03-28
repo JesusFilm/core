@@ -240,6 +240,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -296,6 +297,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -337,6 +339,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -393,6 +396,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -428,6 +432,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -456,6 +461,7 @@ describe('DefaultMenu', () => {
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
                 setOpenTranslateDialog={noop}
+                setOpenBlockStatsDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -495,6 +501,7 @@ describe('DefaultMenu', () => {
                 setOpenTrashDialog={noop}
                 setOpenDetailsDialog={noop}
                 setOpenTranslateDialog={noop}
+                setOpenBlockStatsDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -534,6 +541,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={setOpenTrashDialog}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -596,6 +604,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -659,6 +668,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -722,6 +732,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -787,6 +798,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -849,6 +861,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -908,6 +921,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -969,6 +983,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -1039,6 +1054,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={noop}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -1077,6 +1093,7 @@ describe('DefaultMenu', () => {
               setOpenTrashDialog={noop}
               setOpenDetailsDialog={noop}
               setOpenTranslateDialog={setOpenTranslateDialog}
+              setOpenBlockStatsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>

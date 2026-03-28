@@ -15,13 +15,13 @@ import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained
 import CircleIcon from '@core/shared/ui/icons/Circle'
 import CursorPointerIcon from '@core/shared/ui/icons/CursorPointer'
 import DuplicateCardIcon from '@core/shared/ui/icons/DuplicateCard'
-import IconIcon from '@core/shared/ui/icons/Icon'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import Layout1Icon from '@core/shared/ui/icons/Layout1'
 import Mail1Icon from '@core/shared/ui/icons/Mail1'
 import MessageCircleIcon from '@core/shared/ui/icons/MessageCircle'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import SpaceHeightIcon from '@core/shared/ui/icons/SpaceHeight'
+import Stars2Icon from '@core/shared/ui/icons/Stars'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 import Type1Icon from '@core/shared/ui/icons/Type1'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
@@ -29,7 +29,7 @@ import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import {
   GetJourneyBlockStats,
   GetJourneyBlockStatsVariables
-} from '../../../../../../__generated__/GetJourneyBlockStats'
+} from '../../../../../../../__generated__/GetJourneyBlockStats'
 
 export const GET_JOURNEY_BLOCK_STATS = gql`
   query GetJourneyBlockStats($id: ID!) {
@@ -59,7 +59,7 @@ const BLOCK_TYPE_CONFIG: Record<string, BlockTypeConfig> = {
   },
   IconBlock: {
     label: 'Icon',
-    icon: <IconIcon />
+    icon: <Stars2Icon />
   },
   ImageBlock: {
     label: 'Image',
@@ -136,18 +136,17 @@ export function BlockStatsDialog({
     void loadBlockStats({ variables: { id } })
   }, [open, id, loadBlockStats])
 
-  const blockCounts = data?.journey?.blocks?.reduce<Record<string, number>>(
-    (acc, block) => {
-      const typeName = block.__typename ?? 'Unknown'
-      acc[typeName] = (acc[typeName] ?? 0) + 1
-      return acc
-    },
-    {}
-  )
+  const blocks = data?.journey?.blocks ?? []
 
-  const totalCount = data?.journey?.blocks?.length ?? 0
+  const blockCounts = blocks.reduce<Record<string, number>>((acc, block) => {
+    const typeName = block.__typename ?? 'Unknown'
+    acc[typeName] = (acc[typeName] ?? 0) + 1
+    return acc
+  }, {})
 
-  const blockEntries = Object.entries(blockCounts ?? {}).sort(([a], [b]) =>
+  const totalCount = blocks.length
+
+  const blockEntries = Object.entries(blockCounts).sort(([a], [b]) =>
     (BLOCK_TYPE_CONFIG[a]?.label ?? a).localeCompare(
       BLOCK_TYPE_CONFIG[b]?.label ?? b
     )

@@ -2,9 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { GET_JOURNEY_BLOCK_STATS } from './BlockStatsDialog'
-
-import { BlockStatsDialog } from '.'
+import { BlockStatsDialog, GET_JOURNEY_BLOCK_STATS } from './BlockStatsDialog'
 
 const blocks = [
   { id: 'block-1', __typename: 'StepBlock' },
