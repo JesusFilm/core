@@ -98,7 +98,7 @@ jobs:
             ${{ github.event.inputs.spec }}
 
       - name: Fetch main ref for nx affected
-        run: git fetch origin main:main
+        run: git fetch origin main
 
       - uses: actions/setup-node@v4
         with:
@@ -126,8 +126,8 @@ jobs:
           MODEL: ${{ github.event.inputs.model }}
           SPEC: |
             Implement the following spec. After making changes:
-            1. Run `npx nx affected --target=lint --base=main` to verify
-            2. Run `npx nx affected --target=type-check --base=main` to verify
+            1. Run `npx nx affected --target=lint --base=origin/main` to verify
+            2. Run `npx nx affected --target=type-check --base=origin/main` to verify
             If checks fail, attempt to fix. If you cannot fix after 2 attempts, stop and describe what failed.
 
             Spec:
