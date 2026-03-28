@@ -7,6 +7,7 @@ import { ReactElement, useEffect, useMemo } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
+import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
@@ -70,6 +71,7 @@ interface DefaultMenuProps {
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
   setOpenTranslateDialog: () => void
+  setOpenBlockStatsDialog?: () => void
   handleKeepMounted?: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
@@ -110,6 +112,7 @@ export function DefaultMenu({
   setOpenTrashDialog,
   setOpenDetailsDialog,
   setOpenTranslateDialog,
+  setOpenBlockStatsDialog,
   handleKeepMounted,
   template,
   refetch,
@@ -207,6 +210,15 @@ export function DefaultMenu({
         icon={<Edit2Icon color="secondary" />}
         onClick={() => {
           setOpenDetailsDialog()
+          handleCloseMenu()
+          setHasOpenDialog?.(true)
+        }}
+      />
+      <MenuItem
+        label={t('Block Stats')}
+        icon={<BarChartSquare3Icon color="secondary" />}
+        onClick={() => {
+          setOpenBlockStatsDialog?.()
           handleCloseMenu()
           setHasOpenDialog?.(true)
         }}

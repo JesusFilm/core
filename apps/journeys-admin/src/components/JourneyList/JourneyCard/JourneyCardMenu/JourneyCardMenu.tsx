@@ -67,6 +67,15 @@ const TranslateJourneyDialog = dynamic(
   { ssr: false }
 )
 
+const BlockStatsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "BlockStatsDialog" */
+      './BlockStatsDialog'
+    ).then((mod) => mod.BlockStatsDialog),
+  { ssr: false }
+)
+
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -127,6 +136,9 @@ export function JourneyCardMenu({
     boolean | undefined
   >()
   const [openTranslateDialog, setOpenTranslateDialog] = useState<
+    boolean | undefined
+  >()
+  const [openBlockStatsDialog, setOpenBlockStatsDialog] = useState<
     boolean | undefined
   >()
   const [keepMounted, setKeepMounted] = useState<boolean>(false)
@@ -252,6 +264,7 @@ export function JourneyCardMenu({
                 setOpenTrashDialog={() => setOpenTrashDialog(true)}
                 setOpenTranslateDialog={() => setOpenTranslateDialog(true)}
                 setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+                setOpenBlockStatsDialog={() => setOpenBlockStatsDialog(true)}
                 template={template}
                 refetch={refetch}
                 setHasOpenDialog={setHasOpenDialog}
@@ -322,6 +335,17 @@ export function JourneyCardMenu({
             setHasOpenDialog?.(false)
           }}
           journey={journey}
+        />
+      )}
+      {openBlockStatsDialog != null && (
+        <BlockStatsDialog
+          journeyId={id}
+          journeyTitle={journey?.title ?? ''}
+          open={openBlockStatsDialog}
+          onClose={() => {
+            setOpenBlockStatsDialog(false)
+            setHasOpenDialog?.(false)
+          }}
         />
       )}
     </>
