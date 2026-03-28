@@ -38,9 +38,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Validate Linear ticket
         id: ticket
@@ -162,7 +170,7 @@ jobs:
             echo "Draft PR created: $PR_URL"
           fi
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           BRANCH: ${{ steps.ticket.outputs.branch }}
           TITLE: ${{ steps.ticket.outputs.title }}
           TICKET: ${{ github.event.inputs.ticket }}
@@ -215,7 +223,7 @@ jobs:
           )
           gh pr edit "$PR_URL" --body "$PR_BODY"
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR_URL: ${{ steps.draft-pr.outputs.pr_url }}
           TICKET: ${{ github.event.inputs.ticket }}
           SPEC: ${{ github.event.inputs.spec }}
