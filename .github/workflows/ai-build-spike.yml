@@ -10,11 +10,20 @@ on:
         description: "Linear ticket ID (e.g. NES-777)"
         required: true
         type: string
-      model:
-        description: "Claude model to use"
+      validation_model:
+        description: "Claude model for spec validation"
         required: true
         type: choice
-        default: sonnet
+        default: haiku
+        options:
+          - opus
+          - sonnet
+          - haiku
+      build_model:
+        description: "Claude model for implementation"
+        required: true
+        type: choice
+        default: haiku
         options:
           - opus
           - sonnet
@@ -75,7 +84,7 @@ jobs:
           fi
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
-          MODEL: ${{ github.event.inputs.model }}
+          MODEL: ${{ github.event.inputs.validation_model }}
           PROMPT: |
             You are a spec validator for the Next Steps (journeys-admin) application.
             Validate the following spec against these rules:
@@ -126,7 +135,7 @@ jobs:
           PR_URL=$(gh pr create \
             --draft \
             --title "ai-build($TICKET): $TITLE" \
-            --body "$(printf "🤖 AI build in progress...\n\nTicket: %s\nSpec: %s\nModel: %s" "$TICKET" "$SPEC" "$MODEL")" \
+            --body "$(printf "🤖 AI build in progress...\n\nTicket: %s\nSpec: %s\nModel: %s" "$TICKET" "$SPEC" "$BUILD_MODEL")" \
             --base main)
           echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
           echo "Draft PR created: $PR_URL"
@@ -136,7 +145,7 @@ jobs:
           TITLE: ${{ steps.ticket.outputs.title }}
           TICKET: ${{ github.event.inputs.ticket }}
           SPEC: ${{ github.event.inputs.spec }}
-          MODEL: ${{ github.event.inputs.model }}
+          BUILD_MODEL: ${{ github.event.inputs.build_model }}
 
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code
@@ -146,7 +155,7 @@ jobs:
         run: claude -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
-          MODEL: ${{ github.event.inputs.model }}
+          MODEL: ${{ github.event.inputs.build_model }}
           SPEC: |
             You are implementing a spec in an Nx monorepo. Git is already configured
             and you are on a feature branch with a draft PR open.
@@ -174,10 +183,10 @@ jobs:
         if: success()
         run: |
           gh pr ready "$PR_URL"
-          gh pr edit "$PR_URL" --body "$(printf "🤖 AI build complete.\n\nTicket: %s\nSpec: %s\nModel: %s" "$TICKET" "$SPEC" "$MODEL")"
+          gh pr edit "$PR_URL" --body "$(printf "🤖 AI build complete.\n\nTicket: %s\nSpec: %s\nModel: %s" "$TICKET" "$SPEC" "$BUILD_MODEL")"
         env:
           GH_TOKEN: ${{ github.token }}
           PR_URL: ${{ steps.draft-pr.outputs.pr_url }}
           TICKET: ${{ github.event.inputs.ticket }}
           SPEC: ${{ github.event.inputs.spec }}
-          MODEL: ${{ github.event.inputs.model }}
+          BUILD_MODEL: ${{ github.event.inputs.build_model }}
