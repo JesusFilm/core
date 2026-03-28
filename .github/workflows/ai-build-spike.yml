@@ -6,8 +6,8 @@ on:
         description: "Feature spec to implement"
         required: true
         type: string
-      branch_name:
-        description: "Branch name for changes"
+      ticket:
+        description: "Linear ticket ID (e.g. NES-777)"
         required: true
         type: string
       model:
@@ -32,6 +32,33 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+
+      - name: Validate Linear ticket
+        id: ticket
+        run: |
+          RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+            -H "Content-Type: application/json" \
+            -H "Authorization: $LINEAR_API_KEY" \
+            -d "{\"query\": \"{ issue(id: \\\"$TICKET\\\") { id title gitBranchName } }\"}")
+
+          TITLE=$(echo "$RESPONSE" | jq -r '.data.issue.title // empty')
+          GIT_BRANCH=$(echo "$RESPONSE" | jq -r '.data.issue.gitBranchName // empty')
+
+          if [ -z "$TITLE" ]; then
+            echo "::error::Linear ticket $TICKET not found or inaccessible."
+            exit 1
+          fi
+
+          # Replace the username prefix with ai-build
+          BRANCH_NAME=$(echo "$GIT_BRANCH" | sed 's|^[^/]*/|ai-build/|')
+
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+          echo "Ticket: $TITLE"
+          echo "Branch: $BRANCH_NAME"
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY_AI_BUILD_SYSTEM }}
+          TICKET: ${{ github.event.inputs.ticket }}
 
       - name: Validate spec
         id: validate-spec
@@ -69,51 +96,65 @@ jobs:
             Spec to validate:
             ${{ github.event.inputs.spec }}
 
-      # --- 2nd pass: uncomment below to enable build after spec validation ---
-      #
-      # - name: Fetch main ref for nx affected
-      #   run: git fetch origin main:main
-      #
-      # - uses: actions/setup-node@v4
-      #   with:
-      #     node-version: '20'
-      #
-      # - uses: pnpm/action-setup@v4
-      #
-      # - name: Install dependencies
-      #   run: pnpm install --frozen-lockfile
-      #
-      # - name: Generate Prisma clients
-      #   run: npx nx run-many --target=prisma-generate
-      #
-      # - name: Create branch
-      #   run: git checkout -b ${{ github.event.inputs.branch_name }}
-      #
-      # - name: Run Claude
-      #   run: npx -y @anthropic-ai/claude-code -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
-      #   env:
-      #     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
-      #     MODEL: ${{ github.event.inputs.model }}
-      #     SPEC: |
-      #       Implement the following spec. After making changes:
-      #       1. Run `npx nx affected --target=lint --base=main` to verify
-      #       2. Run `npx nx affected --target=type-check --base=main` to verify
-      #       If checks fail, attempt to fix. If you cannot fix after 2 attempts, stop and describe what failed.
-      #
-      #       Spec:
-      #       ${{ github.event.inputs.spec }}
-      #
-      # - name: Push and create PR
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      #     git add -A
-      #     git diff --staged --quiet && echo "No changes to commit" && exit 0
-      #     git commit -m "ai-build: ${{ github.event.inputs.branch_name }}"
-      #     git push origin ${{ github.event.inputs.branch_name }}
-      #     gh pr create \
-      #       --title "AI Build: ${{ github.event.inputs.branch_name }}" \
-      #       --body "Automated build from spec via GitHub Actions spike." \
-      #       --base main
-      #   env:
-      #     GH_TOKEN: ${{ github.token }}
+      - name: Fetch main ref for nx affected
+        run: git fetch origin main:main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma clients
+        run: npx nx run-many --target=prisma-generate
+
+      - name: Create branch
+        run: git checkout -b ${{ steps.ticket.outputs.branch }}
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+        working-directory: /tmp
+
+      - name: Run Claude
+        run: claude -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
+          MODEL: ${{ github.event.inputs.model }}
+          SPEC: |
+            Implement the following spec. After making changes:
+            1. Run `npx nx affected --target=lint --base=main` to verify
+            2. Run `npx nx affected --target=type-check --base=main` to verify
+            If checks fail, attempt to fix. If you cannot fix after 2 attempts, stop and describe what failed.
+
+            Spec:
+            ${{ github.event.inputs.spec }}
+
+      - name: Push and create PR
+        run: |
+          BRANCH="${{ steps.ticket.outputs.branch }}"
+          TITLE="${{ steps.ticket.outputs.title }}"
+          TICKET="${{ github.event.inputs.ticket }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet && echo "No changes to commit" && exit 0
+          git commit -m "ai-build($TICKET): $TITLE"
+          git fetch origin "$BRANCH" 2>/dev/null || true
+          git push --force-with-lease origin "$BRANCH"
+          if ! gh pr list --head "$BRANCH" --json number --jq '.[0].number' | grep -q .; then
+            gh pr create \
+              --title "ai-build($TICKET): $TITLE" \
+              --body "Automated build from spec via GitHub Actions spike.
+
+Ticket: $TICKET
+Spec: ${{ github.event.inputs.spec }}" \
+              --base main
+          else
+            echo "PR already exists for this branch"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
