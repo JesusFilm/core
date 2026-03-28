@@ -39,10 +39,11 @@ jobs:
           RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
             -H "Content-Type: application/json" \
             -H "Authorization: $LINEAR_API_KEY" \
-            -d "{\"query\": \"{ issue(id: \\\"$TICKET\\\") { id title gitBranchName } }\"}")
+            -H "apollo-require-preflight: true" \
+            -d "{\"query\": \"{ issue(id: \\\"$TICKET\\\") { id title branchName } }\"}")
 
           TITLE=$(echo "$RESPONSE" | jq -r '.data.issue.title // empty')
-          GIT_BRANCH=$(echo "$RESPONSE" | jq -r '.data.issue.gitBranchName // empty')
+          GIT_BRANCH=$(echo "$RESPONSE" | jq -r '.data.issue.branchName // empty')
 
           if [ -z "$TITLE" ]; then
             echo "::error::Linear ticket $TICKET not found or inaccessible."
