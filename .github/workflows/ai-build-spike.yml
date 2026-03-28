@@ -129,16 +129,38 @@ jobs:
       - name: Create branch and draft PR
         id: draft-pr
         run: |
-          git checkout -b "$BRANCH"
-          git commit --allow-empty -m "ai-build($TICKET): starting implementation"
-          git push -u origin "$BRANCH"
-          PR_URL=$(gh pr create \
-            --draft \
-            --title "ai-build($TICKET): $TITLE" \
-            --body "$(printf "🤖 AI build in progress...\n\nTicket: %s\nSpec: %s\nModel: %s" "$TICKET" "$SPEC" "$BUILD_MODEL")" \
-            --base main)
-          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
-          echo "Draft PR created: $PR_URL"
+          # Handle re-runs: check if branch already exists
+          if git ls-remote --exit-code origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+            git commit --allow-empty -m "ai-build($TICKET): starting implementation"
+            git push -u origin "$BRANCH"
+          fi
+
+          # Handle re-runs: check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --json url --jq '.[0].url // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "pr_url=$EXISTING_PR" >> "$GITHUB_OUTPUT"
+            echo "Reusing existing PR: $EXISTING_PR"
+          else
+            PR_BODY=$(cat <<EOF
+          🤖 AI build in progress...
+
+          Ticket: $TICKET
+          Spec: $SPEC
+          Model: $BUILD_MODEL
+          EOF
+            )
+            PR_URL=$(gh pr create \
+              --draft \
+              --title "ai-build($TICKET): $TITLE" \
+              --body "$PR_BODY" \
+              --base main)
+            echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+            echo "Draft PR created: $PR_URL"
+          fi
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ steps.ticket.outputs.branch }}
@@ -183,7 +205,15 @@ jobs:
         if: success()
         run: |
           gh pr ready "$PR_URL"
-          gh pr edit "$PR_URL" --body "$(printf "🤖 AI build complete.\n\nTicket: %s\nSpec: %s\nModel: %s" "$TICKET" "$SPEC" "$BUILD_MODEL")"
+          PR_BODY=$(cat <<EOF
+          🤖 AI build complete.
+
+          Ticket: $TICKET
+          Spec: $SPEC
+          Model: $BUILD_MODEL
+          EOF
+          )
+          gh pr edit "$PR_URL" --body "$PR_BODY"
         env:
           GH_TOKEN: ${{ github.token }}
           PR_URL: ${{ steps.draft-pr.outputs.pr_url }}
