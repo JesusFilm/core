@@ -36,7 +36,7 @@ jobs:
       - name: Validate spec
         id: validate-spec
         run: |
-          RESULT=$(npx -y @anthropic-ai/claude-code -p "$PROMPT" --model "$MODEL" --dangerously-skip-permissions)
+          RESULT=$(cd /tmp && npx -y @anthropic-ai/claude-code -p "$PROMPT" --model "$MODEL" --dangerously-skip-permissions)
           echo "$RESULT"
           if echo "$RESULT" | grep -qx "SPEC_VALID"; then
             echo "valid=true" >> "$GITHUB_OUTPUT"
