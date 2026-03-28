@@ -33,27 +33,12 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Fetch main ref for nx affected
-        run: git fetch origin main:main
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - uses: pnpm/action-setup@v4
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma clients
-        run: npx nx run-many --target=prisma-generate --all
-
       - name: Validate spec
         id: validate-spec
         run: |
           RESULT=$(npx -y @anthropic-ai/claude-code -p "$PROMPT" --model "$MODEL" --dangerously-skip-permissions)
           echo "$RESULT"
-          if echo "$RESULT" | grep -q "SPEC_VALID"; then
+          if echo "$RESULT" | grep -qx "SPEC_VALID"; then
             echo "valid=true" >> "$GITHUB_OUTPUT"
           else
             echo "valid=false" >> "$GITHUB_OUTPUT"
@@ -84,6 +69,23 @@ jobs:
             Spec to validate:
             ${{ github.event.inputs.spec }}
 
+      # --- 2nd pass: uncomment below to enable build after spec validation ---
+      #
+      # - name: Fetch main ref for nx affected
+      #   run: git fetch origin main:main
+      #
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20'
+      #
+      # - uses: pnpm/action-setup@v4
+      #
+      # - name: Install dependencies
+      #   run: pnpm install --frozen-lockfile
+      #
+      # - name: Generate Prisma clients
+      #   run: npx nx run-many --target=prisma-generate
+      #
       # - name: Create branch
       #   run: git checkout -b ${{ github.event.inputs.branch_name }}
       #
