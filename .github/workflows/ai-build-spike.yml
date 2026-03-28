@@ -114,8 +114,12 @@ jobs:
       - name: Create branch
         run: git checkout -b ${{ steps.ticket.outputs.branch }}
 
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+        working-directory: /tmp
+
       - name: Run Claude
-        run: cd /tmp && npx -y @anthropic-ai/claude-code -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
+        run: claude -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
           MODEL: ${{ github.event.inputs.model }}
@@ -139,6 +143,7 @@ jobs:
           git add -A
           git diff --staged --quiet && echo "No changes to commit" && exit 0
           git commit -m "ai-build($TICKET): $TITLE"
+          git fetch origin "$BRANCH" 2>/dev/null || true
           git push --force-with-lease origin "$BRANCH"
           if ! gh pr list --head "$BRANCH" --json number --jq '.[0].number' | grep -q .; then
             gh pr create \
