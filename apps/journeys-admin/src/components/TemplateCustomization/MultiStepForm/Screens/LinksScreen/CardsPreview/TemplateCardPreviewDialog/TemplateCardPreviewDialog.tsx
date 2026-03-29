@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
 export interface TemplateCardPreviewDialogProps {
   open: boolean

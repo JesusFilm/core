@@ -15,7 +15,7 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getNextCustomizeScreen } from '../../../utils/getNextCustomizeScreen'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { CardsPreview } from '../LinksScreen/CardsPreview'
-import { TemplateCardPreviewDialog } from '../LinksScreen/CardsPreview/TemplateCardPreviewDialog'
+import { TemplateCardPreviewDialog } from '../LinksScreen/CardsPreview/TemplateCardPreviewDialog/TemplateCardPreviewDialog'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 interface GuestPreviewScreenProps {

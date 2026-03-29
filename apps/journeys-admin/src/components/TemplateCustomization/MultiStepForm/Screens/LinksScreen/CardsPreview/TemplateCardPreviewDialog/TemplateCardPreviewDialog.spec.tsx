@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
+import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
 import {
   TemplateCardPreviewDialog,
