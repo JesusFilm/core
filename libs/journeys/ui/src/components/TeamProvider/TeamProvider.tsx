@@ -136,6 +136,10 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   // Capture the session and URL values at mount time (before setActiveTeam writes to them)
   const initialSessionTeamId = useRef(getSessionTeamId())
   const initialUrlTeamId = useRef(getUrlTeamId())
+  // Prevents stale closures (e.g. from page useEffect refetch) from re-running initial
+  // resolution. Safe to lock permanently because all post-initial team changes go through
+  // setActiveTeam directly, not through updateActiveTeam.
+  const hasResolvedTeam = useRef(false)
 
   function syncDbAndRefetch(resolvedTeamId: string | null): void {
     void updateLastActiveTeamId({
@@ -149,7 +153,8 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   }
 
   function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
-    if (activeTeam !== undefined || data.teams == null) return
+    if (hasResolvedTeam.current || data.teams == null) return
+    hasResolvedTeam.current = true
     sendGTMEvent({
       event: 'get_teams',
       teams: data.teams.length
@@ -158,7 +163,6 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     // URL param takes highest priority (invitation links)
     const urlTeamId = initialUrlTeamId.current
     if (urlTeamId != null) {
-      initialUrlTeamId.current = undefined
       cleanUrlTeamParam()
       const urlTeam = data.teams.find((team) => team.id === urlTeamId)
       if (urlTeam != null) {
