@@ -3,6 +3,14 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/users/client'
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
+import { builder } from '../builder'
+
+import { findOrFetchUser } from './findOrFetchUser'
+import { CreateVerificationRequestInput, MeInput } from './inputs'
+import { AnonymousUser, AuthenticatedUser, User } from './objects'
+import { validateEmail } from './validateEmail'
+import { verifyUser } from './verifyUser'
+
 function isFirebaseNotFound(error: unknown): boolean {
   return (
     error != null &&
@@ -11,14 +19,6 @@ function isFirebaseNotFound(error: unknown): boolean {
     (error as { code: string }).code === 'auth/user-not-found'
   )
 }
-
-import { builder } from '../builder'
-
-import { findOrFetchUser } from './findOrFetchUser'
-import { CreateVerificationRequestInput, MeInput } from './inputs'
-import { AnonymousUser, AuthenticatedUser, User } from './objects'
-import { validateEmail } from './validateEmail'
-import { verifyUser } from './verifyUser'
 
 builder.asEntity(User, {
   key: builder.selection<{ id: string }>('id'),
