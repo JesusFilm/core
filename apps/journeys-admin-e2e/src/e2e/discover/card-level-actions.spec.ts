@@ -68,14 +68,11 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
     await cardLevelActionPage.clickSelectImageBtn() // clicking on select image buttom in image properties drawer
     await cardLevelActionPage.clickImageSelectionTab('Custom') // clicking on custom tab in image drawer tab list
-    await cardLevelActionPage.getImageSrc() // getting current image source
     await cardLevelActionPage.uploadImageInCustomTab() // uploading image in the custom tab
-    //  await cardLevelActionPage.verifyImgUploadedSuccessMsg() // verifying the 'Upload successful' message
-    await cardLevelActionPage.verifyImageGotChanged() // verifying the image is updated in the custom tab
+    await cardLevelActionPage.verifyCustomImageUploaded() // verifying the Cloudflare-hosted image appears in the thumbnail
     await cardLevelActionPage.clickImageSelectionTab('Gallery') // clicking on Gallery tab in image drawer tab list
-    await cardLevelActionPage.getImageSrc() // getting current image source
     await cardLevelActionPage.clickImgFromFeatureOfGalleryTab() // selecting an image of Gallery tab in the image drawer
-    await cardLevelActionPage.verifyImageGotChanged() // verifying the seleted image is updated in the image drawer
+    await cardLevelActionPage.verifyGalleryImageSelected() // verifying the Unsplash gallery image appears in the thumbnail
     await cardLevelActionPage.clickImgDeleteBtn() // deleting the selected image
     await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
   })

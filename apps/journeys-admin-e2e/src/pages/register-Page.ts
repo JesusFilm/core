@@ -112,12 +112,15 @@ export class Register {
   }
 
   async clickNextBtn() {
-    await this.page
-      .locator('button[type="button"]', { hasText: 'Next' })
-      .click({ delay: 2000 })
+    const nextBtn = this.page.locator('button[type="button"]', {
+      hasText: 'Next'
+    })
+    await expect(nextBtn).toBeEnabled()
+    await nextBtn.click()
   }
 
   async verifyPageNavigatedFewQuestionsPage() {
+    // 50s: onboarding SSR page can be slow after T&C acceptance on first run
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
@@ -127,9 +130,11 @@ export class Register {
   }
 
   async clickNextBtnInFewQuestionPage() {
-    await this.page
-      .locator('button[type="submit"]', { hasText: 'Next' })
-      .click({ delay: 3000 })
+    const nextBtn = this.page.locator('button[type="submit"]', {
+      hasText: 'Next'
+    })
+    await expect(nextBtn).toBeEnabled()
+    await nextBtn.click()
   }
 
   async entetTeamName() {

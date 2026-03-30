@@ -68,12 +68,21 @@ export class CardLevelActionPage {
   }
 
   async clickBtnInAddBlockDrawer(buttonName: string) {
-    const button = this.page.locator(
-      'div[data-testid="SettingsDrawer"] button',
-      {
-        hasText: buttonName
-      }
-    )
+    // Use the exact JourneysAdmin test-id for each block type to avoid ambiguous
+    // matches against other SettingsDrawer buttons that contain the same word
+    // (e.g. "Image Source" header in the background-image properties drawer).
+    const testIdMap: Record<string, string> = {
+      Image: 'JourneysAdminButtonNewImageButton',
+      Spacer: 'JourneysAdminButtonNewSpacerButton',
+      Video: 'JourneysAdminButtonNewVideoButton',
+      Typography: 'JourneysAdminButtonNewTypographyButton'
+    }
+    const testId = testIdMap[buttonName]
+    const button = testId
+      ? this.page.locator(`div[data-testid="${testId}"] button`)
+      : this.page.locator('div[data-testid="SettingsDrawer"] button', {
+          hasText: buttonName
+        })
     await button.click({ timeout: sixtySecondsTimeout })
   }
 
@@ -238,39 +247,51 @@ export class CardLevelActionPage {
       .setInputFiles(
         require('path').join(__dirname, '../utils/testResource/Flower.jpg')
       )
+    // Scope to the ImageLibrary Drawer to avoid matching the progress bar
+    // in the properties panel behind it.
+    const imageLibraryDrawer = this.page.locator(
+      'div[data-testid="SettingsDrawer"]',
+      { has: this.page.locator('button[aria-label="close-image-library"]') }
+    )
     await expect(
-      this.page.locator(
-        'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
+      imageLibraryDrawer.locator(
+        'div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
 
-  async getImageSrc() {
-    if (
-      await this.page
-        .locator(
-          'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
-        )
-        .isVisible()
-    ) {
-      this.uploadedImgSrc = await this.page
-        .locator(
-          'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
-        )
-        .getAttribute('src')
-    } else {
-      this.uploadedImgSrc = ''
-    }
+  private imageLibraryThumbnail() {
+    // The ImageLibrary Drawer is identified by its close button (aria-label hardcoded
+    // to "close-image-library" for all settings drawers). Use .first() because the
+    // background-image properties panel can also be open at the same time, creating a
+    // second matching drawer — both show the same img src, so first() is fine.
+    return this.page
+      .locator('div[data-testid="SettingsDrawer"]', {
+        has: this.page.locator('button[aria-label="close-image-library"]')
+      })
+      .locator('div[data-testid="ImageBlockThumbnail"] img')
+      .first()
   }
 
-  async verifyImageGotChanged() {
-    await expect(
-      this.page.locator(
-        'div[data-testid="ImageSource"] + div div[data-testid="ImageBlockThumbnail"] img'
-      )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc, {
-      timeout: sixtySecondsTimeout
-    })
+  async verifyCustomImageUploaded() {
+    // After a custom file upload, Apollo optimistically sets the src to a
+    // Cloudflare imagedelivery.net URL. Wait up to 60s for the img to appear
+    // with that src (upload + Apollo update can be slow on cold Vercel).
+    await expect(this.imageLibraryThumbnail()).toHaveAttribute(
+      'src',
+      /imagedelivery\.net/,
+      { timeout: sixtySecondsTimeout }
+    )
+  }
+
+  async verifyGalleryImageSelected() {
+    // After selecting an Unsplash gallery image the src always contains
+    // images.unsplash.com. Wait up to 60s for the img to reflect that.
+    await expect(this.imageLibraryThumbnail()).toHaveAttribute(
+      'src',
+      /images\.unsplash\.com/,
+      { timeout: sixtySecondsTimeout }
+    )
   }
 
   async verifyImgUploadedSuccessMsg() {
