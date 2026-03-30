@@ -9,8 +9,7 @@ import {
   MOBILE_FAB_BOTTOM_OFFSET,
   MOBILE_FAB_RIGHT_OFFSET,
   MOBILE_HELPSCOUT_FAB_MARGIN_X,
-  MOBILE_HELPSCOUT_FAB_WIDTH,
-  MOBILE_HELPSCOUT_FAB_Z_INDEX
+  MOBILE_HELPSCOUT_FAB_WIDTH
 } from '../../HelpScoutBeacon/constants'
 
 export function AddJourneyFab(): ReactElement {
@@ -38,7 +37,7 @@ export function AddJourneyFab(): ReactElement {
           MOBILE_FAB_RIGHT_OFFSET +
           MOBILE_HELPSCOUT_FAB_WIDTH +
           MOBILE_HELPSCOUT_FAB_MARGIN_X,
-        zIndex: MOBILE_HELPSCOUT_FAB_Z_INDEX,
+        zIndex: (theme) => theme.zIndex.fab,
         display: { xs: 'flex', md: 'none' }
       }}
       data-testid="AddJourneyFab"
