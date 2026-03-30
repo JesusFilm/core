@@ -60,16 +60,17 @@ export function LanguageScreen({
   const { loadUser } = useCurrentUserLazyQuery()
   const [teamCreate] = useTeamCreateMutation()
   const [loading, setLoading] = useState(false)
-  const isDataReady = query?.data != null && journey != null
-  const hasTeamLoadError = query?.error != null
+  const isSignedIn = user?.email != null && user?.id != null
+  const isGuestFlowEnabled = templateCustomizationGuestFlow === true
+  // Guests don't have teams yet — only block on team load errors for signed-in users
+  const isDataReady = journey != null && (!isSignedIn || query?.data != null)
+  const hasTeamLoadError = isSignedIn && query?.error != null
 
   const steps = transformer(journey?.blocks ?? []) as Array<
     TreeBlock<StepBlock>
   >
   // If the user is not authenticated, useAuth returns { user: null }
   const isParentTemplate = journey?.fromTemplateId == null
-  const isSignedIn = user?.email != null && user?.id != null
-  const isGuestFlowEnabled = templateCustomizationGuestFlow === true
   const isNextDisabled = (!isSignedIn && !isGuestFlowEnabled) || loading
 
   const {
