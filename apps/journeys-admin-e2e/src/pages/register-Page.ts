@@ -165,7 +165,15 @@ export class Register {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >70s on first run
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >70s on first run.
+    // NavigationListItemProjects is part of the app shell and loads before team data.
+    await expect(
+      this.page.getByTestId('NavigationListItemProjects')
+    ).toBeVisible({ timeout: 90000 })
+
+    // 90s: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS runs client-side (not in SSR cache) and
+    // needs a fresh network request — cold Vercel instances can take up to 65s to respond.
+    // T&C acceptance always creates a team so this button must appear — it is deterministic.
     await expect(
       this.page.getByRole('button', { name: 'Create Custom Journey' })
     ).toBeEnabled({ timeout: 90000 })

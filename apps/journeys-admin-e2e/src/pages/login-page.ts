@@ -30,10 +30,18 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run.
+    // NavigationListItemProjects is part of the app shell and loads before team data.
     await expect(
-      this.page.getByRole('button', { name: 'Create Custom Journey' })
-    ).toBeEnabled({ timeout: 90000 })
+      this.page.getByTestId('NavigationListItemProjects')
+    ).toBeVisible({ timeout: 90000 })
+
+    // TeamSelect is disabled={query.loading} while the teams Apollo query is in
+    // flight (see TeamSelect.tsx). Enabled means the query resolved and the page
+    // is fully interactive — regardless of which team (or Shared With Me) is active.
+    await expect(
+      this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+    ).toBeEnabled({ timeout: 30000 })
   }
 
   async login(accountKey: string = 'admin'): Promise<void> {
