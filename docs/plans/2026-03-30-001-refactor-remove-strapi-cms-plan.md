@@ -1,5 +1,5 @@
 ---
-title: "refactor: Remove Strapi CMS and related infrastructure"
+title: 'refactor: Remove Strapi CMS and related infrastructure'
 type: refactor
 status: completed
 date: 2026-03-30
@@ -93,33 +93,33 @@ Remove the entire directory including source code, Dockerfile, infrastructure/, 
 
 #### B2. Remove Terraform environment references
 
-| File | Action |
-|------|--------|
-| `infrastructure/environments/prod/main.tf` (lines 120-133) | Delete `module "cms"` block |
-| `infrastructure/environments/prod/data.tf` (lines 65-67) | Delete `data "aws_ssm_parameter" "doppler_cms_prod_token"` |
-| `infrastructure/environments/stage/main.tf` (lines 157-170) | Delete `module "cms"` block |
-| `infrastructure/environments/stage/data.tf` (lines 60-62) | Delete `data "aws_ssm_parameter" "doppler_cms_stage_token"` |
+| File                                                        | Action                                                      |
+| ----------------------------------------------------------- | ----------------------------------------------------------- |
+| `infrastructure/environments/prod/main.tf` (lines 120-133)  | Delete `module "cms"` block                                 |
+| `infrastructure/environments/prod/data.tf` (lines 65-67)    | Delete `data "aws_ssm_parameter" "doppler_cms_prod_token"`  |
+| `infrastructure/environments/stage/main.tf` (lines 157-170) | Delete `module "cms"` block                                 |
+| `infrastructure/environments/stage/data.tf` (lines 60-62)   | Delete `data "aws_ssm_parameter" "doppler_cms_stage_token"` |
 
 #### B3. Clean up GitHub Actions workflows
 
-| File | Action |
-|------|--------|
-| `.github/workflows/ecs-frontend-deploy-prod.yml` | Remove `DOPPLER_CMS_TOKEN` lines (L52, L81, L110) + delete entire `cms:` job (L91-119) |
-| `.github/workflows/ecs-frontend-deploy-stage.yml` | Remove `DOPPLER_CMS_TOKEN` lines (L52, L119, L148) + delete entire `cms:` job (L129-157) |
-| `.github/workflows/main.yml` | Remove `DOPPLER_CMS_TOKEN` line (L56) |
-| `.github/workflows/ecs-frontend-deploy-prod-worker.yml` | Remove `DOPPLER_CMS_TOKEN` from `workflow_call.secrets` declaration (L35) AND from secrets passthrough (L104) |
+| File                                                     | Action                                                                                                        |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `.github/workflows/ecs-frontend-deploy-prod.yml`         | Remove `DOPPLER_CMS_TOKEN` lines (L52, L81, L110) + delete entire `cms:` job (L91-119)                        |
+| `.github/workflows/ecs-frontend-deploy-stage.yml`        | Remove `DOPPLER_CMS_TOKEN` lines (L52, L119, L148) + delete entire `cms:` job (L129-157)                      |
+| `.github/workflows/main.yml`                             | Remove `DOPPLER_CMS_TOKEN` line (L56)                                                                         |
+| `.github/workflows/ecs-frontend-deploy-prod-worker.yml`  | Remove `DOPPLER_CMS_TOKEN` from `workflow_call.secrets` declaration (L35) AND from secrets passthrough (L104) |
 | `.github/workflows/ecs-frontend-deploy-stage-worker.yml` | Remove `DOPPLER_CMS_TOKEN` from `workflow_call.secrets` declaration (L35) AND from secrets passthrough (L104) |
-| `.github/workflows/ai-build-spike.yml` | Remove "cms" from rejected-domains list (L102, optional) |
+| `.github/workflows/ai-build-spike.yml`                   | Remove "cms" from rejected-domains list (L102, optional)                                                      |
 
 #### B4. Clean up root config and dev tooling
 
-| File | Action |
-|------|--------|
-| `package.json` (L426) | Remove `"strapi-blurhash>canvas": "^3.2.1"` from `pnpm.overrides` |
-| `.devcontainer/post-create-command.sh` (L47-49) | Delete CMS database creation block |
-| `.gitignore` (L103-105) | Delete Strapi CMS entries (note: these used stale `apis/cms/` path) |
-| `.claude/rules/frontend/apps.md` (L4) | Remove `- 'apps/cms/src/**/*.{ts,tsx}'` path |
-| `apps/watch/public/images/thumbnails/README.md` (L106, L192) | Remove stale CMS references |
+| File                                                         | Action                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `package.json` (L426)                                        | Remove `"strapi-blurhash>canvas": "^3.2.1"` from `pnpm.overrides`   |
+| `.devcontainer/post-create-command.sh` (L47-49)              | Delete CMS database creation block                                  |
+| `.gitignore` (L103-105)                                      | Delete Strapi CMS entries (note: these used stale `apis/cms/` path) |
+| `.claude/rules/frontend/apps.md` (L4)                        | Remove `- 'apps/cms/src/**/*.{ts,tsx}'` path                        |
+| `apps/watch/public/images/thumbnails/README.md` (L106, L192) | Remove stale CMS references                                         |
 
 #### B5. Regenerate lockfile and validate
 
