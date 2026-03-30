@@ -71,9 +71,10 @@ function DrawerContent({
       <Stack
         data-testid="side-body"
         border="hidden"
+        flexGrow={1}
         sx={{
-          overflow: 'none',
-          overflowY: { sm: 'auto' }
+          overflow: 'hidden',
+          overflowY: 'auto'
         }}
       >
         {children}
