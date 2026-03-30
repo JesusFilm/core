@@ -11,6 +11,15 @@ import { AnonymousUser, AuthenticatedUser, User } from './objects'
 import { validateEmail } from './validateEmail'
 import { verifyUser } from './verifyUser'
 
+function isFirebaseNotFound(error: unknown): boolean {
+  return (
+    error != null &&
+    typeof error === 'object' &&
+    'code' in error &&
+    (error as { code: string }).code === 'auth/user-not-found'
+  )
+}
+
 builder.asEntity(User, {
   key: builder.selection<{ id: string }>('id'),
   resolveReference: async ({ id }) => {
@@ -91,12 +100,22 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (_parent, { input }, ctx) => {
-      const user = await findOrFetchUser(
-        {},
-        ctx.currentUser.id,
-        input?.redirect ?? undefined,
-        input?.app ?? 'NextSteps'
-      )
+      let user
+      try {
+        user = await findOrFetchUser(
+          {},
+          ctx.currentUser.id,
+          input?.redirect ?? undefined,
+          input?.app ?? 'NextSteps'
+        )
+      } catch (error) {
+        if (isFirebaseNotFound(error)) {
+          throw new GraphQLError('User account has been deleted', {
+            extensions: { code: 'UNAUTHENTICATED' }
+          })
+        }
+        throw error
+      }
       if (user == null) return null
 
       // Return appropriate type based on whether user has email
