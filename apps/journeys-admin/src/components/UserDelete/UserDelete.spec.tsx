@@ -94,17 +94,13 @@ describe('UserDeleteWithErrorBoundary', () => {
   })
 
   it('should have delete button disabled before check', () => {
-    render(
+    const { getAllByRole } = render(
       <MockedProvider>
         <UserDeleteWithErrorBoundary />
       </MockedProvider>
     )
 
-    const buttons = document.querySelectorAll('button')
-    const deleteUserButtons = Array.from(buttons).filter(
-      (btn) => btn.textContent === 'Delete User'
-    )
-    // The last "Delete User" button is the action button (not the heading)
+    const deleteUserButtons = getAllByRole('button', { name: 'Delete User' })
     const actionBtn = deleteUserButtons[deleteUserButtons.length - 1]
     expect(actionBtn).toBeDisabled()
   })

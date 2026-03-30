@@ -32,7 +32,6 @@ import {
   Suspense,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState
 } from 'react'
@@ -160,6 +159,12 @@ interface ConfirmVars {
   id: string
 }
 
+const levelLabel: Record<string, string> = {
+  error: 'ERROR',
+  warn: 'WARN',
+  info: 'INFO'
+}
+
 function UserDeleteContent(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -200,6 +205,8 @@ function UserDeleteContent(): ReactElement {
             variant: 'success'
           })
           setCheckComplete(false)
+          setUserId('')
+          setLogs([])
         } else {
           enqueueSnackbar(t('User deletion failed. Check logs for details.'), {
             variant: 'error'
@@ -241,12 +248,6 @@ function UserDeleteContent(): ReactElement {
       el.scrollTop = el.scrollHeight
     }
   }, [logs])
-
-  const levelLabel: Record<string, string> = {
-    error: 'ERROR',
-    warn: 'WARN',
-    info: 'INFO'
-  }
 
   const logText = logs
     .map((log) => {
@@ -313,7 +314,7 @@ function UserDeleteContent(): ReactElement {
           <InputLabel id="id-type-label">{t('Lookup By')}</InputLabel>
           <Select
             labelId="id-type-label"
-            aria-describedby="delete-warning"
+            SelectDisplayProps={{ 'aria-describedby': 'delete-warning' }}
             value={idType}
             label={t('Lookup By')}
             onChange={(e) => {
