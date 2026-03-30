@@ -45,6 +45,7 @@ interface TeamProviderProps {
 
 const SESSION_STORAGE_KEY = 'journeys-admin:activeTeamId'
 const SHARED_WITH_ME_SENTINEL = '__shared__'
+const URL_PARAM_KEY = 'activeTeam'
 
 function getSessionTeamId(): string | null | undefined {
   if (typeof window === 'undefined') return undefined
@@ -68,6 +69,30 @@ function setSessionTeamId(teamId: string | null): void {
     )
   } catch (error) {
     console.error('Failed to write activeTeamId to sessionStorage:', error)
+  }
+}
+
+function getUrlTeamId(): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  try {
+    return (
+      new URLSearchParams(window.location.search).get(URL_PARAM_KEY) ??
+      undefined
+    )
+  } catch (error) {
+    console.error('Failed to read activeTeam from URL:', error)
+    return undefined
+  }
+}
+
+function cleanUrlTeamParam(): void {
+  if (typeof window === 'undefined') return
+  try {
+    const url = new URL(window.location.href)
+    url.searchParams.delete(URL_PARAM_KEY)
+    window.history.replaceState({}, '', url.toString())
+  } catch (error) {
+    console.error('Failed to clean activeTeam from URL:', error)
   }
 }
 
@@ -108,8 +133,13 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   )
   const client = useApolloClient()
   const [updateLastActiveTeamId] = useMutation(UPDATE_LAST_ACTIVE_TEAM_ID)
-  // Capture the session value at mount time (before setActiveTeam writes to it)
+  // Capture the session and URL values at mount time (before setActiveTeam writes to them)
   const initialSessionTeamId = useRef(getSessionTeamId())
+  const initialUrlTeamId = useRef(getUrlTeamId())
+  // Prevents stale closures (e.g. from page useEffect refetch) from re-running initial
+  // resolution. Safe to lock permanently because all post-initial team changes go through
+  // setActiveTeam directly, not through updateActiveTeam.
+  const hasResolvedTeam = useRef(false)
 
   function syncDbAndRefetch(resolvedTeamId: string | null): void {
     void updateLastActiveTeamId({
@@ -123,11 +153,25 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   }
 
   function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
-    if (activeTeam !== undefined || data.teams == null) return
+    if (hasResolvedTeam.current || data.teams == null) return
+    hasResolvedTeam.current = true
     sendGTMEvent({
       event: 'get_teams',
       teams: data.teams.length
     })
+
+    // URL param takes highest priority (invitation links)
+    const urlTeamId = initialUrlTeamId.current
+    if (urlTeamId != null) {
+      cleanUrlTeamParam()
+      const urlTeam = data.teams.find((team) => team.id === urlTeamId)
+      if (urlTeam != null) {
+        setActiveTeam(urlTeam)
+        syncDbAndRefetch(urlTeamId)
+        return
+      }
+      // URL team not found in teams list — fall through to session/DB
+    }
 
     const sessionTeamId = initialSessionTeamId.current
     const dbTeamId = data.getJourneyProfile?.lastActiveTeamId ?? null
