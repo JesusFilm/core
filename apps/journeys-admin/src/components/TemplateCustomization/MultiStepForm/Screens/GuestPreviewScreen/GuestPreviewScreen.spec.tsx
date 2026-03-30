@@ -39,26 +39,27 @@ jest.mock('../LinksScreen/CardsPreview', () => ({
 jest.mock(
   '../LinksScreen/CardsPreview/TemplateCardPreviewDialog/TemplateCardPreviewDialog',
   () => ({
-  TemplateCardPreviewDialog: ({
-    open,
-    onClose,
-    initialStepId
-  }: {
-    open: boolean
-    onClose: () => void
-    initialStepId: string | null
-  }) => (
-    <div
-      data-testid="MockTemplateCardPreviewDialog"
-      data-open={String(open)}
-      data-initial-step-id={initialStepId ?? ''}
-    >
-      <button data-testid="MockDialogClose" onClick={onClose}>
-        Close Dialog
-      </button>
-    </div>
-  )
-  }))
+    TemplateCardPreviewDialog: ({
+      open,
+      onClose,
+      initialStepId
+    }: {
+      open: boolean
+      onClose: () => void
+      initialStepId: string | null
+    }) => (
+      <div
+        data-testid="MockTemplateCardPreviewDialog"
+        data-open={String(open)}
+        data-initial-step-id={initialStepId ?? ''}
+      >
+        <button data-testid="MockDialogClose" onClick={onClose}>
+          Close Dialog
+        </button>
+      </div>
+    )
+  })
+)
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
