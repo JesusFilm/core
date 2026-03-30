@@ -8,12 +8,8 @@ interface DeleteUserDataInput {
   firebaseUserId: string
   firebaseUidOverride: string | null
   userEmail: string | null
-  userFirstName: string
-  userLastName: string | null
   callerUserId: string
   callerEmail: string | null
-  callerFirstName: string
-  callerLastName: string | null
   deletedJourneyIds: string[]
   deletedTeamIds: string[]
   deletedUserJourneyIds: string[]
@@ -127,13 +123,8 @@ export async function deleteUserData(
     auditLog = await prisma.userDeleteAuditLog.create({
       data: {
         deletedUserId: input.userDbId,
-        deletedUserEmail: input.userEmail,
-        deletedUserFirstName: input.userFirstName,
-        deletedUserLastName: input.userLastName,
         callerUserId: input.callerUserId,
         callerEmail: input.callerEmail,
-        callerFirstName: input.callerFirstName,
-        callerLastName: input.callerLastName,
         deletedJourneyIds: input.deletedJourneyIds,
         deletedTeamIds: input.deletedTeamIds,
         deletedUserJourneyIds: input.deletedUserJourneyIds,
