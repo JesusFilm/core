@@ -31,13 +31,8 @@ model User {
 model UserDeleteAuditLog {
   id                    String   @id @default(uuid())
   deletedUserId         String
-  deletedUserEmail      String?
-  deletedUserFirstName  String
-  deletedUserLastName   String?
   callerUserId          String
   callerEmail           String?
-  callerFirstName       String
-  callerLastName        String?
   deletedJourneyIds     String[]
   deletedTeamIds        String[]
   deletedUserJourneyIds String[]
