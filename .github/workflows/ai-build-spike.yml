@@ -3,15 +3,15 @@ on:
   workflow_dispatch:
     inputs:
       spec:
-        description: "Feature spec to implement"
+        description: 'Feature spec to implement'
         required: true
         type: string
       ticket:
-        description: "Linear ticket ID (e.g. NES-777)"
+        description: 'Linear ticket ID (e.g. NES-777)'
         required: true
         type: string
       validation_model:
-        description: "Claude model for spec validation"
+        description: 'Claude model for spec validation'
         required: true
         type: choice
         default: haiku
@@ -20,7 +20,7 @@ on:
           - sonnet
           - haiku
       build_model:
-        description: "Claude model for implementation"
+        description: 'Claude model for implementation'
         required: true
         type: choice
         default: haiku
