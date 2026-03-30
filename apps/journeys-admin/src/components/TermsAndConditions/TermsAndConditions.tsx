@@ -103,12 +103,17 @@ export function TermsAndConditions(): ReactElement {
     }
 
     if (teamId != null && team != null) {
+      // Must await before navigating so the DB write completes before the next
+      // page's TeamProvider fires GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS. If this
+      // were inside Promise.allSettled the failure would be silently swallowed
+      // and the new page would see lastActiveTeamId: null from the DB.
+      await updateLastActiveTeamId({
+        variables: {
+          input: { lastActiveTeamId: teamId }
+        }
+      })
+
       await Promise.allSettled([
-        updateLastActiveTeamId({
-          variables: {
-            input: { lastActiveTeamId: teamId }
-          }
-        }),
         router.push(
           router.query.redirect != null
             ? new URL(router.query.redirect as string, window.location.origin)

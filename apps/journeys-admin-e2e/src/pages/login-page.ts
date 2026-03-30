@@ -61,6 +61,22 @@ export class LoginPage {
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilNewUserDiscoverPageLoaded()
+  }
+
+  // Used after new-user registration login. T&C acceptance always creates a team
+  // and sets it active (see TermsAndConditions.tsx), so "Create Custom Journey"
+  // must be enabled — this is a deterministic requirement, not a defensive check.
+  private async waitUntilNewUserDiscoverPageLoaded() {
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run.
+    await expect(
+      this.page.getByTestId('NavigationListItemProjects')
+    ).toBeVisible({ timeout: 90000 })
+
+    // 90s: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS runs client-side (not in SSR cache) and
+    // needs a fresh network request — cold Vercel instances can take up to 65s to respond.
+    await expect(
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
   }
 }
