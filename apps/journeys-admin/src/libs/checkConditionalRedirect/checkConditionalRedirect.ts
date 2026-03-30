@@ -36,33 +36,24 @@ export async function checkConditionalRedirect({
   teamName,
   allowGuest = false
 }: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
-  const requestedRedirect = new URL(
+  const currentRedirect = new URL(
     resolvedUrl,
     'https://admin.nextstep.is'
   ).searchParams.get('redirect')
-  const currentRedirect =
-    requestedRedirect != null &&
-    requestedRedirect.startsWith('/') &&
-    !requestedRedirect.startsWith('//')
-      ? requestedRedirect
-      : null
-
-  let redirectForApi: string | undefined
-  let encodedRedirect = ''
+  let redirect = ''
 
   if (currentRedirect != null) {
-    redirectForApi = currentRedirect
-    encodedRedirect = `?redirect=${encodeURIComponent(currentRedirect)}`
-  } else if (resolvedUrl !== '/') {
-    redirectForApi = resolvedUrl
-    encodedRedirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
+    redirect = `?redirect=${encodeURIComponent(currentRedirect)}`
+  } else {
+    if (resolvedUrl !== '/')
+      redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
   }
 
   let meResult: GetMe | undefined
   try {
     const { data } = await apolloClient.query<GetMe>({
       query: GET_ME,
-      variables: { input: { redirect: redirectForApi } }
+      variables: { input: { redirect } }
     })
     meResult = data
   } catch (error) {
@@ -87,7 +78,7 @@ export async function checkConditionalRedirect({
     if (!(me.me?.emailVerified ?? false)) {
       if (resolvedUrl.startsWith('/users/verify')) return
       return {
-        destination: `/users/verify${encodedRedirect}`,
+        destination: `/users/verify${redirect}`,
         permanent: false
       }
     }
@@ -97,8 +88,8 @@ export async function checkConditionalRedirect({
     return
   }
 
-  // don't redirect when already on /users/verify with the same redirect param
-  if (resolvedUrl.startsWith(`/users/verify${encodedRedirect}`)) return
+  // don't redirect on /users/verify
+  if (resolvedUrl.startsWith(`/users/verify${redirect}`)) return
 
   const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
@@ -107,24 +98,7 @@ export async function checkConditionalRedirect({
   if (data.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {
-      destination: `/users/terms-and-conditions${encodedRedirect}`,
-      permanent: false
-    }
-  }
-
-  // Terms already accepted — skip past the terms page if we're still on it
-  // (e.g. redirected here after email verification via link).
-  // Only forward the original ?redirect= destination, not the terms URL itself.
-  if (resolvedUrl.startsWith('/users/terms-and-conditions')) {
-    const forwardRedirect = currentRedirect != null ? encodedRedirect : ''
-    if (data.teams.length === 0) {
-      return {
-        destination: `/teams/new${forwardRedirect}`,
-        permanent: false
-      }
-    }
-    return {
-      destination: currentRedirect ?? '/',
+      destination: `/users/terms-and-conditions${redirect}`,
       permanent: false
     }
   }
@@ -139,7 +113,7 @@ export async function checkConditionalRedirect({
     }
     if (resolvedUrl.startsWith('/teams/new')) return
     return {
-      destination: `/teams/new${encodedRedirect}`,
+      destination: `/teams/new${redirect}`,
       permanent: false
     }
   }

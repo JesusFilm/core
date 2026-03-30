@@ -128,10 +128,10 @@ export function createApolloClient(
         true
     ) {
       void logout()
-      // Propagate a settled error so any awaiting promise rejects cleanly
+      // Return an empty observable to suppress the error so React does not crash
       // while logout() clears the Firebase token and redirects to sign-in
       return new Observable((observer) => {
-        observer.error(new Error('Session expired'))
+        observer.complete()
       })
     }
   })
