@@ -3,6 +3,15 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/users/client'
 import { impersonateUser } from '@core/yoga/firebaseClient'
 
+function isFirebaseNotFound(error: unknown): boolean {
+  return (
+    error != null &&
+    typeof error === 'object' &&
+    'code' in error &&
+    (error as { code: string }).code === 'auth/user-not-found'
+  )
+}
+
 import { builder } from '../builder'
 
 import { findOrFetchUser } from './findOrFetchUser'
@@ -91,12 +100,22 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (_parent, { input }, ctx) => {
-      const user = await findOrFetchUser(
-        {},
-        ctx.currentUser.id,
-        input?.redirect ?? undefined,
-        input?.app ?? 'NextSteps'
-      )
+      let user
+      try {
+        user = await findOrFetchUser(
+          {},
+          ctx.currentUser.id,
+          input?.redirect ?? undefined,
+          input?.app ?? 'NextSteps'
+        )
+      } catch (error) {
+        if (isFirebaseNotFound(error)) {
+          throw new GraphQLError('User account has been deleted', {
+            extensions: { code: 'UNAUTHENTICATED' }
+          })
+        }
+        throw error
+      }
       if (user == null) return null
 
       // Return appropriate type based on whether user has email
