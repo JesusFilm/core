@@ -1538,6 +1538,33 @@ describe('video', () => {
         })
       )
     })
+
+    it('should query videos with updatedAt filter', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+
+      await client({
+        document: VIDEOS_QUERY,
+        variables: {
+          where: {
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
+          }
+        }
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            published: true,
+            availableLanguages: { isEmpty: false },
+            updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+          })
+        })
+      )
+    })
   })
 
   describe('video', () => {
@@ -1660,6 +1687,31 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.videosCount', 1)
+    })
+
+    it('should return a count of videos with updatedAt filter', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(5)
+      const data = await client({
+        document: VIDEO_COUNT,
+        variables: {
+          where: {
+            updatedAt: { gte: '2025-01-01T00:00:00.000Z' }
+          }
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: {
+          id: undefined,
+          label: undefined,
+          locked: undefined,
+          published: true,
+          availableLanguages: { isEmpty: false },
+          title: undefined,
+          variants: undefined,
+          updatedAt: { gte: new Date('2025-01-01T00:00:00.000Z') }
+        }
+      })
+      expect(data).toHaveProperty('data.videosCount', 5)
     })
   })
 

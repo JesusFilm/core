@@ -1,5 +1,6 @@
 import { Prisma } from '@core/prisma/media/client'
 
+import { toPrismaDateTimeFilter } from '../../../builder'
 import { type VideosFilter } from '../../inputs/videosFilter'
 import { parseFullTextSearch } from '../parseFullTextSearch'
 
@@ -10,7 +11,8 @@ export function videosFilter({
   ids,
   subtitleLanguageIds,
   published,
-  locked
+  locked,
+  updatedAt
 }: typeof VideosFilter.$inferInput): Prisma.VideoWhereInput {
   return {
     title:
@@ -36,6 +38,7 @@ export function videosFilter({
     label: labels != null ? { in: labels } : undefined,
     id: ids != null ? { in: ids } : undefined,
     published: published != null ? published : undefined,
-    locked: locked != null ? locked : undefined
+    locked: locked != null ? locked : undefined,
+    updatedAt: toPrismaDateTimeFilter(updatedAt)
   }
 }

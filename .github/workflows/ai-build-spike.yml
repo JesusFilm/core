@@ -1,0 +1,230 @@
+name: AI Build (Spike)
+on:
+  workflow_dispatch:
+    inputs:
+      spec:
+        description: 'Feature spec to implement'
+        required: true
+        type: string
+      ticket:
+        description: 'Linear ticket ID (e.g. NES-777)'
+        required: true
+        type: string
+      validation_model:
+        description: 'Claude model for spec validation'
+        required: true
+        type: choice
+        default: haiku
+        options:
+          - opus
+          - sonnet
+          - haiku
+      build_model:
+        description: 'Claude model for implementation'
+        required: true
+        type: choice
+        default: haiku
+        options:
+          - opus
+          - sonnet
+          - haiku
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.CI_BOT_APP_ID }}
+          private-key: ${{ secrets.CI_BOT_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Validate Linear ticket
+        id: ticket
+        run: |
+          RESPONSE=$(curl -s -X POST https://api.linear.app/graphql \
+            -H "Content-Type: application/json" \
+            -H "Authorization: $LINEAR_API_KEY" \
+            -H "apollo-require-preflight: true" \
+            -d "{\"query\": \"{ issue(id: \\\"$TICKET\\\") { id title branchName } }\"}")
+
+          TITLE=$(echo "$RESPONSE" | jq -r '.data.issue.title // empty')
+          GIT_BRANCH=$(echo "$RESPONSE" | jq -r '.data.issue.branchName // empty')
+
+          if [ -z "$TITLE" ]; then
+            echo "::error::Linear ticket $TICKET not found or inaccessible."
+            exit 1
+          fi
+
+          # Replace the username prefix with aibuild (no hyphen — branch naming rules require [a-z]+ before /)
+          BRANCH_NAME=$(echo "$GIT_BRANCH" | sed 's|^[^/]*/|aibuild/|')
+
+          echo "title=$TITLE" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+          echo "Ticket: $TITLE"
+          echo "Branch: $BRANCH_NAME"
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY_AI_BUILD_SYSTEM }}
+          TICKET: ${{ github.event.inputs.ticket }}
+
+      - name: Validate spec
+        id: validate-spec
+        run: |
+          RESULT=$(cd /tmp && npx -y @anthropic-ai/claude-code -p "$PROMPT" --model "$MODEL" --dangerously-skip-permissions)
+          echo "$RESULT"
+          if echo "$RESULT" | grep -qx "SPEC_VALID"; then
+            echo "valid=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "valid=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Spec validation failed. See output above."
+            exit 1
+          fi
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
+          MODEL: ${{ github.event.inputs.validation_model }}
+          PROMPT: |
+            You are a spec validator for the Next Steps (journeys-admin) application.
+            Validate the following spec against these rules:
+
+            1. DOMAIN: The spec must describe changes to journeys-admin (also known as next-steps-admin)
+               and its related APIs (api-journeys, api-journeys-modern) or libraries (journeys-ui, shared-ui).
+               Reject specs targeting other domains such as: watch, player, arclight, docs, cms, videos-admin,
+               resources, short-links, CI/CD, infrastructure, or unrelated libraries.
+
+            2. FORMAT: The spec must follow a user story structure:
+               "As a [role], I want to [action] so that [benefit]"
+               It should be clear, specific, and describe a single coherent change.
+               Reject vague, multi-domain, or poorly structured specs.
+
+            If BOTH rules pass, respond with exactly: SPEC_VALID
+            If EITHER rule fails, respond with: SPEC_INVALID followed by a brief explanation of what is wrong
+            and an example of a well-formed spec for reference.
+
+            Spec to validate:
+            ${{ github.event.inputs.spec }}
+
+      - name: Fetch main ref for nx affected
+        run: git fetch origin main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma clients
+        run: npx nx run-many --target=prisma-generate
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create branch and draft PR
+        id: draft-pr
+        run: |
+          # Handle re-runs: check if branch already exists
+          if git ls-remote --exit-code origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+            git commit --allow-empty -m "ai-build($TICKET): starting implementation"
+            git push -u origin "$BRANCH"
+          fi
+
+          # Handle re-runs: check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --json url --jq '.[0].url // empty')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "pr_url=$EXISTING_PR" >> "$GITHUB_OUTPUT"
+            echo "Reusing existing PR: $EXISTING_PR"
+          else
+            PR_BODY=$(cat <<EOF
+          🤖 AI build in progress...
+
+          Ticket: $TICKET
+          Spec: $SPEC
+          Model: $BUILD_MODEL
+          EOF
+            )
+            PR_URL=$(gh pr create \
+              --draft \
+              --title "ai-build($TICKET): $TITLE" \
+              --body "$PR_BODY" \
+              --base main)
+            echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+            echo "Draft PR created: $PR_URL"
+          fi
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH: ${{ steps.ticket.outputs.branch }}
+          TITLE: ${{ steps.ticket.outputs.title }}
+          TICKET: ${{ github.event.inputs.ticket }}
+          SPEC: ${{ github.event.inputs.spec }}
+          BUILD_MODEL: ${{ github.event.inputs.build_model }}
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+        working-directory: /tmp
+
+      - name: Run Claude
+        run: claude -p "$SPEC" --model "$MODEL" --dangerously-skip-permissions
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY_AI_BUILD_SYSTEM }}
+          MODEL: ${{ github.event.inputs.build_model }}
+          SPEC: |
+            You are implementing a spec in an Nx monorepo. Git is already configured
+            and you are on a feature branch with a draft PR open.
+
+            IMPORTANT — commit and push your work frequently:
+            - After each meaningful change (new file, updated component, added test), run:
+              git add -A && git commit -m "type(scope): short description" && git push
+            - Use conventional commit format: feat, fix, refactor, test, chore as the type.
+              Scope should be the affected project or area (e.g. journeys-admin, journeys-ui).
+              Subject must be lowercase, not sentence-case or start-case.
+              Example: git commit -m "feat(journeys-admin): add duplicate card button to step editor"
+            - This gives visibility to engineers watching the draft PR.
+            - Do NOT wait until the end to commit everything at once.
+
+            After all changes are complete:
+            1. Run `npx nx affected --target=lint --base=origin/main` to verify
+            2. Run `npx nx affected --target=type-check --base=origin/main` to verify
+            If checks fail, attempt to fix, commit, and push the fix.
+            If you cannot fix after 2 attempts, commit what you have, push, and describe what failed.
+
+            Spec:
+            ${{ github.event.inputs.spec }}
+
+      - name: Mark PR ready for review
+        if: success()
+        run: |
+          gh pr ready "$PR_URL"
+          PR_BODY=$(cat <<EOF
+          🤖 AI build complete.
+
+          Ticket: $TICKET
+          Spec: $SPEC
+          Model: $BUILD_MODEL
+          EOF
+          )
+          gh pr edit "$PR_URL" --body "$PR_BODY"
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_URL: ${{ steps.draft-pr.outputs.pr_url }}
+          TICKET: ${{ github.event.inputs.ticket }}
+          SPEC: ${{ github.event.inputs.spec }}
+          BUILD_MODEL: ${{ github.event.inputs.build_model }}

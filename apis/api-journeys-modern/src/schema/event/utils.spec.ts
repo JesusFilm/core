@@ -91,6 +91,9 @@ describe('event utils', () => {
 
       const result = await validateBlockEvent('user-id', 'block-id', 'step-id')
 
+      expect(prismaMock.visitor.findFirst).toHaveBeenCalledWith({
+        where: { userId: 'user-id', teamId: 'team-id' }
+      })
       expect(result).toEqual({
         visitor: mockVisitor,
         journeyVisitor: mockJourneyVisitor,
@@ -261,6 +264,7 @@ describe('event utils', () => {
 
   describe('getByUserIdAndJourneyId', () => {
     it('should return visitor and journeyVisitor when both exist', async () => {
+      const mockJourney = { teamId: 'team-id' }
       const mockVisitor = {
         id: 'visitor-id'
       }
@@ -270,6 +274,7 @@ describe('event utils', () => {
         visitorId: 'visitor-id'
       }
 
+      prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
       prismaMock.visitor.findFirst.mockResolvedValue(mockVisitor as any)
       prismaMock.journeyVisitor.findUnique.mockResolvedValue(
         mockJourneyVisitor as any
@@ -277,13 +282,27 @@ describe('event utils', () => {
 
       const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
 
+      expect(prismaMock.visitor.findFirst).toHaveBeenCalledWith({
+        where: { userId: 'user-id', teamId: 'team-id' }
+      })
       expect(result).toEqual({
         visitor: mockVisitor,
         journeyVisitor: mockJourneyVisitor
       })
     })
 
+    it('should return null when journey does not exist', async () => {
+      prismaMock.journey.findUnique.mockResolvedValue(null)
+
+      const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
+
+      expect(result).toBeNull()
+    })
+
     it('should return null when visitor does not exist', async () => {
+      prismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'team-id'
+      } as any)
       prismaMock.visitor.findFirst.mockResolvedValue(null)
 
       const result = await getByUserIdAndJourneyId('user-id', 'journey-id')
@@ -292,6 +311,9 @@ describe('event utils', () => {
     })
 
     it('should return null when journeyVisitor does not exist', async () => {
+      prismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'team-id'
+      } as any)
       prismaMock.visitor.findFirst.mockResolvedValue({
         id: 'visitor-id'
       } as any)
