@@ -5,6 +5,7 @@
 ## Use `npx jest` directly — never `npx nx test`
 
 The `nx test` executor has critical issues:
+
 - `--testPathPattern` is silently ignored and runs **all** test suites (~3+ minutes)
 - `--testFile` works but adds ~2s overhead per invocation
 
@@ -15,6 +16,7 @@ npx jest --config <app-path>/jest.config.ts --no-coverage '<path-to-spec-file>'
 ```
 
 Example:
+
 ```bash
 npx jest --config apps/journeys-admin/jest.config.ts --no-coverage 'apps/journeys-admin/src/components/Foo/Foo.spec.tsx'
 ```
@@ -34,10 +36,10 @@ npx jest --config <app-path>/jest.config.ts --no-coverage '<path-to-folder>'
 
 Each app has its own `jest.config.ts` at the app root. Match the spec file's app:
 
-| Spec file path starts with | Jest config |
-|---|---|
-| `apps/<app-name>/` | `apps/<app-name>/jest.config.ts` |
-| `libs/<lib-name>/` | `libs/<lib-name>/jest.config.ts` |
+| Spec file path starts with | Jest config                      |
+| -------------------------- | -------------------------------- |
+| `apps/<app-name>/`         | `apps/<app-name>/jest.config.ts` |
+| `libs/<lib-name>/`         | `libs/<lib-name>/jest.config.ts` |
 
 ## Common mistakes to avoid
 
