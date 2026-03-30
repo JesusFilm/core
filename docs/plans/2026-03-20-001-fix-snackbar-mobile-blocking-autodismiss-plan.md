@@ -105,8 +105,9 @@ Full audit of all 39 snackbar callsites in `apps/journeys-admin/`:
 
 ## Acceptance Criteria
 
-- [ ] `SnackbarProvider` in `apps/journeys-admin/pages/_app.tsx` has a global close button action
-- [ ] Close button has `aria-label="dismiss notification"` for accessibility
+- [x] `SnackbarProvider` in `apps/journeys-admin/pages/_app.tsx` has a global close button action
+- [x] `SnackbarProvider` in `apps/journeys/pages/_app.tsx` has a global close button action
+- [x] Close button has `aria-label="dismiss notification"` for accessibility
 - [ ] Users can manually dismiss any snackbar by tapping the close button
 - [ ] Snackbars still auto-dismiss after their configured duration (default 5s, or explicit overrides)
 - [ ] Existing tests pass without modification
@@ -171,8 +172,7 @@ import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 ### Files Changed
 
 1. `apps/journeys-admin/pages/_app.tsx` — add `action` prop to `SnackbarProvider`, add module-scope `snackbarAction` function, add `IconButton`, `closeSnackbar`/`SnackbarKey`, and `XCircleContainedIcon` imports
-
-**That's it — single file change.**
+2. `apps/journeys/pages/_app.tsx` — identical pattern applied to the public-facing journeys app
 
 ### Future Cleanup Opportunities (Not in scope)
 
