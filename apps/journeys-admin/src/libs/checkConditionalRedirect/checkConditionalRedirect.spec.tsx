@@ -15,6 +15,31 @@ const meData = {
 }
 
 describe('checkConditionalRedirect', () => {
+  it('redirects to clear-auth when GetMe throws UNAUTHENTICATED', async () => {
+    const unauthError = {
+      graphQLErrors: [{ extensions: { code: 'UNAUTHENTICATED' } }]
+    }
+    const apolloClient = {
+      query: jest.fn().mockRejectedValueOnce(unauthError)
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    expect(
+      await checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
+    ).toEqual({
+      destination: '/api/clear-auth',
+      permanent: false
+    })
+  })
+
+  it('rethrows non-UNAUTHENTICATED errors from GetMe', async () => {
+    const networkError = new Error('Network error')
+    const apolloClient = {
+      query: jest.fn().mockRejectedValueOnce(networkError)
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    await expect(
+      checkConditionalRedirect({ apolloClient, resolvedUrl: '/' })
+    ).rejects.toThrow('Network error')
+  })
+
   it('calls apollo apolloClient', async () => {
     const apolloClient = {
       query: jest
