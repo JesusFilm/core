@@ -1,5 +1,5 @@
 ---
-title: "fix: Invitation link does not redirect to the correct team"
+title: 'fix: Invitation link does not redirect to the correct team'
 type: fix
 status: active
 date: 2026-03-25
@@ -109,19 +109,19 @@ initialUrlTeamId.current = undefined
 
 ### Key Files to Modify
 
-| File | Change |
-|---|---|
-| `libs/journeys/ui/src/components/TeamProvider/TeamProvider.tsx` | Add URL param reading, priority check, and cleanup |
-| `libs/journeys/ui/src/components/TeamProvider/TeamProvider.spec.tsx` | Add tests for URL param consumption |
+| File                                                                 | Change                                             |
+| -------------------------------------------------------------------- | -------------------------------------------------- |
+| `libs/journeys/ui/src/components/TeamProvider/TeamProvider.tsx`      | Add URL param reading, priority check, and cleanup |
+| `libs/journeys/ui/src/components/TeamProvider/TeamProvider.spec.tsx` | Add tests for URL param consumption                |
 
 ### Files for Reference Only (no changes needed)
 
-| File | Why |
-|---|---|
-| `apis/api-journeys-modern/src/workers/email/service/service.ts:138,217` | Generates `?activeTeam=` URLs — already correct |
-| `apps/journeys-admin/src/libs/auth/getAuthTokens.ts` | Auth redirect preserves `?activeTeam` via `redirect` param — already works |
+| File                                                                          | Why                                                                                   |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `apis/api-journeys-modern/src/workers/email/service/service.ts:138,217`       | Generates `?activeTeam=` URLs — already correct                                       |
+| `apps/journeys-admin/src/libs/auth/getAuthTokens.ts`                          | Auth redirect preserves `?activeTeam` via `redirect` param — already works            |
 | `apis/api-journeys/src/app/modules/userTeamInvite/userTeamInvite.resolver.ts` | `userTeamInviteAcceptAll()` runs in `initAndAuthApp` before page load — already works |
-| `apps/journeys-admin/pages/_app.tsx:117` | `TeamProvider` wraps entire app — no change needed |
+| `apps/journeys-admin/pages/_app.tsx:117`                                      | `TeamProvider` wraps entire app — no change needed                                    |
 
 ## Verified Assumptions
 
@@ -150,32 +150,39 @@ These were investigated during research and confirmed:
 ### Test Cases
 
 #### 1. `should set active team from URL activeTeam parameter`
+
 - **Setup**: Set `window.location.search = '?activeTeam=teamId'`, mock `teams` query returning that team
 - **Verify**: `activeTeam` is set to the URL-specified team, DB is synced
 
 #### 2. `should prioritize URL param over session storage`
+
 - **Setup**: Set both `sessionStorage` (team A) and `window.location.search` (team B)
 - **Verify**: Team B (URL) wins
 
 #### 3. `should prioritize URL param over database lastActiveTeamId`
+
 - **Setup**: Set `lastActiveTeamId` to team A in mock query, URL param to team B
 - **Verify**: Team B (URL) wins
 
 #### 4. `should fall through to session storage when URL team is not in teams list`
+
 - **Setup**: Set URL param to non-existent team ID, session storage to valid team
 - **Verify**: Falls through to session storage team
 
 #### 5. `should clean activeTeam param from URL after consumption`
+
 - **Setup**: Set `window.location.search = '?activeTeam=teamId&type=templates'`
 - **Verify**: `window.history.replaceState` called with URL containing only `?type=templates`
 
 #### 6. `should not read URL param during SSR`
+
 - **Setup**: Test with `typeof window === 'undefined'` scenario (handled by existing SSR guards)
 - **Verify**: Returns `undefined`, no errors
 
 ### Test Pattern
 
 Follow the existing pattern in `TeamProvider.spec.tsx`:
+
 - Use `MockedProvider` with typed `MockedResponse<GetLastActiveTeamIdAndTeams>`
 - Mock `window.location` via `Object.defineProperty` or jest spies
 - Mock `window.history.replaceState` via `jest.spyOn`
