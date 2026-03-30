@@ -36,7 +36,9 @@ jest.mock('../LinksScreen/CardsPreview', () => ({
   )
 }))
 
-jest.mock('../LinksScreen/CardsPreview/TemplateCardPreviewDialog', () => ({
+jest.mock(
+  '../LinksScreen/CardsPreview/TemplateCardPreviewDialog/TemplateCardPreviewDialog',
+  () => ({
   TemplateCardPreviewDialog: ({
     open,
     onClose,
@@ -56,7 +58,7 @@ jest.mock('../LinksScreen/CardsPreview/TemplateCardPreviewDialog', () => ({
       </button>
     </div>
   )
-}))
+  }))
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
