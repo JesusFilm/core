@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { randomBytes } from 'crypto'
+
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
@@ -15,8 +16,7 @@ export class Register {
   userEmail: string
   constructor(page: Page) {
     this.page = page
-    randomNumber =
-      `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(4).toString('hex')}`
+    randomNumber = `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(4).toString('hex')}`
   }
 
   async registerNewAccount() {
