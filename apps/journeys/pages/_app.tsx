@@ -1,6 +1,7 @@
 import { ApolloProvider } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import GlobalStyles from '@mui/material/GlobalStyles'
+import IconButton from '@mui/material/IconButton'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager, sendGTMEvent } from '@next/third-parties/google'
 import { onAuthStateChanged } from 'firebase/auth'
@@ -9,11 +10,12 @@ import Head from 'next/head'
 import Script from 'next/script'
 import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
-import { SnackbarProvider } from 'notistack'
+import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
 import { GetJourney_journey as Journey } from '../__generated__/GetJourney'
 import i18nConfig from '../next-i18next.config'
@@ -21,6 +23,17 @@ import { useApollo } from '../src/libs/apolloClient'
 import { firebaseAuth } from '../src/libs/firebaseClient'
 
 import './globals.css'
+
+const snackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
+  <IconButton
+    size="small"
+    aria-label="dismiss notification"
+    color="inherit"
+    onClick={() => closeSnackbar(snackbarKey)}
+  >
+    <XCircleContainedIcon />
+  </IconButton>
+)
 
 type JourneysAppProps = NextJsAppProps<{ journey?: Journey }> & {
   pageProps: SSRConfig
@@ -108,6 +121,7 @@ function JourneysApp({
             vertical: 'bottom',
             horizontal: 'right'
           }}
+          action={snackbarAction}
         >
           <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
           <Component {...pageProps} />
