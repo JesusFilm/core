@@ -90,23 +90,16 @@ export function MultiStepForm(): ReactElement {
     screens
   )
 
-  // Because of how react renders the screens, the scroll position is not reset when the screen changes.
-  // This is a workaround to reset the scroll position when the screen changes.
+  // Reset scroll position when the active screen changes.
   useEffect(() => {
     requestAnimationFrame(() => {
-      const scrollContainer = document.querySelector<HTMLElement>(
-        '[data-testid="MainPanelBody"]'
-      )
-      if (scrollContainer != null) {
-        scrollContainer.scrollTop = 0
-      }
+      document
+        .querySelector<HTMLElement>('[data-testid="MainPanelBody"]')
+        ?.scrollTo(0, 0)
 
-      const appHeader = document.querySelector<HTMLElement>('#app-header')
-      if (appHeader != null) {
-        requestAnimationFrame(() => {
-          appHeader.scrollIntoView({ block: 'start', behavior: 'instant' })
-        })
-      }
+      document
+        .querySelector<HTMLElement>('[data-testid="JourneysAdminPageWrapper"]')
+        ?.scrollTo(0, 0)
     })
   }, [activeScreen])
 
