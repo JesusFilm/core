@@ -1,7 +1,6 @@
 ---
 paths:
   - 'apps/arclight/src/**/*.{ts,tsx}'
-  - 'apps/cms/src/**/*.{ts,tsx}'
   - 'apps/docs/src/**/*.{ts,tsx}'
   - 'apps/journeys/src/**/*.{ts,tsx}'
   - 'apps/journeys-admin/src/**/*.{ts,tsx}'

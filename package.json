@@ -422,8 +422,6 @@
     }
   },
   "pnpm": {
-    "overrides": {
-      "strapi-blurhash>canvas": "^3.2.1"
-    }
+    "overrides": {}
   }
 }

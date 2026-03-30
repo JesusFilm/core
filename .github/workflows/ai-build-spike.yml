@@ -99,7 +99,7 @@ jobs:
 
             1. DOMAIN: The spec must describe changes to journeys-admin (also known as next-steps-admin)
                and its related APIs (api-journeys, api-journeys-modern) or libraries (journeys-ui, shared-ui).
-               Reject specs targeting other domains such as: watch, player, arclight, docs, cms, videos-admin,
+               Reject specs targeting other domains such as: watch, player, arclight, docs, videos-admin,
                resources, short-links, CI/CD, infrastructure, or unrelated libraries.
 
             2. FORMAT: The spec must follow a user story structure:
