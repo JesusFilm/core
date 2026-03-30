@@ -46,13 +46,21 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
     },
     subscribe: async function* (_parent, { idType, id }, ctx) {
       try {
-        const {
-          user,
-          firebase,
-          logs: lookupLogs
-        } = await lookupUser(idType, id)
+        const [{ user, firebase, logs: lookupLogs }, caller] =
+          await Promise.all([
+            lookupUser(idType, id),
+            prisma.user.findUnique({ where: { userId: ctx.currentUser.id } })
+          ])
         for (const log of lookupLogs) {
           yield { log, done: false, success: null }
+        }
+        if (caller == null) {
+          yield {
+            log: createLog('❌ Caller user not found', 'error'),
+            done: true,
+            success: false
+          }
+          return
         }
 
         // Firebase-only account — no DB user, just delete Firebase auth
@@ -60,6 +68,47 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           if (!firebase.exists || firebase.uid == null) {
             yield {
               log: createLog('❌ No Firebase account found to delete', 'error'),
+              done: true,
+              success: false
+            }
+            return
+          }
+
+          // Create audit log before deletion so there is always a durable
+          // record, matching the behaviour of the full-user path.
+          let auditLog: { id: string } | null = null
+          try {
+            auditLog = await prisma.userDeleteAuditLog.create({
+              data: {
+                deletedUserId: firebase.uid,
+                deletedUserEmail: firebase.email,
+                deletedUserFirstName: '(Firebase only)',
+                callerUserId: caller.id,
+                callerEmail: caller.email,
+                callerFirstName: caller.firstName,
+                callerLastName: caller.lastName,
+                deletedJourneyIds: [],
+                deletedTeamIds: [],
+                deletedUserJourneyIds: [],
+                deletedUserTeamIds: [],
+                success: false
+              }
+            })
+            yield {
+              log: createLog('📝 Audit log created'),
+              done: false,
+              success: null
+            }
+          } catch (auditError) {
+            console.error(
+              'Failed to create audit log for firebase-only deletion:',
+              auditError
+            )
+            yield {
+              log: createLog(
+                '❌ Failed to create audit log. Aborting deletion.',
+                'error'
+              ),
               done: true,
               success: false
             }
@@ -82,27 +131,31 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           }
 
           const hasError = fbLogs.some((log) => log.level === 'error')
+
+          // Best-effort audit log update
+          try {
+            await prisma.userDeleteAuditLog.update({
+              where: { id: auditLog.id },
+              data: {
+                success: !hasError,
+                ...(hasError
+                  ? { errorMessage: 'Firebase deletion failed' }
+                  : {})
+              }
+            })
+          } catch {
+            // best-effort
+          }
+
           yield {
             log: createLog(
               hasError
                 ? '❌ Firebase deletion failed'
-                : '✅ Firebase-only account deleted successfully'
+                : '✅ Firebase-only account deleted successfully',
+              hasError ? 'error' : 'info'
             ),
             done: true,
             success: !hasError
-          }
-          return
-        }
-
-        // Look up the caller (superAdmin) for audit log
-        const caller = await prisma.user.findUnique({
-          where: { userId: ctx.currentUser.id }
-        })
-        if (caller == null) {
-          yield {
-            log: createLog('❌ Caller user not found', 'error'),
-            done: true,
-            success: false
           }
           return
         }
@@ -175,7 +228,8 @@ builder.subscriptionField('userDeleteConfirm', (t) =>
           log: createLog(
             userResult.success
               ? '✅ User deletion completed successfully'
-              : '❌ User deletion failed'
+              : '❌ User deletion failed',
+            userResult.success ? 'info' : 'error'
           ),
           done: true,
           success: userResult.success

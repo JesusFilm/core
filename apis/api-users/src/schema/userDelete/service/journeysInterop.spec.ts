@@ -47,14 +47,12 @@ describe('callJourneysCheck', () => {
     expect(result.logs[0].level).toBe('error')
   })
 
-  it('should return error log on exception', async () => {
+  it('should throw on exception so callers can distinguish failure from empty', async () => {
+    // Comment 5: function now rethrows instead of returning all-zero counts,
+    // so callers can tell a network failure apart from "nothing to clean up".
     mockMutate.mockRejectedValueOnce(new Error('Network error'))
 
-    const result = await callJourneysCheck('user-123')
-
-    expect(result.journeysToDelete).toBe(0)
-    expect(result.logs[0].level).toBe('error')
-    expect(result.logs[0].message).toContain('Journeys check failed')
+    await expect(callJourneysCheck('user-123')).rejects.toThrow('Network error')
   })
 })
 
@@ -90,12 +88,11 @@ describe('callJourneysConfirm', () => {
     expect(result.logs[0].level).toBe('error')
   })
 
-  it('should return failure on exception', async () => {
+  it('should throw on exception so callers can distinguish failure from empty', async () => {
+    // Comment 5: function now rethrows instead of returning success:false with
+    // all-zero counts, consistent with callJourneysCheck behaviour.
     mockMutate.mockRejectedValueOnce(new Error('Timeout'))
 
-    const result = await callJourneysConfirm('user-123')
-
-    expect(result.success).toBe(false)
-    expect(result.logs[0].message).toContain('Journeys deletion failed')
+    await expect(callJourneysConfirm('user-123')).rejects.toThrow('Timeout')
   })
 })

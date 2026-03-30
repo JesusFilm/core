@@ -40,7 +40,11 @@ export async function checkJourneysData(
   let journeysToRemove = 0
 
   for (const uj of userJourneys) {
-    const others = uj.journey.userJourneys.filter((j) => j.userId !== userId)
+    // Exclude inviteRequested — same logic as deleteJourneysData to keep
+    // check/confirm counts consistent.
+    const others = uj.journey.userJourneys.filter(
+      (j) => j.userId !== userId && j.role !== 'inviteRequested'
+    )
     if (others.length === 0) {
       journeysToDelete++
     } else if (uj.role === 'owner') {

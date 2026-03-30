@@ -105,7 +105,14 @@ describe('deleteUserData', () => {
   })
 
   it('should fail if firebase deletion has hard error', async () => {
+    // Comment 2: audit log is now created BEFORE Firebase deletion (Comment 3
+    // fix), so these mocks are required — the function reaches audit log
+    // creation before hitting the Firebase error.
+    prismaMock.userDeleteAuditLog.create.mockResolvedValueOnce({
+      id: 'audit-1'
+    } as any)
     mockDeleteUser.mockRejectedValueOnce(new Error('Firebase error'))
+    prismaMock.userDeleteAuditLog.update.mockResolvedValueOnce({} as any)
 
     const result = await deleteUserData(baseInput)
 
