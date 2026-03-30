@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { randomBytes } from 'crypto'
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
@@ -15,8 +16,7 @@ export class Register {
   constructor(page: Page) {
     this.page = page
     randomNumber =
-      dayjs().format('DDMMYYhhmmss') +
-      Math.floor(Math.random() * (100 - 999 + 1) + 999)
+      `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(4).toString('hex')}`
   }
 
   async registerNewAccount() {
@@ -99,11 +99,10 @@ export class Register {
   }
 
   async verifyPageNavigatedBeforeStartPage() {
+    // Stable element-based assertion for the Terms step.
+    // Using wrapper text is brittle due to translation/markup differences.
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-        { hasText: 'Terms and Conditions' }
-      )
+      this.page.locator('button[data-testid="TermsAndConditionsNextButton"]')
     ).toBeVisible({ timeout: 90000 })
   }
 
