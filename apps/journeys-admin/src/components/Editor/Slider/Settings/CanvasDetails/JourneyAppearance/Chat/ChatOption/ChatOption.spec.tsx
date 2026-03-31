@@ -168,11 +168,7 @@ describe('ChatOption', () => {
     rerender(
       <MockedProvider>
         <SnackbarProvider>
-          <ChatOption
-            {...initialProps}
-            chatButton={undefined}
-            active={false}
-          />
+          <ChatOption {...initialProps} chatButton={undefined} active={false} />
         </SnackbarProvider>
       </MockedProvider>
     )

@@ -1,5 +1,5 @@
 ---
-title: "fix: Custom chat widget clears URL and icon on deselect"
+title: 'fix: Custom chat widget clears URL and icon on deselect'
 type: fix
 status: active
 date: 2026-03-31
@@ -15,12 +15,14 @@ linear: NES-1522
 **Research agents used:** Frontend races reviewer, TypeScript reviewer, Code simplicity reviewer, Pattern recognition specialist, Performance oracle, Framework docs researcher, Git history analyzer, ReactFlow learning check
 
 ### Key Improvements
+
 1. Replaced `useEffect` sync with render-time state reset — eliminates the double-render anti-pattern flagged by React docs
 2. Added ESLint compliance guidance — extract `chatButton?.id` to a local const
 3. Documented the TextFieldForm Formik key interaction as a known amplification vector
 4. Added verification that the shift case is handled without stale-state frames
 
 ### New Considerations Discovered
+
 - The `useState` + `useEffect` sync pattern is explicitly called an anti-pattern by the React docs ("You Might Not Need an Effect")
 - The `useEffect` approach causes a one-frame stale-state render before the effect fires — render-time reset eliminates this
 - The `TextFieldForm` key pattern `key={field-${id}-${initialValue}}` amplifies any state change into a full Formik remount
@@ -39,6 +41,7 @@ key={customButtons[0]?.id ?? 'custom-0'}
 ```
 
 When the button is deleted from the server and Apollo cache:
+
 1. `customButtons[0]` becomes `undefined`
 2. The key changes from the button's ID (e.g. `"abc123"`) to the fallback `"custom-0"`
 3. React unmounts the old component and mounts a new one
@@ -50,6 +53,7 @@ Dedicated platforms have no `key` prop, so React preserves their component ident
 ### Research Insights
 
 **React docs on keys** (react.dev/learn/preserving-and-resetting-state):
+
 > "Specifying a key tells React to use the key itself as part of the component's position. Every time a component with a specific key appears on the screen, its state is created fresh. Every time it is removed, its state is destroyed."
 
 **Git history**: The dynamic key pattern was introduced in PR #8865 (NES-1452, 2026-03-20) by jianwei1. A reviewer explicitly flagged the need for keys on the second custom slot. The key pattern exists specifically because `ChatOption` uses `useState` initializers that only run on mount.
@@ -152,13 +156,13 @@ useEffect(() => {
 
 ## Verification Scenarios
 
-| # | Scenario | Expected |
-|---|----------|----------|
-| A | 1 custom: deselect then re-select | URL and icon preserved |
-| B | 2 customs: deselect first | Second button's data shifts into slot 1 correctly |
-| C | 2 customs: deselect second | First button unchanged |
-| D | Deselect then re-select then refresh page | Button re-created on server with preserved URL (verify via network or refresh) |
-| E | Toggle dedicated platforms off and on | Regression check — unchanged behavior |
+| #   | Scenario                                  | Expected                                                                       |
+| --- | ----------------------------------------- | ------------------------------------------------------------------------------ |
+| A   | 1 custom: deselect then re-select         | URL and icon preserved                                                         |
+| B   | 2 customs: deselect first                 | Second button's data shifts into slot 1 correctly                              |
+| C   | 2 customs: deselect second                | First button unchanged                                                         |
+| D   | Deselect then re-select then refresh page | Button re-created on server with preserved URL (verify via network or refresh) |
+| E   | Toggle dedicated platforms off and on     | Regression check — unchanged behavior                                          |
 
 ### Research Insights on Verification
 
@@ -178,12 +182,12 @@ useEffect(() => {
 
 ## Edge Cases Discovered During Research
 
-| Edge Case | Impact | Handling |
-|---|---|---|
-| Server normalizes link (e.g. lowercases hostname) | Low — currently server returns link as-is | State reset would write back the normalized value. Add a comment documenting this assumption. |
-| `chatButton` transitions from undefined to `{id: undefined}` | Negligible — IDs are always UUIDs in practice | `chatButton.id !== trackedId` → `undefined !== undefined` → false → no sync. Technically correct (no button identity change). |
-| User types in TextFieldForm but hasn't submitted | Unsubmitted input exists only in Formik's internal state | Deselecting destroys the Formik instance. This is consistent with dedicated platforms — user must commit (blur/enter) before toggling. |
-| External update to chatButton fields (e.g. Google Sync) | State not synced if ID unchanged | By design — syncing on value changes would overwrite local edits. The ID-based approach prioritizes local state preservation. |
+| Edge Case                                                    | Impact                                                   | Handling                                                                                                                               |
+| ------------------------------------------------------------ | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Server normalizes link (e.g. lowercases hostname)            | Low — currently server returns link as-is                | State reset would write back the normalized value. Add a comment documenting this assumption.                                          |
+| `chatButton` transitions from undefined to `{id: undefined}` | Negligible — IDs are always UUIDs in practice            | `chatButton.id !== trackedId` → `undefined !== undefined` → false → no sync. Technically correct (no button identity change).          |
+| User types in TextFieldForm but hasn't submitted             | Unsubmitted input exists only in Formik's internal state | Deselecting destroys the Formik instance. This is consistent with dedicated platforms — user must commit (blur/enter) before toggling. |
+| External update to chatButton fields (e.g. Google Sync)      | State not synced if ID unchanged                         | By design — syncing on value changes would overwrite local edits. The ID-based approach prioritizes local state preservation.          |
 
 ## Sources
 
