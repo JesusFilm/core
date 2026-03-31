@@ -450,5 +450,54 @@ describe('Properties', () => {
       expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
     )
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('showCardTemplates: false')).toBeInTheDocument()
+  })
+
+  it('should show card properties for empty card when showCardTemplates is false', async () => {
+    const card: TreeBlock<CardBlock> = {
+      id: 'card1.id',
+      __typename: 'CardBlock',
+      parentBlockId: 'step1.id',
+      coverBlockId: null,
+      parentOrder: 0,
+      backgroundColor: null,
+      themeMode: ThemeMode.light,
+      themeName: ThemeName.base,
+      fullscreen: false,
+      backdropBlur: null,
+      eventLabel: null,
+      children: []
+    }
+
+    const step: TreeBlock<StepBlock> = {
+      id: 'step.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: [card]
+    }
+
+    const state = {
+      showCardTemplates: false
+    } as unknown as EditorState
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <MuxVideoUploadProvider>
+              <Properties block={step} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
+    )
   })
 })
