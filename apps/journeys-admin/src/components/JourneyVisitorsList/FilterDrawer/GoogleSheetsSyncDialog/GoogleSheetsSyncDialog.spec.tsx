@@ -261,7 +261,9 @@ describe('GoogleSheetsSyncDialog', () => {
     await screen.findByRole('button', { name: 'Create Sync' })
 
     // Open the dropdown
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Integration account' }))
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
 
     const options = screen.getAllByRole('option')
     const optionTexts = options.map((o) => o.textContent)
@@ -291,7 +293,9 @@ describe('GoogleSheetsSyncDialog', () => {
 
     await screen.findByRole('button', { name: 'Create Sync' })
 
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Integration account' }))
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
 
     const options = screen.getAllByRole('option')
     // Only the disabled placeholder option should exist
