@@ -101,7 +101,7 @@ describe('LinksScreen', () => {
   })
 
   it('shows validation error for invalid chat URL on submit', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -121,7 +121,7 @@ describe('LinksScreen', () => {
   })
 
   it('calls handleNext on submit (unchanged values)', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -135,7 +135,7 @@ describe('LinksScreen', () => {
   })
 
   it('should show loading state on the Next button after submitting', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -154,7 +154,7 @@ describe('LinksScreen', () => {
   })
 
   it('calls correct mutations for changed url, email, and chat', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
 
     const journeyWithLinks = {
       ...defaultJourney,
@@ -327,7 +327,7 @@ describe('LinksScreen', () => {
   })
 
   it('accepts phone numbers and calls phone update mutation', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
     const journeyWithPhone = {
       ...defaultJourney,
       id: 'journey-id',
@@ -488,7 +488,7 @@ describe('LinksScreen', () => {
   })
 
   it('calls chatButtonUpdate mutation when platform icon is changed', async () => {
-    const handleNext = jest.fn()
+    const handleNext = jest.fn().mockResolvedValue(undefined)
 
     const platformUpdateMock: MockedResponse<
       JourneyChatButtonUpdate,

@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -90,6 +90,19 @@ export function MultiStepForm(): ReactElement {
     screens
   )
 
+  // Reset scroll position when the active screen changes.
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>('[data-testid="MainPanelBody"]')
+        ?.scrollTo(0, 0)
+
+      document
+        .querySelector<HTMLElement>('[data-testid="JourneysAdminPageWrapper"]')
+        ?.scrollTo(0, 0)
+    })
+  }, [activeScreen])
+
   useTemplateCustomizationRedirect({
     journeyId,
     screens,
@@ -103,9 +116,12 @@ export function MultiStepForm(): ReactElement {
       typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
     const nextScreen = getNextCustomizeScreen(screens, activeScreen)
     if (nextScreen == null) return
-    void router.replace(
+    const success = await router.replace(
       buildCustomizeUrl(targetJourneyId, nextScreen, undefined)
     )
+    if (!success) {
+      throw new Error('Navigation was aborted')
+    }
   }
 
   const activeStepForStepper =

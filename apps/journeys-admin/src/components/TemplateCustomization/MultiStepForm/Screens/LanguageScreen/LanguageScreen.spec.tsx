@@ -209,7 +209,7 @@ describe('LanguageScreen', () => {
     jest.clearAllMocks()
     push = jest.fn()
     mockUser = defaultMockUser
-    handleNext = jest.fn((overrideJourneyId?: string) => {
+    handleNext = jest.fn(async (overrideJourneyId?: string) => {
       const id = overrideJourneyId ?? 'journeyId'
       push(`/templates/${id}/customize`, undefined, { shallow: true })
     })
@@ -1366,6 +1366,43 @@ describe('LanguageScreen', () => {
         'Failed to load teams. Please refresh the page and try again.'
       )
     )
+  })
+
+  it('does not show team load error for guest users when team query fails', async () => {
+    mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
+    const mockTeamsQueryError: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+      error: new Error('Forbidden')
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          mockTeamsQueryError,
+          mockGetChildJourneysFromTemplateId,
+          mockGetParentJourneysFromTemplateId
+        ]}
+      >
+        <SnackbarProvider>
+          <FlagsProvider flags={{ templateCustomizationGuestFlow: true }}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TeamProvider>
+                <LanguageScreen handleNext={handleNext} />
+              </TeamProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText(
+          'Failed to load teams. Please refresh the page and try again.'
+        )
+      ).not.toBeInTheDocument()
+    )
+    expect(screen.getByTestId('ScreenWrapper')).toBeInTheDocument()
   })
 
   it('duplicates journey to the user-selected team, not lastActiveTeamId', async () => {
