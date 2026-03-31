@@ -103,9 +103,12 @@ export function MultiStepForm(): ReactElement {
       typeof overrideJourneyId === 'string' ? overrideJourneyId : journeyId
     const nextScreen = getNextCustomizeScreen(screens, activeScreen)
     if (nextScreen == null) return
-    void router.replace(
+    const success = await router.replace(
       buildCustomizeUrl(targetJourneyId, nextScreen, undefined)
     )
+    if (!success) {
+      throw new Error('Navigation was aborted')
+    }
   }
 
   const activeStepForStepper =

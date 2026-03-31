@@ -273,7 +273,7 @@ export function LanguageScreen({
         languagesJourneyMap?.[values.languageSelect?.id ?? ''] ?? journey?.id
 
       if (shouldSkipDuplicate(journey, values)) {
-        handleNext()
+        await handleNext()
         return
       }
 
@@ -285,7 +285,7 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
-        handleNext(duplicatedJourneyId)
+        await handleNext(duplicatedJourneyId)
       }
     } catch {
       enqueueSnackbar(
@@ -294,7 +294,6 @@ export function LanguageScreen({
         ),
         { variant: 'error' }
       )
-    } finally {
       setLoading(false)
     }
   }
