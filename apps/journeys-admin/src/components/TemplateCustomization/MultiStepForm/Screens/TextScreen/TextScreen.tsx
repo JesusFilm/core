@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -32,7 +33,8 @@ const renderEditableText = (
   const parts: ReactElement[] = []
   let lastIndex = 0
 
-  const regex = /\{\{([^:]+):\s*([^}]+)\}\}/g
+  // Matches {{ key: value }}, {{ key: }} (empty value), and {{ key }} (no colon)
+  const regex = /\{\{([^:}]+)(?::\s*([^}]*))?\}\}/g
   let match
 
   const safeText = text ?? ''
@@ -48,13 +50,13 @@ const renderEditableText = (
     }
 
     const key = match[1].trim()
-    const defaultValue = match[2].trim()
+    const defaultValue = match[2] !== undefined ? match[2].trim() : ''
 
     // Find the replacement item for this key
     const replacementItem = replacementItems.find((item) => item.key === key)
     const currentValue = replacementItem
-      ? replacementItem.value || replacementItem.defaultValue
-      : defaultValue
+      ? (replacementItem.value || replacementItem.defaultValue || key)
+      : (defaultValue !== '' ? defaultValue : key)
 
     // Add editable span for the replaceable part
     parts.push(
@@ -127,8 +129,9 @@ interface TextScreenProps {
 }
 
 export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
   const [journeyCustomizationFieldUpdate, { loading: isSubmitting }] =
     useMutation<JourneyCustomizationFieldUpdate>(
       JOURNEY_CUSTOMIZATION_FIELD_UPDATE
@@ -174,16 +177,24 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
     })
 
     if (hasChanges) {
-      await journeyCustomizationFieldUpdate({
-        variables: {
-          journeyId: journey.id,
-          input: replacementItems.map((item) => ({
-            id: item.id,
-            key: item.key,
-            value: item.value
-          }))
-        }
-      })
+      try {
+        await journeyCustomizationFieldUpdate({
+          variables: {
+            journeyId: journey.id,
+            input: replacementItems.map((item) => ({
+              id: item.id,
+              key: item.key,
+              value: item.value
+            }))
+          }
+        })
+      } catch {
+        enqueueSnackbar(
+          t('Failed to save changes. Please try again.'),
+          { variant: 'error' }
+        )
+        return
+      }
     }
     setNavigating(true)
     try {
