@@ -298,4 +298,37 @@ describe('GoogleSheetsSyncDialog', () => {
     expect(options).toHaveLength(1)
     expect(options[0]).toHaveTextContent('Select integration account')
   })
+
+  it('shows no integration options when user is not authenticated', async () => {
+    mockUseAuth.mockReturnValue({
+      user: null
+    } as unknown as ReturnType<typeof useAuth>)
+    mockUseIntegrationQuery.mockReturnValue({
+      data: {
+        integrations: [
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration1',
+            accountEmail: 'someone@example.com',
+            user: null
+          }
+        ]
+      }
+    })
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
+
+    const options = screen.getAllByRole('option')
+    expect(options).toHaveLength(1)
+    expect(options[0]).toHaveTextContent('Select integration account')
+  })
 })
