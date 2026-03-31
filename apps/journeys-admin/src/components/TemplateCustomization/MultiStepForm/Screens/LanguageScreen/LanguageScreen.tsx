@@ -1,7 +1,9 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
+import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
@@ -20,6 +22,7 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Globe2 from '@core/shared/ui/icons/Globe2'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useAuth } from '../../../../../libs/auth'
@@ -395,6 +398,24 @@ export function LanguageScreen({
                       slug: language?.slug
                     }))}
                     onChange={(value) => setFieldValue('languageSelect', value)}
+                    renderInput={(params) => (
+                      <TextField
+                        data-testid="LanguageAutocompleteInput"
+                        {...params}
+                        hiddenLabel
+                        placeholder="Search Language"
+                        variant="filled"
+                        InputProps={{
+                          ...params.InputProps,
+                          sx: { paddingBottom: 2 },
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Globe2 />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    )}
                   />
                   {isSignedIn && (
                     <Box sx={{ mt: 4 }}>
