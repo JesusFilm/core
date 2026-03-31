@@ -254,7 +254,8 @@ export const reducer = (
         ...state,
         selectedGoalUrl: action.selectedGoalUrl
       }
-    case 'SetSelectedStepAction':
+    case 'SetSelectedStepAction': {
+      const isSameStep = action.selectedStep?.id === state.selectedStepId
       return {
         ...state,
         selectedStepId: action.selectedStep?.id,
@@ -263,8 +264,9 @@ export const reducer = (
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
-        showCardTemplates: true
+        showCardTemplates: isSameStep ? state.showCardTemplates : true
       }
+    }
     case 'SetSelectedStepByIdAction': {
       const selectedStep =
         action.selectedStepId != null
@@ -280,7 +282,11 @@ export const reducer = (
         selectedBlock: selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
-        showCardTemplates: true
+        showCardTemplates:
+          action.selectedStepId != null &&
+          action.selectedStepId === state.selectedStepId
+            ? state.showCardTemplates
+            : true
       }
     }
     case 'SetStepsAction': {

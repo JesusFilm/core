@@ -977,6 +977,54 @@ describe('EditorContext', () => {
         expect(result.showCardTemplates).toBe(true)
       })
 
+      it('should preserve showCardTemplates when re-selecting the same step via SetSelectedStepAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          selectedStepId: 'step0.id',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedStepAction',
+          selectedStep: step
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
+      it('should preserve showCardTemplates when re-selecting the same step via SetSelectedStepByIdAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          selectedStepId: 'step0.id',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetSelectedStepByIdAction',
+          selectedStepId: 'step0.id'
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
+      it('should preserve showCardTemplates when re-selecting the same step via SetEditorFocusAction', () => {
+        const state: EditorState = {
+          steps: [step],
+          showCardTemplates: false,
+          selectedStepId: 'step0.id',
+          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
+          activeSlide: ActiveSlide.JourneyFlow,
+          activeContent: ActiveContent.Canvas
+        }
+        const result = reducer(state, {
+          type: 'SetEditorFocusAction',
+          selectedStep: step
+        })
+        expect(result.showCardTemplates).toBe(false)
+      })
+
       it('should not reset showCardTemplates on SetSelectedBlockAction', () => {
         const state: EditorState = {
           steps: [step],
