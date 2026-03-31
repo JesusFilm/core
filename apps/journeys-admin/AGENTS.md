@@ -20,7 +20,7 @@ Admin app for creating, editing, and managing interactive journeys. Includes a v
 
 Every component lives in its own PascalCase directory:
 
-```
+```text
 ComponentName/
   ComponentName.tsx          # Implementation
   ComponentName.spec.tsx     # Unit tests
@@ -83,7 +83,7 @@ Tests must wrap components in the required providers:
 
 The editor is the core feature of this app. Key architecture:
 
-```
+```text
 Editor/
   Editor.tsx            # Main container, initializes providers
   Toolbar/              # Top action bar
@@ -105,7 +105,7 @@ Editor/
 
 60+ custom mutation/query hooks in `src/libs/`:
 
-```
+```text
 src/libs/
   useJourneyUpdateMutation/
     useJourneyUpdateMutation.ts    # Hook implementation

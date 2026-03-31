@@ -1,3 +1,5 @@
+<!-- Keep in sync with .cursor/skills/review-pr/SKILL.md -->
+
 Review a GitHub pull request for correctness, security, design, and maintainability. Default mode is **remote** (posts comments to GitHub). Pass `mode=local` to display findings without posting.
 
 ## Parameters
@@ -65,6 +67,8 @@ gh api graphql -f query='
   }' -f owner=OWNER -f repo=REPO -F pr=NUMBER
 ```
 
+If `pageInfo.hasNextPage` is `true`, repeat the query with `after: $cursor` using the `endCursor` value and accumulate all `reviewThreads` before deduplication.
+
 ## 1.5. Scope the review (large PRs)
 
 If the PR touches **more than ~30 files**, prioritise:
@@ -131,7 +135,7 @@ Review changed files (using the priority order from step 1.5 for large PRs). For
 
 Before posting anything (remote mode) or finalising (local mode), present findings:
 
-```
+```markdown
 ## PR Review Triage — PR #123: <title>
 
 **Conventions loaded:** (list the rules/AGENTS.md files that matched, or "none — generic review")

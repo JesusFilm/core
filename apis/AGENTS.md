@@ -63,7 +63,7 @@ apis/api-journeys/src/app/
       journey.acl.ts               # CASL access rules
       journey.resolver.spec.ts     # Tests
       journeyCustomizable.service.ts  # Customizable sync logic
-    block/                         # 27 block types
+    block/
     action/                        # Action types
     ...
 ```
@@ -102,8 +102,8 @@ apis/api-journeys-modern/src/
       adminJourney.query.ts        # Query field definition
       adminJourney.query.spec.ts
       inputs/                      # GraphQL input types
-    block/                         # 26 block types
-    action/                        # 15 action types
+    block/
+    action/
     enums/
     ...
   lib/

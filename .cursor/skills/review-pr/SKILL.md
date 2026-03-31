@@ -3,6 +3,8 @@ name: review-pr
 description: Reviews a GitHub PR for correctness, security, design, and maintainability. Auto-loads project conventions from rules and AGENTS.md files based on changed file paths. Use when asked to review a PR, check a PR, or give feedback on a pull request.
 ---
 
+<!-- Keep in sync with .claude/commands/review-pr.md -->
+
 # Review a Pull Request
 
 Review a GitHub pull request for correctness, security, design, and maintainability. Default mode is **remote** (posts comments to GitHub). Pass `mode=local` to display findings without posting.
@@ -72,6 +74,8 @@ gh api graphql -f query='
   }' -f owner=OWNER -f repo=REPO -F pr=NUMBER
 ```
 
+If `pageInfo.hasNextPage` is `true`, repeat the query with `after: $cursor` using the `endCursor` value and accumulate all `reviewThreads` before deduplication.
+
 ## 1.5. Scope the review (large PRs)
 
 If the PR touches **more than ~30 files**, prioritise:
@@ -138,7 +142,7 @@ Review changed files (using the priority order from step 1.5 for large PRs). For
 
 Before posting anything (remote mode) or finalising (local mode), present findings:
 
-```
+```markdown
 ## PR Review Triage — PR #123: <title>
 
 **Conventions loaded:** (list the rules/AGENTS.md files that matched, or "none — generic review")
