@@ -949,11 +949,6 @@ Field names to translate per block type:
 
 IMPORTANT: Do not translate or modify anything inside curly braces {{ }}. Only use it for context when translating text outside the curly braces.
 
-Example: "Welcome {{ user_name }}! Your event is on {{ event_date: January 15 }}."
-- Preserve {{ user_name }} exactly as-is
-- Preserve {{ event_date: January 15 }} exactly as-is
-- Translate "Welcome" and "! Your event is on" and "."
-
 Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
 
