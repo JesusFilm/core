@@ -22,7 +22,9 @@ export class LoginPage {
   }
 
   async fillExistingPassword(password: string): Promise<void> {
-    await this.page.getByPlaceholder('Enter Password').fill(password)
+    await this.page
+      .getByPlaceholder('Enter Password')
+      .fill(password, { timeout: sixtySecondsTimeout })
   }
 
   async clickSubmitButton(): Promise<void> {
@@ -54,29 +56,63 @@ export class LoginPage {
     await this.waitUntilDiscoverPageLoaded()
   }
 
-  async logInWithCreatedNewUser(userName: string) {
+  async logInWithCreatedNewUser(userName: string, expectedTeamTitle?: string) {
     await this.fillExistingEmail(userName)
     console.log(`userName : ${userName}`)
     await this.clickSubmitButton()
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilNewUserDiscoverPageLoaded()
+    await this.waitUntilNewUserDiscoverPageLoaded(expectedTeamTitle)
   }
 
-  // Used after new-user registration login. T&C acceptance always creates a team
-  // and sets it active (see TermsAndConditions.tsx), so "Create Custom Journey"
-  // must be enabled — this is a deterministic requirement, not a defensive check.
-  private async waitUntilNewUserDiscoverPageLoaded() {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run.
+  private async getTeamSelectCombobox() {
+    return this.page.getByTestId('TeamSelect').locator('[role="combobox"]')
+  }
+
+  async assertSharedWithMeDiscoverState() {
+    const teamSelect = await this.getTeamSelectCombobox()
+    await expect(teamSelect).toContainText('Shared With Me', { timeout: 90000 })
+    await expect(
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toHaveCount(0)
+  }
+
+  async assertCreatedTeamDiscoverState(expectedTeamTitle?: string) {
+    const teamSelect = await this.getTeamSelectCombobox()
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if ((await teamSelect.innerText()).includes('Shared With Me')) {
+        if (attempt === 2) break
+        await this.page.waitForTimeout(5000)
+        await this.page.reload()
+        await expect(
+          this.page.getByTestId('NavigationListItemProjects')
+        ).toBeVisible({ timeout: 90000 })
+        await expect(
+          this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+        ).toBeEnabled({ timeout: 90000 })
+        continue
+      }
+      break
+    }
+    await expect(teamSelect).not.toContainText('Shared With Me', { timeout: 1000 })
+    if (expectedTeamTitle != null && expectedTeamTitle.trim() !== '') {
+      await expect(teamSelect).toContainText(expectedTeamTitle)
+    }
+    await expect(
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
+  }
+
+  private async waitUntilNewUserDiscoverPageLoaded(expectedTeamTitle?: string) {
     await expect(
       this.page.getByTestId('NavigationListItemProjects')
     ).toBeVisible({ timeout: 90000 })
 
-    // 90s: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS runs client-side (not in SSR cache) and
-    // needs a fresh network request — cold Vercel instances can take up to 65s to respond.
     await expect(
-      this.page.getByRole('button', { name: 'Create Custom Journey' })
+      this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
     ).toBeEnabled({ timeout: 90000 })
+
+    await this.assertCreatedTeamDiscoverState(expectedTeamTitle)
   }
 }

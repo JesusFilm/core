@@ -87,6 +87,22 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
+const getNoTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: null
+      }
+    }
+  }
+}
+
 describe('TeamProvider', () => {
   beforeEach(() => {
     sessionStorage.clear()
@@ -266,6 +282,71 @@ describe('TeamProvider', () => {
 
     render(
       <MockedProvider mocks={[getTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByText('activeTeam: my first team')).toBeInTheDocument()
+    )
+  })
+
+  it('should resolve to Shared With Me when no team exists', async () => {
+    render(
+      <MockedProvider mocks={[getNoTeamsMock]}>
+        <TeamProvider>
+          <TestComponent />
+        </TeamProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.queryByText(/activeTeam:/)).not.toBeInTheDocument()
+    )
+  })
+
+  it('should recover to the only team when db lastActiveTeamId is null', async () => {
+    const updateLastActiveTeamIdMock: MockedResponse = {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: { lastActiveTeamId: 'teamId1' }
+        }
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: { id: 'journeyProfileId' }
+        }
+      }
+    }
+
+    const getSingleTeamNullActiveMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: {
+          query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+        },
+        result: {
+          data: {
+            teams: [teams[0]],
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: null
+            }
+          }
+        }
+      }
+
+    render(
+      <MockedProvider
+        mocks={[
+          getSingleTeamNullActiveMock,
+          updateLastActiveTeamIdMock,
+          getSingleTeamNullActiveMock
+        ]}
+      >
         <TeamProvider>
           <TestComponent />
         </TeamProvider>

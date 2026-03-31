@@ -153,7 +153,21 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     }
 
     const lastActiveTeam = data.teams.find((team) => team.id === dbTeamId)
-    setActiveTeam(lastActiveTeam ?? null)
+    if (lastActiveTeam != null) {
+      setActiveTeam(lastActiveTeam)
+      return
+    }
+
+    // Deterministic onboarding recovery:
+    // when DB lastActiveTeamId is null but exactly one team exists, that team is
+    // the intended active team for first-time users. Persist it back to the DB.
+    if (dbTeamId == null && data.teams.length === 1) {
+      setActiveTeam(data.teams[0])
+      syncDbAndRefetch(data.teams[0].id)
+      return
+    }
+
+    setActiveTeam(null)
   }
 
   const query = useQuery<GetLastActiveTeamIdAndTeams>(

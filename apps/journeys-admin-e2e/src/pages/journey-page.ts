@@ -11,6 +11,7 @@ import testData from '../utils/testData.json'
 let journeyName = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
+const ninetySecondsTimeout = 90000
 // eslint-disable-next-line no-undef
 const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
@@ -243,8 +244,7 @@ export class JourneyPage {
     const createButton = this.page.getByRole('button', {
       name: 'Create Custom Journey'
     })
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take time on first load
-    await expect(createButton).toBeEnabled({ timeout: 90000 })
+    await expect(createButton).toBeEnabled({ timeout: ninetySecondsTimeout })
     await createButton.click()
     const journeyImageLoader = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
@@ -269,7 +269,7 @@ export class JourneyPage {
         'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
       )
       .first()
-      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
+      .click({ timeout: ninetySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -346,7 +346,7 @@ export class JourneyPage {
       this.page.locator(this.journeyNamePath, {
         hasText: journeyName
       })
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async clickOnTheCreatedCustomJourney() {

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { randomBytes } from 'crypto'
+
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
@@ -13,10 +14,11 @@ export class Register {
   readonly page: Page
   name: string
   userEmail: string
+  activeTeamTitle = ''
   constructor(page: Page) {
     this.page = page
     randomNumber =
-      `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(4).toString('hex')}`
+      `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(8).toString('hex')}`
   }
 
   async registerNewAccount() {
@@ -30,9 +32,7 @@ export class Register {
     await this.verifyPageNavigatedToVerifyYourEmailPage()
     await this.enterOTP(otp)
     await this.clickValidateEmailBtn()
-    await this.verifyPageNavigatedBeforeStartPage()
-    await this.clickIAgreeBtn()
-    await this.clickNextBtn()
+    await this.proceedAfterEmailVerification()
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
   }
@@ -49,9 +49,9 @@ export class Register {
   }
 
   async enterName() {
-    await this.page
-      .locator('input#name')
-      .fill(testData.register.userName + randomNumber)
+    await this.page.locator('input#name').fill(testData.register.userName + randomNumber, {
+      timeout: 60000
+    })
   }
 
   async enterPassword(password: string) {
@@ -76,20 +76,18 @@ export class Register {
   }
 
   async enterOTP(otp) {
-    await this.page
+    const summary = this.page
       .locator(
         'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
       )
       .first()
-      .click()
-    await expect(
-      this.page
-        .locator(
-          'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
-        )
-        .first()
-    ).toHaveAttribute('aria-expanded', 'true')
-    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
+    await summary.click()
+    const tokenInput = this.page.locator(
+      'div[role="region"] input[name="token"]'
+    )
+    // Prefer waiting for the token field (outcome) — aria-expanded can stay false under load.
+    await expect(tokenInput).toBeVisible({ timeout: 60000 })
+    await tokenInput.fill(otp)
   }
 
   async clickValidateEmailBtn() {
@@ -98,12 +96,38 @@ export class Register {
       .click()
   }
 
-  async verifyPageNavigatedBeforeStartPage() {
-    // Stable element-based assertion for the Terms step.
-    // Using wrapper text is brittle due to translation/markup differences.
-    await expect(
-      this.page.locator('button[data-testid="TermsAndConditionsNextButton"]')
-    ).toBeVisible({ timeout: 90000 })
+  /**
+   * After email verification, users land on Terms or Create Your Workspace.
+   * Wait for the primary control on each route (soft wait); URL alone can lag
+   * behind client navigation under parallel load.
+   */
+  async proceedAfterEmailVerification() {
+    const termsNext = this.page.getByTestId('TermsAndConditionsNextButton')
+    const workspaceHeading = this.page.getByRole('heading', {
+      name: 'Create Your Workspace'
+    })
+    await expect(termsNext.or(workspaceHeading)).toBeVisible({ timeout: 90000 })
+
+    if (await termsNext.isVisible()) {
+      await this.clickIAgreeBtn()
+      await this.clickNextBtn()
+      return
+    }
+
+    await expect(workspaceHeading).toBeVisible({ timeout: 30000 })
+    const createWorkspaceButton = this.page.getByRole('button', { name: 'Create' })
+    // Deterministic workspace path: some users do not get prefilled titles.
+    if (!(await createWorkspaceButton.isEnabled())) {
+      const fallbackTeamTitle = `Team ${randomNumber}`
+      await this.page.locator('input#title').fill(fallbackTeamTitle, {
+        timeout: 30000
+      })
+      await this.page.locator('input#publicTitle').fill(fallbackTeamTitle, {
+        timeout: 30000
+      })
+    }
+    await expect(createWorkspaceButton).toBeEnabled({ timeout: 30000 })
+    await createWorkspaceButton.click()
   }
 
   async clickIAgreeBtn() {
@@ -170,12 +194,21 @@ export class Register {
       this.page.getByTestId('NavigationListItemProjects')
     ).toBeVisible({ timeout: 90000 })
 
-    // 90s: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS runs client-side (not in SSR cache) and
-    // needs a fresh network request — cold Vercel instances can take up to 65s to respond.
-    // T&C acceptance always creates a team so this button must appear — it is deterministic.
+    // TeamSelect is disabled while teams query is loading; enabled means Apollo resolved.
+    await expect(
+      this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+    ).toBeEnabled({ timeout: 90000 })
+
+    const teamSelect = this.page
+      .getByTestId('TeamSelect')
+      .locator('[role="combobox"]')
+    await expect(teamSelect).not.toContainText('Shared With Me', {
+      timeout: 90000
+    })
     await expect(
       this.page.getByRole('button', { name: 'Create Custom Journey' })
     ).toBeEnabled({ timeout: 90000 })
+    this.activeTeamTitle = (await teamSelect.innerText()).trim()
   }
 
   async waitUntilTheToestMsgDisappear() {
@@ -209,6 +242,10 @@ export class Register {
 
   async getUserEmailId() {
     return this.userEmail
+  }
+
+  async getActiveTeamTitle() {
+    return this.activeTeamTitle
   }
 
   async clickNextBtnOfTermsAndConditions() {

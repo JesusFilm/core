@@ -11,6 +11,7 @@ import {
   useTeam
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
@@ -116,6 +117,24 @@ describe('TeamOnboarding', () => {
       }
     }
   }
+  const journeyDuplicateMock: MockedResponse = {
+    request: {
+      query: JOURNEY_DUPLICATE,
+      variables: {
+        id: '9d9ca229-9fb5-4d06-a18c-2d1a4ceba457',
+        teamId: 'teamId1'
+      }
+    },
+    result: {
+      data: {
+        journeyDuplicate: {
+          __typename: 'Journey',
+          id: 'onboarding-journey',
+          template: false
+        }
+      }
+    }
+  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -181,7 +200,14 @@ describe('TeamOnboarding', () => {
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
       <MockedProvider
-        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
+        mocks={[
+          teamMock,
+          getTeams,
+          journeyDuplicateMock,
+          updateLastActiveTeamIdMock,
+          getTeams,
+          updateLastActiveTeamIdMock
+        ]}
         cache={cache}
       >
         <SnackbarProvider>
@@ -211,7 +237,7 @@ describe('TeamOnboarding', () => {
       ])
     )
     expect(getByText('Team Title created.')).toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith('/?onboarding=true')
+    await waitFor(() => expect(push).toHaveBeenCalledWith('/?onboarding=true'))
   })
 
   it('should update last active team id', async () => {
@@ -234,6 +260,8 @@ describe('TeamOnboarding', () => {
             },
             result
           },
+          journeyDuplicateMock,
+          updateLastActiveTeamIdMock,
           updateLastActiveTeamIdMock
         ]}
       >
@@ -325,7 +353,14 @@ describe('TeamOnboarding', () => {
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
       <MockedProvider
-        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
+        mocks={[
+          teamMock,
+          getTeams,
+          journeyDuplicateMock,
+          updateLastActiveTeamIdMock,
+          getTeams,
+          updateLastActiveTeamIdMock
+        ]}
         cache={cache}
       >
         <SnackbarProvider>
@@ -353,8 +388,10 @@ describe('TeamOnboarding', () => {
       ])
     )
     expect(getByText('Team Title created.')).toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith(
-      new URL('http://localhost/custom-location')
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        new URL('http://localhost/custom-location')
+      )
     )
   })
 })

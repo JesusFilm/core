@@ -18,8 +18,8 @@ const config = {
   }
 }
 
-// Set test time out to 4 minutes as it has to run lighthouse audit
-test.setTimeout(4 * 60 * 1000)
+// Lighthouse + cold remote URL can exceed 4 minutes under parallel CI load
+test.setTimeout(6 * 60 * 1000)
 
 test('Homepage', async () => {
   const browser = await chromium.launch({

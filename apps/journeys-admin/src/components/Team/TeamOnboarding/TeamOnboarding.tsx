@@ -35,21 +35,22 @@ export function TeamOnboarding({ user }: TeamOnboardingProps): ReactElement {
 
   async function handleSubmit(data?: TeamCreate | null): Promise<void> {
     if (data?.teamCreate.id == null) return
-    await Promise.all([
-      journeyDuplicate({
-        variables: {
-          id: ONBOARDING_TEMPLATE_ID,
-          teamId: data.teamCreate.id
+    await journeyDuplicate({
+      variables: {
+        id: ONBOARDING_TEMPLATE_ID,
+        teamId: data.teamCreate.id
+      }
+    })
+    // Persist active team before navigation so next page resolves the same team.
+    await updateLastActiveTeamId({
+      variables: {
+        input: {
+          lastActiveTeamId: data.teamCreate.id
         }
-      }),
-      updateLastActiveTeamId({
-        variables: {
-          input: {
-            lastActiveTeamId: data.teamCreate.id
-          }
-        }
-      }),
-      await router.push(
+      }
+    })
+    await Promise.allSettled([
+      router.push(
         router.query.redirect != null
           ? new URL(
               `${window.location.origin}${router.query.redirect as string}`
