@@ -67,7 +67,7 @@ import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
 import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
 // Module-scope for stable reference (no re-creation on render)
-const snackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
+const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   <IconButton
     size="small"
     aria-label="dismiss notification"
@@ -81,7 +81,7 @@ const snackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
 // Added action prop to the existing SnackbarProvider:
 <SnackbarProvider
   anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-  action={snackbarAction}
+  action={SnackbarAction}
 >
 ```
 
