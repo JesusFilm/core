@@ -210,6 +210,42 @@ describe('api-users', () => {
       expect(verifyUser).not.toHaveBeenCalled()
     })
 
+    it('should still return user when verification email enqueue fails', async () => {
+      const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      const updatedUser = {
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      }
+      prismaMock.user.update.mockResolvedValueOnce(updatedUser)
+      const verifyUserMock = verifyUser as jest.MockedFunction<typeof verifyUser>
+      verifyUserMock.mockRejectedValueOnce(new Error('Queue unavailable'))
+
+      const data = await authClient({ document: ME_QUERY })
+
+      expect(data).toHaveProperty('data.me.email', 'test@example.com')
+      expect(data).not.toHaveProperty('errors')
+    })
+
     it('should return error when email is already in use', async () => {
       const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
         typeof findOrFetchUser

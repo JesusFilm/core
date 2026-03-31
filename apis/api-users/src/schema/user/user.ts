@@ -119,12 +119,19 @@ builder.queryFields((t) => ({
             }
           })
           if (!updatedUser.emailVerified) {
-            await verifyUser(
-              ctx.currentUser.id,
-              ctx.currentUser.email,
-              input?.redirect ?? undefined,
-              input?.app ?? 'NextSteps'
-            )
+            try {
+              await verifyUser(
+                ctx.currentUser.id,
+                ctx.currentUser.email,
+                input?.redirect ?? undefined,
+                input?.app ?? 'NextSteps'
+              )
+            } catch (verifyError) {
+              console.error(
+                `Failed to enqueue verification email for userId: ${ctx.currentUser.id}`,
+                verifyError
+              )
+            }
           }
           return updatedUser
         } catch (error) {
