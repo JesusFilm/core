@@ -200,7 +200,9 @@ describe('api-users', () => {
         emailVerified: true
       })
 
-      const verifyUserMock = verifyUser as jest.MockedFunction<typeof verifyUser>
+      const verifyUserMock = verifyUser as jest.MockedFunction<
+        typeof verifyUser
+      >
       verifyUserMock.mockClear()
 
       await authClient({ document: ME_QUERY })
