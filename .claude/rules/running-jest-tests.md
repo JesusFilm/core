@@ -1,6 +1,6 @@
-# Running Tests
+# Running Jest Tests
 
-**Applies when:** Running Jest tests for any app or library in this monorepo.
+**Applies when:** Running Jest tests for any app or library in this monorepo. This rule covers Jest unit/component tests only — E2E tests use a different workflow.
 
 ## Use `npx jest` directly — never `npx nx test`
 
