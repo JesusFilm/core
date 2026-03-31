@@ -28,6 +28,28 @@ import {
   TeamRemoved
 } from './prisma.types'
 
+export interface EmailRecipient {
+  firstName: string
+  lastName?: string
+  email: string
+  imageUrl?: string | null
+}
+
+function toEmailRecipient(user: {
+  firstName: string
+  lastName?: string | null
+  email?: string | null
+  imageUrl?: string | null
+}): EmailRecipient | null {
+  if (user.email == null) return null
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName ?? undefined,
+    email: user.email,
+    imageUrl: user.imageUrl
+  }
+}
+
 export async function service(job: Job<ApiJourneysJob>): Promise<void> {
   switch (job.name) {
     case 'team-invite':
@@ -56,21 +78,14 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
     where: { userId: job.data.userId }
   })
 
-  const user =
-    recipientUser == null
-      ? null
-      : {
-          ...recipientUser,
-          email: recipientUser.email ?? '',
-          lastName: recipientUser.lastName ?? undefined
-        }
-
-  if (user == null) throw new Error('User not found')
+  if (recipientUser == null) throw new Error('User not found')
+  const recipient = toEmailRecipient(recipientUser)
+  if (recipient == null) throw new Error('User has no email')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
-      email: user.email
+      email: recipient.email
     }
   })
   // do not send email if team removed notification is not preferred
@@ -83,14 +98,14 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
   const html = await render(
     TeamRemovedEmail({
       teamName: job.data.teamName,
-      recipient: user
+      recipient
     })
   )
 
   const text = await render(
     TeamRemovedEmail({
       teamName: job.data.teamName,
-      recipient: user
+      recipient
     }),
     {
       plainText: true
@@ -98,7 +113,7 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
   )
 
   await sendEmail({
-    to: user.email,
+    to: recipient.email,
     subject: `You have been removed from team: ${job.data.teamName}`,
     text,
     html
@@ -124,16 +139,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     where: { email: job.data.email }
   })
 
-  const user =
-    recipientUser == null
-      ? null
-      : {
-          ...recipientUser,
-          email: recipientUser.email ?? '',
-          lastName: recipientUser.lastName ?? undefined
-        }
-
-  if (user == null) {
+  if (recipientUser == null) {
     const html = await render(
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
@@ -160,10 +166,13 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
       html
     })
   } else {
+    const recipient = toEmailRecipient(recipientUser)
+    if (recipient == null) throw new Error('User has no email')
+
     const html = await render(
       TeamInviteEmail({
         teamName: job.data.team.title,
-        recipient: user,
+        recipient,
         inviteLink: url,
         sender: job.data.sender
       })
@@ -172,7 +181,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
     const text = await render(
       TeamInviteEmail({
         teamName: job.data.team.title,
-        recipient: user,
+        recipient,
         inviteLink: url,
         sender: job.data.sender
       }),
@@ -208,26 +217,29 @@ export async function teamInviteAcceptedEmail(
   })
 
   const recipientUsersByUserId = new Map(
-    recipientUsers.map((user) => [
-      user.userId,
-      {
-        ...user,
-        email: user.email ?? '',
-        lastName: user.lastName ?? undefined
-      }
-    ])
+    recipientUsers.map((user) => {
+      const recipient = toEmailRecipient(user)
+      if (recipient == null) throw new Error('User has no email')
+      return [user.userId, recipient] as const
+    })
   )
 
-  const recipients = recipientUserIds.map((userId) =>
-    recipientUsersByUserId.get(userId)
-  )
-
-  if (recipients.length === 0) {
+  if (recipientUserIds.length === 0) {
     throw new Error('Team Managers not found')
   }
 
+  const missingIds = recipientUserIds.filter(
+    (id) => !recipientUsersByUserId.has(id)
+  )
+  if (missingIds.length > 0) {
+    throw new Error(`Team Managers not found for userIds: ${missingIds.join(', ')}`)
+  }
+
+  const recipients = recipientUserIds.map(
+    (userId) => recipientUsersByUserId.get(userId)!
+  )
+
   for (const recipient of recipients) {
-    if (recipient == null) throw new Error('User not found')
 
     // check recipient preferences
     const preferences = await prisma.journeysEmailPreference.findFirst({
@@ -287,21 +299,14 @@ export async function journeyAccessRequest(
     where: { userId: recipientUserId }
   })
 
-  const user =
-    recipientUser == null
-      ? null
-      : {
-          ...recipientUser,
-          email: recipientUser.email ?? '',
-          lastName: recipientUser.lastName ?? undefined
-        }
-
-  if (user == null) throw new Error('User not found')
+  if (recipientUser == null) throw new Error('User not found')
+  const recipient = toEmailRecipient(recipientUser)
+  if (recipient == null) throw new Error('User has no email')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
-      email: user.email
+      email: recipient.email
     }
   })
   // do not send email if team removed notification is not preferred
@@ -315,7 +320,7 @@ export async function journeyAccessRequest(
     JourneyAccessRequestEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
-      recipient: user,
+      recipient,
       sender: job.data.sender
     })
   )
@@ -323,7 +328,7 @@ export async function journeyAccessRequest(
     JourneyAccessRequestEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
-      recipient: user,
+      recipient,
       sender: job.data.sender
     }),
     {
@@ -332,7 +337,7 @@ export async function journeyAccessRequest(
   )
 
   await sendEmail({
-    to: user.email,
+    to: recipient.email,
     subject: `${job.data.sender.firstName} requests access to a journey`,
     html,
     text
@@ -346,21 +351,14 @@ export async function journeyRequestApproved(
     where: { userId: job.data.userId }
   })
 
-  const user =
-    recipientUser == null
-      ? null
-      : {
-          ...recipientUser,
-          email: recipientUser.email ?? '',
-          lastName: recipientUser.lastName ?? undefined
-        }
-
-  if (user == null) throw new Error('User not found')
+  if (recipientUser == null) throw new Error('User not found')
+  const recipient = toEmailRecipient(recipientUser)
+  if (recipient == null) throw new Error('User has no email')
 
   // check recipient preferences
   const preferences = await prisma.journeysEmailPreference.findFirst({
     where: {
-      email: user.email
+      email: recipient.email
     }
   })
   // do not send email if team removed notification is not preferred
@@ -375,7 +373,7 @@ export async function journeyRequestApproved(
       journey: job.data.journey,
       inviteLink: job.data.url,
       sender: job.data.sender,
-      recipient: user
+      recipient
     })
   )
 
@@ -384,14 +382,14 @@ export async function journeyRequestApproved(
       journey: job.data.journey,
       inviteLink: job.data.url,
       sender: job.data.sender,
-      recipient: user
+      recipient
     }),
     {
       plainText: true
     }
   )
   await sendEmail({
-    to: user.email,
+    to: recipient.email,
     subject: `${job.data.journey.title} has been shared with you`,
     html,
     text
@@ -418,16 +416,7 @@ export async function journeyEditInvite(
     where: { email: job.data.email }
   })
 
-  const user =
-    recipientUser == null
-      ? null
-      : {
-          ...recipientUser,
-          email: recipientUser.email ?? '',
-          lastName: recipientUser.lastName ?? undefined
-        }
-
-  if (user == null) {
+  if (recipientUser == null) {
     const url = `${env.JOURNEYS_ADMIN_URL}/`
     const html = await render(
       JourneySharedNoAccountEmail({
@@ -455,12 +444,15 @@ export async function journeyEditInvite(
       text
     })
   } else {
+    const recipient = toEmailRecipient(recipientUser)
+    if (recipient == null) throw new Error('User has no email')
+
     const html = await render(
       JourneySharedEmail({
         sender: job.data.sender,
         journey: job.data.journey,
         inviteLink: job.data.url,
-        recipient: user
+        recipient
       })
     )
     const text = await render(
@@ -468,7 +460,7 @@ export async function journeyEditInvite(
         journey: job.data.journey,
         inviteLink: job.data.url,
         sender: job.data.sender,
-        recipient: user
+        recipient
       }),
       {
         plainText: true
