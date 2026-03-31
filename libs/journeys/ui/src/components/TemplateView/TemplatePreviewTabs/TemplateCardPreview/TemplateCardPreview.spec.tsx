@@ -4,6 +4,8 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '../../../../libs/block/TreeBlock'
+import { JourneyProvider } from '../../../../libs/JourneyProvider'
+import { journey } from '../../../../libs/JourneyProvider/JourneyProvider.mock'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview'
@@ -19,9 +21,13 @@ const mockUpdate = jest.fn()
 jest.mock('swiper/react', () => {
   const React = require('react')
   return {
-    Swiper: ({ children, onSwiper }: any) => {
+    Swiper: ({ children, onSwiper, onSlideChangeTransitionEnd }: any) => {
       React.useEffect(() => {
-        onSwiper?.({ slideTo: mockSlideTo, update: mockUpdate })
+        onSwiper?.({
+          slideTo: mockSlideTo,
+          update: mockUpdate,
+          realIndex: 0
+        })
       }, [onSwiper])
       return <div data-testid="Swiper">{children}</div>
     },
@@ -51,7 +57,9 @@ describe('TemplateCardPreview', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <JourneyProvider value={{ journey }}>
+          <TemplateCardPreview steps={steps} />
+        </JourneyProvider>
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -99,7 +107,9 @@ describe('TemplateCardPreview', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <JourneyProvider value={{ journey }}>
+          <TemplateCardPreview steps={steps} />
+        </JourneyProvider>
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -112,7 +122,9 @@ describe('TemplateCardPreview', () => {
 
     render(
       <ThemeProvider theme={createTheme()}>
-        <TemplateCardPreview steps={steps} />
+        <JourneyProvider value={{ journey }}>
+          <TemplateCardPreview steps={steps} />
+        </JourneyProvider>
       </ThemeProvider>
     )
     await waitFor(() =>
@@ -137,7 +149,9 @@ describe('TemplateCardPreview', () => {
 
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview steps={steps} variant="compact" />
+          <JourneyProvider value={{ journey }}>
+            <TemplateCardPreview steps={steps} variant="compact" />
+          </JourneyProvider>
         </ThemeProvider>
       )
       await waitFor(() =>
@@ -160,14 +174,76 @@ describe('TemplateCardPreview', () => {
 
       render(
         <ThemeProvider theme={createTheme()}>
-          <TemplateCardPreview
-            steps={steps}
-            variant="compact"
-            selectedStep={steps[1]}
-          />
+          <JourneyProvider value={{ journey }}>
+            <TemplateCardPreview
+              steps={steps}
+              variant="compact"
+              selectedStep={steps[1]}
+            />
+          </JourneyProvider>
         </ThemeProvider>
       )
       await waitFor(() => expect(mockSlideTo).toHaveBeenCalledWith(1, 500))
+    })
+  })
+
+  describe('guestPreview variant', () => {
+    it('should render all steps and not show more cards slide', async () => {
+      const steps = [
+        { id: '1', children: [{ __typename: 'CardBlock' }] },
+        { id: '2', children: [{ __typename: 'CardBlock' }] },
+        { id: '3', children: [{ __typename: 'CardBlock' }] },
+        { id: '4', children: [{ __typename: 'CardBlock' }] },
+        { id: '5', children: [{ __typename: 'CardBlock' }] },
+        { id: '6', children: [{ __typename: 'CardBlock' }] },
+        { id: '7', children: [{ __typename: 'CardBlock' }] },
+        { id: '8', children: [{ __typename: 'CardBlock' }] },
+        { id: '9', children: [{ __typename: 'CardBlock' }] },
+        { id: '10', children: [{ __typename: 'CardBlock' }] }
+      ] as Array<TreeBlock<StepBlock>>
+
+      render(
+        <MockedProvider>
+          <ThemeProvider theme={createTheme()}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TemplateCardPreview steps={steps} variant="guestPreview" />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
+          10
+        )
+      )
+      expect(screen.queryByTestId('UseTemplatesSlide')).not.toBeInTheDocument()
+    })
+
+    it('should accept initialStepId and render without error', async () => {
+      const steps = [
+        { id: 'step-1', children: [{ __typename: 'CardBlock' }] },
+        { id: 'step-2', children: [{ __typename: 'CardBlock' }] },
+        { id: 'step-3', children: [{ __typename: 'CardBlock' }] }
+      ] as Array<TreeBlock<StepBlock>>
+
+      render(
+        <MockedProvider>
+          <ThemeProvider theme={createTheme()}>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <TemplateCardPreview
+                steps={steps}
+                variant="guestPreview"
+                initialStepId="step-2"
+              />
+            </JourneyProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(screen.getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(
+          3
+        )
+      )
     })
   })
 })

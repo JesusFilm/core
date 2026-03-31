@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
@@ -28,7 +27,7 @@ import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetC
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import { CardsPreview, EDGE_FADE_PX } from '../LinksScreen/CardsPreview'
+import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
@@ -274,7 +273,7 @@ export function LanguageScreen({
         languagesJourneyMap?.[values.languageSelect?.id ?? ''] ?? journey?.id
 
       if (shouldSkipDuplicate(journey, values)) {
-        handleNext()
+        await handleNext()
         return
       }
 
@@ -286,7 +285,7 @@ export function LanguageScreen({
       )
 
       if (duplicatedJourneyId != null) {
-        handleNext(duplicatedJourneyId)
+        await handleNext(duplicatedJourneyId)
       }
     } catch {
       enqueueSnackbar(
@@ -295,7 +294,6 @@ export function LanguageScreen({
         ),
         { variant: 'error' }
       )
-    } finally {
       setLoading(false)
     }
   }
@@ -379,14 +377,7 @@ export function LanguageScreen({
             >
               {`'${journey?.title ?? ''}'`}
             </Typography>
-            <Box
-              sx={{
-                mx: `-${EDGE_FADE_PX}px`,
-                width: `calc(100% + ${EDGE_FADE_PX * 2}px)`
-              }}
-            >
-              {steps.length > 0 && <CardsPreview steps={steps} />}
-            </Box>
+            {steps.length > 0 && <CardsPreview steps={steps} />}
             <Form style={{ width: '100%' }}>
               <FormControl
                 sx={{
