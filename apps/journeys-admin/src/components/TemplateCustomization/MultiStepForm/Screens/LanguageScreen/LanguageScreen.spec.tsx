@@ -209,7 +209,7 @@ describe('LanguageScreen', () => {
     jest.clearAllMocks()
     push = jest.fn()
     mockUser = defaultMockUser
-    handleNext = jest.fn((overrideJourneyId?: string) => {
+    handleNext = jest.fn(async (overrideJourneyId?: string) => {
       const id = overrideJourneyId ?? 'journeyId'
       push(`/templates/${id}/customize`, undefined, { shallow: true })
     })
