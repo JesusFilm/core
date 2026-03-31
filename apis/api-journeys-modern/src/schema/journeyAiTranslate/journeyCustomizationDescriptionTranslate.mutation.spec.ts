@@ -61,8 +61,18 @@ describe('journeyCustomizationDescriptionTranslate', () => {
   >
 
   const mockFields = [
-    { id: 'field-1', key: 'website_label', value: null, defaultValue: 'our website' },
-    { id: 'field-2', key: 'cta_label', value: null, defaultValue: 'Learn More' },
+    {
+      id: 'field-1',
+      key: 'website_label',
+      value: null,
+      defaultValue: 'our website'
+    },
+    {
+      id: 'field-2',
+      key: 'cta_label',
+      value: null,
+      defaultValue: 'Learn More'
+    },
     { id: 'field-3', key: 'empty_field', value: null, defaultValue: null }
   ]
 
@@ -104,7 +114,9 @@ describe('journeyCustomizationDescriptionTranslate', () => {
     mockTranslateDescription.mockResolvedValue(
       '¡Bienvenido {{ user_name }}! Ingresa tus datos a continuación.'
     )
-    mockTranslateValue.mockImplementation(async ({ value }) => `translated:${value}`)
+    mockTranslateValue.mockImplementation(
+      async ({ value }) => `translated:${value}`
+    )
     prismaMock.journeyCustomizationField.update.mockResolvedValue({} as any)
     prismaMock.journey.update.mockResolvedValue({
       ...mockJourney,

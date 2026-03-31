@@ -32,9 +32,7 @@ export function resolveJourneyCustomizationString(
             ? unquotedValue.trim()
             : undefined
 
-      return inlineValue != null && inlineValue !== ''
-        ? inlineValue
-        : fullMatch
+      return inlineValue != null && inlineValue !== '' ? inlineValue : fullMatch
     }
   )
 
