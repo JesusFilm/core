@@ -18,15 +18,15 @@ export type CustomizationScreen =
  * Add a screen here to exclude it from the step dot count.
  * For screens that should also hide the stepper entirely, add to STEPPER_HIDDEN_SCREENS too.
  */
-export const STEPPER_EXCLUDED_SCREENS: ReadonlySet<CustomizationScreen> = new Set([
-  'done',
-  'guestPreview'
-])
+export const STEPPER_EXCLUDED_SCREENS: ReadonlySet<CustomizationScreen> =
+  new Set(['done', 'guestPreview'])
 
 /**
  * Screens where the progress stepper is hidden entirely (must be a subset of STEPPER_EXCLUDED_SCREENS).
  */
-export const STEPPER_HIDDEN_SCREENS: ReadonlySet<CustomizationScreen> = new Set(['done'])
+export const STEPPER_HIDDEN_SCREENS: ReadonlySet<CustomizationScreen> = new Set(
+  ['done']
+)
 
 export interface CustomizeFlowConfig {
   screens: CustomizationScreen[]

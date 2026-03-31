@@ -867,9 +867,7 @@ describe('MultiStepForm', () => {
         )
 
         expect(screen.getByTestId('done-screen')).toBeInTheDocument()
-        expect(
-          screen.queryByTestId('progress-stepper')
-        ).not.toBeInTheDocument()
+        expect(screen.queryByTestId('progress-stepper')).not.toBeInTheDocument()
       })
     })
   })
