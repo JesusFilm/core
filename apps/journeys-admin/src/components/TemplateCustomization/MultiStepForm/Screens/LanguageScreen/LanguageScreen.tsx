@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
@@ -386,18 +387,6 @@ export function LanguageScreen({
                 }}
               >
                 <Stack gap={2} sx={{ px: { xs: 0 } }}>
-                  <Typography
-                    variant="h6"
-                    display={{ xs: 'none', sm: 'block' }}
-                  >
-                    {t('Select a language')}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    display={{ xs: 'block', sm: 'none' }}
-                  >
-                    {t('Select a language')}
-                  </Typography>
                   <LanguageAutocomplete
                     value={values.languageSelect}
                     languages={languages.map((language) => ({
@@ -408,23 +397,9 @@ export function LanguageScreen({
                     onChange={(value) => setFieldValue('languageSelect', value)}
                   />
                   {isSignedIn && (
-                    <>
-                      <Typography
-                        variant="h6"
-                        display={{ xs: 'none', sm: 'block' }}
-                        sx={{ mt: 4 }}
-                      >
-                        {t('Select a team')}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        display={{ xs: 'block', sm: 'none' }}
-                        sx={{ mt: 4 }}
-                      >
-                        {t('Select a team')}
-                      </Typography>
+                    <Box sx={{ mt: 4 }}>
                       <JourneyCustomizeTeamSelect />
-                    </>
+                    </Box>
                   )}
                 </Stack>
               </FormControl>

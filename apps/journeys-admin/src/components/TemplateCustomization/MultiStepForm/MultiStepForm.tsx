@@ -16,6 +16,8 @@ import {
 } from '../utils/customizationRoutes'
 import {
   CustomizationScreen,
+  STEPPER_EXCLUDED_SCREENS,
+  STEPPER_HIDDEN_SCREENS,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
 import { getNextCustomizeScreen } from '../utils/getNextCustomizeScreen'
@@ -111,10 +113,10 @@ export function MultiStepForm(): ReactElement {
     }
   }
 
-  const activeStepForStepper =
-    activeScreen === 'guestPreview'
-      ? screens.indexOf('guestPreview') - 1
-      : screens.indexOf(activeScreen)
+  const stepperScreens = screens.filter((s) => !STEPPER_EXCLUDED_SCREENS.has(s))
+  const activeStepForStepper = STEPPER_EXCLUDED_SCREENS.has(activeScreen)
+    ? stepperScreens.indexOf(screens[screens.indexOf(activeScreen) - 1])
+    : stepperScreens.indexOf(activeScreen)
 
   return (
     <TemplateVideoUploadProvider>
@@ -133,16 +135,17 @@ export function MultiStepForm(): ReactElement {
         }}
       >
         <Stack gap={{ xs: 8, sm: 17 }} data-testid="MultiStepForm">
-          {(hasEditableText ||
-            hasCustomizableLinks ||
-            hasCustomizableMedia) && (
-            <Box sx={{ mt: { xs: 3, sm: 6 } }}>
-              <ProgressStepper
-                activeStepNumber={activeStepForStepper}
-                totalSteps={totalSteps}
-              />
-            </Box>
-          )}
+          {!STEPPER_HIDDEN_SCREENS.has(activeScreen) &&
+            (hasEditableText ||
+              hasCustomizableLinks ||
+              hasCustomizableMedia) && (
+              <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+                <ProgressStepper
+                  activeStepNumber={activeStepForStepper}
+                  totalSteps={totalSteps}
+                />
+              </Box>
+            )}
           {renderScreen(activeScreen, screens, handleNext)}
         </Stack>
       </Container>
