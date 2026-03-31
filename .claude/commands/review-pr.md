@@ -6,10 +6,10 @@ Review a GitHub pull request for correctness, security, design, and maintainabil
 - `mode` — `remote` (default) or `local`
 - `auto` — `true` or `false` (default `false`). When `true`, skip the operator confirmation gate (Step 4) and proceed directly to posting/displaying. Use `COMMENT` as the review event (never `REQUEST_CHANGES` or `APPROVE` without a human). Intended for build-loop autonomous invocation.
 
-| Mode | Behaviour |
-|------|-----------|
-| **remote** (default) | Full review → post comments and submit review on GitHub |
-| **local** | Same analysis → display findings in chat only, nothing posted |
+| Mode                 | Behaviour                                                     |
+| -------------------- | ------------------------------------------------------------- |
+| **remote** (default) | Full review → post comments and submit review on GitHub       |
+| **local**            | Same analysis → display findings in chat only, nothing posted |
 
 ---
 
@@ -69,11 +69,11 @@ gh api graphql -f query='
 
 If the PR touches **more than ~30 files**, prioritise:
 
-| Priority | File type | Action |
-|----------|-----------|--------|
-| **Deep** | Core logic, security-sensitive, public API surfaces, files with complex diffs | Read surrounding context, review line-by-line |
-| **Scan** | Tests (verify they test the right thing), internal utilities, straightforward refactors | Quick read for obvious issues |
-| **Skim** | Generated files, lockfiles, config/CI, docs, renames/moves | Spot-check only; skip if mechanical |
+| Priority | File type                                                                               | Action                                        |
+| -------- | --------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **Deep** | Core logic, security-sensitive, public API surfaces, files with complex diffs           | Read surrounding context, review line-by-line |
+| **Scan** | Tests (verify they test the right thing), internal utilities, straightforward refactors | Quick read for obvious issues                 |
+| **Skim** | Generated files, lockfiles, config/CI, docs, renames/moves                              | Spot-check only; skip if mechanical           |
 
 Use the file list from `gh pr view NUMBER --json files` to sort by `additions + deletions`. Start with the highest-churn non-generated files.
 
@@ -105,24 +105,24 @@ Do not start flagging issues until you understand what the author was trying to 
 If the PR description is empty or uninformative:
 
 1. Infer intent from commit messages and the diff itself.
-2. Note the gap in triage output: *"PR has no description — review is based on code and commit messages only. Risk of misunderstanding intent."*
+2. Note the gap in triage output: _"PR has no description — review is based on code and commit messages only. Risk of misunderstanding intent."_
 3. If intent remains unclear after reading the code, ask the user before proceeding.
 
 ## 3. Triage — pragmatic, not pedantic
 
 Review changed files (using the priority order from step 1.5 for large PRs). For each potential finding, classify it:
 
-| Category | When to flag | Example |
-|----------|-------------|---------|
-| **Critical** | Bugs, security holes, data loss, broken logic, missing error handling that will bite in production, **guardrail rule violations** | Race condition, SQL injection, unchecked null on a critical path, customizable block change missing sync |
-| **Concern** | Design issues, maintainability risks, unclear intent, missing tests for important behaviour, **convention violations from loaded rules** | Tight coupling, duplicated logic across files, using MUI in watch-modern, missing i18n wrapping |
-| **Nit** | Style preference, minor naming, formatting — **only flag if pervasive pattern** | Single inconsistent variable name (skip), systematic naming convention violation across the PR (flag) |
-| **Skip** | Acceptable as-is. Readable, works, follows project conventions — or too subjective to be worth raising | Preferring `forEach` over `for...of`, minor comment wording |
+| Category     | When to flag                                                                                                                             | Example                                                                                                  |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Critical** | Bugs, security holes, data loss, broken logic, missing error handling that will bite in production, **guardrail rule violations**        | Race condition, SQL injection, unchecked null on a critical path, customizable block change missing sync |
+| **Concern**  | Design issues, maintainability risks, unclear intent, missing tests for important behaviour, **convention violations from loaded rules** | Tight coupling, duplicated logic across files, using MUI in watch-modern, missing i18n wrapping          |
+| **Nit**      | Style preference, minor naming, formatting — **only flag if pervasive pattern**                                                          | Single inconsistent variable name (skip), systematic naming convention violation across the PR (flag)    |
+| **Skip**     | Acceptable as-is. Readable, works, follows project conventions — or too subjective to be worth raising                                   | Preferring `forEach` over `for...of`, minor comment wording                                              |
 
 **Ground rules:**
 
 - If it works, is readable, and follows project conventions — don't comment.
-- Challenge your own findings: *"Would I mass-reject a PR over this?"* If no, consider skipping.
+- Challenge your own findings: _"Would I mass-reject a PR over this?"_ If no, consider skipping.
 - Group related issues. Don't leave 5 comments about the same pattern — leave one with context.
 - Acknowledge what's done well when something is genuinely good.
 - Never auto-approve and never block for style alone.
@@ -171,11 +171,11 @@ COMMIT_SHA=$(gh pr view NUMBER --json headRefOid --jq '.headRefOid')
 
 Choose the review event based on confirmed findings:
 
-| Findings | Event |
-|----------|-------|
-| Any **Critical** items | `REQUEST_CHANGES` — only if user confirms |
-| Only **Concern** / **Nit** | `COMMENT` |
-| Nothing to flag | `APPROVE` — only if user confirms |
+| Findings                   | Event                                     |
+| -------------------------- | ----------------------------------------- |
+| Any **Critical** items     | `REQUEST_CHANGES` — only if user confirms |
+| Only **Concern** / **Nit** | `COMMENT`                                 |
+| Nothing to flag            | `APPROVE` — only if user confirms         |
 
 Default to `COMMENT` when unsure. Never auto-approve or auto-request-changes without user confirmation. For **draft PRs**, always use `COMMENT` regardless of findings.
 
@@ -231,7 +231,7 @@ If the user says "post it":
 
 ## Notes
 
-- **Respect the author's context.** They may know things you don't. Frame concerns as questions when uncertain: *"Is there a reason this doesn't use...?"*
+- **Respect the author's context.** They may know things you don't. Frame concerns as questions when uncertain: _"Is there a reason this doesn't use...?"_
 - **Don't duplicate existing feedback.** Check existing review threads before posting. If someone already raised it, skip or +1 briefly.
-- **Check CI before reviewing.** If CI is red, note it but don't spend time reviewing code that may change. Tell the user: *"CI is failing — worth fixing that before a deep review."*
+- **Check CI before reviewing.** If CI is red, note it but don't spend time reviewing code that may change. Tell the user: _"CI is failing — worth fixing that before a deep review."_
 - **Forks.** `gh pr diff` and `gh pr view` work across forks transparently. The `headRefOid` from `gh pr view` is the correct commit for inline comments regardless of fork origin.
