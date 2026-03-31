@@ -232,7 +232,9 @@ export async function teamInviteAcceptedEmail(
     (id) => !recipientUsersByUserId.has(id)
   )
   if (missingIds.length > 0) {
-    throw new Error(`Team Managers not found for userIds: ${missingIds.join(', ')}`)
+    throw new Error(
+      `Team Managers not found for userIds: ${missingIds.join(', ')}`
+    )
   }
 
   const recipients = recipientUserIds.map(
@@ -240,7 +242,6 @@ export async function teamInviteAcceptedEmail(
   )
 
   for (const recipient of recipients) {
-
     // check recipient preferences
     const preferences = await prisma.journeysEmailPreference.findFirst({
       where: {
