@@ -20,7 +20,7 @@ export function JourneyCustomizeTeamSelect(): ReactElement {
   const teams = query?.data?.teams ?? []
 
   return (
-    <FormControl>
+    <FormControl fullWidth>
       <Select
         variant="filled"
         name="teamSelect"

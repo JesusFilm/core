@@ -22,7 +22,7 @@ import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplica
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Globe2 from '@core/shared/ui/icons/Globe2'
+import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useAuth } from '../../../../../libs/auth'
@@ -410,7 +410,7 @@ export function LanguageScreen({
                           sx: { paddingBottom: 2 },
                           startAdornment: (
                             <InputAdornment position="start">
-                              <Globe2 />
+                              <Translate />
                             </InputAdornment>
                           )
                         }}
