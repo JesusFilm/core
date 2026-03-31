@@ -138,7 +138,7 @@ export async function translateCustomizationFields({
  * Translates a single value using AI
  * Does NOT translate addresses, times, or locations
  */
-async function translateValue({
+export async function translateValue({
   value,
   sourceLanguageName,
   targetLanguageName,

@@ -380,7 +380,8 @@ Return in this format:
           where: { id: input.journeyId },
           data: updateData,
           include: {
-            blocks: true
+            blocks: true,
+            journeyCustomizationFields: true
           }
         })
 
@@ -637,7 +638,8 @@ If there is no Bible translation was available, use the the most popular English
         const finalJourney = await prisma.journey.findUnique({
           where: { id: input.journeyId },
           include: {
-            blocks: true
+            blocks: true,
+            journeyCustomizationFields: true
           }
         })
 
@@ -1051,8 +1053,8 @@ If there is no Bible translation was available, use the the most popular English
       const updatedJourney = await prisma.journey.findUnique({
         where: { id: input.journeyId },
         include: {
-          blocks: true
-          // Add other relations as needed for the full object
+          blocks: true,
+          journeyCustomizationFields: true
         }
       })
       if (!updatedJourney) throw new Error('Could not fetch updated journey')

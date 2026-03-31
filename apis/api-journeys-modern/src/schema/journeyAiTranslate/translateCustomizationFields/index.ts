@@ -1,4 +1,5 @@
 export {
   translateCustomizationDescription,
-  translateCustomizationFields
+  translateCustomizationFields,
+  translateValue
 } from './translateCustomizationFields'
