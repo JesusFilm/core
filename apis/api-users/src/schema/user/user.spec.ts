@@ -237,7 +237,9 @@ describe('api-users', () => {
         emailVerified: false
       }
       prismaMock.user.update.mockResolvedValueOnce(updatedUser)
-      const verifyUserMock = verifyUser as jest.MockedFunction<typeof verifyUser>
+      const verifyUserMock = verifyUser as jest.MockedFunction<
+        typeof verifyUser
+      >
       verifyUserMock.mockRejectedValueOnce(new Error('Queue unavailable'))
 
       const data = await authClient({ document: ME_QUERY })
