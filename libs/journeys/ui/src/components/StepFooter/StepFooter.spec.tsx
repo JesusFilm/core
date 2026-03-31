@@ -109,6 +109,31 @@ describe('StepFooter', () => {
     )
   })
 
+  it('should render without EditorProvider when selectedStep prop is provided', () => {
+    const step = {
+      id: 'step1',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    } as TreeBlock<StepBlock>
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <StepFooter selectedStep={step} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
+  })
+
   it('should call onFooterClick on click', () => {
     const onFooterClick = jest.fn()
     render(
