@@ -28,6 +28,7 @@ interface TemplateCardPreviewProps {
   variant?: TemplateCardPreviewVariant
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
+  initialStepId?: string | null
 }
 
 interface TemplateCardPreviewPlaceholderProps {
@@ -88,16 +89,18 @@ function getSpacerWidth(
 /**
  * Horizontal carousel of template step cards with optional "more cards" slide.
  *
- * TemplateCardPreview has two variants:
+ * TemplateCardPreview has three variants:
  *
- * 'standard': Renders the first 7 steps plus a “use this template” call-to-action. Used on the /templates page.
+ * 'standard': Renders the first 7 steps plus a "use this template" call-to-action. Used on the /templates page.
  *
  * 'compact': Renders the full list of customizable media steps with selection state. Used in the template customization flow.
+ *
+ * 'guestPreview': Full-size responsive preview used in the guest preview dialog.
  *
  * @param props - Component props
  * @param props.steps - Journey step blocks to display as cards
  * @param props.authUser - Authenticated user for CTA sign-in state
- * @param props.variant - 'standard' | 'compact'; controls layout and behaviour
+ * @param props.variant - Controls layout and behaviour
  * @param props.onClick - Handler when a card is clicked
  * @param props.selectedStep - Selected step (compact variant)
  * @returns Carousel UI or skeleton placeholder when steps are loading
@@ -107,7 +110,8 @@ export function TemplateCardPreview({
   authUser,
   variant = 'standard',
   onClick,
-  selectedStep
+  selectedStep,
+  initialStepId
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -121,18 +125,30 @@ export function TemplateCardPreview({
     showMoreCardsSlide,
     swiperProps,
     slideSx,
-    selectedSlideSx,
     swiperSx,
-    modules
+    modules,
+    breakpoints: variantBreakpoints
   } = config
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: VARIANT_CONFIGS[variant].breakpoints.xs,
-    [breakpoints.values.sm]: VARIANT_CONFIGS[variant].breakpoints.sm
+    [breakpoints.values.xs]: variantBreakpoints.xs,
+    [breakpoints.values.sm]: variantBreakpoints.sm
   }
 
   const slidesToRender =
-    steps != null ? (variant === 'compact' ? steps : take(steps, 7)) : []
+    steps != null
+      ? config.maxSlides != null
+        ? take(steps, config.maxSlides)
+        : steps
+      : []
+
+  const initialSlide =
+    initialStepId != null && slidesToRender.length > 0
+      ? Math.max(
+          0,
+          slidesToRender.findIndex((s) => s.id === initialStepId)
+        )
+      : 0
 
   useEffect(() => {
     if (variant !== 'compact' || swiper == null || selectedStep == null) return
@@ -146,11 +162,22 @@ export function TemplateCardPreview({
     swiper.slideTo(index, 500)
   }, [swiper, selectedStep])
 
-  return steps != null ? (
+  if (steps == null) {
+    return (
+      <TemplateCardPreviewPlaceholder
+        cardWidth={cardWidth}
+        cardHeight={cardHeight}
+        breakpoints={variantBreakpoints}
+      />
+    )
+  }
+
+  return (
     <StyledSwiper
       modules={modules}
       breakpoints={swiperBreakpoints}
       onSwiper={setSwiper}
+      initialSlide={initialStepId != null ? initialSlide : undefined}
       {...swiperProps}
       sx={{
         ...swiperSx,
@@ -158,21 +185,33 @@ export function TemplateCardPreview({
       }}
     >
       {slidesToRender.map((step) => {
-        const isSelected = variant === 'compact' && selectedStep?.id === step.id
+        const isSelected =
+          config.selectedBoxShadow != null && selectedStep?.id === step.id
+        const selectedSlideStyles = isSelected
+          ? {
+              width: {
+                xs: cardWidth.xs * SELECTED_SCALE,
+                sm: cardWidth.sm * SELECTED_SCALE
+              },
+              height: {
+                xs: cardHeight.xs * SELECTED_SCALE,
+                sm: cardHeight.sm * SELECTED_SCALE
+              },
+              zIndex: 1
+            }
+          : {}
         return (
           <StyledSwiperSlide
             data-testid="TemplateCardsSwiperSlide"
             key={step.id}
-            sx={{
-              ...(slideSx as object),
-              ...(isSelected ? (selectedSlideSx as object) : {})
-            }}
+            sx={{ ...slideSx, ...selectedSlideStyles }}
           >
             <TemplateCardPreviewItem
               step={step}
               variant={variant}
               onClick={onClick}
               selectedStep={selectedStep}
+              steps={slidesToRender}
             />
           </StyledSwiperSlide>
         )
@@ -182,8 +221,8 @@ export function TemplateCardPreview({
           data-testid="MediaSpacerSlide"
           sx={{
             width: {
-              xs: getSpacerWidth(cardWidth.xs, config.breakpoints.xs),
-              sm: getSpacerWidth(cardWidth.sm, config.breakpoints.sm)
+              xs: getSpacerWidth(cardWidth.xs, variantBreakpoints.xs),
+              sm: getSpacerWidth(cardWidth.sm, variantBreakpoints.sm)
             }
           }}
         />
@@ -257,11 +296,5 @@ export function TemplateCardPreview({
         </StyledSwiperSlide>
       )}
     </StyledSwiper>
-  ) : (
-    <TemplateCardPreviewPlaceholder
-      cardWidth={cardWidth}
-      cardHeight={cardHeight}
-      breakpoints={config.breakpoints}
-    />
   )
 }

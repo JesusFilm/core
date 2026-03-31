@@ -1,4 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -9,6 +10,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { VARIANT_CONFIGS } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/templateCardPreviewConfig'
 import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreviewItem'
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
@@ -38,6 +40,8 @@ interface GoogleSheetsSyncsForDoneScreenData {
 interface GoogleSheetsSyncsForDoneScreenVariables {
   filter: { journeyId: string }
 }
+
+const PREVIEW_SCALE = 0.7
 
 export function DoneScreen(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -125,7 +129,18 @@ export function DoneScreen(): ReactElement {
       }
     >
       {steps.length > 0 && (
-        <TemplateCardPreviewItem step={steps[0]} variant="standard" />
+        <Box
+          sx={{
+            transform: `scale(${PREVIEW_SCALE})`,
+            transformOrigin: 'top center',
+            height: {
+              xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
+              sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
+            }
+          }}
+        >
+          <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
+        </Box>
       )}
 
       <Stack
