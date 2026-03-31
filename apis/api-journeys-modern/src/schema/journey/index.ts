@@ -1,3 +1,4 @@
+import './adminJourney.query'
 import './adminJourneys.query'
 import './journey'
 import './inputs'

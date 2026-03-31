@@ -79,6 +79,7 @@ describe('WebsiteCover', () => {
       variantLanguages: []
     },
     customizable: null,
+    notes: null,
     children: []
   }
 
@@ -346,6 +347,55 @@ describe('WebsiteCover', () => {
 
     expect(getByTestId('website-cover-video')).toBeInTheDocument()
     expect(getByTestId('website-cover-image')).toBeInTheDocument()
+  })
+
+  it('should show poster image when videoId is null', () => {
+    const { getByTestId, queryByTestId } = render(
+      <WebsiteCover
+        backgroundColor="#DDD"
+        backgroundBlur={blurUrl}
+        videoBlock={{
+          ...videoBlock,
+          source: VideoBlockSource.youTube,
+          videoId: null,
+          mediaVideo: {
+            __typename: 'YouTube',
+            id: 'yt-123'
+          },
+          image: 'https://i.ytimg.com/vi/yt-123/hqdefault.jpg'
+        }}
+      >
+        {children}
+      </WebsiteCover>
+    )
+
+    expect(getByTestId('video-poster-image')).toBeInTheDocument()
+    expect(getByTestId('video-poster-image')).toHaveAttribute(
+      'aria-details',
+      'https://i.ytimg.com/vi/yt-123/hqdefault.jpg'
+    )
+    expect(queryByTestId('background-video')).not.toBeInTheDocument()
+  })
+
+  it('should not render BackgroundVideo when videoId is null', () => {
+    const { queryByRole } = render(
+      <WebsiteCover
+        backgroundColor="#DDD"
+        backgroundBlur={blurUrl}
+        videoBlock={{
+          ...videoBlock,
+          videoId: null,
+          image:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }}
+      >
+        {children}
+      </WebsiteCover>
+    )
+
+    expect(
+      queryByRole('region', { name: 'Video Player' })
+    ).not.toBeInTheDocument()
   })
 
   it('should pass hasFullscreenVideo prop to OverlayContent', () => {

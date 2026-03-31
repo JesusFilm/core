@@ -133,6 +133,25 @@ describe('TextScreen', () => {
     )
   })
 
+  it('should show loading state on the Next button after clicking', () => {
+    const handleNext = jest.fn()
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
+          <TextScreen handleNext={handleNext} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const nextButton = screen.getByTestId('CustomizeFlowNextButton')
+    expect(nextButton).not.toBeDisabled()
+
+    fireEvent.click(nextButton)
+
+    expect(nextButton).toBeDisabled()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
   it('does not submit when no changes and still calls handleNext', () => {
     const handleNext = jest.fn()
     render(

@@ -161,6 +161,7 @@ const video: TreeBlock<VideoFields> = {
   action: null,
   fullsize: null,
   customizable: null,
+  notes: null,
   children: []
 }
 

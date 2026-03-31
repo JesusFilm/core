@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { fetchSignInMethodsForEmail } from 'firebase/auth'
 
@@ -10,14 +11,22 @@ jest.mock('firebase/auth', () => ({
 
 describe('Home', () => {
   it('should render home page', () => {
-    const { getByRole } = render(<HomePage />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
     expect(getByRole('tab', { name: 'New account' })).toHaveTextContent(
       'New account'
     )
   })
 
   it('should render google and facebook login buttons', () => {
-    const { getByRole } = render(<HomePage />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
     expect(
       getByRole('button', { name: 'Continue with Google' })
     ).toBeInTheDocument()
@@ -27,7 +36,11 @@ describe('Home', () => {
   })
 
   it('should require user to enter an email', async () => {
-    const { getByRole, getByText } = render(<HomePage />)
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
 
     fireEvent.click(getByRole('button', { name: 'Continue with email' }))
     await waitFor(() =>
@@ -37,7 +50,11 @@ describe('Home', () => {
   })
 
   it('should validate user email', async () => {
-    const { getByRole, getByText } = render(<HomePage />)
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
 
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'Invalid Email Address' }
@@ -52,7 +69,11 @@ describe('Home', () => {
   })
 
   it('should disable email sign in button on invalid click', async () => {
-    const { getByRole } = render(<HomePage />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
 
     const signInButton = getByRole('button', { name: 'Continue with email' })
     expect(signInButton).not.toBeDisabled()
@@ -67,7 +88,11 @@ describe('Home', () => {
         typeof fetchSignInMethodsForEmail
       >
 
-    const { getByRole } = render(<HomePage />)
+    const { getByRole } = render(
+      <MockedProvider>
+        <HomePage />
+      </MockedProvider>
+    )
 
     fireEvent.change(getByRole('textbox'), {
       target: { value: 'example@example.com' }

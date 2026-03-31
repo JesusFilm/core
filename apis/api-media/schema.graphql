@@ -23,6 +23,7 @@ interface BaseError {
 
 type BibleBook {
   id: ID!
+  updatedAt: DateTime!
   name(languageId: ID, primary: Boolean): [BibleBookName!]!
   osisId: String!
   alternateName: String
@@ -35,6 +36,10 @@ type BibleBookName {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input BibleBooksFilter {
+  updatedAt: DateTimeFilter
 }
 
 type BibleCitation {
@@ -206,6 +211,11 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input DateTimeFilter {
+  gte: DateTime
+  lte: DateTime
+}
+
 enum DefaultPlatform {
   ios
   android
@@ -257,8 +267,13 @@ input ImageInput {
 
 type Keyword {
   id: ID!
+  updatedAt: DateTime!
   value: String!
   language: Language!
+}
+
+input KeywordsFilter {
+  updatedAt: DateTimeFilter
 }
 
 type LabeledVideoCounts {
@@ -702,10 +717,10 @@ type Query {
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
-  bibleBooks: [BibleBook!]!
+  bibleBooks(where: BibleBooksFilter): [BibleBook!]!
   bibleCitations(videoId: ID): [BibleCitation!]!
   bibleCitation(id: ID!): BibleCitation!
-  keywords: [Keyword!]!
+  keywords(where: KeywordsFilter): [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
@@ -749,7 +764,8 @@ type Query {
   ): QueryShortLinksConnection!
   userMediaProfile: UserMediaProfile
   videoVariant(id: ID!): VideoVariant!
-  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
+  videoVariants(input: VideoVariantFilter, offset: Int, limit: Int): [VideoVariant!]!
+  videoVariantsCount(input: VideoVariantFilter): Int!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -1119,6 +1135,7 @@ type Video
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
   publishedAt: Date
+  updatedAt: DateTime!
   children: [Video!]!
   parents: [Video!]!
 }
@@ -1151,6 +1168,7 @@ type VideoDescription {
 
 type VideoEdition {
   id: ID!
+  updatedAt: DateTime!
   name: String
   videoVariants: [VideoVariant!]!
   videoSubtitles: [VideoSubtitle!]!
@@ -1339,6 +1357,7 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+  updatedAt: DateTime!
 
   """master video file"""
   asset: CloudflareR2
@@ -1443,6 +1462,7 @@ input VideoVariantDownloadUpdateInput {
 input VideoVariantFilter {
   onlyPublished: Boolean = true
   languageId: ID
+  updatedAt: DateTimeFilter
 }
 
 input VideoVariantUpdateInput {
@@ -1472,6 +1492,7 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
   published: Boolean
   locked: Boolean
+  updatedAt: DateTimeFilter
 }
 
 type Youtube

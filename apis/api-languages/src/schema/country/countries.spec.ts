@@ -29,6 +29,7 @@ const COUNTRIES_QUERY = graphql(`
       flagPngSrc
       flagWebpSrc
       id
+      updatedAt
       countryLanguages {
         speakers
         displaySpeakers
@@ -51,6 +52,28 @@ const COUNTRIES_QUERY = graphql(`
       population
       languageCount
       languageHavingMediaCount
+    }
+  }
+`)
+
+const COUNTRIES_WITH_FILTER_QUERY = graphql(`
+  query CountriesWithFilter(
+    $languageId: ID
+    $primary: Boolean
+    $where: CountriesFilter
+  ) {
+    countries(where: $where) {
+      id
+      updatedAt
+      flagPngSrc
+      flagWebpSrc
+      latitude
+      longitude
+      population
+      name(languageId: $languageId, primary: $primary) {
+        value
+        primary
+      }
     }
   }
 `)
@@ -136,7 +159,8 @@ describe('countries', () => {
     })
     expect(data).toHaveProperty('data.countries', [
       {
-        ...country,
+        ...omit(country, ['updatedAt']),
+        updatedAt: country.updatedAt.toISOString(),
         continent: {
           ...continent,
           name: [
@@ -156,6 +180,58 @@ describe('countries', () => {
         name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }],
         languageCount: 1,
         languageHavingMediaCount: 1
+      }
+    ])
+  })
+
+  it('should query countries with updatedAt via CountriesFilter', async () => {
+    const filterResult = {
+      ...country,
+      name: [countryName],
+      continent: {
+        ...continent,
+        name: [continentName]
+      },
+      _count: {
+        countryLanguages: 1,
+        languages: 1
+      }
+    } as unknown as Country
+    prismaMock.country.findMany.mockResolvedValue([filterResult])
+
+    const updatedSince = '2021-01-01T00:00:00.000Z'
+    const data = await client({
+      document: COUNTRIES_WITH_FILTER_QUERY,
+      variables: {
+        languageId: '529',
+        primary: true,
+        where: { updatedAt: { gte: updatedSince } }
+      }
+    })
+
+    expect(prismaMock.country.findMany).toHaveBeenCalledWith({
+      include: {
+        name: {
+          include: {
+            language: true
+          },
+          where: {
+            OR: [{ languageId: '529' }, { primary: true }]
+          },
+          orderBy: {
+            primary: 'desc'
+          }
+        }
+      },
+      where: {
+        updatedAt: { gte: new Date(updatedSince) }
+      }
+    })
+    expect(data).toHaveProperty('data.countries', [
+      {
+        ...omit(country, ['updatedAt']),
+        updatedAt: country.updatedAt.toISOString(),
+        name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
       }
     ])
   })
@@ -228,7 +304,8 @@ describe('countries', () => {
     })
     expect(data).toHaveProperty('data.countries', [
       {
-        ...country,
+        ...omit(country, ['updatedAt']),
+        updatedAt: country.updatedAt.toISOString(),
         continent: {
           ...continent,
           name: [
