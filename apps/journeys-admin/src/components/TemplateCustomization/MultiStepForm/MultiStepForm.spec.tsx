@@ -72,7 +72,7 @@ jest.mock('next/router', () => ({
 }))
 
 const mockPush = jest.fn()
-const mockReplace = jest.fn()
+const mockReplace = jest.fn().mockResolvedValue(true)
 jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({
     push: mockPush,
