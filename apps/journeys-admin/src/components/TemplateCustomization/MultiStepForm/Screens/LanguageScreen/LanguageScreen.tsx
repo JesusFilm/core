@@ -403,7 +403,7 @@ export function LanguageScreen({
                         data-testid="LanguageAutocompleteInput"
                         {...params}
                         hiddenLabel
-                        placeholder="Search Language"
+                        placeholder={t('Search Language')}
                         variant="filled"
                         InputProps={{
                           ...params.InputProps,
