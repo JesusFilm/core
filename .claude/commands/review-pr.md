@@ -141,16 +141,20 @@ Before posting anything (remote mode) or finalising (local mode), present findin
 **Conventions loaded:** (list the rules/AGENTS.md files that matched, or "none — generic review")
 
 **Critical (must fix):**
+
 - `src/auth.ts:42` — JWT secret read from env without fallback; server crashes on missing var
 - `src/db.ts:88-91` — Raw SQL interpolation → SQL injection risk
 
 **Concern (worth discussing):**
+
 - `src/api/handler.ts:15-30` — New retry logic has no backoff; could hammer downstream service
 
 **Nit (minor, pattern-level):**
+
 - Inconsistent error message format across 4 new handlers (some use template literals, some concatenation)
 
 **Positive:**
+
 - Clean separation of validation logic into its own module
 - Good test coverage on the happy path
 
