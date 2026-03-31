@@ -150,7 +150,8 @@ async function translateValue({
   journeyAnalysis?: string
 }): Promise<string> {
   const prompt = `
-${journeyAnalysis ? `JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}Translate the following value from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+${journeyAnalysis ? `JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}
+Translate the following value from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
 
 IMPORTANT RULES:
 - DO NOT translate addresses (street addresses, city names, postal codes, country names)
@@ -162,7 +163,7 @@ IMPORTANT RULES:
 
 Value to translate: ${hardenPrompt(value)}
 
-Return only the translated value, maintaining the same meaning and cultural appropriateness while preserving addresses, times, and locations exactly as they appear.
+Return only the translated value, maintaining the same meaning and cultural appropriateness.
 `
 
   const { output } = await generateText({
@@ -242,25 +243,16 @@ export async function translateCustomizationDescription({
   // The AI will be instructed to copy these exactly as-is without any changes
   const fieldContext = fieldMatches
     .map((field, index) => {
-      return `Field ${index + 1}: "${field.fullMatch}" - preserve EXACTLY as-is (do not translate or modify)`
+      return `Field ${index + 1}: "${field.fullMatch}"`
     })
     .join('\n')
 
   const prompt = `
-${journeyAnalysis ? `JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}Translate the following customization description from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+${journeyAnalysis ? `JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}
+Translate the following customization description from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
 
 CRITICAL RULES - READ CAREFULLY:
-1. PRESERVE EVERYTHING inside double curly braces {{ }} EXACTLY as-is - this is the MOST IMPORTANT rule
-   - Do NOT translate ANYTHING inside {{ }} - neither keys nor values
-   - Do NOT modify ANYTHING inside {{ }}
-   - Do NOT change the format inside {{ }}
-   - Do NOT convert {{ key }} to {{ key: value }} format
-   - Do NOT rewrite {{ key: value }} in any way
-   - The content inside {{ }} are field keys that map to journeyCustomizationFields and must remain completely unchanged
-   - Copy every {{ ... }} block exactly as-is to the output without any modifications
-   - Example: {{ user_name }} stays as {{ user_name }} (no conversion)
-   - Example: {{ user_name: John }} stays as {{ user_name: John }} (no translation, no rewriting)
-
+1. PRESERVE EVERYTHING inside double curly braces {{ }} EXACTLY as-is, do not translate or modify - this is the MOST IMPORTANT rule
 2. DO NOT translate proper nouns (names of people, organizations, brands, etc.)
 3. Only translate text that is completely OUTSIDE the {{ }} brackets
 4. Maintain all other text formatting and structure
@@ -270,8 +262,6 @@ ${hardenPrompt(fieldContext)}
 
 Description to translate:
 ${hardenPrompt(description)}
-
-IMPORTANT: When you see {{ anything }}, copy it EXACTLY as-is to the output without any changes. Only translate text that is completely OUTSIDE the {{ }} brackets. The field keys inside {{ }} are identifiers that map to journeyCustomizationFields and must never be changed or translated.
 `
 
   const { output } = await generateText({
