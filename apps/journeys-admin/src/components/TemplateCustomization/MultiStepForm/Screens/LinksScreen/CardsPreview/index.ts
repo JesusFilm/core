@@ -1,1 +1,1 @@
-export { CardsPreview, EDGE_FADE_PX } from './CardsPreview'
+export { CardsPreview } from './CardsPreview'
