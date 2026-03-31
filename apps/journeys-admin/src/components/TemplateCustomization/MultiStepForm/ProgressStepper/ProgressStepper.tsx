@@ -16,7 +16,6 @@ export function ProgressStepper({
   activeStepNumber,
   totalSteps
 }: ProgressStepperProps): ReactElement {
-  // Create steps array based on totalSteps ('done' is excluded from totalSteps by callers)
   const steps = Array.from({ length: totalSteps }, (_, index) => index)
 
   const ProgressStepperIcon = ({ icon }: StepIconProps): ReactElement => {

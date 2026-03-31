@@ -114,8 +114,9 @@ export function MultiStepForm(): ReactElement {
   }
 
   const stepperScreens = screens.filter((s) => !STEPPER_EXCLUDED_SCREENS.has(s))
+  const activeScreenIndex = screens.indexOf(activeScreen)
   const activeStepForStepper = STEPPER_EXCLUDED_SCREENS.has(activeScreen)
-    ? stepperScreens.indexOf(screens[screens.indexOf(activeScreen) - 1])
+    ? stepperScreens.indexOf(screens[activeScreenIndex - 1])
     : stepperScreens.indexOf(activeScreen)
 
   return (
