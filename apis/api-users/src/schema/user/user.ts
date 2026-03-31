@@ -108,7 +108,7 @@ builder.queryFields((t) => ({
         ctx.currentUser.firstName != null
       ) {
         try {
-          return await prisma.user.update({
+          const updatedUser = await prisma.user.update({
             where: { userId: ctx.currentUser.id },
             data: {
               firstName: ctx.currentUser.firstName.trim(),
@@ -118,6 +118,15 @@ builder.queryFields((t) => ({
               })
             }
           })
+          if (!updatedUser.emailVerified) {
+            await verifyUser(
+              ctx.currentUser.id,
+              ctx.currentUser.email,
+              input?.redirect ?? undefined,
+              input?.app ?? 'NextSteps'
+            )
+          }
+          return updatedUser
         } catch (error) {
           if (
             error instanceof Prisma.PrismaClientKnownRequestError &&

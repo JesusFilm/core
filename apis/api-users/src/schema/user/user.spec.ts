@@ -136,6 +136,78 @@ describe('api-users', () => {
       })
     })
 
+    it('should send verification email when guest converts to authenticated', async () => {
+      const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+      prismaMock.user.update.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: false
+      })
+
+      await authClient({ document: ME_QUERY })
+
+      expect(verifyUser).toHaveBeenCalledWith(
+        'testUserId',
+        'test@example.com',
+        undefined,
+        'NextSteps'
+      )
+    })
+
+    it('should not send verification email when guest converts via verified provider', async () => {
+      const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
+        typeof findOrFetchUser
+      >
+      findOrFetchUserMock.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: null,
+        email: null,
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+      prismaMock.user.update.mockResolvedValueOnce({
+        id: '1',
+        userId: 'testUserId',
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        imageUrl: null,
+        createdAt: new Date(),
+        superAdmin: false,
+        emailVerified: true
+      })
+
+      const verifyUserMock = verifyUser as jest.MockedFunction<typeof verifyUser>
+      verifyUserMock.mockClear()
+
+      await authClient({ document: ME_QUERY })
+
+      expect(verifyUser).not.toHaveBeenCalled()
+    })
+
     it('should return error when email is already in use', async () => {
       const findOrFetchUserMock = findOrFetchUser as jest.MockedFunction<
         typeof findOrFetchUser
