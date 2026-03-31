@@ -39,6 +39,7 @@ import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
+import { useAuth } from '../../../../libs/auth'
 import { getGoogleOAuthUrl } from '../../../../libs/googleOAuthUrl'
 import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
 
@@ -158,6 +159,7 @@ export function GoogleSheetsSyncDialog({
   const router = useRouter()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const { user } = useAuth()
 
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
@@ -165,6 +167,12 @@ export function GoogleSheetsSyncDialog({
   const { data: integrationsData } = useIntegrationQuery({
     teamId: journeyData?.journey?.team?.id as string
   })
+
+  const myGoogleIntegrations = integrationsData?.integrations?.filter(
+    (integration) =>
+      integration.__typename === 'IntegrationGoogle' &&
+      integration.user?.id === user?.id
+  )
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
   const [pickerActive, setPickerActive] = useState(false)
@@ -1189,7 +1197,7 @@ export function GoogleSheetsSyncDialog({
                     renderValue={(selected) => {
                       if (selected === '')
                         return t('Select integration account')
-                      const found = integrationsData?.integrations.find(
+                      const found = myGoogleIntegrations?.find(
                         (integration) => integration.id === selected
                       )
                       if (found?.__typename === 'IntegrationGoogle') {
@@ -1201,16 +1209,11 @@ export function GoogleSheetsSyncDialog({
                     <MenuItem value="" disabled>
                       {t('Select integration account')}
                     </MenuItem>
-                    {integrationsData?.integrations
-                      ?.filter(
-                        (integration) =>
-                          integration.__typename === 'IntegrationGoogle'
-                      )
-                      .map((integration) => (
-                        <MenuItem key={integration.id} value={integration.id}>
-                          {integration.accountEmail ?? t('Unknown email')}
-                        </MenuItem>
-                      ))}
+                    {myGoogleIntegrations?.map((integration) => (
+                      <MenuItem key={integration.id} value={integration.id}>
+                        {integration.accountEmail ?? t('Unknown email')}
+                      </MenuItem>
+                    ))}
                   </Select>
                   {touched.integrationId != null &&
                     errors.integrationId != null && (
