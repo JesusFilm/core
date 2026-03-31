@@ -26,7 +26,7 @@ import './globals.css'
 
 getFirebaseAuth()
 
-const snackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
+const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   <IconButton
     size="small"
     aria-label="dismiss notification"
@@ -133,7 +133,7 @@ function JourneysAdminApp({
                     vertical: 'bottom',
                     horizontal: 'right'
                   }}
-                  action={snackbarAction}
+                  action={SnackbarAction}
                 >
                   <GoogleTagManager
                     gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
