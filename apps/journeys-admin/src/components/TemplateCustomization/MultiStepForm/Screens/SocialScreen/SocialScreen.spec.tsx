@@ -10,7 +10,7 @@ import { JOURNEY_SEO_TITLE_UPDATE } from '../../../../Editor/Slider/Settings/Soc
 import { SocialScreen } from './SocialScreen'
 
 describe('SocialScreen', () => {
-  const handleNext = jest.fn()
+  const handleNext = jest.fn().mockResolvedValue(undefined)
 
   const baseJourney = {
     ...journey,
