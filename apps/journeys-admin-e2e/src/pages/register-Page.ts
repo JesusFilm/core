@@ -17,8 +17,7 @@ export class Register {
   activeTeamTitle = ''
   constructor(page: Page) {
     this.page = page
-    randomNumber =
-      `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(8).toString('hex')}`
+    randomNumber = `${dayjs().format('DDMMYYhhmmssSSS')}${randomBytes(8).toString('hex')}`
   }
 
   async registerNewAccount() {
@@ -49,9 +48,11 @@ export class Register {
   }
 
   async enterName() {
-    await this.page.locator('input#name').fill(testData.register.userName + randomNumber, {
-      timeout: 60000
-    })
+    await this.page
+      .locator('input#name')
+      .fill(testData.register.userName + randomNumber, {
+        timeout: 60000
+      })
   }
 
   async enterPassword(password: string) {
@@ -115,7 +116,9 @@ export class Register {
     }
 
     await expect(workspaceHeading).toBeVisible({ timeout: 30000 })
-    const createWorkspaceButton = this.page.getByRole('button', { name: 'Create' })
+    const createWorkspaceButton = this.page.getByRole('button', {
+      name: 'Create'
+    })
     // Deterministic workspace path: some users do not get prefilled titles.
     if (!(await createWorkspaceButton.isEnabled())) {
       const fallbackTeamTitle = `Team ${randomNumber}`

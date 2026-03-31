@@ -89,13 +89,17 @@ export class LoginPage {
           this.page.getByTestId('NavigationListItemProjects')
         ).toBeVisible({ timeout: 90000 })
         await expect(
-          this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+          this.page
+            .getByTestId('TeamSelect')
+            .locator('[aria-haspopup="listbox"]')
         ).toBeEnabled({ timeout: 90000 })
         continue
       }
       break
     }
-    await expect(teamSelect).not.toContainText('Shared With Me', { timeout: 1000 })
+    await expect(teamSelect).not.toContainText('Shared With Me', {
+      timeout: 1000
+    })
     if (expectedTeamTitle != null && expectedTeamTitle.trim() !== '') {
       await expect(teamSelect).toContainText(expectedTeamTitle)
     }
