@@ -43,10 +43,10 @@ Fetch existing review comments to avoid duplicating feedback:
 
 ```bash
 gh api graphql -f query='
-  query($owner:String!,$repo:String!,$pr:Int!) {
+  query($owner:String!,$repo:String!,$pr:Int!,$cursor:String) {
     repository(owner:$owner,name:$repo) {
       pullRequest(number:$pr) {
-        reviewThreads(first:100) {
+        reviewThreads(first:100, after:$cursor) {
           pageInfo { hasNextPage endCursor }
           nodes {
             id
