@@ -14,6 +14,10 @@ Read the [docs](https://docs.core.jesusfilm.org) or find out more about us at [j
 
 The fastest and easiest way to try Core out is via using Visual Studio Code with the Remote - Containers extension. This lets you use a Docker container as a full-featured development environment. Follow our [Getting Started Tutorial](https://docs.core.jesusfilm.org/docs/getting-started/development-environment).
 
+## AI-Assisted Engineering
+
+This repo includes AI skills that automate common engineering tasks (PR review, review feedback handling, stage branch reset). See [docs/ai-foundations.md](docs/ai-foundations.md) for the full guide.
+
 ## License
 
 [Stratis Icon Set](https://www.figma.com/community/file/1177180791780461401/Stratis-UI-Icons---1000%2B-Free-Figma-icons) by [Monty Hayton](https://www.figma.com/@designproduct) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
