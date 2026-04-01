@@ -1283,6 +1283,9 @@ export class JourneyResolver {
         select: { journeyCustomizationDescription: true }
       })
 
-    return journeyWithCustomizationDescription?.journeyCustomizationDescription ?? null
+    return (
+      journeyWithCustomizationDescription?.journeyCustomizationDescription ??
+      null
+    )
   }
 }
