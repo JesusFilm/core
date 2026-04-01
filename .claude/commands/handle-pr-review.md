@@ -31,11 +31,11 @@ Fall back to `gh api` by head branch or listing PRs.
 
 **Check PR state before proceeding:**
 
-| State | Action |
-|-------|--------|
-| **Open** | Proceed normally |
-| **Draft** | Proceed, but note that the PR is still in draft — reviewer expectations may differ |
-| **Merged / Closed** | Stop and inform user; no action to take |
+| State               | Action                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------- |
+| **Open**            | Proceed normally                                                                   |
+| **Draft**           | Proceed, but note that the PR is still in draft — reviewer expectations may differ |
+| **Merged / Closed** | Stop and inform user; no action to take                                            |
 
 ## 2. Fetch unresolved threads (GraphQL)
 
@@ -86,12 +86,12 @@ gh api graphql -f query='
 
 Before writing any code, read **all** unresolved threads and the surrounding source code, then classify each:
 
-| Category | When | Action |
-|----------|------|--------|
-| **Fix** | Feedback is correct: real bug, valid improvement, catches something missed, or aligns with project conventions | Plan the code change |
-| **Fix (adjusted)** | Core concern is valid but the suggested approach isn't ideal — you'll address the underlying issue your own way | Plan your solution; note the deviation |
-| **Challenge** | Feedback is incorrect, conflicts with project conventions, misunderstands context, would degrade the code, or is overly pedantic on a subjective point | Draft a respectful reply with evidence |
-| **Skip** | Marked "nit" / "optional" / "take it or leave it", already resolved by another fix, or outdated thread whose concern was addressed by subsequent commits | Note it; no action unless user asks |
+| Category           | When                                                                                                                                                     | Action                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **Fix**            | Feedback is correct: real bug, valid improvement, catches something missed, or aligns with project conventions                                           | Plan the code change                   |
+| **Fix (adjusted)** | Core concern is valid but the suggested approach isn't ideal — you'll address the underlying issue your own way                                          | Plan your solution; note the deviation |
+| **Challenge**      | Feedback is incorrect, conflicts with project conventions, misunderstands context, would degrade the code, or is overly pedantic on a subjective point   | Draft a respectful reply with evidence |
+| **Skip**           | Marked "nit" / "optional" / "take it or leave it", already resolved by another fix, or outdated thread whose concern was addressed by subsequent commits | Note it; no action unless user asks    |
 
 **Ground rules:**
 
@@ -104,14 +104,14 @@ Before writing any code, read **all** unresolved threads and the surrounding sou
 
 Be respectful but direct. Cite project conventions, existing patterns, or technical reasoning.
 
-| Scenario | Example reply |
-|----------|---------------|
-| **Architecture disagreement** | *"We considered [approach] but chose [current pattern] because [reason]. The trade-off is [X], but for this use case [benefit] outweighs [cost]. Happy to discuss if you see a risk I'm missing."* |
-| **Bot false positive** | *"This is a false positive — [tool] flags [pattern] generically, but here [explanation of why the flagged code is correct]. See [link/reference] for context."* |
-| **Subjective style preference** | *"This follows the existing pattern in [file/module]. Both approaches are valid; I lean toward consistency with surrounding code."* |
-| **Reviewer missing context** | *"Good question. The reason for [approach] is [constraint/requirement]. I'll add a code comment to make this clearer."* |
-| **Over-engineering suggestion** | *"Agree this could benefit from [abstraction] at scale, but currently there's only [N] usage(s). Prefer to keep it simple and extract when a clear pattern emerges."* |
-| **Partial agreement** | *"The [specific part] is a good catch — I've addressed that. I kept [other part] as-is because [reason]."* |
+| Scenario                        | Example reply                                                                                                                                                                                      |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Architecture disagreement**   | _"We considered [approach] but chose [current pattern] because [reason]. The trade-off is [X], but for this use case [benefit] outweighs [cost]. Happy to discuss if you see a risk I'm missing."_ |
+| **Bot false positive**          | _"This is a false positive — [tool] flags [pattern] generically, but here [explanation of why the flagged code is correct]. See [link/reference] for context."_                                    |
+| **Subjective style preference** | _"This follows the existing pattern in [file/module]. Both approaches are valid; I lean toward consistency with surrounding code."_                                                                |
+| **Reviewer missing context**    | _"Good question. The reason for [approach] is [constraint/requirement]. I'll add a code comment to make this clearer."_                                                                            |
+| **Over-engineering suggestion** | _"Agree this could benefit from [abstraction] at scale, but currently there's only [N] usage(s). Prefer to keep it simple and extract when a clear pattern emerges."_                              |
+| **Partial agreement**           | _"The [specific part] is a good catch — I've addressed that. I kept [other part] as-is because [reason]."_                                                                                         |
 
 Present the triage to the user for confirmation before proceeding:
 
@@ -184,11 +184,11 @@ git fetch origin BASE_BRANCH
 git merge-base --is-ancestor origin/BASE_BRANCH HEAD || echo "base has diverged"
 ```
 
-| Situation | Action |
-|-----------|--------|
-| **CI was already failing** before your changes | Note it to user; push your fixes anyway |
-| **Your changes break CI** | Fix before pushing |
-| **Merge conflicts with base** | Inform user; offer to rebase or merge. Prefer rebase for clean history unless the branch has shared collaborators |
+| Situation                                      | Action                                                                                                            |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **CI was already failing** before your changes | Note it to user; push your fixes anyway                                                                           |
+| **Your changes break CI**                      | Fix before pushing                                                                                                |
+| **Merge conflicts with base**                  | Inform user; offer to rebase or merge. Prefer rebase for clean history unless the branch has shared collaborators |
 
 ## 7. Push
 
@@ -269,17 +269,17 @@ gh pr comment NUMBER --body "## Review feedback addressed ($COMMIT_SHA)
 - **Thread context matters.** Read the full thread conversation, not just the last comment.
 - **Resolved threads:** Skip entirely; do not re-open or re-evaluate.
 - **Dismissed reviews:** If a review was dismissed, its threads may still be unresolved. Treat unresolved threads from dismissed reviews the same as any other — triage on merit.
-- **Multiple review rounds:** If running repeatedly on the same PR, only fetch and triage *new* unresolved threads. Reference prior summary comments to avoid re-addressing already-handled feedback.
+- **Multiple review rounds:** If running repeatedly on the same PR, only fetch and triage _new_ unresolved threads. Reference prior summary comments to avoid re-addressing already-handled feedback.
 - **Forks:** `gh pr view` and `gh api graphql` work across forks transparently. Use the base repo's owner/name in API calls.
 - **Automated tools:** CodeRabbit, CodeQL, Copilot, SonarCloud — triage the same as human feedback. Do not auto-accept bot suggestions.
 
 **Common errors and recovery:**
 
-| Error | Recovery |
-|-------|----------|
-| `gh auth status` fails | Run `gh auth login` |
-| GraphQL `INSUFFICIENT_SCOPES` | Token needs `repo` scope; re-auth with `gh auth login -s repo` |
-| 404 on PR number | Verify PR exists and is accessible: `gh pr view NUMBER` |
-| Rate limiting (403 with `retry-after` header) | Wait the indicated duration and retry; batch mutations where possible |
-| Thread resolve fails | Check `viewerCanResolve`; may need maintainer permissions |
-| Reply endpoint returns 422 | Comment may have been deleted or thread was converted; fall back to issue comment |
+| Error                                         | Recovery                                                                          |
+| --------------------------------------------- | --------------------------------------------------------------------------------- |
+| `gh auth status` fails                        | Run `gh auth login`                                                               |
+| GraphQL `INSUFFICIENT_SCOPES`                 | Token needs `repo` scope; re-auth with `gh auth login -s repo`                    |
+| 404 on PR number                              | Verify PR exists and is accessible: `gh pr view NUMBER`                           |
+| Rate limiting (403 with `retry-after` header) | Wait the indicated duration and retry; batch mutations where possible             |
+| Thread resolve fails                          | Check `viewerCanResolve`; may need maintainer permissions                         |
+| Reply endpoint returns 422                    | Comment may have been deleted or thread was converted; fall back to issue comment |
