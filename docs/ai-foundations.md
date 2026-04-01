@@ -13,11 +13,11 @@ AI skills that automate common engineering tasks in core. These run inside Curso
 
 Available in `.cursor/skills/`. Trigger by typing the phrase in Cursor chat or using the skill picker.
 
-| Skill | What it does | When to use it | How to trigger |
-|-------|-------------|----------------|----------------|
-| **review-pr** | Reviews a PR for correctness, security, design, and maintainability. Auto-loads project conventions from `.claude/rules/` and `AGENTS.md` files based on changed paths. Posts findings as inline GitHub comments. | Before requesting human review, or to get a second opinion on someone else's PR. | `review PR`, `review PR #123`, `review this PR in local mode` |
-| **handle-pr-review** | Fetches unresolved review threads, triages each as fix/challenge/skip, applies holistic fixes, resolves threads, and posts a summary comment. | After receiving review feedback on your PR. | `check review feedback`, `address PR comments`, `handle review` |
-| **reset-stage** | Resets the stage branch from main, re-merges all PRs labelled "on stage", auto-resolves conflicts. Reports results to Slack. | Stage has conflicts, has drifted, or needs a clean rebuild. | `reset stage`, `rebuild stage`, `dry run stage` |
+| Skill                | What it does                                                                                                                                                                                                      | When to use it                                                                   | How to trigger                                                  |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| **review-pr**        | Reviews a PR for correctness, security, design, and maintainability. Auto-loads project conventions from `.claude/rules/` and `AGENTS.md` files based on changed paths. Posts findings as inline GitHub comments. | Before requesting human review, or to get a second opinion on someone else's PR. | `review PR`, `review PR #123`, `review this PR in local mode`   |
+| **handle-pr-review** | Fetches unresolved review threads, triages each as fix/challenge/skip, applies holistic fixes, resolves threads, and posts a summary comment.                                                                     | After receiving review feedback on your PR.                                      | `check review feedback`, `address PR comments`, `handle review` |
+| **reset-stage**      | Resets the stage branch from main, re-merges all PRs labelled "on stage", auto-resolves conflicts. Reports results to Slack.                                                                                      | Stage has conflicts, has drifted, or needs a clean rebuild.                      | `reset stage`, `rebuild stage`, `dry run stage`                 |
 
 ### review-pr modes
 
@@ -27,11 +27,11 @@ Available in `.cursor/skills/`. Trigger by typing the phrase in Cursor chat or u
 
 ### handle-pr-review triage categories
 
-| Category | When | What happens |
-|----------|------|-------------|
-| **Fix** | Comment is correct and pragmatic | Code change applied, thread resolved |
-| **Challenge** | Comment is wrong, pedantic, or would make code worse | Respectful reply posted with reasoning |
-| **Skip** | Marked "nit" or "optional", or already covered by another fix | Noted in summary, no action |
+| Category      | When                                                          | What happens                           |
+| ------------- | ------------------------------------------------------------- | -------------------------------------- |
+| **Fix**       | Comment is correct and pragmatic                              | Code change applied, thread resolved   |
+| **Challenge** | Comment is wrong, pedantic, or would make code worse          | Respectful reply posted with reasoning |
+| **Skip**      | Marked "nit" or "optional", or already covered by another fix | Noted in summary, no action            |
 
 ### reset-stage flags
 
@@ -45,10 +45,10 @@ Available in `.cursor/skills/`. Trigger by typing the phrase in Cursor chat or u
 
 The same skills are available in Claude Code for terminal-based workflows.
 
-| Command | Equivalent Cursor skill |
-|---------|------------------------|
-| `/review-pr` | review-pr |
-| `/handle-pr-review` | handle-pr-review |
+| Command             | Equivalent Cursor skill |
+| ------------------- | ----------------------- |
+| `/review-pr`        | review-pr               |
+| `/handle-pr-review` | handle-pr-review        |
 
 Usage: open Claude Code in the core repo and type the command. Parameters are the same as the Cursor versions.
 
@@ -56,16 +56,16 @@ Usage: open Claude Code in the core repo and type the command. Parameters are th
 
 `.claude/rules/` contains coding convention files that `review-pr` auto-loads based on which files a PR changes. Engineers don't need to configure anything — the rules are applied automatically.
 
-| Rule file | Covers |
-|-----------|--------|
-| `backend/apis.md` | GraphQL API layer, Prisma patterns, Federation, auth, logging |
-| `backend/workers.md` | Background job patterns |
-| `backend/customizable-blocks.md` | Custom block sync guardrails |
-| `frontend/apps.md` | React application conventions |
-| `frontend/watch-modern.md` | Watch Modern app-specific rules |
-| `infra/kubernetes.md` | Kubernetes deployment conventions |
-| `infra/terraform.md` | Infrastructure-as-code patterns |
-| `running-jest-tests.md` | Jest testing workflow (use `npx jest` directly, never `nx test`) |
+| Rule file                        | Covers                                                           |
+| -------------------------------- | ---------------------------------------------------------------- |
+| `backend/apis.md`                | GraphQL API layer, Prisma patterns, Federation, auth, logging    |
+| `backend/workers.md`             | Background job patterns                                          |
+| `backend/customizable-blocks.md` | Custom block sync guardrails                                     |
+| `frontend/apps.md`               | React application conventions                                    |
+| `frontend/watch-modern.md`       | Watch Modern app-specific rules                                  |
+| `infra/kubernetes.md`            | Kubernetes deployment conventions                                |
+| `infra/terraform.md`             | Infrastructure-as-code patterns                                  |
+| `running-jest-tests.md`          | Jest testing workflow (use `npx jest` directly, never `nx test`) |
 
 ## Troubleshooting
 
