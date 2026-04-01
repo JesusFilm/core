@@ -55,8 +55,10 @@ const renderEditableText = (
     // Find the replacement item for this key
     const replacementItem = replacementItems.find((item) => item.key === key)
     const currentValue = replacementItem
-      ? (replacementItem.value || replacementItem.defaultValue || key)
-      : (defaultValue !== '' ? defaultValue : key)
+      ? replacementItem.value || replacementItem.defaultValue || key
+      : defaultValue !== ''
+        ? defaultValue
+        : key
 
     // Add editable span for the replaceable part
     parts.push(
@@ -189,10 +191,9 @@ export function TextScreen({ handleNext }: TextScreenProps): ReactElement {
           }
         })
       } catch {
-        enqueueSnackbar(
-          t('Failed to save changes. Please try again.'),
-          { variant: 'error' }
-        )
+        enqueueSnackbar(t('Failed to save changes. Please try again.'), {
+          variant: 'error'
+        })
         return
       }
     }
