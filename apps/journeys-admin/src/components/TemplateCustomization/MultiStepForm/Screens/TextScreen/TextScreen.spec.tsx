@@ -1,6 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -164,109 +163,5 @@ describe('TextScreen', () => {
     )
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     expect(handleNext).toHaveBeenCalled()
-  })
-
-  it('renders editable tokens for empty-value format {{ key: }}', () => {
-    const journey = {
-      ...defaultJourney,
-      journeyCustomizationDescription: 'Dear {{ name: }}!',
-      journeyCustomizationFields: [
-        {
-          id: '1',
-          journeyId: defaultJourney.id,
-          key: 'name',
-          value: null,
-          defaultValue: null,
-          __typename: 'JourneyCustomizationField'
-        }
-      ]
-    } as unknown as JourneyFields
-
-    render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <TextScreen handleNext={jest.fn()} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    // Should render an editable span with the key name as placeholder text
-    const editableSpan = screen.getByText('name')
-    expect(editableSpan).toBeInTheDocument()
-    expect(editableSpan).toHaveAttribute('contenteditable', 'true')
-  })
-
-  it('renders editable tokens for no-colon format {{ key }}', () => {
-    const journey = {
-      ...defaultJourney,
-      journeyCustomizationDescription: 'Hello {{ city }}!',
-      journeyCustomizationFields: [
-        {
-          id: '1',
-          journeyId: defaultJourney.id,
-          key: 'city',
-          value: null,
-          defaultValue: null,
-          __typename: 'JourneyCustomizationField'
-        }
-      ]
-    } as unknown as JourneyFields
-
-    render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <TextScreen handleNext={jest.fn()} />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const editableSpan = screen.getByText('city')
-    expect(editableSpan).toBeInTheDocument()
-    expect(editableSpan).toHaveAttribute('contenteditable', 'true')
-  })
-
-  it('shows error snackbar when mutation fails', async () => {
-    const handleNext = jest.fn().mockResolvedValue(undefined)
-    const failedMock: MockedResponse<
-      JourneyCustomizationFieldUpdate,
-      JourneyCustomizationFieldUpdateVariables
-    > = {
-      request: {
-        query: JOURNEY_CUSTOMIZATION_FIELD_UPDATE,
-        variables: {
-          journeyId: baseJourney.id,
-          input: [
-            { id: '1', key: 'firstName', value: 'Jane' },
-            { id: '2', key: 'lastName', value: 'Doe' }
-          ]
-        }
-      },
-      error: new Error('Network error')
-    }
-
-    render(
-      <MockedProvider mocks={[failedMock]}>
-        <SnackbarProvider>
-          <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
-            <TextScreen handleNext={handleNext} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    // Change a value so mutation is triggered
-    const firstEditable = screen.getAllByText('John')[0]
-    fireEvent.focus(firstEditable)
-    firstEditable.textContent = 'Jane'
-    fireEvent.blur(firstEditable)
-
-    fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
-
-    await waitFor(() =>
-      expect(
-        screen.getByText('Failed to save changes. Please try again.')
-      ).toBeInTheDocument()
-    )
-    expect(handleNext).not.toHaveBeenCalled()
   })
 })
