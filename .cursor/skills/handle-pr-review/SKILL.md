@@ -5,7 +5,7 @@ description: Fetches PR review comments, triages them (fix, challenge, or skip),
 
 # Handle PR Review Feedback
 
-<!-- sync: this skill must stay in sync with .claude/commands/handle-pr-review.md -->
+<!-- sync: simplified subset of .claude/commands/handle-pr-review.md (canonical). Keep the summary comment step aligned. -->
 
 When the user asks to check or fix review feedback on a PR (e.g. on JesusFilm/core):
 
@@ -122,7 +122,7 @@ gh pr comment PR_NUMBER --body "Your reply here"
 
 ## 9. Post summary comment
 
-<!-- sync: this step must stay in sync with .claude/commands/handle-pr-review.md step 10 -->
+<!-- sync: keep "Post summary comment" aligned with the canonical version in .claude/commands/handle-pr-review.md -->
 
 Add a PR comment summarising everything. **Resolve the commit SHA first** — do not rely on shell variable expansion inside heredocs:
 

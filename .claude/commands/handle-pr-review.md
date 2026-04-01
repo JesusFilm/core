@@ -1,6 +1,6 @@
 Fetch PR review comments, triage them (fix, challenge, or skip), apply holistic fixes, resolve threads, and post a summary.
 
-<!-- sync: this file must stay in sync with .cursor/skills/handle-pr-review/SKILL.md -->
+<!-- sync: canonical version. .cursor/skills/handle-pr-review/SKILL.md is a simplified subset — keep the summary comment step aligned. -->
 
 ## Parameters
 
@@ -232,7 +232,7 @@ gh api repos/OWNER/REPO/issues/PR/comments -f body="Your reply here"
 
 ## 10. Post summary comment
 
-<!-- sync: this step must stay in sync with .cursor/skills/handle-pr-review/SKILL.md step 9 -->
+<!-- sync: keep "Post summary comment" aligned with the simplified version in .cursor/skills/handle-pr-review/SKILL.md -->
 
 Add a PR comment summarising everything. **Resolve the commit SHA first** — do not rely on shell variable expansion inside heredocs:
 
