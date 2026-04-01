@@ -71,7 +71,8 @@ export class CustomizationMediaPage {
 
     await expect
       .poll(
-        async () => await videosSection.locator('.MuiCircularProgress-root').count(),
+        async () =>
+          await videosSection.locator('.MuiCircularProgress-root').count(),
         { timeout: defaultTimeout, intervals: [400, 800, 1200] }
       )
       .toBe(0)
