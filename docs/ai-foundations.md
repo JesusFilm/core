@@ -1,6 +1,6 @@
 # AI Foundations
 
-AI skills that automate common engineering tasks in core. These run inside Cursor and Claude Code — no external services, no cost beyond your existing tooling.
+AI skills that automate common engineering tasks in core. They run inside Cursor and Claude Code, using tools you already have (`gh` CLI, optionally Doppler for Slack notifications).
 
 ## Prerequisites
 
@@ -43,7 +43,7 @@ Available in `.cursor/skills/`. Trigger by typing the phrase in Cursor chat or u
 
 ## Claude Code Commands
 
-The same skills are available in Claude Code for terminal-based workflows.
+The review skills are also available as Claude Code commands for terminal-based workflows.
 
 | Command             | Equivalent Cursor skill |
 | ------------------- | ----------------------- |
