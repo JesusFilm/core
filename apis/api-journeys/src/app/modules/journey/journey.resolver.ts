@@ -1272,4 +1272,17 @@ export class JourneyResolver {
       where: { journeyId: journey.id }
     })
   }
+
+  @ResolveField('journeyCustomizationDescription')
+  async journeyCustomizationDescription(
+    @Parent() journey: Journey
+  ): Promise<string | null> {
+    const journeyWithCustomizationDescription =
+      await this.prismaService.journey.findUnique({
+        where: { id: journey.id },
+        select: { journeyCustomizationDescription: true }
+      })
+
+    return journeyWithCustomizationDescription?.journeyCustomizationDescription ?? null
+  }
 }
