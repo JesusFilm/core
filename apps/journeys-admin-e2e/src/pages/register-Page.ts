@@ -275,7 +275,9 @@ export class Register {
   }
 
   private getTeamSelectTrigger() {
-    return this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+    return this.page
+      .getByTestId('TeamSelect')
+      .locator('[aria-haspopup="listbox"]')
   }
 
   private async selectFirstAuthoringTeamIfNeeded(): Promise<void> {

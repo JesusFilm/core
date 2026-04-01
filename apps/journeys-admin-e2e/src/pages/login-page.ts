@@ -75,7 +75,9 @@ export class LoginPage {
   }
 
   private getTeamSelectTrigger() {
-    return this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+    return this.page
+      .getByTestId('TeamSelect')
+      .locator('[aria-haspopup="listbox"]')
   }
 
   private async selectFirstAuthoringTeamIfNeeded(): Promise<void> {
@@ -117,9 +119,9 @@ export class LoginPage {
         if (attempt === 2) break
         await this.page.reload()
         await expect(this.getProjectsNavItem()).toBeVisible({ timeout: 90000 })
-        await expect(
-          this.getTeamSelectTrigger()
-        ).toBeEnabled({ timeout: 90000 })
+        await expect(this.getTeamSelectTrigger()).toBeEnabled({
+          timeout: 90000
+        })
         continue
       }
       break
