@@ -45,10 +45,7 @@ export class CustomizationMediaPage {
   }
 
   async pasteYouTubeUrl(url: string): Promise<void> {
-    const input = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('input')
-    await input.fill(url)
+    await this.page.getByRole('textbox', { name: 'YouTube URL' }).fill(url)
   }
 
   async waitForAutoSubmit(): Promise<void> {
@@ -59,17 +56,33 @@ export class CustomizationMediaPage {
     await this.page.waitForLoadState('load')
   }
 
-  async waitForAutoSubmitError(): Promise<void> {
-    const input = this.page
+  /**
+   * VideosSection validates via a debounced useEffect (~800ms) on URL change,
+   * not on blur. Waits until helper text shows the error (see VideosSection.tsx).
+   */
+  async waitForAutoSubmitError(
+    expectedInputValue = 'not-a-valid-url'
+  ): Promise<void> {
+    const input = this.page.getByRole('textbox', { name: 'YouTube URL' })
+    const videosSection = this.page.getByTestId('VideosSection')
+    const helper = this.page
       .getByTestId('VideosSection-youtube-input')
-      .locator('input')
-    await input.press('Tab')
+      .locator('.MuiFormHelperText-root')
 
-    // Validate by user-visible message rather than MUI error classes,
-    // which can change across variants while the text remains stable.
-    await expect(
-      this.page.getByTestId('VideosSection-youtube-input')
-    ).toContainText('Please enter a valid YouTube URL', { timeout: 90000 })
+    await expect
+      .poll(
+        async () => await videosSection.locator('.MuiCircularProgress-root').count(),
+        { timeout: defaultTimeout, intervals: [400, 800, 1200] }
+      )
+      .toBe(0)
+
+    await expect(input).toHaveValue(expectedInputValue, {
+      timeout: defaultTimeout
+    })
+
+    await expect(helper).toHaveText('Please enter a valid YouTube URL', {
+      timeout: 90000
+    })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {

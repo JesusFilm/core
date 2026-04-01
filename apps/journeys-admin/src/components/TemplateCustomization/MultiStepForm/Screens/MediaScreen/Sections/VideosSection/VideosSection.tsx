@@ -165,7 +165,11 @@ export function VideosSection({
 
   useEffect(() => {
     const trimmedUrl = youtubeUrl.trim()
-    if (trimmedUrl === '' || loading || videoBlock == null) return
+    if (trimmedUrl === '') {
+      setYoutubeUrlError(undefined)
+      return
+    }
+    if (loading) return
 
     const timer = setTimeout(() => {
       const extractedId = extractYouTubeVideoId(trimmedUrl)
@@ -174,6 +178,7 @@ export function VideosSection({
         return
       }
       setYoutubeUrlError(undefined)
+      if (videoBlock == null) return
       if (trimmedUrl === lastSubmittedRef.current.get(videoBlock.id)) return
       void startYouTubeLink(videoBlock.id, extractedId).then((success) => {
         if (success) {
