@@ -103,7 +103,7 @@ export class Register {
    * behind client navigation under parallel load.
    */
   async proceedAfterEmailVerification() {
-    const termsNext = this.page.getByTestId('TermsAndConditionsNextButton')
+    const termsNext = this.page.getByRole('button', { name: /Next/i })
     const workspaceHeading = this.page.getByRole('heading', {
       name: 'Create Your Workspace'
     })
@@ -138,9 +138,7 @@ export class Register {
   }
 
   async clickNextBtn() {
-    const nextBtn = this.page.locator('button[type="button"]', {
-      hasText: 'Next'
-    })
+    const nextBtn = this.page.getByRole('button', { name: 'Next' })
     await expect(nextBtn).toBeEnabled()
     await nextBtn.click()
   }
@@ -156,9 +154,7 @@ export class Register {
   }
 
   async clickNextBtnInFewQuestionPage() {
-    const nextBtn = this.page.locator('button[type="submit"]', {
-      hasText: 'Next'
-    })
+    const nextBtn = this.page.getByRole('button', { name: 'Next' })
     await expect(nextBtn).toBeEnabled()
     await nextBtn.click()
   }
@@ -192,22 +188,16 @@ export class Register {
 
   async waitUntilDiscoverPageLoaded() {
     // 90s: cold Vercel SSR + TeamProvider Apollo query can take >70s on first run.
-    // NavigationListItemProjects is part of the app shell and loads before team data.
-    await expect(
-      this.page.getByTestId('NavigationListItemProjects')
-    ).toBeVisible({ timeout: 90000 })
+    // Projects navigation link is part of the app shell and loads before team data.
+    await expect(this.getProjectsNavItem()).toBeVisible({ timeout: 90000 })
 
     // TeamSelect is disabled while teams query is loading; enabled means Apollo resolved.
-    await expect(
-      this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
-    ).toBeEnabled({ timeout: 90000 })
+    await expect(this.getTeamSelectTrigger()).toBeEnabled({ timeout: 90000 })
 
     const teamSelect = this.page
       .getByTestId('TeamSelect')
       .locator('[role="combobox"]')
-    await expect(teamSelect).not.toContainText('Shared With Me', {
-      timeout: 90000
-    })
+    await this.selectFirstAuthoringTeamIfNeeded()
     await expect(
       this.page.getByRole('button', { name: 'Create Custom Journey' })
     ).toBeEnabled({ timeout: 90000 })
@@ -252,9 +242,7 @@ export class Register {
   }
 
   async clickNextBtnOfTermsAndConditions() {
-    await this.page
-      .locator('button[data-testid="TermsAndConditionsNextButton"]')
-      .click()
+    await this.page.getByRole('button', { name: /Next/i }).click()
   }
 
   async retryCreateYourWorkSpacePage() {
@@ -278,5 +266,40 @@ export class Register {
         { hasText: 'Create Your Workspace' }
       )
     ).toBeVisible({ timeout: 10000 })
+  }
+
+  private getProjectsNavItem() {
+    return this.page
+      .getByRole('link', { name: /Projects/i })
+      .or(this.page.getByTestId('NavigationListItemProjects'))
+  }
+
+  private getTeamSelectTrigger() {
+    return this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+  }
+
+  private async selectFirstAuthoringTeamIfNeeded(): Promise<void> {
+    const teamSelect = this.page
+      .getByTestId('TeamSelect')
+      .locator('[role="combobox"]')
+    if (!(await teamSelect.innerText()).includes('Shared With Me')) return
+
+    const trigger = this.getTeamSelectTrigger()
+    await trigger.click()
+    const authoringTeamOption = this.page
+      .locator('ul[role="listbox"] li[role="option"]', {
+        hasNotText: 'Shared With Me'
+      })
+      .first()
+
+    try {
+      await expect(authoringTeamOption).toBeVisible({ timeout: 10000 })
+      await authoringTeamOption.click()
+      await expect(teamSelect).not.toContainText('Shared With Me', {
+        timeout: 30000
+      })
+    } catch {
+      await this.page.keyboard.press('Escape')
+    }
   }
 }

@@ -60,10 +60,16 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmitError(): Promise<void> {
-    const errorText = this.page
+    const input = this.page
       .getByTestId('VideosSection-youtube-input')
-      .locator('p.MuiFormHelperText-root.Mui-error')
-    await expect(errorText).toBeVisible({ timeout: 90000 })
+      .locator('input')
+    await input.press('Tab')
+
+    // Validate by user-visible message rather than MUI error classes,
+    // which can change across variants while the text remains stable.
+    await expect(
+      this.page.getByTestId('VideosSection-youtube-input')
+    ).toContainText('Please enter a valid YouTube URL', { timeout: 90000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {

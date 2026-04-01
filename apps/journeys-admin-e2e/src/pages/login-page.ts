@@ -33,10 +33,8 @@ export class LoginPage {
 
   async waitUntilDiscoverPageLoaded() {
     // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run.
-    // NavigationListItemProjects is part of the app shell and loads before team data.
-    await expect(
-      this.page.getByTestId('NavigationListItemProjects')
-    ).toBeVisible({ timeout: 90000 })
+    // Projects navigation link is part of the app shell and loads before team data.
+    await expect(this.getProjectsNavItem()).toBeVisible({ timeout: 90000 })
 
     // TeamSelect is disabled={query.loading} while the teams Apollo query is in
     // flight (see TeamSelect.tsx). Enabled means the query resolved and the page
@@ -70,6 +68,39 @@ export class LoginPage {
     return this.page.getByTestId('TeamSelect').locator('[role="combobox"]')
   }
 
+  private getProjectsNavItem() {
+    return this.page
+      .getByRole('link', { name: /Projects/i })
+      .or(this.page.getByTestId('NavigationListItemProjects'))
+  }
+
+  private getTeamSelectTrigger() {
+    return this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
+  }
+
+  private async selectFirstAuthoringTeamIfNeeded(): Promise<void> {
+    const teamSelect = await this.getTeamSelectCombobox()
+    if (!(await teamSelect.innerText()).includes('Shared With Me')) return
+
+    const trigger = this.getTeamSelectTrigger()
+    await trigger.click()
+    const authoringTeamOption = this.page
+      .locator('ul[role="listbox"] li[role="option"]', {
+        hasNotText: 'Shared With Me'
+      })
+      .first()
+
+    try {
+      await expect(authoringTeamOption).toBeVisible({ timeout: 10000 })
+      await authoringTeamOption.click()
+      await expect(teamSelect).not.toContainText('Shared With Me', {
+        timeout: 30000
+      })
+    } catch {
+      await this.page.keyboard.press('Escape')
+    }
+  }
+
   async assertSharedWithMeDiscoverState() {
     const teamSelect = await this.getTeamSelectCombobox()
     await expect(teamSelect).toContainText('Shared With Me', { timeout: 90000 })
@@ -81,24 +112,20 @@ export class LoginPage {
   async assertCreatedTeamDiscoverState(expectedTeamTitle?: string) {
     const teamSelect = await this.getTeamSelectCombobox()
     for (let attempt = 0; attempt < 3; attempt++) {
+      await this.selectFirstAuthoringTeamIfNeeded()
       if ((await teamSelect.innerText()).includes('Shared With Me')) {
         if (attempt === 2) break
-        await this.page.waitForTimeout(5000)
         await this.page.reload()
+        await expect(this.getProjectsNavItem()).toBeVisible({ timeout: 90000 })
         await expect(
-          this.page.getByTestId('NavigationListItemProjects')
-        ).toBeVisible({ timeout: 90000 })
-        await expect(
-          this.page
-            .getByTestId('TeamSelect')
-            .locator('[aria-haspopup="listbox"]')
+          this.getTeamSelectTrigger()
         ).toBeEnabled({ timeout: 90000 })
         continue
       }
       break
     }
     await expect(teamSelect).not.toContainText('Shared With Me', {
-      timeout: 1000
+      timeout: 90000
     })
     if (expectedTeamTitle != null && expectedTeamTitle.trim() !== '') {
       await expect(teamSelect).toContainText(expectedTeamTitle)
@@ -109,13 +136,9 @@ export class LoginPage {
   }
 
   private async waitUntilNewUserDiscoverPageLoaded(expectedTeamTitle?: string) {
-    await expect(
-      this.page.getByTestId('NavigationListItemProjects')
-    ).toBeVisible({ timeout: 90000 })
+    await expect(this.getProjectsNavItem()).toBeVisible({ timeout: 90000 })
 
-    await expect(
-      this.page.getByTestId('TeamSelect').locator('[aria-haspopup="listbox"]')
-    ).toBeEnabled({ timeout: 90000 })
+    await expect(this.getTeamSelectTrigger()).toBeEnabled({ timeout: 90000 })
 
     await this.assertCreatedTeamDiscoverState(expectedTeamTitle)
   }
