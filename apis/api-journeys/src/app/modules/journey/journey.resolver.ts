@@ -1277,9 +1277,13 @@ export class JourneyResolver {
   async journeyCustomizationDescription(
     @Parent() journey: Journey
   ): Promise<string | null> {
+    if (journey.journeyCustomizationDescription !== undefined) {
+      return journey.journeyCustomizationDescription
+    }
+
     const journeyWithCustomizationDescription =
-      await this.prismaService.journey.findUnique({
-        where: { id: journey.id },
+      await this.prismaService.journey.findFirst({
+        where: { id: journey.id, deletedAt: null },
         select: { journeyCustomizationDescription: true }
       })
 
