@@ -188,7 +188,9 @@ Choose the review event based on confirmed findings:
 
 Default to `COMMENT` when unsure. Never auto-approve or auto-request-changes without user confirmation. For **draft PRs**, always use `COMMENT` regardless of findings.
 
-**If `auto=true`:** Always use `COMMENT` regardless of findings.
+**If `auto=true`:** Always use `COMMENT` regardless of findings. The operator
+reviews the PR after the autonomous cycle completes — they decide whether to
+request changes or approve.
 
 Submit a **single** review with inline comments using `--input -`:
 

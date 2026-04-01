@@ -6,7 +6,7 @@ Review a GitHub pull request for correctness, security, design, and maintainabil
 
 - `pr` — PR number or URL (optional; auto-detected from current branch if omitted)
 - `mode` — `remote` (default) or `local`
-- `auto` — `true` or `false` (default `false`). When `true`, skip the operator confirmation gate (Step 4) and proceed directly to posting/displaying. Use `COMMENT` as the review event (never `REQUEST_CHANGES` or `APPROVE` without a human). Intended for build-loop autonomous invocation.
+- `auto` — `true` or `false` (default `false`). When `true`, skip the operator confirmation gate (Step 4) and proceed directly to posting/displaying. Use `COMMENT` as the review event (never `REQUEST_CHANGES` or `APPROVE` without a human).
 
 | Mode                 | Behaviour                                                     |
 | -------------------- | ------------------------------------------------------------- |
