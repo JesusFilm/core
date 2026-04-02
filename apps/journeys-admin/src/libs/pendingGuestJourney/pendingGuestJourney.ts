@@ -21,7 +21,22 @@ export function getPendingGuestJourney(): PendingGuestJourney | null {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY)
     if (raw == null) return null
-    return JSON.parse(raw) as PendingGuestJourney
+    const parsed: unknown = JSON.parse(raw)
+    if (
+      typeof parsed !== 'object' ||
+      parsed == null ||
+      typeof (parsed as Record<string, unknown>).journeyId !== 'string'
+    ) {
+      return null
+    }
+    const obj = parsed as Record<string, unknown>
+    return {
+      journeyId: obj.journeyId as string,
+      originalTemplateId:
+        typeof obj.originalTemplateId === 'string'
+          ? obj.originalTemplateId
+          : null
+    }
   } catch {
     return null
   }

@@ -114,7 +114,7 @@ function CustomizePage() {
     }
   })
   const [transferJourney] = useMutation(JOURNEY_TRANSFER_FROM_ANONYMOUS)
-  const transferAttempted = useRef(false)
+  const transferAttempted = useRef<string | null>(null)
 
   useEffect(() => {
     if (error == null) return
@@ -133,23 +133,24 @@ function CustomizePage() {
   }, [error, router])
 
   useEffect(() => {
-    if (data?.journey == null) return
-    if (transferAttempted.current) return
+    const journeyId = data?.journey?.id
+    if (journeyId == null) return
+    if (user == null || user.isAnonymous === true) return
 
     const pending = getPendingGuestJourney()
-    if (pending == null) return
+    if (pending == null || pending.journeyId !== journeyId) return
+    if (transferAttempted.current === journeyId) return
 
-    transferAttempted.current = true
-    clearPendingGuestJourney()
-
-    if (user != null && user.isAnonymous !== true) {
-      transferJourney({
-        variables: { journeyId: data.journey.id }
-      }).catch((err) => {
+    transferAttempted.current = journeyId
+    void transferJourney({ variables: { journeyId } })
+      .then(() => {
+        clearPendingGuestJourney()
+      })
+      .catch((err) => {
+        transferAttempted.current = null
         console.error('[journeyTransfer] client-side transfer failed', err)
       })
-    }
-  }, [data?.journey, user, transferJourney])
+  }, [data?.journey?.id, user, transferJourney])
 
   return (
     <>

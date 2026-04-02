@@ -102,7 +102,7 @@ builder.mutationField('journeyTransferFromAnonymous', (t) =>
         })
       }
 
-      if (journey.teamId === resolvedTeamId) {
+      if (alreadyOwns && journey.teamId === resolvedTeamId) {
         return await prisma.journey.findUniqueOrThrow({
           ...query,
           where: { id: journeyId }
