@@ -22,7 +22,7 @@ async function main(): Promise<void> {
   await nua1()
   await onboarding()
   await onboardingTemplates()
-  await quickStartTemplate('reset')
+  await quickStartTemplate()
   await playwrightUserAccess()
 
   await formBlocksDelete()
