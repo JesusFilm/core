@@ -255,12 +255,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         mutation: VALIDATE_EMAIL,
         variables: { email, token }
       })
-      return {
-        redirect: {
-          permanent: false,
-          destination
-        }
-      }
+      return redirectToApp(ctx)
     } catch (_err) {
       return {
         props: {
