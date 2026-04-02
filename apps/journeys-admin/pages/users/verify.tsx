@@ -27,6 +27,7 @@ import { useAuth } from '../../src/libs/auth'
 import { logout } from '../../src/libs/auth/firebase'
 import {
   getAuthTokens,
+  redirectToApp,
   redirectToLogin,
   toUser
 } from '../../src/libs/auth/getAuthTokens'
@@ -232,11 +233,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     locale: ctx.locale
   })
 
-  const destination =
-    typeof ctx.query.redirect === 'string' && ctx.query.redirect.length > 0
-      ? `/?redirect=${encodeURIComponent(ctx.query.redirect)}`
-      : '/'
-
   // skip if already verified
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
@@ -246,12 +242,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
     (apiUser.data?.me?.emailVerified ?? false)
   ) {
-    return {
-      redirect: {
-        permanent: false,
-        destination
-      }
-    }
+    return redirectToApp(ctx)
   }
 
   const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null

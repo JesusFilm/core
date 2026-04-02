@@ -1,10 +1,18 @@
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { Component, ErrorInfo, ReactElement, ReactNode, useEffect } from 'react'
+import {
+  Component,
+  ErrorInfo,
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef
+} from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GET_JOURNEY, useJourneyQuery } from '@core/journeys/ui/useJourneyQuery'
@@ -24,6 +32,18 @@ import {
   toUser
 } from '../../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../../src/libs/initAndAuthApp'
+import {
+  clearPendingGuestJourney,
+  getPendingGuestJourney
+} from '../../../src/libs/pendingGuestJourney'
+
+const JOURNEY_TRANSFER_FROM_ANONYMOUS = gql`
+  mutation JourneyTransferFromAnonymous($journeyId: ID!) {
+    journeyTransferFromAnonymous(journeyId: $journeyId) {
+      id
+    }
+  }
+`
 
 interface DiagnosticBoundaryState {
   hasError: boolean
@@ -93,6 +113,8 @@ function CustomizePage() {
       skipRoutingFilter: true
     }
   })
+  const [transferJourney] = useMutation(JOURNEY_TRANSFER_FROM_ANONYMOUS)
+  const transferAttempted = useRef(false)
 
   useEffect(() => {
     if (error == null) return
@@ -108,7 +130,26 @@ function CustomizePage() {
           : undefined,
       graphQLErrors: error.graphQLErrors?.map((e) => e.message)
     })
-  }, [error, router.query.journeyId])
+  }, [error, router])
+
+  useEffect(() => {
+    if (data?.journey == null) return
+    if (transferAttempted.current) return
+
+    const pending = getPendingGuestJourney()
+    if (pending == null) return
+
+    transferAttempted.current = true
+    clearPendingGuestJourney()
+
+    if (user != null && user.isAnonymous !== true) {
+      transferJourney({
+        variables: { journeyId: data.journey.id }
+      }).catch((err) => {
+        console.error('[journeyTransfer] client-side transfer failed', err)
+      })
+    }
+  }, [data?.journey, user, transferJourney])
 
   return (
     <>
@@ -188,6 +229,19 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         destination: '/templates',
         permanent: false
       }
+    }
+  }
+
+  if (ctx.query.transfer === 'true') {
+    try {
+      await apolloClient.mutate({
+        mutation: JOURNEY_TRANSFER_FROM_ANONYMOUS,
+        variables: { journeyId: journeyId.toString() }
+      })
+    } catch (transferError) {
+      logDiagnosticError('journeyTransfer', transferError, ctx, {
+        journeyId: journeyId?.toString()
+      })
     }
   }
 
