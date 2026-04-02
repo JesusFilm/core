@@ -2,7 +2,6 @@ import { generateText } from 'ai'
 
 import { translateCustomizationFields } from './translateCustomizationFields'
 
-// Mock all external dependencies
 jest.mock('@ai-sdk/google', () => ({
   google: jest.fn(() => 'mocked-google-model')
 }))
@@ -16,6 +15,16 @@ jest.mock('@core/shared/ai/prompts', () => ({
   hardenPrompt: jest.fn((text) => `<hardened>${text}</hardened>`),
   preSystemPrompt: 'mocked system prompt'
 }))
+
+const baseMockResponse = {
+  usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
+  finishReason: 'stop',
+  warnings: [],
+  request: {} as any,
+  response: {} as any,
+  id: 'mock-id',
+  createdAt: new Date()
+}
 
 describe('translateCustomizationFields', () => {
   const mockGenerateText = generateText as jest.MockedFunction<
@@ -54,21 +63,6 @@ describe('translateCustomizationFields', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-
-    mockGenerateText.mockResolvedValue({
-      output: { translatedValue: 'Translated Value' },
-      usage: {
-        totalTokens: 100,
-        inputTokens: 50,
-        outputTokens: 50
-      },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
   })
 
   it('should translate customization fields and description', async () => {
@@ -77,88 +71,40 @@ describe('translateCustomizationFields', () => {
     const sourceLanguageName = 'English'
     const targetLanguageName = 'Spanish'
 
-    // Use mockImplementation to return translations based on the input value
-    // This handles the parallel execution order issue with Promise.all
     mockGenerateText.mockImplementation(async (options: any) => {
       const prompt = options.messages[1].content[0].text
 
-      // Check if this is a description translation (has "customization description" in prompt)
       if (prompt.includes('customization description')) {
         return {
           output: {
             translatedDescription:
               '¡Bienvenido {{ user_name }}! Tu evento es el {{ event_date }} en {{ location }}.'
           },
-          usage: { totalTokens: 200, inputTokens: 100, outputTokens: 100 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
+          ...baseMockResponse
         } as any
       }
 
-      // Field value translations - match based on the value in the prompt
-      if (prompt.includes('John Doe')) {
+      // Batch translation of values: ["John Doe", "January 15, 2024"]
+      if (prompt.includes('John Doe') && prompt.includes('January 15, 2024')) {
         return {
-          output: { translatedValue: 'Juan Pérez' },
-          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
-        } as any
-      }
-      if (prompt.includes('Guest')) {
-        return {
-          output: { translatedValue: 'Invitado' },
-          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
-        } as any
-      }
-      if (prompt.includes('January 15, 2024')) {
-        return {
-          output: { translatedValue: '15 de enero de 2024' },
-          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
-        } as any
-      }
-      if (prompt.includes('New York')) {
-        return {
-          output: { translatedValue: 'Nueva York' },
-          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
+          output: {
+            translations: ['Juan Pérez', '15 de enero de 2024']
+          },
+          ...baseMockResponse
         } as any
       }
 
-      // Default fallback
+      // Batch translation of defaultValues: ["Guest", "New York"]
+      if (prompt.includes('Guest') && prompt.includes('New York')) {
+        return {
+          output: { translations: ['Invitado', 'Nueva York'] },
+          ...baseMockResponse
+        } as any
+      }
+
       return {
-        output: { translatedValue: 'Translated Value' },
-        usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-        finishReason: 'stop',
-        warnings: [],
-        request: {} as any,
-        response: {} as any,
-        id: 'mock-id',
-        createdAt: new Date()
+        output: { translations: ['Translated Value'] },
+        ...baseMockResponse
       } as any
     })
 
@@ -192,34 +138,33 @@ describe('translateCustomizationFields', () => {
       translatedDefaultValue: 'Nueva York'
     })
 
-    // Verify generateObject was called for each field value and description
-    // 4 field translations (user_name value, user_name defaultValue, event_date value, location defaultValue) + 1 description
-    expect(mockGenerateText).toHaveBeenCalledTimes(5)
+    // 3 calls: 1 batch for values, 1 batch for defaultValues, 1 for description
+    expect(mockGenerateText).toHaveBeenCalledTimes(3)
   })
 
   it('should handle null customization description', async () => {
-    // Mock field value and defaultValue translations (2 calls for field1)
-    mockGenerateText.mockResolvedValueOnce({
-      output: { translatedValue: 'Juan Pérez' },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    // field1 has both value and defaultValue, so 2 batch calls
+    mockGenerateText.mockImplementation(async (options: any) => {
+      const prompt = options.messages[1].content[0].text
 
-    mockGenerateText.mockResolvedValueOnce({
-      output: { translatedValue: 'Invitado' },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+      if (prompt.includes('John Doe')) {
+        return {
+          output: { translations: ['Juan Pérez'] },
+          ...baseMockResponse
+        } as any
+      }
+      if (prompt.includes('Guest')) {
+        return {
+          output: { translations: ['Invitado'] },
+          ...baseMockResponse
+        } as any
+      }
+
+      return {
+        output: { translations: ['Translated'] },
+        ...baseMockResponse
+      } as any
+    })
 
     const result = await translateCustomizationFields({
       journeyCustomizationDescription: null,
@@ -230,7 +175,13 @@ describe('translateCustomizationFields', () => {
 
     expect(result.translatedDescription).toBeNull()
     expect(result.translatedFields).toHaveLength(1)
-    // Description translation should not be called - only field value and defaultValue
+    expect(result.translatedFields[0]).toEqual({
+      id: 'field1',
+      key: 'user_name',
+      translatedValue: 'Juan Pérez',
+      translatedDefaultValue: 'Invitado'
+    })
+    // 2 batch calls: one for values, one for defaultValues (no description)
     expect(mockGenerateText).toHaveBeenCalledTimes(2)
   })
 
@@ -239,13 +190,7 @@ describe('translateCustomizationFields', () => {
       output: {
         translatedDescription: 'Translated description'
       },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
+      ...baseMockResponse
     } as any)
 
     const result = await translateCustomizationFields({
@@ -278,13 +223,7 @@ describe('translateCustomizationFields', () => {
       output: {
         translatedDescription: 'Translated description'
       },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
+      ...baseMockResponse
     } as any)
 
     const result = await translateCustomizationFields({
@@ -310,13 +249,7 @@ describe('translateCustomizationFields', () => {
         translatedDescription:
           'Hola {{ user_name }}, tu código es {{ code: ABC123 }}.'
       },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
+      ...baseMockResponse
     } as any)
 
     const result = await translateCustomizationFields({
@@ -326,7 +259,6 @@ describe('translateCustomizationFields', () => {
       targetLanguageName
     })
 
-    // Verify {{ }} blocks are preserved
     expect(result.translatedDescription).toContain('{{ user_name }}')
     expect(result.translatedDescription).toContain('{{ code: ABC123 }}')
     expect(result.translatedDescription).not.toContain('{{ user_name:')
@@ -335,27 +267,27 @@ describe('translateCustomizationFields', () => {
   it('should include journey analysis in translation prompts when provided', async () => {
     const journeyAnalysis = 'This journey is about user onboarding'
 
-    mockGenerateText.mockResolvedValueOnce({
-      output: { translatedValue: 'Translated Value' },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    mockGenerateText.mockImplementation(async () => {
+      return {
+        output: { translations: ['Translated Value'] },
+        ...baseMockResponse
+      } as any
+    })
 
-    mockGenerateText.mockResolvedValueOnce({
-      output: { translatedDescription: 'Translated description' },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
+    // Override for description call
+    mockGenerateText
+      .mockResolvedValueOnce({
+        output: { translations: ['Translated Value'] },
+        ...baseMockResponse
+      } as any)
+      .mockResolvedValueOnce({
+        output: { translations: ['Translated Default'] },
+        ...baseMockResponse
+      } as any)
+      .mockResolvedValueOnce({
+        output: { translatedDescription: 'Translated description' },
+        ...baseMockResponse
+      } as any)
 
     await translateCustomizationFields({
       journeyCustomizationDescription: 'Welcome!',
@@ -365,7 +297,6 @@ describe('translateCustomizationFields', () => {
       journeyAnalysis
     })
 
-    // Verify journey analysis was included in the prompt
     const calls = mockGenerateText.mock.calls
     expect(calls.length).toBeGreaterThan(0)
     const promptText = JSON.stringify(calls[0])
@@ -389,42 +320,26 @@ describe('translateCustomizationFields', () => {
     mockGenerateText.mockImplementation(async (options: any) => {
       const prompt = options.messages[1].content[0].text
 
+      // Values batch should target French
       if (prompt.includes('Hello')) {
         expect(prompt).toContain('French')
         return {
-          output: { translatedValue: 'Bonjour' },
-          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
+          output: { translations: ['Bonjour'] },
+          ...baseMockResponse
         } as any
       }
+      // DefaultValues batch should target Spanish
       if (prompt.includes('Welcome')) {
         expect(prompt).toContain('Spanish')
         return {
-          output: { translatedValue: 'Bienvenido' },
-          usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-          finishReason: 'stop',
-          warnings: [],
-          request: {} as any,
-          response: {} as any,
-          id: 'mock-id',
-          createdAt: new Date()
+          output: { translations: ['Bienvenido'] },
+          ...baseMockResponse
         } as any
       }
 
       return {
-        output: { translatedValue: 'Translated' },
-        usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-        finishReason: 'stop',
-        warnings: [],
-        request: {} as any,
-        response: {} as any,
-        id: 'mock-id',
-        createdAt: new Date()
+        output: { translations: ['Translated'] },
+        ...baseMockResponse
       } as any
     })
 
@@ -462,14 +377,8 @@ describe('translateCustomizationFields', () => {
       const prompt = options.messages[1].content[0].text
       expect(prompt).toContain('French')
       return {
-        output: { translatedValue: 'Bienvenue' },
-        usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-        finishReason: 'stop',
-        warnings: [],
-        request: {} as any,
-        response: {} as any,
-        id: 'mock-id',
-        createdAt: new Date()
+        output: { translations: ['Bienvenue'] },
+        ...baseMockResponse
       } as any
     })
 
@@ -511,25 +420,13 @@ describe('translateCustomizationFields', () => {
     ]
 
     mockGenerateText.mockResolvedValueOnce({
-      output: { translatedValue: '123 Main Street, New York, NY 10001' },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
-    } as any)
-
-    mockGenerateText.mockResolvedValueOnce({
-      output: { translatedValue: '3:00 PM on Monday, January 15' },
-      usage: { totalTokens: 100, inputTokens: 50, outputTokens: 50 },
-      finishReason: 'stop',
-      warnings: [],
-      request: {} as any,
-      response: {} as any,
-      id: 'mock-id',
-      createdAt: new Date()
+      output: {
+        translations: [
+          '123 Main Street, New York, NY 10001',
+          '3:00 PM on Monday, January 15'
+        ]
+      },
+      ...baseMockResponse
     } as any)
 
     await translateCustomizationFields({
@@ -539,9 +436,8 @@ describe('translateCustomizationFields', () => {
       targetLanguageName: 'Spanish'
     })
 
-    // The prompt should instruct not to translate addresses/times
-    // In a real scenario, the AI would preserve these, but in tests we verify the prompt
-    expect(mockGenerateText).toHaveBeenCalledTimes(2)
+    // Both values are batched into a single call
+    expect(mockGenerateText).toHaveBeenCalledTimes(1)
     const promptCalls = mockGenerateText.mock.calls
     promptCalls.forEach((call) => {
       const prompt = JSON.stringify(call)
@@ -549,5 +445,18 @@ describe('translateCustomizationFields', () => {
       expect(prompt).toContain('DO NOT translate times')
       expect(prompt).toContain('DO NOT translate locations')
     })
+  })
+
+  it('should return early when no fields and no description', async () => {
+    const result = await translateCustomizationFields({
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      sourceLanguageName: 'English',
+      targetLanguageName: 'Spanish'
+    })
+
+    expect(result.translatedDescription).toBeNull()
+    expect(result.translatedFields).toHaveLength(0)
+    expect(mockGenerateText).not.toHaveBeenCalled()
   })
 })

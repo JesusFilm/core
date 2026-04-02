@@ -5,18 +5,22 @@ import { z } from 'zod'
 import { JourneyCustomizationField } from '@core/prisma/journeys/client'
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
-/**
- * Schema for customization field translation response
- */
-const CustomizationFieldTranslationSchema = z.object({
-  translatedValue: z
-    .string()
-    .describe('Translated value for the customization field')
+const CUSTOMIZATION_SYSTEM_PROMPT = `${preSystemPrompt}
+
+You are a professional translation engine.
+- Translate text accurately while preserving meaning and cultural appropriateness
+- DO NOT translate addresses (street addresses, city names, postal codes, country names)
+- DO NOT translate times (time formats, day names, month names)
+- DO NOT translate locations (place names, venue names, building names)
+- DO NOT translate proper nouns (names of people, organizations, brands)
+- Maintain the original format and structure`
+
+const BatchTranslationSchema = z.object({
+  translations: z
+    .array(z.string())
+    .describe('Translated texts in the same order as the input values')
 })
 
-/**
- * Schema for customization description translation response
- */
 const CustomizationDescriptionTranslationSchema = z.object({
   translatedDescription: z
     .string()
@@ -26,13 +30,76 @@ const CustomizationDescriptionTranslationSchema = z.object({
 })
 
 /**
- * Extracts and translates customization fields and description.
- * - Translates field values to targetLanguageName (user-facing customization text)
- * - Translates field defaultValues to defaultValueTargetLanguageName (journey content language),
- *   falling back to targetLanguageName if not provided
- * - All {{ ... }} blocks in the description are preserved verbatim (no conversion or rewriting)
- * - Does NOT translate addresses, times, or locations
- * - Only translates text outside of {{ }} brackets in the description
+ * Translates multiple values in a single AI call.
+ * Far more efficient than individual translateValue calls when handling multiple fields.
+ */
+async function translateBatch({
+  values,
+  sourceLanguageName,
+  targetLanguageName,
+  journeyAnalysis
+}: {
+  values: string[]
+  sourceLanguageName: string
+  targetLanguageName: string
+  journeyAnalysis?: string
+}): Promise<string[]> {
+  if (values.length === 0) return []
+
+  const numberedValues = values
+    .map((v, i) => `${i + 1}. ${hardenPrompt(v)}`)
+    .join('\n')
+
+  const prompt = `${journeyAnalysis ? `Context:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}Translate each value from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+Return translations in the same order as input.
+
+${numberedValues}`
+
+  const { output } = await generateText({
+    model: google('gemini-2.5-flash'),
+    messages: [
+      { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
+      {
+        role: 'user',
+        content: [{ type: 'text', text: prompt }]
+      }
+    ],
+    output: Output.object({ schema: BatchTranslationSchema })
+  })
+
+  return values.map((original, i) => output.translations[i] ?? original)
+}
+
+/**
+ * Translates a single value using AI.
+ * Prefer translateBatch when translating multiple values.
+ */
+export async function translateValue({
+  value,
+  sourceLanguageName,
+  targetLanguageName,
+  journeyAnalysis
+}: {
+  value: string
+  sourceLanguageName: string
+  targetLanguageName: string
+  journeyAnalysis?: string
+}): Promise<string> {
+  const [result] = await translateBatch({
+    values: [value],
+    sourceLanguageName,
+    targetLanguageName,
+    journeyAnalysis
+  })
+  return result
+}
+
+/**
+ * Translates customization fields and description.
+ * - Batches all field values into a single AI call per target language
+ * - Batches all field defaultValues into a single AI call
+ * - Translates description separately (has unique preservation requirements)
+ * - All {{ ... }} blocks in the description are preserved verbatim
  *
  * @param journeyCustomizationDescription - The customization description string
  * @param journeyCustomizationFields - Array of customization field objects
@@ -68,132 +135,74 @@ export async function translateCustomizationFields({
   const effectiveDefaultValueTarget =
     defaultValueTargetLanguageName ?? targetLanguageName
 
-  // Extract values that need translation from fields
-  const valuesToTranslate: Array<{
-    id: string
-    key: string
-    value: string | null
-    defaultValue: string | null
-  }> = []
+  const fieldsWithContent = journeyCustomizationFields.filter(
+    (field) => field.value || field.defaultValue
+  )
 
-  for (const field of journeyCustomizationFields) {
-    if (field.value || field.defaultValue) {
-      valuesToTranslate.push({
-        id: field.id,
-        key: field.key,
-        value: field.value,
-        defaultValue: field.defaultValue
-      })
-    }
+  if (fieldsWithContent.length === 0 && !journeyCustomizationDescription) {
+    return { translatedDescription: null, translatedFields: [] }
   }
 
-  // Translate field values
-  const translatedFields = await Promise.all(
-    valuesToTranslate.map(async (field) => {
-      const translatedValue = field.value
-        ? await translateValue({
-            value: field.value,
+  const valueEntries = fieldsWithContent
+    .map((f, i) => ({ index: i, text: f.value }))
+    .filter((e): e is { index: number; text: string } => e.text != null)
+
+  const defaultValueEntries = fieldsWithContent
+    .map((f, i) => ({ index: i, text: f.defaultValue }))
+    .filter((e): e is { index: number; text: string } => e.text != null)
+
+  const [translatedValues, translatedDefaults, translatedDescription] =
+    await Promise.all([
+      valueEntries.length > 0
+        ? translateBatch({
+            values: valueEntries.map((e) => e.text),
             sourceLanguageName,
             targetLanguageName,
             journeyAnalysis
           })
-        : null
+        : Promise.resolve([] as string[]),
 
-      const translatedDefaultValue = field.defaultValue
-        ? await translateValue({
-            value: field.defaultValue,
+      defaultValueEntries.length > 0
+        ? translateBatch({
+            values: defaultValueEntries.map((e) => e.text),
             sourceLanguageName,
             targetLanguageName: effectiveDefaultValueTarget,
             journeyAnalysis
           })
-        : null
+        : Promise.resolve([] as string[]),
 
-      return {
-        id: field.id,
-        key: field.key,
-        translatedValue,
-        translatedDefaultValue
-      }
-    })
-  )
+      journeyCustomizationDescription
+        ? translateCustomizationDescription({
+            description: journeyCustomizationDescription,
+            sourceLanguageName,
+            targetLanguageName,
+            journeyAnalysis
+          })
+        : Promise.resolve(null)
+    ])
 
-  // Translate description while preserving all {{ ... }} blocks verbatim
-  let translatedDescription: string | null = null
-  if (journeyCustomizationDescription) {
-    translatedDescription = await translateCustomizationDescription({
-      description: journeyCustomizationDescription,
-      sourceLanguageName,
-      targetLanguageName,
-      journeyAnalysis
-    })
-  }
-
-  return {
-    translatedDescription,
-    translatedFields
-  }
-}
-
-/**
- * Translates a single value using AI
- * Does NOT translate addresses, times, or locations
- */
-export async function translateValue({
-  value,
-  sourceLanguageName,
-  targetLanguageName,
-  journeyAnalysis
-}: {
-  value: string
-  sourceLanguageName: string
-  targetLanguageName: string
-  journeyAnalysis?: string
-}): Promise<string> {
-  const prompt = `
-${journeyAnalysis ? `JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}
-Translate the following value from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
-
-IMPORTANT RULES:
-- DO NOT translate addresses (street addresses, city names, postal codes, country names)
-- DO NOT translate times (time formats like "3:00 PM", "14:30", "Monday", "January", etc.)
-- DO NOT translate locations (place names, venue names, building names, etc.)
-- DO NOT translate proper nouns (names of people, organizations, brands, etc.)
-- Only translate general descriptive text, instructions, and common phrases
-- Maintain the same format and structure as the original
-
-Value to translate: ${hardenPrompt(value)}
-
-Return only the translated value, maintaining the same meaning and cultural appropriateness.
-`
-
-  const { output } = await generateText({
-    model: google('gemini-2.5-flash'),
-    messages: [
-      {
-        role: 'system',
-        content: preSystemPrompt
-      },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: prompt
-          }
-        ]
-      }
-    ],
-    output: Output.object({
-      schema: CustomizationFieldTranslationSchema
-    })
+  const valueMap = new Map<number, string>()
+  valueEntries.forEach((entry, i) => {
+    valueMap.set(entry.index, translatedValues[i])
   })
 
-  return output.translatedValue
+  const defaultValueMap = new Map<number, string>()
+  defaultValueEntries.forEach((entry, i) => {
+    defaultValueMap.set(entry.index, translatedDefaults[i])
+  })
+
+  const translatedFields = fieldsWithContent.map((field, i) => ({
+    id: field.id,
+    key: field.key,
+    translatedValue: valueMap.get(i) ?? null,
+    translatedDefaultValue: defaultValueMap.get(i) ?? null
+  }))
+
+  return { translatedDescription, translatedFields }
 }
 
 /**
  * Translates customization description while preserving all {{ ... }} blocks verbatim.
- * All {{ key }} and {{ key: value }} blocks are preserved exactly as-is without any conversion or rewriting.
  * Only text outside of {{ }} brackets is translated.
  */
 export async function translateCustomizationDescription({
@@ -207,78 +216,35 @@ export async function translateCustomizationDescription({
   targetLanguageName: string
   journeyAnalysis?: string
 }): Promise<string> {
-  // Pattern to match {{ key }} and {{ key: value }} formats for identification only
-  // These blocks will be preserved verbatim in the translation
   const fieldPattern =
     /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
 
-  // Extract all field references to provide context to the AI
-  // All {{ ... }} blocks will be preserved verbatim (no translation or modification)
-  const fieldMatches: Array<{
-    fullMatch: string
-    key: string
-    value: string | null
-  }> = []
-
+  const fieldMatches: string[] = []
   let match
   while ((match = fieldPattern.exec(description)) !== null) {
-    const key = match[1].trim()
-    const quotedValue = match[3]
-    const unquotedValue = match[4]
-    const value =
-      quotedValue !== undefined
-        ? quotedValue
-        : unquotedValue !== undefined
-          ? unquotedValue.trim()
-          : null
-
-    fieldMatches.push({
-      fullMatch: match[0],
-      key,
-      value
-    })
+    fieldMatches.push(match[0])
   }
 
-  // Build translation context listing all {{ ... }} blocks that must be preserved verbatim
-  // The AI will be instructed to copy these exactly as-is without any changes
-  const fieldContext = fieldMatches
-    .map((field, index) => {
-      return `Field ${index + 1}: "${field.fullMatch}"`
-    })
-    .join('\n')
+  const fieldContext =
+    fieldMatches.length > 0
+      ? `\nThese {{ }} blocks must be preserved EXACTLY as-is:\n${fieldMatches.map((m, i) => `${i + 1}. "${m}"`).join('\n')}\n`
+      : ''
 
-  const prompt = `
-${journeyAnalysis ? `JOURNEY ANALYSIS AND ADAPTATION SUGGESTIONS:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}
-Translate the following customization description from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
+  const prompt = `${journeyAnalysis ? `Context:\n${hardenPrompt(journeyAnalysis)}\n\n` : ''}Translate this customization description from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
 
-CRITICAL RULES - READ CAREFULLY:
-1. PRESERVE EVERYTHING inside double curly braces {{ }} EXACTLY as-is, do not translate or modify - this is the MOST IMPORTANT rule
-2. DO NOT translate proper nouns (names of people, organizations, brands, etc.)
-3. Only translate text that is completely OUTSIDE the {{ }} brackets
-4. Maintain all other text formatting and structure
-
-Customization fields in the text:
-${hardenPrompt(fieldContext)}
-
-Description to translate:
-${hardenPrompt(description)}
-`
+CRITICAL: Preserve ALL {{ }} blocks exactly as-is — do not translate, modify, or rewrite anything inside double curly braces.
+Only translate text outside {{ }} brackets.
+${fieldContext}
+Description:
+${hardenPrompt(description)}`
 
   const { output } = await generateText({
-    model: google('gemini-2.0-flash'),
+    model: google('gemini-2.5-flash'),
     messages: [
-      {
-        role: 'system',
-        content: preSystemPrompt
-      },
+      { role: 'system', content: CUSTOMIZATION_SYSTEM_PROMPT },
       {
         role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: prompt
-          }
-        ]
+        content: [{ type: 'text', text: prompt }]
       }
     ],
     output: Output.object({
