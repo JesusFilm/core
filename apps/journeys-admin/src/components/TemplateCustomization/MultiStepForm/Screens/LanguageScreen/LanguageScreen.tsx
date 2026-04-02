@@ -1,6 +1,9 @@
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
+import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { getApp } from 'firebase/app'
 import { getAuth, signInAnonymously } from 'firebase/auth'
@@ -25,6 +28,7 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { useUpdateLastActiveTeamIdMutation } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { LOCALE_LANGUAGES } from '../../../../../../middleware'
@@ -542,42 +546,34 @@ export function LanguageScreen({
                 }}
               >
                 <Stack gap={2} sx={{ px: { xs: 0 } }}>
-                  <Typography
-                    variant="h6"
-                    display={{ xs: 'none', sm: 'block' }}
-                  >
-                    {t('Select a language')}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    display={{ xs: 'block', sm: 'none' }}
-                  >
-                    {t('Select a language')}
-                  </Typography>
                   <LanguageAutocomplete
                     value={values.languageSelect}
                     languages={languagesData?.languages}
                     loading={languagesLoading}
                     onChange={(value) => setFieldValue('languageSelect', value)}
+                    renderInput={(params) => (
+                      <TextField
+                        data-testid="LanguageAutocompleteInput"
+                        {...params}
+                        hiddenLabel
+                        placeholder={t('Search Language')}
+                        variant="filled"
+                        InputProps={{
+                          ...params.InputProps,
+                          sx: { paddingBottom: 2 },
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <Translate />
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    )}
                   />
                   {isSignedIn && (
-                    <>
-                      <Typography
-                        variant="h6"
-                        display={{ xs: 'none', sm: 'block' }}
-                        sx={{ mt: 4 }}
-                      >
-                        {t('Select a team')}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        display={{ xs: 'block', sm: 'none' }}
-                        sx={{ mt: 4 }}
-                      >
-                        {t('Select a team')}
-                      </Typography>
+                    <Box sx={{ mt: 4 }}>
                       <JourneyCustomizeTeamSelect />
-                    </>
+                    </Box>
                   )}
                   <TranslationDialogWrapper
                     open={translationVariables != null}

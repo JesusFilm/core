@@ -814,6 +814,8 @@ type Journey
   """used in a plausible share link to embed report"""
   plausibleToken: String
   fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
 
   """
@@ -913,6 +915,16 @@ input JourneyCustomizationDescriptionTranslateInput {
 
   """The language to translate the customization description into"""
   targetLanguageName: String!
+}
+
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
 }
 
 type JourneyEvent implements Event & Node

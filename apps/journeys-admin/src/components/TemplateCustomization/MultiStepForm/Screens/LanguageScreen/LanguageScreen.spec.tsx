@@ -1904,9 +1904,9 @@ describe('LanguageScreen', () => {
 
     expect(screen.getByText(`'${journey.title}'`)).toBeInTheDocument()
 
-    expect(screen.getAllByText('Select a language')).toHaveLength(2)
+    expect(screen.queryByText('Select a language')).not.toBeInTheDocument()
     expect(screen.getByTestId('LanguageAutocompleteInput')).toBeInTheDocument()
-    expect(screen.getAllByText('Select a team')).toHaveLength(2)
+    expect(screen.queryByText('Select a team')).not.toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: 'Team' })).toBeInTheDocument()
 
     expect(screen.getByTestId('CustomizeFlowNextButton')).toBeInTheDocument()
