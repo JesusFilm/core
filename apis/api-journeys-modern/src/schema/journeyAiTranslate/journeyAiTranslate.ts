@@ -783,10 +783,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
               sourceLanguageName,
               targetLanguageName
             }).catch((error) => {
-              console.warn(
-                `Error translating card ${cardBlock.id}:`,
-                error
-              )
+              console.warn(`Error translating card ${cardBlock.id}:`, error)
             })
           )
         )
