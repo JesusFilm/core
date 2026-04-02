@@ -7,8 +7,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import {
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut
+  signOut as firebaseSignOut,
+  signInWithEmailAndPassword
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
@@ -16,11 +16,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { InferType, object, string } from 'yup'
 
-import {
-  getFirebaseAuth,
-  login,
-  loginWithCredential
-} from '../../../libs/auth'
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
 import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { PageProps } from '../types'
 

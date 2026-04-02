@@ -7,18 +7,12 @@ describe('addTransferParam', () => {
   })
 
   it('should append transfer=true to existing query params', () => {
-    const result = addTransferParam(
-      '/templates/123/customize?screen=text'
-    )
-    expect(result).toBe(
-      '/templates/123/customize?screen=text&transfer=true'
-    )
+    const result = addTransferParam('/templates/123/customize?screen=text')
+    expect(result).toBe('/templates/123/customize?screen=text&transfer=true')
   })
 
   it('should replace existing transfer param', () => {
-    const result = addTransferParam(
-      '/templates/123/customize?transfer=false'
-    )
+    const result = addTransferParam('/templates/123/customize?transfer=false')
     expect(result).toBe('/templates/123/customize?transfer=true')
   })
 

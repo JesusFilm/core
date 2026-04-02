@@ -52,10 +52,7 @@ export function GuestPreviewScreen({
 
   function handleContinueWithAccount(): void {
     if (journey?.id != null) {
-      setPendingGuestJourney(
-        journey.id,
-        journey.fromTemplateId ?? journey.id
-      )
+      setPendingGuestJourney(journey.id, journey.fromTemplateId ?? journey.id)
     }
 
     const nextScreen = getNextCustomizeScreen(screens, 'guestPreview')

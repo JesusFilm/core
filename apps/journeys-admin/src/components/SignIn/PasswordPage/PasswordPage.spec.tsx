@@ -2,8 +2,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { FirebaseError } from 'firebase/app'
 import {
   UserCredential,
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut
+  signOut as firebaseSignOut,
+  signInWithEmailAndPassword
 } from 'firebase/auth'
 
 import { getFirebaseAuth } from '../../../libs/auth'

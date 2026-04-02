@@ -20,11 +20,7 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
-import {
-  getFirebaseAuth,
-  login,
-  loginWithCredential
-} from '../../../libs/auth'
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
 import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
@@ -171,8 +167,7 @@ export function RegisterPage({
                 | string
                 | undefined
               const redirectUrl =
-                existingRedirect ??
-                `/templates/${pending.journeyId}/customize`
+                existingRedirect ?? `/templates/${pending.journeyId}/customize`
               window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
               return
             }

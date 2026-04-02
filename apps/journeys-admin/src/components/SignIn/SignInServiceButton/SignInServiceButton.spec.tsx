@@ -76,7 +76,9 @@ const mockLinkWithPopup = linkWithPopup as jest.MockedFunction<
 >
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { OAuthProvider: MockedOAuthProvider } = require('firebase/auth')
-const mockCredentialFromError = MockedOAuthProvider.credentialFromError as jest.Mock
+
+const mockCredentialFromError =
+  MockedOAuthProvider.credentialFromError as jest.Mock
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('SignInServiceButton', () => {

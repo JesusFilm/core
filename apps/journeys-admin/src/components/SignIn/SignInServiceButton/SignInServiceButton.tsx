@@ -18,11 +18,7 @@ import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
 
-import {
-  getFirebaseAuth,
-  login,
-  loginWithCredential
-} from '../../../libs/auth'
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
 import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { JOURNEY_PUBLISH } from '../RegisterPage/RegisterPage'
 import { getJourneyIdFromRedirect } from '../utils'
@@ -102,12 +98,9 @@ export function SignInServiceButton({
 
           const pending = getPendingGuestJourney()
           if (pending != null) {
-            const existingRedirect = router.query.redirect as
-              | string
-              | undefined
+            const existingRedirect = router.query.redirect as string | undefined
             const redirectUrl =
-              existingRedirect ??
-              `/templates/${pending.journeyId}/customize`
+              existingRedirect ?? `/templates/${pending.journeyId}/customize`
             window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
             return
           }
