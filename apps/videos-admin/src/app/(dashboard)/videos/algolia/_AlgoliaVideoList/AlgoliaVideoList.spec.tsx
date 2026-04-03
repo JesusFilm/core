@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { algoliasearch } from 'algoliasearch'
 import {
   useHits,
@@ -136,7 +136,8 @@ describe('AlgoliaVideoList', () => {
 
     expect(screen.getByText('English Title')).toBeInTheDocument()
     expect(screen.getByText('Fallback Title')).toBeInTheDocument()
-    expect(screen.getAllByText('Published').length).toBeGreaterThan(0)
+    const publishedRow = screen.getByRole('row', { name: /english title/i })
+    expect(within(publishedRow).getByTestId('PublishedChip')).toBeInTheDocument()
     expect(screen.getByText('Draft')).toBeInTheDocument()
   })
 
