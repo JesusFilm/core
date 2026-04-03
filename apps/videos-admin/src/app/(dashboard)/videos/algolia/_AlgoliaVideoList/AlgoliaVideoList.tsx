@@ -96,7 +96,9 @@ function PublishedFilter(): ReactElement {
   })
 
   const publishedTrueItem = publishedItems.find((item) => item.label === 'true')
-  const publishedFalseItem = publishedItems.find((item) => item.label === 'false')
+  const publishedFalseItem = publishedItems.find(
+    (item) => item.label === 'false'
+  )
 
   const selectedPublishedFilter = publishedTrueItem?.isRefined
     ? 'published'
@@ -152,7 +154,8 @@ function AlgoliaInstantSearchResults(): ReactElement {
 
   const handleRowClick = (params: GridRowParams<AlgoliaRow>): void => {
     const selectedMediaComponentId = params.row.mediaComponentId
-    if (selectedMediaComponentId == null || selectedMediaComponentId === '') return
+    if (selectedMediaComponentId == null || selectedMediaComponentId === '')
+      return
 
     router.push(`/videos/${selectedMediaComponentId}`)
   }
@@ -242,7 +245,8 @@ function AlgoliaInstantSearchResults(): ReactElement {
 
 export function AlgoliaVideoList(): ReactElement {
   const searchClient = useMemo(() => getAlgoliaSearchClient(), [])
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS_STG ?? 'videos-stg'
+  const indexName =
+    process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS_STG ?? 'videos-stg'
 
   if (searchClient == null) {
     return (

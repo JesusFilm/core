@@ -13,7 +13,8 @@ export default function VideosLayout({
   children
 }: VideosLayoutProps): ReactElement {
   const pathname = usePathname()
-  const shouldRenderTabs = pathname === '/videos' || pathname === '/videos/algolia'
+  const shouldRenderTabs =
+    pathname === '/videos' || pathname === '/videos/algolia'
 
   return (
     <>

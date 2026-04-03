@@ -32,7 +32,9 @@ jest.mock('react-instantsearch', () => ({
   useSearchBox: jest.fn()
 }))
 
-const mockUseSearchBox = useSearchBox as jest.MockedFunction<typeof useSearchBox>
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
 const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
 const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
   typeof useInstantSearch
@@ -43,7 +45,9 @@ const mockUsePagination = usePagination as jest.MockedFunction<
 const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
-const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<typeof algoliasearch>
+const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
+  typeof algoliasearch
+>
 
 describe('AlgoliaVideoList', () => {
   const originalEnv = process.env
@@ -94,7 +98,9 @@ describe('AlgoliaVideoList', () => {
     render(<AlgoliaVideoList />)
 
     expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
-    expect(screen.getByRole('combobox', { name: 'Published' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('combobox', { name: 'Published' })
+    ).toBeInTheDocument()
   })
 
   it('renders mapped hits and published draft chips', () => {
