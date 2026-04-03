@@ -245,8 +245,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
 
 export function AlgoliaVideoList(): ReactElement {
   const searchClient = useMemo(() => getAlgoliaSearchClient(), [])
-  const indexName =
-    process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS_STG ?? 'videos-stg'
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS
 
   if (searchClient == null) {
     return (
