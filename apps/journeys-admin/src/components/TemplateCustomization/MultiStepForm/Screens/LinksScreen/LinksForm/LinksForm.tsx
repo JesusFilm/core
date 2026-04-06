@@ -69,13 +69,13 @@ export function LinksForm({
 
   function handleLinkBlur(
     e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-    linkType: 'url' | 'email' | 'chatButtons'
+    isEmail: boolean
   ): void {
     const { name, value } = e.target
     const trimmed = value.trim()
     if (!trimmed) return
 
-    if (linkType === 'email') {
+    if (isEmail) {
       const bare = trimmed.toLowerCase().startsWith('mailto:')
         ? trimmed.slice(7)
         : trimmed
@@ -225,7 +225,7 @@ export function LinksForm({
                       placeholder={t('Chat URL')}
                       value={values?.[fieldName] ?? ''}
                       onChange={handleChange}
-                      onBlur={(e) => handleLinkBlur(e, 'chatButtons')}
+                      onBlur={(e) => handleLinkBlur(e, false)}
                       error={hasError}
                       aria-label={`${t('Edit')} ${link.label}`}
                       InputProps={{ disableUnderline: true }}
@@ -295,7 +295,7 @@ export function LinksForm({
                   value={values?.[fieldName] ?? ''}
                   onChange={handleChange}
                   onBlur={(e) =>
-                    handleLinkBlur(e, link.linkType as 'url' | 'email')
+                    handleLinkBlur(e, link.linkType === 'email')
                   }
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
