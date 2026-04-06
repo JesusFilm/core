@@ -310,7 +310,8 @@ export function Canvas(): ReactElement {
                               outlineOffset: -4,
                               borderRadius: 6,
                               cursor: 'pointer',
-                              minHeight: '42px'
+                              minHeight: '42px',
+                              overflow: 'hidden'
                             }}
                             onHeaderClick={
                               journey?.website === true
