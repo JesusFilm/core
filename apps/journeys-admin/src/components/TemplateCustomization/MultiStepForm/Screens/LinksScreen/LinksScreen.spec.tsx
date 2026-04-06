@@ -487,6 +487,52 @@ describe('LinksScreen', () => {
     )
   })
 
+  it('should sanitize corrupted email initial values on load', () => {
+    const journeyWithCorruptedEmail = {
+      ...defaultJourney,
+      id: 'journey-id',
+      blocks: [
+        {
+          id: 'step-1',
+          __typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          locked: false,
+          nextBlockId: null,
+          slug: 's1',
+          children: []
+        },
+        {
+          id: 'btn-email',
+          __typename: 'ButtonBlock',
+          parentBlockId: 'step-1',
+          parentOrder: 0,
+          label: 'Contact Us',
+          action: {
+            __typename: 'EmailAction',
+            email: 'https://user@example.com',
+            parentStepId: 'step-1',
+            customizable: true
+          }
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: journeyWithCorruptedEmail, variant: 'admin' }}
+        >
+          <LinksScreen handleNext={jest.fn()} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const emailGroup = screen.getByLabelText('Edit Contact Us')
+    const emailInput = within(emailGroup).getByRole('textbox')
+    expect(emailInput).toHaveValue('user@example.com')
+  })
+
   it('calls chatButtonUpdate mutation when platform icon is changed', async () => {
     const handleNext = jest.fn().mockResolvedValue(undefined)
 
