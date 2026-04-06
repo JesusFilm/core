@@ -47,13 +47,18 @@ Make `handleLinkBLur` link-type-aware by accepting a `linkType` parameter. This 
 **1a. Rename `handleLinkBLur` → `handleLinkBlur` and modify signature/logic (lines 70-75)**
 
 ```typescript
-function handleLinkBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>, linkType: 'url' | 'email' | 'chatButtons'): void {
+function handleLinkBlur(
+  e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  isEmail: boolean
+): void {
   const { name, value } = e.target
   const trimmed = value.trim()
   if (!trimmed) return
 
-  if (linkType === 'email') {
-    const bare = trimmed.toLowerCase().startsWith('mailto:') ? trimmed.slice(7) : trimmed
+  if (isEmail) {
+    const bare = trimmed.toLowerCase().startsWith('mailto:')
+      ? trimmed.slice(7)
+      : trimmed
     void setFieldValue(name, bare)
     return
   }
@@ -69,19 +74,20 @@ Key decisions made during implementation:
 - **Case-insensitive `mailto:` check** — uses `.toLowerCase().startsWith()` instead of regex for readability
 - **Widen event type** to `HTMLInputElement | HTMLTextAreaElement` to match MUI TextField's `onBlur` callback type
 - **Renamed from `handleLinkBLur`** (pre-existing typo) to `handleLinkBlur`
+- **Simplified param from `linkType` union to `isEmail: boolean`** — the only distinction that matters is email vs not-email; chatButtons and url both get the same `https://` treatment
 
 **1b. Update onBlur binding for chatButtons TextField (line 215)**
 
 ```diff
 - onBlur={handleLinkBlur}
-+ onBlur={(e) => handleLinkBlur(e, 'chatButtons')}
++ onBlur={(e) => handleLinkBlur(e, false)}
 ```
 
 **1c. Update onBlur binding for catch-all TextField (line 279)**
 
 ```diff
 - onBlur={handleLinkBlur}
-+ onBlur={(e) => handleLinkBlur(e, link.linkType as 'url' | 'email')}
++ onBlur={(e) => handleLinkBlur(e, link.linkType === 'email')}
 ```
 
 Note: The cast is safe because the only linkTypes that reach this branch are `'url'` and `'email'` — `'chatButtons'` and `'phone'` are handled by earlier branches in the render.
@@ -299,7 +305,7 @@ it('should not call setFieldValue on blur when email field is empty', () => {
 
 | File                                                   | Change                                                                                                                                                                                                 |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `apps/journeys-admin/.../LinksForm/LinksForm.tsx`      | Rename `handleLinkBLur` → `handleLinkBlur`, add `linkType` param, trim-first logic, case-insensitive mailto strip, widen event type, update `onBlur` bindings, add placeholders (not wrapped in `t()`) |
+| `apps/journeys-admin/.../LinksForm/LinksForm.tsx`      | Rename `handleLinkBLur` → `handleLinkBlur`, add `isEmail` boolean param, trim-first logic, case-insensitive mailto strip, widen event type, update `onBlur` bindings, add placeholders (not wrapped in `t()`) |
 | `apps/journeys-admin/.../LinksForm/LinksForm.spec.tsx` | Add 8 new tests: email blur, mailto strip, whitespace-only, spaces-around-mailto, chatButton regression, email placeholder, URL placeholder, empty email                                               |
 
 ## Sources
