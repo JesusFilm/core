@@ -835,6 +835,40 @@ describe('MultiStepForm', () => {
           screen.queryByTestId('progress-stepper-step-1')
         ).not.toBeInTheDocument()
       })
+
+      it('should not render progress stepper on the done screen', async () => {
+        const journeyWithCapabilities = {
+          ...journey,
+          journeyCustomizationDescription: 'Hello {{ firstName: John }}!',
+          journeyCustomizationFields: [
+            {
+              id: '1',
+              key: 'firstName',
+              value: 'John',
+              __typename: 'JourneyCustomizationField'
+            }
+          ],
+          blocks: []
+        } as unknown as Journey
+
+        setRouterQuery({
+          journeyId: journeyWithCapabilities.id,
+          screen: 'done'
+        })
+
+        render(
+          <FlagsProvider flags={defaultFlags}>
+            <SnackbarProvider>
+              <JourneyProvider value={{ journey: journeyWithCapabilities }}>
+                <MultiStepForm />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </FlagsProvider>
+        )
+
+        expect(screen.getByTestId('done-screen')).toBeInTheDocument()
+        expect(screen.queryByTestId('progress-stepper')).not.toBeInTheDocument()
+      })
     })
   })
 
