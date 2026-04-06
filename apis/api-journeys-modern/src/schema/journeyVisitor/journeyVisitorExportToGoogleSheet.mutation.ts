@@ -153,7 +153,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
 
       if (integrationRecord.teamId !== journey.teamId) {
         throw new GraphQLError(
-          'Integration does not belong to this journey\'s team',
+          "Integration does not belong to this journey's team",
           { extensions: { code: 'FORBIDDEN' } }
         )
       }

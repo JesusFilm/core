@@ -1,5 +1,5 @@
 ---
-title: "fix: Google Sync permission — enforce integration ownership on export mutation (NES-1489)"
+title: 'fix: Google Sync permission — enforce integration ownership on export mutation (NES-1489)'
 type: fix
 status: active
 date: 2026-03-25
@@ -48,24 +48,24 @@ The sync dialog dropdown now filters integrations to only show the current user'
 
 ### `journeyVisitorExportToGoogleSheet` (the mutation the frontend calls)
 
-| Check | Purpose | Error |
-|-------|---------|-------|
-| `isAuthenticated` (withAuth) | Must be logged in | Not authorized |
-| `ability(Action.Export, ...)` | Must be team manager/member or journey owner | Forbidden |
-| `integration.teamId === journey.teamId` | Integration must belong to the journey's team | Forbidden |
-| `integration.userId === context.user.id` | Must own the integration (privacy) | Forbidden |
+| Check                                    | Purpose                                       | Error          |
+| ---------------------------------------- | --------------------------------------------- | -------------- |
+| `isAuthenticated` (withAuth)             | Must be logged in                             | Not authorized |
+| `ability(Action.Export, ...)`            | Must be team manager/member or journey owner  | Forbidden      |
+| `integration.teamId === journey.teamId`  | Integration must belong to the journey's team | Forbidden      |
+| `integration.userId === context.user.id` | Must own the integration (privacy)            | Forbidden      |
 
 ### `googleSheetsSyncCreate` (not called by frontend — unchanged from main)
 
-| Check | Purpose |
-|-------|---------|
+| Check                           | Purpose                  |
+| ------------------------------- | ------------------------ |
 | `isIntegrationOwner` (withAuth) | Must own the integration |
-| `ability(Action.Export, ...)` | Must have export access |
+| `ability(Action.Export, ...)`   | Must have export access  |
 
 ### `googleSheetsSyncDelete` / `googleSheetsSyncBackfill` (unchanged)
 
-| Check | Purpose |
-|-------|---------|
+| Check                                   | Purpose                   |
+| --------------------------------------- | ------------------------- |
 | `isIntegrationOwner \|\| isTeamManager` | Can manage existing syncs |
 
 ## End Result
@@ -79,26 +79,26 @@ With both the frontend (PR #8938) and backend changes:
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `googleSheetsSyncCreate.mutation.ts` | Reverted to `main` |
-| `googleSheetsSyncCreate.mutation.spec.ts` | Reverted to `main` |
-| `journeyVisitorExportToGoogleSheet.mutation.ts` | Added ownership + team checks |
-| `journeyVisitorExportToGoogleSheet.mutation.spec.ts` | Added 2 new test cases |
+| File                                                 | Change                        |
+| ---------------------------------------------------- | ----------------------------- |
+| `googleSheetsSyncCreate.mutation.ts`                 | Reverted to `main`            |
+| `googleSheetsSyncCreate.mutation.spec.ts`            | Reverted to `main`            |
+| `journeyVisitorExportToGoogleSheet.mutation.ts`      | Added ownership + team checks |
+| `journeyVisitorExportToGoogleSheet.mutation.spec.ts` | Added 2 new test cases        |
 
 ## Test Matrix — `journeyVisitorExportToGoogleSheet`
 
-| Test Case | Status |
-|-----------|--------|
-| Create new spreadsheet (happy path) | Existing (passing) |
-| Export to existing spreadsheet | Existing (passing) |
-| Default sheet name | Existing (passing) |
-| Journey not found | Existing (passing) |
-| User lacks export permission | Existing (passing) |
-| Integration not found | Existing (passing) |
-| User does not own integration → Forbidden | **New** |
-| Integration from different team → Forbidden | **New** |
-| Various validation errors | Existing (passing) |
+| Test Case                                   | Status             |
+| ------------------------------------------- | ------------------ |
+| Create new spreadsheet (happy path)         | Existing (passing) |
+| Export to existing spreadsheet              | Existing (passing) |
+| Default sheet name                          | Existing (passing) |
+| Journey not found                           | Existing (passing) |
+| User lacks export permission                | Existing (passing) |
+| Integration not found                       | Existing (passing) |
+| User does not own integration → Forbidden   | **New**            |
+| Integration from different team → Forbidden | **New**            |
+| Various validation errors                   | Existing (passing) |
 
 ## Related Tickets
 
