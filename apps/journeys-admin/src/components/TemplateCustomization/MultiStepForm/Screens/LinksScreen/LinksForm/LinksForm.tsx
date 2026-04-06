@@ -72,15 +72,18 @@ export function LinksForm({
     linkType: 'url' | 'email' | 'chatButtons'
   ): void {
     const { name, value } = e.target
-    if (!value) return
+    const trimmed = value.trim()
+    if (!trimmed) return
 
     if (linkType === 'email') {
-      const bare = value.startsWith('mailto:') ? value.slice(7) : value
-      void setFieldValue(name, bare.trim())
+      const bare = trimmed.startsWith('mailto:')
+        ? trimmed.slice(7)
+        : trimmed
+      void setFieldValue(name, bare)
       return
     }
 
-    const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
+    const url = /^\w+:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`
     void setFieldValue(name, url)
   }
 
