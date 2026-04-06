@@ -222,6 +222,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
       </Box>
       <Stack direction="row" spacing={1} alignItems="center">
         <Button
+          aria-label="Previous page"
           variant="outlined"
           disabled={currentRefinement <= 0}
           onClick={() => refinePage(currentRefinement - 1)}
@@ -232,6 +233,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
           Page {nbPages === 0 ? 0 : currentRefinement + 1} of {nbPages}
         </Typography>
         <Button
+          aria-label="Next page"
           variant="outlined"
           disabled={currentRefinement >= nbPages - 1}
           onClick={() => refinePage(currentRefinement + 1)}
@@ -245,7 +247,7 @@ function AlgoliaInstantSearchResults(): ReactElement {
 
 export function AlgoliaVideoList(): ReactElement {
   const searchClient = useMemo(() => getAlgoliaSearchClient(), [])
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS ?? ''
 
   if (searchClient == null) {
     return (
@@ -254,6 +256,17 @@ export function AlgoliaVideoList(): ReactElement {
         <Typography color="warning.main">
           Set NEXT_PUBLIC_ALGOLIA_APP_ID and NEXT_PUBLIC_ALGOLIA_API_KEY to use
           this tab.
+        </Typography>
+      </Stack>
+    )
+  }
+
+  if (indexName === '') {
+    return (
+      <Stack sx={{ width: '100%' }} gap={2}>
+        <Typography variant="h4">Algolia Video Library</Typography>
+        <Typography color="warning.main">
+          Set NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS to use this tab.
         </Typography>
       </Stack>
     )

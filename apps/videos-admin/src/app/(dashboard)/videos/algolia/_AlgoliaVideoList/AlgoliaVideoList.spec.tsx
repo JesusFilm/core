@@ -61,7 +61,7 @@ describe('AlgoliaVideoList', () => {
       ...originalEnv,
       NEXT_PUBLIC_ALGOLIA_APP_ID: 'test-app-id',
       NEXT_PUBLIC_ALGOLIA_API_KEY: 'test-api-key',
-      NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS_STG: 'videos-stg'
+      NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS: 'test-videos'
     }
 
     mockUseSearchBox.mockReturnValue({
@@ -98,6 +98,12 @@ describe('AlgoliaVideoList', () => {
     render(<AlgoliaVideoList />)
 
     expect(screen.getByLabelText('Search Algolia')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Previous page' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Next page' })
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('combobox', { name: 'Published' })
     ).toBeInTheDocument()
@@ -189,5 +195,21 @@ describe('AlgoliaVideoList', () => {
       )
     ).toBeInTheDocument()
     expect(mockAlgoliaSearch).not.toHaveBeenCalled()
+  })
+
+  it('shows warning when algolia index env var is missing', () => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_ALGOLIA_APP_ID: 'test-app-id',
+      NEXT_PUBLIC_ALGOLIA_API_KEY: 'test-api-key',
+      NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS: ''
+    }
+
+    render(<AlgoliaVideoList />)
+
+    expect(
+      screen.getByText('Set NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS to use this tab.')
+    ).toBeInTheDocument()
+    expect(screen.queryByLabelText('Search Algolia')).not.toBeInTheDocument()
   })
 })
