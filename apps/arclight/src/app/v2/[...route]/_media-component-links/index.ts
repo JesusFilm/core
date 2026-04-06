@@ -103,58 +103,62 @@ mediaComponentLinks.openapi(route, async (c) => {
   ])
 
   const bypass = isCacheBypassEnabled(c)
-  const response = await getWithStaleCache(cacheKey, async () => {
-    try {
-      const { data } = await getApolloClient().query<
-        ResultOf<typeof GET_VIDEOS_CHILDREN>
-      >({
-        query: GET_VIDEOS_CHILDREN,
-        variables: {
-          ids,
-          metadataLanguageId,
-          fallbackLanguageId,
-          limit: 10000
-        }
-      })
-
-      const mediaComponentsLinks = data.videos
-        .filter(
-          (video) => video.children.length > 0 || video.parents.length > 0
-        )
-        .filter(
-          (video) =>
-            video.title[0]?.value != null ||
-            video.fallbackTitle[0]?.value != null
-        )
-        .map((video) => ({
-          mediaComponentId: video.id,
-          linkedMediaComponentIds: {
-            ...(video.children.length > 0
-              ? { contains: video.children.map(({ id }) => id) }
-              : {}),
-            ...(video.parents.length > 0
-              ? { containedBy: video.parents.map(({ id }) => id) }
-              : {})
+  const response = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      try {
+        const { data } = await getApolloClient().query<
+          ResultOf<typeof GET_VIDEOS_CHILDREN>
+        >({
+          query: GET_VIDEOS_CHILDREN,
+          variables: {
+            ids,
+            metadataLanguageId,
+            fallbackLanguageId,
+            limit: 10000
           }
-        }))
+        })
 
-      const queryString = new URLSearchParams(queryObject).toString()
-      return {
-        _links: {
-          self: {
-            href: `http://api.arclight.org/v2/mediaComponents?${queryString}`
+        const mediaComponentsLinks = data.videos
+          .filter(
+            (video) => video.children.length > 0 || video.parents.length > 0
+          )
+          .filter(
+            (video) =>
+              video.title[0]?.value != null ||
+              video.fallbackTitle[0]?.value != null
+          )
+          .map((video) => ({
+            mediaComponentId: video.id,
+            linkedMediaComponentIds: {
+              ...(video.children.length > 0
+                ? { contains: video.children.map(({ id }) => id) }
+                : {}),
+              ...(video.parents.length > 0
+                ? { containedBy: video.parents.map(({ id }) => id) }
+                : {})
+            }
+          }))
+
+        const queryString = new URLSearchParams(queryObject).toString()
+        return {
+          _links: {
+            self: {
+              href: `http://api.arclight.org/v2/mediaComponents?${queryString}`
+            }
+          },
+          _embedded: {
+            mediaComponentsLinks
           }
-        },
-        _embedded: {
-          mediaComponentsLinks
         }
+      } catch (err) {
+        throw new HTTPException(500, {
+          message: `Failed to get videos with children: ${err instanceof Error ? err.message : String(err)}`
+        })
       }
-    } catch (err) {
-      throw new HTTPException(500, {
-        message: `Failed to get videos with children: ${err instanceof Error ? err.message : String(err)}`
-      })
-    }
-  }, { bypass })
+    },
+    { bypass }
+  )
 
   return c.json(response)
 })
