@@ -289,8 +289,8 @@ export function LinksForm({
                   type={link.linkType === 'email' ? 'email' : 'text'}
                   placeholder={
                     link.linkType === 'email'
-                      ? t('email@example.com')
-                      : t('https://example.com')
+                      ? 'email@example.com'
+                      : 'https://example.com'
                   }
                   value={values?.[fieldName] ?? ''}
                   onChange={handleChange}

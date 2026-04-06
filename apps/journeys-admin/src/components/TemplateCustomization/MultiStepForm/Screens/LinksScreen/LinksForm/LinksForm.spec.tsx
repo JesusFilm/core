@@ -317,6 +317,96 @@ describe('LinksForm', () => {
     expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
   })
 
+  it('should show URL placeholder for URL fields', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'url-1',
+        linkType: 'url',
+        url: '',
+        label: 'URL Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const { container } = render(
+      <Formik initialValues={{ 'url-1': '' }} onSubmit={jest.fn()}>
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = container.querySelector('input[name="url-1"]')
+    expect(input).toHaveAttribute('placeholder', 'https://example.com')
+  })
+
+  it('should not call setFieldValue when value is only whitespace', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = jest.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, { target: { value: '   ' } })
+    fireEvent.blur(input)
+    expect(setFieldValue).not.toHaveBeenCalled()
+  })
+
+  it('should strip mailto: from email with surrounding whitespace', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'email-1',
+        linkType: 'email',
+        url: '',
+        label: 'Email Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    const setFieldValue = jest.fn()
+    render(
+      <Formik initialValues={{ 'email-1': '' }} onSubmit={jest.fn()}>
+        {(formik) => (
+          <FormikProvider value={{ ...formik, setFieldValue }}>
+            <LinksForm links={links} onPlatformChange={jest.fn()} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const input = within(screen.getByLabelText('Edit Email Link')).getByRole(
+      'textbox'
+    )
+    fireEvent.change(input, {
+      target: { value: ' mailto:info@church.com ' }
+    })
+    fireEvent.blur(input)
+    expect(setFieldValue).toHaveBeenCalledWith('email-1', 'info@church.com')
+  })
+
   it('should open email via mailto:', () => {
     const links: JourneyLink[] = [
       {
