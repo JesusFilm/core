@@ -40,13 +40,16 @@ export async function checkConditionalRedirect({
     resolvedUrl,
     'https://admin.nextstep.is'
   ).searchParams.get('redirect')
-  let redirect = ''
+
+  let redirect: string | undefined
+  let encodedRedirect = ''
 
   if (currentRedirect != null) {
-    redirect = `?redirect=${encodeURIComponent(currentRedirect)}`
-  } else {
-    if (resolvedUrl !== '/')
-      redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
+    redirect = currentRedirect
+    encodedRedirect = `?redirect=${encodeURIComponent(currentRedirect)}`
+  } else if (resolvedUrl !== '/') {
+    redirect = resolvedUrl
+    encodedRedirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
   }
 
   const { data: me } = await apolloClient.query<GetMe>({
@@ -58,7 +61,7 @@ export async function checkConditionalRedirect({
     if (!(me.me?.emailVerified ?? false)) {
       if (resolvedUrl.startsWith('/users/verify')) return
       return {
-        destination: `/users/verify${redirect}`,
+        destination: `/users/verify${encodedRedirect}`,
         permanent: false
       }
     }
@@ -69,7 +72,7 @@ export async function checkConditionalRedirect({
   }
 
   // don't redirect on /users/verify
-  if (resolvedUrl.startsWith(`/users/verify${redirect}`)) return
+  if (resolvedUrl.startsWith(`/users/verify${encodedRedirect}`)) return
 
   const { data } = await apolloClient.query<GetJourneyProfileAndTeams>({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
@@ -78,7 +81,7 @@ export async function checkConditionalRedirect({
   if (data.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {
-      destination: `/users/terms-and-conditions${redirect}`,
+      destination: `/users/terms-and-conditions${encodedRedirect}`,
       permanent: false
     }
   }
@@ -93,7 +96,7 @@ export async function checkConditionalRedirect({
     }
     if (resolvedUrl.startsWith('/teams/new')) return
     return {
-      destination: `/teams/new${redirect}`,
+      destination: `/teams/new${encodedRedirect}`,
       permanent: false
     }
   }
