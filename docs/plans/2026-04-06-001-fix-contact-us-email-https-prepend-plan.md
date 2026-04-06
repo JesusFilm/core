@@ -47,18 +47,13 @@ Make `handleLinkBLur` link-type-aware by accepting a `linkType` parameter. This 
 **1a. Rename `handleLinkBLur` → `handleLinkBlur` and modify signature/logic (lines 70-75)**
 
 ```typescript
-function handleLinkBlur(
-  e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-  isEmail: boolean
-): void {
+function handleLinkBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>, isEmail: boolean): void {
   const { name, value } = e.target
   const trimmed = value.trim()
   if (!trimmed) return
 
   if (isEmail) {
-    const bare = trimmed.toLowerCase().startsWith('mailto:')
-      ? trimmed.slice(7)
-      : trimmed
+    const bare = trimmed.toLowerCase().startsWith('mailto:') ? trimmed.slice(7) : trimmed
     void setFieldValue(name, bare)
     return
   }
@@ -303,10 +298,10 @@ it('should not call setFieldValue on blur when email field is empty', () => {
 
 ## Files Modified
 
-| File                                                   | Change                                                                                                                                                                                                 |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| File                                                   | Change                                                                                                                                                                                                        |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `apps/journeys-admin/.../LinksForm/LinksForm.tsx`      | Rename `handleLinkBLur` → `handleLinkBlur`, add `isEmail` boolean param, trim-first logic, case-insensitive mailto strip, widen event type, update `onBlur` bindings, add placeholders (not wrapped in `t()`) |
-| `apps/journeys-admin/.../LinksForm/LinksForm.spec.tsx` | Add 8 new tests: email blur, mailto strip, whitespace-only, spaces-around-mailto, chatButton regression, email placeholder, URL placeholder, empty email                                               |
+| `apps/journeys-admin/.../LinksForm/LinksForm.spec.tsx` | Add 8 new tests: email blur, mailto strip, whitespace-only, spaces-around-mailto, chatButton regression, email placeholder, URL placeholder, empty email                                                      |
 
 ## Sources
 

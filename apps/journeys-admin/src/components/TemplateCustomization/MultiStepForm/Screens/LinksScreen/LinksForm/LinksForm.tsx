@@ -294,9 +294,7 @@ export function LinksForm({
                   }
                   value={values?.[fieldName] ?? ''}
                   onChange={handleChange}
-                  onBlur={(e) =>
-                    handleLinkBlur(e, link.linkType === 'email')
-                  }
+                  onBlur={(e) => handleLinkBlur(e, link.linkType === 'email')}
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
                   helperText={hasError ? (errors?.[fieldName] as string) : ' '}
