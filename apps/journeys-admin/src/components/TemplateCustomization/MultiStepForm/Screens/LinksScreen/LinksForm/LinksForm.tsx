@@ -68,7 +68,7 @@ export function LinksForm({
   }
 
   function handleLinkBlur(
-    e: React.FocusEvent<HTMLInputElement>,
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
     linkType: 'url' | 'email' | 'chatButtons'
   ): void {
     const { name, value } = e.target
