@@ -138,13 +138,11 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         })
       }
 
-      // Validate integration
-      const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
-        .accessToken
-
+      // Validate integration: must exist, belong to the journey's team,
+      // and be owned by the requesting user (privacy: only use your own Google account)
       const integrationRecord = await prisma.integration.findUnique({
         where: { id: integrationId },
-        select: { id: true, accountEmail: true }
+        select: { id: true, userId: true, teamId: true, accountEmail: true }
       })
 
       if (integrationRecord == null) {
@@ -152,6 +150,23 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           extensions: { code: 'NOT_FOUND' }
         })
       }
+
+      if (integrationRecord.teamId !== journey.teamId) {
+        throw new GraphQLError(
+          'Integration does not belong to this journey\'s team',
+          { extensions: { code: 'FORBIDDEN' } }
+        )
+      }
+
+      if (integrationRecord.userId !== context.user.id) {
+        throw new GraphQLError(
+          'You can only create syncs using your own Google account',
+          { extensions: { code: 'FORBIDDEN' } }
+        )
+      }
+
+      const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
+        .accessToken
 
       const integrationIdUsed = integrationRecord.id
       const integrationEmail = integrationRecord.accountEmail ?? null
