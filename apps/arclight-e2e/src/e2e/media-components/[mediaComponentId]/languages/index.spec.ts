@@ -233,9 +233,7 @@ test.describe('media component languages', () => {
     const language = data._embedded.mediaComponentLanguage[0]
 
     expect(language.shareUrl).toBeDefined()
-    expect(language.shareUrl).toMatch(
-      /^https:\/\/arc\.gt\/s\/[A-Za-z0-9_-]+\/\d+$/
-    )
+    expect(language.shareUrl).toMatch(/^https:\/\/arc\.gt\/[A-Za-z0-9_/-]+$/)
   })
 
   test('apiKey parameter affects download URLs in language list', async ({
