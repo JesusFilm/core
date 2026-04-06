@@ -1,9 +1,10 @@
 ---
 title: 'fix: Stop https:// being prepended to email fields in template customization Links screen'
 type: fix
-status: active
+status: complete
 date: 2026-04-06
 ticket: NES-1451
+pr: https://github.com/JesusFilm/core/pull/8950
 ---
 
 # fix: Stop https:// being prepended to email fields in template customization Links screen
@@ -43,38 +44,48 @@ Make `handleLinkBLur` link-type-aware by accepting a `linkType` parameter. This 
 
 **Path:** `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/LinksScreen/LinksForm/LinksForm.tsx`
 
-**1a. Modify `handleLinkBLur` signature and logic (lines 70-75)**
+**1a. Rename `handleLinkBLur` → `handleLinkBlur` and modify signature/logic (lines 70-75)**
 
 ```typescript
-function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>, linkType: 'url' | 'email' | 'chatButtons'): void {
+function handleLinkBlur(
+  e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  linkType: 'url' | 'email' | 'chatButtons'
+): void {
   const { name, value } = e.target
-  if (!value) return
+  const trimmed = value.trim()
+  if (!trimmed) return
 
   if (linkType === 'email') {
-    // Strip mailto: prefix if user pasted it — store bare email only
-    const bare = value.startsWith('mailto:') ? value.slice(7) : value
-    void setFieldValue(name, bare.trim())
+    const bare = trimmed.toLowerCase().startsWith('mailto:')
+      ? trimmed.slice(7)
+      : trimmed
+    void setFieldValue(name, bare)
     return
   }
 
-  // URL and chatButtons: prepend https:// if no protocol present
-  const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
+  const url = /^\w+:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`
   void setFieldValue(name, url)
 }
 ```
 
+Key decisions made during implementation:
+- **Trim first, then normalize** — trimming after normalization let values like `" mailto:user@example.com "` bypass the `startsWith` check
+- **Case-insensitive `mailto:` check** — uses `.toLowerCase().startsWith()` instead of regex for readability
+- **Widen event type** to `HTMLInputElement | HTMLTextAreaElement` to match MUI TextField's `onBlur` callback type
+- **Renamed from `handleLinkBLur`** (pre-existing typo) to `handleLinkBlur`
+
 **1b. Update onBlur binding for chatButtons TextField (line 215)**
 
 ```diff
-- onBlur={handleLinkBLur}
-+ onBlur={(e) => handleLinkBLur(e, 'chatButtons')}
+- onBlur={handleLinkBlur}
++ onBlur={(e) => handleLinkBlur(e, 'chatButtons')}
 ```
 
 **1c. Update onBlur binding for catch-all TextField (line 279)**
 
 ```diff
-- onBlur={handleLinkBLur}
-+ onBlur={(e) => handleLinkBLur(e, link.linkType as 'url' | 'email')}
+- onBlur={handleLinkBlur}
++ onBlur={(e) => handleLinkBlur(e, link.linkType as 'url' | 'email')}
 ```
 
 Note: The cast is safe because the only linkTypes that reach this branch are `'url'` and `'email'` — `'chatButtons'` and `'phone'` are handled by earlier branches in the render.
@@ -91,32 +102,19 @@ Add a placeholder prop to communicate expected input format, matching the existi
     hiddenLabel
     fullWidth
     type={link.linkType === 'email' ? 'email' : 'text'}
-+   placeholder={link.linkType === 'email' ? t('email@example.com') : t('https://example.com')}
++   placeholder={link.linkType === 'email' ? 'email@example.com' : 'https://example.com'}
     value={values?.[fieldName] ?? ''}
     onChange={handleChange}
 ```
 
-#### File 2: `LinksScreen.tsx` — Sanitize corrupted initial values
+#### ~~File 2: `LinksScreen.tsx` — Sanitize corrupted initial values~~ (Removed)
 
-**Path:** `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/LinksScreen/LinksScreen.tsx`
+Initially planned to sanitize corrupted email values on load, but this was removed because:
+- The editor's `EmailAction` component validates with `.email()` so `https://` can never be stored for an email action
+- The bug itself blocked form submission (Formik rejected the corrupted value), so no corrupt data was ever persisted
+- The sanitization was guarding against an impossible state
 
-**2a. Sanitize email values in `initialValues` reducer (lines 264-265)**
-
-Users who previously saved through the buggy flow may have `https://info@church.com` stored. With `validateOnMount: true`, these corrupt values would immediately show errors the user didn't cause.
-
-```diff
-  } else {
--   acc[link.id] = link.url ?? ''
-+   const raw = link.url ?? ''
-+   // Strip https:// from email fields to recover values corrupted by the old onBlur bug
-+   acc[link.id] =
-+     link.linkType === 'email' && raw.startsWith('https://')
-+       ? raw.replace(/^https?:\/\//, '')
-+       : raw
-  }
-```
-
-#### File 3: `LinksForm.spec.tsx` — New tests
+#### File 2: `LinksForm.spec.tsx` — New tests
 
 **Path:** `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/LinksScreen/LinksForm/LinksForm.spec.tsx`
 
@@ -264,48 +262,48 @@ it('should not call setFieldValue on blur when email field is empty', () => {
 
 ## Edge Cases Considered
 
-| Scenario                           | Input                     | Link Type   | onBlur Result                        | Notes                                      |
-| ---------------------------------- | ------------------------- | ----------- | ------------------------------------ | ------------------------------------------ |
-| Normal email                       | `info@church.com`         | email       | `info@church.com` (unchanged)        | Core fix                                   |
-| Email with mailto:                 | `mailto:info@church.com`  | email       | `info@church.com` (stripped)         | Normalize to bare address                  |
-| Email with leading/trailing spaces | `info@church.com`         | email       | `info@church.com` (trimmed)          | Prevents validation mismatch               |
-| Empty email                        | ``                        | email       | no-op (early return)                 | Existing behavior preserved                |
-| Corrupted stored email             | `https://info@church.com` | email       | `info@church.com` (stripped on load) | initialValues sanitization                 |
-| Normal URL                         | `example.com`             | url         | `https://example.com`                | Existing behavior preserved                |
-| URL with protocol                  | `https://example.com`     | url         | `https://example.com`                | Existing behavior preserved                |
-| URL with http://                   | `http://example.com`      | url         | `http://example.com`                 | Existing behavior preserved                |
-| Chat button URL                    | `wa.me/123`               | chatButtons | `https://wa.me/123`                  | Existing behavior preserved                |
-| Phone field                        | `+15551234`               | phone       | N/A                                  | Uses PhoneField, never hits handleLinkBLur |
-
-| Email field shows placeholder | ``| email | Shows `email@example.com` | Communicates expected format |
-| URL field shows placeholder |`` | url | Shows `https://example.com` | Communicates expected format |
+| Scenario | Input | Link Type | onBlur Result | Notes |
+|---|---|---|---|---|
+| Normal email | `info@church.com` | email | `info@church.com` (unchanged) | Core fix |
+| Email with mailto: | `mailto:info@church.com` | email | `info@church.com` (stripped) | Normalize to bare address |
+| Email with MAILTO: | `MAILTO:info@church.com` | email | `info@church.com` (stripped) | Case-insensitive check |
+| Email with leading/trailing spaces | ` info@church.com ` | email | `info@church.com` (trimmed) | Trim-first prevents validation mismatch |
+| Spaces around mailto: | ` mailto:info@church.com ` | email | `info@church.com` (trimmed + stripped) | Trim before startsWith check |
+| Empty email | `` | email | no-op (early return) | Existing behavior preserved |
+| Whitespace-only | `   ` | email | no-op (early return) | Trim-first converts to empty |
+| Normal URL | `example.com` | url | `https://example.com` | Existing behavior preserved |
+| URL with protocol | `https://example.com` | url | `https://example.com` | Existing behavior preserved |
+| URL with http:// | `http://example.com` | url | `http://example.com` | Existing behavior preserved |
+| Chat button URL | `wa.me/123` | chatButtons | `https://wa.me/123` | Existing behavior preserved |
+| Phone field | `+15551234` | phone | N/A | Uses PhoneField, never hits handleLinkBlur |
+| Email placeholder | (empty) | email | Shows `email@example.com` | Not wrapped in `t()` — colon breaks i18next |
+| URL placeholder | (empty) | url | Shows `https://example.com` | Not wrapped in `t()` — colon breaks i18next |
 
 ## Out of Scope
 
 - **URL fields with `mailto:` typed in them** — extremely unlikely and the regex handles it adequately for URL contexts
-- **Trimming for URL/chatButton fields** — submit handler already trims; adding it to onBlur would change existing behavior
-- **Database migration to clean corrupted emails** — the initialValues sanitization handles this at the UI layer; a data migration is not justified for this low-volume edge case
+- **Database migration to clean corrupted emails** — not needed; the editor validates with `.email()` so corrupted data was never persisted (the bug blocked form submission)
+- **Sanitizing `initialValues` on load** — removed; same reasoning as above
 
 ## Acceptance Criteria
 
-- [ ] Email field in Links screen accepts plain email addresses without `https://` prepend
-- [ ] Email field with `mailto:` pasted is normalized to bare address on blur
-- [ ] Email field with leading/trailing spaces is trimmed on blur
-- [ ] URL fields still get `https://` prepended on blur (no regression)
-- [ ] ChatButton fields still get `https://` prepended on blur (no regression)
-- [ ] Previously corrupted email values (with `https://`) are sanitized when loaded into the form
-- [ ] Email fields show `email@example.com` placeholder when empty
-- [ ] URL fields show `https://example.com` placeholder when empty
-- [ ] All new test cases pass
-- [ ] Existing tests continue to pass
+- [x] Email field in Links screen accepts plain email addresses without `https://` prepend
+- [x] Email field with `mailto:` (case-insensitive) pasted is normalized to bare address on blur
+- [x] All input values are trimmed before normalization (whitespace-only = no-op)
+- [x] URL fields still get `https://` prepended on blur (no regression)
+- [x] ChatButton fields still get `https://` prepended on blur (no regression)
+- [x] Email fields show `email@example.com` placeholder when empty
+- [x] URL fields show `https://example.com` placeholder when empty
+- [x] Placeholders not wrapped in `t()` (colon in `https:` breaks i18next namespace separator)
+- [x] All 23 new + existing test cases pass
+- [x] CI type-check passes (widened event type to include `HTMLTextAreaElement`)
 
-## Files to Modify
+## Files Modified
 
-| File                                                                                                                      | Change                                                                      |
-| ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/LinksScreen/LinksForm/LinksForm.tsx`      | Modify `handleLinkBLur` to accept `linkType`, update both `onBlur` bindings |
-| `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/LinksScreen/LinksScreen.tsx`              | Sanitize corrupted email values in `initialValues` reducer                  |
-| `apps/journeys-admin/src/components/TemplateCustomization/MultiStepForm/Screens/LinksScreen/LinksForm/LinksForm.spec.tsx` | Add 4 new test cases for email blur behavior                                |
+| File | Change |
+|---|---|
+| `apps/journeys-admin/.../LinksForm/LinksForm.tsx` | Rename `handleLinkBLur` → `handleLinkBlur`, add `linkType` param, trim-first logic, case-insensitive mailto strip, widen event type, update `onBlur` bindings, add placeholders (not wrapped in `t()`) |
+| `apps/journeys-admin/.../LinksForm/LinksForm.spec.tsx` | Add 8 new tests: email blur, mailto strip, whitespace-only, spaces-around-mailto, chatButton regression, email placeholder, URL placeholder, empty email |
 
 ## Sources
 
