@@ -47,18 +47,13 @@ Make `handleLinkBLur` link-type-aware by accepting a `linkType` parameter. This 
 **1a. Rename `handleLinkBLur` → `handleLinkBlur` and modify signature/logic (lines 70-75)**
 
 ```typescript
-function handleLinkBlur(
-  e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
-  linkType: 'url' | 'email' | 'chatButtons'
-): void {
+function handleLinkBlur(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>, linkType: 'url' | 'email' | 'chatButtons'): void {
   const { name, value } = e.target
   const trimmed = value.trim()
   if (!trimmed) return
 
   if (linkType === 'email') {
-    const bare = trimmed.toLowerCase().startsWith('mailto:')
-      ? trimmed.slice(7)
-      : trimmed
+    const bare = trimmed.toLowerCase().startsWith('mailto:') ? trimmed.slice(7) : trimmed
     void setFieldValue(name, bare)
     return
   }
@@ -69,6 +64,7 @@ function handleLinkBlur(
 ```
 
 Key decisions made during implementation:
+
 - **Trim first, then normalize** — trimming after normalization let values like `" mailto:user@example.com "` bypass the `startsWith` check
 - **Case-insensitive `mailto:` check** — uses `.toLowerCase().startsWith()` instead of regex for readability
 - **Widen event type** to `HTMLInputElement | HTMLTextAreaElement` to match MUI TextField's `onBlur` callback type
@@ -110,6 +106,7 @@ Add a placeholder prop to communicate expected input format, matching the existi
 #### ~~File 2: `LinksScreen.tsx` — Sanitize corrupted initial values~~ (Removed)
 
 Initially planned to sanitize corrupted email values on load, but this was removed because:
+
 - The editor's `EmailAction` component validates with `.email()` so `https://` can never be stored for an email action
 - The bug itself blocked form submission (Formik rejected the corrupted value), so no corrupt data was ever persisted
 - The sanitization was guarding against an impossible state
@@ -262,22 +259,22 @@ it('should not call setFieldValue on blur when email field is empty', () => {
 
 ## Edge Cases Considered
 
-| Scenario | Input | Link Type | onBlur Result | Notes |
-|---|---|---|---|---|
-| Normal email | `info@church.com` | email | `info@church.com` (unchanged) | Core fix |
-| Email with mailto: | `mailto:info@church.com` | email | `info@church.com` (stripped) | Normalize to bare address |
-| Email with MAILTO: | `MAILTO:info@church.com` | email | `info@church.com` (stripped) | Case-insensitive check |
-| Email with leading/trailing spaces | ` info@church.com ` | email | `info@church.com` (trimmed) | Trim-first prevents validation mismatch |
-| Spaces around mailto: | ` mailto:info@church.com ` | email | `info@church.com` (trimmed + stripped) | Trim before startsWith check |
-| Empty email | `` | email | no-op (early return) | Existing behavior preserved |
-| Whitespace-only | `   ` | email | no-op (early return) | Trim-first converts to empty |
-| Normal URL | `example.com` | url | `https://example.com` | Existing behavior preserved |
-| URL with protocol | `https://example.com` | url | `https://example.com` | Existing behavior preserved |
-| URL with http:// | `http://example.com` | url | `http://example.com` | Existing behavior preserved |
-| Chat button URL | `wa.me/123` | chatButtons | `https://wa.me/123` | Existing behavior preserved |
-| Phone field | `+15551234` | phone | N/A | Uses PhoneField, never hits handleLinkBlur |
-| Email placeholder | (empty) | email | Shows `email@example.com` | Not wrapped in `t()` — colon breaks i18next |
-| URL placeholder | (empty) | url | Shows `https://example.com` | Not wrapped in `t()` — colon breaks i18next |
+| Scenario                           | Input                    | Link Type   | onBlur Result                          | Notes                                       |
+| ---------------------------------- | ------------------------ | ----------- | -------------------------------------- | ------------------------------------------- |
+| Normal email                       | `info@church.com`        | email       | `info@church.com` (unchanged)          | Core fix                                    |
+| Email with mailto:                 | `mailto:info@church.com` | email       | `info@church.com` (stripped)           | Normalize to bare address                   |
+| Email with MAILTO:                 | `MAILTO:info@church.com` | email       | `info@church.com` (stripped)           | Case-insensitive check                      |
+| Email with leading/trailing spaces | `info@church.com`        | email       | `info@church.com` (trimmed)            | Trim-first prevents validation mismatch     |
+| Spaces around mailto:              | `mailto:info@church.com` | email       | `info@church.com` (trimmed + stripped) | Trim before startsWith check                |
+| Empty email                        | ``                       | email       | no-op (early return)                   | Existing behavior preserved                 |
+| Whitespace-only                    | `   `                    | email       | no-op (early return)                   | Trim-first converts to empty                |
+| Normal URL                         | `example.com`            | url         | `https://example.com`                  | Existing behavior preserved                 |
+| URL with protocol                  | `https://example.com`    | url         | `https://example.com`                  | Existing behavior preserved                 |
+| URL with http://                   | `http://example.com`     | url         | `http://example.com`                   | Existing behavior preserved                 |
+| Chat button URL                    | `wa.me/123`              | chatButtons | `https://wa.me/123`                    | Existing behavior preserved                 |
+| Phone field                        | `+15551234`              | phone       | N/A                                    | Uses PhoneField, never hits handleLinkBlur  |
+| Email placeholder                  | (empty)                  | email       | Shows `email@example.com`              | Not wrapped in `t()` — colon breaks i18next |
+| URL placeholder                    | (empty)                  | url         | Shows `https://example.com`            | Not wrapped in `t()` — colon breaks i18next |
 
 ## Out of Scope
 
@@ -300,10 +297,10 @@ it('should not call setFieldValue on blur when email field is empty', () => {
 
 ## Files Modified
 
-| File | Change |
-|---|---|
-| `apps/journeys-admin/.../LinksForm/LinksForm.tsx` | Rename `handleLinkBLur` → `handleLinkBlur`, add `linkType` param, trim-first logic, case-insensitive mailto strip, widen event type, update `onBlur` bindings, add placeholders (not wrapped in `t()`) |
-| `apps/journeys-admin/.../LinksForm/LinksForm.spec.tsx` | Add 8 new tests: email blur, mailto strip, whitespace-only, spaces-around-mailto, chatButton regression, email placeholder, URL placeholder, empty email |
+| File                                                   | Change                                                                                                                                                                                                 |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/journeys-admin/.../LinksForm/LinksForm.tsx`      | Rename `handleLinkBLur` → `handleLinkBlur`, add `linkType` param, trim-first logic, case-insensitive mailto strip, widen event type, update `onBlur` bindings, add placeholders (not wrapped in `t()`) |
+| `apps/journeys-admin/.../LinksForm/LinksForm.spec.tsx` | Add 8 new tests: email blur, mailto strip, whitespace-only, spaces-around-mailto, chatButton regression, email placeholder, URL placeholder, empty email                                               |
 
 ## Sources
 
