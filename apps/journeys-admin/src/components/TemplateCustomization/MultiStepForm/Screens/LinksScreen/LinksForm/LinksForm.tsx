@@ -67,9 +67,19 @@ export function LinksForm({
     window.open(targetUrl, '_blank', 'noopener,noreferrer')
   }
 
-  function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>): void {
+  function handleLinkBlur(
+    e: React.FocusEvent<HTMLInputElement>,
+    linkType: 'url' | 'email' | 'chatButtons'
+  ): void {
     const { name, value } = e.target
     if (!value) return
+
+    if (linkType === 'email') {
+      const bare = value.startsWith('mailto:') ? value.slice(7) : value
+      void setFieldValue(name, bare.trim())
+      return
+    }
+
     const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
     void setFieldValue(name, url)
   }
@@ -212,7 +222,7 @@ export function LinksForm({
                       placeholder={t('Chat URL')}
                       value={values?.[fieldName] ?? ''}
                       onChange={handleChange}
-                      onBlur={handleLinkBLur}
+                      onBlur={(e) => handleLinkBlur(e, 'chatButtons')}
                       error={hasError}
                       aria-label={`${t('Edit')} ${link.label}`}
                       InputProps={{ disableUnderline: true }}
@@ -274,9 +284,19 @@ export function LinksForm({
                   hiddenLabel
                   fullWidth
                   type={link.linkType === 'email' ? 'email' : 'text'}
+                  placeholder={
+                    link.linkType === 'email'
+                      ? t('email@example.com')
+                      : t('https://example.com')
+                  }
                   value={values?.[fieldName] ?? ''}
                   onChange={handleChange}
-                  onBlur={handleLinkBLur}
+                  onBlur={(e) =>
+                    handleLinkBlur(
+                      e,
+                      link.linkType as 'url' | 'email'
+                    )
+                  }
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
                   helperText={hasError ? (errors?.[fieldName] as string) : ' '}

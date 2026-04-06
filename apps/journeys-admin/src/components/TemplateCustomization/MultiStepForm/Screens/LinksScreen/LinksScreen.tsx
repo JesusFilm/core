@@ -262,7 +262,11 @@ export function LinksScreen({ handleNext }: LinksScreenProps): ReactElement {
           acc[`${link.id}__cc`] = callingCode
           acc[`${link.id}__local`] = local
         } else {
-          acc[link.id] = link.url ?? ''
+          const raw = link.url ?? ''
+          acc[link.id] =
+            link.linkType === 'email' && /^https?:\/\//.test(raw)
+              ? raw.replace(/^https?:\/\//, '')
+              : raw
         }
         return acc
       }, {})}
