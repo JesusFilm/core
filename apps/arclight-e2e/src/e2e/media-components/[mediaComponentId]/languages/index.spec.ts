@@ -5,6 +5,39 @@ import { createQueryParams, getBaseUrl } from '../../../../framework/helpers'
 const mediaComponentId = '2_0-ConsideringChristmas'
 const defaultLanguageIds = [529, 7083]
 
+type MediaComponentLanguage = {
+  subtitleUrls?: {
+    vtt?: Array<{
+      languageId: number
+      languageName: string
+      languageTag: string
+      url: string
+    }>
+    srt?: Array<{
+      languageId: number
+      languageName: string
+      languageTag: string
+      url: string
+    }>
+  }
+  streamingUrls: Record<string, unknown>
+  shareUrl?: string
+  webEmbedPlayer?: string
+  webEmbedSharePlayer?: string
+}
+
+function getLanguageWithSubtitleFormat(
+  languages: MediaComponentLanguage[],
+  format: 'vtt' | 'srt'
+): MediaComponentLanguage {
+  const language = languages.find(
+    (entry) => (entry.subtitleUrls?.[format]?.length ?? 0) > 0
+  )
+
+  expect(language).toBeDefined()
+  return language!
+}
+
 test.describe('media component languages', () => {
   test('default response matches expected shape', async ({ request }) => {
     const response = await request.get(
@@ -84,7 +117,10 @@ test.describe('media component languages', () => {
 
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
-    const language = data._embedded.mediaComponentLanguage[0]
+    const language = getLanguageWithSubtitleFormat(
+      data._embedded.mediaComponentLanguage,
+      'vtt'
+    )
 
     // Streaming URLs
     expect(language.streamingUrls).toHaveProperty('m3u8')
@@ -111,7 +147,10 @@ test.describe('media component languages', () => {
 
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
-    const language = data._embedded.mediaComponentLanguage[0]
+    const language = getLanguageWithSubtitleFormat(
+      data._embedded.mediaComponentLanguage,
+      'srt'
+    )
 
     // Streaming URLs
     expect(language.streamingUrls).toHaveProperty('dash')
@@ -132,7 +171,7 @@ test.describe('media component languages', () => {
       languageTag: expect.any(String),
       url: expect.any(String)
     })
-    expect(language.subtitleUrls?.m3u8).toBeUndefined()
+    expect(language.subtitleUrls).not.toHaveProperty('m3u8')
 
     // No web-specific properties
     expect(language).not.toHaveProperty('webEmbedPlayer')
@@ -146,7 +185,10 @@ test.describe('media component languages', () => {
 
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
-    const language = data._embedded.mediaComponentLanguage[0]
+    const language = getLanguageWithSubtitleFormat(
+      data._embedded.mediaComponentLanguage,
+      'vtt'
+    )
 
     // Streaming URLs
     expect(language.streamingUrls).toEqual({})
@@ -191,7 +233,9 @@ test.describe('media component languages', () => {
     const language = data._embedded.mediaComponentLanguage[0]
 
     expect(language.shareUrl).toBeDefined()
-    expect(language.shareUrl).toMatch(/^https:\/\/arc\.gt\/[a-z0-9]+$/)
+    expect(language.shareUrl).toMatch(
+      /^https:\/\/arc\.gt\/s\/[A-Za-z0-9_-]+\/\d+$/
+    )
   })
 
   test('apiKey parameter affects download URLs in language list', async ({
