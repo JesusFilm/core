@@ -321,7 +321,7 @@ export function Video({
               outline:
                 selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
               outlineOffset: '-3px',
-              borderRadius: '24px'
+              borderRadius: 'var(--card-border-radius, 24px)'
             }}
             elevation={0}
             variant="outlined"

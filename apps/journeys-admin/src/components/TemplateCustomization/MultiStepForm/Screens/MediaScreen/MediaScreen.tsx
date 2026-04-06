@@ -75,9 +75,14 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
       footer={
         <CustomizeFlowNextButton
           label={t('Next')}
-          onClick={() => {
+          onClick={async () => {
             setNavigating(true)
-            handleNext()
+            try {
+              await handleNext()
+            } catch (error) {
+              console.error('[MediaScreen] Navigation failed:', error)
+              setNavigating(false)
+            }
           }}
           ariaLabel={t('Next')}
           loading={hasActiveUploads || navigating}
