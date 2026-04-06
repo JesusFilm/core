@@ -442,7 +442,7 @@ describe('translateCustomizationFields', () => {
     promptCalls.forEach((call) => {
       const prompt = JSON.stringify(call)
       expect(prompt).toContain('DO NOT translate addresses')
-      expect(prompt).toContain('DO NOT translate times')
+      expect(prompt).toContain('Preserve numeric time formats')
       expect(prompt).toContain('DO NOT translate locations')
     })
   })
