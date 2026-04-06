@@ -7,6 +7,7 @@ import {
   generateCacheKey,
   getWithStaleCache
 } from '../../../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../../../lib/cacheBypass'
 import { findDownloadWithFallback } from '../../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
@@ -168,6 +169,7 @@ mediaComponentLanguage.openapi(route, async (c) => {
     apiKey ?? ''
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const cachedData = await getWithStaleCache(cacheKey, async () => {
     const videoQuery = {
       where: { id: mediaComponentId },
@@ -576,6 +578,6 @@ mediaComponentLanguage.openapi(route, async (c) => {
       },
       statusCode: 200
     }
-  })
+  }, { bypass })
   return c.json(cachedData.data, cachedData.statusCode as 200 | 404 | 500)
 })

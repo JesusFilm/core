@@ -5,6 +5,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
@@ -181,6 +182,7 @@ mediaComponent.openapi(route, async (c) => {
     ...metadataLanguageTags.slice(0, 20)
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const cachedData = await getWithStaleCache(cacheKey, async () => {
     let data
     try {
@@ -335,7 +337,7 @@ mediaComponent.openapi(route, async (c) => {
     }
 
     return { data: responseData, statusCode: 200 }
-  })
+  }, { bypass })
 
   return c.json(cachedData.data, cachedData.statusCode as 200 | 404 | 500)
 })

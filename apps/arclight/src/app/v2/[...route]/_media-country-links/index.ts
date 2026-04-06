@@ -4,6 +4,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
 
 const GET_COUNTRIES_LANGUAGES = graphql(`
   query GetCountriesLanguages {
@@ -87,6 +88,7 @@ mediaCountryLinks.openapi(route, async (c) => {
 
   const cacheKey = generateCacheKey(['media-country-links', ...ids])
 
+  const bypass = isCacheBypassEnabled(c)
   const response = await getWithStaleCache(cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_COUNTRIES_LANGUAGES>
@@ -135,7 +137,7 @@ mediaCountryLinks.openapi(route, async (c) => {
         mediaCountriesLinks
       }
     }
-  })
+  }, { bypass })
 
   return c.json(response)
 })

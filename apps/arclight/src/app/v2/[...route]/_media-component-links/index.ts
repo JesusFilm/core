@@ -5,6 +5,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaComponentLinksWithId } from './[mediaComponentId]'
@@ -101,6 +102,7 @@ mediaComponentLinks.openapi(route, async (c) => {
     ...metadataLanguageTags.slice(0, 20)
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const response = await getWithStaleCache(cacheKey, async () => {
     try {
       const { data } = await getApolloClient().query<
@@ -152,7 +154,7 @@ mediaComponentLinks.openapi(route, async (c) => {
         message: `Failed to get videos with children: ${err instanceof Error ? err.message : String(err)}`
       })
     }
-  })
+  }, { bypass })
 
   return c.json(response)
 })

@@ -4,6 +4,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../lib/cacheBypass'
 import { findBestMatchingName } from '../lib'
 
 const GET_TAXONOMY = graphql(`
@@ -95,6 +96,7 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
     ...metadataLanguageTags
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const response = await getWithStaleCache(cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_TAXONOMY>
@@ -143,7 +145,7 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
     })
 
     return response
-  })
+  }, { bypass })
 
   if ('message' in response) {
     return c.json(response, 404)

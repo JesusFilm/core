@@ -5,6 +5,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaCountry } from './[countryId]'
@@ -174,6 +175,7 @@ mediaCountries.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const response = await getWithStaleCache(cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_COUNTRIES>
@@ -290,7 +292,7 @@ mediaCountries.openapi(route, async (c) => {
         mediaCountries
       }
     }
-  })
+  }, { bypass })
 
   return c.json(response)
 })

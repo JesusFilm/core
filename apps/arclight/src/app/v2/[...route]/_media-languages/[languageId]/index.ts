@@ -5,6 +5,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 const GET_LANGUAGE = graphql(`
@@ -162,6 +163,7 @@ mediaLanguage.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const response = await getWithStaleCache(cacheKey, async () => {
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_LANGUAGE>
@@ -256,7 +258,7 @@ mediaLanguage.openapi(route, async (c) => {
         }
       }
     }
-  })
+  }, { bypass })
 
   if ('message' in response) {
     return c.json(response, response.logref === 406 ? 400 : 404)
