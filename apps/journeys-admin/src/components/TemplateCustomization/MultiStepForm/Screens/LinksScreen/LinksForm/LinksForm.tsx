@@ -76,7 +76,7 @@ export function LinksForm({
     if (!trimmed) return
 
     if (linkType === 'email') {
-      const bare = /^mailto:/i.test(trimmed)
+      const bare = trimmed.toLowerCase().startsWith('mailto:')
         ? trimmed.slice(7)
         : trimmed
       void setFieldValue(name, bare)
