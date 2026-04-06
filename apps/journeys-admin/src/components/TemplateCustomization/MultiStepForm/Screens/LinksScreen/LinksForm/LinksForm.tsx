@@ -76,9 +76,7 @@ export function LinksForm({
     if (!trimmed) return
 
     if (linkType === 'email') {
-      const bare = trimmed.startsWith('mailto:')
-        ? trimmed.slice(7)
-        : trimmed
+      const bare = trimmed.startsWith('mailto:') ? trimmed.slice(7) : trimmed
       void setFieldValue(name, bare)
       return
     }
@@ -295,10 +293,7 @@ export function LinksForm({
                   value={values?.[fieldName] ?? ''}
                   onChange={handleChange}
                   onBlur={(e) =>
-                    handleLinkBlur(
-                      e,
-                      link.linkType as 'url' | 'email'
-                    )
+                    handleLinkBlur(e, link.linkType as 'url' | 'email')
                   }
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
