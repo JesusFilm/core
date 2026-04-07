@@ -1,5 +1,5 @@
 ---
-title: "fix: Google sync dropdown empty due to federation ID mismatch (NES-1492)"
+title: 'fix: Google sync dropdown empty due to federation ID mismatch (NES-1492)'
 type: fix
 status: active
 date: 2026-04-07
@@ -113,14 +113,7 @@ Replace the current filter to use `userId` (Firebase UID) instead of `user.id` (
 
 ```typescript
 const currentUserId = user?.id
-const currentUserIntegrations =
-  currentUserId != null
-    ? (integrationsData?.integrations?.filter(
-        (integration) =>
-          integration.__typename === 'IntegrationGoogle' &&
-          integration.userId === currentUserId
-      ) ?? [])
-    : []
+const currentUserIntegrations = currentUserId != null ? (integrationsData?.integrations?.filter((integration) => integration.__typename === 'IntegrationGoogle' && integration.userId === currentUserId) ?? []) : []
 ```
 
 Also update `renderValue` and the `MenuItem` mapping to use `currentUserIntegrations` (already done in the current branch — just need to fix the filter field).
@@ -138,12 +131,12 @@ Remove the import of `GetIntegration_integrations_IntegrationGoogle` since we no
 
 ## Edge Cases
 
-| Scenario | Expected behavior |
-|---|---|
+| Scenario                                                        | Expected behavior                                                                                                     |
+| --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Integration with `userId: null` (legacy data, Oct 21 2025 only) | Excluded from dropdown — extremely rare (feature launched Oct 21, userId added Oct 22). User would need to re-create. |
-| User is `null` on initial render (auth loading) | `currentUserId` is undefined, filter returns `[]` — empty state shown briefly until auth resolves |
-| Multiple Google integrations per user | All shown — distinguished by `accountEmail` |
-| OAuth creates new integration | Apollo cache updates via mutation response — dropdown populates on re-query |
+| User is `null` on initial render (auth loading)                 | `currentUserId` is undefined, filter returns `[]` — empty state shown briefly until auth resolves                     |
+| Multiple Google integrations per user                           | All shown — distinguished by `accountEmail`                                                                           |
+| OAuth creates new integration                                   | Apollo cache updates via mutation response — dropdown populates on re-query                                           |
 
 ## Sources
 
