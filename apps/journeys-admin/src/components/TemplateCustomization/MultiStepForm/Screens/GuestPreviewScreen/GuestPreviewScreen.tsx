@@ -64,8 +64,8 @@ export function GuestPreviewScreen({
 
   return (
     <ScreenWrapper
-      title={t('Your preview is ready')}
-      mobileTitle={t('Preview ready')}
+      title={t('Almost there!')}
+      mobileTitle={t('Almost there!')}
       subtitle={t(
         'This content contains buttons linking to external sites. Check them and update the links below.'
       )}
@@ -80,6 +80,7 @@ export function GuestPreviewScreen({
       >
         <Typography
           variant="subtitle2"
+          align="center"
           gutterBottom
           sx={{ mb: { xs: 0, sm: 2 } }}
         >
@@ -108,6 +109,7 @@ export function GuestPreviewScreen({
         >
           <Typography
             variant="body2"
+            align="center"
             color="text.secondary"
             display={{ xs: 'block', sm: 'none' }}
           >
@@ -117,6 +119,7 @@ export function GuestPreviewScreen({
           </Typography>
           <Typography
             variant="body1"
+            align="center"
             color="text.secondary"
             display={{ xs: 'none', sm: 'block' }}
           >
@@ -136,6 +139,7 @@ export function GuestPreviewScreen({
           />
           <Typography
             variant="body2"
+            align="center"
             color="text.secondary"
             sx={{ fontStyle: 'italic', fontWeight: 700 }}
           >
