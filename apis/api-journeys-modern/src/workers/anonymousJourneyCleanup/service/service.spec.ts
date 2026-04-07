@@ -5,6 +5,10 @@ import { UserJourneyRole } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
+import {
+  collectMediaFromJourneys,
+  deleteUnusedMedia
+} from './mediaCleanup'
 import { service } from './service'
 
 jest.mock('@core/prisma/users/client', () => ({
@@ -15,6 +19,16 @@ jest.mock('@core/prisma/users/client', () => ({
     }
   }
 }))
+
+jest.mock('./mediaCleanup')
+
+const mockCollectMediaFromJourneys =
+  collectMediaFromJourneys as jest.MockedFunction<
+    typeof collectMediaFromJourneys
+  >
+const mockDeleteUnusedMedia = deleteUnusedMedia as jest.MockedFunction<
+  typeof deleteUnusedMedia
+>
 
 const { prisma: mockPrismaUsers } = jest.requireMock(
   '@core/prisma/users/client'
@@ -34,6 +48,15 @@ describe('anonymousJourneyCleanup service', () => {
       warn: jest.fn(),
       error: jest.fn()
     } as any
+
+    mockCollectMediaFromJourneys.mockResolvedValue({
+      muxVideoIds: new Set(),
+      cloudflareImageIds: new Set()
+    })
+    mockDeleteUnusedMedia.mockResolvedValue({
+      deletedMuxVideos: 0,
+      deletedCloudflareImages: 0
+    })
   })
 
   afterEach(() => {
@@ -246,8 +269,117 @@ describe('anonymousJourneyCleanup service', () => {
     await service(mockJob, mockLogger)
 
     expect(mockLogger.info).toHaveBeenCalledWith(
-      { deletedJourneyCount: 1, deletedUserCount: 1 },
-      'Anonymous journey cleanup completed: deleted 1 journeys and 1 users'
+      {
+        deletedJourneyCount: 1,
+        deletedUserCount: 1,
+        deletedMuxVideoCount: 0,
+        deletedCloudflareImageCount: 0
+      },
+      'Anonymous journey cleanup completed: deleted 1 journeys, 1 users, 0 Mux videos, 0 Cloudflare images'
     )
+  })
+
+  it('should collect and delete unused media before deleting journeys', async () => {
+    mockPrismaUsers.user.findMany.mockResolvedValue([
+      { id: 'user-db-1', userId: 'user-1' }
+    ])
+    prismaMock.journey.findMany.mockResolvedValue([
+      { id: 'journey-1', title: 'J1' },
+      { id: 'journey-2', title: 'J2' }
+    ] as any)
+    prismaMock.journey.delete.mockResolvedValue({} as any)
+    prismaMock.journey.count.mockResolvedValue(0)
+    prismaMock.userTeam.findMany.mockResolvedValue([])
+    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })
+    mockPrismaUsers.user.delete.mockResolvedValue({})
+
+    mockCollectMediaFromJourneys.mockResolvedValue({
+      muxVideoIds: new Set(['mux-1']),
+      cloudflareImageIds: new Set(['cf-img-1'])
+    })
+    mockDeleteUnusedMedia.mockResolvedValue({
+      deletedMuxVideos: 1,
+      deletedCloudflareImages: 1
+    })
+
+    await service(mockJob, mockLogger)
+
+    expect(mockCollectMediaFromJourneys).toHaveBeenCalledWith([
+      'journey-1',
+      'journey-2'
+    ])
+    expect(mockDeleteUnusedMedia).toHaveBeenCalledWith(
+      {
+        muxVideoIds: new Set(['mux-1']),
+        cloudflareImageIds: new Set(['cf-img-1'])
+      },
+      ['journey-1', 'journey-2'],
+      'user-1',
+      mockLogger
+    )
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      expect.objectContaining({
+        deletedMuxVideoCount: 1,
+        deletedCloudflareImageCount: 1
+      }),
+      expect.stringContaining('1 Mux videos, 1 Cloudflare images')
+    )
+  })
+
+  it('should skip media cleanup when no media references found', async () => {
+    mockPrismaUsers.user.findMany.mockResolvedValue([
+      { id: 'user-db-1', userId: 'user-1' }
+    ])
+    prismaMock.journey.findMany.mockResolvedValue([
+      { id: 'journey-1', title: 'J1' }
+    ] as any)
+    prismaMock.journey.delete.mockResolvedValue({} as any)
+    prismaMock.journey.count.mockResolvedValue(0)
+    prismaMock.userTeam.findMany.mockResolvedValue([])
+    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })
+    mockPrismaUsers.user.delete.mockResolvedValue({})
+
+    mockCollectMediaFromJourneys.mockResolvedValue({
+      muxVideoIds: new Set(),
+      cloudflareImageIds: new Set()
+    })
+
+    await service(mockJob, mockLogger)
+
+    expect(mockDeleteUnusedMedia).not.toHaveBeenCalled()
+  })
+
+  it('should call media cleanup before journey deletion', async () => {
+    const callOrder: string[] = []
+
+    mockPrismaUsers.user.findMany.mockResolvedValue([
+      { id: 'user-db-1', userId: 'user-1' }
+    ])
+    prismaMock.journey.findMany.mockResolvedValue([
+      { id: 'journey-1', title: 'J1' }
+    ] as any)
+    prismaMock.journey.delete.mockResolvedValue({} as any).mockImplementation(
+      (async () => {
+        callOrder.push('journey.delete')
+        return {} as any
+      }) as any
+    )
+    prismaMock.journey.count.mockResolvedValue(0)
+    prismaMock.userTeam.findMany.mockResolvedValue([])
+    prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })
+    mockPrismaUsers.user.delete.mockResolvedValue({})
+
+    mockCollectMediaFromJourneys.mockResolvedValue({
+      muxVideoIds: new Set(['mux-1']),
+      cloudflareImageIds: new Set()
+    })
+    mockDeleteUnusedMedia.mockImplementation(async () => {
+      callOrder.push('deleteUnusedMedia')
+      return { deletedMuxVideos: 1, deletedCloudflareImages: 0 }
+    })
+
+    await service(mockJob, mockLogger)
+
+    expect(callOrder).toEqual(['deleteUnusedMedia', 'journey.delete'])
   })
 })
