@@ -39,8 +39,6 @@ import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { GetIntegration_integrations_IntegrationGoogle } from '../../../../../__generated__/GetIntegration'
-import { useAuth } from '../../../../libs/auth'
 import { getGoogleOAuthUrl } from '../../../../libs/googleOAuthUrl'
 import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
 
@@ -160,7 +158,6 @@ export function GoogleSheetsSyncDialog({
   const router = useRouter()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const { user } = useAuth()
 
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
@@ -168,18 +165,6 @@ export function GoogleSheetsSyncDialog({
   const { data: integrationsData } = useIntegrationQuery({
     teamId: journeyData?.journey?.team?.id as string
   })
-
-  const currentUserId = user?.id
-  const currentUserIntegrations =
-    currentUserId != null
-      ? (integrationsData?.integrations?.filter(
-          (
-            integration
-          ): integration is GetIntegration_integrations_IntegrationGoogle =>
-            integration.__typename === 'IntegrationGoogle' &&
-            integration.user?.id === currentUserId
-        ) ?? [])
-      : []
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
   const [pickerActive, setPickerActive] = useState(false)
@@ -1204,20 +1189,28 @@ export function GoogleSheetsSyncDialog({
                     renderValue={(selected) => {
                       if (selected === '')
                         return t('Select integration account')
-                      const found = currentUserIntegrations.find(
+                      const found = integrationsData?.integrations.find(
                         (integration) => integration.id === selected
                       )
-                      return found?.accountEmail ?? t('Unknown email')
+                      if (found?.__typename === 'IntegrationGoogle') {
+                        return found.accountEmail ?? t('Unknown email')
+                      }
+                      return t('Unknown integration')
                     }}
                   >
                     <MenuItem value="" disabled>
                       {t('Select integration account')}
                     </MenuItem>
-                    {currentUserIntegrations.map((integration) => (
-                      <MenuItem key={integration.id} value={integration.id}>
-                        {integration.accountEmail ?? t('Unknown email')}
-                      </MenuItem>
-                    ))}
+                    {integrationsData?.integrations
+                      ?.filter(
+                        (integration) =>
+                          integration.__typename === 'IntegrationGoogle'
+                      )
+                      .map((integration) => (
+                        <MenuItem key={integration.id} value={integration.id}>
+                          {integration.accountEmail ?? t('Unknown email')}
+                        </MenuItem>
+                      ))}
                   </Select>
                   {touched.integrationId != null &&
                     errors.integrationId != null && (
