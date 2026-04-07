@@ -67,10 +67,23 @@ export function LinksForm({
     window.open(targetUrl, '_blank', 'noopener,noreferrer')
   }
 
-  function handleLinkBLur(e: React.FocusEvent<HTMLInputElement>): void {
+  function handleLinkBlur(
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+    isEmail: boolean
+  ): void {
     const { name, value } = e.target
-    if (!value) return
-    const url = /^\w+:\/\//.test(value) ? value : `https://${value}`
+    const trimmed = value.trim()
+    if (!trimmed) return
+
+    if (isEmail) {
+      const bare = trimmed.toLowerCase().startsWith('mailto:')
+        ? trimmed.slice(7)
+        : trimmed
+      void setFieldValue(name, bare)
+      return
+    }
+
+    const url = /^\w+:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`
     void setFieldValue(name, url)
   }
 
@@ -212,7 +225,7 @@ export function LinksForm({
                       placeholder={t('Chat URL')}
                       value={values?.[fieldName] ?? ''}
                       onChange={handleChange}
-                      onBlur={handleLinkBLur}
+                      onBlur={(e) => handleLinkBlur(e, false)}
                       error={hasError}
                       aria-label={`${t('Edit')} ${link.label}`}
                       InputProps={{ disableUnderline: true }}
@@ -274,9 +287,14 @@ export function LinksForm({
                   hiddenLabel
                   fullWidth
                   type={link.linkType === 'email' ? 'email' : 'text'}
+                  placeholder={
+                    link.linkType === 'email'
+                      ? 'email@example.com'
+                      : 'https://example.com'
+                  }
                   value={values?.[fieldName] ?? ''}
                   onChange={handleChange}
-                  onBlur={handleLinkBLur}
+                  onBlur={(e) => handleLinkBlur(e, link.linkType === 'email')}
                   error={hasError}
                   aria-label={`${t('Edit')} ${link.label}`}
                   helperText={hasError ? (errors?.[fieldName] as string) : ' '}

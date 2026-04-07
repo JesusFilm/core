@@ -702,6 +702,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
+  userId: ID
   user: User
 }
 
