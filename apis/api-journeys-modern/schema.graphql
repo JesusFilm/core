@@ -1281,9 +1281,6 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
-  discord
-  signal
-  weChat
 }
 
 type MultiselectBlock implements Block
@@ -1432,6 +1429,8 @@ type Mutation {
     """
     timezone: String
   ): JourneyVisitorGoogleSheetExportResult!
+  userDeleteJourneysCheck(userId: String!): UserDeleteJourneysCheckResult!
+  userDeleteJourneysConfirm(userId: String!): UserDeleteJourneysConfirmResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -2313,6 +2312,31 @@ type UserAgent
   browser: Browser!
   device: Device!
   os: OperatingSystem!
+}
+
+type UserDeleteJourneysCheckResult {
+  journeysToDelete: Int!
+  journeysToTransfer: Int!
+  journeysToRemove: Int!
+  teamsToDelete: Int!
+  teamsToTransfer: Int!
+  teamsToRemove: Int!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysConfirmResult {
+  success: Boolean!
+  deletedJourneyIds: [String!]!
+  deletedTeamIds: [String!]!
+  deletedUserJourneyIds: [String!]!
+  deletedUserTeamIds: [String!]!
+  logs: [UserDeleteJourneysLogEntry!]!
+}
+
+type UserDeleteJourneysLogEntry {
+  message: String!
+  level: String!
+  timestamp: String!
 }
 
 type UserInvite

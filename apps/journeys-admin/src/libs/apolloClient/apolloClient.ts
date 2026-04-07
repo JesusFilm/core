@@ -12,6 +12,7 @@ import {
 } from '@apollo/client'
 import { EntityStore, StoreObject } from '@apollo/client/cache'
 import { setContext } from '@apollo/client/link/context'
+import { onError } from '@apollo/client/link/error'
 import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
@@ -19,6 +20,8 @@ import { getAuth } from 'firebase/auth'
 import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
 import { Observable } from 'zen-observable-ts'
+
+import { logout } from '../auth/firebase'
 
 import { cache } from './cache'
 
@@ -118,6 +121,21 @@ export function createApolloClient(
     }
   })
 
+  const errorLink = onError(({ graphQLErrors }) => {
+    if (
+      !ssrMode &&
+      graphQLErrors?.some((e) => e.extensions?.code === 'UNAUTHENTICATED') ===
+        true
+    ) {
+      void logout()
+      // Return an empty observable to suppress the error so React does not crash
+      // while logout() clears the Firebase token and redirects to sign-in
+      return new Observable((observer) => {
+        observer.complete()
+      })
+    }
+  })
+
   const mutationQueueLink = new MutationQueueLink()
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
 
@@ -134,7 +152,13 @@ export function createApolloClient(
     httpLink
   )
 
-  const link = from([debounceLink, mutationQueueLink, authLink, splitLink])
+  const link = from([
+    errorLink,
+    debounceLink,
+    mutationQueueLink,
+    authLink,
+    splitLink
+  ])
 
   return new ApolloClient({
     ssrMode,

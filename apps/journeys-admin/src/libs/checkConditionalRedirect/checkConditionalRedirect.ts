@@ -49,12 +49,32 @@ export async function checkConditionalRedirect({
       redirect = `?redirect=${encodeURIComponent(resolvedUrl)}`
   }
 
-  const { data: me } = await apolloClient.query<GetMe>({
-    query: GET_ME,
-    variables: { input: { redirect } }
-  })
+  let meResult: GetMe | undefined
+  try {
+    const { data } = await apolloClient.query<GetMe>({
+      query: GET_ME,
+      variables: { input: { redirect } }
+    })
+    meResult = data
+  } catch (error) {
+    const isUnauthenticated =
+      error != null &&
+      typeof error === 'object' &&
+      'graphQLErrors' in error &&
+      Array.isArray((error as { graphQLErrors: unknown[] }).graphQLErrors) &&
+      (
+        error as { graphQLErrors: Array<{ extensions?: { code?: string } }> }
+      ).graphQLErrors.some((e) => e.extensions?.code === 'UNAUTHENTICATED')
 
-  if (me.me?.__typename === 'AuthenticatedUser') {
+    if (isUnauthenticated) {
+      return { destination: '/api/clear-auth', permanent: false }
+    }
+    throw error
+  }
+
+  const me = meResult
+
+  if (me?.me?.__typename === 'AuthenticatedUser') {
     if (!(me.me?.emailVerified ?? false)) {
       if (resolvedUrl.startsWith('/users/verify')) return
       return {
@@ -64,7 +84,7 @@ export async function checkConditionalRedirect({
     }
   }
 
-  if (me.me?.__typename === 'AnonymousUser' && allowGuest) {
+  if (me?.me?.__typename === 'AnonymousUser' && allowGuest) {
     return
   }
 
