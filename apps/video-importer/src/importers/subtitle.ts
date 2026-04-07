@@ -2,7 +2,6 @@ import { env } from '../env'
 import { getGraphQLClient } from '../gql/graphqlClient'
 import { CREATE_VIDEO_SUBTITLE, UPDATE_VIDEO_SUBTITLE } from '../gql/mutations'
 import { GET_VIDEO_SUBTITLES_BY_EDITION } from '../gql/queries'
-import { createR2Asset, uploadToR2 } from '../services/r2'
 import type { ProcessingSummary, R2Asset, VideoSubtitleInput } from '../types'
 import { markFileAsCompleted } from '../utils/fileUtils'
 import { validateVideoAndEdition } from '../utils/videoEditionValidator'
@@ -20,7 +19,9 @@ export async function processSubtitleFile(
   if (!match) return
 
   // Parse file properly - extension is captured in match[5], extraFields in match[4]
-  const [, videoId, editionName, languageId, extraField, fileExtension] = match
+  const [, videoId, editionName, rawLanguageId, extraField, fileExtension] =
+    match
+  const languageId = rawLanguageId.trim()
   const edition = editionName.toLowerCase()
 
   // Filter out the extension and empty values from extraFields
@@ -32,10 +33,21 @@ export async function processSubtitleFile(
   if (extraFields.length > 0) {
     console.log(`Extra fields: ${extraFields.join(', ')}`)
   }
+
+  if (languageId.length === 0) {
+    console.error(
+      `Validation failed for ${file}: missing languageId in filename`
+    )
+    summary.failed++
+    return
+  }
+
   try {
-    await validateVideoAndEdition(videoId, edition)
+    await validateVideoAndEdition(videoId, edition, languageId)
   } catch (error) {
-    console.error(`Validation failed:`, error)
+    console.error(
+      `Validation failed for ${file}: ${(error as Error).message}`
+    )
     summary.failed++
     return
   }
@@ -44,6 +56,9 @@ export async function processSubtitleFile(
   const originalFilename = file
   const subtitleVariantId = `${languageId}_${edition}_${videoId}`
   const fileName = `${videoId}/editions/${edition}/subtitles/${subtitleVariantId}.${fileExtension}`
+  const { createR2Asset, uploadToR2 } = await import(
+    /* webpackChunkName: "video-importer-r2" */ '../services/r2'
+  )
 
   let r2Asset
   try {

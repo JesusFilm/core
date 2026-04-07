@@ -1,5 +1,11 @@
 import { getGraphQLClient } from '../gql/graphqlClient'
 
+interface LanguageValidationResponse {
+  language?: {
+    id: string
+  } | null
+}
+
 interface VideoWithEditionsResponse {
   video?: {
     id: string
@@ -9,9 +15,43 @@ interface VideoWithEditionsResponse {
       name: string
     }>
   } | null
-  language?: {
-    id: string
-  } | null
+  language?: LanguageValidationResponse['language']
+}
+
+function getGraphQLErrorMessage(error: unknown): string {
+  return (error as { response?: { errors?: Array<{ message?: string }> } })
+    .response?.errors?.[0]?.message ?? (error as Error).message
+}
+
+export async function validateLanguage(languageId: string): Promise<void> {
+  if (languageId.length === 0) {
+    throw new Error('Missing languageId in filename')
+  }
+
+  const client = await getGraphQLClient()
+
+  const languageQuery = `
+    query ValidateLanguage($languageId: ID!) {
+      language(id: $languageId) {
+        id
+      }
+    }
+  `
+
+  let response: LanguageValidationResponse
+  try {
+    response = await client.request<LanguageValidationResponse>(languageQuery, {
+      languageId
+    })
+  } catch (error) {
+    throw new Error(`Failed validation query: ${getGraphQLErrorMessage(error)}`)
+  }
+
+  if (!response.language) {
+    throw new Error(
+      `Language with ID "${languageId}" does not exist in the database`
+    )
+  }
 }
 
 export async function validateVideoAndEdition(
@@ -23,10 +63,14 @@ export async function validateVideoAndEdition(
     `Validating video, edition, and language: ${videoId} / ${editionName} / ${languageId}`
   )
 
+  if (languageId.length === 0) {
+    throw new Error('Missing languageId in filename')
+  }
+
   const client = await getGraphQLClient()
 
   const videoQuery = `
-    query ValidateVideo($videoId: ID!, $languageId: ID!) {
+    query ValidateVideoAndLanguage($videoId: ID!, $languageId: ID!) {
       video(id: $videoId) {
         id
         slug
@@ -48,10 +92,7 @@ export async function validateVideoAndEdition(
       languageId
     })
   } catch (error) {
-    const gqlMessage =
-      (error as { response?: { errors?: Array<{ message?: string }> } })
-        .response?.errors?.[0]?.message ?? (error as Error).message
-    throw new Error(`Failed validation query: ${gqlMessage}`)
+    throw new Error(`Failed validation query: ${getGraphQLErrorMessage(error)}`)
   }
 
   if (!response.video) {
