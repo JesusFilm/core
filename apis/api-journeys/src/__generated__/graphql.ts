@@ -1039,6 +1039,7 @@ export type IntegrationGoogle = Integration & {
   team: Team;
   type: IntegrationType;
   user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type IntegrationGoogleCreateInput = {
