@@ -17,11 +17,11 @@ builder.mutationField('cardBlockCreate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: CardBlock,
     nullable: false,
-    override: {
-      from: 'api-journeys'
-    },
     args: {
       input: t.arg({ type: CardBlockCreateInput, required: true })
+    },
+    override: {
+      from: 'api-journeys'
     },
     resolve: async (_parent, args, context) => {
       const { input: initialInput } = args
