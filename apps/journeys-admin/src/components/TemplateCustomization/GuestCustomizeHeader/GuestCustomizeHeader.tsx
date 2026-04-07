@@ -36,10 +36,7 @@ export function GuestCustomizeHeader(): ReactElement {
   }
 
   return (
-    <Box
-      sx={{ display: { md: 'none' } }}
-      data-testid="GuestCustomizeHeader"
-    >
+    <Box sx={{ display: { md: 'none' } }} data-testid="GuestCustomizeHeader">
       <AppBar
         role="banner"
         position="fixed"
