@@ -86,6 +86,26 @@ export async function checkConditionalRedirect({
     }
   }
 
+  // Terms already accepted — skip past the terms page if we're still on it
+  // (e.g. redirected here after email verification via link).
+  // Only forward the original ?redirect= destination, not the terms URL itself.
+  if (resolvedUrl.startsWith('/users/terms-and-conditions')) {
+    const forwardRedirect =
+      currentRedirect != null
+        ? `?redirect=${encodeURIComponent(currentRedirect)}`
+        : ''
+    if (data.teams.length === 0) {
+      return {
+        destination: `/teams/new${forwardRedirect}`,
+        permanent: false
+      }
+    }
+    return {
+      destination: currentRedirect ?? '/',
+      permanent: false
+    }
+  }
+
   if (data.teams.length === 0) {
     if (currentRedirect?.match(/^\/templates\/[\w-]+\/quick/) != null) {
       await apolloClient.mutate<TeamCreate, TeamCreateVariables>({

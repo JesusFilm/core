@@ -241,12 +241,26 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   // This prevents stale cookies from a previous session (e.g. Google login)
   // short-circuiting the verification for the current guest user.
   if (email != null && token != null) {
+    const redirectQuery =
+      typeof ctx.query.redirect === 'string'
+        ? `?redirect=${encodeURIComponent(ctx.query.redirect)}`
+        : ''
+
     try {
       await apolloClient.mutate({
         mutation: VALIDATE_EMAIL,
         variables: { email, token }
       })
-      return redirectToApp(ctx)
+      // Redirect to terms-and-conditions — the next onboarding step — same
+      // as the client-side manual-code path (handleReValidateEmail). This
+      // ensures a journey profile is created even when server-side cookies
+      // belong to a different user than the client-side Firebase auth.
+      return {
+        redirect: {
+          destination: `/users/terms-and-conditions${redirectQuery}`,
+          permanent: false
+        }
+      }
     } catch (_err) {
       return {
         props: {
