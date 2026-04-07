@@ -267,4 +267,20 @@ describe('ContainedCover', () => {
       'http://youtube.thumbnail.image'
     )
   })
+
+  it('should render gradient background overlay when no children', () => {
+    const { getByTestId } = render(
+      <ContainedCover
+        backgroundColor="#FF000080"
+        backgroundBlur={blurUrl}
+        imageBlock={imageBlock}
+      >
+        {[]}
+      </ContainedCover>
+    )
+
+    const contentContainer = getByTestId('CardOverlayContentContainer')
+    const gradientOverlay = contentContainer.querySelector('.overlay-gradient')
+    expect(gradientOverlay).toBeInTheDocument()
+  })
 })
