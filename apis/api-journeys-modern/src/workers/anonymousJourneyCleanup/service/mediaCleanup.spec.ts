@@ -44,6 +44,15 @@ jest.mock('cloudflare', () => {
   }))
 })
 
+jest.mock('../../../env', () => ({
+  env: {
+    MUX_UGC_ACCESS_TOKEN_ID: 'token-id',
+    MUX_UGC_SECRET_KEY: 'secret-key',
+    CLOUDFLARE_IMAGES_TOKEN: 'cf-token',
+    CLOUDFLARE_ACCOUNT_ID: 'cf-account'
+  }
+}))
+
 describe('mediaCleanup', () => {
   let mockLogger: Logger
 
@@ -165,53 +174,23 @@ describe('mediaCleanup', () => {
 
   describe('deleteMuxAsset', () => {
     it('should call Mux SDK to delete asset', async () => {
-      process.env.MUX_UGC_ACCESS_TOKEN_ID = 'token-id'
-      process.env.MUX_UGC_SECRET_KEY = 'secret-key'
-
       await deleteMuxAsset('asset-123')
 
       expect(mockMuxAssetsDelete).toHaveBeenCalledWith('asset-123')
-    })
-
-    it('should skip when env vars are missing', async () => {
-      delete process.env.MUX_UGC_ACCESS_TOKEN_ID
-      delete process.env.MUX_UGC_SECRET_KEY
-
-      await deleteMuxAsset('asset-123')
-
-      expect(mockMuxAssetsDelete).not.toHaveBeenCalled()
     })
   })
 
   describe('deleteCloudflareImageAsset', () => {
     it('should call Cloudflare SDK to delete image', async () => {
-      process.env.CLOUDFLARE_IMAGES_TOKEN = 'cf-token'
-      process.env.CLOUDFLARE_ACCOUNT_ID = 'cf-account'
-
       await deleteCloudflareImageAsset('img-123')
 
       expect(mockCloudflareImagesDelete).toHaveBeenCalledWith('img-123', {
         account_id: 'cf-account'
       })
     })
-
-    it('should skip when env vars are missing', async () => {
-      delete process.env.CLOUDFLARE_IMAGES_TOKEN
-      delete process.env.CLOUDFLARE_ACCOUNT_ID
-
-      await deleteCloudflareImageAsset('img-123')
-
-      expect(mockCloudflareImagesDelete).not.toHaveBeenCalled()
-    })
   })
 
   describe('deleteUnusedMedia', () => {
-    beforeEach(() => {
-      process.env.MUX_UGC_ACCESS_TOKEN_ID = 'token-id'
-      process.env.MUX_UGC_SECRET_KEY = 'secret-key'
-      process.env.CLOUDFLARE_IMAGES_TOKEN = 'cf-token'
-      process.env.CLOUDFLARE_ACCOUNT_ID = 'cf-account'
-    })
 
     it('should delete Mux video when unused elsewhere and owned by user', async () => {
       const refs: MediaReferences = {

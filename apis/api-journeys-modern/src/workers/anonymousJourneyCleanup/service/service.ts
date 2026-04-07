@@ -52,22 +52,14 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
       )
 
       const journeyIds = journeys.map((j) => j.id)
-
       const mediaRefs = await collectMediaFromJourneys(journeyIds)
-      if (
-        mediaRefs.muxVideoIds.size > 0 ||
-        mediaRefs.cloudflareImageIds.size > 0
-      ) {
-        const { deletedMuxVideos, deletedCloudflareImages } =
-          await deleteUnusedMedia(mediaRefs, journeyIds, user.userId, logger)
-        deletedMuxVideoCount += deletedMuxVideos
-        deletedCloudflareImageCount += deletedCloudflareImages
-      }
 
+      const deletedJourneyIds: string[] = []
       for (const journey of journeys) {
         try {
           await prisma.journey.delete({ where: { id: journey.id } })
           deletedJourneyCount++
+          deletedJourneyIds.push(journey.id)
           logger?.info(
             { journeyId: journey.id },
             `Deleted journey "${journey.title}"`
@@ -78,6 +70,22 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
             `Failed to delete journey "${journey.title}"`
           )
         }
+      }
+
+      if (
+        deletedJourneyIds.length > 0 &&
+        (mediaRefs.muxVideoIds.size > 0 ||
+          mediaRefs.cloudflareImageIds.size > 0)
+      ) {
+        const { deletedMuxVideos, deletedCloudflareImages } =
+          await deleteUnusedMedia(
+            mediaRefs,
+            deletedJourneyIds,
+            user.userId,
+            logger
+          )
+        deletedMuxVideoCount += deletedMuxVideos
+        deletedCloudflareImageCount += deletedCloudflareImages
       }
 
       const remainingJourneys = await prisma.journey.count({

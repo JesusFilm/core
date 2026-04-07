@@ -8,6 +8,8 @@ import { Logger } from 'pino'
 import { VideoBlockSource, prisma } from '@core/prisma/journeys/client'
 import { prisma as prismaMedia } from '@core/prisma/media/client'
 
+import { env } from '../../../env'
+
 export interface MediaReferences {
   muxVideoIds: Set<string>
   cloudflareImageIds: Set<string>
@@ -75,35 +77,27 @@ async function isCloudflareImageUsedElsewhere(
   return count > 0
 }
 
-function getMuxClient(): Mux | null {
-  const tokenId = process.env.MUX_UGC_ACCESS_TOKEN_ID
-  const tokenSecret = process.env.MUX_UGC_SECRET_KEY
-  if (tokenId == null || tokenSecret == null) return null
-  return new Mux({ tokenId, tokenSecret })
+function getMuxClient(): Mux {
+  return new Mux({
+    tokenId: env.MUX_UGC_ACCESS_TOKEN_ID,
+    tokenSecret: env.MUX_UGC_SECRET_KEY
+  })
 }
 
-function getCloudflareClient(): {
-  client: Cloudflare
-  accountId: string
-} | null {
-  const apiToken = process.env.CLOUDFLARE_IMAGES_TOKEN
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
-  if (apiToken == null || accountId == null) return null
-  return { client: new Cloudflare({ apiToken, fetch }), accountId }
+function getCloudflareClient(): Cloudflare {
+  return new Cloudflare({ apiToken: env.CLOUDFLARE_IMAGES_TOKEN, fetch })
 }
 
 export async function deleteMuxAsset(assetId: string): Promise<void> {
-  const mux = getMuxClient()
-  if (mux == null) return
-  await mux.video.assets.delete(assetId)
+  await getMuxClient().video.assets.delete(assetId)
 }
 
 export async function deleteCloudflareImageAsset(
   imageId: string
 ): Promise<void> {
-  const cf = getCloudflareClient()
-  if (cf == null) return
-  await cf.client.images.v1.delete(imageId, { account_id: cf.accountId })
+  await getCloudflareClient().images.v1.delete(imageId, {
+    account_id: env.CLOUDFLARE_ACCOUNT_ID
+  })
 }
 
 export async function deleteUnusedMedia(
