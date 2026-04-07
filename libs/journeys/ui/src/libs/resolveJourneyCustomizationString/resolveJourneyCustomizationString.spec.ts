@@ -42,22 +42,37 @@ describe('resolveJourneyCustomizationString', () => {
     )
   })
 
-  it('does not support inline values; leaves tokens with colon unchanged (quoted)', () => {
+  it('resolves inline-value tokens using field value when field exists', () => {
     expect(
       resolveJourneyCustomizationString("{{ name: 'Knee Sail' }}", fields)
-    ).toBe("{{ name: 'Knee Sail' }}")
+    ).toBe('Alice')
     expect(
       resolveJourneyCustomizationString(
         '{{ title: "Some Random Title" }}',
         fields
       )
-    ).toBe('{{ title: "Some Random Title" }}')
+    ).toBe('Child of God')
   })
 
-  it('does not support inline values; leaves tokens with colon unchanged (unquoted)', () => {
+  it('resolves unquoted inline-value tokens using field value when field exists', () => {
     expect(resolveJourneyCustomizationString('{{ some: value }}', fields)).toBe(
-      '{{ some: value }}'
+      'Some Value'
     )
+  })
+
+  it('falls back to inline value when no field matches', () => {
+    expect(
+      resolveJourneyCustomizationString(
+        "{{ unknown_key: 'Fallback Text' }}",
+        fields
+      )
+    ).toBe('Fallback Text')
+    expect(
+      resolveJourneyCustomizationString(
+        '{{ missing: Visit Our Website }}',
+        fields
+      )
+    ).toBe('Visit Our Website')
   })
 
   it('replaces key-only custom fields regardless of surrounding whitespace', () => {
@@ -66,7 +81,7 @@ describe('resolveJourneyCustomizationString', () => {
     )
     expect(
       resolveJourneyCustomizationString('  {{ title:  Some Title  }}', fields)
-    ).toBe('  {{ title:  Some Title  }}')
+    ).toBe('  Child of God')
   })
 
   it('trims spaces around the key before lookup', () => {
@@ -79,5 +94,46 @@ describe('resolveJourneyCustomizationString', () => {
     expect(resolveJourneyCustomizationString('{{ unknown }}', fields)).toBe(
       '{{ unknown }}'
     )
+  })
+
+  describe('useDefaultValue option', () => {
+    it('prefers defaultValue over value when useDefaultValue is true', () => {
+      expect(
+        resolveJourneyCustomizationString('{{ name }}', fields, {
+          useDefaultValue: true
+        })
+      ).toBe('Anonymous')
+    })
+
+    it('falls back to value when defaultValue is null and useDefaultValue is true', () => {
+      const fieldsWithNullDefault = [
+        { key: 'greeting', value: 'Hello', defaultValue: null }
+      ] as JourneyCustomizationField[]
+
+      expect(
+        resolveJourneyCustomizationString('{{ greeting }}', fieldsWithNullDefault, {
+          useDefaultValue: true
+        })
+      ).toBe('Hello')
+    })
+
+    it('prefers value over defaultValue by default', () => {
+      expect(resolveJourneyCustomizationString('{{ name }}', fields)).toBe(
+        'Alice'
+      )
+      expect(
+        resolveJourneyCustomizationString('{{ name }}', fields, {
+          useDefaultValue: false
+        })
+      ).toBe('Alice')
+    })
+
+    it('resolves inline-value tokens with useDefaultValue', () => {
+      expect(
+        resolveJourneyCustomizationString('{{ some: fallback }}', fields, {
+          useDefaultValue: true
+        })
+      ).toBe('Some Default')
+    })
   })
 })

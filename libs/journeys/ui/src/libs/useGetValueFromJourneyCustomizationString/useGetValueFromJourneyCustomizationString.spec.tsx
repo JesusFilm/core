@@ -40,7 +40,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('Plain')
   })
 
-  it('resolves value from journey customization fields for default variant', () => {
+  it('prefers defaultValue for default variant (end-user rendering)', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -76,7 +76,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       }
     )
 
-    expect(result.current).toBe('Alice')
+    expect(result.current).toBe('Anonymous')
 
     rerender({ label: '{{ title }}' })
     expect(result.current).toBe('Child of God')
@@ -85,7 +85,38 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('{{ unknown }}')
   })
 
-  it('replaces custom fields within mixed strings and leaves non-custom-field text intact', () => {
+  it('prefers value for admin variant on non-template journey', () => {
+    const journey = {
+      template: false,
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'name',
+          value: 'Alice',
+          defaultValue: 'Anonymous'
+        }
+      ]
+    } as unknown as Journey
+
+    const { result } = renderHook(
+      ({ label }: { label: string }) =>
+        useGetValueFromJourneyCustomizationString(label),
+      {
+        initialProps: { label: '{{ name }}' },
+        wrapper: ({ children }) => (
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            {children}
+          </JourneyProvider>
+        )
+      }
+    )
+
+    expect(result.current).toBe('Alice')
+  })
+
+  it('replaces custom fields within mixed strings using defaultValue for default variant', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -113,10 +144,10 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       }
     )
 
-    expect(result.current).toBe('Hello Alice!')
+    expect(result.current).toBe('Hello Anonymous!')
   })
 
-  it('supports multiple custom fields in one string and repeated keys', () => {
+  it('supports multiple custom fields using defaultValue for default variant', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -152,9 +183,9 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       }
     )
 
-    expect(result.current).toBe('Hello John Doe!')
+    expect(result.current).toBe('Hello J D!')
 
     rerender({ label: '{{ first }} & {{ first }}' })
-    expect(result.current).toBe('John & John')
+    expect(result.current).toBe('J & J')
   })
 })

@@ -11,25 +11,25 @@ export const COOKIE_FINGERPRINT = '00004'
 
 const DEFAULT_LOCALE = 'en'
 
-const SUPPORTED_LOCALES = [
-  'en', // English
-  'es', // Spanish
-  'fr', // French
-  'id', // Indonesian
-  'th', // Thai
-  'ja', // Japanese
-  'ko', // Korean
-  'ru', // Russian
-  'tr', // Turkish
-  'zh', // Chinese
-  'zh-Hans-CN', // Chinese, Simplified
-  'de', // German
-  'ne', // Nepali
-  'ms', // Malay
-  'pt' // Portuguese
-]
+export const LOCALE_LANGUAGES: Record<string, string> = {
+  en: '529', // English
+  es: '21028', // Spanish
+  fr: '496', // French
+  id: '16639', // Indonesian
+  th: '13169', // Thai
+  ja: '7083', // Japanese
+  ko: '3887', // Korean
+  ru: '3934', // Russian
+  tr: '1942', // Turkish
+  zh: '20615', // Chinese\
+  'zh-Hans-CN': '21754', // Chinese, Simplified
+  de: '1106', // German
+  ne: '1370', // Nepali
+  ms: '584', // Malay
+  pt: '584' // Portuguese
+}
 
-const PUBLIC_PATHS = ['/users/sign-in']
+const SUPPORTED_LOCALES = Object.keys(LOCALE_LANGUAGES)
 
 interface LanguagePriority {
   code: string
@@ -149,19 +149,6 @@ function handleLocaleRedirect(
     : NextResponse.redirect(redirectUrl)
   response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${locale}`)
   return response
-}
-
-function isPublicPath(req: NextRequest): boolean {
-  const pathname = req.nextUrl.pathname
-  return PUBLIC_PATHS.some(
-    (p) =>
-      pathname === p ||
-      pathname.match(
-        new RegExp(
-          `^/[a-z]{2}(-[A-Za-z]+(-[A-Za-z]+)?)?${p.replace('/', '\\/')}$`
-        )
-      )
-  )
 }
 
 export default async function middleware(
