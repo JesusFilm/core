@@ -1,6 +1,7 @@
 import { ApolloClient, NormalizedCacheObject } from '@apollo/client'
 
 import { GetJourneyProfileAndTeams } from '../../../__generated__/GetJourneyProfileAndTeams'
+import { GET_ME } from '../../components/PageWrapper/NavigationDrawer/UserNavigation'
 import { TEAM_CREATE } from '../useTeamCreateMutation/useTeamCreateMutation'
 
 import { GET_JOURNEY_PROFILE_AND_TEAMS } from './checkConditionalRedirect'
@@ -342,6 +343,96 @@ describe('checkConditionalRedirect', () => {
       mutation: TEAM_CREATE,
       variables: { input: { title: 'teamName' } }
     })
+  })
+
+  it('passes decoded redirect URL to GET_ME instead of query string', async () => {
+    const apolloClient = {
+      query: jest
+        .fn()
+        .mockResolvedValue({
+          data: {
+            getJourneyProfile: {
+              id: 'profile.id',
+              userId: 'user.id',
+              acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+              __typename: 'JourneyProfile'
+            },
+            teams: [{ id: 'teamId', __typename: 'Team' }]
+          }
+        })
+        .mockResolvedValueOnce({ data: meData })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    await checkConditionalRedirect({
+      apolloClient,
+      resolvedUrl:
+        '/users/sign-in?redirect=%2Ftemplates%2FjourneyId%2Fcustomize%2FmediaUpload'
+    })
+    expect(apolloClient.query).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: GET_ME,
+        variables: {
+          input: { redirect: '/templates/journeyId/customize/mediaUpload' }
+        }
+      })
+    )
+  })
+
+  it('passes undefined redirect to GET_ME when resolvedUrl is root', async () => {
+    const apolloClient = {
+      query: jest
+        .fn()
+        .mockResolvedValue({
+          data: {
+            getJourneyProfile: {
+              id: 'profile.id',
+              userId: 'user.id',
+              acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+              __typename: 'JourneyProfile'
+            },
+            teams: [{ id: 'teamId', __typename: 'Team' }]
+          }
+        })
+        .mockResolvedValueOnce({ data: meData })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    await checkConditionalRedirect({
+      apolloClient,
+      resolvedUrl: '/'
+    })
+    expect(apolloClient.query).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: GET_ME,
+        variables: { input: { redirect: undefined } }
+      })
+    )
+  })
+
+  it('passes resolvedUrl to GET_ME when no redirect param and not root', async () => {
+    const apolloClient = {
+      query: jest
+        .fn()
+        .mockResolvedValue({
+          data: {
+            getJourneyProfile: {
+              id: 'profile.id',
+              userId: 'user.id',
+              acceptedTermsAt: '1970-01-01T00:00:00.000Z',
+              __typename: 'JourneyProfile'
+            },
+            teams: [{ id: 'teamId', __typename: 'Team' }]
+          }
+        })
+        .mockResolvedValueOnce({ data: meData })
+    } as unknown as ApolloClient<NormalizedCacheObject>
+    await checkConditionalRedirect({
+      apolloClient,
+      resolvedUrl: '/some-protected-page'
+    })
+    expect(apolloClient.query).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: GET_ME,
+        variables: { input: { redirect: '/some-protected-page' } }
+      })
+    )
   })
 
   it('skip teams new if teams empty and template quick without teamName', async () => {
