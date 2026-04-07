@@ -246,8 +246,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   // then redirect to sign-in so the correct user can log in.
   if (email != null && token != null) {
     const isCurrentUserEmail =
-      user.email != null &&
-      user.email.toLowerCase() === email.toLowerCase()
+      user.email != null && user.email.toLowerCase() === email.toLowerCase()
 
     try {
       await apolloClient.mutate({
