@@ -339,7 +339,6 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
   cardBlockUpdate(
     id: ID!
     input: CardBlockUpdateInput!
@@ -607,18 +606,6 @@ type CardBlock implements Block
   themeName from journey
   """
   themeName: ThemeName @shareable
-}
-
-input CardBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
 }
 
 input CardBlockUpdateInput {
@@ -1277,6 +1264,9 @@ type VideoBlock implements Block
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
   customizable: Boolean @shareable
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 """
@@ -2067,6 +2057,7 @@ type IntegrationGoogle implements Integration
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }
 
