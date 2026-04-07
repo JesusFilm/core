@@ -10,6 +10,7 @@ import LinkIcon from '@core/shared/ui/icons/Link'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { videoBlockSourceToLabel } from '../../../../../../../VisitorInfo/VisitorJourneysList/utils/videoBlockSourceToLabel'
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
@@ -69,11 +70,7 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
         id={`${id}-video-options`}
         icon={<Play1Icon />}
         name={t('Video Source')}
-        value={
-          block.mediaVideo?.__typename === 'Video'
-            ? block.mediaVideo?.title?.[0]?.value
-            : (block.title ?? '')
-        }
+        value={videoBlockSourceToLabel(block.source, t)}
       >
         <VideoOptions />
       </Accordion>
