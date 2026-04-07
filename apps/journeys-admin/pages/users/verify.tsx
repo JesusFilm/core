@@ -237,7 +237,53 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       ? `/?redirect=${encodeURIComponent(ctx.query.redirect)}`
       : '/'
 
-  // skip if already verified
+  const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null
+  const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
+  const token = typeof ctx.query?.token === 'string' ? ctx.query.token : null
+
+  // When the email link is opened in a browser with a different active session,
+  // still validate the email (mutation works by email+token, not auth context)
+  // then redirect to sign-in so the correct user can log in.
+  if (email != null && token != null) {
+    const isCurrentUserEmail =
+      user.email != null &&
+      user.email.toLowerCase() === email.toLowerCase()
+
+    try {
+      await apolloClient.mutate({
+        mutation: VALIDATE_EMAIL,
+        variables: { email, token }
+      })
+
+      if (!isCurrentUserEmail) {
+        const signInDestination =
+          typeof ctx.query.redirect === 'string' &&
+          ctx.query.redirect.length > 0
+            ? `/users/sign-in?redirect=${encodeURIComponent(ctx.query.redirect)}`
+            : '/users/sign-in'
+        return {
+          redirect: { permanent: false, destination: signInDestination }
+        }
+      }
+
+      return {
+        redirect: { permanent: false, destination }
+      }
+    } catch (_err) {
+      return {
+        props: {
+          email,
+          token,
+          initialError: null,
+          userSerialized: JSON.stringify(user),
+          ...translations,
+          initialApolloState: apolloClient.cache.extract()
+        }
+      }
+    }
+  }
+
+  // skip if already verified (no email/token in URL — manual code entry flow)
   const apiUser = await apolloClient.query<GetMe>({
     query: GET_ME,
     variables: { input: { redirect: ctx.query.redirect ?? undefined } }
@@ -250,36 +296,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       redirect: {
         permanent: false,
         destination
-      }
-    }
-  }
-
-  const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null
-  const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
-  const token = typeof ctx.query?.token === 'string' ? ctx.query.token : null
-
-  if (email != null && token != null) {
-    try {
-      await apolloClient.mutate({
-        mutation: VALIDATE_EMAIL,
-        variables: { email, token }
-      })
-      return {
-        redirect: {
-          permanent: false,
-          destination
-        }
-      }
-    } catch (_err) {
-      return {
-        props: {
-          email,
-          token,
-          initialError: null,
-          userSerialized: JSON.stringify(user),
-          ...translations,
-          initialApolloState: apolloClient.cache.extract()
-        }
       }
     }
   }
