@@ -18,7 +18,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t)
 
     expect(result.screens).toEqual(['language', 'social', 'done'])
-    expect(result.totalSteps).toBe(3)
+    expect(result.totalSteps).toBe(2)
     expect(result.hasEditableText).toBe(false)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])
@@ -42,7 +42,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t)
 
     expect(result.screens).toEqual(['language', 'text', 'social', 'done'])
-    expect(result.totalSteps).toBe(4)
+    expect(result.totalSteps).toBe(3)
     expect(result.hasEditableText).toBe(true)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])
@@ -70,7 +70,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t)
 
     expect(result.screens).toEqual(['language', 'links', 'social', 'done'])
-    expect(result.totalSteps).toBe(4)
+    expect(result.totalSteps).toBe(3)
     expect(result.hasEditableText).toBe(false)
     expect(result.hasCustomizableLinks).toBe(true)
     expect(result.links).toHaveLength(1)
@@ -127,7 +127,7 @@ describe('getCustomizeFlowConfig', () => {
       'social',
       'done'
     ])
-    expect(result.totalSteps).toBe(6)
+    expect(result.totalSteps).toBe(5)
     expect(result.hasEditableText).toBe(true)
     expect(result.hasCustomizableLinks).toBe(true)
     expect(result.links).toHaveLength(1)
@@ -175,7 +175,7 @@ describe('getCustomizeFlowConfig', () => {
       'social',
       'done'
     ])
-    expect(result.totalSteps).toBe(5)
+    expect(result.totalSteps).toBe(4)
     expect(result.hasCustomizableMedia).toBe(true)
   })
 
@@ -260,7 +260,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t)
 
     expect(result.screens).toEqual(['language', 'social', 'done'])
-    expect(result.totalSteps).toBe(3)
+    expect(result.totalSteps).toBe(2)
     expect(result.hasEditableText).toBe(false)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])
@@ -277,7 +277,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t)
 
     expect(result.screens).toEqual(['language', 'social', 'done'])
-    expect(result.totalSteps).toBe(3)
+    expect(result.totalSteps).toBe(2)
     expect(result.hasEditableText).toBe(false)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])
@@ -301,7 +301,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t)
 
     expect(result.screens).toEqual(['language', 'social', 'done'])
-    expect(result.totalSteps).toBe(3)
+    expect(result.totalSteps).toBe(2)
     expect(result.hasEditableText).toBe(false)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])
@@ -323,7 +323,7 @@ describe('getCustomizeFlowConfig', () => {
       'social',
       'done'
     ])
-    expect(result.totalSteps).toBe(4)
+    expect(result.totalSteps).toBe(2)
   })
 
   it('should not include guestPreview screen when isGuest is false', () => {
@@ -337,7 +337,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey, t, { isGuest: false })
 
     expect(result.screens).toEqual(['language', 'social', 'done'])
-    expect(result.totalSteps).toBe(3)
+    expect(result.totalSteps).toBe(2)
   })
 
   it('should always include social screen before done screen', () => {
@@ -373,7 +373,7 @@ describe('getCustomizeFlowConfig', () => {
     const result = getCustomizeFlowConfig(journey)
 
     expect(result.screens).toEqual(['language', 'text', 'social', 'done'])
-    expect(result.totalSteps).toBe(4)
+    expect(result.totalSteps).toBe(3)
     expect(result.hasEditableText).toBe(true)
     expect(result.hasCustomizableLinks).toBe(false)
     expect(result.links).toEqual([])

@@ -3,7 +3,7 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
@@ -16,6 +16,8 @@ import {
 } from '../utils/customizationRoutes'
 import {
   CustomizationScreen,
+  STEPPER_EXCLUDED_SCREENS,
+  STEPPER_HIDDEN_SCREENS,
   getCustomizeFlowConfig
 } from '../utils/getCustomizeFlowConfig'
 import { getNextCustomizeScreen } from '../utils/getNextCustomizeScreen'
@@ -90,6 +92,19 @@ export function MultiStepForm(): ReactElement {
     screens
   )
 
+  // Reset scroll position when the active screen changes.
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      document
+        .querySelector<HTMLElement>('[data-testid="MainPanelBody"]')
+        ?.scrollTo(0, 0)
+
+      document
+        .querySelector<HTMLElement>('[data-testid="JourneysAdminPageWrapper"]')
+        ?.scrollTo(0, 0)
+    })
+  }, [activeScreen])
+
   useTemplateCustomizationRedirect({
     journeyId,
     screens,
@@ -111,10 +126,11 @@ export function MultiStepForm(): ReactElement {
     }
   }
 
-  const activeStepForStepper =
-    activeScreen === 'guestPreview'
-      ? screens.indexOf('guestPreview') - 1
-      : screens.indexOf(activeScreen)
+  const stepperScreens = screens.filter((s) => !STEPPER_EXCLUDED_SCREENS.has(s))
+  const activeScreenIndex = screens.indexOf(activeScreen)
+  const activeStepForStepper = STEPPER_EXCLUDED_SCREENS.has(activeScreen)
+    ? stepperScreens.indexOf(screens[activeScreenIndex - 1])
+    : stepperScreens.indexOf(activeScreen)
 
   return (
     <TemplateVideoUploadProvider>
@@ -133,16 +149,17 @@ export function MultiStepForm(): ReactElement {
         }}
       >
         <Stack gap={{ xs: 8, sm: 17 }} data-testid="MultiStepForm">
-          {(hasEditableText ||
-            hasCustomizableLinks ||
-            hasCustomizableMedia) && (
-            <Box sx={{ mt: { xs: 3, sm: 6 } }}>
-              <ProgressStepper
-                activeStepNumber={activeStepForStepper}
-                totalSteps={totalSteps}
-              />
-            </Box>
-          )}
+          {!STEPPER_HIDDEN_SCREENS.has(activeScreen) &&
+            (hasEditableText ||
+              hasCustomizableLinks ||
+              hasCustomizableMedia) && (
+              <Box sx={{ mt: { xs: 3, sm: 6 } }}>
+                <ProgressStepper
+                  activeStepNumber={activeStepForStepper}
+                  totalSteps={totalSteps}
+                />
+              </Box>
+            )}
           {renderScreen(activeScreen, screens, handleNext)}
         </Stack>
       </Container>

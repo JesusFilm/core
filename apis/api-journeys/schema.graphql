@@ -2025,6 +2025,7 @@ type IntegrationGoogle implements Integration
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }
 

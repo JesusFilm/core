@@ -5,6 +5,8 @@ description: Fetches PR review comments, triages them (fix, challenge, or skip),
 
 # Handle PR Review Feedback
 
+<!-- sync: simplified subset of .claude/commands/handle-pr-review.md (canonical). Keep the summary comment step aligned. -->
+
 When the user asks to check or fix review feedback on a PR (e.g. on JesusFilm/core):
 
 ## 1. Identify PR
@@ -120,21 +122,29 @@ gh pr comment PR_NUMBER --body "Your reply here"
 
 ## 9. Post summary comment
 
-Add a PR comment summarising everything:
+<!-- sync: keep "Post summary comment" aligned with the canonical version in .claude/commands/handle-pr-review.md -->
 
-```markdown
-## Review feedback addressed (abc1234)
+Add a PR comment summarising everything. **Resolve the commit SHA first** — do not rely on shell variable expansion inside heredocs:
+
+```bash
+COMMIT_SHA=$(git rev-parse --short HEAD)
+gh pr comment NUMBER --body "## Review feedback addressed ($COMMIT_SHA)
 
 **Fixed:**
-- [thread summary]: [brief change]
-- [thread summary]: [brief change]
+- \`src/api.ts:42\` — [brief change description]
 
 **Challenged:**
-- [thread summary]: [brief reasoning — see inline reply]
+- \`src/util.ts:30\` — [brief reasoning — see inline reply]
 
 **Skipped (optional/nit):**
-- [thread summary]: [reason]
+- [thread summary] — [reason]
+"
 ```
+
+> **Important:** Do **not** use `<<'EOF'` (single-quoted heredoc) — it prevents
+> shell variable expansion and renders `$COMMIT_SHA` as a literal string.
+> Use `gh pr comment --body "..."` with double-quoted strings or unquoted heredocs
+> (`<<EOF`) so that `$COMMIT_SHA` is interpolated.
 
 ## Notes
 

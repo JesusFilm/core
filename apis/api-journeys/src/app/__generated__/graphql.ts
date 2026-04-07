@@ -1633,6 +1633,7 @@ export class IntegrationGoogle implements Integration {
     team: Team;
     type: IntegrationType;
     user?: Nullable<User>;
+    userId?: Nullable<string>;
     accountEmail?: Nullable<string>;
 }
 
