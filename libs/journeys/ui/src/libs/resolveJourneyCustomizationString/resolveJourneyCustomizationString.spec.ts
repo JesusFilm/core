@@ -95,4 +95,45 @@ describe('resolveJourneyCustomizationString', () => {
       '{{ unknown }}'
     )
   })
+
+  describe('useDefaultValue option', () => {
+    it('prefers defaultValue over value when useDefaultValue is true', () => {
+      expect(
+        resolveJourneyCustomizationString('{{ name }}', fields, {
+          useDefaultValue: true
+        })
+      ).toBe('Anonymous')
+    })
+
+    it('falls back to value when defaultValue is null and useDefaultValue is true', () => {
+      const fieldsWithNullDefault = [
+        { key: 'greeting', value: 'Hello', defaultValue: null }
+      ] as JourneyCustomizationField[]
+
+      expect(
+        resolveJourneyCustomizationString('{{ greeting }}', fieldsWithNullDefault, {
+          useDefaultValue: true
+        })
+      ).toBe('Hello')
+    })
+
+    it('prefers value over defaultValue by default', () => {
+      expect(resolveJourneyCustomizationString('{{ name }}', fields)).toBe(
+        'Alice'
+      )
+      expect(
+        resolveJourneyCustomizationString('{{ name }}', fields, {
+          useDefaultValue: false
+        })
+      ).toBe('Alice')
+    })
+
+    it('resolves inline-value tokens with useDefaultValue', () => {
+      expect(
+        resolveJourneyCustomizationString('{{ some: fallback }}', fields, {
+          useDefaultValue: true
+        })
+      ).toBe('Some Default')
+    })
+  })
 })
