@@ -1,11 +1,5 @@
-import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
-import ChatBubbleRoundedIcon from '@mui/icons-material/ChatBubbleRounded'
-import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
-import ThumbUpOffAltRoundedIcon from '@mui/icons-material/ThumbUpOffAltRounded'
 import Card from '@mui/material/Card'
-import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
-import CardHeader from '@mui/material/CardHeader'
 import CardMedia from '@mui/material/CardMedia'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
@@ -32,10 +26,10 @@ interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean
 }
 
-const MEDIA_MOBILE_WIDTH = 223
-const MEDIA_MOBILE_HEIGHT = 139
-const MEDIA_DESKTOP_WIDTH = 284
-const MEDIA_DESKTOP_HEIGHT = 194
+const MEDIA_MOBILE_WIDTH = 215
+const MEDIA_MOBILE_HEIGHT = 147
+const MEDIA_DESKTOP_WIDTH = 215
+const MEDIA_DESKTOP_HEIGHT = 147
 const CARD_SPACING = 12
 
 const StyledInput = styled('input')({
@@ -128,8 +122,11 @@ export function SocialScreenSocialImage({
 
   return (
     <Card
+      variant="outlined"
+      elevation={0}
       sx={{
         borderRadius: 3,
+        borderColor: 'divider',
         p: `${CARD_SPACING}px`,
         width: {
           xs: `calc(${MEDIA_MOBILE_WIDTH}px + calc(${CARD_SPACING}px*2))`,
@@ -137,31 +134,6 @@ export function SocialScreenSocialImage({
         }
       }}
     >
-      <CardHeader
-        avatar={<AccountCircleRoundedIcon sx={{ color: 'divider' }} />}
-        title={
-          <Skeleton variant="text" width={85} height={20} animation={false} />
-        }
-        action={
-          <IconButton disabled>
-            <Skeleton
-              variant="circular"
-              width={12}
-              height={12}
-              animation={false}
-            />
-          </IconButton>
-        }
-        sx={{
-          px: 0,
-          pt: 0,
-          pb: 3,
-          '& .MuiCardHeader-action': {
-            alignSelf: 'center'
-          }
-        }}
-      />
-
       <CardMedia
         sx={{
           display: 'flex',
@@ -295,20 +267,6 @@ export function SocialScreenSocialImage({
         </Typography>
       </CardContent>
 
-      <CardActions sx={{ justifyContent: 'space-around', p: 0 }}>
-        <IconButton disabled>
-          <ThumbUpOffAltRoundedIcon
-            fontSize="small"
-            sx={{ color: 'divider' }}
-          />
-        </IconButton>
-        <IconButton disabled>
-          <ChatBubbleRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
-        </IconButton>
-        <IconButton disabled>
-          <ShareRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
-        </IconButton>
-      </CardActions>
     </Card>
   )
 }
