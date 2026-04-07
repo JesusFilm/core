@@ -6,6 +6,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 import { mediaLanguage } from './[languageId]'
@@ -239,183 +240,188 @@ mediaLanguages.openapi(route, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
-    try {
-      // Get total count
-      const countResult = await getApolloClient().query<
-        ResultOf<typeof GET_LANGUAGES_COUNT>
-      >({
-        query: GET_LANGUAGES_COUNT,
-        variables: {
-          ids,
-          bcp47,
-          iso3,
-          term
+  const bypass = isCacheBypassEnabled(c)
+  const response = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      try {
+        // Get total count
+        const countResult = await getApolloClient().query<
+          ResultOf<typeof GET_LANGUAGES_COUNT>
+        >({
+          query: GET_LANGUAGES_COUNT,
+          variables: {
+            ids,
+            bcp47,
+            iso3,
+            term
+          }
+        })
+        const totalCount = countResult.data.languagesCount
+
+        const { data } = await getApolloClient().query<
+          ResultOf<typeof GET_LANGUAGES_DATA>
+        >({
+          query: GET_LANGUAGES_DATA,
+          variables: {
+            limit,
+            offset,
+            ids,
+            bcp47,
+            iso3,
+            metadataLanguageId,
+            fallbackLanguageId,
+            term
+          }
+        })
+
+        const languages = data.languages
+
+        const queryObject = {
+          ...c.req.query(),
+          page: page.toString(),
+          limit: limit.toString()
         }
-      })
-      const totalCount = countResult.data.languagesCount
 
-      const { data } = await getApolloClient().query<
-        ResultOf<typeof GET_LANGUAGES_DATA>
-      >({
-        query: GET_LANGUAGES_DATA,
-        variables: {
-          limit,
-          offset,
-          ids,
-          bcp47,
-          iso3,
-          metadataLanguageId,
-          fallbackLanguageId,
-          term
-        }
-      })
+        const totalPages = Math.ceil(totalCount / limit)
 
-      const languages = data.languages
-
-      const queryObject = {
-        ...c.req.query(),
-        page: page.toString(),
-        limit: limit.toString()
-      }
-
-      const totalPages = Math.ceil(totalCount / limit)
-
-      const filteredLanguages = languages.filter(
-        (language) =>
-          language.name[0]?.value != null ||
-          language.fallbackName[0]?.value != null
-      )
-
-      const mediaLanguages = filteredLanguages.map((language) => {
-        const nonSuggestedCountryLanguages = language.countryLanguages.filter(
-          ({ suggested }) => !suggested
+        const filteredLanguages = languages.filter(
+          (language) =>
+            language.name[0]?.value != null ||
+            language.fallbackName[0]?.value != null
         )
 
-        const speakerCount = nonSuggestedCountryLanguages.reduce(
-          (acc, { speakers }) => acc + speakers,
-          0
-        )
+        const mediaLanguages = filteredLanguages.map((language) => {
+          const nonSuggestedCountryLanguages = language.countryLanguages.filter(
+            ({ suggested }) => !suggested
+          )
 
-        const countriesCount = nonSuggestedCountryLanguages.length
+          const speakerCount = nonSuggestedCountryLanguages.reduce(
+            (acc, { speakers }) => acc + speakers,
+            0
+          )
 
-        const counts = {
-          speakerCount: {
-            value: speakerCount,
-            description: 'Number of speakers'
-          },
-          countriesCount: {
-            value: countriesCount,
-            description: 'Number of countries'
-          },
-          ...(language.labeledVideoCounts.seriesCount > 0 && {
-            series: {
-              value: language.labeledVideoCounts.seriesCount,
-              description: 'Series'
-            }
-          }),
-          ...(language.labeledVideoCounts.featureFilmCount > 0 && {
-            featureFilm: {
-              value: language.labeledVideoCounts.featureFilmCount,
-              description: 'Feature Film'
-            }
-          }),
-          ...(language.labeledVideoCounts.shortFilmCount > 0 && {
-            shortFilm: {
-              value: language.labeledVideoCounts.shortFilmCount,
-              description: 'Short Film'
-            }
-          })
-        }
+          const countriesCount = nonSuggestedCountryLanguages.length
 
-        return {
-          languageId: Number(language.id),
-          iso3: language.iso3 ?? '',
-          bcp47: language.bcp47 ?? '',
-          counts,
-          ...(language.audioPreview != null && {
-            audioPreview: {
-              url: language.audioPreview.value,
-              audioBitrate: language.audioPreview.bitrate,
-              audioContainer: language.audioPreview.codec,
-              sizeInBytes: language.audioPreview.size
-            }
-          }),
-          primaryCountryId:
-            language.countryLanguages.find(({ primary }) => primary)?.country
-              ?.id ??
-            language.countryLanguages[0]?.country?.id ??
-            'US',
-          name:
-            language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-          nameNative:
-            language.nameNative[0]?.value ??
-            language.name[0]?.value ??
-            language.fallbackName[0]?.value ??
-            '',
-          metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-          _links: {
-            self: {
-              href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
+          const counts = {
+            speakerCount: {
+              value: speakerCount,
+              description: 'Number of speakers'
+            },
+            countriesCount: {
+              value: countriesCount,
+              description: 'Number of countries'
+            },
+            ...(language.labeledVideoCounts.seriesCount > 0 && {
+              series: {
+                value: language.labeledVideoCounts.seriesCount,
+                description: 'Series'
+              }
+            }),
+            ...(language.labeledVideoCounts.featureFilmCount > 0 && {
+              featureFilm: {
+                value: language.labeledVideoCounts.featureFilmCount,
+                description: 'Feature Film'
+              }
+            }),
+            ...(language.labeledVideoCounts.shortFilmCount > 0 && {
+              shortFilm: {
+                value: language.labeledVideoCounts.shortFilmCount,
+                description: 'Short Film'
+              }
+            })
+          }
+
+          return {
+            languageId: Number(language.id),
+            iso3: language.iso3 ?? '',
+            bcp47: language.bcp47 ?? '',
+            counts,
+            ...(language.audioPreview != null && {
+              audioPreview: {
+                url: language.audioPreview.value,
+                audioBitrate: language.audioPreview.bitrate,
+                audioContainer: language.audioPreview.codec,
+                sizeInBytes: language.audioPreview.size
+              }
+            }),
+            primaryCountryId:
+              language.countryLanguages.find(({ primary }) => primary)?.country
+                ?.id ??
+              language.countryLanguages[0]?.country?.id ??
+              'US',
+            name:
+              language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
+            nameNative:
+              language.nameNative[0]?.value ??
+              language.name[0]?.value ??
+              language.fallbackName[0]?.value ??
+              '',
+            metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
+              }
             }
           }
-        }
-      })
+        })
 
-      const queryString = new URLSearchParams(queryObject).toString()
-      const firstQueryString = new URLSearchParams({
-        ...queryObject,
-        page: '1'
-      }).toString()
-      const lastQueryString = new URLSearchParams({
-        ...queryObject,
-        page: totalPages.toString()
-      }).toString()
-      const nextQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page + 1).toString()
-      }).toString()
-      const previousQueryString = new URLSearchParams({
-        ...queryObject,
-        page: (page - 1).toString()
-      }).toString()
+        const queryString = new URLSearchParams(queryObject).toString()
+        const firstQueryString = new URLSearchParams({
+          ...queryObject,
+          page: '1'
+        }).toString()
+        const lastQueryString = new URLSearchParams({
+          ...queryObject,
+          page: totalPages.toString()
+        }).toString()
+        const nextQueryString = new URLSearchParams({
+          ...queryObject,
+          page: (page + 1).toString()
+        }).toString()
+        const previousQueryString = new URLSearchParams({
+          ...queryObject,
+          page: (page - 1).toString()
+        }).toString()
 
-      return {
-        page,
-        limit,
-        pages: totalPages,
-        total: totalCount,
-        _links: {
-          self: {
-            href: `http://api.arclight.org/v2/media-languages?${queryString}`
+        return {
+          page,
+          limit,
+          pages: totalPages,
+          total: totalCount,
+          _links: {
+            self: {
+              href: `http://api.arclight.org/v2/media-languages?${queryString}`
+            },
+            first: {
+              href: `http://api.arclight.org/v2/media-languages?${firstQueryString}`
+            },
+            last: {
+              href: `http://api.arclight.org/v2/media-languages?${lastQueryString}`
+            },
+            ...(page < totalPages && {
+              next: {
+                href: `http://api.arclight.org/v2/media-languages?${nextQueryString}`
+              }
+            }),
+            ...(page > 1 && {
+              previous: {
+                href: `http://api.arclight.org/v2/media-languages?${previousQueryString}`
+              }
+            })
           },
-          first: {
-            href: `http://api.arclight.org/v2/media-languages?${firstQueryString}`
-          },
-          last: {
-            href: `http://api.arclight.org/v2/media-languages?${lastQueryString}`
-          },
-          ...(page < totalPages && {
-            next: {
-              href: `http://api.arclight.org/v2/media-languages?${nextQueryString}`
-            }
-          }),
-          ...(page > 1 && {
-            previous: {
-              href: `http://api.arclight.org/v2/media-languages?${previousQueryString}`
-            }
-          })
-        },
-        _embedded: {
-          mediaLanguages
+          _embedded: {
+            mediaLanguages
+          }
         }
+      } catch (err) {
+        throw new HTTPException(500, {
+          message: `Failed to get languages: ${err instanceof Error ? err.message : String(err)}`
+        })
       }
-    } catch (err) {
-      throw new HTTPException(500, {
-        message: `Failed to get languages: ${err instanceof Error ? err.message : String(err)}`
-      })
-    }
-  })
+    },
+    { bypass }
+  )
 
   return c.json(response)
 })

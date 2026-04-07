@@ -4,6 +4,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
 
 const GET_COUNTRIES_LANGUAGES = graphql(`
   query GetCountriesLanguages {
@@ -87,55 +88,62 @@ mediaCountryLinks.openapi(route, async (c) => {
 
   const cacheKey = generateCacheKey(['media-country-links', ...ids])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_COUNTRIES_LANGUAGES>
-    >({
-      query: GET_COUNTRIES_LANGUAGES
-    })
+  const bypass = isCacheBypassEnabled(c)
+  const response = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_COUNTRIES_LANGUAGES>
+      >({
+        query: GET_COUNTRIES_LANGUAGES
+      })
 
-    const mediaCountriesLinks = [...data.countries]
-      .filter((country) => (ids.length > 0 ? ids?.includes(country.id) : true))
-      .sort((a, b) => a.id.localeCompare(b.id))
-      .map((country) => ({
-        countryId: country.id,
-        linkedMediaLanguages: {
-          suggested: country.countryLanguages
-            .filter(
-              (countryLanguage) =>
-                countryLanguage.suggested && countryLanguage.order
-            )
-            .sort((a, b) => Number(b.order) - Number(a.order))
-            .map(({ language }, index, array) => ({
-              languageId: Number(language.id),
-              languageRank: array.length - index
-            })),
-          spoken: country.countryLanguages
-            .filter((countryLanguage) => !countryLanguage.suggested)
-            .sort((a, b) => {
-              const speakerDiff = b.speakers - a.speakers
-              return speakerDiff !== 0
-                ? speakerDiff
-                : Number(a.language.id) - Number(b.language.id)
-            })
-            .map(({ language, speakers }) => ({
-              languageId: Number(language.id),
-              speakerCount: speakers
-            }))
-        }
-      }))
+      const mediaCountriesLinks = [...data.countries]
+        .filter((country) =>
+          ids.length > 0 ? ids?.includes(country.id) : true
+        )
+        .sort((a, b) => a.id.localeCompare(b.id))
+        .map((country) => ({
+          countryId: country.id,
+          linkedMediaLanguages: {
+            suggested: country.countryLanguages
+              .filter(
+                (countryLanguage) =>
+                  countryLanguage.suggested && countryLanguage.order
+              )
+              .sort((a, b) => Number(b.order) - Number(a.order))
+              .map(({ language }, index, array) => ({
+                languageId: Number(language.id),
+                languageRank: array.length - index
+              })),
+            spoken: country.countryLanguages
+              .filter((countryLanguage) => !countryLanguage.suggested)
+              .sort((a, b) => {
+                const speakerDiff = b.speakers - a.speakers
+                return speakerDiff !== 0
+                  ? speakerDiff
+                  : Number(a.language.id) - Number(b.language.id)
+              })
+              .map(({ language, speakers }) => ({
+                languageId: Number(language.id),
+                speakerCount: speakers
+              }))
+          }
+        }))
 
-    return {
-      _links: {
-        self: {
-          href: `http://api.arclight.org/v2/media-country-links?$apikey=${apiKey}`
+      return {
+        _links: {
+          self: {
+            href: `http://api.arclight.org/v2/media-country-links?$apikey=${apiKey}`
+          }
+        },
+        _embedded: {
+          mediaCountriesLinks
         }
-      },
-      _embedded: {
-        mediaCountriesLinks
       }
-    }
-  })
+    },
+    { bypass }
+  )
 
   return c.json(response)
 })

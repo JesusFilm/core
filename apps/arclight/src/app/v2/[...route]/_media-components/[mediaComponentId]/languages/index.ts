@@ -8,6 +8,7 @@ import {
   generateCacheKey,
   getWithStaleCache
 } from '../../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../../lib/cacheBypass'
 import { findDownloadWithFallback } from '../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../lib/getPlatformFromApiKey'
 import {
@@ -96,6 +97,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
     ...languageIds.slice(0, 20)
   ])
 
+  const bypass = isCacheBypassEnabled(c)
   const { data: cachedData, statusCode } = await getWithStaleCache(
     cacheKey,
     async () => {
@@ -368,7 +370,8 @@ mediaComponentLanguages.openapi(route, async (c) => {
         },
         statusCode: 200
       }
-    }
+    },
+    { bypass }
   )
 
   return c.json(cachedData, statusCode as 200 | 404 | 500)

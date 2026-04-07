@@ -7,6 +7,7 @@ import {
   generateCacheKey,
   getWithStaleCache
 } from '../../../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../../../lib/cacheBypass'
 import { findDownloadWithFallback } from '../../../../../../../lib/downloadHelpers'
 import { getDefaultPlatformForApiKey } from '../../../../../../../lib/getPlatformFromApiKey'
 import {
@@ -168,414 +169,422 @@ mediaComponentLanguage.openapi(route, async (c) => {
     apiKey ?? ''
   ])
 
-  const cachedData = await getWithStaleCache(cacheKey, async () => {
-    const videoQuery = {
-      where: { id: mediaComponentId },
-      select: {
-        variants: {
-          where: { languageId: languageId },
-          select: {
-            id: true,
-            languageId: true,
-            lengthInMilliseconds: true,
-            hls: true,
-            dash: true,
-            share: true,
-            edition: true,
-            downloads: {
-              select: {
-                quality: true,
-                url: true,
-                size: true,
-                height: true,
-                width: true,
-                bitrate: true
-              }
-            }
-          }
-        },
-        subtitles: {
-          select: {
-            languageId: true,
-            vttSrc: true,
-            srtSrc: true,
-            edition: true
-          }
-        },
-        ...(expand.includes('contains') && {
-          children: {
-            where: {
-              variants: {
-                some: { languageId: languageId }
-              }
-            },
+  const bypass = isCacheBypassEnabled(c)
+  const cachedData = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      const videoQuery = {
+        where: { id: mediaComponentId },
+        select: {
+          variants: {
+            where: { languageId: languageId },
             select: {
               id: true,
-              label: true,
-              primaryLanguageId: true,
-              variants: {
-                where: { languageId: languageId },
+              languageId: true,
+              lengthInMilliseconds: true,
+              hls: true,
+              dash: true,
+              share: true,
+              edition: true,
+              downloads: {
                 select: {
-                  id: true,
-                  lengthInMilliseconds: true,
-                  hls: true,
-                  share: true,
-                  downloads: {
-                    select: {
-                      quality: true,
-                      url: true,
-                      size: true,
-                      height: true,
-                      width: true,
-                      bitrate: true
-                    }
-                  }
-                }
-              },
-              subtitles: {
-                select: {
-                  languageId: true,
-                  vttSrc: true,
-                  srtSrc: true,
-                  edition: true
+                  quality: true,
+                  url: true,
+                  size: true,
+                  height: true,
+                  width: true,
+                  bitrate: true
                 }
               }
             }
-          }
-        })
-      }
-    }
-
-    let video
-    try {
-      video = await mediaPrisma.video.findUnique(videoQuery)
-    } catch (error) {
-      console.error(
-        `Database error fetching video ${mediaComponentId} with language ${languageId}:`,
-        error
-      )
-      throw error
-    }
-
-    if (!video || !video.variants || video.variants.length === 0) {
-      console.error(`Video ${mediaComponentId} not found!`)
-      return {
-        data: {
-          message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
-          logref: 404
-        },
-        statusCode: 404
-      }
-    }
-
-    const subtitleLanguageIds = video.subtitles?.map((s) => s.languageId)
-
-    const languageQuery = {
-      where: {
-        id: { in: subtitleLanguageIds }
-      },
-      select: {
-        id: true,
-        bcp47: true,
-        iso3: true,
-        name: {
-          where: {
-            languageId: { equals: '529' }
           },
-          select: {
-            value: true
+          subtitles: {
+            select: {
+              languageId: true,
+              vttSrc: true,
+              srtSrc: true,
+              edition: true
+            }
+          },
+          ...(expand.includes('contains') && {
+            children: {
+              where: {
+                variants: {
+                  some: { languageId: languageId }
+                }
+              },
+              select: {
+                id: true,
+                label: true,
+                primaryLanguageId: true,
+                variants: {
+                  where: { languageId: languageId },
+                  select: {
+                    id: true,
+                    lengthInMilliseconds: true,
+                    hls: true,
+                    share: true,
+                    downloads: {
+                      select: {
+                        quality: true,
+                        url: true,
+                        size: true,
+                        height: true,
+                        width: true,
+                        bitrate: true
+                      }
+                    }
+                  }
+                },
+                subtitles: {
+                  select: {
+                    languageId: true,
+                    vttSrc: true,
+                    srtSrc: true,
+                    edition: true
+                  }
+                }
+              }
+            }
+          })
+        }
+      }
+
+      let video
+      try {
+        video = await mediaPrisma.video.findUnique(videoQuery)
+      } catch (error) {
+        console.error(
+          `Database error fetching video ${mediaComponentId} with language ${languageId}:`,
+          error
+        )
+        throw error
+      }
+
+      if (!video || !video.variants || video.variants.length === 0) {
+        console.error(`Video ${mediaComponentId} not found!`)
+        return {
+          data: {
+            message: `Media component '${mediaComponentId}' language '${languageId}' not found!`,
+            logref: 404
+          },
+          statusCode: 404
+        }
+      }
+
+      const subtitleLanguageIds = video.subtitles?.map((s) => s.languageId)
+
+      const languageQuery = {
+        where: {
+          id: { in: subtitleLanguageIds }
+        },
+        select: {
+          id: true,
+          bcp47: true,
+          iso3: true,
+          name: {
+            where: {
+              languageId: { equals: '529' }
+            },
+            select: {
+              value: true
+            }
           }
         }
       }
-    }
 
-    let languages
-    if (subtitleLanguageIds?.length > 0) {
-      try {
-        languages = await languagesPrisma.language.findMany(languageQuery)
-      } catch (error) {
-        console.error(`Database error fetching languages:`, error)
-        throw error
+      let languages
+      if (subtitleLanguageIds?.length > 0) {
+        try {
+          languages = await languagesPrisma.language.findMany(languageQuery)
+        } catch (error) {
+          console.error(`Database error fetching languages:`, error)
+          throw error
+        }
       }
-    }
 
-    const languageMap = languages
-      ? new Map(languages.map((lang) => [lang.id, lang]))
-      : new Map()
+      const languageMap = languages
+        ? new Map(languages.map((lang) => [lang.id, lang]))
+        : new Map()
 
-    const variant = video.variants[0]
-    type Variant = typeof variant
-    const downloads = variant.downloads
-    type Download = (typeof downloads)[0]
-    const subtitles = video.subtitles
-    type Subtitle = (typeof subtitles)[0]
+      const variant = video.variants[0]
+      type Variant = typeof variant
+      const downloads = variant.downloads
+      type Download = (typeof downloads)[0]
+      const subtitles = video.subtitles
+      type Subtitle = (typeof subtitles)[0]
 
-    type NormalizedDownload = {
-      quality: string
-      url: string
-      size: number
-      height: number
-      width: number
-      bitrate: number
-    }
-    const normalizeDownloads = (
-      downloads: Download[]
-    ): NormalizedDownload[] => {
-      return downloads.map((d) => ({
-        quality: d.quality ?? '',
-        url: d.url,
-        size: d.size ?? 0,
-        height: d.height ?? 0,
-        width: d.width ?? 0,
-        bitrate: d.bitrate ?? 0
-      }))
-    }
+      type NormalizedDownload = {
+        quality: string
+        url: string
+        size: number
+        height: number
+        width: number
+        bitrate: number
+      }
+      const normalizeDownloads = (
+        downloads: Download[]
+      ): NormalizedDownload[] => {
+        return downloads.map((d) => ({
+          quality: d.quality ?? '',
+          url: d.url,
+          size: d.size ?? 0,
+          height: d.height ?? 0,
+          width: d.width ?? 0,
+          bitrate: d.bitrate ?? 0
+        }))
+      }
 
-    const buildDownloadUrls = (
-      normalizedDownloads: NormalizedDownload[],
-      apiKey?: string
-    ): DownloadUrlSchema => {
-      if (!normalizedDownloads || normalizedDownloads.length === 0)
-        return { low: undefined, high: undefined }
+      const buildDownloadUrls = (
+        normalizedDownloads: NormalizedDownload[],
+        apiKey?: string
+      ): DownloadUrlSchema => {
+        if (!normalizedDownloads || normalizedDownloads.length === 0)
+          return { low: undefined, high: undefined }
 
-      const downloadLow = findDownloadWithFallback(
-        normalizedDownloads,
-        'low',
-        apiKey
-      )
+        const downloadLow = findDownloadWithFallback(
+          normalizedDownloads,
+          'low',
+          apiKey
+        )
 
-      const downloadHigh = findDownloadWithFallback(
-        normalizedDownloads,
-        'high',
-        apiKey
-      )
+        const downloadHigh = findDownloadWithFallback(
+          normalizedDownloads,
+          'high',
+          apiKey
+        )
+
+        return {
+          low: downloadLow
+            ? {
+                url: downloadLow.url,
+                height: downloadLow.height || 240,
+                width: downloadLow.width || 426,
+                sizeInBytes: downloadLow.size,
+                bitrate: downloadLow.bitrate
+              }
+            : undefined,
+          high: downloadHigh
+            ? {
+                url: downloadHigh.url,
+                height: downloadHigh.height || 720,
+                width: downloadHigh.width || 1280,
+                sizeInBytes: downloadHigh.size,
+                bitrate: downloadHigh.bitrate
+              }
+            : undefined
+        }
+      }
+
+      let webEmbedPlayer = ''
+      let webEmbedSharePlayer = ''
+      if (platform === 'web') {
+        webEmbedPlayer = getWebEmbedPlayer(variant.id, apiSessionId)
+        webEmbedSharePlayer = getWebEmbedSharePlayer(variant.id, apiSessionId)
+      }
+
+      const buildSubtitleUrls = (subtitles: Subtitle[]): SubtitleSchema => {
+        const subtitleUrls: SubtitleSchema = {
+          vtt: [],
+          srt: []
+        }
+        if (subtitles?.length === 0) return subtitleUrls
+
+        const editionSubtitles = subtitles.filter(
+          (subtitle: Subtitle) =>
+            subtitle.edition === variant.edition ||
+            (!subtitle.edition && !variant.edition)
+        )
+
+        for (const subtitle of editionSubtitles) {
+          const languageInfo = languageMap.get(subtitle.languageId)
+          if (!languageInfo || !languageInfo.name[0]) continue
+          subtitleUrls.vtt.push({
+            languageId: Number(subtitle.languageId),
+            languageName: languageInfo.name[0].value,
+            languageTag: languageInfo.bcp47 ?? languageInfo.iso3 ?? 'en',
+            url: subtitle.vttSrc ?? ''
+          })
+          subtitleUrls.srt.push({
+            languageId: Number(subtitle.languageId),
+            languageName: languageInfo.name[0].value,
+            languageTag: languageInfo.bcp47 ?? languageInfo.iso3 ?? 'en',
+            url: subtitle.srtSrc ?? ''
+          })
+        }
+        return subtitleUrls
+      }
+
+      const buildStreamingUrls = (
+        platform: string,
+        variant: Variant,
+        normalizedDownloads: NormalizedDownload[]
+      ): StreamingUrlSchema => {
+        if (!variant.hls && !variant.dash) return {}
+
+        const downloadLow = findDownloadWithFallback(
+          normalizedDownloads,
+          'low',
+          apiKey
+        )
+
+        const downloadSd = findDownloadWithFallback(
+          normalizedDownloads,
+          'sd',
+          apiKey
+        )
+
+        const downloadHigh = findDownloadWithFallback(
+          normalizedDownloads,
+          'high',
+          apiKey
+        )
+
+        switch (platform) {
+          case 'android':
+            return {
+              dash: variant.dash
+                ? [{ videoBitrate: 0, url: variant.dash }]
+                : [],
+              hls: variant.hls ? [{ videoBitrate: 0, url: variant.hls }] : [],
+              http: [
+                {
+                  videoBitrate: downloadLow?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadLow?.url ?? ''
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url ?? ''
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url ?? ''
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url ?? ''
+                },
+                {
+                  videoBitrate: downloadSd?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadSd?.url ?? ''
+                },
+                {
+                  videoBitrate: downloadHigh?.bitrate ?? 0,
+                  videoContainer: 'MP4',
+                  url: downloadHigh?.url ?? ''
+                }
+              ]
+            }
+          case 'ios':
+            return {
+              m3u8: variant.hls
+                ? [
+                    {
+                      videoBitrate: 0,
+                      videoContainer: 'M2TS',
+                      url: variant.hls
+                    }
+                  ]
+                : [],
+              http: []
+            }
+          default: // 'web'
+            return {}
+        }
+      }
+
+      const normalizedDownloads = normalizeDownloads(downloads)
 
       return {
-        low: downloadLow
-          ? {
-              url: downloadLow.url,
-              height: downloadLow.height || 240,
-              width: downloadLow.width || 426,
-              sizeInBytes: downloadLow.size,
-              bitrate: downloadLow.bitrate
-            }
-          : undefined,
-        high: downloadHigh
-          ? {
-              url: downloadHigh.url,
-              height: downloadHigh.height || 720,
-              width: downloadHigh.width || 1280,
-              sizeInBytes: downloadHigh.size,
-              bitrate: downloadHigh.bitrate
-            }
-          : undefined
-      }
-    }
-
-    let webEmbedPlayer = ''
-    let webEmbedSharePlayer = ''
-    if (platform === 'web') {
-      webEmbedPlayer = getWebEmbedPlayer(variant.id, apiSessionId)
-      webEmbedSharePlayer = getWebEmbedSharePlayer(variant.id, apiSessionId)
-    }
-
-    const buildSubtitleUrls = (subtitles: Subtitle[]): SubtitleSchema => {
-      const subtitleUrls: SubtitleSchema = {
-        vtt: [],
-        srt: []
-      }
-      if (subtitles?.length === 0) return subtitleUrls
-
-      const editionSubtitles = subtitles.filter(
-        (subtitle: Subtitle) =>
-          subtitle.edition === variant.edition ||
-          (!subtitle.edition && !variant.edition)
-      )
-
-      for (const subtitle of editionSubtitles) {
-        const languageInfo = languageMap.get(subtitle.languageId)
-        if (!languageInfo || !languageInfo.name[0]) continue
-        subtitleUrls.vtt.push({
-          languageId: Number(subtitle.languageId),
-          languageName: languageInfo.name[0].value,
-          languageTag: languageInfo.bcp47 ?? languageInfo.iso3 ?? 'en',
-          url: subtitle.vttSrc ?? ''
-        })
-        subtitleUrls.srt.push({
-          languageId: Number(subtitle.languageId),
-          languageName: languageInfo.name[0].value,
-          languageTag: languageInfo.bcp47 ?? languageInfo.iso3 ?? 'en',
-          url: subtitle.srtSrc ?? ''
-        })
-      }
-      return subtitleUrls
-    }
-
-    const buildStreamingUrls = (
-      platform: string,
-      variant: Variant,
-      normalizedDownloads: NormalizedDownload[]
-    ): StreamingUrlSchema => {
-      if (!variant.hls && !variant.dash) return {}
-
-      const downloadLow = findDownloadWithFallback(
-        normalizedDownloads,
-        'low',
-        apiKey
-      )
-
-      const downloadSd = findDownloadWithFallback(
-        normalizedDownloads,
-        'sd',
-        apiKey
-      )
-
-      const downloadHigh = findDownloadWithFallback(
-        normalizedDownloads,
-        'high',
-        apiKey
-      )
-
-      switch (platform) {
-        case 'android':
-          return {
-            dash: variant.dash ? [{ videoBitrate: 0, url: variant.dash }] : [],
-            hls: variant.hls ? [{ videoBitrate: 0, url: variant.hls }] : [],
-            http: [
-              {
-                videoBitrate: downloadLow?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadLow?.url ?? ''
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url ?? ''
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url ?? ''
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url ?? ''
-              },
-              {
-                videoBitrate: downloadSd?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadSd?.url ?? ''
-              },
-              {
-                videoBitrate: downloadHigh?.bitrate ?? 0,
-                videoContainer: 'MP4',
-                url: downloadHigh?.url ?? ''
-              }
-            ]
-          }
-        case 'ios':
-          return {
-            m3u8: variant.hls
-              ? [
-                  {
-                    videoBitrate: 0,
-                    videoContainer: 'M2TS',
-                    url: variant.hls
-                  }
-                ]
-              : [],
-            http: []
-          }
-        default: // 'web'
-          return {}
-      }
-    }
-
-    const normalizedDownloads = normalizeDownloads(downloads)
-
-    return {
-      data: {
-        mediaComponentId,
-        languageId: Number(languageId),
-        refId: variant.id,
-        apiSessionId,
-        platform,
-        lengthInMilliseconds: variant.lengthInMilliseconds ?? 0,
-        subtitleUrls: buildSubtitleUrls(subtitles),
-        downloadUrls: buildDownloadUrls(normalizedDownloads, apiKey),
-        streamingUrls: buildStreamingUrls(
+        data: {
+          mediaComponentId,
+          languageId: Number(languageId),
+          refId: variant.id,
+          apiSessionId,
           platform,
-          variant,
-          normalizedDownloads
-        ),
-        shareUrl:
-          variant.share ??
-          `https://arc.gt/s/${variant.id}/${variant.languageId}`,
-        socialMediaUrls: {},
-        ...(platform === 'web' && {
-          webEmbedPlayer,
-          webEmbedSharePlayer
-        }),
-        openGraphVideoPlayer: 'https://jesusfilm.org/',
-        _links: {
-          self: {
-            href: c.req.url
+          lengthInMilliseconds: variant.lengthInMilliseconds ?? 0,
+          subtitleUrls: buildSubtitleUrls(subtitles),
+          downloadUrls: buildDownloadUrls(normalizedDownloads, apiKey),
+          streamingUrls: buildStreamingUrls(
+            platform,
+            variant,
+            normalizedDownloads
+          ),
+          shareUrl:
+            variant.share ??
+            `https://arc.gt/s/${variant.id}/${variant.languageId}`,
+          socialMediaUrls: {},
+          ...(platform === 'web' && {
+            webEmbedPlayer,
+            webEmbedSharePlayer
+          }),
+          openGraphVideoPlayer: 'https://jesusfilm.org/',
+          _links: {
+            self: {
+              href: c.req.url
+            },
+            mediaComponent: {
+              href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey ?? ''}`
+            },
+            mediaLanguage: {
+              href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey ?? ''}`
+            }
           },
-          mediaComponent: {
-            href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey ?? ''}`
-          },
-          mediaLanguage: {
-            href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey ?? ''}`
-          }
-        },
-        ...(expand.includes('contains') &&
-          video.children &&
-          video.children.length > 0 && {
-            _embedded: {
-              contains: video.children.map((child: any) => {
-                const childVariant = child.variants?.[0]
-                const childNormalizedDownloads = normalizeDownloads(
-                  childVariant.downloads
-                )
-                return {
-                  mediaComponentId: child.id,
-                  languageId: Number(languageId),
-                  refId: `${child.id}_${languageId}-${child.label}`,
-                  apiSessionId,
-                  lengthInMilliseconds: childVariant?.lengthInMilliseconds ?? 0,
-                  subtitleUrls: buildSubtitleUrls(child.subtitles),
-                  downloadUrls: buildDownloadUrls(
-                    childNormalizedDownloads,
-                    apiKey
-                  ),
-                  streamingUrls: buildStreamingUrls(
-                    platform,
-                    childVariant,
-                    childNormalizedDownloads
-                  ),
-                  shareUrl:
-                    childVariant?.share ??
-                    `https://arc.gt/s/${childVariant?.id}/${languageId}`,
-                  socialMediaUrls: {},
-                  _links: {
-                    self: {
-                      href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey ?? ''}`
-                    },
-                    mediaComponent: {
-                      href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey ?? ''}`
-                    },
-                    mediaLanguage: {
-                      href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey ?? ''}`
+          ...(expand.includes('contains') &&
+            video.children &&
+            video.children.length > 0 && {
+              _embedded: {
+                contains: video.children.map((child: any) => {
+                  const childVariant = child.variants?.[0]
+                  const childNormalizedDownloads = normalizeDownloads(
+                    childVariant.downloads
+                  )
+                  return {
+                    mediaComponentId: child.id,
+                    languageId: Number(languageId),
+                    refId: `${child.id}_${languageId}-${child.label}`,
+                    apiSessionId,
+                    lengthInMilliseconds:
+                      childVariant?.lengthInMilliseconds ?? 0,
+                    subtitleUrls: buildSubtitleUrls(child.subtitles),
+                    downloadUrls: buildDownloadUrls(
+                      childNormalizedDownloads,
+                      apiKey
+                    ),
+                    streamingUrls: buildStreamingUrls(
+                      platform,
+                      childVariant,
+                      childNormalizedDownloads
+                    ),
+                    shareUrl:
+                      childVariant?.share ??
+                      `https://arc.gt/s/${childVariant?.id}/${languageId}`,
+                    socialMediaUrls: {},
+                    _links: {
+                      self: {
+                        href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey ?? ''}`
+                      },
+                      mediaComponent: {
+                        href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey ?? ''}`
+                      },
+                      mediaLanguage: {
+                        href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey ?? ''}`
+                      }
                     }
                   }
-                }
-              })
-            }
-          })
-      },
-      statusCode: 200
-    }
-  })
+                })
+              }
+            })
+        },
+        statusCode: 200
+      }
+    },
+    { bypass }
+  )
   return c.json(cachedData.data, cachedData.statusCode as 200 | 404 | 500)
 })

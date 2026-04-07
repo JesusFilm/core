@@ -4,6 +4,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../../lib/cacheBypass'
 import { findBestMatchingName } from '../lib'
 
 const GET_TAXONOMY = graphql(`
@@ -95,55 +96,63 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
     ...metadataLanguageTags
   ])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_TAXONOMY>
-    >({
-      query: GET_TAXONOMY,
-      variables: {
-        category,
-        languageCodes: metadataLanguageTags
-      }
-    })
+  const bypass = isCacheBypassEnabled(c)
+  const response = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_TAXONOMY>
+      >({
+        query: GET_TAXONOMY,
+        variables: {
+          category,
+          languageCodes: metadataLanguageTags
+        }
+      })
 
-    if (data.taxonomies.length === 0) {
-      return {
-        message: `Taxonomy '${category}' not found!`,
-        logref: 404
-      }
-    }
-
-    const response = {
-      terms: {} as Record<
-        string,
-        { label: string; metadataLanguageTag: string }
-      >,
-      _links: {
-        self: {
-          href: `http://api.arclight.org/v2/taxonomies/${category}?apiKey=${apiKey}`
-        },
-        taxonomies: {
-          href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+      if (data.taxonomies.length === 0) {
+        return {
+          message: `Taxonomy '${category}' not found!`,
+          logref: 404
         }
       }
-    }
 
-    data.taxonomies.forEach((taxonomy) => {
-      if (taxonomy.name.length === 0) return
-
-      const matchingName = findBestMatchingName(
-        taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
-        metadataLanguageTags
-      )
-
-      response.terms[taxonomy.term] = {
-        label: matchingName.label,
-        metadataLanguageTag: matchingName.language.bcp47
+      const response = {
+        terms: {} as Record<
+          string,
+          { label: string; metadataLanguageTag: string }
+        >,
+        _links: {
+          self: {
+            href: `http://api.arclight.org/v2/taxonomies/${category}?apiKey=${apiKey}`
+          },
+          taxonomies: {
+            href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+          }
+        }
       }
-    })
 
-    return response
-  })
+      data.taxonomies.forEach((taxonomy) => {
+        if (taxonomy.name.length === 0) return
+
+        const matchingName = findBestMatchingName(
+          taxonomy.name as Array<{
+            label: string
+            language: { bcp47: string }
+          }>,
+          metadataLanguageTags
+        )
+
+        response.terms[taxonomy.term] = {
+          label: matchingName.label,
+          metadataLanguageTag: matchingName.language.bcp47
+        }
+      })
+
+      return response
+    },
+    { bypass }
+  )
 
   if ('message' in response) {
     return c.json(response, 404)

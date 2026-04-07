@@ -4,6 +4,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
+import { isCacheBypassEnabled } from '../../../../lib/cacheBypass'
 
 import { taxonomiesWithCategory } from './[category]'
 import { TaxonomyGroup, findBestMatchingName } from './lib'
@@ -98,62 +99,72 @@ taxonomies.openapi(listTaxonomiesRoute, async (c) => {
 
   const cacheKey = generateCacheKey(['taxonomies', ...metadataLanguageTags])
 
-  const response = await getWithStaleCache(cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_TAXONOMIES>
-    >({
-      query: GET_TAXONOMIES,
-      variables: { languageCodes: metadataLanguageTags }
-    })
+  const bypass = isCacheBypassEnabled(c)
+  const response = await getWithStaleCache(
+    cacheKey,
+    async () => {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_TAXONOMIES>
+      >({
+        query: GET_TAXONOMIES,
+        variables: { languageCodes: metadataLanguageTags }
+      })
 
-    const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
+      const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
 
-    const filteredTaxonomies = data.taxonomies.filter(
-      (taxonomy) => taxonomy.name.length > 0
-    )
-
-    if (filteredTaxonomies.length === 0) {
-      return null
-    }
-
-    filteredTaxonomies.forEach((taxonomy) => {
-      const matchingName = findBestMatchingName(
-        taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
-        metadataLanguageTags
+      const filteredTaxonomies = data.taxonomies.filter(
+        (taxonomy) => taxonomy.name.length > 0
       )
 
-      if (groupedTaxonomies[taxonomy.category] === undefined) {
-        groupedTaxonomies[taxonomy.category] = {
-          terms: {
-            [taxonomy.term]: {
-              label: matchingName.label,
-              metadataLanguageTag: matchingName.language.bcp47
-            }
-          },
-          _links: {
-            self: {
-              href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?apiKey=${apiKey}`
+      if (filteredTaxonomies.length === 0) {
+        return null
+      }
+
+      filteredTaxonomies.forEach((taxonomy) => {
+        const matchingName = findBestMatchingName(
+          taxonomy.name as Array<{
+            label: string
+            language: { bcp47: string }
+          }>,
+          metadataLanguageTags
+        )
+
+        if (groupedTaxonomies[taxonomy.category] === undefined) {
+          groupedTaxonomies[taxonomy.category] = {
+            terms: {
+              [taxonomy.term]: {
+                label: matchingName.label,
+                metadataLanguageTag: matchingName.language.bcp47
+              }
             },
-            taxonomies: {
-              href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?apiKey=${apiKey}`
+              },
+              taxonomies: {
+                href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+              }
             }
           }
+        } else {
+          groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
+            label: matchingName.label,
+            metadataLanguageTag: matchingName.language.bcp47
+          }
         }
-      } else {
-        groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
-          label: matchingName.label,
-          metadataLanguageTag: matchingName.language.bcp47
-        }
-      }
-    })
+      })
 
-    return {
-      _links: {
-        self: { href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}` }
-      },
-      _embedded: { taxonomies: groupedTaxonomies }
-    }
-  })
+      return {
+        _links: {
+          self: {
+            href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+          }
+        },
+        _embedded: { taxonomies: groupedTaxonomies }
+      }
+    },
+    { bypass }
+  )
 
   if (response == null) {
     return c.json(
