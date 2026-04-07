@@ -40,7 +40,7 @@ export function ScreenWrapper({
     >
       <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
         <Typography
-          variant="h3"
+          variant="h5"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{ mb: { xs: 0, sm: 2 } }}

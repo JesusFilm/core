@@ -376,6 +376,8 @@ export function LanguageScreen({
           >
             <Typography
               variant="subtitle2"
+              color="text.secondary"
+              align="center"
               gutterBottom
               sx={{ mb: { xs: 0, sm: 2 } }}
             >
