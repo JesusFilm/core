@@ -59,7 +59,8 @@ const defaultIntegrationsData = {
       __typename: 'IntegrationGoogle',
       id: 'integration1',
       accountEmail: 'test@example.com',
-      user: { __typename: 'AuthenticatedUser', id: 'user1' }
+      userId: 'user1',
+      user: { __typename: 'AuthenticatedUser', id: 'user1-uuid' }
     }
   ]
 }
@@ -241,13 +242,15 @@ describe('GoogleSheetsSyncDialog', () => {
             __typename: 'IntegrationGoogle',
             id: 'integration1',
             accountEmail: 'myaccount@example.com',
-            user: { __typename: 'AuthenticatedUser', id: 'user1' }
+            userId: 'user1',
+            user: { __typename: 'AuthenticatedUser', id: 'user1-uuid' }
           },
           {
             __typename: 'IntegrationGoogle',
             id: 'integration2',
             accountEmail: 'other-manager@example.com',
-            user: { __typename: 'AuthenticatedUser', id: 'otherUser' }
+            userId: 'otherUser',
+            user: { __typename: 'AuthenticatedUser', id: 'otherUser-uuid' }
           }
         ]
       }
@@ -280,7 +283,8 @@ describe('GoogleSheetsSyncDialog', () => {
             __typename: 'IntegrationGoogle',
             id: 'integration2',
             accountEmail: 'other-manager@example.com',
-            user: { __typename: 'AuthenticatedUser', id: 'otherUser' }
+            userId: 'otherUser',
+            user: { __typename: 'AuthenticatedUser', id: 'otherUser-uuid' }
           }
         ]
       }
@@ -303,6 +307,46 @@ describe('GoogleSheetsSyncDialog', () => {
     expect(options[0]).toHaveTextContent('Select integration account')
   })
 
+  it('excludes integrations with null userId from dropdown', async () => {
+    mockUseIntegrationQuery.mockReturnValue({
+      data: {
+        integrations: [
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration1',
+            accountEmail: 'legacy@example.com',
+            userId: null,
+            user: null
+          },
+          {
+            __typename: 'IntegrationGoogle',
+            id: 'integration2',
+            accountEmail: 'myaccount@example.com',
+            userId: 'user1',
+            user: { __typename: 'AuthenticatedUser', id: 'user1-uuid' }
+          }
+        ]
+      }
+    })
+    setupApolloMocks()
+
+    render(
+      <GoogleSheetsSyncDialog open journeyId="journey1" onClose={onClose} />
+    )
+
+    await screen.findByRole('button', { name: 'Create Sync' })
+
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Integration account' })
+    )
+
+    const options = screen.getAllByRole('option')
+    const optionTexts = options.map((o) => o.textContent)
+
+    expect(optionTexts).toContain('myaccount@example.com')
+    expect(optionTexts).not.toContain('legacy@example.com')
+  })
+
   it('shows no integration options when user is not authenticated', async () => {
     mockUseAuth.mockReturnValue({
       user: null
@@ -314,6 +358,7 @@ describe('GoogleSheetsSyncDialog', () => {
             __typename: 'IntegrationGoogle',
             id: 'integration1',
             accountEmail: 'someone@example.com',
+            userId: 'someUser',
             user: null
           }
         ]

@@ -177,7 +177,7 @@ export function GoogleSheetsSyncDialog({
             integration
           ): integration is GetIntegration_integrations_IntegrationGoogle =>
             integration.__typename === 'IntegrationGoogle' &&
-            integration.user?.id === currentUserId
+            integration.userId === currentUserId
         ) ?? [])
       : []
 
