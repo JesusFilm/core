@@ -45,9 +45,11 @@ export const GET_ADMIN_JOURNEYS = gql`
         openedAt
         user {
           id
-          firstName
-          lastName
-          imageUrl
+          ... on AuthenticatedUser {
+            firstName
+            lastName
+            imageUrl
+          }
         }
       }
       primaryImageBlock {
@@ -73,17 +75,20 @@ export const GET_ADMIN_JOURNEYS = gql`
         defaultValue
       }
       website
+      customizable
     }
   }
 `
 
 export function useAdminJourneysQuery(
-  variables?: GetAdminJourneysVariables
+  variables?: GetAdminJourneysVariables,
+  options?: { skip?: boolean }
 ): QueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
   const query = useQuery<GetAdminJourneys, GetAdminJourneysVariables>(
     GET_ADMIN_JOURNEYS,
     {
-      variables
+      variables,
+      skip: options?.skip
     }
   )
 

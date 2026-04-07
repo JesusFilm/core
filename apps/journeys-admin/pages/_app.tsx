@@ -1,6 +1,7 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import GlobalStyles from '@mui/material/GlobalStyles'
+import IconButton from '@mui/material/IconButton'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
@@ -8,20 +9,33 @@ import Head from 'next/head'
 import Script from 'next/script'
 import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
-import { SnackbarProvider } from 'notistack'
+import { SnackbarKey, SnackbarProvider, closeSnackbar } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import XCircleContainedIcon from '@core/shared/ui/icons/XCircleContained'
 
 import i18nConfig from '../next-i18next.config'
 import { ThemeProvider } from '../src/components/ThemeProvider'
 import { useApollo } from '../src/libs/apolloClient'
-import { initAuth } from '../src/libs/firebaseClient/initAuth'
+import { AuthProvider, User } from '../src/libs/auth'
+import { getFirebaseAuth } from '../src/libs/auth/firebase'
 
 import './globals.css'
 
-initAuth()
+getFirebaseAuth()
+
+const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
+  <IconButton
+    size="small"
+    aria-label="dismiss notification"
+    color="inherit"
+    onClick={() => closeSnackbar(snackbarKey)}
+  >
+    <XCircleContainedIcon />
+  </IconButton>
+)
 
 type JourneysAdminAppProps = NextJsAppProps<{
   userSerialized?: string
@@ -39,14 +53,14 @@ function JourneysAdminApp({
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const user =
+  const user: User | null =
     pageProps.userSerialized != null
       ? JSON.parse(pageProps.userSerialized)
       : null
 
   const apolloClient = useApollo({
     initialState: pageProps.initialApolloState,
-    token: user?._token
+    token: user?.token
   })
 
   useEffect(() => {
@@ -111,22 +125,25 @@ function JourneysAdminApp({
            `}
               </Script>
             )}
-          <ApolloProvider client={apolloClient}>
-            <TeamProvider>
-              <SnackbarProvider
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right'
-                }}
-              >
-                <GoogleTagManager
-                  gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
-                  dataLayer={{ userId: user?.id }}
-                />
-                <Component {...pageProps} />
-              </SnackbarProvider>
-            </TeamProvider>
-          </ApolloProvider>
+          <AuthProvider user={user}>
+            <ApolloProvider client={apolloClient}>
+              <TeamProvider>
+                <SnackbarProvider
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right'
+                  }}
+                  action={SnackbarAction}
+                >
+                  <GoogleTagManager
+                    gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
+                    dataLayer={{ userId: user?.id ?? '' }}
+                  />
+                  <Component {...pageProps} />
+                </SnackbarProvider>
+              </TeamProvider>
+            </ApolloProvider>
+          </AuthProvider>
         </ThemeProvider>
       </AppCacheProvider>
     </FlagsProvider>

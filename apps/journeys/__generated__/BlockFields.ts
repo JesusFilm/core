@@ -153,6 +153,7 @@ export interface BlockFields_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface BlockFields_MultiselectOptionBlock {
@@ -550,6 +551,11 @@ export interface BlockFields_VideoBlock {
   action: BlockFields_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

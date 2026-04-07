@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import { SxProps, Theme } from '@mui/material/styles'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -50,6 +51,8 @@ interface ShareItemProps {
   handleCloseMenu?: () => void
   handleKeepMounted?: () => void
   buttonVariant?: 'icon' | 'default'
+  setHasOpenDialog?: (hasOpenDialog: boolean) => void
+  buttonProps?: ComponentProps<typeof Button>
 }
 
 /**
@@ -68,7 +71,9 @@ export function ShareItem({
   journey,
   handleCloseMenu,
   handleKeepMounted,
-  buttonVariant = 'icon'
+  buttonVariant = 'icon',
+  setHasOpenDialog,
+  buttonProps
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -105,6 +110,7 @@ export function ShareItem({
     setAnchorEl(event.currentTarget)
     handleKeepMounted?.()
     handleCloseMenu?.()
+    setHasOpenDialog?.(true)
   }
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -121,13 +127,14 @@ export function ShareItem({
         variant={variant}
         label={t('Share')}
         onClick={handleShowMenu}
-        ButtonProps={{ variant: 'contained' }}
+        ButtonProps={{ variant: 'contained', ...buttonProps }}
         icon={buttonVariant === 'icon' ? <ShareIcon /> : undefined}
       />
       <Dialog
         open={Boolean(anchorEl)}
         onClose={() => {
           setAnchorEl(null)
+          setHasOpenDialog?.(false)
         }}
         dialogTitle={{ title: t('Share'), closeButton: true }}
         sx={{ minWidth: 350 }}

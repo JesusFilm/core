@@ -72,6 +72,8 @@ describe('getCurrentEventLabel', () => {
       subtitleLanguage: null,
       mediaVideo: null,
       action: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 

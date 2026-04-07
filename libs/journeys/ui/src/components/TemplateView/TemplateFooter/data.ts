@@ -49,7 +49,8 @@ export const journey: Journey = {
       blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'CardBlock',
@@ -109,7 +110,8 @@ export const journey: Journey = {
       blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
       scale: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      customizable: null
     },
     {
       __typename: 'CardBlock',
@@ -174,5 +176,6 @@ export const journey: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }

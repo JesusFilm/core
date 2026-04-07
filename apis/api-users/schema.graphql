@@ -1,27 +1,19 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key", "@shareable"])
 
-input CreateVerificationRequestInput {
-  redirect: String
+type AnonymousUser implements User
+  @key(fields: "id")
+  @shareable
+{
+  id: ID!
 }
 
-input MeInput {
-  redirect: String
+enum App {
+  NextSteps
+  JesusFilmOne
 }
 
-type Mutation {
-  userImpersonate(email: String!): String
-  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
-  validateEmail(email: String!, token: String!): User
-}
-
-type Query {
-  me(input: MeInput): User
-  user(id: ID!): User
-  userByEmail(email: String!): User
-}
-
-type User
+type AuthenticatedUser implements User
   @key(fields: "id")
 {
   id: ID!
@@ -31,4 +23,32 @@ type User
   imageUrl: String
   superAdmin: Boolean
   emailVerified: Boolean!
+}
+
+input CreateVerificationRequestInput {
+  redirect: String
+  app: App
+}
+
+input MeInput {
+  redirect: String
+  app: App
+}
+
+type Mutation {
+  userImpersonate(email: String!): String
+  createVerificationRequest(input: CreateVerificationRequestInput): Boolean
+  validateEmail(email: String!, token: String!): AuthenticatedUser
+}
+
+type Query {
+  me(input: MeInput): User
+  user(id: ID!): AuthenticatedUser
+  userByEmail(email: String!): AuthenticatedUser
+}
+
+interface User
+  @key(fields: "id")
+{
+  id: ID!
 }

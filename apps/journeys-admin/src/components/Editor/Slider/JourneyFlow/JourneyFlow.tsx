@@ -113,10 +113,35 @@ export function JourneyFlow(): ReactElement {
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
   const edgeUpdateSuccessful = useRef<boolean | null>(null)
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [nodes, setNodes, onMainNodesChange] = useNodesState([])
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
-  const [referrerNodes, setReferrerNodes] = useNodesState([])
+  const [referrerNodes, setReferrerNodes, onReferrerNodesChange] =
+    useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
+
+  const referrerNodeIds = useMemo(
+    () => new Set(referrerNodes.map((n) => n.id)),
+    [referrerNodes]
+  )
+  // Route node changes to the correct state handler. This prevents an infinite
+  // re-render of referrer nodes. See NES-781 for details.
+  const onNodesChange = useCallback<
+    NonNullable<ReactFlowProps['onNodesChange']>
+  >(
+    (changes) => {
+      // Step and social preview nodes
+      const mainChanges = changes.filter(
+        (c) => !('id' in c && referrerNodeIds.has(c.id))
+      )
+      // Referrer nodes
+      const referrerChanges = changes.filter(
+        (c) => 'id' in c && referrerNodeIds.has(c.id)
+      )
+      if (mainChanges.length > 0) onMainNodesChange(mainChanges)
+      if (referrerChanges.length > 0) onReferrerNodesChange(referrerChanges)
+    },
+    [onMainNodesChange, onReferrerNodesChange, referrerNodeIds]
+  )
   const dragTimeStampRef = useRef(0)
 
   const createStepFromStep = useCreateStepFromStep()
@@ -574,8 +599,9 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
-  const isLocalTemplate =
-    journey?.team?.id !== 'jfp-team' && journey?.template === true
+  const isTemplate =
+    journey?.team?.id === 'jfp-team' || journey?.template === true
+
   return (
     <Box
       sx={{
@@ -625,7 +651,8 @@ export function JourneyFlow(): ReactElement {
               )}
             </Panel>
             {/* Hide analytics overlay switch for local templates */}
-            {!isLocalTemplate &&
+            {!isTemplate &&
+              journey != null &&
               /* Only show analytics panel when editorAnalytics feature flag is enabled */
               editorAnalytics && (
                 <Panel position="top-left">

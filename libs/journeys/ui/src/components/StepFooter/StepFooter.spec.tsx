@@ -89,7 +89,8 @@ describe('StepFooter', () => {
     journeyCustomizationFields: [],
     fromTemplateId: null,
     socialNodeX: null,
-    socialNodeY: null
+    socialNodeY: null,
+    customizable: null
   }
 
   it('should render custom styles', () => {
@@ -106,6 +107,31 @@ describe('StepFooter', () => {
     expect(screen.getByTestId('JourneysStepFooter')).toHaveStyle(
       'outline: 1px solid red'
     )
+  })
+
+  it('should render without EditorProvider when selectedStep prop is provided', () => {
+    const step = {
+      id: 'step1',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    } as TreeBlock<StepBlock>
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <StepFooter selectedStep={step} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
   })
 
   it('should call onFooterClick on click', () => {

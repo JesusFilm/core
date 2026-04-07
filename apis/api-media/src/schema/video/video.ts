@@ -9,7 +9,10 @@ import {
   prisma
 } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
+import {
+  updateVideoInAlgolia,
+  updateVideoPublishedStatus
+} from '../../lib/algolia/algoliaVideoUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
@@ -330,8 +333,6 @@ const Video = builder.prismaObject('Video', {
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock = getLanguageIdFromInfo(info, video.id)
-
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
           !isEmpty(variableValueId) &&
@@ -347,8 +348,16 @@ const Video = builder.prismaObject('Video', {
           })
         }
 
+        // Prefer per-block language set by resolveReference over the legacy batch lookup
+        const requestedLanguageId = (video as any)._requestedLanguageId as
+          | string
+          | undefined
+
         const primaryLanguageId =
-          languageId ?? journeysLanguageIdForBlock ?? '529'
+          languageId ??
+          requestedLanguageId ??
+          getLanguageIdFromInfo(info, video.id) ??
+          '529'
 
         return await prisma.videoVariant.findUnique({
           ...query,
@@ -387,7 +396,8 @@ const Video = builder.prismaObject('Video', {
       nullable: false,
       resolve: ({ restrictViewPlatforms }) => restrictViewPlatforms
     }),
-    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true })
+    publishedAt: t.expose('publishedAt', { type: 'Date', nullable: true }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false })
   })
 })
 
@@ -460,8 +470,13 @@ builder.asEntity(Video, {
   key: builder.selection<{ id: string; primaryLanguageId: string }>(
     'id primaryLanguageId'
   ),
-  resolveReference: async ({ id }) =>
-    await prisma.video.findUniqueOrThrow({ where: { id } })
+  // Preserve the per-block videoVariantLanguageId so the variant resolver can use it
+  resolveReference: async (ref) => {
+    const video = await prisma.video.findUniqueOrThrow({
+      where: { id: ref.id }
+    })
+    return { ...video, _requestedLanguageId: ref.primaryLanguageId }
+  }
 })
 
 builder.queryFields((t) => ({
@@ -816,6 +831,12 @@ builder.mutationFields((t) => ({
           } catch (error) {
             console.error('Parent variant video update error:', error)
           }
+        }
+        // Update variants' videoPublished status in Algolia when published status changes
+        try {
+          await updateVideoPublishedStatus(input.id, isNowPublished ?? false)
+        } catch (error) {
+          console.error('Video variants Algolia update error:', error)
         }
       }
 

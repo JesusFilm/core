@@ -7,15 +7,14 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
-import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react'
 
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../__generated__/JourneyFields'
+import { User } from '../../../libs/auth/authContext'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -24,9 +23,9 @@ import {
 import { ActivePriorityList } from '../ActiveJourneyList/ActivePriorityList'
 import { AddJourneyButton } from '../ActiveJourneyList/AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
-import type { JourneyListEvent, JourneyListProps } from '../JourneyList'
+import type { JourneyListEvent } from '../JourneyList'
 import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
-import { JourneySort, SortOrder } from '../JourneySort'
+import { SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
@@ -103,7 +102,7 @@ export const DELETE_TRASHED_JOURNEYS = gql`
 export interface JourneyListContentProps {
   contentType: ContentType
   status: JourneyStatusFilter
-  user?: User
+  user?: User | null
   sortOrder?: SortOrder
   event?: JourneyListEvent
 }
@@ -118,14 +117,15 @@ export function JourneyListContent({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
+  const { activeTeam } = useTeam()
 
-  // Determine query parameters based on contentType and status
+  // Determine query parameters based on contentType, status, and active team
   const getQueryParams = () => {
     const isTemplate = contentType === 'templates'
     const baseParams: {
       status: JourneyStatus[]
       template?: boolean
-      useLastActiveTeamId?: boolean
+      teamId?: string
     } = {
       status: []
     }
@@ -142,20 +142,22 @@ export function JourneyListContent({
         break
     }
 
-    if (isTemplate) {
-      baseParams.template = true
-      // Filter templates by current team to avoid showing templates from other teams
-      baseParams.useLastActiveTeamId = true
-    } else {
-      // Explicitly filter out templates when showing journeys
-      baseParams.template = false
-      baseParams.useLastActiveTeamId = true
+    baseParams.template = isTemplate
+
+    if (activeTeam != null) {
+      // Explicit team selected — filter by team ID
+      baseParams.teamId = activeTeam.id
     }
+    // When activeTeam is null ("Shared With Me"), pass neither teamId nor
+    // useLastActiveTeamId so the backend applies the shared-with-me filter.
+    // When activeTeam is undefined (loading), also omit — the query is skipped.
 
     return baseParams
   }
 
-  const { data, refetch } = useAdminJourneysQuery(getQueryParams())
+  const { data, refetch } = useAdminJourneysQuery(getQueryParams(), {
+    skip: activeTeam === undefined
+  })
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
   // Determine mutations based on status
@@ -278,14 +280,13 @@ export function JourneyListContent({
 
   const getOwnerFilteredIds = (): string[] | undefined => {
     const isTemplate = contentType === 'templates'
-    const isTeamContext = getQueryParams().useLastActiveTeamId
 
     // Templates and team journeys: send all IDs, backend handles permissions
-    if (isTemplate || !user?.id || isTeamContext) {
+    if (isTemplate || !user?.id || activeTeam != null) {
       return data?.journeys?.map((journey) => journey.id)
     }
 
-    // Personal journeys: only include journeys where user is owner
+    // Personal/shared journeys: only include journeys where user is owner
     return data?.journeys
       ?.filter(
         (journey) =>
@@ -617,18 +618,11 @@ export function JourneyListContent({
                       xl: contentType === 'templates' ? 2.4 : 3
                     }}
                   >
-                    <JourneyProvider
-                      value={{
-                        journey: journey as unknown as JourneyFields,
-                        variant: 'admin'
-                      }}
-                    >
-                      <JourneyCard
-                        key={journey.id}
-                        journey={journey}
-                        refetch={refetch}
-                      />
-                    </JourneyProvider>
+                    <JourneyCard
+                      key={journey.id}
+                      journey={journey}
+                      refetch={refetch}
+                    />
                   </Grid>
                 ))}
               </Grid>
@@ -664,7 +658,7 @@ export function JourneyListContent({
             variant="text"
             size="small"
             component="a"
-            href="https://support.nextstep.is/"
+            href="https://support.nextstep.is/article/1517-creating-a-template"
             target="_blank"
             rel="noopener noreferrer"
           >

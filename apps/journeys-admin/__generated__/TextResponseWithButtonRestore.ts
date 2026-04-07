@@ -153,6 +153,7 @@ export interface TextResponseWithButtonRestore_textResponse_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_MultiselectOptionBlock {
@@ -550,6 +551,11 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
   action: TextResponseWithButtonRestore_textResponse_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -758,6 +764,7 @@ export interface TextResponseWithButtonRestore_button_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_button_MultiselectOptionBlock {
@@ -1155,6 +1162,11 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
   action: TextResponseWithButtonRestore_button_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1363,6 +1375,7 @@ export interface TextResponseWithButtonRestore_startIcon_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_MultiselectOptionBlock {
@@ -1760,6 +1773,11 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
   action: TextResponseWithButtonRestore_startIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1968,6 +1986,7 @@ export interface TextResponseWithButtonRestore_endIcon_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_MultiselectOptionBlock {
@@ -2365,6 +2384,11 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
   action: TextResponseWithButtonRestore_endIcon_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

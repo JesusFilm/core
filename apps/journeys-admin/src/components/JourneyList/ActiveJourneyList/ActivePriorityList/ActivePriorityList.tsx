@@ -1,16 +1,13 @@
 import { ApolloQueryResult, OperationVariables } from '@apollo/client'
 import Grid from '@mui/material/Grid'
-import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
-
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
-import { JourneyFields } from '../../../../../__generated__/JourneyFields'
+import { User } from '../../../../libs/auth/authContext'
 import { JourneyCard } from '../../JourneyCard'
 import { JourneyCardVariant } from '../../JourneyCard/journeyCardVariant'
 import { SortOrder } from '../../JourneySort'
@@ -22,7 +19,7 @@ interface ActivePriorityListProps {
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
   ) => Promise<ApolloQueryResult<GetAdminJourneys>>
-  user?: User
+  user?: User | null
 }
 
 export function ActivePriorityList({
@@ -88,19 +85,12 @@ export function ActivePriorityList({
       {Object.entries(allActiveJourneys).map(([key, journeys]) =>
         journeys.map((journey) => (
           <Grid key={journey.id} size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}>
-            <JourneyProvider
-              value={{
-                journey: journey as unknown as JourneyFields,
-                variant: 'admin'
-              }}
-            >
-              <JourneyCard
-                key={journey.id}
-                journey={journey}
-                refetch={refetch}
-                variant={key as JourneyCardVariant}
-              />
-            </JourneyProvider>
+            <JourneyCard
+              key={journey.id}
+              journey={journey}
+              refetch={refetch}
+              variant={key as JourneyCardVariant}
+            />
           </Grid>
         ))
       )}

@@ -153,6 +153,7 @@ export interface StepDuplicate_blockDuplicate_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface StepDuplicate_blockDuplicate_MultiselectOptionBlock {
@@ -560,6 +561,11 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
   action: StepDuplicate_blockDuplicate_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

@@ -111,6 +111,8 @@ const video: TreeBlock<VideoBlock> = {
   showGeneratedSubtitles: null,
   eventLabel: null,
   endEventLabel: null,
+  customizable: null,
+  notes: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -151,7 +153,8 @@ const image: TreeBlock<ImageBlock> = {
   scale: 100,
   children: [],
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 const coverVideoBlockDeleteMock: MockedResponse<

@@ -167,6 +167,7 @@ export interface GetAdminJourney_journey_blocks_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourney_journey_blocks_MultiselectOptionBlock {
@@ -564,6 +565,11 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
   action: GetAdminJourney_journey_blocks_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -645,6 +651,7 @@ export interface GetAdminJourney_journey_primaryImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourney_journey_creatorImageBlock {
@@ -664,15 +671,23 @@ export interface GetAdminJourney_journey_creatorImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
-export interface GetAdminJourney_journey_userJourneys_user {
-  __typename: "User";
+export interface GetAdminJourney_journey_userJourneys_user_AnonymousUser {
+  __typename: "AnonymousUser";
+  id: string;
+}
+
+export interface GetAdminJourney_journey_userJourneys_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
   id: string;
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
 }
+
+export type GetAdminJourney_journey_userJourneys_user = GetAdminJourney_journey_userJourneys_user_AnonymousUser | GetAdminJourney_journey_userJourneys_user_AuthenticatedUser;
 
 export interface GetAdminJourney_journey_userJourneys {
   __typename: "UserJourney";
@@ -690,6 +705,7 @@ export interface GetAdminJourney_journey_chatButtons {
   id: string;
   link: string | null;
   platform: MessagePlatform | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourney_journey_host {
@@ -745,6 +761,7 @@ export interface GetAdminJourney_journey_logoImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourney_journey_menuStepBlock {
@@ -839,6 +856,10 @@ export interface GetAdminJourney_journey {
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourney_journey_journeyCustomizationFields[];
   fromTemplateId: string | null;
+  /**
+   * used to display quick start label on customizable templates
+   */
+  customizable: boolean | null;
 }
 
 export interface GetAdminJourney {

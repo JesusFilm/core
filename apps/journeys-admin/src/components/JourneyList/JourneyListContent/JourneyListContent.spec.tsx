@@ -1,6 +1,8 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import '../../../../test/i18n'
 
 import {
@@ -11,6 +13,7 @@ import {
   archivedTemplatesMock,
   deleteTrashedJourneysMutationMock,
   deleteTrashedTemplatesMutationMock,
+  mockTeamId,
   noArchivedMock,
   noArchivedTemplatesMock,
   noJourneysMock,
@@ -36,11 +39,17 @@ jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
 
+jest.mock('@core/journeys/ui/TeamProvider', () => ({
+  __esModule: true,
+  useTeam: jest.fn()
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
 
+const mockUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('JourneyListContent', () => {
@@ -50,29 +59,95 @@ describe('JourneyListContent', () => {
       query: {},
       replace: jest.fn()
     } as any)
+    mockUseTeam.mockReturnValue({
+      activeTeam: {
+        __typename: 'Team',
+        id: mockTeamId,
+        title: 'Test Team',
+        publicTitle: null,
+        userTeams: [],
+        customDomains: []
+      },
+      setActiveTeam: jest.fn(),
+      refetch: jest.fn(),
+      query: {} as any
+    })
   })
 
-  it('should render "Learn more" as an external link that opens in a new tab', async () => {
-    renderJourneyListContent({
-      mocks: [noTemplatesMock],
-      contentType: 'templates',
-      status: 'active'
+  describe('Learn more button visibility', () => {
+    it('should render "Learn more" as an external link when templates + active', async () => {
+      renderJourneyListContent({
+        mocks: [noTemplatesMock],
+        contentType: 'templates',
+        status: 'active'
+      })
+
+      const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
+      expect(learnMoreLink).toHaveAttribute(
+        'href',
+        'https://support.nextstep.is/article/1517-creating-a-template'
+      )
+      expect(learnMoreLink).toHaveAttribute('target', '_blank')
+      expect(learnMoreLink).toHaveAttribute(
+        'rel',
+        expect.stringContaining('noopener')
+      )
+      expect(learnMoreLink).toHaveAttribute(
+        'rel',
+        expect.stringContaining('noreferrer')
+      )
     })
 
-    const learnMoreLink = screen.getByRole('link', { name: 'Learn more' })
-    expect(learnMoreLink).toHaveAttribute(
-      'href',
-      'https://support.nextstep.is/'
-    )
-    expect(learnMoreLink).toHaveAttribute('target', '_blank')
-    expect(learnMoreLink).toHaveAttribute(
-      'rel',
-      expect.stringContaining('noopener')
-    )
-    expect(learnMoreLink).toHaveAttribute(
-      'rel',
-      expect.stringContaining('noreferrer')
-    )
+    it('should not show "Learn more" when contentType is journeys', async () => {
+      renderJourneyListContent({
+        mocks: [noJourneysMock],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      await waitFor(() =>
+        expect(screen.getByText('No journeys to display.')).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not show "Learn more" when contentType is templates and status is archived', async () => {
+      renderJourneyListContent({
+        mocks: [noArchivedTemplatesMock],
+        contentType: 'templates',
+        status: 'archived'
+      })
+
+      await waitFor(() =>
+        expect(screen.getByText('No archived templates.')).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not show "Learn more" when contentType is templates and status is trashed', async () => {
+      renderJourneyListContent({
+        mocks: [noTrashedTemplatesMock],
+        contentType: 'templates',
+        status: 'trashed'
+      })
+
+      await waitFor(() =>
+        expect(
+          screen.getByText('Your trashed templates will appear here.')
+        ).toBeInTheDocument()
+      )
+
+      expect(
+        screen.queryByRole('link', { name: 'Learn more' })
+      ).not.toBeInTheDocument()
+    })
   })
 
   describe('Active Journeys', () => {
@@ -880,6 +955,30 @@ describe('JourneyListContent', () => {
 
       // Replace should not be called since refresh param is not present
       expect(replace).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Loading State', () => {
+    it('should show loading skeleton when activeTeam is undefined', () => {
+      mockUseTeam.mockReturnValue({
+        activeTeam: undefined,
+        setActiveTeam: jest.fn(),
+        refetch: jest.fn(),
+        query: {} as any
+      })
+
+      renderJourneyListContent({
+        mocks: [],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Query is skipped when activeTeam is undefined (loading),
+      // so data is null and the loading skeleton should render
+      expect(
+        screen.queryByText('Default Journey Heading')
+      ).not.toBeInTheDocument()
     })
   })
 })

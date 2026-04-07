@@ -11,9 +11,8 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
@@ -23,7 +22,6 @@ import { Tooltip } from '../../Tooltip/Tooltip'
 
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
-import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
 
 export const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
   query GetJourneyBlockTypes($id: ID!) {
@@ -48,6 +46,7 @@ interface FilterDrawerProps {
   handleClearAll: () => void
   journeyId?: string
   disableExportButton?: boolean
+  onSyncDialogOpen?: () => void
 }
 
 export function FilterDrawer({
@@ -62,21 +61,11 @@ export function FilterDrawer({
   withIcon,
   hideInteractive,
   handleClearAll,
-  disableExportButton = false
+  disableExportButton = false,
+  onSyncDialogOpen
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
   const [showExportDialog, setShowExportDialog] = useState(false)
-  const [showSyncsDialog, setShowSyncsDialog] = useState(false)
-
-  // Check for query parameter to open sync dialog after integration creation
-  useEffect(() => {
-    if (journeyId == null) return
-    const openSyncDialog = router.query.openSyncDialog === 'true'
-    if (openSyncDialog) {
-      setShowSyncsDialog(true)
-    }
-  }, [journeyId, router])
 
   const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
     skip: journeyId == null,
@@ -193,7 +182,7 @@ export function FilterDrawer({
               variant="contained"
               color="secondary"
               sx={{ width: '100%', mb: 2 }}
-              onClick={() => setShowSyncsDialog(true)}
+              onClick={onSyncDialogOpen}
               disabled={disableExportButton}
             >
               {t('Sync to Google Sheets')}
@@ -258,11 +247,6 @@ export function FilterDrawer({
                   ? blockTypesData.journey.createdAt.toISOString()
                   : null
             }
-          />
-          <GoogleSheetsSyncDialog
-            open={showSyncsDialog}
-            onClose={() => setShowSyncsDialog(false)}
-            journeyId={journeyId}
           />
         </>
       )}

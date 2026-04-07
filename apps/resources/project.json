@@ -62,7 +62,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm dlx @datadog/datadog-ci@3.20.0 sourcemaps upload dist/apps/resources/.next/static --service=resources --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci@5.8.0 sourcemaps upload dist/apps/resources/.next/static --service=resources --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }
@@ -114,7 +114,7 @@
     "generate-test-data": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 pnpm exec ts-node apps/resources/src/components/Videos/testData.generator.ts"
+        "command": "NEXT_PUBLIC_GATEWAY_URL=http://127.0.0.1:4000 pnpm exec tsx apps/resources/src/components/Videos/testData.generator.ts"
       }
     },
     "export": {

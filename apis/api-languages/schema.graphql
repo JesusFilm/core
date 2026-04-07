@@ -13,6 +13,14 @@ type AudioPreview
   codec: String!
 }
 
+type AuthenticatedUser implements User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+  languageUserRoles: [LanguageRole!]!
+}
+
 type Continent {
   id: ID!
   name(languageId: ID, primary: Boolean): [ContinentName!]!
@@ -25,10 +33,15 @@ type ContinentName {
   language: Language!
 }
 
+input CountriesFilter {
+  updatedAt: DateTimeFilter
+}
+
 type Country
   @key(fields: "id")
 {
   id: ID!
+  updatedAt: DateTime!
   population: Int
   latitude: Float
   longitude: Float
@@ -59,10 +72,21 @@ type CountryName {
   language: Language!
 }
 
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+input DateTimeFilter {
+  gte: DateTime
+  lte: DateTime
+}
+
 type Language
   @key(fields: "id")
 {
   id: ID!
+  updatedAt: DateTime!
   bcp47: String
   iso3: String
   slug: String
@@ -90,6 +114,7 @@ input LanguagesFilter {
   ids: [ID!]
   bcp47: [String!]
   iso3: [String!]
+  updatedAt: DateTimeFilter
 }
 
 type Mutation {
@@ -121,13 +146,9 @@ type Query {
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
   languagesCount(where: LanguagesFilter, term: String): Int!
   country(id: ID!): Country
-  countries(term: String, ids: [ID!]): [Country!]!
+  countries(term: String, ids: [ID!], where: CountriesFilter): [Country!]!
 }
 
-type User
-  @key(fields: "id")
-  @extends
-{
-  id: ID! @external
-  languageUserRoles: [LanguageRole!]!
+interface User {
+  id: ID!
 }

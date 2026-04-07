@@ -55,6 +55,21 @@ describe('NotificationSwitch', () => {
     )
   })
 
+  it('renders without Tooltip when name is not provided', async () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <NotificationSwitch journeyId="journeyId" />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.mouseOver(screen.getByRole('checkbox'))
+    await waitFor(() =>
+      expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    )
+  })
+
   it('does not update event email notifications when disabled', async () => {
     render(
       <SnackbarProvider>

@@ -74,7 +74,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -179,7 +180,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -283,7 +285,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -448,7 +451,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -579,6 +583,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             posterBlockId: null,
             fullsize: null,
             action: null,
+            customizable: null,
+            notes: null,
             children: []
           }
         ]
@@ -620,7 +626,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             children: [],
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             __typename: 'SignUpBlock',
@@ -671,7 +678,8 @@ const steps: Array<TreeBlock<StepBlock>> = [
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
             scale: null,
             focalLeft: 50,
-            focalTop: 50
+            focalTop: 50,
+            customizable: null
           },
           {
             id: 'typographyBlockId1',
@@ -879,13 +887,15 @@ export const JourneyAppearanceEdit = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.tikTok
+          platform: MessagePlatform.tikTok,
+          customizable: null
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.snapchat
+          platform: MessagePlatform.snapchat,
+          customizable: null
         }
       ]
     }

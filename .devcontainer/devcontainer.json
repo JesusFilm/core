@@ -18,9 +18,16 @@
         "mtxr.sqltools-driver-pg",
         "prisma.prisma",
         "firsttris.vscode-jest-runner",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "anthropic.claude-code"
       ]
     }
+  },
+
+  // Forward Claude Code auth tokens from host environment
+  "remoteEnv": {
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN:}",
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY:}"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

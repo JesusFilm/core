@@ -102,7 +102,8 @@ const defaultJourney: Journey = {
   journeyCustomizationFields: [],
   fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  customizable: null
 }
 
 type Story = StoryObj<ComponentProps<typeof Conductor> & { journey?: Journey }>
@@ -136,13 +137,15 @@ export const WithContent = {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.tikTok
+          platform: MessagePlatform.tikTok,
+          customizable: null
         },
         {
           __typename: 'ChatButton',
           id: '1',
           link: 'https://m.me/',
-          platform: MessagePlatform.snapchat
+          platform: MessagePlatform.snapchat,
+          customizable: null
         }
       ]
     },

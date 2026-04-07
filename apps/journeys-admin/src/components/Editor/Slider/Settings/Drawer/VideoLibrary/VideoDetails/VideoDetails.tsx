@@ -105,7 +105,9 @@ export function VideoDetails({
       videoId: null,
       videoVariantLanguageId: null,
       posterBlockId: null,
-      source: VideoBlockSource.internal
+      source: VideoBlockSource.internal,
+      startAt: null,
+      endAt: null
     })
   }
 

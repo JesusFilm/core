@@ -153,6 +153,7 @@ export interface CardPollRestore_imageRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_imageRestore_MultiselectOptionBlock {
@@ -550,6 +551,11 @@ export interface CardPollRestore_imageRestore_VideoBlock {
   action: CardPollRestore_imageRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_imageRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -758,6 +764,7 @@ export interface CardPollRestore_subtitleRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_subtitleRestore_MultiselectOptionBlock {
@@ -1155,6 +1162,11 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
   action: CardPollRestore_subtitleRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1363,6 +1375,7 @@ export interface CardPollRestore_titleRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_titleRestore_MultiselectOptionBlock {
@@ -1760,6 +1773,11 @@ export interface CardPollRestore_titleRestore_VideoBlock {
   action: CardPollRestore_titleRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_titleRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1968,6 +1986,7 @@ export interface CardPollRestore_radioQuestionRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_MultiselectOptionBlock {
@@ -2365,6 +2384,11 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
   action: CardPollRestore_radioQuestionRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2573,6 +2597,7 @@ export interface CardPollRestore_radioOption1Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_MultiselectOptionBlock {
@@ -2970,6 +2995,11 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
   action: CardPollRestore_radioOption1Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3178,6 +3208,7 @@ export interface CardPollRestore_radioOption2Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_MultiselectOptionBlock {
@@ -3575,6 +3606,11 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
   action: CardPollRestore_radioOption2Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -3783,6 +3819,7 @@ export interface CardPollRestore_radioOption3Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_MultiselectOptionBlock {
@@ -4180,6 +4217,11 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
   action: CardPollRestore_radioOption3Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4388,6 +4430,7 @@ export interface CardPollRestore_radioOption4Restore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_MultiselectOptionBlock {
@@ -4785,6 +4828,11 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
   action: CardPollRestore_radioOption4Restore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -4993,6 +5041,7 @@ export interface CardPollRestore_bodyRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface CardPollRestore_bodyRestore_MultiselectOptionBlock {
@@ -5390,6 +5439,11 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
   action: CardPollRestore_bodyRestore_VideoBlock_action | null;
   eventLabel: BlockEventLabel | null;
   endEventLabel: BlockEventLabel | null;
+  customizable: boolean | null;
+  /**
+   * Publisher notes for template adapters (e.g. trailer, intro).
+   */
+  notes: string | null;
 }
 
 export interface CardPollRestore_bodyRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {

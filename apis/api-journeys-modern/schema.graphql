@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@interfaceObject", "@key", "@override", "@shareable"])
 
 interface Action {
   parentBlockId: ID!
@@ -283,6 +283,7 @@ type ChatButton
   id: ID!
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 input ChatButtonCreateInput {
@@ -293,6 +294,7 @@ input ChatButtonCreateInput {
 input ChatButtonUpdateInput {
   link: String
   platform: MessagePlatform
+  customizable: Boolean
 }
 
 type ChatOpenEvent implements Event
@@ -639,6 +641,7 @@ type ImageBlock implements Block
   focalTop: Int
   focalLeft: Int
   scale: Int
+  customizable: Boolean
 }
 
 input ImageBlockCreateInput {
@@ -665,6 +668,7 @@ input ImageBlockCreateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 input ImageBlockUpdateInput {
@@ -682,6 +686,7 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+  customizable: Boolean
 }
 
 interface Integration {
@@ -697,6 +702,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   team: Team!
   accountEmail: String
+  userId: ID
   user: User
 }
 
@@ -793,6 +799,7 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   showAssistant: Boolean
+  customizable: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -808,6 +815,8 @@ type Journey
   """used in a plausible share link to embed report"""
   plausibleToken: String
   fromTemplateId: String
+  journeyCustomizationDescription: String
+  journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
 
   """
@@ -873,6 +882,16 @@ input JourneyCreateInput {
   Slug should be unique amongst all journeys (server will throw BAD_USER_INPUT error if not). If not required will use title formatted with kebab-case. If the generated slug is not unique the uuid will be placed at the end of the slug guaranteeing uniqueness
   """
   slug: String
+}
+
+type JourneyCustomizationField
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  key: String!
+  value: String
+  defaultValue: String
 }
 
 type JourneyEvent implements Event & Node
@@ -1179,6 +1198,11 @@ input JourneysQueryOptions {
 
   """skip custom domain routing filter (for admin template customization)"""
   skipRoutingFilter: Boolean
+
+  """
+  when provided, filter the journey to only return if its status is in this list. when not provided, no status filter is applied (current behaviour).
+  """
+  status: [JourneyStatus!]
 }
 
 enum JourneysReportType {
@@ -1257,6 +1281,9 @@ enum MessagePlatform {
   checkBroken
   checkContained
   settings
+  discord
+  signal
+  weChat
 }
 
 type MultiselectBlock implements Block
@@ -1323,6 +1350,23 @@ input MultiselectSubmissionEventCreateInput {
 }
 
 type Mutation {
+  buttonBlockCreate(input: ButtonBlockCreateInput!): ButtonBlock! @override(from: "api-journeys")
+  buttonBlockUpdate(
+    id: ID!
+    input: ButtonBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): ButtonBlock @override(from: "api-journeys")
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock! @override(from: "api-journeys")
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): CardBlock! @override(from: "api-journeys")
+  iconBlockCreate(input: IconBlockCreateInput!): IconBlock! @override(from: "api-journeys")
   multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
   multiselectBlockUpdate(
     id: ID!
@@ -1363,12 +1407,19 @@ type Mutation {
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
+
+  """
+  Triggers a backfill of the Google Sheets sync. Clears existing data and re-exports all events.
+  """
+  googleSheetsSyncBackfill(id: ID!): GoogleSheetsSync!
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   integrationDelete(id: ID!): Integration!
+  journeyTransferFromAnonymous(journeyId: ID!, teamId: ID): Journey!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile! @override(from: "api-journeys")
   journeyVisitorExportToGoogleSheet(
     journeyId: ID!
     filter: JourneyEventsFilter
@@ -1697,6 +1748,9 @@ type Query {
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
+  adminJourney(id: ID!, idType: IdType = slug): Journey! @override(from: "api-journeys")
+  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]! @override(from: "api-journeys")
+  getJourneyProfile: JourneyProfile
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -1755,6 +1809,7 @@ type Query {
     """
     status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
+  getUserRole: UserRole @override(from: "api-journeys")
 }
 
 type RadioOptionBlock implements Block
@@ -2247,9 +2302,9 @@ enum TypographyVariant {
 
 type User
   @key(fields: "id")
-  @extends
+  @interfaceObject
 {
-  id: ID! @external
+  id: ID!
 }
 
 type UserAgent
@@ -2382,6 +2437,10 @@ type VideoBlock implements Block
   action: Action
   showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
+  customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 input VideoBlockCreateInput {
@@ -2411,6 +2470,10 @@ input VideoBlockCreateInput {
   posterBlockId: ID
   subtitleLanguageId: ID
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 enum VideoBlockObjectFit {
@@ -2451,6 +2514,12 @@ input VideoBlockUpdateInput {
   """
   source: VideoBlockSource
   showGeneratedSubtitles: Boolean
+  customizable: Boolean
+
+  """
+  Publisher notes for template adapters (e.g. trailer, intro). Pass an empty string to clear.
+  """
+  notes: String
 }
 
 type VideoCollapseEvent implements Event

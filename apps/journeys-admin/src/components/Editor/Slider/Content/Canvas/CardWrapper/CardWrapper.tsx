@@ -23,6 +23,10 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
   const openCardTemplates = (e: MouseEvent): void => {
     e.stopPropagation()
     dispatch({
+      type: 'SetShowCardTemplatesAction',
+      showCardTemplates: true
+    })
+    dispatch({
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
     })

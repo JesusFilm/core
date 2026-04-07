@@ -55,7 +55,10 @@ export const JourneyRef = builder.prismaObject('Journey', {
       resolve: (journey) => ({ id: journey.languageId ?? '529' })
     }),
     blocks: t.relation('blocks', {
-      nullable: true
+      nullable: true,
+      query: () => ({
+        where: { deletedAt: null }
+      })
     }),
     chatButtons: t.relation('chatButtons', {
       nullable: false
@@ -166,6 +169,9 @@ export const JourneyRef = builder.prismaObject('Journey', {
     showAssistant: t.exposeBoolean('showAssistant', {
       nullable: true
     }),
+    customizable: t.exposeBoolean('customizable', {
+      nullable: true
+    }),
 
     // UI Configuration Fields
     menuButtonIcon: t.field({
@@ -212,6 +218,13 @@ export const JourneyRef = builder.prismaObject('Journey', {
     }),
     fromTemplateId: t.exposeString('fromTemplateId', {
       nullable: true
+    }),
+    journeyCustomizationDescription: t.exposeString(
+      'journeyCustomizationDescription',
+      { nullable: true }
+    ),
+    journeyCustomizationFields: t.relation('journeyCustomizationFields', {
+      nullable: false
     }),
     journeyTheme: t.relation('journeyTheme', {
       nullable: true

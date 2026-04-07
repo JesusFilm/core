@@ -22,7 +22,8 @@ const imageBlock: ImageFields = {
   blurhash: '',
   scale: null,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  customizable: null
 }
 
 export const defaultTemplate: Journey = {
@@ -61,7 +62,8 @@ export const defaultTemplate: Journey = {
   },
   primaryImageBlock: null,
   trashedAt: null,
-  fromTemplateId: null
+  fromTemplateId: null,
+  customizable: null
 }
 
 export const oldTemplate: Journey = {

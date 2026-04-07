@@ -208,6 +208,8 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
+                notes: null,
                 children: []
               }}
             />
@@ -267,6 +269,8 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
+                notes: null,
                 children: []
               }}
             />
@@ -383,7 +387,8 @@ describe('VideoLibrary', () => {
                 parentBlockId: 'card1.id',
                 parentOrder: 0,
                 triggerStart: 0,
-                triggerAction: 'play'
+                triggerAction: 'play',
+                notes: null
               } as unknown as TreeBlock<VideoBlock>
             }}
           >
@@ -457,6 +462,8 @@ describe('VideoLibrary', () => {
                   posterBlockId: 'poster1.id',
                   eventLabel: null,
                   endEventLabel: null,
+                  customizable: null,
+                  notes: null,
                   children: []
                 }}
                 onSelect={onSelect}
@@ -580,6 +587,8 @@ describe('VideoLibrary', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -705,6 +714,8 @@ describe('VideoLibrary', () => {
                   posterBlockId: 'poster1.id',
                   eventLabel: null,
                   endEventLabel: null,
+                  customizable: null,
+                  notes: null,
                   children: []
                 }}
                 onSelect={onSelect}
@@ -818,6 +829,8 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
+                notes: null,
                 children: [],
                 source: VideoBlockSource.internal
               }}
@@ -887,6 +900,8 @@ describe('VideoLibrary', () => {
                 posterBlockId: null,
                 eventLabel: null,
                 endEventLabel: null,
+                customizable: null,
+                notes: null,
                 children: [],
                 source: VideoBlockSource.mux
               }}

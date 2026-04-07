@@ -23,7 +23,7 @@ psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || e
 
 # install pnpm
 echo "Installing pnpm..."
-corepack enable && corepack prepare pnpm --activate
+corepack enable && corepack prepare pnpm@10.15.1 --activate
 
 # install global CLIs
 echo "Installing global CLIs..."
@@ -52,3 +52,26 @@ echo "Installing Argo CD..."
 curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
 sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
 rm argocd-linux-amd64
+
+# Configure Claude Code with bypassPermissions (container is the sandbox boundary)
+echo "Configuring Claude Code..."
+mkdir -p /home/node/.claude
+cat > /home/node/.claude/settings.json << 'SETTINGS'
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "deny": [
+      "Read(**/.env*)",
+      "Read(**/.env.*)",
+      "Bash(docker run*-v /*)",
+      "Bash(docker run*--privileged*)"
+    ]
+  }
+}
+SETTINGS
+
+# Skip onboarding wizard when auth token is pre-configured
+if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ] || [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+  echo '{ "hasCompletedOnboarding": true }' > /home/node/.claude.json
+fi
+echo "Claude Code configured!"

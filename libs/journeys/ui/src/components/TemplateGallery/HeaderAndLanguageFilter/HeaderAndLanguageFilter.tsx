@@ -198,6 +198,7 @@ export function HeaderAndLanguageFilter({
         '3804', // Korean
         '1927', // Malay
         '1370', // Nepali
+        '139081', // Bengali, Indian
         '1254' // Myanmar (Burmese)
       ]
     }
@@ -223,13 +224,7 @@ export function HeaderAndLanguageFilter({
   const localButtonProps: LocalButtonProps = {
     loading: loading || selectedLanguageIds == null,
     onClick: () => {
-      const param = 'template-language'
-      void router.push({ query: { ...router.query, param } }, undefined, {
-        shallow: true
-      })
-      router.events.on('routeChangeComplete', () => {
-        setBeaconPageViewed(param)
-      })
+      setBeaconPageViewed('template-language')
       setOpen(!open)
     }
   }

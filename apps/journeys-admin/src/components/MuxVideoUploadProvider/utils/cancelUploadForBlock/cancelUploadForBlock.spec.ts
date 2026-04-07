@@ -92,6 +92,8 @@ describe('cancelUploadForBlock', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -143,6 +145,8 @@ describe('cancelUploadForBlock', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -194,6 +198,8 @@ describe('cancelUploadForBlock', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -229,6 +235,8 @@ describe('cancelUploadForBlock', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 
@@ -275,6 +283,8 @@ describe('cancelUploadForBlock', () => {
       posterBlockId: null,
       eventLabel: null,
       endEventLabel: null,
+      customizable: null,
+      notes: null,
       children: []
     }
 

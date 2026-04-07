@@ -1,12 +1,22 @@
-import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
+import {
+  OperationVariables,
+  QueryResult,
+  gql,
+  useApolloClient,
+  useMutation,
+  useQuery
+} from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
   ReactNode,
   createContext,
   useContext,
+  useRef,
   useState
 } from 'react'
+
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 
 import {
   GetLastActiveTeamIdAndTeams,
@@ -33,6 +43,59 @@ interface TeamProviderProps {
   children: ReactNode
 }
 
+const SESSION_STORAGE_KEY = 'journeys-admin:activeTeamId'
+const SHARED_WITH_ME_SENTINEL = '__shared__'
+const URL_PARAM_KEY = 'activeTeam'
+
+function getSessionTeamId(): string | null | undefined {
+  if (typeof window === 'undefined') return undefined
+  try {
+    const stored = sessionStorage.getItem(SESSION_STORAGE_KEY)
+    if (stored == null) return undefined
+    if (stored === SHARED_WITH_ME_SENTINEL) return null
+    return stored
+  } catch (error) {
+    console.error('Failed to read activeTeamId from sessionStorage:', error)
+    return undefined
+  }
+}
+
+function setSessionTeamId(teamId: string | null): void {
+  if (typeof window === 'undefined') return
+  try {
+    sessionStorage.setItem(
+      SESSION_STORAGE_KEY,
+      teamId ?? SHARED_WITH_ME_SENTINEL
+    )
+  } catch (error) {
+    console.error('Failed to write activeTeamId to sessionStorage:', error)
+  }
+}
+
+function getUrlTeamId(): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  try {
+    return (
+      new URLSearchParams(window.location.search).get(URL_PARAM_KEY) ??
+      undefined
+    )
+  } catch (error) {
+    console.error('Failed to read activeTeam from URL:', error)
+    return undefined
+  }
+}
+
+function cleanUrlTeamParam(): void {
+  if (typeof window === 'undefined') return
+  try {
+    const url = new URL(window.location.href)
+    url.searchParams.delete(URL_PARAM_KEY)
+    window.history.replaceState({}, '', url.toString())
+  } catch (error) {
+    console.error('Failed to clean activeTeam from URL:', error)
+  }
+}
+
 export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
   query GetLastActiveTeamIdAndTeams {
     getJourneyProfile {
@@ -46,11 +109,13 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
       userTeams {
         id
         user {
-          id
-          firstName
-          lastName
-          imageUrl
-          email
+          ... on AuthenticatedUser {
+            id
+            firstName
+            lastName
+            imageUrl
+            email
+          }
         }
         role
       }
@@ -66,16 +131,72 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null | undefined>(
     undefined
   )
+  const client = useApolloClient()
+  const [updateLastActiveTeamId] = useMutation(UPDATE_LAST_ACTIVE_TEAM_ID)
+  // Capture the session and URL values at mount time (before setActiveTeam writes to them)
+  const initialSessionTeamId = useRef(getSessionTeamId())
+  const initialUrlTeamId = useRef(getUrlTeamId())
+  // Prevents stale closures (e.g. from page useEffect refetch) from re-running initial
+  // resolution. Safe to lock permanently because all post-initial team changes go through
+  // setActiveTeam directly, not through updateActiveTeam.
+  const hasResolvedTeam = useRef(false)
+
+  function syncDbAndRefetch(resolvedTeamId: string | null): void {
+    void updateLastActiveTeamId({
+      variables: {
+        input: { lastActiveTeamId: resolvedTeamId }
+      },
+      onCompleted() {
+        void client.refetchQueries({ include: ['GetAdminJourneys'] })
+      }
+    })
+  }
 
   function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
-    if (activeTeam != null || data.teams == null) return
+    if (hasResolvedTeam.current || data.teams == null) return
+    hasResolvedTeam.current = true
     sendGTMEvent({
       event: 'get_teams',
       teams: data.teams.length
     })
-    const lastActiveTeam = data.teams.find(
-      (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
-    )
+
+    // URL param takes highest priority (invitation links)
+    const urlTeamId = initialUrlTeamId.current
+    if (urlTeamId != null) {
+      cleanUrlTeamParam()
+      const urlTeam = data.teams.find((team) => team.id === urlTeamId)
+      if (urlTeam != null) {
+        setActiveTeam(urlTeam)
+        syncDbAndRefetch(urlTeamId)
+        return
+      }
+      // URL team not found in teams list — fall through to session/DB
+    }
+
+    const sessionTeamId = initialSessionTeamId.current
+    const dbTeamId = data.getJourneyProfile?.lastActiveTeamId ?? null
+
+    if (sessionTeamId !== undefined) {
+      // Per-tab session value exists from a previous page load — use it instead of DB value
+      if (sessionTeamId === null) {
+        setActiveTeam(null)
+        if (dbTeamId !== null) {
+          syncDbAndRefetch(null)
+        }
+        return
+      }
+      const sessionTeam = data.teams.find((team) => team.id === sessionTeamId)
+      if (sessionTeam != null) {
+        setActiveTeam(sessionTeam)
+        if (sessionTeamId !== dbTeamId) {
+          syncDbAndRefetch(sessionTeamId)
+        }
+        return
+      }
+      // Session team not found in teams list (deleted/inaccessible) — fall through to DB
+    }
+
+    const lastActiveTeam = data.teams.find((team) => team.id === dbTeamId)
     setActiveTeam(lastActiveTeam ?? null)
   }
 
@@ -89,6 +210,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   )
 
   function setActiveTeam(team: Team | null): void {
+    setSessionTeamId(team?.id ?? null)
     if (team == null) {
       setActiveTeamId(null)
     } else {

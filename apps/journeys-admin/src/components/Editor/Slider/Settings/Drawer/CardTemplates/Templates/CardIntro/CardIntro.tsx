@@ -331,6 +331,8 @@ export function CardIntro(): ReactElement {
         variantLanguages: []
       },
       action: null,
+      customizable: null,
+      notes: null,
       __typename: 'VideoBlock'
     } satisfies VideoBlock
 

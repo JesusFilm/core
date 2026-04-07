@@ -9,7 +9,6 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
-import { useUser } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -23,6 +22,7 @@ import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
 import { JourneyProfileCreate } from '../../../__generated__/JourneyProfileCreate'
 import { UpdateLastActiveTeamId } from '../../../__generated__/UpdateLastActiveTeamId'
+import { useAuth } from '../../libs/auth'
 import { useTeamCreateMutation } from '../../libs/useTeamCreateMutation'
 import { ONBOARDING_TEMPLATE_ID } from '../Team/TeamOnboarding/TeamOnboarding'
 
@@ -42,7 +42,7 @@ export function TermsAndConditions(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [accepted, setAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
-  const user = useUser()
+  const { user } = useAuth()
   const [teamCreate] = useTeamCreateMutation()
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
@@ -66,40 +66,55 @@ export function TermsAndConditions(): ReactElement {
     setLoading(true)
     await journeyProfileCreate()
 
-    const { data: teamCreateData } = await teamCreate({
-      variables: {
-        input: {
-          title: t('{{ displayName }} & Team', {
-            displayName
-          }),
-          publicTitle: t('{{ displayName }} Team', {
-            displayName: displayName.charAt(0)
-          })
-        }
-      }
-    })
+    const existingTeam = query.data?.teams?.[0]
+    const hasExistingTeam = existingTeam != null
+    let teamId: string | undefined
+    let team: typeof existingTeam | undefined
 
-    if (teamCreateData?.teamCreate != null) {
-      await Promise.allSettled([
-        journeyDuplicate({
+    if (hasExistingTeam) {
+      teamId = existingTeam.id
+      team = existingTeam
+    } else {
+      const { data: teamCreateData } = await teamCreate({
+        variables: {
+          input: {
+            title: t('{{ displayName }} & Team', {
+              displayName
+            }),
+            publicTitle: t('{{ displayName }} Team', {
+              displayName: displayName.charAt(0)
+            })
+          }
+        }
+      })
+
+      const newTeam = teamCreateData?.teamCreate
+      if (newTeam != null) {
+        teamId = newTeam.id
+        team = newTeam
+
+        await journeyDuplicate({
           variables: {
             id: ONBOARDING_TEMPLATE_ID,
-            teamId: teamCreateData.teamCreate.id
+            teamId: newTeam.id
           }
-        }),
+        })
+      }
+    }
+
+    if (teamId != null && team != null) {
+      await Promise.allSettled([
         updateLastActiveTeamId({
           variables: {
-            input: {
-              lastActiveTeamId: teamCreateData.teamCreate.id
-            }
+            input: { lastActiveTeamId: teamId }
           }
         }),
         router.push(
           router.query.redirect != null
-            ? new URL(
-                `${window.location.origin}${router.query.redirect as string}`
-              )
-            : '/?onboarding=true'
+            ? new URL(router.query.redirect as string, window.location.origin)
+            : hasExistingTeam
+              ? '/'
+              : '/?onboarding=true'
         ),
         query
           .refetch()
@@ -108,7 +123,7 @@ export function TermsAndConditions(): ReactElement {
           )
       ])
 
-      setActiveTeam(teamCreateData.teamCreate)
+      setActiveTeam(team)
     }
     setLoading(false)
   }

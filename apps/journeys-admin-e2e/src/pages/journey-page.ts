@@ -5,7 +5,7 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
-import { generateRandomNumber } from '../framework/helpers'
+import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let journeyName = ''
@@ -240,32 +240,18 @@ export class JourneyPage {
   }
 
   async clickCreateCustomJourney(): Promise<void> {
-    const createJourneyLoaderPath = this.page.locator(
+    const createButton = this.page.getByRole('button', {
+      name: 'Create Custom Journey'
+    })
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can take time on first load
+    await expect(createButton).toBeEnabled({ timeout: 90000 })
+    await createButton.click()
+    const journeyImageLoader = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
     )
-    await this.page
-      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
-      .waitFor({ state: 'visible', timeout: 150000 })
-    await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminContainedIconButton"] button'
-      )
-    ).toBeVisible({ timeout: 150000 })
-    await expect(createJourneyLoaderPath).toBeHidden({ timeout: 18000 })
-    await this.page
-      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
-      .click()
-    try {
-      await expect(createJourneyLoaderPath, 'Ignore if not found').toBeVisible({
-        timeout: 5000
-      })
-    } catch {
-      // Ignore if not found
-    }
-    await expect(createJourneyLoaderPath).toBeHidden({
+    await expect(journeyImageLoader).toBeHidden({
       timeout: sixtySecondsTimeout
     })
-    //await this.page.waitForLoadState('networkidle')
   }
 
   async setJourneyName(journey: string) {
@@ -346,6 +332,9 @@ export class JourneyPage {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Save' })
       .click({ delay: 3000 })
+    await expect(this.page.getByTestId('JourneyDetailsDialog')).toBeHidden({
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async backToHome() {
@@ -425,7 +414,22 @@ export class JourneyPage {
   }
 
   async clickArchivedTab() {
-    await this.page.locator('button[id*="archived-status-panel-tab"]').click()
+    const archivedTab = this.page.locator(
+      'button[id*="archived-status-panel-tab"]'
+    )
+    const visible = await archivedTab
+      .first()
+      .isVisible()
+      .catch(() => false)
+    if (!visible) {
+      const baseUrl = await getBaseUrl()
+      const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
+      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    }
+    await expect(archivedTab.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    await archivedTab.first().click()
     await expect(
       this.page.locator(
         'button[id*="archived-status-panel-tab"][aria-selected="true"]'
@@ -464,7 +468,9 @@ export class JourneyPage {
   }
 
   async clickTrashTab() {
-    await this.page.locator('button[id*="trashed-status-panel-tab"]').click()
+    const trashTab = this.page.locator('button[id*="trashed-status-panel-tab"]')
+    await expect(trashTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await trashTab.click()
     await expect(
       this.page.locator(
         'button[id*="trashed-status-panel-tab"][aria-selected="true"]'
@@ -509,7 +515,9 @@ export class JourneyPage {
   }
 
   async clickActiveTab() {
-    await this.page.locator('button[id*="active-status-panel-tab"]').click()
+    const activeTab = this.page.locator('button[id*="active-status-panel-tab"]')
+    await expect(activeTab).toBeVisible({ timeout: sixtySecondsTimeout })
+    await activeTab.click()
     await expect(
       this.page.locator(
         'button[id*="active-status-panel-tab"][aria-selected="true"]'
@@ -621,7 +629,7 @@ export class JourneyPage {
           `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
         )
         .first()
-    ).toBeVisible()
+    ).toBeVisible({ timeout: thirtySecondsTimeout })
     this.journeyList = await this.page
       .locator(
         `div[id*="active-status-panel-tabpanel"] ${this.journeyNamePath}`
@@ -779,27 +787,23 @@ export class JourneyPage {
   }
 
   async clickSortByIcon() {
-    await this.page
-      .locator('div[aria-label="journey status tabs"] div[role="button"]')
-      .click()
+    const sortByButton = this.page.getByRole('button', {
+      name: /Sort By/i
+    })
+    await expect(sortByButton).toBeVisible({ timeout: thirtySecondsTimeout })
+    await sortByButton.click()
   }
 
   async clickSortOpion(sortOption: string) {
-    await this.page
-      .locator(
-        'div[aria-label="sort-by-options"] span[class*="MuiFormControlLabel"]',
-        { hasText: sortOption }
-      )
-      .click()
+    const option = this.page.getByRole('radio', { name: sortOption })
+    await expect(option).toBeVisible({ timeout: thirtySecondsTimeout })
+    await option.click()
   }
 
   async verifySelectedSortOptionInSortByIcon(selectedSortOption: string) {
     await expect(
-      this.page.locator(
-        'div[aria-label="journey status tabs"] div[role="button"]',
-        { hasText: selectedSortOption }
-      )
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+      this.page.getByRole('button', { name: /Sort By/i })
+    ).toContainText(selectedSortOption, { timeout: thirtySecondsTimeout })
   }
 
   async verifyJouyneysAreSortedByNames() {
@@ -1057,7 +1061,12 @@ export class JourneyPage {
   }
 
   async clickAnalyticsIconInCustomJourneyPage() {
-    await this.page.locator('div[data-testid="AnalyticsItem"] a').click()
+    await this.page
+      .locator('div[aria-label="journey-card"]', {
+        hasText: this.existingJourneyName
+      })
+      .locator('div[data-testid="AnalyticsItem"] a')
+      .click()
   }
 
   async verifyAnalyticsPageNavigation() {
@@ -1147,10 +1156,12 @@ export class JourneyPage {
   }
 
   async clickShareButtonInJourneyPage() {
-    await this.page
+    const shareButton = this.page
       .locator('div[data-testid="ShareItem"]')
       .getByRole('button', { name: 'Share' })
-      .click()
+    // 90s: cold Vercel SSR can delay journey page render after navigation from card click
+    await expect(shareButton).toBeVisible({ timeout: 90000 })
+    await shareButton.click()
   }
 
   async clickCopyIconInShareDialog() {

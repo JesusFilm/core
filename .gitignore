@@ -6,7 +6,7 @@
 /out-tsc
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -86,6 +86,12 @@ terraform.tfstate.backup
 .react-email
 
 .cursor/rules/*.dev.mdc
+
+# personal claude rules
+.claude/rules/preferences.md
+.claude/rules/workflows.md
+.claude/rules/*.dev.md
+.claude/worktrees
 
 # ignore exports
 /exports/*

@@ -26,6 +26,7 @@ export interface LogoBlockCreate_imageBlockCreate {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+  customizable: boolean | null;
 }
 
 export interface LogoBlockCreate_journeyUpdate_logoImageBlock {

@@ -42,8 +42,24 @@ function run({
       ? { connection, concurrency }
       : { connection }
 
-  // eslint-disable-next-line no-new
-  new Worker(queueName, job, workerOptions)
+  const worker = new Worker(queueName, job, workerOptions)
+
+  const queueLogger = logger.child({ queue: queueName })
+
+  worker.on('failed', (job, err) => {
+    queueLogger.error(
+      {
+        jobId: job?.id,
+        jobName: job?.name,
+        error: err
+      },
+      'Job failed'
+    )
+  })
+
+  worker.on('error', (err) => {
+    queueLogger.error({ error: err }, 'Worker error')
+  })
 
   async function job(job: Job): Promise<void> {
     const childLogger = logger.child({
@@ -109,6 +125,12 @@ async function main(): Promise<void> {
       await import(
         /* webpackChunkName: "e2eCleanup" */
         './e2eCleanup'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: "anonymousJourneyCleanup" */
+        './anonymousJourneyCleanup'
       )
     )
     // Google Sheets sync worker - concurrency of 1 to prevent race conditions

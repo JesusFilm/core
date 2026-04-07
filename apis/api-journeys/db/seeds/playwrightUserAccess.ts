@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   JourneyStatus,
-  Role,
   ThemeMode,
   ThemeName,
   UserTeamRole
@@ -51,6 +50,10 @@ const PLAYWRIGHT_USER_DATA = [
     journeySlug: `${JOURNEY_SLUG}-6`
   }
 ]
+
+enum Role {
+  publisher = 'publisher'
+}
 
 interface UserAccessData {
   journeyData: {

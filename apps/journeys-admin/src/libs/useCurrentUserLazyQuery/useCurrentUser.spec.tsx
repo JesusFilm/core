@@ -20,7 +20,8 @@ describe('useCurrentUserLazyQuery', () => {
                 data: {
                   me: {
                     id: 'user.id',
-                    email: 'test@email.com'
+                    email: 'test@email.com',
+                    __typename: 'AuthenticatedUser'
                   }
                 }
               }
@@ -38,6 +39,7 @@ describe('useCurrentUserLazyQuery', () => {
 
     await waitFor(() =>
       expect(result.current.data).toEqual({
+        __typename: 'AuthenticatedUser',
         id: 'user.id',
         email: 'test@email.com'
       })
@@ -57,7 +59,8 @@ describe('useCurrentUserLazyQuery', () => {
                 data: {
                   me: {
                     id: 'user.id',
-                    email: 'test@email.com'
+                    email: 'test@email.com',
+                    __typename: 'AuthenticatedUser'
                   }
                 }
               }
@@ -70,7 +73,7 @@ describe('useCurrentUserLazyQuery', () => {
     })
 
     expect(result.current.data).toEqual({
-      __typename: 'User',
+      __typename: 'AuthenticatedUser',
       id: '',
       email: ''
     })

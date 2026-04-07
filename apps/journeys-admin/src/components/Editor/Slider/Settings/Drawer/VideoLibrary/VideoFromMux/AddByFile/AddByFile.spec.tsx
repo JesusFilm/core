@@ -83,7 +83,8 @@ const mockJourney: Journey = {
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  customizable: null
 }
 
 async function dropTestVideo(): Promise<void> {
@@ -138,6 +139,8 @@ const TestWrapper = ({
               objectFit: null,
               subtitleLanguage: null,
               showGeneratedSubtitles: false,
+              customizable: null,
+              notes: null,
               mediaVideo: null,
               eventLabel: null,
               endEventLabel: null,
@@ -166,7 +169,11 @@ describe('AddByFile', () => {
 
     expect(screen.getByTestId('AddByFile')).toBeInTheDocument()
     expect(screen.getByText('Drop a video here')).toBeInTheDocument()
-    expect(screen.getByText('Max size is 1 GB')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Upload a video (MP4 or MOV) at least 1 second long. Maximum file size: 1 GB'
+      )
+    ).toBeInTheDocument()
   })
 
   it('should render upload button', () => {

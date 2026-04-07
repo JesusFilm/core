@@ -15,9 +15,12 @@ import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
+import { StepFields } from '@core/journeys/ui/Step/__generated__/StepFields'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
+import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName as SharedThemeName } from '@core/shared/ui/themes'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -30,10 +33,13 @@ import {
 
 interface CardsPreviewProps {
   steps: Array<TreeBlock<StepBlock>>
+  onCardClick?: (step: TreeBlock<StepBlock>) => void
 }
 
 interface CardsPreviewItemProps {
   step: TreeBlock<StepBlock>
+  onClick?: (step: TreeBlock<StepBlock>) => void
+  steps?: Array<TreeBlock<StepBlock>>
 }
 
 const StyledSwiperSlide = styled(SwiperSlide)(() => ({}))
@@ -50,10 +56,11 @@ const FRAME_HEIGHT = 773
 const IFRAME_SCALE = CONTAINER_WIDTH / FRAME_WIDTH
 const CONTAINER_HEIGHT = Math.round(FRAME_HEIGHT * IFRAME_SCALE)
 
-// Spacing and offsets
-const EDGE_FADE_PX = 16
-
-function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
+function CardsPreviewItem({
+  step,
+  onClick,
+  steps
+}: CardsPreviewItemProps): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const cardBlock = step.children.find(
@@ -62,12 +69,29 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
 
   return (
     <Box
+      onClick={onClick != null ? () => onClick(step) : undefined}
+      onKeyDown={
+        onClick != null
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick(step)
+              }
+            }
+          : undefined
+      }
+      role={onClick != null ? 'button' : undefined}
+      tabIndex={onClick != null ? 0 : undefined}
+      aria-label={
+        onClick != null ? `Open preview for card ${step.id}` : undefined
+      }
       sx={{
         position: 'relative',
         width: CONTAINER_WIDTH,
         height: CONTAINER_HEIGHT,
         backgroundColor: 'background.default',
-        borderRadius: 3
+        borderRadius: 3,
+        cursor: onClick != null ? 'pointer' : undefined
       }}
       data-testid="CardsPreviewItem"
     >
@@ -84,7 +108,7 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
             width: FRAME_WIDTH,
             height: FRAME_HEIGHT,
             zIndex: 2,
-            cursor: 'grab'
+            cursor: onClick != null ? 'pointer' : 'grab'
           }}
         />
         <FramePortal
@@ -95,26 +119,42 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
           dir={rtl ? 'rtl' : 'ltr'}
         >
           <ThemeProvider
-            themeName={cardBlock?.themeName ?? ThemeName.base}
+            themeName={SharedThemeName.journeyUi}
             themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
             rtl={rtl}
             locale={locale}
           >
             <Box
               sx={{
+                position: 'relative',
                 height: '100%',
                 borderRadius: 4
               }}
             >
-              <BlockRenderer
-                block={step}
-                wrappers={{
-                  VideoWrapper,
-                  CardWrapper
-                }}
+              <StepHeader
+                steps={steps as unknown as Array<TreeBlock<StepFields>>}
+                selectedStep={step as unknown as TreeBlock<StepFields>}
+                sx={{ mt: 2, px: 3 }}
+              />
+              <ThemeProvider
+                themeName={cardBlock?.themeName ?? ThemeName.base}
+                themeMode={cardBlock?.themeMode ?? ThemeMode.dark}
+                rtl={rtl}
+                locale={locale}
+                nested
+              >
+                <BlockRenderer
+                  block={step}
+                  wrappers={{
+                    VideoWrapper,
+                    CardWrapper
+                  }}
+                />
+              </ThemeProvider>
+              <StepFooter
+                selectedStep={step as unknown as TreeBlock<StepFields>}
               />
             </Box>
-            <StepFooter />
           </ThemeProvider>
         </FramePortal>
       </Box>
@@ -122,9 +162,11 @@ function CardsPreviewItem({ step }: CardsPreviewItemProps): ReactElement {
   )
 }
 
-export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
+export function CardsPreview({
+  steps,
+  onCardClick
+}: CardsPreviewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
   const slidesToRender: Array<TreeBlock<StepBlock>> = take(steps, 7)
 
   if (steps.length === 0) {
@@ -158,7 +200,6 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
       centerInsufficientSlides
       slidesPerView="auto"
       spaceBetween={12}
-      slidesOffsetBefore={EDGE_FADE_PX}
       observer
       observeParents
       sx={{
@@ -166,9 +207,7 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
         overflow: 'hidden',
         zIndex: 2,
         height: CONTAINER_HEIGHT + 15,
-        width: '100%',
-        maskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`,
-        WebkitMaskImage: `linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,1) ${EDGE_FADE_PX}px, rgba(0,0,0,1) calc(100% - ${EDGE_FADE_PX}px), rgba(0,0,0,0) 100%)`
+        width: '100%'
       }}
     >
       {slidesToRender.map((step) => (
@@ -180,7 +219,11 @@ export function CardsPreview({ steps }: CardsPreviewProps): ReactElement {
             width: 'unset !important'
           }}
         >
-          <CardsPreviewItem step={step} />
+          <CardsPreviewItem
+            step={step}
+            onClick={onCardClick}
+            steps={slidesToRender}
+          />
         </StyledSwiperSlide>
       ))}
       {steps.length > slidesToRender.length && (
