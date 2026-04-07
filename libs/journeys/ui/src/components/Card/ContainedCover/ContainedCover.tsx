@@ -289,11 +289,11 @@ export function ContainedCover({
                 pl: { sm: 50 },
                 WebkitMask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient('right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 mask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient('right')
+                  sm: overlayGradient(rtl ? 'left' : 'right')
                 },
                 backgroundColor: `${baseBackgroundColor}FF`
               }}
