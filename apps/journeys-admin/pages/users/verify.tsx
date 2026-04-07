@@ -233,22 +233,13 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     locale: ctx.locale
   })
 
-  // skip if already verified
-  const apiUser = await apolloClient.query<GetMe>({
-    query: GET_ME,
-    variables: { input: { redirect: ctx.query.redirect ?? undefined } }
-  })
-  if (
-    apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
-    (apiUser.data?.me?.emailVerified ?? false)
-  ) {
-    return redirectToApp(ctx)
-  }
-
   const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null
   const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
   const token = typeof ctx.query?.token === 'string' ? ctx.query.token : null
 
+  // Validate email+token from query params first, before checking cookie user.
+  // This prevents stale cookies from a previous session (e.g. Google login)
+  // short-circuiting the verification for the current guest user.
   if (email != null && token != null) {
     try {
       await apolloClient.mutate({
@@ -268,6 +259,18 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
       }
     }
+  }
+
+  // skip if already verified (only reached when no email+token query params)
+  const apiUser = await apolloClient.query<GetMe>({
+    query: GET_ME,
+    variables: { input: { redirect: ctx.query.redirect ?? undefined } }
+  })
+  if (
+    apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
+    (apiUser.data?.me?.emailVerified ?? false)
+  ) {
+    return redirectToApp(ctx)
   }
   return {
     props: {
