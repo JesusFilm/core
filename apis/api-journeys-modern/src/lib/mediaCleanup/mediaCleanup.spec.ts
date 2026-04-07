@@ -2,7 +2,7 @@ import { Logger } from 'pino'
 
 import { VideoBlockSource } from '@core/prisma/journeys/client'
 
-import { prismaMock } from '../../../../test/prismaMock'
+import { prismaMock } from '../../../test/prismaMock'
 
 import {
   MediaReferences,
@@ -44,7 +44,7 @@ jest.mock('cloudflare', () => {
   }))
 })
 
-jest.mock('../../../env', () => ({
+jest.mock('../../env', () => ({
   env: {
     MUX_UGC_ACCESS_TOKEN_ID: 'token-id',
     MUX_UGC_SECRET_KEY: 'secret-key',
