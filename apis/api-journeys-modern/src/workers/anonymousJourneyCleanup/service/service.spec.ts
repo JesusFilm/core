@@ -5,10 +5,7 @@ import { UserJourneyRole } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
-import {
-  collectMediaFromJourneys,
-  deleteUnusedMedia
-} from './mediaCleanup'
+import { collectMediaFromJourneys, deleteUnusedMedia } from './mediaCleanup'
 import { service } from './service'
 
 jest.mock('@core/prisma/users/client', () => ({
@@ -358,12 +355,12 @@ describe('anonymousJourneyCleanup service', () => {
     prismaMock.journey.findMany.mockResolvedValue([
       { id: 'journey-1', title: 'J1' }
     ] as any)
-    prismaMock.journey.delete.mockResolvedValue({} as any).mockImplementation(
-      (async () => {
+    prismaMock.journey.delete
+      .mockResolvedValue({} as any)
+      .mockImplementation((async () => {
         callOrder.push('journey.delete')
         return {} as any
-      }) as any
-    )
+      }) as any)
     prismaMock.journey.count.mockResolvedValue(0)
     prismaMock.userTeam.findMany.mockResolvedValue([])
     prismaMock.userTeam.deleteMany.mockResolvedValue({ count: 0 })

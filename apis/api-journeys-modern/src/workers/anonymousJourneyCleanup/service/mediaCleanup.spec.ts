@@ -1,15 +1,16 @@
-import { VideoBlockSource } from '@core/prisma/journeys/client'
 import { Logger } from 'pino'
+
+import { VideoBlockSource } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
 import {
+  MediaReferences,
   collectMediaFromJourneys,
   deleteCloudflareImageAsset,
   deleteMuxAsset,
   deleteUnusedMedia,
-  extractCloudflareImageId,
-  MediaReferences
+  extractCloudflareImageId
 } from './mediaCleanup'
 
 jest.mock('@core/prisma/media/client', () => ({
@@ -72,8 +73,12 @@ describe('mediaCleanup', () => {
     })
 
     it('should return null for non-imagedelivery URLs', () => {
-      expect(extractCloudflareImageId('https://unsplash.com/photo.jpg')).toBeNull()
-      expect(extractCloudflareImageId('https://example.com/image.png')).toBeNull()
+      expect(
+        extractCloudflareImageId('https://unsplash.com/photo.jpg')
+      ).toBeNull()
+      expect(
+        extractCloudflareImageId('https://example.com/image.png')
+      ).toBeNull()
     })
 
     it('should return null for empty string', () => {

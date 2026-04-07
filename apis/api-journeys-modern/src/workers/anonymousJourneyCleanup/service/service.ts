@@ -54,7 +54,10 @@ export async function service(job: Job, logger?: Logger): Promise<void> {
       const journeyIds = journeys.map((j) => j.id)
 
       const mediaRefs = await collectMediaFromJourneys(journeyIds)
-      if (mediaRefs.muxVideoIds.size > 0 || mediaRefs.cloudflareImageIds.size > 0) {
+      if (
+        mediaRefs.muxVideoIds.size > 0 ||
+        mediaRefs.cloudflareImageIds.size > 0
+      ) {
         const { deletedMuxVideos, deletedCloudflareImages } =
           await deleteUnusedMedia(mediaRefs, journeyIds, user.userId, logger)
         deletedMuxVideoCount += deletedMuxVideos

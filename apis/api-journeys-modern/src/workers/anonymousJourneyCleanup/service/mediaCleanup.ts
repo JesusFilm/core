@@ -82,7 +82,10 @@ function getMuxClient(): Mux | null {
   return new Mux({ tokenId, tokenSecret })
 }
 
-function getCloudflareClient(): { client: Cloudflare; accountId: string } | null {
+function getCloudflareClient(): {
+  client: Cloudflare
+  accountId: string
+} | null {
   const apiToken = process.env.CLOUDFLARE_IMAGES_TOKEN
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
   if (apiToken == null || accountId == null) return null
@@ -152,10 +155,7 @@ export async function deleteUnusedMedia(
   for (const imageId of refs.cloudflareImageIds) {
     try {
       if (await isCloudflareImageUsedElsewhere(imageId, journeyIds)) {
-        logger?.debug(
-          { imageId },
-          'Cloudflare image used elsewhere, skipping'
-        )
+        logger?.debug({ imageId }, 'Cloudflare image used elsewhere, skipping')
         continue
       }
 
