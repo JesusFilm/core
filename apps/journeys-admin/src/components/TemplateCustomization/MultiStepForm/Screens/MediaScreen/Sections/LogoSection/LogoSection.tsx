@@ -135,9 +135,7 @@ export function LogoSection(): ReactElement {
               borderColor: 'secondary.light'
             }}
           >
-            <Typography variant="subtitle2">
-              {t('Upload File')}
-            </Typography>
+            <Typography variant="subtitle2">{t('Upload File')}</Typography>
           </Button>
           <Typography variant="caption" color="text.secondary">
             {t('Supports JPG, PNG, and GIF files.')}
