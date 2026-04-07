@@ -266,7 +266,6 @@ export function SocialScreenSocialImage({
           {t('your.nextstep.is')}
         </Typography>
       </CardContent>
-
     </Card>
   )
 }
