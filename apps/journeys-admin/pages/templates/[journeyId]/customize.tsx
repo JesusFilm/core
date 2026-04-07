@@ -15,6 +15,7 @@ import {
 } from '../../../__generated__/GetJourney'
 import { IdType } from '../../../__generated__/globalTypes'
 import { PageWrapper } from '../../../src/components/PageWrapper'
+import { GuestCustomizeHeader } from '../../../src/components/TemplateCustomization/GuestCustomizeHeader'
 import { MultiStepForm } from '../../../src/components/TemplateCustomization/MultiStepForm'
 import { JOURNEY_NOT_FOUND_ERROR } from '../../../src/components/TemplateCustomization/utils/customizationRoutes/customizationRoutes'
 import { useAuth } from '../../../src/libs/auth'
@@ -86,6 +87,7 @@ function CustomizePage() {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { user } = useAuth()
+  const isGuest = user == null || user.email == null
   const { data, loading, error } = useJourneyQuery({
     id: router.query.journeyId as string,
     idType: IdType.databaseId,
@@ -116,9 +118,12 @@ function CustomizePage() {
       <PageWrapper
         user={user}
         showMainHeader={false}
+        showAppHeader={!isGuest}
+        showNavBar={!isGuest}
         mainBodyPadding={false}
         background="linear-gradient(to bottom, #1f2c430f, #2568994d)"
       >
+        {isGuest && <GuestCustomizeHeader />}
         <JourneyProvider
           value={{
             journey: data?.journey,
