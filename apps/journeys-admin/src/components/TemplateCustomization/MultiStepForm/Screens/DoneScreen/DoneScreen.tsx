@@ -15,7 +15,7 @@ import { TemplateCardPreviewItem } from '@core/journeys/ui/TemplateView/Template
 import { transformer } from '@core/journeys/ui/transformer'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ArrowRightContained1Icon from '@core/shared/ui/icons/ArrowRightContained1'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { NotificationSwitch } from '../../../../AccessDialog/NotificationSwitch'
@@ -119,7 +119,7 @@ export function DoneScreen(): ReactElement {
           data-testid="ProjectsDashboardButton"
           onClick={handleGoToProjectsDashboard}
           loading={navigating}
-          endIcon={<ArrowRightContained1Icon />}
+          endIcon={<ChevronRightIcon />}
           sx={{ mt: 4 }}
         >
           <Typography variant="subtitle2">
@@ -136,7 +136,8 @@ export function DoneScreen(): ReactElement {
             height: {
               xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
               sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
-            }
+            },
+            boxShadow: 1
           }}
         >
           <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
