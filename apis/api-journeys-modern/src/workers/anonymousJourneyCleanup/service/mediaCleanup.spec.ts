@@ -191,7 +191,6 @@ describe('mediaCleanup', () => {
   })
 
   describe('deleteUnusedMedia', () => {
-
     it('should delete Mux video when unused elsewhere and owned by user', async () => {
       const refs: MediaReferences = {
         muxVideoIds: new Set(['mux-1']),
