@@ -120,25 +120,22 @@ export function LogoSection(): ReactElement {
             )}
           </Box>
         </Box>
-        <Stack spacing={0.5} alignItems="flex-start">
+        <Stack spacing={0.5} alignItems="flex-start" sx={{ flex: 1 }}>
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button
-            size="small"
-            color="secondary"
             variant="outlined"
+            color="secondary"
             disabled={loading}
             onClick={open}
             sx={{
-              height: 32,
-              width: { xs: 160, sm: 220 },
-              borderRadius: 2
+              borderWidth: 2,
+              borderRadius: 2,
+              height: 48,
+              width: '100%',
+              borderColor: 'secondary.light'
             }}
           >
-            <Typography
-              variant="subtitle2"
-              fontSize={14}
-              sx={{ color: 'text.secondary' }}
-            >
+            <Typography variant="subtitle2">
               {t('Upload File')}
             </Typography>
           </Button>

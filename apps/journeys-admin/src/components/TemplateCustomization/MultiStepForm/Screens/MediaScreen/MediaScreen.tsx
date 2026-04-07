@@ -1,3 +1,4 @@
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
@@ -91,6 +92,7 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     >
       <Stack sx={{ width: '100%', gap: 6 }}>
         {showLogo && <LogoSection />}
+        {showLogo && <Divider />}
         <CardsSection
           customizableSteps={customizableSteps}
           selectedStep={selectedStep}

@@ -62,6 +62,9 @@ export function CardsSection({
           selectedStep={selectedStep}
         />
       </Box>
+      <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 1 }}>
+        {t('Tap to preview')}
+      </Typography>
     </Stack>
   )
 }

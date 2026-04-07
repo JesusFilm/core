@@ -232,7 +232,6 @@ export function VideosSection({
         data-testid="VideosSection-youtube-input"
         variant="filled"
         hiddenLabel
-        size="small"
         fullWidth
         placeholder={t('Paste a YouTube link...')}
         value={youtubeUrl}
