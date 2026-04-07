@@ -21,9 +21,19 @@ export async function processVideoFile(
   const match = file.match(VIDEO_FILENAME_REGEX)
   if (!match) return
 
-  const [, videoId, editionName, languageId, version] = match
+  const [, videoId, editionName, rawLanguageId, version] = match
+  const languageId = rawLanguageId.trim()
   const edition = editionName.toLowerCase()
   const parsedVersion = Number.parseInt(version, 10)
+
+  if (languageId.length === 0) {
+    console.error(
+      `Validation failed for ${file}: missing languageId in filename`
+    )
+    summary.failed++
+    return
+  }
+
   if (Number.isNaN(parsedVersion)) {
     console.error(
       `Invalid version "${version}" for ${file}. Video=${videoId}, Edition=${edition}, Lang=${languageId}. Skipping.`
@@ -37,9 +47,11 @@ export async function processVideoFile(
   )
 
   try {
-    await validateVideoAndEdition(videoId, edition)
+    await validateVideoAndEdition(videoId, edition, languageId)
   } catch (error) {
-    console.error(`Validation failed:`, error)
+    console.error(
+      `Validation failed for ${file}: ${(error as Error).message}`
+    )
     summary.failed++
     return
   }
