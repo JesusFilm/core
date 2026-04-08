@@ -20,6 +20,10 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
+import {
+  ValidateEmail as ValidateEmailType,
+  ValidateEmailVariables
+} from '../../__generated__/ValidateEmail'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
@@ -228,34 +232,42 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (tokens == null) return redirectToLogin(ctx)
 
   const user = toUser(tokens)
+  // resolvedUrl is intentionally omitted so that checkConditionalRedirect
+  // (called inside initAndAuthApp) does not run — otherwise the verify page
+  // would redirect to itself in a loop.
   const { translations, apolloClient } = await initAndAuthApp({
     user,
     locale: ctx.locale
   })
 
-  // skip if already verified
-  const apiUser = await apolloClient.query<GetMe>({
-    query: GET_ME,
-    variables: { input: { redirect: ctx.query.redirect ?? undefined } }
-  })
-  if (
-    apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
-    (apiUser.data?.me?.emailVerified ?? false)
-  ) {
-    return redirectToApp(ctx)
-  }
-
   const rawEmail = typeof ctx.query?.email === 'string' ? ctx.query.email : null
   const email = rawEmail != null ? rawEmail.replace(/\s/g, '+') : null
   const token = typeof ctx.query?.token === 'string' ? ctx.query.token : null
 
+  // Validate email+token from query params first, before checking cookie user.
+  // This prevents stale cookies from a previous session (e.g. Google login)
+  // short-circuiting the verification for the current guest user.
   if (email != null && token != null) {
+    const redirectQuery =
+      typeof ctx.query.redirect === 'string'
+        ? `?redirect=${encodeURIComponent(ctx.query.redirect)}`
+        : ''
+
     try {
-      await apolloClient.mutate({
+      await apolloClient.mutate<ValidateEmailType, ValidateEmailVariables>({
         mutation: VALIDATE_EMAIL,
         variables: { email, token }
       })
-      return redirectToApp(ctx)
+      // Redirect to terms-and-conditions — the next onboarding step — same
+      // as the client-side manual-code path (handleReValidateEmail). This
+      // ensures a journey profile is created even when server-side cookies
+      // belong to a different user than the client-side Firebase auth.
+      return {
+        redirect: {
+          destination: `/users/terms-and-conditions${redirectQuery}`,
+          permanent: false
+        }
+      }
     } catch (_err) {
       return {
         props: {
@@ -268,6 +280,18 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
       }
     }
+  }
+
+  // skip if already verified (only reached when no email+token query params)
+  const apiUser = await apolloClient.query<GetMe>({
+    query: GET_ME,
+    variables: { input: { redirect: ctx.query.redirect ?? undefined } }
+  })
+  if (
+    apiUser.data?.me?.__typename === 'AuthenticatedUser' &&
+    (apiUser.data?.me?.emailVerified ?? false)
+  ) {
+    return redirectToApp(ctx)
   }
   return {
     props: {
