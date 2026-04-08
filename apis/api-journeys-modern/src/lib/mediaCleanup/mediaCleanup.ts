@@ -149,10 +149,7 @@ export async function deleteUnusedMedia(
   for (const imageId of refs.cloudflareImageIds) {
     try {
       if (await isCloudflareImageUsedElsewhere(imageId, journeyIds)) {
-        logger?.debug(
-          { imageId },
-          'Cloudflare image used elsewhere, skipping'
-        )
+        logger?.debug({ imageId }, 'Cloudflare image used elsewhere, skipping')
         continue
       }
 
