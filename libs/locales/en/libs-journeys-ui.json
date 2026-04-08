@@ -1,6 +1,7 @@
 {
   "Submit": "Submit",
   "Button": "Button",
+  "None": "None",
   "This field is required": "This field is required",
   "Name must be 2 characters or more": "Name must be 2 characters or more",
   "Name must be 50 characters or less": "Name must be 50 characters or less",
@@ -103,6 +104,5 @@
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>",
-  "None": "None"
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }
