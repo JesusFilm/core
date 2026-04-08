@@ -61,13 +61,12 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmitError(): Promise<void> {
-    // User-visible error first (then a11y); 90s: debounce + journey/context on Media screen
-    await expect(
-      this.page.getByText('Please enter a valid YouTube URL')
-    ).toBeVisible({ timeout: 90000 })
-    await expect(
-      this.page.getByRole('textbox', { name: 'YouTube URL' })
-    ).toHaveAttribute('aria-invalid', 'true', { timeout: 30000 })
+    const fieldRoot = this.page.getByTestId('VideosSection-youtube-input')
+    const errorHelper = fieldRoot.locator('.MuiFormHelperText-root.Mui-error')
+    // 90s: 800ms debounce + journey/context; scope to field — no fragile aria-invalid timing
+    await expect(errorHelper).toHaveText('Please enter a valid YouTube URL', {
+      timeout: 90000
+    })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {

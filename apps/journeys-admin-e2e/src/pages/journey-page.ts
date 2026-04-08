@@ -807,167 +807,97 @@ export class JourneyPage {
   }
 
   async verifyJouyneysAreSortedByNames() {
-    const journeyList = await this.page
-      .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-        {
-          has: this.page.locator(
-            'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-          )
-        }
-      )
-      .locator(this.journeyNamePath)
-      .allInnerTexts()
-    const journeyExpectedList = await this.page
-      .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-        {
-          has: this.page.locator(
-            'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-          )
-        }
-      )
-      .locator(this.journeyNamePath)
-      .allInnerTexts()
-    await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
-  }
-
-  async sortTheListToAscendingOrder(
-    list: string[],
-    expectedSortedList: string[]
-  ) {
-    list
-      .map((str) => str.toLowerCase())
-      .sort((a, b) => Intl.Collator().compare(a, b))
-    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
+    const cardLocator = this.page.locator(
+      'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+      {
+        has: this.page.locator(
+          'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
+        )
+      }
+    )
+    await expect(cardLocator.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    const names = await cardLocator.locator(this.journeyNamePath).allInnerTexts()
+    const sorted = [...names].sort((a, b) =>
+      Intl.Collator().compare(a.toLowerCase(), b.toLowerCase())
+    )
+    expect(names).toEqual(sorted)
   }
 
   async verifyNewlyJouyneysAreSortedByNames() {
-    const journeyListCount = await this.page
-      .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-        {
-          hasNot: this.page.locator(
-            'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-          )
-        }
-      )
-      .locator(this.journeyNamePath)
-      .count()
-    if (journeyListCount !== 0) {
-      const journeyList = await this.page
-        .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-          {
-            hasNot: this.page.locator(
-              'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-            )
-          }
+    const cardLocator = this.page.locator(
+      'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+      {
+        hasNot: this.page.locator(
+          'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
         )
-        .locator(this.journeyNamePath)
-        .allInnerTexts()
-      const journeyExpectedList = await this.page
-        .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-          {
-            hasNot: this.page.locator(
-              'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-            )
-          }
-        )
-        .locator(this.journeyNamePath)
-        .allInnerTexts()
-      await this.sortTheListToAscendingOrder(journeyList, journeyExpectedList)
-    } else {
+      }
+    )
+    const journeyListCount = await cardLocator.locator(this.journeyNamePath).count()
+    if (journeyListCount === 0) {
       console.log('There are no new journeys exist to name sort')
+      return
     }
+    await expect(cardLocator.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    const names = await cardLocator.locator(this.journeyNamePath).allInnerTexts()
+    const sorted = [...names].sort((a, b) =>
+      Intl.Collator().compare(a.toLowerCase(), b.toLowerCase())
+    )
+    expect(names).toEqual(sorted)
   }
 
   async verifyJourneyAreSortedByDates() {
-    const journeysDescriptionList = await this.page
-      .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-        {
-          has: this.page.locator(
-            'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-          )
-        }
-      )
+    const cardLocator = this.page.locator(
+      'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+      {
+        has: this.page.locator(
+          'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
+        )
+      }
+    )
+    await expect(cardLocator.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    const journeysDescriptionList = await cardLocator
       .locator('span[data-testid="new-journey-badge"] + span')
       .allInnerTexts()
-    const journeySiteSortedDate: string[] = []
-    const journeyExpectdSortedList: string[] = []
-    for (let journey = 0; journey < journeysDescriptionList.length; journey++) {
-      journeySiteSortedDate.push(
-        journeysDescriptionList[journey].split('-')[0].trim()
-      )
-      journeyExpectdSortedList.push(
-        journeysDescriptionList[journey].split('-')[0].trim()
-      )
-    }
-    await this.sortDateToDessendingOrder(
-      journeySiteSortedDate,
-      journeyExpectdSortedList
+    const dateLabels = journeysDescriptionList.map((d) => d.split('-')[0].trim())
+    const sorted = [...dateLabels].sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime()
     )
-  }
-
-  async sortDateToDessendingOrder(
-    expectedSortedList: string[],
-    list: string[]
-  ) {
-    list.sort((a: string, b: string) => {
-      const dateA = new Date(a)
-      const dateB = new Date(b)
-      return dateB.getTime() - dateA.getTime()
-    })
-    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
+    expect(dateLabels).toEqual(sorted)
   }
 
   async verifyNewlyJourneyAreSortedByDates() {
-    const journeysDescriptionCount = await this.page
-      .locator(
-        'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-        {
-          hasNot: this.page.locator(
-            'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-          )
-        }
-      )
-      .locator('span[data-testid="new-journey-badge"] + span')
-      .count()
-    if (journeysDescriptionCount !== 0) {
-      const journeysDescriptionList = await this.page
-        .locator(
-          'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
-          {
-            hasNot: this.page.locator(
-              'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
-            )
-          }
-        )
-        .locator('span[data-testid="new-journey-badge"] + span')
-        .allInnerTexts()
-      const journeySiteSortedDate: string[] = []
-      const journeyExpectdSortedList: string[] = []
-      for (
-        let journey = 0;
-        journey < journeysDescriptionList.length;
-        journey++
-      ) {
-        journeySiteSortedDate.push(
-          journeysDescriptionList[journey].split('-')[0].trim()
-        )
-        journeyExpectdSortedList.push(
-          journeysDescriptionList[journey].split('-')[0].trim()
+    const cardLocator = this.page.locator(
+      'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
+      {
+        hasNot: this.page.locator(
+          'span[class*="MuiBadge-invisible"] svg[aria-label="New"]'
         )
       }
-      await this.sortDateToDessendingOrder(
-        journeySiteSortedDate,
-        journeyExpectdSortedList
-      )
-    } else {
+    )
+    const journeysDescriptionCount = await cardLocator
+      .locator('span[data-testid="new-journey-badge"] + span')
+      .count()
+    if (journeysDescriptionCount === 0) {
       console.log('There are no new journeys exist to sort')
+      return
     }
+    await expect(cardLocator.first()).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+    const journeysDescriptionList = await cardLocator
+      .locator('span[data-testid="new-journey-badge"] + span')
+      .allInnerTexts()
+    const dateLabels = journeysDescriptionList.map((d) => d.split('-')[0].trim())
+    const sorted = [...dateLabels].sort(
+      (a, b) => new Date(b).getTime() - new Date(a).getTime()
+    )
+    expect(dateLabels).toEqual(sorted)
   }
 
   async verifySeeLinkHrefAttributeBesideUseTemplate() {
@@ -1057,23 +987,24 @@ export class JourneyPage {
   }
 
   async clickAnalyticsIconInCustomJourneyPage() {
-    await this.page
+    const analyticsLink = this.page
       .locator('div[aria-label="journey-card"]', {
         hasText: this.existingJourneyName
       })
       .locator('div[data-testid="AnalyticsItem"] a')
-      .click()
+    await expect(analyticsLink).toBeVisible({ timeout: 90000 })
+    await analyticsLink.click()
   }
 
   async verifyAnalyticsPageNavigation() {
     const [newPage] = await Promise.all([
-      this.context.waitForEvent('page'),
+      this.context.waitForEvent('page', { timeout: 90000 }),
       this.clickAnalyticsIconInCustomJourneyPage()
     ])
     await newPage.waitForLoadState()
     await expect(
       newPage.locator('div[data-testid="JourneysAdminReportsNavigation"]')
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 60000 })
     await newPage.close()
   }
 
@@ -1258,7 +1189,10 @@ export class JourneyPage {
     await menuItem.click()
   }
   async downloadQRCodeAsPng() {
-    const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
+    await expect(
+      this.page.locator('div.MuiDialogContent-root canvas#qr-code-download')
+    ).toBeVisible({ timeout: 90000 })
+    const qrDownload = this.page.waitForEvent('download', { timeout: 90000 })
     await this.clickButtonInShareDialog('Download PNG')
     const downloadFile = await qrDownload
     this.downloadedQrFile = downloadFile.suggestedFilename()

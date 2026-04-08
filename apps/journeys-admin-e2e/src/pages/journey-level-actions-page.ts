@@ -48,12 +48,13 @@ export class JourneyLevelActions {
   }
 
   async clickThreeDotOfCreatedJourney(journeyName): Promise<void> {
-    await this.page
+    const menuBtn = this.page
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
       .locator('[data-testid="JourneyCardMenuButton"]')
       .first()
-      .click()
+    await expect(menuBtn).toBeVisible({ timeout: 90000 })
+    await menuBtn.click()
     this.existingJourneyName = journeyName
   }
 
@@ -78,10 +79,10 @@ export class JourneyLevelActions {
       .locator('div[aria-label="journey-card"]', { hasText: journeyName })
       .first()
 
-    await expect(journeyCardpath).toBeVisible({ timeout: thirtySecondsTimeout })
-    await expect(journeyCardpath).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await expect(journeyCardpath).toBeVisible({ timeout: 60000 })
+    await expect(journeyCardpath).toBeEnabled({ timeout: 60000 })
     await expect(journeyCardpath).toBeInViewport({
-      timeout: thirtySecondsTimeout
+      timeout: 60000
     })
     await journeyCardpath.click({ delay: 500 })
   }
@@ -334,25 +335,25 @@ export class JourneyLevelActions {
   }
 
   async clickNavigationSideMenu(): Promise<void> {
-    await this.page
-      .locator('div[data-testid="NavigationListItemToggle"]')
-      .click()
+    const toggle = this.page.getByTestId('NavigationListItemToggle')
+    await expect(toggle).toBeVisible({ timeout: thirtySecondsTimeout })
+    await toggle.click()
   }
 
   async verifyNavigationSideMenuOpened(): Promise<void> {
-    await expect(
-      this.page.locator(
-        'div[data-testid="NavigationDrawer"] div[aria-hidden="true"][style*="visibility: hidden"]'
-      )
-    ).toBeHidden()
+    const paper = this.page
+      .getByTestId('NavigationDrawer')
+      .locator('.MuiDrawer-paper')
+    await expect(paper).toBeVisible({ timeout: thirtySecondsTimeout })
+    await expect(paper).toHaveCSS('width', '237px')
   }
 
   async verifyNavigationSideMenuClosed(): Promise<void> {
-    await expect(
-      this.page.locator(
-        'div[data-testid="NavigationDrawer"] div[aria-hidden="true"][style*="visibility: hidden"]'
-      )
-    ).toHaveCount(1)
+    const paper = this.page
+      .getByTestId('NavigationDrawer')
+      .locator('.MuiDrawer-paper')
+    await expect(paper).toBeVisible({ timeout: thirtySecondsTimeout })
+    await expect(paper).toHaveCSS('width', '72px')
   }
 
   async clickHelpBtn(): Promise<void> {

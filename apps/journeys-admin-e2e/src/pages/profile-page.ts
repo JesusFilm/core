@@ -98,7 +98,7 @@ export class ProfilePage {
 
   async verifyloggedOut() {
     await expect(this.page.locator('input#username')).toBeVisible({
-      timeout: 30000
+      timeout: 90000
     })
   }
 

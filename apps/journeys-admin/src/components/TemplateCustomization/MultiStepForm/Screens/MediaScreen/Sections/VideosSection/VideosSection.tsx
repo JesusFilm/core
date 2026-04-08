@@ -132,6 +132,9 @@ export function VideosSection({
   const errorMessage =
     uploadStatus?.status === 'error' ? uploadStatus.error : undefined
 
+  const loadingRef = useRef(loading)
+  loadingRef.current = loading
+
   const { open, getInputProps } = useDropzone({
     onDropAccepted: (files) => {
       if (videoBlock != null && files[0] != null) {
@@ -171,7 +174,8 @@ export function VideosSection({
 
   useEffect(() => {
     const trimmedUrl = youtubeUrl.trim()
-    if (trimmedUrl === '' || loading || videoBlockId == null) return
+    // Do not gate on loading here: invalid URLs must still show validation while upload/processing.
+    if (trimmedUrl === '' || videoBlockId == null) return
 
     const timer = setTimeout(() => {
       const extractedId = extractYouTubeVideoId(trimmedUrl)
@@ -180,6 +184,7 @@ export function VideosSection({
         return
       }
       setYoutubeUrlError(undefined)
+      if (loadingRef.current) return
       if (trimmedUrl === lastSubmittedRef.current.get(videoBlockId)) return
       void startYouTubeLinkRef
         .current(videoBlockId, extractedId)
@@ -193,6 +198,7 @@ export function VideosSection({
     return () => clearTimeout(timer)
     // videoBlockId — not videoBlock: journey updates replace block object identity often.
     // t / startYouTubeLink use refs so i18n or context callback identity changes do not reset debounce.
+    // loading stays in deps so when upload finishes we re-run debounce for a valid URL.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable via tRef / startYouTubeLinkRef
   }, [youtubeUrl, loading, videoBlockId])
 

@@ -14,15 +14,15 @@ export class LandingPage {
   async goToAdminUrl(): Promise<void> {
     const baseURL = await getBaseUrl()
     await this.page.goto(baseURL)
-    // Wait for two seconds as the landing page showing 'Sign in with email' button second time
-    // even after clicking the 'Sign in with email' button
+    // Wait for two seconds as the landing page can briefly show the submit button twice
+    // after clicking Continue with email (matches HomePage.tsx / admin.nextstep.is)
     // eslint-disable-next-line
     await this.page.waitForTimeout(2000)
   }
 
   async signInWithEmailVisible(): Promise<void> {
     await expect(this.page.locator('button[type="submit"]')).toHaveText(
-      'Sign in with email'
+      'Continue with email'
     )
   }
 

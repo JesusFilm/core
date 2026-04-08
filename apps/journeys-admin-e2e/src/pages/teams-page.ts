@@ -73,11 +73,12 @@ export class TeamsPage {
   }
 
   async clickThreeDotOptions(options) {
-    await this.page
-      .locator('li[data-testid="JourneysAdminMenuItem"] span', {
-        hasText: options
-      })
-      .click()
+    const item = this.page.locator(
+      'li[data-testid="JourneysAdminMenuItem"] span',
+      { hasText: options }
+    )
+    await expect(item).toBeVisible({ timeout: 60000 })
+    await item.click()
   }
 
   async enterTeamName() {
@@ -142,7 +143,10 @@ export class TeamsPage {
   }
 
   async clickCreateJourneyBtn() {
-    await this.page.locator('button[data-testid="AddJourneyButton"]').click()
+    const btn = this.page.locator('button[data-testid="AddJourneyButton"]')
+    await expect(btn).toBeVisible({ timeout: 90000 })
+    await expect(btn).toBeEnabled({ timeout: 90000 })
+    await btn.click()
   }
 
   async enterTeamRename() {
@@ -190,9 +194,11 @@ export class TeamsPage {
   }
 
   async clickMemberPlusIcon() {
-    await this.page
-      .locator('div[data-testid="member-dialog-open-avatar"]')
-      .click()
+    const avatar = this.page.locator(
+      'div[data-testid="member-dialog-open-avatar"]'
+    )
+    await expect(avatar).toBeVisible({ timeout: 90000 })
+    await avatar.click()
   }
 
   //Custom Domain option in Three dot menu

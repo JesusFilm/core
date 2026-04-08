@@ -199,12 +199,12 @@ export class CardLevelActionPage {
   }
 
   async waitUntilJourneyCardLoaded() {
-    await this.page
-      .locator('div[data-testid="StrategyItem"] button')
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
-    await expect(
-      this.page.locator('div[data-testid="StrategyItem"] button')
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    await expect(this.page.locator(this.journeyCardFrame).first()).toBeAttached({
+      timeout: 90000
+    })
+    const strategyBtn = this.page.locator('div[data-testid="StrategyItem"] button')
+    await strategyBtn.waitFor({ state: 'visible', timeout: 90000 })
+    await expect(strategyBtn).toBeVisible({ timeout: 90000 })
   }
 
   async clickSelectImageBtn() {
