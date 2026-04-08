@@ -230,7 +230,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     type: "TextResponseBlock!"
     override: "api-journeys"
   )
-  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS) 
+  typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   typographyBlockUpdate(
     id: ID!
     input: TypographyBlockUpdateInput!
