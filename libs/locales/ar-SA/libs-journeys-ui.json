@@ -126,5 +126,6 @@
   "{{count}} Videos_few": "{{count}} مقاطع الفيديو",
   "{{count}} Videos_many": "{{count}} مقاطع الفيديو",
   "{{count}} Videos_other": "{{count}} مقاطع الفيديو",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>قوالب الرحلات</0><1>في</1><2>{{firstLanguage}}</2>"
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>قوالب الرحلات</0><1>في</1><2>{{firstLanguage}}</2>",
+  "None": "None"
 }

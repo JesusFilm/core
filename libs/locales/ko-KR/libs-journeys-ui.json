@@ -96,5 +96,6 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>여정 템플릿</0><1>in</1><2>{{count}} 언어</2>",
   "{{count}} more cards_other": "{{count}} 더 많은 카드",
   "{{count}} Cards_other": "{{count}} 카드",
-  "{{count}} Videos_other": "{{count}} 동영상"
+  "{{count}} Videos_other": "{{count}} 동영상",
+  "None": "None"
 }

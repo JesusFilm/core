@@ -102,5 +102,6 @@
   "{{count}} Cards_one": "{{count}} Tarjeta",
   "{{count}} Cards_other": "{{count}} Tarjetas",
   "{{count}} Videos_one": "{{count}} Vídeo",
-  "{{count}} Videos_other": "{{count}} Vídeos"
+  "{{count}} Videos_other": "{{count}} Vídeos",
+  "None": "None"
 }

@@ -96,5 +96,6 @@
   "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_other": "<0>旅程模板</0><1>在</1><2>所有语言</2>",
   "{{count}} more cards_other": "{{count}} 更多贺卡",
   "{{count}} Cards_other": "{{count}} 牌",
-  "{{count}} Videos_other": "{{count}} 视频"
+  "{{count}} Videos_other": "{{count}} 视频",
+  "None": "None"
 }
