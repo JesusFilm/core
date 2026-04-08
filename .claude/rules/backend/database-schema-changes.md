@@ -111,7 +111,7 @@ After codegen, check for and fix any resulting TypeScript errors in affected fro
 
 If `nx prisma-migrate prisma-<domain>` fails with:
 
-```
+```text
 Error: Prisma Migrate has detected that the environment is non-interactive, which is not supported.
 ```
 

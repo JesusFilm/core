@@ -14,26 +14,26 @@ alwaysApply: false
 
 ## Prisma Domain Reference
 
-| Domain | Nx Project | Schema Path | DB URL Env Var | APIs Using This Domain |
-|--------|-----------|-------------|----------------|----------------------|
-| journeys | `prisma-journeys` | `libs/prisma/journeys/db/schema.prisma` | `PG_DATABASE_URL_JOURNEYS` | `api-journeys`, `api-journeys-modern` |
-| users | `prisma-users` | `libs/prisma/users/db/schema.prisma` | `PG_DATABASE_URL_USERS` | `api-users` |
+| Domain    | Nx Project         | Schema Path                              | DB URL Env Var              | APIs Using This Domain                                                        |
+| --------- | ------------------ | ---------------------------------------- | --------------------------- | ----------------------------------------------------------------------------- |
+| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  | `api-journeys`, `api-journeys-modern`                                         |
+| users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     | `api-users`                                                                   |
 | analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` (uses `prisma-introspect`, not `prisma-migrate` — see Step 3) |
-| languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages` |
-| media | `prisma-media` | `libs/prisma/media/db/schema.prisma` | `PG_DATABASE_URL_MEDIA` | `api-media` |
+| languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages`                                                               |
+| media     | `prisma-media`     | `libs/prisma/media/db/schema.prisma`     | `PG_DATABASE_URL_MEDIA`     | `api-media`                                                                   |
 
 ## Which Steps Do I Need?
 
-| Change Type | Prisma Steps (1-3) | GraphQL Steps (4-7) |
-|-------------|:------------------:|:-------------------:|
-| New field (exposed in GraphQL) | Yes | Yes |
-| New field (internal only) | Yes | No |
-| New enum | Yes | Yes |
-| Change nullability | Yes | Yes (if field is in GraphQL) |
-| New model/table | Yes | Yes (if exposed) |
-| Rename/change field type | Yes | Yes (if field is in GraphQL) |
-| New query or mutation (no schema change) | No | Yes |
-| GraphQL-only change (no DB change) | No | Yes |
+| Change Type                              | Prisma Steps (1-3) |     GraphQL Steps (4-7)      |
+| ---------------------------------------- | :----------------: | :--------------------------: |
+| New field (exposed in GraphQL)           |        Yes         |             Yes              |
+| New field (internal only)                |        Yes         |              No              |
+| New enum                                 |        Yes         |             Yes              |
+| Change nullability                       |        Yes         | Yes (if field is in GraphQL) |
+| New model/table                          |        Yes         |       Yes (if exposed)       |
+| Rename/change field type                 |        Yes         | Yes (if field is in GraphQL) |
+| New query or mutation (no schema change) |         No         |             Yes              |
+| GraphQL-only change (no DB change)       |         No         |             Yes              |
 
 ## Workflow
 
@@ -112,7 +112,7 @@ After codegen, check for and fix any resulting TypeScript errors in affected fro
 
 If `nx prisma-migrate prisma-<domain>` fails with:
 
-```
+```text
 Error: Prisma Migrate has detected that the environment is non-interactive, which is not supported.
 ```
 
