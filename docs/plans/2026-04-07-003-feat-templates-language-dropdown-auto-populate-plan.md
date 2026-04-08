@@ -1,5 +1,5 @@
 ---
-title: "feat: Auto-populate templates language dropdown from published template languages"
+title: 'feat: Auto-populate templates language dropdown from published template languages'
 type: feat
 status: completed
 date: 2026-04-07
@@ -170,15 +170,16 @@ The templates page (`/templates`) language filter dropdown is hardcoded with 26 
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Prisma `distinct` query performance on large journey table | Query is filtered by indexed fields (`template`, `status`, `teamId`); result set is small (distinct languages only) |
+| Risk                                                                           | Mitigation                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Prisma `distinct` query performance on large journey table                     | Query is filtered by indexed fields (`template`, `status`, `teamId`); result set is small (distinct languages only)                                                                               |
 | SSR adds an extra sequential network hop (fetch language IDs before languages) | The two fetches are inherently sequential, but `GET_TAGS` and `GET_JOURNEYS` still run in parallel with `GET_LANGUAGES`. ISR caches the result for 60s, so this only runs once per minute at most |
-| GraphQL codegen needs to run for new types | Standard workflow — run `nx generate-graphql api-journeys`, `nx generate-graphql api-gateway`, then `nx run-many -t codegen --all` after schema changes |
+| GraphQL codegen needs to run for new types                                     | Standard workflow — run `nx generate-graphql api-journeys`, `nx generate-graphql api-gateway`, then `nx run-many -t codegen --all` after schema changes                                           |
 
 ## Delivery Notes
 
 Work was split into two PRs for clean merge ordering:
+
 - **Backend PR #8976** (`26-03-JC-feat-template-language-ids-query`): Unit 1 — GraphQL schema, resolver, tests, generated types, codegen output
 - **Frontend PR #8973** (`26-03-JC-feat-templates-language-dropdown`): Units 2 & 3 — component changes, SSR update, test/story mocks. Base branch points to backend PR.
 

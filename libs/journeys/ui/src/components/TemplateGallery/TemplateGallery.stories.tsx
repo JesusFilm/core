@@ -36,7 +36,12 @@ export const Default = {
   ...Template,
   parameters: {
     apolloClient: {
-      mocks: [getJourneyTemplateLanguageIdsMock, getJourneysWithoutLanguageIdsMock, getLanguagesMock, getTagsMock]
+      mocks: [
+        getJourneyTemplateLanguageIdsMock,
+        getJourneysWithoutLanguageIdsMock,
+        getLanguagesMock,
+        getTagsMock
+      ]
     }
   }
 }

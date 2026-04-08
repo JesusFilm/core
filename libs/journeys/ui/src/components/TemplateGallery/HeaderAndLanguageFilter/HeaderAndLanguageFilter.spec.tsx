@@ -41,7 +41,9 @@ describe('HeaderAndLanguageFilter', () => {
     } as unknown as NextRouter)
 
     render(
-      <MockedProvider mocks={[getJourneyTemplateLanguageIdsMock, getLanguagesMock]}>
+      <MockedProvider
+        mocks={[getJourneyTemplateLanguageIdsMock, getLanguagesMock]}
+      >
         <HeaderAndLanguageFilter selectedLanguageIds={[]} onChange={onChange} />
       </MockedProvider>
     )
@@ -70,7 +72,9 @@ describe('HeaderAndLanguageFilter', () => {
 
   it('should show loading', () => {
     render(
-      <MockedProvider mocks={[getJourneyTemplateLanguageIdsMock, getLanguagesMock]}>
+      <MockedProvider
+        mocks={[getJourneyTemplateLanguageIdsMock, getLanguagesMock]}
+      >
         <HeaderAndLanguageFilter onChange={noop} />
       </MockedProvider>
     )

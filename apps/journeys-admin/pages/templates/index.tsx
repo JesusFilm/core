@@ -115,8 +115,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   }>({
     query: GET_JOURNEY_TEMPLATE_LANGUAGE_IDS
   })
-  const templateLanguageIds =
-    languageIdsData?.journeyTemplateLanguageIds ?? []
+  const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds ?? []
 
   // Then fetch languages, tags, and journeys in parallel
   await Promise.all([

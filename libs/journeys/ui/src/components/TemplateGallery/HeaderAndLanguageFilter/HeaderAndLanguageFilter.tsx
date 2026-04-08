@@ -189,18 +189,15 @@ export function HeaderAndLanguageFilter({
   const { data, loading: languagesLoading } = useQuery<
     GetLanguages,
     GetLanguagesVariables
-  >(
-    GET_LANGUAGES,
-    {
-      variables: {
-        languageId: '529',
-        where: {
-          ids: templateLanguageIds
-        }
-      },
-      skip: templateLanguageIds == null
-    }
-  )
+  >(GET_LANGUAGES, {
+    variables: {
+      languageId: '529',
+      where: {
+        ids: templateLanguageIds
+      }
+    },
+    skip: templateLanguageIds == null
+  })
 
   const loading = languageIdsLoading || languagesLoading
 
