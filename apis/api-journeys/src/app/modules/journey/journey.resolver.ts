@@ -215,7 +215,7 @@ export class JourneyResolver {
       where: {
         template: true,
         status: JourneyStatus.published,
-        teamId: 'jfp-team'
+        teamId: 'jfp-team' // only global templates (shown on /templates page)
       },
       distinct: ['languageId'],
       select: { languageId: true }
