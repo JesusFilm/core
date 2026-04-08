@@ -21,9 +21,7 @@ describe('radioQuestionBlockCreate', () => {
   })
 
   const RADIO_QUESTION_BLOCK_CREATE = graphql(`
-    mutation RadioQuestionBlockCreate(
-      $input: RadioQuestionBlockCreateInput!
-    ) {
+    mutation RadioQuestionBlockCreate($input: RadioQuestionBlockCreateInput!) {
       radioQuestionBlockCreate(input: $input) {
         id
         journeyId
