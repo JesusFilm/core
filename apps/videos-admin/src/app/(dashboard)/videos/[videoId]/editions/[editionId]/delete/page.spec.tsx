@@ -4,6 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import DeleteEditionPage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the Apollo Client hooks
 jest.mock('@apollo/client', () => ({
   useMutation: jest.fn(() => [jest.fn(), { loading: false }])
@@ -41,7 +44,10 @@ describe('DeleteEditionPage', () => {
     render(
       <SnackbarProvider>
         <DeleteEditionPage
-          params={{ videoId: 'video-123', editionId: 'edition-123' }}
+          params={resolvedParams({
+            videoId: 'video-123',
+            editionId: 'edition-123'
+          })}
         />
       </SnackbarProvider>
     )
@@ -80,7 +86,10 @@ describe('DeleteEditionPage', () => {
     render(
       <SnackbarProvider>
         <DeleteEditionPage
-          params={{ videoId: 'video-123', editionId: 'edition-123' }}
+          params={resolvedParams({
+            videoId: 'video-123',
+            editionId: 'edition-123'
+          })}
         />
       </SnackbarProvider>
     )
@@ -110,7 +119,10 @@ describe('DeleteEditionPage', () => {
     render(
       <SnackbarProvider>
         <DeleteEditionPage
-          params={{ videoId: 'video-123', editionId: 'edition-123' }}
+          params={resolvedParams({
+            videoId: 'video-123',
+            editionId: 'edition-123'
+          })}
         />
       </SnackbarProvider>
     )

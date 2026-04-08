@@ -4,6 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import StudyQuestionDeletePage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the Apollo Client hooks
 jest.mock('@apollo/client', () => {
   const mockMutation = jest.fn(() =>
@@ -61,10 +64,10 @@ describe('StudyQuestionDeletePage', () => {
     render(
       <SnackbarProvider>
         <StudyQuestionDeletePage
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             studyQuestionId: mockStudyQuestionId
-          }}
+          })}
         />
       </SnackbarProvider>
     )

@@ -4,6 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import SubtitlePage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the components used in the page
 jest.mock('../_SubtitleFileUpload', () => ({
   SubtitleFileUpload: ({ subtitle }) => (
@@ -146,11 +149,11 @@ describe('SubtitlePage', () => {
     render(
       <SnackbarProvider>
         <SubtitlePage
-          params={{
+          params={resolvedParams({
             videoId: 'video-123',
             editionId: 'edition-123',
             subtitleId: 'subtitle-123'
-          }}
+          })}
         />
       </SnackbarProvider>
     )

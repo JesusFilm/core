@@ -3,6 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 // Import the component under test
 import ConfirmDeleteDialog from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock Apollo client
 jest.mock('@apollo/client', () => {
   const original = jest.requireActual('@apollo/client')
@@ -115,11 +118,11 @@ describe('ConfirmDeleteDialog', () => {
   it('renders the delete confirmation dialog', () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 
@@ -141,11 +144,11 @@ describe('ConfirmDeleteDialog', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 
@@ -161,11 +164,11 @@ describe('ConfirmDeleteDialog', () => {
   it('navigates back when dialog is closed', () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 
@@ -181,11 +184,11 @@ describe('ConfirmDeleteDialog', () => {
   it('deletes download and navigates back when confirm button is clicked', async () => {
     render(
       <ConfirmDeleteDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockDownloadId
-        }}
+        })}
       />
     )
 

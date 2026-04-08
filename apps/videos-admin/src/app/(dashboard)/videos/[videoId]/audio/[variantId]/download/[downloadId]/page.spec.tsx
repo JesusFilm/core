@@ -3,6 +3,9 @@ import { render } from '@testing-library/react'
 // Import the component under test
 import DownloadPage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the router
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -32,10 +35,10 @@ describe('DownloadPage with downloadId', () => {
   it('redirects to the variant page', () => {
     render(
       <DownloadPage
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 
@@ -49,10 +52,10 @@ describe('DownloadPage with downloadId', () => {
   it('renders an empty fragment', () => {
     const { container } = render(
       <DownloadPage
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId
-        }}
+        })}
       />
     )
 

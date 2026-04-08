@@ -4,6 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import StudyQuestionDialog from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the StudyQuestionForm component
 jest.mock('../_StudyQuestionForm/StudyQuestionForm', () => ({
   StudyQuestionForm: ({ variant, initialValues, onSubmit, loading }) => (
@@ -73,10 +76,10 @@ describe('StudyQuestionDialog', () => {
     render(
       <SnackbarProvider>
         <StudyQuestionDialog
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             studyQuestionId: mockStudyQuestionId
-          }}
+          })}
         />
       </SnackbarProvider>
     )

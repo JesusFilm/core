@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import CitationDeletePage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 const mockCitationId = 'citation-123'
 const mockVideoId = 'video-123'
 
@@ -94,7 +97,10 @@ describe('CitationDeletePage', () => {
   it('renders the delete confirmation dialog', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -111,7 +117,10 @@ describe('CitationDeletePage', () => {
   it('navigates back when cancel button is clicked', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -127,7 +136,10 @@ describe('CitationDeletePage', () => {
   it('calls delete mutation when delete button is clicked', () => {
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -148,7 +160,10 @@ describe('CitationDeletePage', () => {
 
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 
@@ -177,7 +192,10 @@ describe('CitationDeletePage', () => {
 
     render(
       <CitationDeletePage
-        params={{ videoId: mockVideoId, citationId: mockCitationId }}
+        params={resolvedParams({
+          videoId: mockVideoId,
+          citationId: mockCitationId
+        })}
       />
     )
 

@@ -4,6 +4,9 @@ import React from 'react'
 // Import the component under test
 import AddVideoVariantDownloadDialog from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock form requestSubmit method which is not implemented in JSDOM
 HTMLFormElement.prototype.requestSubmit = jest.fn(function () {
   // Simple mock: just dispatch a submit event
@@ -379,11 +382,11 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -402,11 +405,11 @@ describe('AddVideoVariantDownloadDialog', () => {
   it('navigates back when dialog is closed', () => {
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -422,11 +425,11 @@ describe('AddVideoVariantDownloadDialog', () => {
   it('shows auto generate option when Mux video is available', () => {
     render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -448,11 +451,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // First render with high quality (should have "Add" button)
     const { rerender } = render(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 
@@ -469,11 +472,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     // Re-render to reflect the new quality value
     rerender(
       <AddVideoVariantDownloadDialog
-        params={{
+        params={resolvedParams({
           videoId: mockVideoId,
           variantId: mockVariantId,
           downloadId: mockLanguageId
-        }}
+        })}
       />
     )
 

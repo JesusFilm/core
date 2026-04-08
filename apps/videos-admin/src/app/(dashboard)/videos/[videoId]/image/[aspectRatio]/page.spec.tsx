@@ -6,6 +6,9 @@ import { ImageAspectRatio } from '../../../constants'
 
 import VideoImage from './page'
 
+const resolvedParams = <T,>(value: T): Promise<T> =>
+  Object.assign(Promise.resolve(value), { status: 'fulfilled' as const, value })
+
 // Mock the FileUpload component
 jest.mock('../../../../../../components/FileUpload', () => ({
   FileUpload: ({ onDrop, loading, onUploadComplete }) => (
@@ -90,10 +93,10 @@ describe('VideoImage', () => {
     render(
       <SnackbarProvider>
         <VideoImage
-          params={{
+          params={resolvedParams({
             videoId: mockVideoId,
             aspectRatio: mockAspectRatio
-          }}
+          })}
         />
       </SnackbarProvider>
     )
