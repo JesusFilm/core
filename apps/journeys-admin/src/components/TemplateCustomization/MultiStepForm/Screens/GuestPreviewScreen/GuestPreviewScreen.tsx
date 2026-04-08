@@ -64,8 +64,8 @@ export function GuestPreviewScreen({
 
   return (
     <ScreenWrapper
-      title={t('Almost there!')}
-      mobileTitle={t('Almost there!')}
+      title={t('Your preview is ready')}
+      mobileTitle={t('Preview ready')}
       subtitle={t(
         'This content contains buttons linking to external sites. Check them and update the links below.'
       )}
