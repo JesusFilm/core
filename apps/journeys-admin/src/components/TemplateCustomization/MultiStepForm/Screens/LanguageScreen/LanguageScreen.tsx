@@ -52,7 +52,7 @@ interface LanguageScreenProps {
 export function LanguageScreen({
   handleNext
 }: LanguageScreenProps): ReactElement {
-  const { t } = useTranslation('journeys-ui')
+  const { t } = useTranslation('apps-journeys-admin')
   const { templateCustomizationGuestFlow } = useFlags()
   const { enqueueSnackbar } = useSnackbar()
   const { user } = useAuth()

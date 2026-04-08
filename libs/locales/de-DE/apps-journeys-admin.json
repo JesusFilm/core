@@ -1128,5 +1128,13 @@
   "{{count}} years ago_one": "{{count}} vor Jahren",
   "{{count}} years ago_other": "{{count}} vor Jahren",
   "{{count}} more cards_one": "{{count}} mehr Karten",
-  "{{count}} more cards_other": "{{count}} mehr Karten"
+  "{{count}} more cards_other": "{{count}} mehr Karten",
+  "My Team": "Mein Team",
+  "Unable to create guest user. Please try again or sign in.": "Gastbenutzer kann nicht erstellt werden. Bitte versuche es erneut oder melde dich an.",
+  "Failed to duplicate journey to team, please refresh the page and try again": "Die Reise zum Team konnte nicht dupliziert werden. Bitte aktualisiere die Seite und versuche es erneut.",
+  "Journey failed to load. Please refresh the page and try again.": "Die Reise konnte nicht geladen werden. Bitte aktualisiere die Seite und versuche es erneut.",
+  "Let's Get Started!": "Los geht's!",
+  "Get Started": "Anfangen",
+  "A few quick edits and your template will be ready to share.": "Ein paar schnelle Änderungen und deine Vorlage ist bereit zum Teilen.",
+  "A few quick edits and it's ready to share!": "Ein paar schnelle Änderungen und schon ist es fertig zum Teilen!"
 }

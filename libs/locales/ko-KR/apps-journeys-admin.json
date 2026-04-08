@@ -1118,5 +1118,13 @@
   "{{count}} days ago_other": "{{count}} 며칠 전",
   "{{count}} months ago_other": "{{count}} 몇 달 전",
   "{{count}} years ago_other": "{{count}} 년 전",
-  "{{count}} more cards_other": "{{count}} 더 많은 카드"
+  "{{count}} more cards_other": "{{count}} 더 많은 카드",
+  "My Team": "내 팀",
+  "Unable to create guest user. Please try again or sign in.": "게스트 사용자를 만들 수 없습니다. 다시 시도하거나 로그인하세요.",
+  "Failed to duplicate journey to team, please refresh the page and try again": "여정을 팀에 복제하지 못했습니다. 페이지를 새로고침하고 다시 시도하세요.",
+  "Journey failed to load. Please refresh the page and try again.": "여정을 로드하지 못했습니다. 페이지를 새로고침하고 다시 시도하세요.",
+  "Let's Get Started!": "시작하기!",
+  "Get Started": "시작하기",
+  "A few quick edits and your template will be ready to share.": "몇 가지 간단한 편집만 하면 템플릿을 공유할 준비가 완료됩니다.",
+  "A few quick edits and it's ready to share!": "몇 가지 간단한 편집만 하면 바로 공유할 수 있습니다!"
 }

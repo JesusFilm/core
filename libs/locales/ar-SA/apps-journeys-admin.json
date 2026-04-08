@@ -1168,5 +1168,13 @@
   "{{count}} more cards_two": "{{count}} المزيد من البطاقات",
   "{{count}} more cards_few": "{{count}} المزيد من البطاقات",
   "{{count}} more cards_many": "{{count}} المزيد من البطاقات",
-  "{{count}} more cards_other": "{{count}} المزيد من البطاقات"
+  "{{count}} more cards_other": "{{count}} المزيد من البطاقات",
+  "My Team": "فريقي",
+  "Unable to create guest user. Please try again or sign in.": "غير قادر على إنشاء مستخدم ضيف. يرجى المحاولة مرة أخرى أو تسجيل الدخول.",
+  "Failed to duplicate journey to team, please refresh the page and try again": "فشل في تكرار الرحلة إلى الفريق، يرجى تحديث الصفحة والمحاولة مرة أخرى",
+  "Journey failed to load. Please refresh the page and try again.": "فشل تحميل الرحلة. يرجى تحديث الصفحة والمحاولة مرة أخرى.",
+  "Let's Get Started!": "دعنا نبدأ!",
+  "Get Started": "ابدأ الآن",
+  "A few quick edits and your template will be ready to share.": "بعض التعديلات السريعة وسيكون قالبك جاهزاً للمشاركة.",
+  "A few quick edits and it's ready to share!": "بعض التعديلات السريعة وستكون جاهزة للمشاركة!"
 }

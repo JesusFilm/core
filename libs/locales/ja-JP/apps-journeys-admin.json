@@ -1118,5 +1118,13 @@
   "{{count}} days ago_other": "{{count}} 日前",
   "{{count}} months ago_other": "{{count}} ヶ月前",
   "{{count}} years ago_other": "{{count}} 往年",
-  "{{count}} more cards_other": "{{count}} その他のカード"
+  "{{count}} more cards_other": "{{count}} その他のカード",
+  "My Team": "私のチーム",
+  "Unable to create guest user. Please try again or sign in.": "ゲストユーザーを作成できません。再試行するか、サインインしてください。",
+  "Failed to duplicate journey to team, please refresh the page and try again": "チームへの旅の複製に失敗しました。ページを更新して再度お試しください。",
+  "Journey failed to load. Please refresh the page and try again.": "旅のロードに失敗しました。ページを更新して再度お試しください。",
+  "Let's Get Started!": "さあ、始めましょう!",
+  "Get Started": "スタート",
+  "A few quick edits and your template will be ready to share.": "いくつかの簡単な編集で、テンプレートを共有する準備が整います。",
+  "A few quick edits and it's ready to share!": "少し編集すれば、共有できるようになる！"
 }
