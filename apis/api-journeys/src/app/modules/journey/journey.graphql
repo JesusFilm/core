@@ -164,6 +164,7 @@ type PowerBiEmbed @shareable {
 
 extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
+  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
   journeyTemplateLanguageIds: [String!]!

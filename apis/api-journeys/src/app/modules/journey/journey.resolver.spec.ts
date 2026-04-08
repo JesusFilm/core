@@ -366,6 +366,60 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('adminJourney', () => {
+    it('returns journey by slug', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      expect(
+        await resolver.adminJourney(ability, 'journey-slug', IdType.slug)
+      ).toEqual(journeyWithUserTeam)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: {
+          slug: 'journey-slug'
+        },
+        include: {
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
+          }
+        }
+      })
+    })
+
+    it('returns journey by id', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      expect(
+        await resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
+      ).toEqual(journeyWithUserTeam)
+      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        include: {
+          userJourneys: true,
+          team: {
+            include: { userTeams: true }
+          }
+        }
+      })
+    })
+
+    it('throws error if not found', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(null)
+      await expect(
+        resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
+      ).rejects.toThrow('journey not found')
+    })
+
+    it('throws error if not authorized', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+      await expect(
+        resolver.adminJourney(ability, 'journeyId', IdType.databaseId)
+      ).rejects.toThrow('user is not allowed to view journey')
+    })
+  })
+
   describe('journeys', () => {
     it('returns published journeys', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
