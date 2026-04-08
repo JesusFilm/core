@@ -28,15 +28,15 @@ pnpm exec nx run journeys-admin-e2e:update-snapshots
 
 Copy `.env.example` to `.env` (or set these in CI secrets):
 
-| Variable | Description |
-|---|---|
-| `JOURNEYS_ADMIN_DAILY_E2E` | URL of the staging deployment to test against |
-| `DEPLOYMENT_URL` | Fallback URL (e.g. a Vercel preview URL) |
-| `PLAYWRIGHT_EMAIL` | Email of the pre-existing admin test account |
-| `PLAYWRIGHT_PASSWORD` | Password for the admin test account |
-| `PLAYWRIGHT_USER` | Display name for the admin test account |
-| `PLAYWRIGHT_TEAM_NAME` | Team name used by the admin test account |
-| `EXAMPLE_EMAIL_TOKEN` | Static OTP token used during new user registration |
+| Variable                   | Description                                        |
+| -------------------------- | -------------------------------------------------- |
+| `JOURNEYS_ADMIN_DAILY_E2E` | URL of the staging deployment to test against      |
+| `DEPLOYMENT_URL`           | Fallback URL (e.g. a Vercel preview URL)           |
+| `PLAYWRIGHT_EMAIL`         | Email of the pre-existing admin test account       |
+| `PLAYWRIGHT_PASSWORD`      | Password for the admin test account                |
+| `PLAYWRIGHT_USER`          | Display name for the admin test account            |
+| `PLAYWRIGHT_TEAM_NAME`     | Team name used by the admin test account           |
+| `EXAMPLE_EMAIL_TOKEN`      | Static OTP token used during new user registration |
 
 If none of the URL variables are set, tests fall back to `http://localhost:4200`.
 
@@ -71,7 +71,9 @@ pre-existing admin account. A single sign-in state is reused for all tests in th
 ```typescript
 import { test, expect } from '../../fixtures/authenticated'
 
-test('my test', async ({ authedPage }) => { /* ... */ })
+test('my test', async ({ authedPage }) => {
+  /* ... */
+})
 ```
 
 ### Worker-level registration (`fixtures/workerAuth.ts`)
@@ -110,11 +112,11 @@ Worker 2 starts
 
 #### Why this matters
 
-| | Before | After |
-|---|---|---|
-| Registrations per CI run | ~13 (one per spec file) | 4 (one per worker) |
-| Backend load at startup | High — 13 concurrent OTP + onboarding flows | Low — 4 staggered flows |
-| Test isolation | Full (each spec gets its own `BrowserContext`) | Full (unchanged) |
+|                          | Before                                         | After                   |
+| ------------------------ | ---------------------------------------------- | ----------------------- |
+| Registrations per CI run | ~13 (one per spec file)                        | 4 (one per worker)      |
+| Backend load at startup  | High — 13 concurrent OTP + onboarding flows    | Low — 4 staggered flows |
+| Test isolation           | Full (each spec gets its own `BrowserContext`) | Full (unchanged)        |
 
 Each spec file still creates its own `BrowserContext`, so sessionStorage, cookies, and
 navigation state are completely isolated between spec files. The only thing shared
@@ -162,7 +164,9 @@ test.describe('My feature', () => {
     sharedContext = undefined
   })
 
-  test('does something', async () => { /* ... */ })
+  test('does something', async () => {
+    /* ... */
+  })
 })
 ```
 
@@ -173,7 +177,9 @@ Use the `authedPage` fixture from `authenticated.ts` (logs in as the shared admi
 ```typescript
 import { test, expect } from '../../fixtures/authenticated'
 
-test('my customization test', async ({ authedPage }) => { /* ... */ })
+test('my customization test', async ({ authedPage }) => {
+  /* ... */
+})
 ```
 
 ### Do not register in `beforeAll`
