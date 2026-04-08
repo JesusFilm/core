@@ -239,6 +239,19 @@ export class JourneyPage {
     await this.page.getByRole('link', { name: 'Preview' }).click()
   }
 
+  /**
+   * Discover list + create action load under TeamProvider; plain `/` can leave
+   * "Create Custom Journey" disabled until the journeys view is ready.
+   */
+  async gotoDiscoverJourneysPage(): Promise<void> {
+    const baseUrl = await getBaseUrl()
+    const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
+    await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    await expect(
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
+  }
+
   async clickCreateCustomJourney(): Promise<void> {
     const createButton = this.page.getByRole('button', {
       name: 'Create Custom Journey'

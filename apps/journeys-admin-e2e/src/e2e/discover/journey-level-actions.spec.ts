@@ -46,7 +46,7 @@ test.describe('Journey level actions', () => {
       throw new Error('Shared authenticated context was not initialized')
     }
     currentPage = await sharedContext.newPage()
-    await getSharedPage().goto('/')
+    await new JourneyPage(getSharedPage()).gotoDiscoverJourneysPage()
   })
 
   test.afterEach(async () => {
