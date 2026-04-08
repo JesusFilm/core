@@ -13,6 +13,8 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { useTemplateVideoUpload } from '../../TemplateVideoUploadProvider'
 import { ScreenWrapper } from '../ScreenWrapper'
 
+import { TemplateCardPreviewDialog } from '../LinksScreen/CardsPreview/TemplateCardPreviewDialog'
+
 import {
   CardsSection,
   ImagesSection,
@@ -65,11 +67,18 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
     }
   }, [customizableSteps, selectedStep])
 
+  const [previewStepId, setPreviewStepId] = useState<string | null>(null)
+
   function handleStepClick(step: TreeBlock<StepBlock>): void {
+    if (selectedStep?.id === step.id) {
+      setPreviewStepId(step.id)
+      return
+    }
     setSelectedStep(step)
     setSelectedCardBlockId(getCardBlockIdFromStep(step))
   }
   return (
+    <>
     <ScreenWrapper
       title={t('Media')}
       subtitle={t('Personalize and manage your media assets')}
@@ -114,5 +123,12 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
         )}
       </Stack>
     </ScreenWrapper>
+    <TemplateCardPreviewDialog
+      open={previewStepId != null}
+      onClose={() => setPreviewStepId(null)}
+      steps={customizableSteps}
+      initialStepId={previewStepId}
+    />
+  </>
   )
 }
