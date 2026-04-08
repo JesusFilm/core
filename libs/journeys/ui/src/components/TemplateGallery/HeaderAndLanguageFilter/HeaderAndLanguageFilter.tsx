@@ -21,7 +21,10 @@ import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
 import { setBeaconPageViewed } from '../../../libs/beaconHooks'
 import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
-import { GetLanguages } from '../../../libs/useLanguagesQuery/__generated__/GetLanguages'
+import {
+  GetLanguages,
+  GetLanguagesVariables
+} from '../../../libs/useLanguagesQuery/__generated__/GetLanguages'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
@@ -183,7 +186,10 @@ export function HeaderAndLanguageFilter({
 
   const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds
 
-  const { data, loading: languagesLoading } = useQuery<GetLanguages>(
+  const { data, loading: languagesLoading } = useQuery<
+    GetLanguages,
+    GetLanguagesVariables
+  >(
     GET_LANGUAGES,
     {
       variables: {

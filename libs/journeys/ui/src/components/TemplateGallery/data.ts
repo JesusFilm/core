@@ -18,7 +18,7 @@ import { GetLanguages } from '../../libs/useLanguagesQuery/__generated__/GetLang
 import { GET_TAGS } from '../../libs/useTagsQuery'
 import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
 
-import { GET_JOURNEY_TEMPLATE_LANGUAGE_IDS } from './HeaderAndLanguageFilter/HeaderAndLanguageFilter'
+import { GET_JOURNEY_TEMPLATE_LANGUAGE_IDS } from './HeaderAndLanguageFilter'
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',
