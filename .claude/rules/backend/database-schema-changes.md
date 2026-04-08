@@ -1,0 +1,157 @@
+---
+paths:
+  - 'libs/prisma/**/schema.prisma'
+  - 'apis/**/*.graphql'
+  - 'apis/**/src/schema/**/*.ts'
+---
+
+<!-- Keep in sync with .cursor/rules/database-schema-changes.mdc -->
+
+# Database Schema Changes
+
+**Applies when:** Making changes to Prisma schemas, GraphQL types/queries/mutations, or Pothos schema definitions. This includes adding fields, adding enums, changing nullability, adding models, renaming fields, or adding new queries/mutations.
+
+## Prisma Domain Reference
+
+| Domain | Nx Project | Schema Path | DB URL Env Var | APIs Using This Domain |
+|--------|-----------|-------------|----------------|----------------------|
+| journeys | `prisma-journeys` | `libs/prisma/journeys/db/schema.prisma` | `PG_DATABASE_URL_JOURNEYS` | `api-journeys`, `api-journeys-modern` |
+| users | `prisma-users` | `libs/prisma/users/db/schema.prisma` | `PG_DATABASE_URL_USERS` | `api-users` |
+| analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` |
+| languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages` |
+| media | `prisma-media` | `libs/prisma/media/db/schema.prisma` | `PG_DATABASE_URL_MEDIA` | `api-media` |
+
+## Which Steps Do I Need?
+
+| Change Type | Prisma Steps (1-3) | GraphQL Steps (4-7) |
+|-------------|:------------------:|:-------------------:|
+| New field (exposed in GraphQL) | Yes | Yes |
+| New field (internal only) | Yes | No |
+| New enum | Yes | Yes |
+| Change nullability | Yes | Yes (if field is in GraphQL) |
+| New model/table | Yes | Yes (if exposed) |
+| Rename/change field type | Yes | Yes (if field is in GraphQL) |
+| New query or mutation (no schema change) | No | Yes |
+| GraphQL-only change (no DB change) | No | Yes |
+
+## Workflow
+
+### Prisma Steps (schema changes only)
+
+**Step 1: Edit the Prisma schema**
+
+Edit the relevant `schema.prisma` file from the domain reference table above.
+
+**Step 2: Generate Prisma client**
+
+```bash
+nx prisma-generate prisma-<domain>
+```
+
+**Step 3: Create and run migration**
+
+```bash
+nx prisma-migrate prisma-<domain>
+```
+
+This creates a SQL migration file with a timestamped name and runs it against your local database.
+
+### GraphQL Steps (when the change affects GraphQL)
+
+**Step 4: Update GraphQL type definitions**
+
+This differs by API:
+
+- **api-journeys (SDL-first):** Edit the relevant `.graphql` file in `apis/api-journeys/src/app/` (e.g., `journeyProfile.graphql`, NOT `schema.graphql`). Also update the resolver and its spec file if needed.
+- **api-journeys-modern (Pothos):** Edit the Pothos schema code in `apis/api-journeys-modern/src/schema/`. The types are defined in TypeScript.
+- **Other APIs (Pothos):** Edit the Pothos schema code in `apis/<api>/src/schema/`.
+
+**Step 5: Generate GraphQL schema for each affected API**
+
+Run `generate-graphql` for **every API that uses the affected prisma domain** (see the "APIs Using This Domain" column in the reference table):
+
+```bash
+nx generate-graphql <api-name>
+```
+
+For example, if you changed the journeys schema and both APIs expose the change:
+
+```bash
+nx generate-graphql api-journeys
+nx generate-graphql api-journeys-modern
+```
+
+> **api-journeys requires a running server.** It uses Apollo Rover introspection on port 4001. Start the server first with `nf start` or `nx serve api-journeys`. All other APIs use static generation and do **not** need a running server.
+
+**Step 6: Recompose the gateway schema**
+
+```bash
+nx generate-graphql api-gateway
+```
+
+This uses Hive to compose all subgraph schemas into `apis/api-gateway/schema.graphql`.
+
+> If `nf start` is already running, the `gateway-watcher` process handles this automatically.
+
+**Step 7: Run frontend codegen**
+
+```bash
+nx run-many -t codegen
+```
+
+This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, `shared-gql`, and `api-journeys`.
+
+After codegen, check for and fix any resulting TypeScript errors in affected frontend projects.
+
+## Troubleshooting
+
+### "Environment is non-interactive" error during migration
+
+If `nx prisma-migrate prisma-<domain>` fails with:
+
+```
+Error: Prisma Migrate has detected that the environment is non-interactive, which is not supported.
+```
+
+Run the migration manually by combining the database URL env var with the prisma command:
+
+```bash
+PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts'
+```
+
+For example, for the journeys domain:
+
+```bash
+PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts'
+```
+
+### "Running generate... Error" after migration
+
+If the migration succeeds but prisma generate fails, run it separately:
+
+```bash
+nx prisma-generate prisma-<domain>
+```
+
+### GraphQL generation fails for api-journeys
+
+Ensure the api-journeys server is running on port 4001. Start it with:
+
+```bash
+nf start
+```
+
+Or individually:
+
+```bash
+nx serve api-journeys
+```
+
+Then retry `nx generate-graphql api-journeys`.
+
+## Common Mistakes to Avoid
+
+- **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the `.graphql` SDL files (api-journeys) or Pothos schema code (all other APIs).
+- **Do NOT forget `generate-graphql api-gateway`** after updating any subgraph schema — the gateway supergraph must be recomposed.
+- **Do NOT forget `nx run-many -t codegen`** — frontend TypeScript types will be stale until codegen runs.
+- **Do NOT skip generating for all APIs that share a prisma domain** — e.g., both `api-journeys` and `api-journeys-modern` share `prisma-journeys`.
