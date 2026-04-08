@@ -14,7 +14,8 @@ let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return sharedPage
 }
 
@@ -55,9 +56,7 @@ test.describe('Teams', () => {
   2. Create a journey (just one card) for newly created team
   3. Rename the team
   */
-  test('Create a team and create a journey then rename the team', async ({
-    
-  }) => {
+  test('Create a team and create a journey then rename the team', async ({}) => {
     const page = getSharedPage()
     const teamsPage = new TeamsPage(page)
     const journeyName = new JourneyPage(page)
@@ -71,9 +70,7 @@ test.describe('Teams', () => {
   })
 
   // Discover page -> Three dot > Custom Domain
-  test('Verify Custom Domain option from Three dot menu And validate journey link from the selected journey page', async ({
-    
-  }) => {
+  test('Verify Custom Domain option from Three dot menu And validate journey link from the selected journey page', async ({}) => {
     const page = getSharedPage()
     const context = getSharedContext()
     const domainName =
@@ -114,9 +111,7 @@ test.describe('Teams', () => {
   // ISSUE: The Growth Spaces card on /integrations/new is only rendered when the teamIntegrations
   // feature flag is on. When the flag is off, the test fails because the Growth Spaces link/button
   // is missing (0 elements). Re-enable this test when the flag is available in the test environment.
-  test.skip('Verify Integrations option from Three dot menu', async ({
-    
-  }) => {
+  test.skip('Verify Integrations option from Three dot menu', async ({}) => {
     const page = getSharedPage()
     const teamPage = new TeamsPage(page)
 

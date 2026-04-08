@@ -11,7 +11,8 @@ let onboardingPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (onboardingPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (onboardingPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return onboardingPage
 }
 
@@ -33,7 +34,8 @@ test.describe('verify journey sorting', () => {
 
   test.beforeEach(async () => {
     const context = sharedContext
-    if (context == null) throw new Error('Shared authenticated context was not initialized')
+    if (context == null)
+      throw new Error('Shared authenticated context was not initialized')
     onboardingPage = await context.newPage()
     const page = getSharedPage()
     const landingPage = new LandingPage(page)

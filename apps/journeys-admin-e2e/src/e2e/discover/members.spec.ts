@@ -11,7 +11,8 @@ let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return sharedPage
 }
 
@@ -43,9 +44,7 @@ test.describe('Verify Add member', () => {
   })
 
   // Verify the user able to add the member through member option in discover page
-  test('Add a member through member option in discover page', async ({
-    
-  }) => {
+  test('Add a member through member option in discover page', async ({}) => {
     const page = getSharedPage()
     const teamsPage = new TeamsPage(page)
     await teamsPage.verifyMemberAddedViaMemberOptionOfThreeDotOptions()

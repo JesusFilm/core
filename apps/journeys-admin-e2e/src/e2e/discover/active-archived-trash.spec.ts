@@ -13,7 +13,8 @@ let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return sharedPage
 }
 
@@ -54,9 +55,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
   // tabs) is not found – locator('button[id*="archived-status-panel-tab"]') times out. Likely environment- or
   // routing-related (e.g. discover list not visible in this deployment). Re-enable when the discover journey
   // list is available.
-  test.skip('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
-    
-  }) => {
+  test.skip('Verify the user able to move the single journeys from Active, archived, Trash page', async ({}) => {
     const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     // Verify the user able to move the single journeys from Active to archived page
@@ -81,9 +80,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
   // ISSUE: After archiving (or when the test runs), the Discover journey list (Active/Archived/Trash tabs) is
   // not found – button[id*="archived-status-panel-tab"] times out. Likely environment- or routing-related.
   // Re-enable when the discover journey list is available.
-  test.skip('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
-    
-  }) => {
+  test.skip('Verify the user able to move the all journeys from Active, archived, Trash page', async ({}) => {
     const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button

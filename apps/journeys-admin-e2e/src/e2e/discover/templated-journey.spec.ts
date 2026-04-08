@@ -11,7 +11,8 @@ let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return sharedPage
 }
 
@@ -41,9 +42,7 @@ test.describe('verify see link and see all templates', () => {
   })
 
   // Assert that See all link & See all templates button have a href to /templates
-  test('Assert that See all link & See all templates button have a href to /templates', async ({
-    
-  }) => {
+  test('Assert that See all link & See all templates button have a href to /templates', async ({}) => {
     const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     await journeyPage.verifySeeLinkHrefAttributeBesideUseTemplate() // beside the 'use template' drawer name in discover page, verify the 'see link' have href attribute with '/templates' value

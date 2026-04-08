@@ -12,7 +12,8 @@ let currentPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (currentPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (currentPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return currentPage
 }
 
@@ -96,7 +97,9 @@ test.describe('Journey level actions - discover', () => {
 
   test('Verify language option from three dot options on top right in the selected journey page', async () => {
     const page = getSharedPage()
+
     test.setTimeout(120000)
+
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney()

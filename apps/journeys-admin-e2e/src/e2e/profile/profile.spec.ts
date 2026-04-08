@@ -11,7 +11,8 @@ let currentPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (currentPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (currentPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return currentPage
 }
 

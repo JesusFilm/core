@@ -13,7 +13,8 @@ let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
 const getSharedPage = (): Page => {
-  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  if (sharedPage == null)
+    throw new Error('Shared authenticated page was not initialized')
   return sharedPage
 }
 
@@ -205,5 +206,4 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() //Clicking delete button in the tooltip bar to delete the Spacer from the card
     await cardLevelActionPage.verifySpacerRemovedFromCard() //validate spacer got removed from the card after delete
   })
-
 })
