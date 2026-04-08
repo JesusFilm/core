@@ -14,8 +14,8 @@ import { type MouseEvent, type ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChervonDownIcon from '@core/shared/ui/icons/ChevronDown'
-import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
