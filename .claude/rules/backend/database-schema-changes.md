@@ -103,8 +103,6 @@ nx run-many -t codegen
 
 This regenerates TypeScript types for all frontend projects that depend on the gateway schema: `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, `shared-gql`, and `api-journeys`.
 
-After codegen, check for and fix any resulting TypeScript errors in affected frontend projects.
-
 ## Troubleshooting
 
 ### "Environment is non-interactive" error during migration
