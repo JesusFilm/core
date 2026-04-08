@@ -225,7 +225,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     journeyId: ID
-  ): TextResponseBlock @join__field(graph: API_JOURNEYS) 
+  ): TextResponseBlock @join__field(
+    graph: API_JOURNEYS_MODERN
+    type: "TextResponseBlock!"
+    override: "api-journeys"
+  )
   typographyBlockCreate(input: TypographyBlockCreateInput!) : TypographyBlock! @join__field(graph: API_JOURNEYS) 
   typographyBlockUpdate(
     id: ID!

@@ -1427,6 +1427,13 @@ type Mutation {
     journeyId: ID
   ): StepBlock! @override(from: "api-journeys")
   textResponseBlockCreate(input: TextResponseBlockCreateInput!): TextResponseBlock! @override(from: "api-journeys")
+  textResponseBlockUpdate(
+    id: ID!
+    input: TextResponseBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): TextResponseBlock! @override(from: "api-journeys")
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock!
   videoBlockUpdate(
     id: ID!
