@@ -320,7 +320,7 @@ export function Video({
               zIndex: 1,
               outline:
                 selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
-              outlineOffset: '-3px',
+              outlineOffset: '0px',
               borderRadius: 'var(--card-border-radius, 24px)'
             }}
             elevation={0}

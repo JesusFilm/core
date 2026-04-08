@@ -307,7 +307,7 @@ export function Canvas(): ReactElement {
                                 journey?.website === true
                                   ? '2px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: -4,
+                              outlineOffset: 0,
                               borderRadius: 6,
                               cursor: 'pointer',
                               minHeight: '42px',
@@ -355,7 +355,7 @@ export function Canvas(): ReactElement {
                                 ActiveCanvasDetailsDrawer.JourneyAppearance
                                   ? '2px solid #C52D3A'
                                   : 'none',
-                              outlineOffset: -4,
+                              outlineOffset: 0,
                               borderRadius: 6,
                               cursor: 'pointer'
                             }}
