@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import NoSsr from '@mui/material/NoSsr'
@@ -19,10 +20,17 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageOption } from '@core/shared/ui/MultipleLanguageAutocomplete'
 
 import { setBeaconPageViewed } from '../../../libs/beaconHooks'
-import { useLanguagesQuery } from '../../../libs/useLanguagesQuery'
+import { GET_LANGUAGES } from '../../../libs/useLanguagesQuery'
+import { GetLanguages } from '../../../libs/useLanguagesQuery/__generated__/GetLanguages'
 
 import { convertLanguagesToOptions } from './convertLanguagesToOptions'
 import { LanguagesFilterPopper } from './LanguagesFilterPopper/LanguagesFilterPopper'
+
+export const GET_JOURNEY_TEMPLATE_LANGUAGE_IDS = gql`
+  query GetJourneyTemplateLanguageIds {
+    journeyTemplateLanguageIds
+  }
+`
 
 interface LocalTypographyProps extends ComponentProps<typeof Typography> {}
 
@@ -169,40 +177,26 @@ export function HeaderAndLanguageFilter({
     if (popperAnchor != null) setAnchorEl(popperAnchor)
   }, [anchorEl])
 
-  const { data, loading } = useLanguagesQuery({
-    languageId: '529',
-    // make sure these variables are the same as in pages/templates/index.ts
-    where: {
-      ids: [
-        '529', // English
-        '4415', // Italiano, Italian
-        '1106', // Deutsch, German, Standard
-        '4451', // polski, Polish
-        '496', // Français, French
-        '20526', // Shqip, Albanian
-        '584', // Português, Portuguese, Brazil
-        '21028', // Español, Spanish, Latin American
-        '20615', // 普通話, Chinese, Mandarin
-        '3934', // Русский, Russian
-        '22658', // Arabic Modern
-        '7083', // Japanese
-        '16639', // Bahasa Indonesia
-        '3887', // Vietnamese
-        '13169', // Thai
-        '6464', // Hindi
-        '12876', // Ukrainian
-        '53441', // Arabic, Egyptian Modern Standard
-        '1942', // Türkçe, Turkish
-        '5541', // Serbian
-        '6788', // Farsi, Western
-        '3804', // Korean
-        '1927', // Malay
-        '1370', // Nepali
-        '139081', // Bengali, Indian
-        '1254' // Myanmar (Burmese)
-      ]
+  const { data: languageIdsData, loading: languageIdsLoading } = useQuery<{
+    journeyTemplateLanguageIds: string[]
+  }>(GET_JOURNEY_TEMPLATE_LANGUAGE_IDS)
+
+  const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds
+
+  const { data, loading: languagesLoading } = useQuery<GetLanguages>(
+    GET_LANGUAGES,
+    {
+      variables: {
+        languageId: '529',
+        where: {
+          ids: templateLanguageIds
+        }
+      },
+      skip: templateLanguageIds == null
     }
-  })
+  )
+
+  const loading = languageIdsLoading || languagesLoading
 
   const languageOptions = convertLanguagesToOptions(
     data?.languages.filter(({ id }) => selectedLanguageIds?.includes(id))

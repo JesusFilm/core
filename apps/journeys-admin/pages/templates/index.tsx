@@ -9,6 +9,7 @@ import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TemplateGallery } from '@core/journeys/ui/TemplateGallery'
+import { GET_JOURNEY_TEMPLATE_LANGUAGE_IDS } from '@core/journeys/ui/TemplateGallery/HeaderAndLanguageFilter'
 import { GET_JOURNEYS } from '@core/journeys/ui/useJourneysQuery'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
@@ -108,51 +109,30 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
     locale
   })
 
+  // Fetch dynamic template language IDs first (sequential — result feeds into GET_LANGUAGES)
+  const { data: languageIdsData } = await apolloClient.query<{
+    journeyTemplateLanguageIds: string[]
+  }>({
+    query: GET_JOURNEY_TEMPLATE_LANGUAGE_IDS
+  })
+  const templateLanguageIds =
+    languageIdsData?.journeyTemplateLanguageIds ?? []
+
+  // Then fetch languages, tags, and journeys in parallel
   await Promise.all([
     apolloClient.query<GetLanguages, GetLanguagesVariables>({
-      // from /workspaces/core/apps/journeys-admin/src/components/TemplateGallery/HeaderAndLanguageFilter/HeaderAndLanguageFilter.tsx useLanguagesQuery
       query: GET_LANGUAGES,
       variables: {
         languageId: '529',
         where: {
-          // make sure theese variables are the same as in HeaderAndLanguageFilter.tsx
-          ids: [
-            '529', // English
-            '4415', // Italiano, Italian
-            '1106', // Deutsch, German, Standard
-            '4451', // polski, Polish
-            '496', // Français, French
-            '20526', // Shqip, Albanian
-            '584', // Português, Portuguese, Brazil
-            '21028', // Español, Spanish, Latin American
-            '20615', // 普通話, Chinese, Mandarin
-            '3934', // Русский, Russian
-            '22658', // Arabic Modern
-            '7083', // Japanese
-            '16639', // Bahasa Indonesia
-            '3887', // Vietnamese
-            '13169', // Thai
-            '6464', // Hindi
-            '12876', // Ukrainian
-            '53441', // Arabic, Egyptian Modern Standard
-            '1942', // Türkçe, Turkish
-            '5541', // Serbian
-            '6788', // Farsi, Western
-            '3804', // Korean
-            '1927', // Malay
-            '1370', // Nepali
-            '139081', // Bengali, Indian
-            '1254' // Myanmar (Burmese)
-          ]
+          ids: templateLanguageIds
         }
       }
     }),
     apolloClient.query<GetTags>({
-      // from apps/journeys-admin/src/components/TemplateGallery/TagsFilter/TagsFilter.tsx useJourneysQuery
       query: GET_TAGS
     }),
     apolloClient.query<GetJourneys, GetJourneysVariables>({
-      // from apps/journeys-admin/src/components/TemplateSections/TemplateSections.tsx useJourneysQuery
       query: GET_JOURNEYS,
       variables: {
         where: {
