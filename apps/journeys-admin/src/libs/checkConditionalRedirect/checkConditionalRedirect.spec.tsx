@@ -566,8 +566,7 @@ describe('checkConditionalRedirect', () => {
     expect(
       await checkConditionalRedirect({
         apolloClient,
-        resolvedUrl:
-          '/users/terms-and-conditions?redirect=https://evil.example'
+        resolvedUrl: '/users/terms-and-conditions?redirect=https://evil.example'
       })
     ).toEqual({
       destination: '/',
