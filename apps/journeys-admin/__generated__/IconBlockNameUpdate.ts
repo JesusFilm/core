@@ -16,7 +16,7 @@ export interface IconBlockNameUpdate_iconBlockUpdate {
 }
 
 export interface IconBlockNameUpdate {
-  iconBlockUpdate: IconBlockNameUpdate_iconBlockUpdate | null;
+  iconBlockUpdate: IconBlockNameUpdate_iconBlockUpdate;
 }
 
 export interface IconBlockNameUpdateVariables {
