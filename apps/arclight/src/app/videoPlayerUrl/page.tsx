@@ -1,4 +1,5 @@
 import { graphql } from '@core/shared/gql'
+import { notFound } from 'next/navigation'
 
 import { getApolloClient } from '../../lib/apolloClient'
 
@@ -98,38 +99,24 @@ export default async function Page(props: {
 }) {
   const searchParams = await props.searchParams
   if (!searchParams.refId) {
-    return {
-      message: 'Missing refId parameter',
-      status: 404
-    }
+    notFound()
   }
 
-  // Parse start and end times, ensuring they are valid numbers
   const startTime = searchParams.start ? Number(searchParams.start) : undefined
   const endTime = searchParams.end ? Number(searchParams.end) : undefined
   const subonRaw = searchParams.subon ?? null
   const sublangidsRaw = searchParams.sublangids ?? null
 
-  // Validate time parameters
   if (startTime != null && (isNaN(startTime) || startTime < 0)) {
-    return {
-      message: 'Invalid start time parameter',
-      status: 400
-    }
+    notFound()
   }
 
   if (endTime != null && (isNaN(endTime) || endTime < 0)) {
-    return {
-      message: 'Invalid end time parameter',
-      status: 400
-    }
+    notFound()
   }
 
   if (startTime != null && endTime != null && endTime <= startTime) {
-    return {
-      message: 'End time must be greater than start time',
-      status: 400
-    }
+    notFound()
   }
 
   const { data } = await getApolloClient().query({
@@ -165,10 +152,7 @@ export default async function Page(props: {
     }))
 
   if (!hlsUrl) {
-    return {
-      message: 'No video URL found for ID: ' + searchParams.refId,
-      status: 404
-    }
+    notFound()
   }
 
   return (

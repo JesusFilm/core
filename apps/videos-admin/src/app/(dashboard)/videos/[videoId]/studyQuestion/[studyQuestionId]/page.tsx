@@ -3,7 +3,7 @@
 import { useMutation, useSuspenseQuery } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, use } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -31,15 +31,16 @@ const GET_STUDY_QUESTION = graphql(`
   }
 `)
 interface StudyQuestionDialogProps {
-  params: {
+  params: Promise<{
     videoId: string
     studyQuestionId: string
-  }
+  }>
 }
 
 export default function StudyQuestionDialog({
-  params: { videoId, studyQuestionId }
+  params
 }: StudyQuestionDialogProps): ReactElement {
+  const { videoId, studyQuestionId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [updateStudyQuestion, { loading }] = useMutation(UPDATE_STUDY_QUESTION)

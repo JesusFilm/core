@@ -3,6 +3,7 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
+import { use } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -16,15 +17,16 @@ const DELETE_VIDEO_EDITION = graphql(`
 `)
 
 interface DeleteEditionPageProps {
-  params: {
+  params: Promise<{
     videoId: string
     editionId: string
-  }
+  }>
 }
 
 export default function DeleteEditionPage({
-  params: { videoId, editionId }
+  params
 }: DeleteEditionPageProps) {
+  const { videoId, editionId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [deleteEdition, { loading }] = useMutation(DELETE_VIDEO_EDITION)

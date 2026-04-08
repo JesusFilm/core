@@ -9,12 +9,7 @@ const nextConfig = {
   nx: {},
   productionBrowserSourceMaps: true,
   typescript: {
-    // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
-  },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
   },
   outputFileTracingExcludes: {
     '*': [
@@ -23,10 +18,7 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
-  experimental: {
-    fallbackNodePolyfills: false,
-    reactCompiler: true
-  }
+  reactCompiler: true
 }
 
 const plugins = [

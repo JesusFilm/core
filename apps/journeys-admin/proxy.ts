@@ -164,7 +164,7 @@ function isPublicPath(req: NextRequest): boolean {
   )
 }
 
-export default async function middleware(
+export default async function proxy(
   req: NextRequest
 ): Promise<NextResponse> {
   return await authMiddleware(req, {

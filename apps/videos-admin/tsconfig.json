@@ -27,10 +27,10 @@
     "next-env.d.ts",
     "src/app/_ApolloProvider/ApolloProvider.tsx",
     "src/i18n.ts",
-    "src/middleware.ts",
+    "src/proxy.ts",
     ".next/types/**/*.ts",
     "../../dist/apps/videos-admin/.next/types/**/*.ts",
     "src/app/(dashboard)/videos/[videoId]/image/[aspectRatio]/layout.tsx"
   ],
-  "exclude": ["node_modules", "jest.config.ts", ".next"]
+  "exclude": ["node_modules", "jest.config.ts", ".next", "**/*.stories.ts", "**/*.stories.tsx", "src/libs/storybookConfig"]
 }

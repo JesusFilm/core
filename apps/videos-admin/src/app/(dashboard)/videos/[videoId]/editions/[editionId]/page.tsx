@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
+import { use } from 'react'
 import { object, string } from 'yup'
 
 import { graphql } from '@core/shared/gql'
@@ -50,15 +51,16 @@ const UPDATE_VIDEO_EDITION = graphql(`
 `)
 
 interface EditEditionPageProps {
-  params: {
+  params: Promise<{
     videoId: string
     editionId: string
-  }
+  }>
 }
 
 export default function EditEditionPage({
-  params: { videoId, editionId }
+  params
 }: EditEditionPageProps) {
+  const { videoId, editionId } = use(params)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useSuspenseQuery(GET_EDITION, {
