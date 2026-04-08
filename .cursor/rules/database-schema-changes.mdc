@@ -18,7 +18,7 @@ alwaysApply: false
 |--------|-----------|-------------|----------------|----------------------|
 | journeys | `prisma-journeys` | `libs/prisma/journeys/db/schema.prisma` | `PG_DATABASE_URL_JOURNEYS` | `api-journeys`, `api-journeys-modern` |
 | users | `prisma-users` | `libs/prisma/users/db/schema.prisma` | `PG_DATABASE_URL_USERS` | `api-users` |
-| analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` |
+| analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` | `api-analytics` (uses `prisma-introspect`, not `prisma-migrate` — see Step 3) |
 | languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` | `api-languages` |
 | media | `prisma-media` | `libs/prisma/media/db/schema.prisma` | `PG_DATABASE_URL_MEDIA` | `api-media` |
 
@@ -57,19 +57,21 @@ nx prisma-migrate prisma-<domain>
 
 This creates a SQL migration file with a timestamped name and runs it against your local database.
 
+> **Exception:** The `analytics` domain does not use migrations. Its database is managed externally. Use `nx prisma-introspect prisma-analytics` to pull the current schema instead of running `prisma-migrate`.
+
 ### GraphQL Steps (when the change affects GraphQL)
 
 **Step 4: Update GraphQL type definitions**
 
 This differs by API:
 
-- **api-journeys (SDL-first):** Edit the relevant `.graphql` file in `apis/api-journeys/src/app/` (e.g., `journeyProfile.graphql`, NOT `schema.graphql`). Also update the resolver and its spec file if needed.
+- **api-journeys (SDL-first):** Edit the relevant `.graphql` file in `apis/api-journeys/src/app/modules/<module>/` (e.g., `apis/api-journeys/src/app/modules/journeyProfile/journeyProfile.graphql`, NOT `schema.graphql`). Also update the resolver and its spec file if needed.
 - **api-journeys-modern (Pothos):** Edit the Pothos schema code in `apis/api-journeys-modern/src/schema/`. The types are defined in TypeScript.
 - **Other APIs (Pothos):** Edit the Pothos schema code in `apis/<api>/src/schema/`.
 
 **Step 5: Generate GraphQL schema for each affected API**
 
-Run `generate-graphql` for **every API that uses the affected prisma domain** (see the "APIs Using This Domain" column in the reference table):
+Run `generate-graphql` for **every API whose GraphQL type definitions you updated in Step 4**:
 
 ```bash
 nx generate-graphql <api-name>
@@ -117,13 +119,15 @@ Error: Prisma Migrate has detected that the environment is non-interactive, whic
 Run the migration manually by combining the database URL env var with the prisma command:
 
 ```bash
-PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts'
+PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
+
+The `--name` flag is required to avoid an interactive prompt for the migration name. The database URL above uses the default devcontainer values (`db` hostname, `postgres`/`postgres` credentials) — substitute your actual values if your local setup differs.
 
 For example, for the journeys domain:
 
 ```bash
-PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts'
+PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
 
 ### "Running generate... Error" after migration
