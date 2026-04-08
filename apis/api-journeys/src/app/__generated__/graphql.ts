@@ -946,8 +946,6 @@ export abstract class IQuery {
 
     abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
 
-    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
     abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
 
     abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
