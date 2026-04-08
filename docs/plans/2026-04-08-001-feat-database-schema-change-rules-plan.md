@@ -1,5 +1,5 @@
 ---
-title: "feat: Add database schema change workflow rules for Claude and Cursor"
+title: 'feat: Add database schema change workflow rules for Claude and Cursor'
 type: feat
 status: completed
 date: 2026-04-08
@@ -37,25 +37,25 @@ The team has an Obsidian note documenting the steps needed after modifying the d
 
 **Prisma libraries** (5 domains, identical target structure):
 
-| Domain | Nx Project | Schema Path | DB URL Env Var |
-|--------|-----------|-------------|----------------|
-| journeys | `prisma-journeys` | `libs/prisma/journeys/db/schema.prisma` | `PG_DATABASE_URL_JOURNEYS` |
-| users | `prisma-users` | `libs/prisma/users/db/schema.prisma` | `PG_DATABASE_URL_USERS` |
+| Domain    | Nx Project         | Schema Path                              | DB URL Env Var              |
+| --------- | ------------------ | ---------------------------------------- | --------------------------- |
+| journeys  | `prisma-journeys`  | `libs/prisma/journeys/db/schema.prisma`  | `PG_DATABASE_URL_JOURNEYS`  |
+| users     | `prisma-users`     | `libs/prisma/users/db/schema.prisma`     | `PG_DATABASE_URL_USERS`     |
 | analytics | `prisma-analytics` | `libs/prisma/analytics/db/schema.prisma` | `PG_DATABASE_URL_ANALYTICS` |
 | languages | `prisma-languages` | `libs/prisma/languages/db/schema.prisma` | `PG_DATABASE_URL_LANGUAGES` |
-| media | `prisma-media` | `libs/prisma/media/db/schema.prisma` | `PG_DATABASE_URL_MEDIA` |
+| media     | `prisma-media`     | `libs/prisma/media/db/schema.prisma`     | `PG_DATABASE_URL_MEDIA`     |
 
 Each has identical targets: `prisma-generate`, `prisma-migrate`, `prisma-reset`, `prisma-validate`, `prisma-studio`.
 
 **Prisma domain → API mapping:**
 
-| Prisma Domain | APIs That Use It |
-|---------------|-----------------|
-| journeys | `api-journeys`, `api-journeys-modern` (shared) |
-| users | `api-users` |
-| analytics | `api-analytics` |
-| languages | `api-languages` |
-| media | `api-media` |
+| Prisma Domain | APIs That Use It                               |
+| ------------- | ---------------------------------------------- |
+| journeys      | `api-journeys`, `api-journeys-modern` (shared) |
+| users         | `api-users`                                    |
+| analytics     | `api-analytics`                                |
+| languages     | `api-languages`                                |
+| media         | `api-media`                                    |
 
 **GraphQL generation** (two distinct approaches):
 
@@ -64,10 +64,12 @@ Each has identical targets: `prisma-generate`, `prisma-migrate`, `prisma-reset`,
 - **api-gateway**: `nx generate-graphql api-gateway` uses Hive to compose all subgraph schemas into `apis/api-gateway/schema.graphql`.
 
 **Frontend codegen** (7 projects depend on gateway schema):
+
 - `api-journeys`, `journeys-admin`, `journeys`, `watch`, `resources`, `journeys-ui`, `shared-gql`
 - All triggered via `nx run-many -t codegen`
 
 **Existing rule formats**:
+
 - Claude path-scoped: `paths:` array in YAML frontmatter, organized in subdirectories (`backend/`, `frontend/`, `infra/`)
 - Cursor: `description:`, `globs:`, `alwaysApply:` frontmatter, `.mdc` extension, flat in `.cursor/rules/`
 - Both maintain similar content; some carry `<!-- Keep in sync with ... -->` comments
@@ -108,9 +110,11 @@ None found in `docs/solutions/`.
 **Dependencies:** None
 
 **Files:**
+
 - Create: `.claude/rules/backend/database-schema-changes.md`
 
 **Approach:**
+
 - YAML frontmatter with `paths:` covering prisma schema, graphql SDL, and Pothos schema files
 - Content sections in workflow order:
   1. "Applies when" trigger description
@@ -122,12 +126,14 @@ None found in `docs/solutions/`.
   7. Troubleshooting: non-interactive environment error, prisma generate failures, env var issues
 
 **Patterns to follow:**
+
 - `.claude/rules/backend/apis.md` — YAML frontmatter with `paths:` array
 - `.claude/rules/running-tests.dev.md` — command documentation style with tables, examples, and "Common mistakes to avoid"
 
 **Test expectation:** none — documentation/configuration file
 
 **Verification:**
+
 - File has valid YAML frontmatter with `paths:` array
 - All 5 prisma domains are generalizable from the lookup table
 - Both SDL-first (api-journeys) and Pothos (modern APIs) workflows are documented
@@ -143,9 +149,11 @@ None found in `docs/solutions/`.
 **Dependencies:** Unit 1 (content is shared, adapted to Cursor format)
 
 **Files:**
+
 - Create: `.cursor/rules/database-schema-changes.mdc`
 
 **Approach:**
+
 - Cursor frontmatter: `description:`, `globs:`, `alwaysApply: false`
 - `globs:` pattern matching the Claude `paths:` values
 - Content mirrors the Claude rule
@@ -153,12 +161,14 @@ None found in `docs/solutions/`.
 - Reference base rule: `- @base.mdc` (following existing pattern from `apis.mdc`)
 
 **Patterns to follow:**
+
 - `.cursor/rules/apis.mdc` — frontmatter format and base rule reference
 - `.cursor/rules/qa-requirements.dev.mdc` — contextual guidance style
 
 **Test expectation:** none — documentation/configuration file
 
 **Verification:**
+
 - File has valid Cursor frontmatter with `globs:` patterns
 - Content is functionally equivalent to the Claude rule
 - Sync comment references the Claude rule file path
@@ -171,12 +181,12 @@ None found in `docs/solutions/`.
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Rule files drift out of sync (Claude vs Cursor) | Sync comments in both files. Content is nearly identical, only frontmatter differs. |
-| Prisma target names change | Rule uses generalizable `prisma-<domain>` pattern with lookup table |
+| Risk                                                     | Mitigation                                                                                         |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Rule files drift out of sync (Claude vs Cursor)          | Sync comments in both files. Content is nearly identical, only frontmatter differs.                |
+| Prisma target names change                               | Rule uses generalizable `prisma-<domain>` pattern with lookup table                                |
 | Path patterns too broad (triggering on irrelevant files) | Scoped to `*.prisma`, `*.graphql`, and `*/schema/**/*.ts` — narrow enough to avoid false positives |
-| New APIs added in future | Lookup table pattern is extensible; new domains just add a row |
+| New APIs added in future                                 | Lookup table pattern is extensible; new domains just add a row                                     |
 
 ## Sources & References
 
