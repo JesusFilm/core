@@ -180,9 +180,20 @@ export function HeaderAndLanguageFilter({
     if (popperAnchor != null) setAnchorEl(popperAnchor)
   }, [anchorEl])
 
-  const { data: languageIdsData, loading: languageIdsLoading } = useQuery<{
+  const {
+    data: languageIdsData,
+    loading: languageIdsLoading,
+    error: languageIdsError
+  } = useQuery<{
     journeyTemplateLanguageIds: string[]
   }>(GET_JOURNEY_TEMPLATE_LANGUAGE_IDS)
+
+  if (languageIdsError != null) {
+    console.error(
+      'Failed to fetch journeyTemplateLanguageIds:',
+      languageIdsError.message
+    )
+  }
 
   const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds
 

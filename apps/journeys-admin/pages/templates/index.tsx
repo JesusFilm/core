@@ -115,7 +115,12 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   }>({
     query: GET_JOURNEY_TEMPLATE_LANGUAGE_IDS
   })
-  const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds ?? []
+  const templateLanguageIds = languageIdsData?.journeyTemplateLanguageIds
+  if (templateLanguageIds == null || templateLanguageIds.length === 0) {
+    console.warn(
+      'journeyTemplateLanguageIds returned empty or null — language dropdown will be empty'
+    )
+  }
 
   // Then fetch languages, tags, and journeys in parallel
   await Promise.all([
@@ -124,7 +129,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
       variables: {
         languageId: '529',
         where: {
-          ids: templateLanguageIds
+          ids: templateLanguageIds ?? []
         }
       }
     }),
