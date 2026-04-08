@@ -65,7 +65,11 @@ Use `builder.mutationField` or `builder.queryField` accordingly.
 
 #### Mutation template (block domain)
 
-For block-related mutations, use the shared block service:
+Two authorization patterns exist for block mutations. Choose based on complexity:
+
+**Pattern 1 — `authorizeBlockUpdate` (simple blocks)**
+
+Use for straightforward updates with no domain-specific validation before `update()`. The helper fetches the block + journey ACL, checks permission, and returns the block. Used by `iconBlockUpdate`, `cardBlockUpdate`, `buttonBlockUpdate`.
 
 ```typescript
 import { builder } from '../../builder'
@@ -91,6 +95,64 @@ builder.mutationField('exampleBlockUpdate', (t) =>
     resolve: async (_parent, args, context) => {
       const { id, input } = args
       await authorizeBlockUpdate(id, context.user)
+      return await update(id, { ...input })
+    }
+  })
+)
+```
+
+**Pattern 2 — manual `fetchBlockWithJourneyAcl` + `ability()` (complex blocks)**
+
+Use when you need the fetched block for domain-specific validation or transformation between the auth check and `update()`, or when you need a custom error message. Used by `videoBlockUpdate`, `multiselectBlockUpdate`, `multiselectOptionBlockUpdate`.
+
+```typescript
+import { GraphQLError } from 'graphql'
+
+import {
+  Action,
+  ability,
+  subject as abilitySubject
+} from '../../../lib/auth/ability'
+import { fetchBlockWithJourneyAcl } from '../../../lib/auth/fetchBlockWithJourneyAcl'
+import { builder } from '../../builder'
+import { update } from '../service'
+
+import { ExampleBlock } from './example'
+import { ExampleBlockUpdateInput } from './inputs'
+
+builder.mutationField('exampleBlockUpdate', (t) =>
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
+    type: ExampleBlock,
+    nullable: false,
+    override: { from: 'api-journeys' },
+    args: {
+      id: t.arg({ type: 'ID', required: true }),
+      input: t.arg({ type: ExampleBlockUpdateInput, required: true }),
+      journeyId: t.arg({
+        type: 'ID',
+        required: false,
+        description: 'drop this parameter after merging teams'
+      })
+    },
+    resolve: async (_parent, args, context) => {
+      const { id, input: initialInput } = args
+
+      const block = await fetchBlockWithJourneyAcl(id)
+      if (
+        !ability(
+          Action.Update,
+          abilitySubject('Journey', block.journey),
+          context.user
+        )
+      ) {
+        throw new GraphQLError('user is not allowed to update example block', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+
+      const input = { ...initialInput }
+      // domain-specific validation using `block` here ...
+
       return await update(id, { ...input })
     }
   })
