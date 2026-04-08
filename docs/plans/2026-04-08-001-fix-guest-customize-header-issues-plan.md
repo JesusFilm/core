@@ -1,5 +1,5 @@
 ---
-title: "fix: guest customize header layout, visibility, and locale issues (NES-1526)"
+title: 'fix: guest customize header layout, visibility, and locale issues (NES-1526)'
 type: fix
 status: active
 date: 2026-04-08
@@ -135,6 +135,7 @@ Remove the `currentLanguageCode` variable since it's no longer needed.
 ### Task 5 — Investigate locale switching
 
 **Files to check:**
+
 - `apps/journeys-admin/src/components/LanguageSwitcher/LanguageSwitcher.tsx`
 - `apps/journeys-admin/pages/templates/[journeyId]/customize.tsx` (getServerSideProps)
 - `apps/journeys-admin/src/libs/initAndAuthApp/initAndAuthApp.ts`
@@ -162,6 +163,7 @@ Remove the `currentLanguageCode` variable since it's no longer needed.
 **File:** `GuestCustomizeHeader.spec.tsx`
 
 Update existing tests to reflect the new layout:
+
 - Remove test for home button (replaced by logo click)
 - Add test for logo click navigating to `/`
 - Update test for language button (no locale text displayed)
@@ -179,11 +181,11 @@ Update existing tests to reflect the new layout:
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `apps/journeys-admin/src/components/PageWrapper/PageWrapper.tsx` | Conditional navbar width |
-| `apps/journeys-admin/src/components/TemplateCustomization/GuestCustomizeHeader/GuestCustomizeHeader.tsx` | Desktop visibility, logo layout, globe-only button |
-| `apps/journeys-admin/src/components/TemplateCustomization/GuestCustomizeHeader/GuestCustomizeHeader.spec.tsx` | Update tests |
+| File                                                                                                          | Change                                             |
+| ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `apps/journeys-admin/src/components/PageWrapper/PageWrapper.tsx`                                              | Conditional navbar width                           |
+| `apps/journeys-admin/src/components/TemplateCustomization/GuestCustomizeHeader/GuestCustomizeHeader.tsx`      | Desktop visibility, logo layout, globe-only button |
+| `apps/journeys-admin/src/components/TemplateCustomization/GuestCustomizeHeader/GuestCustomizeHeader.spec.tsx` | Update tests                                       |
 
 ## Sources
 
