@@ -1,33 +1,53 @@
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
 import { generateRandomString } from '../../framework/helpers'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { Register } from '../../pages/register-Page'
 import { TeamsPage } from '../../pages/teams-page'
 
 let userEmail = ''
+let sharedPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  return sharedPage
+}
+
+const getSharedContext = (): BrowserContext => {
+  if (sharedContext == null) {
+    throw new Error('Shared authenticated context was not initialized')
+  }
+  return sharedContext
+}
 
 test.describe('Teams', () => {
+  test.describe.configure({ mode: 'serial' })
+
   test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
+    sharedContext = await browser.newContext()
+    sharedPage = await sharedContext.newPage()
+    const landingPage = new LandingPage(sharedPage)
+    const register = new Register(sharedPage)
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     console.log(`userName : ${userEmail}`)
-    await page.close()
   })
 
-  test.beforeEach(async ({ page }) => {
-    const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+  test.beforeEach(async () => {
+    await getSharedPage().goto('/')
+  })
+
+  test.afterAll(async () => {
+    if (sharedPage != null) await sharedPage.close()
+    if (sharedContext != null) await sharedContext.close()
+    sharedPage = undefined
+    sharedContext = undefined
   })
 
   /*
@@ -36,8 +56,9 @@ test.describe('Teams', () => {
   3. Rename the team
   */
   test('Create a team and create a journey then rename the team', async ({
-    page
+    
   }) => {
+    const page = getSharedPage()
     const teamsPage = new TeamsPage(page)
     const journeyName = new JourneyPage(page)
     // 1. Create a new team - Verify the user able to create the new team through New team option in menu icon in discover page
@@ -51,9 +72,10 @@ test.describe('Teams', () => {
 
   // Discover page -> Three dot > Custom Domain
   test('Verify Custom Domain option from Three dot menu And validate journey link from the selected journey page', async ({
-    page,
-    context
+    
   }) => {
+    const page = getSharedPage()
+    const context = getSharedContext()
     const domainName =
       'your.nextstep.' + (await generateRandomString(5)).toLowerCase()
 
@@ -93,8 +115,9 @@ test.describe('Teams', () => {
   // feature flag is on. When the flag is off, the test fails because the Growth Spaces link/button
   // is missing (0 elements). Re-enable this test when the flag is available in the test environment.
   test.skip('Verify Integrations option from Three dot menu', async ({
-    page
+    
   }) => {
+    const page = getSharedPage()
     const teamPage = new TeamsPage(page)
 
     await teamPage.clickThreeDotOfTeams() //click three dot from the Discovery page teams section

@@ -1,42 +1,71 @@
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
 import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
+let sharedPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (sharedPage == null) {
+    throw new Error('Shared authenticated page was not initialized')
+  }
+  return sharedPage
+}
+
+const getSharedContext = (): BrowserContext => {
+  if (sharedContext == null) {
+    throw new Error('Shared authenticated context was not initialized')
+  }
+  return sharedContext
+}
 
 test.describe('verify custom journey page', () => {
+  test.describe.configure({ mode: 'serial' })
+
   test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
+    sharedContext = await browser.newContext()
+    sharedPage = await sharedContext.newPage()
+    const landingPage = new LandingPage(sharedPage)
+    const register = new Register(sharedPage)
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     console.log(`userEamil : ${userEmail}`)
-    await page.close()
   })
 
-  test.beforeEach(async ({ page }) => {
-    const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+  test.beforeEach(async () => {
+    const page = getSharedPage()
+    await page.goto('/')
+  })
+
+  test.afterAll(async () => {
+    if (sharedPage != null) {
+      await sharedPage.close()
+      sharedPage = undefined
+    }
+    if (sharedContext != null) {
+      await sharedContext.close()
+      sharedContext = undefined
+    }
   })
 
   // Verify the user able to create a journey with 'Create custom journey' button
-  test('Create journey via Create custom journey button', async ({ page }) => {
+  test('Create journey via Create custom journey button', async () => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
   // Verify the user able to delete the journey card in create custom journey page
-  test('Detele journey card in custom journey page', async ({ page }) => {
+  test('Detele journey card in custom journey page', async () => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
@@ -51,7 +80,8 @@ test.describe('verify custom journey page', () => {
   })
 
   // Verify the user able to copy the existing journey card in create journey page
-  test('Duplicate journey card in custom journey page', async ({ page }) => {
+  test('Duplicate journey card in custom journey page', async () => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
@@ -67,10 +97,9 @@ test.describe('verify custom journey page', () => {
   })
 
   // Verify the user able to preview the journey card in full screen mode in create custom journey page
-  test('preview the journey from the custom journey page', async ({
-    page,
-    context
-  }) => {
+  test('preview the journey from the custom journey page', async () => {
+    const page = getSharedPage()
+    const context = getSharedContext()
     const journeyPage = new JourneyPage(page)
     await journeyPage.setBrowserContext(context) // setting browser context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button

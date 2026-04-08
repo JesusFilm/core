@@ -1,34 +1,61 @@
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { ProfilePage } from '../../pages/profile-page'
 import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
+let currentPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (currentPage == null) throw new Error('Shared authenticated page was not initialized')
+  return currentPage
+}
 
 test.describe('verify profile page functionalities', () => {
+  test.describe.configure({ mode: 'serial' })
+
   test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
+    sharedContext = await browser.newContext()
+    currentPage = await sharedContext.newPage()
+    const landingPage = new LandingPage(currentPage)
+    const register = new Register(currentPage)
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     console.log(`userName : ${userEmail}`)
-    await page.close()
+    await currentPage.close()
+    currentPage = undefined
   })
 
-  test.beforeEach(async ({ page }) => {
-    const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+  test.beforeEach(async () => {
+    if (sharedContext == null) {
+      throw new Error('Shared authenticated context was not initialized')
+    }
+    currentPage = await sharedContext.newPage()
+    await getSharedPage().goto('/')
+  })
+
+  test.afterEach(async () => {
+    if (currentPage != null) {
+      await currentPage.close()
+      currentPage = undefined
+    }
+  })
+
+  test.afterAll(async () => {
+    if (currentPage != null) await currentPage.close()
+    if (sharedContext != null) await sharedContext.close()
+    currentPage = undefined
+    sharedContext = undefined
   })
 
   // Verify the user able to add the email notification in email preference page
-  test('verify email preference notification page', async ({ page }) => {
+  test('verify email preference notification page', async () => {
+    const page = getSharedPage()
     const profilePage = new ProfilePage(page)
     await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
     await profilePage.clickEmailPreferences() // clicking the email preferences button
@@ -38,18 +65,9 @@ test.describe('verify profile page functionalities', () => {
     await profilePage.clickDoneBtn() // clicking done button
   })
 
-  // Verify the user able to logout the account through logout link
-  test('logout', async ({ page }) => {
-    const profilePage = new ProfilePage(page)
-    await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
-    await profilePage.clickLogout() // clicking the logout button
-    await profilePage.verifyloggedOut() // verifying the user is logged out and the login page is displayed
-  })
-
   // Verify the user able to change language through language options
-  test('Verify the user able to change language through language options', async ({
-    page
-  }) => {
+  test('Verify the user able to change language through language options', async () => {
+    const page = getSharedPage()
     const profilePage = new ProfilePage(page)
     await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
     await profilePage.clickLanguageOption() // clicking language option
@@ -60,5 +78,14 @@ test.describe('verify profile page functionalities', () => {
     await profilePage.clickLanguageOption() // clicking language option
     await profilePage.enterLanguage('English') // selecting language in the edit language popup
     await profilePage.popupCloseBtn() // closing the change language popup
+  })
+
+  // Verify the user able to logout the account through logout link
+  test('logout', async () => {
+    const page = getSharedPage()
+    const profilePage = new ProfilePage(page)
+    await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
+    await profilePage.clickLogout() // clicking the logout button
+    await profilePage.verifyloggedOut() // verifying the user is logged out and the login page is displayed
   })
 })

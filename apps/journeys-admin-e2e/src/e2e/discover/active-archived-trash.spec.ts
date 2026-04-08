@@ -1,39 +1,53 @@
 /* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { Register } from '../../pages/register-Page'
 import { TeamsPage } from '../../pages/teams-page'
 
 let userEmail = ''
+let sharedPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (sharedPage == null) throw new Error('Shared authenticated page was not initialized')
+  return sharedPage
+}
 
 test.describe('Verify user able to Active, Archived, Trash the journeys', () => {
+  test.describe.configure({ mode: 'serial' })
+
   // Issue 1 : In Terms and Conditions page,The 'Next' button is not working properly
   // Issue 2 : The error toast message is displaying after registration new account
   test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const teamsPage = new TeamsPage(page)
-    const register = new Register(page)
+    sharedContext = await browser.newContext()
+    sharedPage = await sharedContext.newPage()
+    const landingPage = new LandingPage(sharedPage)
+    const teamsPage = new TeamsPage(sharedPage)
+    const register = new Register(sharedPage)
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
     console.log(`userName : ${userEmail}`)
-    await page.close()
   })
 
-  test.beforeEach(async ({ page }) => {
-    const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
+  test.beforeEach(async () => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
+    await page.goto('/')
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+  })
+
+  test.afterAll(async () => {
+    if (sharedPage != null) await sharedPage.close()
+    if (sharedContext != null) await sharedContext.close()
+    sharedPage = undefined
+    sharedContext = undefined
   })
 
   // ISSUE: After archiving a journey (or when the test runs), the Discover journey list (Active/Archived/Trash
@@ -41,8 +55,9 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
   // routing-related (e.g. discover list not visible in this deployment). Re-enable when the discover journey
   // list is available.
   test.skip('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
-    page
+    
   }) => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     // Verify the user able to move the single journeys from Active to archived page
     await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab()
@@ -67,8 +82,9 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
   // not found – button[id*="archived-status-panel-tab"] times out. Likely environment- or routing-related.
   // Re-enable when the discover journey list is available.
   test.skip('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
-    page
+    
   }) => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list

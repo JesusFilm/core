@@ -1,37 +1,65 @@
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
+import type { BrowserContext, Page } from 'playwright-core'
 
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
+let onboardingPage: Page | undefined
+let sharedContext: BrowserContext | undefined
+
+const getSharedPage = (): Page => {
+  if (onboardingPage == null) throw new Error('Shared authenticated page was not initialized')
+  return onboardingPage
+}
 
 test.describe('verify journey sorting', () => {
+  test.describe.configure({ mode: 'serial' })
+
   test.beforeAll('Register new account', async ({ browser }) => {
-    const page = await browser.newPage()
-    const landingPage = new LandingPage(page)
-    const register = new Register(page)
+    sharedContext = await browser.newContext()
+    onboardingPage = await sharedContext.newPage()
+    const landingPage = new LandingPage(onboardingPage)
+    const register = new Register(onboardingPage)
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     console.log(`userName : ${userEmail}`)
-    await page.close()
+    await onboardingPage.close()
+    onboardingPage = undefined
   })
 
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async () => {
+    const context = sharedContext
+    if (context == null) throw new Error('Shared authenticated context was not initialized')
+    onboardingPage = await context.newPage()
+    const page = getSharedPage()
     const landingPage = new LandingPage(page)
-    const loginPage = new LoginPage(page)
     const journeyPage = new JourneyPage(page)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
+  test.afterEach(async () => {
+    if (onboardingPage != null) {
+      await onboardingPage.close()
+      onboardingPage = undefined
+    }
+  })
+
+  test.afterAll(async () => {
+    if (onboardingPage != null) await onboardingPage.close()
+    if (sharedContext != null) await sharedContext.close()
+    onboardingPage = undefined
+    sharedContext = undefined
+  })
+
   // Sort by date
-  test('verify journeys are sort by name', async ({ page }) => {
+  test('verify journeys are sort by name', async () => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
@@ -43,7 +71,8 @@ test.describe('verify journey sorting', () => {
   })
 
   // Sort by name
-  test('verify journeys are sort by date', async ({ page }) => {
+  test('verify journeys are sort by date', async () => {
+    const page = getSharedPage()
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
