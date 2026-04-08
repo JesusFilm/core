@@ -27,7 +27,13 @@ export class CustomizationMediaPage {
     const videosSection = this.page.getByTestId('VideosSection')
     for (let i = 0; i < maxNavigationClicks; i++) {
       if (await videosSection.isVisible()) return
+      if (!this.page.url().includes('/customize')) break
+      const urlBefore = this.page.url()
       await this.clickNextButton()
+      // Wait for client-side navigation to settle before checking the next screen
+      await this.page.waitForURL((url) => url.toString() !== urlBefore, {
+        timeout: defaultTimeout
+      })
     }
     await expect(videosSection).toBeVisible({ timeout: defaultTimeout })
   }
@@ -54,16 +60,16 @@ export class CustomizationMediaPage {
   async waitForAutoSubmit(): Promise<void> {
     const helperText = this.page
       .getByTestId('VideosSection-youtube-input')
-      .locator('.MuiFormHelperText-root')
+      .locator('p')
     await expect(helperText).toBeVisible({ timeout: defaultTimeout })
     await this.page.waitForLoadState('load')
   }
 
   async waitForAutoSubmitError(): Promise<void> {
-    const errorText = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('p.MuiFormHelperText-root.Mui-error')
-    await expect(errorText).toBeVisible({ timeout: 90000 })
+    // Wait for the input to become invalid (aria-invalid is set by MUI on error)
+    await expect(
+      this.page.getByTestId('VideosSection-youtube-input').locator('input')
+    ).toHaveAttribute('aria-invalid', 'true', { timeout: 90000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {
@@ -100,7 +106,7 @@ export class CustomizationMediaPage {
   async getYouTubeHelperText(): Promise<string | null> {
     return await this.page
       .getByTestId('VideosSection-youtube-input')
-      .locator('.MuiFormHelperText-root')
+      .locator('p')
       .textContent()
   }
 }

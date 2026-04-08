@@ -245,11 +245,22 @@ export class JourneyPage {
    */
   async gotoDiscoverJourneysPage(): Promise<void> {
     const baseUrl = await getBaseUrl()
-    const discoverUrl = baseUrl.replace(/\/$/, '') + '/?type=journeys'
+    const discoverUrl = baseUrl.replace(/\/$/, '') + '/'
     await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
-    await expect(
-      this.page.getByRole('button', { name: 'Create Custom Journey' })
-    ).toBeEnabled({ timeout: 90000 })
+
+    const createBtn = this.page.getByRole('button', {
+      name: 'Create Custom Journey'
+    })
+
+    // If the button doesn't appear within 30s, the TeamProvider may not have
+    // received lastActiveTeamId yet (race between updateLastActiveTeamId mutation
+    // and SSR page load). A reload triggers a fresh SSR with committed team data.
+    try {
+      await expect(createBtn).toBeEnabled({ timeout: 30000 })
+    } catch {
+      await this.page.reload({ waitUntil: 'domcontentloaded' })
+      await expect(createBtn).toBeEnabled({ timeout: 90000 })
+    }
   }
 
   async clickCreateCustomJourney(): Promise<void> {

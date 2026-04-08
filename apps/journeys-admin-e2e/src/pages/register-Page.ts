@@ -32,7 +32,13 @@ export class Register {
     await this.clickValidateEmailBtn()
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
-    await this.clickNextBtn()
+    // Use the specific testid to avoid matching sibling "Next" buttons
+    await this.clickNextBtnOfTermsAndConditions()
+    // Wait for navigation away from Terms before checking the Discover page
+    await this.page.waitForURL(
+      (url) => !url.toString().includes('terms-and-conditions'),
+      { timeout: 120000 }
+    )
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
   }
