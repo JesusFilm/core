@@ -1,11 +1,11 @@
 /* eslint-disable playwright/expect-expect */
-import { test } from '@playwright/test'
 import type { BrowserContext, Page } from 'playwright-core'
 
+import { test } from '../../fixtures/workerAuth'
 import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { Register } from '../../pages/register-Page'
+import { LoginPage } from '../../pages/login-page'
 
 let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
@@ -19,13 +19,13 @@ const getSharedPage = (): Page => {
 test.describe('verify card level actions - footer', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser }) => {
+  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
     sharedContext = await browser.newContext()
     sharedPage = await sharedContext.newPage()
     const landingPage = new LandingPage(sharedPage)
-    const register = new Register(sharedPage)
+    const loginPage = new LoginPage(sharedPage)
     await landingPage.goToAdminUrl()
-    await register.registerNewAccount()
+    await loginPage.logInWithCreatedNewUser(workerEmail)
   })
 
   test.beforeEach(async () => {

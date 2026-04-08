@@ -1,12 +1,11 @@
 /* eslint-disable playwright/expect-expect */
-import { test } from '@playwright/test'
 import type { BrowserContext, Page } from 'playwright-core'
 
+import { test } from '../../fixtures/workerAuth'
 import { LandingPage } from '../../pages/landing-page'
+import { LoginPage } from '../../pages/login-page'
 import { ProfilePage } from '../../pages/profile-page'
-import { Register } from '../../pages/register-Page'
 
-let userEmail = ''
 let currentPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
@@ -19,15 +18,13 @@ const getSharedPage = (): Page => {
 test.describe('verify profile page functionalities', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser }) => {
+  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
     sharedContext = await browser.newContext()
     currentPage = await sharedContext.newPage()
     const landingPage = new LandingPage(currentPage)
-    const register = new Register(currentPage)
+    const loginPage = new LoginPage(currentPage)
     await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log(`userName : ${userEmail}`)
+    await loginPage.logInWithCreatedNewUser(workerEmail)
     await currentPage.close()
     currentPage = undefined
   })

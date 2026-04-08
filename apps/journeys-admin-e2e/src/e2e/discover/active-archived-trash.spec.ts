@@ -1,14 +1,13 @@
 /* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
-import { test } from '@playwright/test'
 import type { BrowserContext, Page } from 'playwright-core'
 
+import { test } from '../../fixtures/workerAuth'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { Register } from '../../pages/register-Page'
+import { LoginPage } from '../../pages/login-page'
 import { TeamsPage } from '../../pages/teams-page'
 
-let userEmail = ''
 let sharedPage: Page | undefined
 let sharedContext: BrowserContext | undefined
 
@@ -23,17 +22,15 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
 
   // Issue 1 : In Terms and Conditions page,The 'Next' button is not working properly
   // Issue 2 : The error toast message is displaying after registration new account
-  test.beforeAll('Register new account', async ({ browser }) => {
+  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
     sharedContext = await browser.newContext()
     sharedPage = await sharedContext.newPage()
     const landingPage = new LandingPage(sharedPage)
+    const loginPage = new LoginPage(sharedPage)
     const teamsPage = new TeamsPage(sharedPage)
-    const register = new Register(sharedPage)
     await landingPage.goToAdminUrl()
-    await register.registerNewAccount() // registering new user account
-    userEmail = await register.getUserEmailId() // storing the registered user email id
+    await loginPage.logInWithCreatedNewUser(workerEmail)
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-    console.log(`userName : ${userEmail}`)
   })
 
   test.beforeEach(async () => {
