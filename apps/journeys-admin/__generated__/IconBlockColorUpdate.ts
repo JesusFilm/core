@@ -16,7 +16,7 @@ export interface IconBlockColorUpdate_iconBlockUpdate {
 }
 
 export interface IconBlockColorUpdate {
-  iconBlockUpdate: IconBlockColorUpdate_iconBlockUpdate;
+  iconBlockUpdate: IconBlockColorUpdate_iconBlockUpdate | null;
 }
 
 export interface IconBlockColorUpdateVariables {
