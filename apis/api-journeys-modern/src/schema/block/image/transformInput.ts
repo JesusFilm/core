@@ -42,10 +42,9 @@ export async function transformInput<T extends TransformableImageInput>(
     const pixels = new Uint8ClampedArray(data)
     transformedInput.blurhash = encode(pixels, info.width, info.height, 4, 4)
   } catch (ex) {
-    throw new GraphQLError(
-      ex instanceof Error ? ex.message : String(ex),
-      { extensions: { code: 'BAD_USER_INPUT' } }
-    )
+    throw new GraphQLError(ex instanceof Error ? ex.message : String(ex), {
+      extensions: { code: 'BAD_USER_INPUT' }
+    })
   }
 
   return transformedInput
