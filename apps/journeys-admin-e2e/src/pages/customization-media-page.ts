@@ -118,9 +118,11 @@ export class CustomizationMediaPage {
   }
 
   async getYouTubeHelperText(): Promise<string | null> {
-    return await this.page
-      .getByTestId('VideosSection-youtube-input')
+    const helperText = this.page
+      .getByRole('textbox', { name: 'YouTube URL' })
+      .locator('xpath=ancestor::div[contains(@class,"MuiFormControl-root")]')
       .locator('.MuiFormHelperText-root')
-      .textContent()
+    await expect(helperText).toBeVisible({ timeout: defaultTimeout })
+    return await helperText.textContent()
   }
 }
