@@ -37,9 +37,8 @@ builder.mutationField('stepBlockCreate', (t) =>
               input.nextBlockId != null
                 ? { connect: { id: input.nextBlockId } }
                 : undefined,
-            parentOrder: (
-              await getSiblingsInternal(input.journeyId, null, tx)
-            ).length
+            parentOrder: (await getSiblingsInternal(input.journeyId, null, tx))
+              .length
           }
         })
         await setJourneyUpdatedAt(tx, block)
