@@ -34,25 +34,25 @@ describe('GuestCustomizeHeader', () => {
     jest.clearAllMocks()
   })
 
-  it('should render the home button', () => {
-    const { getByRole } = render(<GuestCustomizeHeader />)
-    expect(getByRole('button', { name: 'home' })).toBeInTheDocument()
+  it('should render the logo in the header', () => {
+    const { getByAltText } = render(<GuestCustomizeHeader />)
+    expect(getByAltText('Next Steps')).toBeInTheDocument()
   })
 
-  it('should navigate to home on home button click', () => {
+  it('should navigate to home on logo click', () => {
     const { getByRole } = render(<GuestCustomizeHeader />)
     fireEvent.click(getByRole('button', { name: 'home' }))
     expect(mockPush).toHaveBeenCalledWith('/')
   })
 
-  it('should render the logo', () => {
-    const { getByAltText } = render(<GuestCustomizeHeader />)
-    expect(getByAltText('Next Steps')).toBeInTheDocument()
-  })
-
-  it('should render the language button', () => {
+  it('should render the language button with globe icon', () => {
     const { getByRole } = render(<GuestCustomizeHeader />)
     expect(getByRole('button', { name: 'language' })).toBeInTheDocument()
+  })
+
+  it('should not display locale text in language button', () => {
+    const { queryByText } = render(<GuestCustomizeHeader />)
+    expect(queryByText('en')).not.toBeInTheDocument()
   })
 
   it('should open language switcher on language button click', () => {
@@ -61,12 +61,7 @@ describe('GuestCustomizeHeader', () => {
     expect(getByText('Change Language')).toBeInTheDocument()
   })
 
-  it('should display the current language code', () => {
-    const { getByText } = render(<GuestCustomizeHeader />)
-    expect(getByText('en')).toBeInTheDocument()
-  })
-
-  it('should have white background', () => {
+  it('should render the header', () => {
     const { getByTestId } = render(<GuestCustomizeHeader />)
     expect(getByTestId('GuestCustomizeHeader')).toBeInTheDocument()
   })
