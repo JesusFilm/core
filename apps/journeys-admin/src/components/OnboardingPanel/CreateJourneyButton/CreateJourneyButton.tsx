@@ -34,9 +34,7 @@ export function CreateJourneyButton(): ReactElement {
         thumbnailIcon={<FilePlus1Icon />}
         onClick={handleCreateJourneyClick}
         loading={
-          loadingJourneyCreateMutation ||
-          loadingTeams ||
-          teamResolutionPending
+          loadingJourneyCreateMutation || loadingTeams || teamResolutionPending
         }
       />
     </SidePanelContainer>
