@@ -36,10 +36,16 @@ export async function checkConditionalRedirect({
   teamName,
   allowGuest = false
 }: CheckConditionalRedirectProps): Promise<Redirect | undefined> {
-  const currentRedirect = new URL(
+  const requestedRedirect = new URL(
     resolvedUrl,
     'https://admin.nextstep.is'
   ).searchParams.get('redirect')
+  const currentRedirect =
+    requestedRedirect != null &&
+    requestedRedirect.startsWith('/') &&
+    !requestedRedirect.startsWith('//')
+      ? requestedRedirect
+      : null
 
   let redirect: string | undefined
   let encodedRedirect = ''
