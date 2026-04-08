@@ -3777,6 +3777,7 @@ export type Query = {
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
   journeySimpleGet?: Maybe<Scalars['Json']['output']>;
+  journeyTemplateLanguageIds: Array<Scalars['String']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
