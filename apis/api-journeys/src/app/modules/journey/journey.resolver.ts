@@ -133,35 +133,6 @@ export class JourneyResolver {
   }
 
   @Query()
-  @UseGuards(AppCaslGuard)
-  async adminJourney(
-    @CaslAbility() ability: AppAbility,
-    @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.slug
-  ): Promise<Journey> {
-    const filter: Prisma.JourneyWhereUniqueInput =
-      idType === IdType.slug ? { slug: id } : { id }
-    const journey = await this.prismaService.journey.findUnique({
-      where: filter,
-      include: {
-        userJourneys: true,
-        team: {
-          include: { userTeams: true }
-        }
-      }
-    })
-    if (journey == null)
-      throw new GraphQLError('journey not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (!ability.can(Action.Read, subject('Journey', journey)))
-      throw new GraphQLError('user is not allowed to view journey', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-    return journey
-  }
-
-  @Query()
   async journeys(
     @Args('where') where?: JourneysFilter,
     @Args('options')
