@@ -49,6 +49,7 @@ export class CustomizationMediaPage {
       .getByTestId('VideosSection-youtube-input')
       .locator('input')
     await input.fill(url)
+    await input.blur()
   }
 
   async waitForAutoSubmit(): Promise<void> {
@@ -60,14 +61,13 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmitError(): Promise<void> {
-    const youtubeField = this.page.getByRole('textbox', { name: 'YouTube URL' })
-    // 90s: 800ms debounce plus journey/context updates on Media screen
-    await expect(youtubeField).toHaveAttribute('aria-invalid', 'true', {
-      timeout: 90000
-    })
+    // User-visible error first (then a11y); 90s: debounce + journey/context on Media screen
     await expect(
       this.page.getByText('Please enter a valid YouTube URL')
     ).toBeVisible({ timeout: 90000 })
+    await expect(
+      this.page.getByRole('textbox', { name: 'YouTube URL' })
+    ).toHaveAttribute('aria-invalid', 'true', { timeout: 30000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {

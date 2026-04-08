@@ -12,6 +12,7 @@ import {
   ReactNode,
   createContext,
   useContext,
+  useLayoutEffect,
   useRef,
   useState
 } from 'react'
@@ -208,6 +209,12 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
       }
     }
   )
+
+  useLayoutEffect(() => {
+    const data = query.data
+    if (data == null) return
+    updateActiveTeam(data)
+  }, [query.data])
 
   function setActiveTeam(team: Team | null): void {
     setSessionTeamId(team?.id ?? null)

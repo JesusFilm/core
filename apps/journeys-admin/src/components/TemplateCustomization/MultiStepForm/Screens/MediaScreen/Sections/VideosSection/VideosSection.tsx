@@ -108,6 +108,11 @@ export function VideosSection({
   const { startUpload, startYouTubeLink, getUploadStatus } =
     useTemplateVideoUpload()
 
+  const tRef = useRef(t)
+  tRef.current = t
+  const startYouTubeLinkRef = useRef(startYouTubeLink)
+  startYouTubeLinkRef.current = startYouTubeLink
+
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [youtubeUrlError, setYoutubeUrlError] = useState<string | undefined>(
     undefined
@@ -171,22 +176,25 @@ export function VideosSection({
     const timer = setTimeout(() => {
       const extractedId = extractYouTubeVideoId(trimmedUrl)
       if (extractedId == null) {
-        setYoutubeUrlError(t('Please enter a valid YouTube URL'))
+        setYoutubeUrlError(tRef.current('Please enter a valid YouTube URL'))
         return
       }
       setYoutubeUrlError(undefined)
       if (trimmedUrl === lastSubmittedRef.current.get(videoBlockId)) return
-      void startYouTubeLink(videoBlockId, extractedId).then((success) => {
-        if (success) {
-          lastSubmittedRef.current.set(videoBlockId, trimmedUrl)
-        }
-      })
+      void startYouTubeLinkRef
+        .current(videoBlockId, extractedId)
+        .then((success) => {
+          if (success) {
+            lastSubmittedRef.current.set(videoBlockId, trimmedUrl)
+          }
+        })
     }, 800)
 
     return () => clearTimeout(timer)
-    // videoBlockId — not videoBlock: journey updates replace block object identity often;
-    // listing videoBlock reset the debounce on every render and blocked validation in CI.
-  }, [youtubeUrl, loading, videoBlockId, startYouTubeLink, t])
+    // videoBlockId — not videoBlock: journey updates replace block object identity often.
+    // t / startYouTubeLink use refs so i18n or context callback identity changes do not reset debounce.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- stable via tRef / startYouTubeLinkRef
+  }, [youtubeUrl, loading, videoBlockId])
 
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
