@@ -57,7 +57,8 @@ async function isMuxVideoUsedElsewhere(
       source: VideoBlockSource.mux,
       videoId,
       journeyId: { notIn: excludeJourneyIds },
-      deletedAt: null
+      deletedAt: null,
+      journey: { deletedAt: null }
     }
   })
   return count > 0
@@ -71,7 +72,8 @@ async function isCloudflareImageUsedElsewhere(
     where: {
       src: { contains: imageId },
       journeyId: { notIn: excludeJourneyIds },
-      deletedAt: null
+      deletedAt: null,
+      journey: { deletedAt: null }
     }
   })
   return count > 0
@@ -135,7 +137,14 @@ export async function deleteUnusedMedia(
       }
 
       if (muxVideo.assetId != null) {
-        await deleteMuxAsset(muxVideo.assetId)
+        try {
+          await deleteMuxAsset(muxVideo.assetId)
+        } catch (error) {
+          logger?.warn(
+            { videoId, assetId: muxVideo.assetId, error },
+            'Failed to delete Mux remote asset, proceeding with DB cleanup'
+          )
+        }
       }
 
       await prismaMedia.muxVideo.delete({ where: { id: videoId } })
@@ -174,7 +183,15 @@ export async function deleteUnusedMedia(
         continue
       }
 
-      await deleteCloudflareImageAsset(imageId)
+      try {
+        await deleteCloudflareImageAsset(imageId)
+      } catch (error) {
+        logger?.warn(
+          { imageId, error },
+          'Failed to delete Cloudflare remote image, proceeding with DB cleanup'
+        )
+      }
+
       await prismaMedia.cloudflareImage.delete({ where: { id: imageId } })
       deletedCloudflareImages++
       logger?.info({ imageId }, 'Deleted unused Cloudflare image')

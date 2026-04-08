@@ -401,6 +401,67 @@ describe('mediaCleanup', () => {
       )
     })
 
+    it('should still delete Mux DB record when remote asset deletion fails', async () => {
+      const refs: MediaReferences = {
+        muxVideoIds: new Set(['mux-1']),
+        cloudflareImageIds: new Set()
+      }
+
+      prismaMock.block.count.mockResolvedValue(0)
+      mockPrismaMedia.muxVideo.findUnique.mockResolvedValue({
+        assetId: 'asset-1',
+        userId: 'user-1'
+      })
+      mockMuxAssetsDelete.mockRejectedValue(new Error('not found'))
+      mockPrismaMedia.muxVideo.delete.mockResolvedValue({})
+
+      const result = await deleteUnusedMedia(
+        refs,
+        ['journey-1'],
+        'user-1',
+        mockLogger
+      )
+
+      expect(result.deletedMuxVideos).toBe(1)
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ videoId: 'mux-1', assetId: 'asset-1' }),
+        'Failed to delete Mux remote asset, proceeding with DB cleanup'
+      )
+      expect(mockPrismaMedia.muxVideo.delete).toHaveBeenCalledWith({
+        where: { id: 'mux-1' }
+      })
+    })
+
+    it('should still delete Cloudflare DB record when remote image deletion fails', async () => {
+      const refs: MediaReferences = {
+        muxVideoIds: new Set(),
+        cloudflareImageIds: new Set(['cf-img-1'])
+      }
+
+      prismaMock.block.count.mockResolvedValue(0)
+      mockPrismaMedia.cloudflareImage.findUnique.mockResolvedValue({
+        userId: 'user-1'
+      })
+      mockCloudflareImagesDelete.mockRejectedValue(new Error('not found'))
+      mockPrismaMedia.cloudflareImage.delete.mockResolvedValue({})
+
+      const result = await deleteUnusedMedia(
+        refs,
+        ['journey-1'],
+        'user-1',
+        mockLogger
+      )
+
+      expect(result.deletedCloudflareImages).toBe(1)
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.objectContaining({ imageId: 'cf-img-1' }),
+        'Failed to delete Cloudflare remote image, proceeding with DB cleanup'
+      )
+      expect(mockPrismaMedia.cloudflareImage.delete).toHaveBeenCalledWith({
+        where: { id: 'cf-img-1' }
+      })
+    })
+
     it('should handle mixed Mux and Cloudflare media', async () => {
       const refs: MediaReferences = {
         muxVideoIds: new Set(['mux-1']),
