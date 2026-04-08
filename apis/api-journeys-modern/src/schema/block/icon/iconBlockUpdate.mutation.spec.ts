@@ -133,7 +133,7 @@ describe('iconBlockUpdate', () => {
     })
 
     expect(result).toEqual({
-      data: { iconBlockUpdate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'user is not allowed to update block'

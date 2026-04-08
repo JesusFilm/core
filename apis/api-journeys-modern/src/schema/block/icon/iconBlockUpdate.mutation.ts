@@ -7,7 +7,7 @@ import { IconBlockUpdateInput } from './inputs'
 builder.mutationField('iconBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: IconBlock,
-    nullable: true,
+    nullable: false,
     override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),

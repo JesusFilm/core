@@ -28,6 +28,7 @@ Overrides use `override: { from: 'api-journeys' }` in the Pothos field definitio
 Find the resolver under `apis/api-journeys/src/app/modules/`. Identify:
 - **Type**: query, mutation, or field resolver
 - **Args and input types**
+- **Return type nullability**: check the `.graphql` SDL file (or `apis/api-journeys/schema.graphql`) for whether the field returns `Type!` (non-nullable) or `Type` (nullable). The override **must** match this exactly.
 - **Authorization logic** (CASL guards, ability checks)
 - **Database operations** (direct Prisma calls vs service methods)
 - **Post-mutation side effects** (e.g. `recalculate()`, `setJourneyUpdatedAt`)
@@ -76,7 +77,7 @@ import { ExampleBlockUpdateInput } from './inputs'
 builder.mutationField('exampleBlockUpdate', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
     type: ExampleBlock,
-    nullable: true,
+    nullable: false, // match the source SDL (IconBlock! → false, IconBlock → true)
     override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true }),
@@ -99,7 +100,7 @@ builder.mutationField('exampleBlockUpdate', (t) =>
 Conventions:
 - `authorizeBlockCreate` for creates, `authorizeBlockUpdate` for updates
 - `update()` from `../service` handles action upsert, `setJourneyUpdatedAt`, `recalculateJourneyCustomizable`
-- `nullable: true` for updates (errors return null), `nullable: false` for creates
+- **`nullable` must match the source SDL**: check the original `.graphql` file — `Type!` → `nullable: false`, `Type` → `nullable: true`
 - Keep the deprecated `journeyId` arg for backwards compat
 
 ---
@@ -121,7 +122,7 @@ builder.mutationField('exampleUpdate', (t) =>
     .withAuth({ $any: { isAuthenticated: true, isAnonymous: true } })
     .prismaField({
       type: ExampleRef,
-      nullable: false,
+      nullable: false, // match the source SDL
       override: { from: 'api-journeys' },
       args: {
         input: t.arg({ type: ExampleInput, required: true })
@@ -147,9 +148,9 @@ import { builder } from '../builder'
 import { ExampleRef } from './example'
 
 builder.queryField('exampleQuery', (t) =>
-  t.withAuth({ isAuthenticated: true, isAnonymous: true }).prismaField({
+  t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).prismaField({
     type: ExampleRef,
-    nullable: false,
+    nullable: false, // match the source SDL
     override: { from: 'api-journeys' },
     args: {
       id: t.arg({ type: 'ID', required: true })
