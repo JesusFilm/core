@@ -818,7 +818,9 @@ export class JourneyPage {
     await expect(cardLocator.first()).toBeVisible({
       timeout: sixtySecondsTimeout
     })
-    const names = await cardLocator.locator(this.journeyNamePath).allInnerTexts()
+    const names = await cardLocator
+      .locator(this.journeyNamePath)
+      .allInnerTexts()
     const sorted = [...names].sort((a, b) =>
       Intl.Collator().compare(a.toLowerCase(), b.toLowerCase())
     )
@@ -834,7 +836,9 @@ export class JourneyPage {
         )
       }
     )
-    const journeyListCount = await cardLocator.locator(this.journeyNamePath).count()
+    const journeyListCount = await cardLocator
+      .locator(this.journeyNamePath)
+      .count()
     if (journeyListCount === 0) {
       console.log('There are no new journeys exist to name sort')
       return
@@ -842,7 +846,9 @@ export class JourneyPage {
     await expect(cardLocator.first()).toBeVisible({
       timeout: sixtySecondsTimeout
     })
-    const names = await cardLocator.locator(this.journeyNamePath).allInnerTexts()
+    const names = await cardLocator
+      .locator(this.journeyNamePath)
+      .allInnerTexts()
     const sorted = [...names].sort((a, b) =>
       Intl.Collator().compare(a.toLowerCase(), b.toLowerCase())
     )
@@ -864,7 +870,9 @@ export class JourneyPage {
     const journeysDescriptionList = await cardLocator
       .locator('span[data-testid="new-journey-badge"] + span')
       .allInnerTexts()
-    const dateLabels = journeysDescriptionList.map((d) => d.split('-')[0].trim())
+    const dateLabels = journeysDescriptionList.map((d) =>
+      d.split('-')[0].trim()
+    )
     const sorted = [...dateLabels].sort(
       (a, b) => new Date(b).getTime() - new Date(a).getTime()
     )
@@ -893,7 +901,9 @@ export class JourneyPage {
     const journeysDescriptionList = await cardLocator
       .locator('span[data-testid="new-journey-badge"] + span')
       .allInnerTexts()
-    const dateLabels = journeysDescriptionList.map((d) => d.split('-')[0].trim())
+    const dateLabels = journeysDescriptionList.map((d) =>
+      d.split('-')[0].trim()
+    )
     const sorted = [...dateLabels].sort(
       (a, b) => new Date(b).getTime() - new Date(a).getTime()
     )
