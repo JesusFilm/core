@@ -234,7 +234,6 @@ extend type Query {
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
-  adminJourney(id: ID!, idType: IdType): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
   journeyCollection(id: ID!): JourneyCollection!
@@ -339,15 +338,6 @@ type Mutation {
 
   """blockRestore is used for redo/undo"""
   blockRestore(id: ID!): [Block!]!
-  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
-  cardBlockUpdate(
-    id: ID!
-    input: CardBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): CardBlock!
-  iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
     input: IconBlockUpdateInput!
@@ -609,29 +599,6 @@ type CardBlock implements Block
   themeName: ThemeName @shareable
 }
 
-input CardBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  eventLabel: BlockEventLabel
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
-input CardBlockUpdateInput {
-  parentBlockId: ID
-  eventLabel: BlockEventLabel
-  coverBlockId: ID
-  backgroundColor: String
-  backdropBlur: Int
-  fullscreen: Boolean
-  themeMode: ThemeMode
-  themeName: ThemeName
-}
-
 enum GridDirection {
   columnReverse
   column
@@ -737,18 +704,6 @@ type IconBlock implements Block
   name: IconName @shareable
   color: IconColor @shareable
   size: IconSize @shareable
-}
-
-input IconBlockCreateInput {
-  """
-  ID should be unique Response UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  parentBlockId: ID!
-  journeyId: ID!
-  name: IconName
-  color: IconColor
-  size: IconSize
 }
 
 input IconBlockUpdateInput {
@@ -1277,6 +1232,9 @@ type VideoBlock implements Block
   subtitleLanguage: Language @shareable
   showGeneratedSubtitles: Boolean @shareable
   customizable: Boolean @shareable
+
+  """Publisher notes for template adapters (e.g. trailer, intro)."""
+  notes: String
 }
 
 """
@@ -2067,6 +2025,7 @@ type IntegrationGoogle implements Integration
   team: Team!
   type: IntegrationType!
   user: User
+  userId: ID
   accountEmail: String
 }
 

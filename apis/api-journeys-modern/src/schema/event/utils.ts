@@ -84,9 +84,10 @@ export async function validateBlockEvent(
     })
   }
 
-  // Get visitor by userId and check if they have access to this journey
+  // Get visitor by userId scoped to the journey's team to avoid
+  // returning a visitor from a different team (e.g. jfp-team)
   const visitor = await prisma.visitor.findFirst({
-    where: { userId }
+    where: { userId, teamId: journey.teamId }
   })
 
   if (visitor == null) {
@@ -152,8 +153,17 @@ export async function getByUserIdAndJourneyId(
   visitor: Visitor
   journeyVisitor: JourneyVisitor
 } | null> {
+  const journey = await prisma.journey.findUnique({
+    where: { id: journeyId },
+    select: { teamId: true }
+  })
+
+  if (journey == null) {
+    return null
+  }
+
   const visitor = await prisma.visitor.findFirst({
-    where: { userId }
+    where: { userId, teamId: journey.teamId }
   })
 
   if (visitor == null) {

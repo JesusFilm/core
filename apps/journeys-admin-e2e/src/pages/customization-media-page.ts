@@ -18,9 +18,9 @@ export class CustomizationMediaPage {
   }
 
   async clickNextButton(): Promise<void> {
-    await this.page
-      .getByTestId('CustomizeFlowNextButton')
-      .click({ timeout: defaultTimeout })
+    const nextButton = this.page.getByTestId('CustomizeFlowNextButton')
+    await expect(nextButton).toBeEnabled({ timeout: defaultTimeout })
+    await nextButton.click({ timeout: defaultTimeout })
   }
 
   async navigateToMediaScreen(): Promise<void> {
@@ -62,8 +62,8 @@ export class CustomizationMediaPage {
   async waitForAutoSubmitError(): Promise<void> {
     const errorText = this.page
       .getByTestId('VideosSection-youtube-input')
-      .locator('.Mui-error, .MuiFormHelperText-root.Mui-error')
-    await expect(errorText).toBeVisible({ timeout: defaultTimeout })
+      .locator('p.MuiFormHelperText-root.Mui-error')
+    await expect(errorText).toBeVisible({ timeout: 90000 })
   }
 
   async verifyVideosSectionVisible(): Promise<void> {

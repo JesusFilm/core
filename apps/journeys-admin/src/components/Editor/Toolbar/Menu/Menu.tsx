@@ -97,7 +97,9 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!isLocalTemplate && (
           <AccessItem variant="menu-item" onClose={handleCloseMenu} />
         )}
-        {!mdUp && !isTemplate && <AnalyticsItem variant="menu-item" />}
+        {!mdUp && !isTemplate && (
+          <AnalyticsItem variant="menu-item" journeyId={journey?.id} />
+        )}
         {!sharedWithMeTeam && !isTemplate && (
           <>
             <CreateTemplateItem variant="menu-item" globalPublish={false} />

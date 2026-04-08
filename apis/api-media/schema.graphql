@@ -23,6 +23,7 @@ interface BaseError {
 
 type BibleBook {
   id: ID!
+  updatedAt: DateTime!
   name(languageId: ID, primary: Boolean): [BibleBookName!]!
   osisId: String!
   alternateName: String
@@ -35,6 +36,10 @@ type BibleBookName {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input BibleBooksFilter {
+  updatedAt: DateTimeFilter
 }
 
 type BibleCitation {
@@ -206,6 +211,11 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+input DateTimeFilter {
+  gte: DateTime
+  lte: DateTime
+}
+
 enum DefaultPlatform {
   ios
   android
@@ -257,8 +267,13 @@ input ImageInput {
 
 type Keyword {
   id: ID!
+  updatedAt: DateTime!
   value: String!
   language: Language!
+}
+
+input KeywordsFilter {
+  updatedAt: DateTimeFilter
 }
 
 type LabeledVideoCounts {
@@ -382,8 +397,7 @@ type Mutation {
   videoOriginCreate(input: MutationVideoOriginCreateInput!): VideoOrigin!
   videoOriginUpdate(input: MutationVideoOriginUpdateInput!): VideoOrigin!
   videoOriginDelete(id: ID!): VideoOrigin!
-  videoPublishChildren(id: ID!): VideoPublishChildrenResult!
-  videoPublishChildrenAndLanguages(id: ID!): VideoPublishChildrenAndLanguagesResult!
+  videoPublishChildren(id: ID!, mode: VideoPublishMode!, dryRun: Boolean!): VideoPublishChildrenResult!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
@@ -702,10 +716,10 @@ type Query {
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
-  bibleBooks: [BibleBook!]!
+  bibleBooks(where: BibleBooksFilter): [BibleBook!]!
   bibleCitations(videoId: ID): [BibleCitation!]!
   bibleCitation(id: ID!): BibleCitation!
-  keywords: [Keyword!]!
+  keywords(where: KeywordsFilter): [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
@@ -1120,6 +1134,7 @@ type Video
   restrictDownloadPlatforms: [Platform!]!
   restrictViewPlatforms: [Platform!]!
   publishedAt: Date
+  updatedAt: DateTime!
   children: [Video!]!
   parents: [Video!]!
 }
@@ -1152,6 +1167,7 @@ type VideoDescription {
 
 type VideoEdition {
   id: ID!
+  updatedAt: DateTime!
   name: String
   videoVariants: [VideoVariant!]!
   videoSubtitles: [VideoSubtitle!]!
@@ -1192,18 +1208,26 @@ type VideoOrigin {
   description: String
 }
 
-type VideoPublishChildrenAndLanguagesResult {
-  parentId: ID
-  publishedChildIds: [ID!]
-  publishedChildrenCount: Int
-  publishedVariantIds: [ID!]
-  publishedVariantsCount: Int
-}
-
 type VideoPublishChildrenResult {
   parentId: ID
-  publishedChildIds: [ID!]
-  publishedChildrenCount: Int
+  publishedVideoIds: [ID!]
+  publishedVideoCount: Int
+  publishedVariantIds: [ID!]
+  publishedVariantsCount: Int
+  dryRun: Boolean
+  videosFailedValidation: [VideoPublishChildrenUnpublishedVideo!]!
+}
+
+type VideoPublishChildrenUnpublishedVideo {
+  videoId: ID
+  missingFields: [String!]
+  message: String
+}
+
+enum VideoPublishMode {
+  childrenVideosOnly
+  childrenVideosAndVariants
+  variantsOnly
 }
 
 enum VideoRedirectType {
@@ -1340,6 +1364,7 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+  updatedAt: DateTime!
 
   """master video file"""
   asset: CloudflareR2
@@ -1444,6 +1469,7 @@ input VideoVariantDownloadUpdateInput {
 input VideoVariantFilter {
   onlyPublished: Boolean = true
   languageId: ID
+  updatedAt: DateTimeFilter
 }
 
 input VideoVariantUpdateInput {
@@ -1473,6 +1499,7 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
   published: Boolean
   locked: Boolean
+  updatedAt: DateTimeFilter
 }
 
 type Youtube

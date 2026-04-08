@@ -51,7 +51,10 @@ Object.defineProperty(document, 'clearImmediate', {
 })
 
 beforeAll(() => mswServer.listen())
-afterEach(() => mswServer.resetHandlers())
+afterEach(() => {
+  mswServer.resetHandlers()
+  sessionStorage.clear()
+})
 afterAll(() => mswServer.close())
 
 jest.mock('next/router', () => require('next-router-mock'))
