@@ -100,10 +100,9 @@ export class Register {
 
   async verifyPageNavigatedBeforeStartPage() {
     await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-        { hasText: 'Terms and Conditions' }
-      )
+      this.page
+        .getByTestId('JourneysAdminOnboardingPageWrapper')
+        .getByRole('heading', { name: 'Terms and Conditions' })
     ).toBeVisible({ timeout: 90000 })
   }
 

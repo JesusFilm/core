@@ -972,17 +972,13 @@ export class JourneyPage {
 
   async verifySeeLinkHrefAttributeBesideUseTemplate() {
     await expect(
-      this.page.locator('h6:has-text("Use Template") + a', {
-        hasText: 'See all'
-      })
+      this.page.getByRole('link', { name: /^See all$/ })
     ).toHaveAttribute('href', '/templates')
   }
 
   async verifySeeAllTemplateBelowUseTemplate() {
     await expect(
-      this.page.locator('div[data-testid="SidePanelContainer"] a', {
-        hasText: 'See all templates'
-      })
+      this.page.getByRole('link', { name: 'See all templates' })
     ).toHaveAttribute('href', '/templates')
   }
 

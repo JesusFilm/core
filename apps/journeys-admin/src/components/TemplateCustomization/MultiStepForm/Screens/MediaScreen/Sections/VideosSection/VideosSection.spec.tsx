@@ -386,6 +386,50 @@ describe('VideosSection', () => {
     expect(mockStartYouTubeLink).not.toHaveBeenCalled()
   })
 
+  it('still shows invalid URL error when journey gets a new object reference before debounce completes', async () => {
+    jest.useFakeTimers()
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })
+    const { rerender } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithMatchingVideoBlock, variant: 'admin' }}
+          >
+            <VideosSection cardBlockId={cardBlockId} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByPlaceholderText('Paste a YouTube link...')
+    await user.clear(input)
+    await user.type(input, 'not-a-valid-url')
+
+    const journeyClone: Journey = {
+      ...journeyWithMatchingVideoBlock,
+      blocks: [...(journeyWithMatchingVideoBlock.blocks ?? [])]
+    }
+
+    rerender(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: journeyClone, variant: 'admin' }}>
+            <VideosSection cardBlockId={cardBlockId} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    act(() => {
+      jest.advanceTimersByTime(800)
+    })
+
+    expect(
+      screen.getByText('Please enter a valid YouTube URL')
+    ).toBeInTheDocument()
+    expect(mockStartYouTubeLink).not.toHaveBeenCalled()
+  })
+
   it('clears error immediately when user types after an invalid URL', async () => {
     jest.useFakeTimers()
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime })

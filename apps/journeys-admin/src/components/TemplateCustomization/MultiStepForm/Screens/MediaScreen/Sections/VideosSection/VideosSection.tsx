@@ -114,6 +114,7 @@ export function VideosSection({
   )
 
   const videoBlock = getCustomizableCardVideoBlock(journey, cardBlockId)
+  const videoBlockId = videoBlock?.id ?? null
   const adapterNote = videoBlock?.notes?.trim() ?? ''
 
   const uploadStatus =
@@ -165,7 +166,7 @@ export function VideosSection({
 
   useEffect(() => {
     const trimmedUrl = youtubeUrl.trim()
-    if (trimmedUrl === '' || loading || videoBlock == null) return
+    if (trimmedUrl === '' || loading || videoBlockId == null) return
 
     const timer = setTimeout(() => {
       const extractedId = extractYouTubeVideoId(trimmedUrl)
@@ -174,16 +175,18 @@ export function VideosSection({
         return
       }
       setYoutubeUrlError(undefined)
-      if (trimmedUrl === lastSubmittedRef.current.get(videoBlock.id)) return
-      void startYouTubeLink(videoBlock.id, extractedId).then((success) => {
+      if (trimmedUrl === lastSubmittedRef.current.get(videoBlockId)) return
+      void startYouTubeLink(videoBlockId, extractedId).then((success) => {
         if (success) {
-          lastSubmittedRef.current.set(videoBlock.id, trimmedUrl)
+          lastSubmittedRef.current.set(videoBlockId, trimmedUrl)
         }
       })
     }, 800)
 
     return () => clearTimeout(timer)
-  }, [youtubeUrl, loading, videoBlock, startYouTubeLink, t])
+    // videoBlockId — not videoBlock: journey updates replace block object identity often;
+    // listing videoBlock reset the debounce on every render and blocked validation in CI.
+  }, [youtubeUrl, loading, videoBlockId, startYouTubeLink, t])
 
   return (
     <Stack data-testid="VideosSection" gap={2} width="100%">
