@@ -210,6 +210,20 @@ export class JourneyResolver {
   }
 
   @Query()
+  async journeyTemplateLanguageIds(): Promise<string[]> {
+    const results = await this.prismaService.journey.findMany({
+      where: {
+        template: true,
+        status: JourneyStatus.published,
+        teamId: 'jfp-team'
+      },
+      distinct: ['languageId'],
+      select: { languageId: true }
+    })
+    return results.map((r) => r.languageId)
+  }
+
+  @Query()
   async journey(
     @Args('id') id: string,
     @Args('idType') idType: IdType = IdType.slug,

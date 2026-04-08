@@ -166,6 +166,7 @@ extend type Query {
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
+  journeyTemplateLanguageIds: [String!]!
 }
 
 input JourneyCreateInput {
