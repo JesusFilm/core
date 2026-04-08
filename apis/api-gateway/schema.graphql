@@ -176,7 +176,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     """
     journeyId: ID
   ): IconBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
-  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS) 
+  imageBlockCreate(input: ImageBlockCreateInput!) : ImageBlock! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   imageBlockUpdate(
     id: ID!
     input: ImageBlockUpdateInput!
