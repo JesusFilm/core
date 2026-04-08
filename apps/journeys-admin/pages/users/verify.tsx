@@ -20,6 +20,10 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { CreateVerificationRequest } from '../../__generated__/CreateVerificationRequest'
 import { GetMe } from '../../__generated__/GetMe'
+import {
+  ValidateEmail as ValidateEmailType,
+  ValidateEmailVariables
+} from '../../__generated__/ValidateEmail'
 import { CREATE_VERIFICATION_REQUEST } from '../../src/components/EmailVerification/EmailVerification'
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { GET_ME } from '../../src/components/PageWrapper/NavigationDrawer/UserNavigation'
@@ -228,6 +232,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   if (tokens == null) return redirectToLogin(ctx)
 
   const user = toUser(tokens)
+  // resolvedUrl is intentionally omitted so that checkConditionalRedirect
+  // (called inside initAndAuthApp) does not run — otherwise the verify page
+  // would redirect to itself in a loop.
   const { translations, apolloClient } = await initAndAuthApp({
     user,
     locale: ctx.locale
@@ -247,7 +254,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         : ''
 
     try {
-      await apolloClient.mutate({
+      await apolloClient.mutate<ValidateEmailType, ValidateEmailVariables>({
         mutation: VALIDATE_EMAIL,
         variables: { email, token }
       })
