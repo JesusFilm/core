@@ -3,13 +3,12 @@ import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
 
+import { journeyEditorUrlRegex } from '../e2e-constants'
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
 const ninetySecondsTimeout = 90000
-/** Same as journey-page: AddJourneyButton → `/journeys/:id`; create-custom → `/edit`. */
-const journeyEditorUrlRegex = /\/journeys\/[^/?#]+(\/edit)?/
 
 export class TeamsPage {
   readonly page: Page

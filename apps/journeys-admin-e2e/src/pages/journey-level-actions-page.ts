@@ -2,11 +2,13 @@
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
+import { journeyEditorUrlRegex } from '../e2e-constants'
 import { generateRandomNumber } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const ninetySecondsTimeout = 90000
 
 export class JourneyLevelActions {
   readonly page: Page
@@ -83,7 +85,14 @@ export class JourneyLevelActions {
     await expect(journeyCardpath).toBeInViewport({
       timeout: thirtySecondsTimeout
     })
-    await journeyCardpath.click({ delay: 500 })
+    // 90s: cold Vercel SSR / client navigation after card click before editor mounts
+    await Promise.all([
+      this.page.waitForURL(journeyEditorUrlRegex, {
+        timeout: ninetySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      journeyCardpath.click({ delay: 500 })
+    ])
   }
 
   async clickThreeDotOptions(options): Promise<void> {

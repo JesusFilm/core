@@ -5,6 +5,7 @@ import path from 'path'
 import { expect } from '@playwright/test'
 import type { Page } from 'playwright-core'
 
+import { journeyEditorUrlRegex } from '../e2e-constants'
 import { generateRandomNumber, getBaseUrl } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
@@ -12,8 +13,6 @@ let journeyName = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
 const ninetySecondsTimeout = 90000
-/** AddJourneyButton → `/journeys/:id`; create-custom → `/journeys/:id/edit`. */
-const journeyEditorUrlRegex = /\/journeys\/[^/?#]+(\/edit)?/
 // eslint-disable-next-line no-undef
 const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
@@ -279,6 +278,11 @@ export class JourneyPage {
       await this.page.reload({ waitUntil: 'domcontentloaded' })
       await expect(createBtn).toBeEnabled({ timeout: 90000 })
     }
+    // Guard: createBtn being enabled proves we are on Discover, not Terms.
+    // Fail loudly here rather than later if SSR unexpectedly redirected.
+    await expect(this.page).not.toHaveURL(/terms-and-conditions/, {
+      timeout: thirtySecondsTimeout
+    })
   }
 
   async clickCreateCustomJourney(): Promise<void> {
@@ -288,7 +292,8 @@ export class JourneyPage {
     const createButton = this.page
       .getByTestId('JourneysAdminContainedIconButton')
       .getByRole('button')
-    // Start listening before click so fast client navigations are not missed
+    // Start listening before click so fast client navigations are not missed.
+    // 90s: cold Vercel SSR for a new journey page after TeamProvider resolves.
     await Promise.all([
       this.page.waitForURL(journeyEditorUrlRegex, {
         timeout: ninetySecondsTimeout,
