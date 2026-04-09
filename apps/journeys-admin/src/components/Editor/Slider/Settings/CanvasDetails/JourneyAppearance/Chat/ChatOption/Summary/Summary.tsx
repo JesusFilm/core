@@ -138,8 +138,9 @@ export function Summary({
           undo: { link: currentLink, platform: currentPlatform }
         },
         execute() {
+          const idToRemove = currentButtonId
           void journeyChatButtonRemove({
-            variables: { chatButtonRemoveId: currentButtonId },
+            variables: { chatButtonRemoveId: idToRemove },
             update(cache, { data }) {
               if (data?.chatButtonRemove != null) {
                 cache.modify({
@@ -151,12 +152,12 @@ export function Summary({
                     chatButtons(refs, { readField }) {
                       return refs.filter(
                         (ref: Reference) =>
-                          currentButtonId !== readField('id', ref)
+                          idToRemove !== readField('id', ref)
                       )
                     }
                   }
                 })
-                cache.evict({ id: `ChatButton:${currentButtonId}` })
+                cache.evict({ id: `ChatButton:${idToRemove}` })
               }
             }
           })
