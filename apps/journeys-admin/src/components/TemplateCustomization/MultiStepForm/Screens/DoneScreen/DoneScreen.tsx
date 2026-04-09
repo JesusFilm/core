@@ -137,7 +137,9 @@ export function DoneScreen(): ReactElement {
               xs: VARIANT_CONFIGS.guestPreview.cardHeight.xs * PREVIEW_SCALE,
               sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
             },
-            boxShadow: 1
+            borderRadius: 4,
+            boxShadow:
+              '0px 2.644px 3.525px 0px rgba(0, 0, 0, 0.14), 0px 2.644px 2.644px 0px rgba(0, 0, 0, 0.12), 0px 0.881px 7.05px 0px rgba(0, 0, 0, 0.20)'
           }}
         >
           <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
