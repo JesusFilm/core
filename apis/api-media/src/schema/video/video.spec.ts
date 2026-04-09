@@ -22,7 +22,6 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
@@ -2708,6 +2707,7 @@ describe('video', () => {
           }
         })
       })
+
     })
 
     describe('videoUpdate', () => {
