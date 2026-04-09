@@ -14,7 +14,7 @@ import { type MouseEvent, type ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ChervonDownIcon from '@core/shared/ui/icons/ChevronDown'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import MetaverseIcon from '@core/shared/ui/icons/Metaverse'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
@@ -42,7 +42,7 @@ export function HeaderTabButtons(): ReactElement {
     { label: t('Watch', { lng: 'en' }), icon: <Play1Icon />, href: '/watch' },
     {
       label: t('Metaverse', { lng: 'en' }),
-      icon: <Globe1Icon />,
+      icon: <MetaverseIcon />,
       href: 'https://www.jesusfilm.org/metaverse/'
     }
   ])
