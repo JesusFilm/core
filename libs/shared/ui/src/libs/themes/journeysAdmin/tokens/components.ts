@@ -2,6 +2,13 @@ import { ThemeOptions } from '@mui/material/styles'
 
 import { palette } from './colors'
 
+declare module '@mui/material/Button' {
+  interface ButtonPropsVariantOverrides {
+    blockContained: true
+    blockOutlined: true
+  }
+}
+
 export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
   components: {
     MuiButton: {
@@ -27,6 +34,94 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           props: { size: 'small' },
           style: {
             fontWeight: 600
+          }
+        },
+        {
+          props: { variant: 'blockContained' as const },
+          style: {
+            borderRadius: '8px',
+            padding: '10px 16px',
+            fontSize: '18px',
+            fontWeight: 700,
+            lineHeight: '20px',
+            minHeight: '48px',
+            boxShadow: 'none'
+          }
+        },
+        {
+          props: {
+            variant: 'blockContained' as const,
+            color: 'solid' as const
+          },
+          style: {
+            backgroundColor: palette[900],
+            color: palette[0],
+            '@media (hover: hover)': {
+              '&:hover': {
+                backgroundColor: palette[800]
+              }
+            }
+          }
+        },
+        {
+          props: {
+            variant: 'blockContained' as const,
+            color: 'primary' as const
+          },
+          style: {
+            backgroundColor: '#C52D3A',
+            color: palette[0],
+            '@media (hover: hover)': {
+              '&:hover': {
+                backgroundColor: '#9E2630'
+              }
+            }
+          }
+        },
+        {
+          props: { variant: 'blockOutlined' as const },
+          style: {
+            borderRadius: '8px',
+            padding: '8px 14px',
+            fontSize: '18px',
+            fontWeight: 700,
+            lineHeight: '20px',
+            minHeight: '48px',
+            borderWidth: '2px',
+            borderStyle: 'solid',
+            backgroundColor: palette[0]
+          }
+        },
+        {
+          props: {
+            variant: 'blockOutlined' as const,
+            color: 'solid' as const
+          },
+          style: {
+            borderColor: palette[900],
+            color: palette[900],
+            '@media (hover: hover)': {
+              '&:hover': {
+                backgroundColor: palette[200],
+                borderWidth: '2px'
+              }
+            }
+          }
+        },
+        {
+          props: {
+            variant: 'blockOutlined' as const,
+            color: 'primary' as const
+          },
+          style: {
+            borderColor: '#C52D3A',
+            color: '#C52D3A',
+            '@media (hover: hover)': {
+              '&:hover': {
+                backgroundColor: palette[100],
+                borderWidth: '2px'
+              }
+            }
           }
         }
       ]
