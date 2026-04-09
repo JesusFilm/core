@@ -625,6 +625,40 @@ describe('JourneyResolver', () => {
     })
   })
 
+  describe('journeyTemplateLanguageIds', () => {
+    it('returns distinct language IDs from published templates', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([
+        { languageId: '529' },
+        { languageId: '496' }
+      ] as any)
+      expect(await resolver.journeyTemplateLanguageIds()).toEqual([
+        '529',
+        '496'
+      ])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          template: true,
+          status: 'published',
+          teamId: 'jfp-team'
+        },
+        distinct: ['languageId'],
+        select: { languageId: true }
+      })
+    })
+
+    it('returns only one entry per language', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([
+        { languageId: '529' }
+      ] as any)
+      expect(await resolver.journeyTemplateLanguageIds()).toEqual(['529'])
+    })
+
+    it('returns empty array when no published templates exist', async () => {
+      prismaService.journey.findMany.mockResolvedValueOnce([])
+      expect(await resolver.journeyTemplateLanguageIds()).toEqual([])
+    })
+  })
+
   describe('journey', () => {
     it('returns journey by slug', async () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(journey)
