@@ -30,17 +30,17 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    const createBtn = this.page.getByRole('button', {
-      name: 'Create Custom Journey'
-    })
-    // First attempt: 30s. If the button doesn't appear the page may have loaded
-    // with lastActiveTeamId=null (race between the updateLastActiveTeamId mutation
-    // and SSR). A reload triggers a fresh SSR that reads the now-committed DB value.
+    const sharedWithMeSelect = this.page
+      .getByRole('combobox')
+      .filter({ hasText: 'Shared With Me' })
+
+    // Discover page is ready when team selector resolves to Shared With Me.
     try {
-      await expect(createBtn).toBeEnabled({ timeout: 30000 })
+      await expect(sharedWithMeSelect).toBeVisible({ timeout: 30000 })
     } catch {
       await this.page.reload({ waitUntil: 'domcontentloaded' })
-      await expect(createBtn).toBeEnabled({ timeout: 90000 })
+      // 90s: team/query hydration can be slow on CI after login and reload.
+      await expect(sharedWithMeSelect).toBeVisible({ timeout: 90000 })
     }
   }
 
