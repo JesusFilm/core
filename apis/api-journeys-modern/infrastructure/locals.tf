@@ -3,6 +3,8 @@ locals {
   environment_variables = [
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
+    "CLOUDFLARE_ACCOUNT_ID",
+    "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_UPLOAD_KEY",
     "FACEBOOK_APP_ID",
     "FACEBOOK_APP_SECRET",
