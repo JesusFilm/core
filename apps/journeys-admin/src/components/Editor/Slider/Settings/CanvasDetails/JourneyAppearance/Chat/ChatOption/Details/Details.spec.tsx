@@ -85,7 +85,9 @@ describe('Details', () => {
         ]}
       >
         <SnackbarProvider>
-          <Details {...props} />
+          <CommandProvider>
+            <Details {...props} />
+          </CommandProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -136,7 +138,9 @@ describe('Details', () => {
         ]}
       >
         <SnackbarProvider>
-          <Details {...props} />
+          <CommandProvider>
+            <Details {...props} />
+          </CommandProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -188,7 +192,9 @@ describe('Details', () => {
         ]}
       >
         <SnackbarProvider>
-          <Details {...props} />
+          <CommandProvider>
+            <Details {...props} />
+          </CommandProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -196,6 +202,168 @@ describe('Details', () => {
     fireEvent.click(getByRole('combobox'))
     fireEvent.click(getByText('Snapchat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('undo after link change restores previous link', async () => {
+    const executeResult = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton' as const,
+          id: 'chat.id',
+          link: 'https://newlink.com',
+          platform: MessagePlatform.whatsApp,
+          customizable: null
+        }
+      }
+    }))
+    const undoResult = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton' as const,
+          id: 'chat.id',
+          link: 'https://example.com',
+          platform: MessagePlatform.whatsApp,
+          customizable: null
+        }
+      }
+    }))
+
+    const executeMock: MockedResponse<
+      JourneyChatButtonUpdate,
+      JourneyChatButtonUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_UPDATE,
+        variables: {
+          chatButtonUpdateId: 'chat.id',
+          journeyId: 'journeyId',
+          input: {
+            link: 'https://newlink.com',
+            platform: MessagePlatform.whatsApp
+          }
+        }
+      },
+      result: executeResult
+    }
+    const undoMock: MockedResponse<
+      JourneyChatButtonUpdate,
+      JourneyChatButtonUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_UPDATE,
+        variables: {
+          chatButtonUpdateId: 'chat.id',
+          journeyId: 'journeyId',
+          input: {
+            link: 'https://example.com',
+            platform: MessagePlatform.whatsApp
+          }
+        }
+      },
+      result: undoResult
+    }
+
+    render(
+      <MockedProvider mocks={[executeMock, undoMock]}>
+        <SnackbarProvider>
+          <CommandProvider>
+            <Details {...defaultProps} />
+            <CommandUndoItem variant="button" />
+          </CommandProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'https://newlink.com' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+    await waitFor(() => expect(executeResult).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoResult).toHaveBeenCalled())
+  })
+
+  it('undo after platform change restores previous platform', async () => {
+    const executeResult = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton' as const,
+          id: 'chat.id',
+          link: 'https://example.com',
+          platform: MessagePlatform.snapchat,
+          customizable: null
+        }
+      }
+    }))
+    const undoResult = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton' as const,
+          id: 'chat.id',
+          link: 'https://example.com',
+          platform: MessagePlatform.tikTok,
+          customizable: null
+        }
+      }
+    }))
+
+    const executeMock: MockedResponse<
+      JourneyChatButtonUpdate,
+      JourneyChatButtonUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_UPDATE,
+        variables: {
+          chatButtonUpdateId: 'chat.id',
+          journeyId: 'journeyId',
+          input: {
+            link: 'https://example.com',
+            platform: MessagePlatform.snapchat
+          }
+        }
+      },
+      result: executeResult
+    }
+    const undoMock: MockedResponse<
+      JourneyChatButtonUpdate,
+      JourneyChatButtonUpdateVariables
+    > = {
+      request: {
+        query: JOURNEY_CHAT_BUTTON_UPDATE,
+        variables: {
+          chatButtonUpdateId: 'chat.id',
+          journeyId: 'journeyId',
+          input: {
+            link: 'https://example.com',
+            platform: MessagePlatform.tikTok
+          }
+        }
+      },
+      result: undoResult
+    }
+
+    render(
+      <MockedProvider mocks={[executeMock, undoMock]}>
+        <SnackbarProvider>
+          <CommandProvider>
+            <Details
+              {...defaultProps}
+              currentPlatform={MessagePlatform.tikTok}
+              enableIconSelect
+            />
+            <CommandUndoItem variant="button" />
+          </CommandProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByText('Snapchat'))
+    await waitFor(() => expect(executeResult).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(undoResult).toHaveBeenCalled())
   })
 
   it('should display human-readable label for legacy platform in dropdown', () => {

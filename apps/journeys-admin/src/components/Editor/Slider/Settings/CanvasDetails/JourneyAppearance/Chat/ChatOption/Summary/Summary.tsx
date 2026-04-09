@@ -3,8 +3,9 @@ import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { ChangeEvent, ReactElement } from 'react'
+
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonCreate } from '../../../../../../../../../../__generated__/JourneyChatButtonCreate'
@@ -55,86 +56,145 @@ export function Summary({
     useMutation<JourneyChatButtonCreate>(JOURNEY_CHAT_BUTTON_CREATE)
   const [journeyChatButtonRemove, { loading: removeLoading }] =
     useMutation<JourneyChatButtonRemove>(JOURNEY_CHAT_BUTTON_REMOVE)
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const { add } = useCommand()
 
-  async function handleToggle(
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> {
-    // Restricts mutations from running if loading for spam click protection, must be QA'd
+  function handleToggle(event: ChangeEvent<HTMLInputElement>): void {
     if (createLoading || removeLoading) return
+
     if (event.target.checked && !disableSelection) {
-      try {
-        await journeyChatButtonCreate({
-          variables: {
-            journeyId,
-            input: {
-              link: currentLink,
-              platform: currentPlatform
-            }
-          },
-          update(cache, { data }) {
-            if (data?.chatButtonCreate != null) {
-              cache.modify({
-                id: cache.identify({ __typename: 'Journey', id: journeyId }),
-                fields: {
-                  chatButtons(existingChatButtons = []) {
-                    const newChatButtonRef = cache.writeFragment({
-                      data: data.chatButtonCreate,
-                      fragment: gql`
-                        fragment NewChatButton on ChatButton {
-                          id
-                        }
-                      `
-                    })
-                    return [...existingChatButtons, newChatButtonRef]
+      let createdButtonId: string | undefined
+
+      add({
+        parameters: {
+          execute: { link: currentLink, platform: currentPlatform },
+          undo: {}
+        },
+        execute({ link, platform }) {
+          void journeyChatButtonCreate({
+            variables: {
+              journeyId,
+              input: { link, platform }
+            },
+            update(cache, { data }) {
+              if (data?.chatButtonCreate != null) {
+                createdButtonId = data.chatButtonCreate.id
+                cache.modify({
+                  id: cache.identify({
+                    __typename: 'Journey',
+                    id: journeyId
+                  }),
+                  fields: {
+                    chatButtons(existingChatButtons = []) {
+                      const newChatButtonRef = cache.writeFragment({
+                        data: data.chatButtonCreate,
+                        fragment: gql`
+                          fragment NewChatButton on ChatButton {
+                            id
+                          }
+                        `
+                      })
+                      return [...existingChatButtons, newChatButtonRef]
+                    }
                   }
-                }
-              })
+                })
+              }
             }
-          }
-        })
-      } catch (error) {
-        enqueueSnackbar(
-          t('Error adding button, please reload and try again.'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-      }
-    } else {
-      if (chatButtonId != null) {
-        try {
-          await journeyChatButtonRemove({
-            variables: { chatButtonRemoveId: chatButtonId },
+          })
+        },
+        undo() {
+          if (createdButtonId == null) return
+          const idToRemove = createdButtonId
+          void journeyChatButtonRemove({
+            variables: { chatButtonRemoveId: idToRemove },
             update(cache, { data }) {
               if (data?.chatButtonRemove != null) {
                 cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journeyId }),
+                  id: cache.identify({
+                    __typename: 'Journey',
+                    id: journeyId
+                  }),
                   fields: {
                     chatButtons(refs, { readField }) {
                       return refs.filter(
                         (ref: Reference) =>
-                          chatButtonId !== readField('id', ref)
+                          idToRemove !== readField('id', ref)
                       )
                     }
                   }
                 })
-                cache.evict({ id: `ChatButton:${chatButtonId}` })
+                cache.evict({ id: `ChatButton:${idToRemove}` })
               }
             }
           })
-        } catch (error) {
-          enqueueSnackbar(
-            t('Error removing button, please reload and try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
         }
-      }
+      })
+    } else {
+      if (chatButtonId == null) return
+      let currentButtonId = chatButtonId
+
+      add({
+        parameters: {
+          execute: {},
+          undo: { link: currentLink, platform: currentPlatform }
+        },
+        execute() {
+          void journeyChatButtonRemove({
+            variables: { chatButtonRemoveId: currentButtonId },
+            update(cache, { data }) {
+              if (data?.chatButtonRemove != null) {
+                cache.modify({
+                  id: cache.identify({
+                    __typename: 'Journey',
+                    id: journeyId
+                  }),
+                  fields: {
+                    chatButtons(refs, { readField }) {
+                      return refs.filter(
+                        (ref: Reference) =>
+                          currentButtonId !== readField('id', ref)
+                      )
+                    }
+                  }
+                })
+                cache.evict({ id: `ChatButton:${currentButtonId}` })
+              }
+            }
+          })
+        },
+        undo({ link, platform }) {
+          void journeyChatButtonCreate({
+            variables: {
+              journeyId,
+              input: { link, platform }
+            },
+            update(cache, { data }) {
+              if (data?.chatButtonCreate != null) {
+                currentButtonId = data.chatButtonCreate.id
+                cache.modify({
+                  id: cache.identify({
+                    __typename: 'Journey',
+                    id: journeyId
+                  }),
+                  fields: {
+                    chatButtons(existingChatButtons = []) {
+                      const newChatButtonRef = cache.writeFragment({
+                        data: data.chatButtonCreate,
+                        fragment: gql`
+                          fragment NewChatButton on ChatButton {
+                            id
+                          }
+                        `
+                      })
+                      return [...existingChatButtons, newChatButtonRef]
+                    }
+                  }
+                })
+              }
+            }
+          })
+        }
+      })
     }
   }
 
