@@ -103,27 +103,20 @@ export function TermsAndConditions(): ReactElement {
     }
 
     if (teamId != null && team != null) {
-      await Promise.allSettled([
-        updateLastActiveTeamId({
-          variables: {
-            input: { lastActiveTeamId: teamId }
-          }
-        }),
-        router.push(
-          router.query.redirect != null
-            ? new URL(router.query.redirect as string, window.location.origin)
-            : hasExistingTeam
-              ? '/'
-              : '/?onboarding=true'
-        ),
-        query
-          .refetch()
-          .then(() =>
-            console.log('[TermsAndConditions] Team data refetched successfully')
-          )
-      ])
-
       setActiveTeam(team)
+      await updateLastActiveTeamId({
+        variables: {
+          input: { lastActiveTeamId: teamId }
+        }
+      })
+      void query.refetch()
+      await router.push(
+        router.query.redirect != null
+          ? new URL(router.query.redirect as string, window.location.origin)
+          : hasExistingTeam
+            ? '/'
+            : '/?onboarding=true'
+      )
     }
     setLoading(false)
   }
