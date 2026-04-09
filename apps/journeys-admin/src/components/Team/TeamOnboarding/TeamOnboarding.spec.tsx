@@ -11,12 +11,16 @@ import {
   useTeam
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
+import { JourneyDuplicate } from '../../../../__generated__/JourneyDuplicate'
 import { TeamCreate } from '../../../../__generated__/TeamCreate'
 import { UpdateLastActiveTeamId } from '../../../../__generated__/UpdateLastActiveTeamId'
 import { User } from '../../../libs/auth/authContext'
 import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMutation'
+
+import { ONBOARDING_TEMPLATE_ID } from './TeamOnboarding'
 
 import { TeamOnboarding } from '.'
 
@@ -107,6 +111,7 @@ describe('TeamOnboarding', () => {
         }
       }
     },
+    maxUsageCount: 2,
     result: {
       data: {
         journeyProfileUpdate: {
@@ -116,6 +121,27 @@ describe('TeamOnboarding', () => {
       }
     }
   }
+
+  const journeyDuplicateMock: MockedResponse<JourneyDuplicate> = {
+    request: {
+      query: JOURNEY_DUPLICATE,
+      variables: {
+        id: ONBOARDING_TEMPLATE_ID,
+        teamId: 'teamId1'
+      }
+    },
+    maxUsageCount: 2,
+    result: {
+      data: {
+        journeyDuplicate: {
+          __typename: 'Journey',
+          id: ONBOARDING_TEMPLATE_ID,
+          template: false
+        }
+      }
+    }
+  }
+
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 
@@ -181,7 +207,12 @@ describe('TeamOnboarding', () => {
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
       <MockedProvider
-        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
+        mocks={[
+          teamMock,
+          getTeams,
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
         cache={cache}
       >
         <SnackbarProvider>
@@ -211,7 +242,9 @@ describe('TeamOnboarding', () => {
       ])
     )
     expect(getByText('Team Title created.')).toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith('/?onboarding=true')
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith('/?onboarding=true')
+    )
   })
 
   it('should update last active team id', async () => {
@@ -234,7 +267,8 @@ describe('TeamOnboarding', () => {
             },
             result
           },
-          updateLastActiveTeamIdMock
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
         ]}
       >
         <SnackbarProvider>
@@ -325,7 +359,12 @@ describe('TeamOnboarding', () => {
 
     const { getByRole, getByTestId, getByText, getAllByRole } = render(
       <MockedProvider
-        mocks={[teamMock, getTeams, updateLastActiveTeamIdMock]}
+        mocks={[
+          teamMock,
+          getTeams,
+          updateLastActiveTeamIdMock,
+          journeyDuplicateMock
+        ]}
         cache={cache}
       >
         <SnackbarProvider>
@@ -353,8 +392,10 @@ describe('TeamOnboarding', () => {
       ])
     )
     expect(getByText('Team Title created.')).toBeInTheDocument()
-    expect(push).toHaveBeenCalledWith(
-      new URL('http://localhost/custom-location')
+    await waitFor(() =>
+      expect(push).toHaveBeenCalledWith(
+        new URL('http://localhost/custom-location')
+      )
     )
   })
 })
