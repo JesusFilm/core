@@ -65,6 +65,8 @@ Use `builder.mutationField` or `builder.queryField` accordingly.
 
 #### Mutation template (block domain)
 
+For block-related mutations, use the shared block service:
+
 Two authorization patterns exist for block mutations. Choose based on complexity:
 
 **Pattern 1 — `authorizeBlockUpdate` (simple blocks)**
