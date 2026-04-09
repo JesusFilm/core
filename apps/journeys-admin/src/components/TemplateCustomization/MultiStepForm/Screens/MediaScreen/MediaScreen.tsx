@@ -11,9 +11,8 @@ import { GetJourney_journey_blocks_StepBlock as StepBlock } from '@core/journeys
 import { getJourneyMedia } from '../../../utils/getJourneyMedia'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { useTemplateVideoUpload } from '../../TemplateVideoUploadProvider'
-import { ScreenWrapper } from '../ScreenWrapper'
-
 import { TemplateCardPreviewDialog } from '../LinksScreen/CardsPreview/TemplateCardPreviewDialog'
+import { ScreenWrapper } from '../ScreenWrapper'
 
 import {
   CardsSection,
@@ -79,56 +78,56 @@ export function MediaScreen({ handleNext }: MediaScreenProps): ReactElement {
   }
   return (
     <>
-    <ScreenWrapper
-      title={t('Media')}
-      subtitle={t('Personalize and manage your media assets')}
-      footer={
-        <CustomizeFlowNextButton
-          label={t('Next')}
-          onClick={async () => {
-            setNavigating(true)
-            try {
-              await handleNext()
-            } catch (error) {
-              console.error('[MediaScreen] Navigation failed:', error)
-              setNavigating(false)
-            }
-          }}
-          ariaLabel={t('Next')}
-          loading={hasActiveUploads || navigating}
-        />
-      }
-    >
-      <Stack sx={{ width: '100%', gap: 6 }}>
-        {showLogo && <LogoSection />}
-        {showLogo && <Divider />}
-        <CardsSection
-          customizableSteps={customizableSteps}
-          selectedStep={selectedStep}
-          handleStepClick={handleStepClick}
-          showLabel={journey?.website === true}
-        />
-        {showImages && (
-          <ImagesSection
-            journey={journey}
-            cardBlockId={selectedCardBlockId}
-            showLabel={showMediaLabels}
+      <ScreenWrapper
+        title={t('Media')}
+        subtitle={t('Personalize and manage your media assets')}
+        footer={
+          <CustomizeFlowNextButton
+            label={t('Next')}
+            onClick={async () => {
+              setNavigating(true)
+              try {
+                await handleNext()
+              } catch (error) {
+                console.error('[MediaScreen] Navigation failed:', error)
+                setNavigating(false)
+              }
+            }}
+            ariaLabel={t('Next')}
+            loading={hasActiveUploads || navigating}
           />
-        )}
-        {showVideos && (
-          <VideosSection
-            cardBlockId={selectedCardBlockId}
-            showLabel={showMediaLabels}
+        }
+      >
+        <Stack sx={{ width: '100%', gap: 6 }}>
+          {showLogo && <LogoSection />}
+          {showLogo && <Divider />}
+          <CardsSection
+            customizableSteps={customizableSteps}
+            selectedStep={selectedStep}
+            handleStepClick={handleStepClick}
+            showLabel={journey?.website === true}
           />
-        )}
-      </Stack>
-    </ScreenWrapper>
-    <TemplateCardPreviewDialog
-      open={previewStepId != null}
-      onClose={() => setPreviewStepId(null)}
-      steps={customizableSteps}
-      initialStepId={previewStepId}
-    />
-  </>
+          {showImages && (
+            <ImagesSection
+              journey={journey}
+              cardBlockId={selectedCardBlockId}
+              showLabel={showMediaLabels}
+            />
+          )}
+          {showVideos && (
+            <VideosSection
+              cardBlockId={selectedCardBlockId}
+              showLabel={showMediaLabels}
+            />
+          )}
+        </Stack>
+      </ScreenWrapper>
+      <TemplateCardPreviewDialog
+        open={previewStepId != null}
+        onClose={() => setPreviewStepId(null)}
+        steps={customizableSteps}
+        initialStepId={previewStepId}
+      />
+    </>
   )
 }
