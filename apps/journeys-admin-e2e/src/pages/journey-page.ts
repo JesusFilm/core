@@ -1311,6 +1311,13 @@ export class JourneyPage {
     await menuItem.click()
   }
   async downloadQRCodeAsPng() {
+    // 90s: QR code canvas-to-PNG conversion on cold Vercel can keep the button
+    // disabled well beyond the default 20s actionTimeout.
+    await expect(
+      this.page
+        .locator('div.MuiDialogContent-root')
+        .getByRole('button', { name: 'Download PNG' })
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
     const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
     await this.clickButtonInShareDialog('Download PNG')
     const downloadFile = await qrDownload

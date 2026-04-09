@@ -10,17 +10,31 @@ Write tests that reflect exact user requirements. A failing test means a real bu
 
 ## Mindset: senior test automation engineer, not application developer
 
-Write automation the way a **tester** would exercise the product: follow **real end-user flows** in order, with **explicit checks** that each step and each screen match expectations. Avoid “making the script work” with loose branching, silent skips, or merged paths that obscure what actually broke.
+Write automation the way a **tester** would exercise the product: follow **real end-user flows** in order, with **explicit checks** that each step and each screen match expectations. Avoid "making the script work" with loose branching, silent skips, or merged paths that obscure what actually broke.
 
 - GOOD: linear steps that read like a journey — sign in → land on dashboard → open feature → assert outcome
 - BAD: one mega-flow that tries alternate selectors or optional steps so something always passes
 
+## No conditional actions — anywhere in E2E code
+
+This rule covers **all** E2E files without exception: spec files, page objects, fixture files (`workerAuth.ts`, etc.), and helpers.
+
+Every action the automation takes must follow a **single, predetermined path**. Reading the current URL or DOM to decide which branch to execute **hides bugs** — if the app ends up in an unexpected state, the test must fail loudly, not silently take the alternate route.
+
+- GOOD: `await this.acceptTermsAndContinue()` — always asserts the terms screen first, fails if it is missing
+- BAD: `if (page.url().includes('teams/new')) { await completeWorkspace() } else { await acceptTerms() }` — a failure in one path is masked by the other
+- BAD: `if (await termsHeading.isVisible()) { … }` — skips the assertion entirely when the screen is absent
+- BAD: `waitForURL(url => url.includes('terms') || url.includes('teams/new'))` — encodes server-side non-determinism as "expected"
+- BAD: `try { await assertOnTermsPage() } catch { await assertOnWorkspacePage() }` — swallows the failure
+
+When a fixture helper (e.g. `registerNewAccount`) fails intermittently because the server returns unexpected state (e.g. SSR cache serving stale data), the **correct fix is to fix the server**, not to make the fixture branch around the bad state. A flaky fixture exposes a real product bug; conditional logic hides it.
+
 ## One user path per test — multiple real paths ⇒ multiple tests
 
-If the product can reach the same **end state** through **two or more genuinely different flows** (different entry points, prerequisites, or screens in between), write **separate tests**. Each test should have its **own preconditions / setup / fixture** so it encodes a single, honest path. Different paths usually need different setup; merging them into one test with `if` / “if present” logic **hides bugs** in the path that stopped being exercised.
+If the product can reach the same **end state** through **two or more genuinely different flows** (different entry points, prerequisites, or screens in between), write **separate tests**. Each test should have its **own preconditions / setup / fixture** so it encodes a single, honest path. Different paths usually need different setup; merging them into one test with `if` / "if present" logic **hides bugs** in the path that stopped being exercised.
 
 - GOOD: `onboarding-via-email.spec.ts` and `onboarding-via-invite-link.spec.ts`, each with setup that forces that entry
-- BAD: a shared `registerUser()` that does `if (await workspacePage.isVisible()) { … } else if (await termsPage.isVisible()) { … }` — failures in one branch can still “pass” via the other
+- BAD: a shared `registerUser()` that does `if (await workspacePage.isVisible()) { … } else if (await termsPage.isVisible()) { … }` — failures in one branch can still "pass" via the other
 - BAD: helpers named like `completeStepIfPresent()` that skip when a screen is missing instead of failing
 
 ## Reference elements by the label the user sees in the UI
