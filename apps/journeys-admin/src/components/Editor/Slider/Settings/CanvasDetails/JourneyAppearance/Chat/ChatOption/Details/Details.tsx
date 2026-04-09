@@ -77,10 +77,7 @@ export function Details({
     [t]
   )
 
-  function handleUpdate(
-    type: 'link' | 'platform',
-    value?: string
-  ): void {
+  function handleUpdate(type: 'link' | 'platform', value?: string): void {
     if (chatButtonId == null) return
 
     if (type === 'link') {
@@ -192,9 +189,7 @@ export function Details({
               labelId="icon-select"
               value={currentPlatform}
               displayEmpty
-              onChange={(event) =>
-                handleUpdate('platform', event.target.value)
-              }
+              onChange={(event) => handleUpdate('platform', event.target.value)}
               IconComponent={ChevronDownIcon}
               renderValue={(selected) => (
                 <Stack direction="row" spacing={5} alignItems="center">

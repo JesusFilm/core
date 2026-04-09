@@ -117,8 +117,7 @@ export function Summary({
                   fields: {
                     chatButtons(refs, { readField }) {
                       return refs.filter(
-                        (ref: Reference) =>
-                          idToRemove !== readField('id', ref)
+                        (ref: Reference) => idToRemove !== readField('id', ref)
                       )
                     }
                   }
