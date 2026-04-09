@@ -109,7 +109,7 @@ export function TermsAndConditions(): ReactElement {
           input: { lastActiveTeamId: teamId }
         }
       })
-      void query.refetch()
+      void query.refetch().catch(() => {})
       await router.push(
         router.query.redirect != null
           ? new URL(router.query.redirect as string, window.location.origin)
