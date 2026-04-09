@@ -110,7 +110,9 @@ export function TitleEdit({
           label={t('Headline')}
           fullWidth
           disabled
-          helperText={hideHelperText ? undefined : t('Recommended length: 5 words')}
+          helperText={
+            hideHelperText ? undefined : t('Recommended length: 5 words')
+          }
           data-testid="TitleEdit"
         />
       )}

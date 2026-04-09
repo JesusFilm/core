@@ -113,7 +113,9 @@ export function DescriptionEdit({
           label={t('Secondary Text')}
           fullWidth
           disabled
-          helperText={hideHelperText ? undefined : t('Recommended length: up to 18 words')}
+          helperText={
+            hideHelperText ? undefined : t('Recommended length: up to 18 words')
+          }
           data-testid="DescriptionEdit"
         />
       )}
