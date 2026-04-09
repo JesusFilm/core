@@ -8,6 +8,21 @@ alwaysApply: false
 
 Write tests that reflect exact user requirements. A failing test means a real bug — never hide it.
 
+## Mindset: senior test automation engineer, not application developer
+
+Write automation the way a **tester** would exercise the product: follow **real end-user flows** in order, with **explicit checks** that each step and each screen match expectations. Avoid “making the script work” with loose branching, silent skips, or merged paths that obscure what actually broke.
+
+- GOOD: linear steps that read like a journey — sign in → land on dashboard → open feature → assert outcome
+- BAD: one mega-flow that tries alternate selectors or optional steps so something always passes
+
+## One user path per test — multiple real paths ⇒ multiple tests
+
+If the product can reach the same **end state** through **two or more genuinely different flows** (different entry points, prerequisites, or screens in between), write **separate tests**. Each test should have its **own preconditions / setup / fixture** so it encodes a single, honest path. Different paths usually need different setup; merging them into one test with `if` / “if present” logic **hides bugs** in the path that stopped being exercised.
+
+- GOOD: `onboarding-via-email.spec.ts` and `onboarding-via-invite-link.spec.ts`, each with setup that forces that entry
+- BAD: a shared `registerUser()` that does `if (await workspacePage.isVisible()) { … } else if (await termsPage.isVisible()) { … }` — failures in one branch can still “pass” via the other
+- BAD: helpers named like `completeStepIfPresent()` that skip when a screen is missing instead of failing
+
 ## Reference elements by the label the user sees in the UI
 
 - GOOD: `getByRole('heading', { name: 'Create Custom Journey' })`
@@ -24,6 +39,14 @@ If a required element is not visible, the test must FAIL and surface the bug.
 - BAD: check visibility first and only assert if it happens to be present
 - BAD: loop over multiple fallback CSS selectors
 - BAD: `try/catch` that swallows an assertion failure
+
+## Validate the destination screen before acting on it
+
+After any navigation or step that should move the user from one screen to the next, **confirm that the new screen is actually shown** (e.g. URL, heading, or other unmistakable UI for that page) **before** clicking, filling, or asserting on elements that belong to that screen.
+
+- GOOD: `await expect(page).toHaveURL(/expected-path/)` then `await expect(page.getByRole('heading', { name: '…' })).toBeVisible()` before further actions
+- GOOD: a dedicated page-object method such as `assertOnTermsPage()` called at the start of every action block for that page
+- BAD: assuming the next page loaded because the previous click resolved — interact immediately without verifying the new context
 
 ## Always use soft waits — never hard waits
 
