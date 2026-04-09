@@ -1,5 +1,11 @@
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded'
+import ChatBubbleRoundedIcon from '@mui/icons-material/ChatBubbleRounded'
+import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
+import ThumbUpOffAltRoundedIcon from '@mui/icons-material/ThumbUpOffAltRounded'
 import Card from '@mui/material/Card'
+import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
 import CardMedia from '@mui/material/CardMedia'
 import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
@@ -23,7 +29,7 @@ import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJo
 import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 
 interface SocialScreenSocialImage {
-  hasCreatorDescription?: boolean
+  hideAdornments?: boolean
 }
 
 const MEDIA_MOBILE_WIDTH = 215
@@ -45,7 +51,7 @@ const StyledInput = styled('input')({
 })
 
 export function SocialScreenSocialImage({
-  hasCreatorDescription = false
+  hideAdornments = false
 }: SocialScreenSocialImage): ReactElement {
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
@@ -134,6 +140,33 @@ export function SocialScreenSocialImage({
         }
       }}
     >
+      {!hideAdornments && (
+        <CardHeader
+          avatar={<AccountCircleRoundedIcon sx={{ color: 'divider' }} />}
+          title={
+            <Skeleton variant="text" width={85} height={20} animation={false} />
+          }
+          action={
+            <IconButton disabled>
+              <Skeleton
+                variant="circular"
+                width={12}
+                height={12}
+                animation={false}
+              />
+            </IconButton>
+          }
+          sx={{
+            px: 0,
+            pt: 0,
+            pb: 3,
+            '& .MuiCardHeader-action': {
+              alignSelf: 'center'
+            }
+          }}
+        />
+      )}
+
       <CardMedia
         sx={{
           display: 'flex',
@@ -143,15 +176,7 @@ export function SocialScreenSocialImage({
           backgroundColor:
             journey != null ? 'background.default' : 'transparent',
           overflow: 'hidden',
-          borderRadius: 3,
-          borderBottomRightRadius: {
-            xs: 12,
-            sm: hasCreatorDescription ? 0 : 12
-          },
-          borderBottomLeftRadius: {
-            xs: 12,
-            sm: hasCreatorDescription ? 0 : 12
-          },
+          borderRadius: 2,
           width: {
             xs: `${MEDIA_MOBILE_WIDTH}px`,
             sm: `${MEDIA_DESKTOP_WIDTH}px`
@@ -232,7 +257,14 @@ export function SocialScreenSocialImage({
         )}
       </CardMedia>
 
-      <CardContent sx={{ px: 0, pb: 1, pt: `${CARD_SPACING}px` }}>
+      <CardContent
+        sx={{
+          px: 0,
+          pb: 0,
+          pt: `${CARD_SPACING}px`,
+          '&:last-child': { pb: 0 }
+        }}
+      >
         <Typography
           variant="body2"
           color="secondary"
@@ -266,6 +298,23 @@ export function SocialScreenSocialImage({
           {t('your.nextstep.is')}
         </Typography>
       </CardContent>
+
+      {!hideAdornments && (
+        <CardActions sx={{ justifyContent: 'space-around', p: 0 }}>
+          <IconButton disabled>
+            <ThumbUpOffAltRoundedIcon
+              fontSize="small"
+              sx={{ color: 'divider' }}
+            />
+          </IconButton>
+          <IconButton disabled>
+            <ChatBubbleRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
+          </IconButton>
+          <IconButton disabled>
+            <ShareRoundedIcon fontSize="small" sx={{ color: 'divider' }} />
+          </IconButton>
+        </CardActions>
+      )}
     </Card>
   )
 }

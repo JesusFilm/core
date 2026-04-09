@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
@@ -9,12 +8,6 @@ import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
-
-const helperTextHiddenSx = {
-  '& .MuiFormHelperText-root': {
-    display: 'none'
-  }
-}
 
 interface SocialScreenProps {
   handleNext: (overrideJourneyId?: string) => void
@@ -47,19 +40,15 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
     >
       <Stack
         alignItems="center"
-        gap={2.5}
+        gap={4}
         data-testid="SocialShareAppearance"
         sx={{
           width: '100%'
         }}
       >
-        <SocialScreenSocialImage />
-        <Box sx={{ width: '100%', ...helperTextHiddenSx }}>
-          <TitleEdit />
-        </Box>
-        <Box sx={{ width: '100%', ...helperTextHiddenSx }}>
-          <DescriptionEdit />
-        </Box>
+        <SocialScreenSocialImage hideAdornments />
+        <TitleEdit hideHelperText />
+        <DescriptionEdit hideHelperText />
       </Stack>
     </ScreenWrapper>
   )
