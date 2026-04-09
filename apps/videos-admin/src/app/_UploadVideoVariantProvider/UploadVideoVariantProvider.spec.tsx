@@ -4,6 +4,8 @@ import axios from 'axios'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import { ReactNode } from 'react'
 
+import { refreshToken } from '../api'
+
 import {
   COMPLETE_R2_MULTIPART,
   CREATE_MUX_VIDEO_UPLOAD_BY_URL,
@@ -31,6 +33,10 @@ jest.mock('notistack', () => ({
 
 jest.mock('uuid', () => ({
   v4: jest.fn().mockReturnValue('uuidv4')
+}))
+
+jest.mock('../api', () => ({
+  refreshToken: jest.fn().mockResolvedValue('refreshed-token')
 }))
 
 // Mock the getExtension function
@@ -275,6 +281,7 @@ const createWrapper = (mocks: any[] = []) => {
 describe('UploadVideoVariantContext', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(refreshToken as jest.Mock).mockResolvedValue('refreshed-token')
   })
 
   it('should initialize with default state', () => {
