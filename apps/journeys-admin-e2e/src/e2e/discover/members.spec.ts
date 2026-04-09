@@ -3,7 +3,6 @@ import type { BrowserContext, Page } from 'playwright-core'
 
 import { test } from '../../fixtures/workerAuth'
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { TeamsPage } from '../../pages/teams-page'
 
 let sharedPage: Page | undefined
@@ -18,14 +17,12 @@ const getSharedPage = (): Page => {
 test.describe('Verify Add member', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
-    sharedContext = await browser.newContext()
+  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
+    sharedContext = await browser.newContext({ storageState: workerStorageState })
     sharedPage = await sharedContext.newPage()
     const landingPage = new LandingPage(sharedPage)
-    const loginPage = new LoginPage(sharedPage)
     const teamsPage = new TeamsPage(sharedPage)
     await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(workerEmail)
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
   })
 

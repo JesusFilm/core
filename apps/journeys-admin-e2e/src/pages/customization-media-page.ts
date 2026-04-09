@@ -4,6 +4,24 @@ import type { Locator, Page } from 'playwright-core'
 const defaultTimeout = 60000
 const maxNavigationClicks = 5
 
+/** Thrown when the template flow has no media step (flag off or journey has no customizable video). */
+export class MediaCustomizeStepUnavailableError extends Error {
+  constructor() {
+    super(
+      'Media customization step is not available (customizableMedia flag off or template has no video blocks)'
+    )
+    this.name = 'MediaCustomizeStepUnavailableError'
+  }
+}
+
+function getScreenFromUrl(url: string): string | null {
+  try {
+    return new URL(url).searchParams.get('screen')
+  } catch {
+    return null
+  }
+}
+
 export class CustomizationMediaPage {
   readonly page: Page
 
@@ -27,10 +45,19 @@ export class CustomizationMediaPage {
     const videosSection = this.page.getByTestId('VideosSection')
     for (let i = 0; i < maxNavigationClicks; i++) {
       if (await videosSection.isVisible()) return
+
+      const screen = getScreenFromUrl(this.page.url())
+      if (screen === 'social') {
+        throw new MediaCustomizeStepUnavailableError()
+      }
+      if (screen === 'media') {
+        await expect(videosSection).toBeVisible({ timeout: defaultTimeout })
+        return
+      }
+
       if (!this.page.url().includes('/customize')) break
       const urlBefore = this.page.url()
       await this.clickNextButton()
-      // Wait for client-side navigation to settle before checking the next screen
       await this.page.waitForURL((url) => url.toString() !== urlBefore, {
         timeout: defaultTimeout
       })

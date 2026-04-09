@@ -11,6 +11,9 @@ import testData from '../utils/testData.json'
 let journeyName = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
+const ninetySecondsTimeout = 90000
+/** AddJourneyButton → `/journeys/:id`; create-custom → `/journeys/:id/edit`. */
+const journeyEditorUrlRegex = /\/journeys\/[^/?#]+(\/edit)?/
 // eslint-disable-next-line no-undef
 const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
@@ -40,6 +43,10 @@ export class JourneyPage {
     ).toBeVisible({ timeout: thirtySecondsTimeout })
   }
   async createAndVerifyCustomJourney() {
+    // Shallow Next.js client transitions may not fire `load`; poll URL instead.
+    await expect(this.page).toHaveURL(journeyEditorUrlRegex, {
+      timeout: ninetySecondsTimeout
+    })
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
@@ -245,12 +252,23 @@ export class JourneyPage {
    */
   async gotoDiscoverJourneysPage(): Promise<void> {
     const baseUrl = await getBaseUrl()
-    const discoverUrl = baseUrl.replace(/\/$/, '') + '/'
+    const root = baseUrl.replace(/\/$/, '') + '/'
+    const teamFromWorker = process.env.PLAYWRIGHT_WORKER_ACTIVE_TEAM_ID
+    let discoverUrl = root
+    if (
+      teamFromWorker != null &&
+      teamFromWorker !== '' &&
+      teamFromWorker !== '__shared__'
+    ) {
+      const u = new URL(root)
+      u.searchParams.set('activeTeam', teamFromWorker)
+      discoverUrl = u.toString()
+    }
     await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
 
-    const createBtn = this.page.getByRole('button', {
-      name: 'Create Custom Journey'
-    })
+    const createBtn = this.page
+      .getByTestId('JourneysAdminContainedIconButton')
+      .getByRole('button')
 
     // If the button doesn't appear within 30s, the TeamProvider may not have
     // received lastActiveTeamId yet (race between updateLastActiveTeamId mutation
@@ -264,18 +282,20 @@ export class JourneyPage {
   }
 
   async clickCreateCustomJourney(): Promise<void> {
-    const createButton = this.page.getByRole('button', {
-      name: 'Create Custom Journey'
-    })
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take time on first load
-    await expect(createButton).toBeEnabled({ timeout: 90000 })
-    await createButton.click()
-    const journeyImageLoader = this.page.locator(
-      'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
-    )
-    await expect(journeyImageLoader).toBeHidden({
-      timeout: sixtySecondsTimeout
-    })
+    // Always land on Discover with reload-retry so TeamProvider + sessionStorage
+    // resolve; plain page.goto('/') in specs leaves the card disabled (Shared With Me).
+    await this.gotoDiscoverJourneysPage()
+    const createButton = this.page
+      .getByTestId('JourneysAdminContainedIconButton')
+      .getByRole('button')
+    // Start listening before click so fast client navigations are not missed
+    await Promise.all([
+      this.page.waitForURL(journeyEditorUrlRegex, {
+        timeout: ninetySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      createButton.click()
+    ])
   }
 
   async setJourneyName(journey: string) {
@@ -293,7 +313,7 @@ export class JourneyPage {
         'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
       )
       .first()
-      .click({ timeout: sixtySecondsTimeout, delay: 1000 })
+      .click({ timeout: ninetySecondsTimeout, delay: 1000 })
     for (let clickRetry = 0; clickRetry < 5; clickRetry++) {
       if (
         await this.page
@@ -312,7 +332,7 @@ export class JourneyPage {
           'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
         )
         .first()
-        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
+        .click({ timeout: ninetySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)

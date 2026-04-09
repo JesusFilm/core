@@ -5,8 +5,6 @@ import { test } from '../../fixtures/workerAuth'
 import { generateRandomString } from '../../framework/helpers'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
-import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 import { TeamsPage } from '../../pages/teams-page'
 
 let sharedPage: Page | undefined
@@ -28,13 +26,9 @@ const getSharedContext = (): BrowserContext => {
 test.describe('Teams', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
-    sharedContext = await browser.newContext()
+  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
+    sharedContext = await browser.newContext({ storageState: workerStorageState })
     sharedPage = await sharedContext.newPage()
-    const landingPage = new LandingPage(sharedPage)
-    const loginPage = new LoginPage(sharedPage)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(workerEmail)
   })
 
   test.beforeEach(async () => {

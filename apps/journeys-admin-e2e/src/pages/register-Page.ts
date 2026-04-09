@@ -82,19 +82,18 @@ export class Register {
   }
 
   async enterOTP(otp) {
-    await this.page
+    const accordionSummary = this.page
       .locator(
         'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
       )
       .first()
-      .click()
-    await expect(
-      this.page
-        .locator(
-          'form[data-testid="EmailInviteForm"] [data-testid="VerifyCodeAccordionSummary"]'
-        )
-        .first()
-    ).toHaveAttribute('aria-expanded', 'true')
+    await expect(accordionSummary).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
+    await accordionSummary.click()
+    await expect(accordionSummary).toHaveAttribute('aria-expanded', 'true', {
+      timeout: thirtySecondsTimeout
+    })
     await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
   }
 

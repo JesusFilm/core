@@ -4,7 +4,6 @@ import type { BrowserContext, Page } from 'playwright-core'
 import { test } from '../../fixtures/workerAuth'
 import { JourneyPage } from '../../pages/journey-page'
 import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 
 let onboardingPage: Page | undefined
 let sharedContext: BrowserContext | undefined
@@ -18,15 +17,8 @@ const getSharedPage = (): Page => {
 test.describe('verify journey sorting', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
-    sharedContext = await browser.newContext()
-    onboardingPage = await sharedContext.newPage()
-    const landingPage = new LandingPage(onboardingPage)
-    const loginPage = new LoginPage(onboardingPage)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(workerEmail)
-    await onboardingPage.close()
-    onboardingPage = undefined
+  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
+    sharedContext = await browser.newContext({ storageState: workerStorageState })
   })
 
   test.beforeEach(async () => {

@@ -7,6 +7,9 @@ import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const ninetySecondsTimeout = 90000
+/** Same as journey-page: AddJourneyButton → `/journeys/:id`; create-custom → `/edit`. */
+const journeyEditorUrlRegex = /\/journeys\/[^/?#]+(\/edit)?/
 
 export class TeamsPage {
   readonly page: Page
@@ -142,7 +145,13 @@ export class TeamsPage {
   }
 
   async clickCreateJourneyBtn() {
-    await this.page.locator('button[data-testid="AddJourneyButton"]').click()
+    await Promise.all([
+      this.page.waitForURL(journeyEditorUrlRegex, {
+        timeout: ninetySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      this.page.locator('button[data-testid="AddJourneyButton"]').click()
+    ])
   }
 
   async enterTeamRename() {

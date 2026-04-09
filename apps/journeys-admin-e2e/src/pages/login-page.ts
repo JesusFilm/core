@@ -30,10 +30,18 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoaded() {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can take >65s on first run
-    await expect(
-      this.page.getByRole('button', { name: 'Create Custom Journey' })
-    ).toBeEnabled({ timeout: 90000 })
+    const createBtn = this.page.getByRole('button', {
+      name: 'Create Custom Journey'
+    })
+    // First attempt: 30s. If the button doesn't appear the page may have loaded
+    // with lastActiveTeamId=null (race between the updateLastActiveTeamId mutation
+    // and SSR). A reload triggers a fresh SSR that reads the now-committed DB value.
+    try {
+      await expect(createBtn).toBeEnabled({ timeout: 30000 })
+    } catch {
+      await this.page.reload({ waitUntil: 'domcontentloaded' })
+      await expect(createBtn).toBeEnabled({ timeout: 90000 })
+    }
   }
 
   async login(accountKey: string = 'admin'): Promise<void> {
@@ -48,7 +56,6 @@ export class LoginPage {
 
   async logInWithCreatedNewUser(userName: string) {
     await this.fillExistingEmail(userName)
-    console.log(`userName : ${userName}`)
     await this.clickSubmitButton()
     const password = await getPassword()
     await this.fillExistingPassword(password)

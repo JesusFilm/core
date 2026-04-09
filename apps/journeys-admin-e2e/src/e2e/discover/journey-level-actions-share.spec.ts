@@ -4,8 +4,6 @@ import type { BrowserContext, Page } from 'playwright-core'
 import { test } from '../../fixtures/workerAuth'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
-import { LandingPage } from '../../pages/landing-page'
-import { LoginPage } from '../../pages/login-page'
 
 let currentPage: Page | undefined
 let sharedContext: BrowserContext | undefined
@@ -26,15 +24,8 @@ const getSharedContext = (): BrowserContext => {
 test.describe('Journey level actions - share', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerEmail }) => {
-    sharedContext = await browser.newContext()
-    currentPage = await sharedContext.newPage()
-    const landingPage = new LandingPage(currentPage)
-    const loginPage = new LoginPage(currentPage)
-    await landingPage.goToAdminUrl()
-    await loginPage.logInWithCreatedNewUser(workerEmail)
-    await currentPage.close()
-    currentPage = undefined
+  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
+    sharedContext = await browser.newContext({ storageState: workerStorageState })
   })
 
   test.beforeEach(async () => {
