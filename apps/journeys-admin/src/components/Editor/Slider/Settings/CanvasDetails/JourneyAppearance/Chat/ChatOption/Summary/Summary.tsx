@@ -60,7 +60,7 @@ export function Summary({
   const { add } = useCommand()
 
   function handleToggle(event: ChangeEvent<HTMLInputElement>): void {
-    if (createLoading || removeLoading) return
+    if (createLoading || removeLoading || journeyId == null) return
 
     if (event.target.checked && !disableSelection) {
       let createdButtonId: string | undefined
@@ -115,7 +115,7 @@ export function Summary({
                     id: journeyId
                   }),
                   fields: {
-                    chatButtons(refs, { readField }) {
+                    chatButtons(refs = [], { readField }) {
                       return refs.filter(
                         (ref: Reference) => idToRemove !== readField('id', ref)
                       )
@@ -149,7 +149,7 @@ export function Summary({
                     id: journeyId
                   }),
                   fields: {
-                    chatButtons(refs, { readField }) {
+                    chatButtons(refs = [], { readField }) {
                       return refs.filter(
                         (ref: Reference) => idToRemove !== readField('id', ref)
                       )
