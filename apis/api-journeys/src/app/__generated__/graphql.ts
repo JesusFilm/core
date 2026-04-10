@@ -950,6 +950,8 @@ export abstract class IQuery {
 
     abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
 
+    abstract journeyTemplateLanguageIds(): string[] | Promise<string[]>;
+
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;

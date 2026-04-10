@@ -7,7 +7,7 @@ import '../../../../test/i18n'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { getLanguagesMock } from '../data'
+import { getJourneyTemplateLanguageIdsMock, getLanguagesMock } from '../data'
 
 import { HeaderAndLanguageFilter } from '.'
 
@@ -29,7 +29,7 @@ export const Default = {
   },
   parameters: {
     apolloClient: {
-      mocks: [getLanguagesMock]
+      mocks: [getJourneyTemplateLanguageIdsMock, getLanguagesMock]
     }
   }
 }
@@ -42,7 +42,7 @@ export const Clicked = {
   },
   parameters: {
     apolloClient: {
-      mocks: [getLanguagesMock]
+      mocks: [getJourneyTemplateLanguageIdsMock, getLanguagesMock]
     }
   },
   play: async () => {
@@ -58,7 +58,7 @@ export const Selected = {
   },
   parameters: {
     apolloClient: {
-      mocks: [getLanguagesMock]
+      mocks: [getJourneyTemplateLanguageIdsMock, getLanguagesMock]
     }
   }
 }
@@ -71,7 +71,10 @@ export const Loading = {
   },
   parameters: {
     apolloClient: {
-      mocks: [{ ...getLanguagesMock, delay: 100000000000000 }]
+      mocks: [
+        { ...getJourneyTemplateLanguageIdsMock, delay: 100000000000000 },
+        getLanguagesMock
+      ]
     }
   }
 }
