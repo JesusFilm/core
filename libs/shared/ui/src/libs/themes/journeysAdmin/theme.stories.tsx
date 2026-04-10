@@ -287,11 +287,7 @@ const ButtonVariants = (): ReactElement => {
               <Button variant={variant} color={color} loading>
                 Loading
               </Button>
-              <Button
-                variant={variant}
-                color={color}
-                startIcon={<Play3Icon />}
-              >
+              <Button variant={variant} color={color} startIcon={<Play3Icon />}>
                 Start Icon
               </Button>
               <Button

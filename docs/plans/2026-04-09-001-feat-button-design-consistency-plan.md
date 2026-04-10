@@ -1,5 +1,5 @@
 ---
-title: "feat: Add blockContained/blockOutlined button variants"
+title: 'feat: Add blockContained/blockOutlined button variants'
 type: feat
 status: active
 date: 2026-04-09
@@ -16,12 +16,14 @@ Rather than fixing each instance, we add two new button variants (`blockContaine
 ## Problem Statement
 
 Buttons across the app (sign-in flow, customization flow, dialogs) override the theme with:
+
 - `color="secondary"` (dark gray `#444451`) instead of the intended dark surface color (`#26262E`)
 - `borderRadius: 2` (8px) fighting the theme's 12px default
 - Hardcoded `height: 48px`, `width: 216px`, `width: '100%'`
 - `<Typography variant="subtitle2">` wrappers overriding the button's own font styling (weight 600 vs theme's 800)
 
 The Figma design specifies a distinct button style (Size=Large, Type=Filled) with:
+
 - Background: `#26262E` (Surface/Dark)
 - Text: `#FFFFFF`, Montserrat Bold 700, 18px/20px
 - Border radius: 8px
@@ -32,6 +34,7 @@ This doesn't match any existing MUI variant + color combination in the admin the
 ## Proposed Solution
 
 No new palette color needed. The existing `secondary` palette already has the right values:
+
 - `secondary.dark` = `#26262E` (`palette[900]`) — the intended fill/border color
 - `secondary.light` = `#6D6D7D` (`palette[700]`) — available for other uses
 - `secondary.contrastText` = `#FFFFFF` (`palette[0]`)
@@ -42,24 +45,26 @@ Hover color: `palette[800]` (`#444451`) — one step lighter than `secondary.dar
 
 A filled button with the compact 8px border radius and Figma-specified spacing.
 
-| Property | Value | Notes |
-|----------|-------|-------|
-| `borderRadius` | `8px` | Per Figma (vs theme default 12px) |
-| `padding` | `10px 16px` | Per Figma |
-| `fontSize` | `18px` | Per Figma |
-| `fontWeight` | `700` | Per Figma (Bold) |
-| `lineHeight` | `20px` | Per Figma |
-| `boxShadow` | `none` | Consistent with existing contained |
-| `textTransform` | `none` | Already set by theme root |
+| Property        | Value       | Notes                              |
+| --------------- | ----------- | ---------------------------------- |
+| `borderRadius`  | `8px`       | Per Figma (vs theme default 12px)  |
+| `padding`       | `10px 16px` | Per Figma                          |
+| `fontSize`      | `18px`      | Per Figma                          |
+| `fontWeight`    | `700`       | Per Figma (Bold)                   |
+| `lineHeight`    | `20px`      | Per Figma                          |
+| `boxShadow`     | `none`      | Consistent with existing contained |
+| `textTransform` | `none`      | Already set by theme root          |
 
 Color-specific compound variants:
 
 **`blockContained` + `color="secondary"`:**
+
 - `backgroundColor`: `palette[900]` (`#26262E`) — uses `secondary.dark`, not `secondary.main`
 - `color`: `palette[0]` (`#FFFFFF`)
 - `&:hover` → `backgroundColor`: `palette[800]` (`#444451`) — one step lighter
 
 **`blockContained` + `color="primary"`:**
+
 - `backgroundColor`: `primary.main` (`#C52D3A`)
 - `color`: `#FFFFFF`
 - `&:hover` → `backgroundColor`: `primary.dark` (`#9E2630`)
@@ -68,19 +73,20 @@ Color-specific compound variants:
 
 An outlined button with matching compact shape.
 
-| Property | Value | Notes |
-|----------|-------|-------|
-| `borderRadius` | `8px` | Matches blockContained |
-| `padding` | `10px 16px` | Matches blockContained (adjusted for border) |
-| `fontSize` | `18px` | Matches blockContained |
-| `fontWeight` | `700` | Matches blockContained |
-| `lineHeight` | `20px` | Matches blockContained |
-| `borderWidth` | `2px` | Consistent with existing outlined override |
-| `backgroundColor` | `palette[0]` (`#FFFFFF`) | White background |
+| Property          | Value                    | Notes                                        |
+| ----------------- | ------------------------ | -------------------------------------------- |
+| `borderRadius`    | `8px`                    | Matches blockContained                       |
+| `padding`         | `10px 16px`              | Matches blockContained (adjusted for border) |
+| `fontSize`        | `18px`                   | Matches blockContained                       |
+| `fontWeight`      | `700`                    | Matches blockContained                       |
+| `lineHeight`      | `20px`                   | Matches blockContained                       |
+| `borderWidth`     | `2px`                    | Consistent with existing outlined override   |
+| `backgroundColor` | `palette[0]` (`#FFFFFF`) | White background                             |
 
 Color-specific compound variants:
 
 **`blockOutlined` + `color="secondary"`:**
+
 - `borderColor`: `palette[900]` (`#26262E`) — uses `secondary.dark`
 - `color`: `palette[900]` (`#26262E`)
 - `backgroundColor`: `palette[0]` (`#FFFFFF`)
@@ -88,6 +94,7 @@ Color-specific compound variants:
 - `&:hover` → `borderWidth`: `2px` (maintain on hover)
 
 **`blockOutlined` + `color="primary"`:**
+
 - `borderColor`: `primary.main` (`#C52D3A`)
 - `color`: `primary.main` (`#C52D3A`)
 - `backgroundColor`: `palette[0]` (`#FFFFFF`)
@@ -111,8 +118,8 @@ No palette augmentation needed — `color="secondary"` and `color="primary"` alr
 
 ## Files to Change
 
-| File | Change |
-|------|--------|
+| File                                                                | Change                                                                                                |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `libs/shared/ui/src/libs/themes/journeysAdmin/tokens/components.ts` | Add `blockContained`/`blockOutlined` variants + compound variants per color + TypeScript augmentation |
 
 ## Acceptance Criteria
