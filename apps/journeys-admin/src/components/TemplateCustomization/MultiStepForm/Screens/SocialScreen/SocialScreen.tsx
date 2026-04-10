@@ -40,7 +40,7 @@ export function SocialScreen({ handleNext }: SocialScreenProps): ReactElement {
     >
       <Stack
         alignItems="center"
-        gap={4}
+        gap={5}
         data-testid="SocialShareAppearance"
         sx={{
           width: '100%'
