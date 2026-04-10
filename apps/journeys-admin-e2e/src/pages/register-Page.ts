@@ -6,17 +6,19 @@ import type { Page } from 'playwright-core'
 import { getOTP, getPassword } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
-let randomNumber = ''
 const thirtySecondsTimeout = 30000
 export class Register {
   readonly page: Page
   name: string
   userEmail: string
+  private readonly randomNumber: string
   constructor(page: Page) {
     this.page = page
-    randomNumber =
-      dayjs().format('DDMMYYhhmmss') +
-      Math.floor(Math.random() * (100 - 999 + 1) + 999)
+    // Use 24-hour clock (HHmmss) + 6 random digits for sufficient uniqueness.
+    // Module-level state caused email collisions across parallel workers.
+    this.randomNumber =
+      dayjs().format('DDMMYYHHmmss') +
+      Math.floor(Math.random() * 900000 + 100000)
   }
 
   async registerNewAccount() {
@@ -31,7 +33,8 @@ export class Register {
       await this.verifyPageNavigatedToVerifyYourEmailPage()
       await this.enterOTP(otp)
       await this.clickValidateEmailBtn()
-      // After Validate Email, app navigates to Terms (see verify.tsx). acceptTermsAndContinue asserts URL + UI first.
+      // After OTP validation verify.tsx always navigates to /terms-and-conditions
+      // (handleReValidateEmail:96-99). acceptTermsAndContinue asserts the URL first.
       await this.acceptTermsAndContinue()
       await this.verifyTermsAcceptedAndPersisted()
       await this.waitUntilTheToestMsgDisappear()
@@ -44,7 +47,7 @@ export class Register {
   }
 
   async enterUserName() {
-    this.userEmail = `playwright${randomNumber}@example.com`
+    this.userEmail = `playwright${this.randomNumber}@example.com`
     await this.page.locator('input#username').fill(this.userEmail)
   }
 
@@ -57,7 +60,7 @@ export class Register {
   async enterName() {
     await this.page
       .locator('input#name')
-      .fill(testData.register.userName + randomNumber)
+      .fill(testData.register.userName + this.randomNumber)
   }
 
   async enterPassword(password: string) {
@@ -242,7 +245,7 @@ export class Register {
     await this.assertOnCreateYourWorkspacePage()
     await this.page
       .locator('input#title')
-      .fill(testData.teams.teamName + randomNumber, { timeout: 60000 })
+      .fill(testData.teams.teamName + this.randomNumber, { timeout: 60000 })
   }
 
   async clickCreateBtn() {
