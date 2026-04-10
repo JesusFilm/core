@@ -11,9 +11,8 @@ import Typography, { TypographyProps } from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
 
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
-import Play3Icon from '@core/shared/ui/icons/Play3'
-
+import ArrowRightIcon from '../../../components/icons/ArrowRight'
+import Play3Icon from '../../../components/icons/Play3'
 import { simpleComponentConfig } from '../../storybook'
 
 const AdminThemeDemo: Meta<typeof Typography> = {

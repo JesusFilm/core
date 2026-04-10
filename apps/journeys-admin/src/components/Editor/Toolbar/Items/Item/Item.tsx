@@ -89,7 +89,8 @@ export function Item({
                   ? {
                       component: 'a' as ElementType,
                       href,
-                      target: '_blank'
+                      target: '_blank',
+                      rel: 'noopener noreferrer'
                     }
                   : {})}
                 onClick={onClick}

@@ -183,7 +183,7 @@ export function TermsAndConditions(): ReactElement {
         data-testid="TermsAndConditionsNextButton"
         variant="blockContained"
         color="solid"
-        disabled={!accepted}
+        disabled={!accepted || loading}
         loading={loading}
         onClick={handleJourneyProfileCreate}
         sx={{

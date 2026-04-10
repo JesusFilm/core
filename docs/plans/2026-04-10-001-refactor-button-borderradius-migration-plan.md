@@ -56,5 +56,5 @@ These use `borderRadius: '12px'` which matches the admin MuiButton root default,
 
 - Group A items 1-2 (GoalsBanner/GoalsList) use inline `color`/`borderColor` in sx instead of the `color` prop — switch to `color="solid"` on the variant and remove those sx overrides
 - Group A items 3-6 already use `color="secondary"` — switch to `color="solid"` since the new variants map secondary-equivalent styles through the `solid` color
-- Group B item 8 (TermsAndConditions) has significant custom styling (`bgcolor`, `py`, custom hover`) — may be better as `blockContained` + `color="solid"` with only the width/height kept in sx
+- Group B item 8 (TermsAndConditions) has significant custom styling (`bgcolor`, `py`, `custom hover`) — may be better as `blockContained` + `color="solid"` with only the width/height kept in sx
 - All file paths are relative to `apps/journeys-admin/src/`
