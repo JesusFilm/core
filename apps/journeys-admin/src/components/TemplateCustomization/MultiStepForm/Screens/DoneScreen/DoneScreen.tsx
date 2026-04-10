@@ -130,6 +130,7 @@ export function DoneScreen(): ReactElement {
     >
       {steps.length > 0 && (
         <Box
+          data-testid="BOX TEST FOR SHADOW"
           sx={{
             transform: `scale(${PREVIEW_SCALE})`,
             transformOrigin: 'top center',
@@ -138,8 +139,8 @@ export function DoneScreen(): ReactElement {
               sm: VARIANT_CONFIGS.guestPreview.cardHeight.sm * PREVIEW_SCALE
             },
             borderRadius: 4,
-            boxShadow:
-              '0px 2.644px 3.525px 0px rgba(0, 0, 0, 0.14), 0px 2.644px 2.644px 0px rgba(0, 0, 0, 0.12), 0px 0.881px 7.05px 0px rgba(0, 0, 0, 0.20)'
+            filter:
+              'drop-shadow(10px 12px 12px rgba(0, 0, 0, 0.15)) drop-shadow(-4px 2px 6px rgba(0, 0, 0, 0.08))'
           }}
         >
           <TemplateCardPreviewItem step={steps[0]} variant="guestPreview" />
