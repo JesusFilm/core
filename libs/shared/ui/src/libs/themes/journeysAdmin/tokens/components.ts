@@ -76,21 +76,6 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           }
         },
         {
-          props: {
-            variant: 'blockContained' as const,
-            color: 'primary' as const
-          },
-          style: {
-            '--variant-containedBg': '#C52D3A',
-            '--variant-containedColor': palette[0],
-            '@media (hover: hover)': {
-              '&:hover': {
-                '--variant-containedBg': '#9E2630'
-              }
-            }
-          }
-        },
-        {
           props: { variant: 'blockOutlined' as const },
           style: {
             borderRadius: '8px',
@@ -100,7 +85,18 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             lineHeight: '20px',
             minHeight: '48px',
             border: '2px solid var(--variant-outlinedBorder, currentColor)',
-            backgroundColor: palette[0]
+            backgroundColor: palette[0],
+            '&.MuiButton-loading': {
+              color: 'transparent'
+            },
+            '& .MuiButton-loadingIndicator': {
+              color: 'var(--variant-outlinedColor, currentColor)'
+            },
+            '&.Mui-disabled:not(.MuiButton-loading)': {
+              color: 'rgba(0, 0, 0, 0.26)',
+              borderColor: 'rgba(0, 0, 0, 0.12)',
+              backgroundColor: palette[0]
+            }
           }
         },
         {
@@ -110,26 +106,11 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
           },
           style: {
             '--variant-outlinedBorder': palette[700],
+            '--variant-outlinedColor': palette[900],
             color: palette[900],
             '@media (hover: hover)': {
               '&:hover': {
                 '--variant-outlinedBorder': palette[900],
-                backgroundColor: palette[0]
-              }
-            }
-          }
-        },
-        {
-          props: {
-            variant: 'blockOutlined' as const,
-            color: 'primary' as const
-          },
-          style: {
-            '--variant-outlinedBorder': '#E43343',
-            color: '#C52D3A',
-            '@media (hover: hover)': {
-              '&:hover': {
-                '--variant-outlinedBorder': '#9E2630',
                 backgroundColor: palette[0]
               }
             }

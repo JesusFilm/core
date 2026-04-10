@@ -45,7 +45,6 @@ function UploadButton({
         disabled={loading}
         onClick={open}
         sx={{
-          height: 40,
           width: '100%'
         }}
       >

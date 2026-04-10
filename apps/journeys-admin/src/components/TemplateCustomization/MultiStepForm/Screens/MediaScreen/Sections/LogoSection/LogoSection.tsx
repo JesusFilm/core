@@ -128,17 +128,10 @@ export function LogoSection(): ReactElement {
             disabled={loading}
             onClick={open}
             sx={{
-              height: 32,
               width: { xs: 160, sm: 220 }
             }}
           >
-            <Typography
-              variant="subtitle2"
-              fontSize={14}
-              sx={{ color: 'text.secondary' }}
-            >
-              {t('Upload File')}
-            </Typography>
+            {t('Upload File')}
           </Button>
           <Typography variant="caption" color="text.secondary">
             {t('Supports JPG, PNG, and GIF files.')}

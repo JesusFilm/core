@@ -35,7 +35,6 @@ import { CardsPreview } from '../LinksScreen/CardsPreview'
 import { ScreenWrapper } from '../ScreenWrapper'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
-import Button from '@mui/material/Button'
 
 interface LanguageFormValues {
   teamSelect: string

@@ -237,19 +237,12 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           disabled={videoBlockId == null || uploadTask != null}
           sx={{
             mt: 4,
-            height: 32,
             width: '100%'
           }}
         >
-          <Typography
-            variant="subtitle2"
-            fontSize={14}
-            sx={{ color: 'secondary.main' }}
-          >
-            {videoBlockId == null
-              ? t('Select a video block first')
-              : t('Upload file')}
-          </Typography>
+          {videoBlockId == null
+            ? t('Select a video block first')
+            : t('Upload file')}
         </Button>
       )}
     </Stack>

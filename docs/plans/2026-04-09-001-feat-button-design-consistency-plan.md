@@ -1,17 +1,17 @@
 ---
-title: "feat: Add blockFilled/blockOutlined button variants"
+title: "feat: Add blockContained/blockOutlined button variants"
 type: feat
 status: active
 date: 2026-04-09
 ---
 
-# Add blockFilled/blockOutlined Button Variants (NES-1529)
+# Add blockContained/blockOutlined Button Variants (NES-1529)
 
 ## Overview
 
 The journeys-admin app has 13+ buttons using `variant="contained" color="secondary"` with ad-hoc `sx` overrides for dimensions, borderRadius, and Typography wrappers. This produces inconsistent "dark, square-ish" buttons that don't match the Figma design spec.
 
-Rather than fixing each instance, we add two new button variants (`blockFilled`, `blockOutlined`) to the MUI theme so buttons can be standardized by changing props, not by fighting the theme with `sx`. The existing `secondary` palette already has the right colors — `secondary.dark` (`#26262E`) is the intended fill color, not `secondary.main` (`#444451`).
+Rather than fixing each instance, we add two new button variants (`blockContained`, `blockOutlined`) to the MUI theme so buttons can be standardized by changing props, not by fighting the theme with `sx`. The existing `secondary` palette already has the right colors — `secondary.dark` (`#26262E`) is the intended fill color, not `secondary.main` (`#444451`).
 
 ## Problem Statement
 
@@ -38,7 +38,7 @@ No new palette color needed. The existing `secondary` palette already has the ri
 
 Hover color: `palette[800]` (`#444451`) — one step lighter than `secondary.dark`.
 
-### 1. Add `blockFilled` button variant
+### 1. Add `blockContained` button variant
 
 A filled button with the compact 8px border radius and Figma-specified spacing.
 
@@ -54,12 +54,12 @@ A filled button with the compact 8px border radius and Figma-specified spacing.
 
 Color-specific compound variants:
 
-**`blockFilled` + `color="secondary"`:**
+**`blockContained` + `color="secondary"`:**
 - `backgroundColor`: `palette[900]` (`#26262E`) — uses `secondary.dark`, not `secondary.main`
 - `color`: `palette[0]` (`#FFFFFF`)
 - `&:hover` → `backgroundColor`: `palette[800]` (`#444451`) — one step lighter
 
-**`blockFilled` + `color="primary"`:**
+**`blockContained` + `color="primary"`:**
 - `backgroundColor`: `primary.main` (`#C52D3A`)
 - `color`: `#FFFFFF`
 - `&:hover` → `backgroundColor`: `primary.dark` (`#9E2630`)
@@ -70,11 +70,11 @@ An outlined button with matching compact shape.
 
 | Property | Value | Notes |
 |----------|-------|-------|
-| `borderRadius` | `8px` | Matches blockFilled |
-| `padding` | `10px 16px` | Matches blockFilled (adjusted for border) |
-| `fontSize` | `18px` | Matches blockFilled |
-| `fontWeight` | `700` | Matches blockFilled |
-| `lineHeight` | `20px` | Matches blockFilled |
+| `borderRadius` | `8px` | Matches blockContained |
+| `padding` | `10px 16px` | Matches blockContained (adjusted for border) |
+| `fontSize` | `18px` | Matches blockContained |
+| `fontWeight` | `700` | Matches blockContained |
+| `lineHeight` | `20px` | Matches blockContained |
 | `borderWidth` | `2px` | Consistent with existing outlined override |
 | `backgroundColor` | `palette[0]` (`#FFFFFF`) | White background |
 
@@ -96,12 +96,12 @@ Color-specific compound variants:
 
 ### 3. TypeScript augmentations
 
-Required module augmentation so `variant="blockFilled"` and `variant="blockOutlined"` are type-safe:
+Required module augmentation so `variant="blockContained"` and `variant="blockOutlined"` are type-safe:
 
 ```typescript
 declare module '@mui/material/Button' {
   interface ButtonPropsVariantOverrides {
-    blockFilled: true
+    blockContained: true
     blockOutlined: true
   }
 }
@@ -113,19 +113,19 @@ No palette augmentation needed — `color="secondary"` and `color="primary"` alr
 
 | File | Change |
 |------|--------|
-| `libs/shared/ui/src/libs/themes/journeysAdmin/tokens/components.ts` | Add `blockFilled`/`blockOutlined` variants + compound variants per color + TypeScript augmentation |
+| `libs/shared/ui/src/libs/themes/journeysAdmin/tokens/components.ts` | Add `blockContained`/`blockOutlined` variants + compound variants per color + TypeScript augmentation |
 
 ## Acceptance Criteria
 
-- [ ] `<Button variant="blockFilled" color="secondary">` renders: #26262E bg, white text, 8px radius, Montserrat 700 18px, padding 10px 16px
-- [ ] `<Button variant="blockFilled" color="secondary">` hover shows #444451 bg
+- [ ] `<Button variant="blockContained" color="secondary">` renders: #26262E bg, white text, 8px radius, Montserrat 700 18px, padding 10px 16px
+- [ ] `<Button variant="blockContained" color="secondary">` hover shows #444451 bg
 - [ ] `<Button variant="blockOutlined" color="secondary">` renders: white bg, #26262E border+text, 8px radius, 2px border
 - [ ] `<Button variant="blockOutlined" color="secondary">` hover shows #DEDFE0 bg
-- [ ] `<Button variant="blockFilled" color="primary">` renders: #C52D3A bg, white text, 8px radius
+- [ ] `<Button variant="blockContained" color="primary">` renders: #C52D3A bg, white text, 8px radius
 - [ ] `<Button variant="blockOutlined" color="primary">` renders: white bg, #C52D3A border+text, 8px radius
 - [ ] Both variants are NOT fullWidth by default
 - [ ] `size="large"` still controls height when used alongside these variants
-- [ ] TypeScript autocomplete works for `variant="blockFilled"` and `variant="blockOutlined"`
+- [ ] TypeScript autocomplete works for `variant="blockContained"` and `variant="blockOutlined"`
 - [ ] Existing `contained`/`outlined`/`text` variants are unchanged
 - [ ] Build passes (`npm run build`)
 - [ ] Existing tests pass
