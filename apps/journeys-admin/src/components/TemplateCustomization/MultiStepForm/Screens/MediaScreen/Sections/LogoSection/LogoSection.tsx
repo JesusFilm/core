@@ -120,7 +120,7 @@ export function LogoSection(): ReactElement {
             )}
           </Box>
         </Box>
-        <Stack spacing={0.5} alignItems="flex-start">
+        <Stack spacing={0.5} alignItems="flex-start" sx={{ flex: 1 }}>
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button
             variant="blockOutlined"
@@ -128,7 +128,7 @@ export function LogoSection(): ReactElement {
             disabled={loading}
             onClick={open}
             sx={{
-              width: { xs: 160, sm: 220 }
+              width: '100%'
             }}
           >
             {t('Upload File')}
