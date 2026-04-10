@@ -2,6 +2,11 @@ import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+
+jest.mock(
+  '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+)
 
 jest.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
@@ -114,6 +119,7 @@ describe('imageBlockCreate', () => {
       })
     )
     expect(tx.journey.update).toHaveBeenCalled()
+    expect(recalculateJourneyCustomizable).not.toHaveBeenCalled()
 
     expect(result).toEqual({
       data: {
@@ -301,6 +307,8 @@ describe('imageBlockCreate', () => {
         })
       })
     )
+
+    expect(recalculateJourneyCustomizable).toHaveBeenCalledWith('journeyId')
 
     expect(result).toEqual({
       data: {
