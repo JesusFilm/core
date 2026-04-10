@@ -22,6 +22,8 @@ import {
 } from './templateCardPreviewConfig'
 import { TemplateCardPreviewItem } from './TemplateCardPreviewItem'
 
+const CARD_LABEL_HEIGHT = 54
+
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
   authUser?: User | null
@@ -29,6 +31,7 @@ interface TemplateCardPreviewProps {
   onClick?: (step: TreeBlock<StepBlock>) => void
   selectedStep?: TreeBlock<StepBlock> | null
   initialStepId?: string | null
+  cardLabel?: string
 }
 
 interface TemplateCardPreviewPlaceholderProps {
@@ -111,7 +114,8 @@ export function TemplateCardPreview({
   variant = 'standard',
   onClick,
   selectedStep,
-  initialStepId
+  initialStepId,
+  cardLabel
 }: TemplateCardPreviewProps): ReactElement {
   const { breakpoints } = useTheme()
   const { t } = useTranslation('libs-journeys-ui')
@@ -181,7 +185,13 @@ export function TemplateCardPreview({
       {...swiperProps}
       sx={{
         ...swiperSx,
-        height: swiperHeight
+        height:
+          cardLabel != null
+            ? {
+                xs: swiperHeight.xs + CARD_LABEL_HEIGHT,
+                sm: swiperHeight.sm + CARD_LABEL_HEIGHT
+              }
+            : swiperHeight
       }}
     >
       {slidesToRender.map((step) => {
@@ -194,8 +204,12 @@ export function TemplateCardPreview({
                 sm: cardWidth.sm * SELECTED_SCALE
               },
               height: {
-                xs: cardHeight.xs * SELECTED_SCALE,
-                sm: cardHeight.sm * SELECTED_SCALE
+                xs:
+                  cardHeight.xs * SELECTED_SCALE +
+                  (cardLabel != null ? CARD_LABEL_HEIGHT : 0),
+                sm:
+                  cardHeight.sm * SELECTED_SCALE +
+                  (cardLabel != null ? CARD_LABEL_HEIGHT : 0)
               },
               zIndex: 1
             }
@@ -213,6 +227,34 @@ export function TemplateCardPreview({
               selectedStep={selectedStep}
               steps={slidesToRender}
             />
+            {isSelected && cardLabel != null && (
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                align="center"
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  whiteSpace: 'nowrap',
+                  animation: 'fadeSlideDown 0.3s ease 0.15s forwards',
+                  opacity: 0,
+                  '@keyframes fadeSlideDown': {
+                    from: {
+                      opacity: 0,
+                      transform: 'translateX(-50%) translateY(-12px)'
+                    },
+                    to: {
+                      opacity: 1,
+                      transform: 'translateX(-50%) translateY(0)'
+                    }
+                  }
+                }}
+              >
+                {cardLabel}
+              </Typography>
+            )}
           </StyledSwiperSlide>
         )
       })}

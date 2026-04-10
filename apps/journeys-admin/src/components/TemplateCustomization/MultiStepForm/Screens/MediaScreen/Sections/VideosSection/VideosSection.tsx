@@ -46,14 +46,14 @@ function UploadButton({
         disabled={loading}
         onClick={open}
         sx={{
-          height: 40,
+          borderWidth: 2,
+          borderRadius: 2,
+          height: 48,
           width: '100%',
-          borderRadius: 2
+          borderColor: 'secondary.light'
         }}
       >
-        <Typography variant="subtitle2" sx={{ color: 'text.secondary' }}>
-          {label}
-        </Typography>
+        <Typography variant="subtitle2">{label}</Typography>
       </Button>
       {errorMessage != null && (
         <Typography
@@ -234,7 +234,6 @@ export function VideosSection({
         data-testid="VideosSection-youtube-input"
         variant="filled"
         hiddenLabel
-        size="small"
         fullWidth
         placeholder={t('Paste a YouTube link...')}
         value={youtubeUrl}
