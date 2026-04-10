@@ -1,5 +1,5 @@
 ---
-title: "fix: YouTube subtitle locale variants missing from dropdown"
+title: 'fix: YouTube subtitle locale variants missing from dropdown'
 type: fix
 status: completed
 date: 2026-04-10
@@ -76,20 +76,24 @@ No prior solutions documented for YouTube subtitle or locale handling.
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `apis/api-media/src/schema/youtube/youtube.ts`
 - Test: `apis/api-media/src/schema/youtube/youtube.spec.ts`
 
 **Approach:**
+
 - After collecting bcp47 codes from YouTube response items (line 127), normalize each code by stripping the locale subtag: `code.split('-')[0]`
 - Use a `Set` to deduplicate (multiple YouTube tracks like `en-GB` and `en-US` will both become `en`)
 - Convert the Set back to an array before passing to the language service query
 - The normalization happens after lowercasing, before the `if (bcp47.length === 0)` check
 
 **Patterns to follow:**
+
 - The existing lowercasing pattern at line 127 (`item.snippet.language.toLowerCase()`)
 - The existing `bcp47` array construction pattern
 
 **Test scenarios:**
+
 - Happy path: YouTube returns `en-GB` and `es` standard tracks → resolver queries language service with `['en', 'es']` → both matched languages returned
 - Happy path: YouTube returns `en-US` standard track → resolver queries with `['en']` → English language returned
 - Edge case: YouTube returns both `en-GB` and `en-US` standard tracks → deduplication produces single `['en']` query → only one English language returned (no duplicates)
@@ -98,6 +102,7 @@ No prior solutions documented for YouTube subtitle or locale handling.
 - Happy path (regression): existing test cases with simple codes (`en`, `es`) continue to pass unchanged
 
 **Verification:**
+
 - All existing tests pass
 - New tests for locale variants pass
 - The resolver query variable contains only base language codes, deduplicated
@@ -111,22 +116,27 @@ No prior solutions documented for YouTube subtitle or locale handling.
 **Dependencies:** None (can be done in parallel with Unit 1)
 
 **Files:**
+
 - Modify: `apis/api-media/src/schema/youtube/youtube.ts`
 - Test: `apis/api-media/src/schema/youtube/youtube.spec.ts`
 
 **Approach:**
+
 - Change `trackKind: z.enum(['standard', 'asr'])` to `trackKind: z.string()` in the Zod schema (line 22)
 - The business logic filter at line 126 (`item.snippet.trackKind === 'standard'`) already handles which tracks to include — the Zod schema should only validate structure
 
 **Patterns to follow:**
+
 - The existing Zod schema pattern in the same file
 
 **Test scenarios:**
+
 - Happy path: YouTube returns items with `trackKind: 'forced'` alongside `'standard'` tracks → parse succeeds, only `standard` tracks included in result
 - Happy path: YouTube returns only `'standard'` and `'asr'` tracks → unchanged behavior
 - Edge case: YouTube returns items with an unknown `trackKind` value (e.g., `'custom'`) → parse succeeds, track is excluded by the `standard` filter
 
 **Verification:**
+
 - Existing Zod validation test restructured: remove the `trackKind: 'invalid-track-kind'` item from the invalid-response fixture (it is no longer invalid). The remaining two invalid items (missing `snippet`, missing `language`) still trigger the parse failure. Update the inline comment to reflect the change.
 - New test confirms `forced` tracks are parsed but excluded from results
 
@@ -139,10 +149,12 @@ No prior solutions documented for YouTube subtitle or locale handling.
 **Dependencies:** Unit 1 (the resolver must return base codes for the player-side fix to be meaningful)
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/Video/utils/extractYouTubeCaptionsAndAddTextTracks/extractYouTubeCaptionsAndAddTextTracks.ts`
 - Test: `libs/journeys/ui/src/components/Video/utils/extractYouTubeCaptionsAndAddTextTracks/extractYouTubeCaptionsAndAddTextTracks.spec.ts`
 
 **Approach:**
+
 - Extract a helper function (e.g., `matchesLanguageCode(bcp47, languageCode)`) that returns true when the languageCode equals the bcp47 or starts with the bcp47 followed by a hyphen
 - This covers: `en` matches `en`, `en` matches `en-GB`, `en` matches `en-US`
 - Must NOT match partial codes: `en` must not match `end` or `eng`
@@ -151,10 +163,12 @@ No prior solutions documented for YouTube subtitle or locale handling.
 - **Important:** Only activate the first matching track when multiple locale variants match (e.g., both `en-GB` and `en-US` match `en`). Use a `matchedLanguageCode` variable to track whether a match has already been found, and skip subsequent matches. This avoids calling `setYouTubeCaptionTrack` twice in rapid succession, which would cause nondeterministic track selection
 
 **Patterns to follow:**
+
 - The existing comparison pattern in the same file
 - The `setYouTubeCaptionTrack` usage pattern
 
 **Test scenarios:**
+
 - Happy path: stored bcp47 `en`, YouTube track `en-GB` → track mode set to `'showing'`, `setYouTubeCaptionTrack` called with `'en-GB'`
 - Happy path: stored bcp47 `en`, YouTube track `en` → unchanged behavior, mode `'showing'`
 - Edge case: stored bcp47 `en`, YouTube tracks `en-GB` and `en-US` → first matching track (`en-GB`, per insertion order) gets `'showing'` and triggers `setYouTubeCaptionTrack` once; second track (`en-US`) gets `'hidden'` — no double-call
@@ -164,6 +178,7 @@ No prior solutions documented for YouTube subtitle or locale handling.
 - Happy path (regression): null subtitleLanguage → all tracks `'hidden'`, no `setYouTubeCaptionTrack` called
 
 **Verification:**
+
 - All existing tests pass
 - New locale-variant tests pass
 - The `setYouTubeCaptionTrack` receives the YouTube track's original locale code, not the base code
@@ -179,11 +194,11 @@ No prior solutions documented for YouTube subtitle or locale handling.
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| YouTube iframe `setOption('captions', 'track', { languageCode: 'en' })` may not auto-match `en-GB` tracks | Unit 3 passes the YouTube track's original locale code to `setYouTubeCaptionTrack`, not the base code |
-| Multiple locale variants collapse to one entry, losing specificity | Acceptable tradeoff — the Language table already models languages at the base level, not locale level |
-| YouTube API may return unexpected BCP 47 formats (e.g., 3-letter codes, script subtags) | `split('-')[0]` handles all BCP 47 formats correctly — the primary subtag is always before the first hyphen |
+| Risk                                                                                                      | Mitigation                                                                                                  |
+| --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| YouTube iframe `setOption('captions', 'track', { languageCode: 'en' })` may not auto-match `en-GB` tracks | Unit 3 passes the YouTube track's original locale code to `setYouTubeCaptionTrack`, not the base code       |
+| Multiple locale variants collapse to one entry, losing specificity                                        | Acceptable tradeoff — the Language table already models languages at the base level, not locale level       |
+| YouTube API may return unexpected BCP 47 formats (e.g., 3-letter codes, script subtags)                   | `split('-')[0]` handles all BCP 47 formats correctly — the primary subtag is always before the first hyphen |
 
 ## Sources & References
 

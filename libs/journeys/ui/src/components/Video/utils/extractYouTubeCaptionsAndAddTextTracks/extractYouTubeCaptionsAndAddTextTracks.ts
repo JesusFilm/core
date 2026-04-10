@@ -16,10 +16,7 @@ function matchesLanguageCode(
   languageCode: string
 ): boolean {
   if (bcp47 == null) return false
-  return (
-    languageCode === bcp47 ||
-    languageCode.startsWith(`${bcp47}-`)
-  )
+  return languageCode === bcp47 || languageCode.startsWith(`${bcp47}-`)
 }
 
 export function extractYouTubeCaptionsAndAddTextTracks({
