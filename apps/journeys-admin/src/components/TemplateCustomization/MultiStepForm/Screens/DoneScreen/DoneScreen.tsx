@@ -130,7 +130,6 @@ export function DoneScreen(): ReactElement {
     >
       {steps.length > 0 && (
         <Box
-          data-testid="BOX TEST FOR SHADOW"
           sx={{
             transform: `scale(${PREVIEW_SCALE})`,
             transformOrigin: 'top center',
