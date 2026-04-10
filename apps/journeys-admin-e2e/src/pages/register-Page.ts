@@ -21,6 +21,11 @@ export class Register {
       Math.floor(Math.random() * 900000 + 100000)
   }
 
+  /** Same value as {@link enterName} — used as `displayName` when creating the first team on Terms. */
+  getRegisteredDisplayName(): string {
+    return testData.register.userName + this.randomNumber
+  }
+
   async registerNewAccount() {
     try {
       const otp = await getOTP()
@@ -42,6 +47,31 @@ export class Register {
       const onboardingHeading = await this.getCurrentOnboardingHeading()
       throw new Error(
         `registerNewAccount failed (url: ${this.page.url()}, heading: ${onboardingHeading ?? 'none'}): ${error instanceof Error ? error.message : String(error)}`
+      )
+    }
+  }
+
+  /**
+   * Same as {@link registerNewAccount} through email verification, then stops on
+   * Terms and Conditions without accepting — for resume / return-sign-in flows.
+   */
+  async registerNewAccountThroughOtpThenStopOnTermsPage() {
+    try {
+      const otp = await getOTP()
+      const password = await getPassword()
+      await this.enterUserName()
+      await this.clickSignInWithEmailBtn()
+      await this.enterName()
+      await this.enterPassword(password)
+      await this.clickSignUpBtn()
+      await this.verifyPageNavigatedToVerifyYourEmailPage()
+      await this.enterOTP(otp)
+      await this.clickValidateEmailBtn()
+      await this.assertOnTermsAndConditionsPage()
+    } catch (error) {
+      const onboardingHeading = await this.getCurrentOnboardingHeading()
+      throw new Error(
+        `registerNewAccountThroughOtpThenStopOnTermsPage failed (url: ${this.page.url()}, heading: ${onboardingHeading ?? 'none'}): ${error instanceof Error ? error.message : String(error)}`
       )
     }
   }

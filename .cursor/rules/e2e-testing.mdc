@@ -8,6 +8,14 @@ alwaysApply: false
 
 Write tests that reflect exact user requirements. A failing test means a real bug — never hide it.
 
+## Update this file when we learn something
+
+Treat this `.mdc` as a **living playbook**. After we resolve a non-obvious e2e issue (flakes, parallelism, auth/onboarding, timing, data setup), **add or tighten a bullet here** so the next fix is faster.
+
+**Agent habit:** When a session surfaces a durable lesson that is not already captured, **propose an edit to this rule** (or the right `apps/**/*.mdc`) and **remind the human** to confirm or extend it — building the doc is a shared step, not optional cleanup.
+
+**Human habit:** If you prefer to own wording, say so; otherwise default to folding resolutions into this file in the same PR or follow-up.
+
 ## Mindset: senior test automation engineer, not application developer
 
 Write automation the way a **tester** would exercise the product: follow **real end-user flows** in order, with **explicit checks** that each step and each screen match expectations. Avoid "making the script work" with loose branching, silent skips, or merged paths that obscure what actually broke.
@@ -28,6 +36,19 @@ Every action the automation takes must follow a **single, predetermined path**. 
 - BAD: `try { await assertOnTermsPage() } catch { await assertOnWorkspacePage() }` — swallows the failure
 
 When a fixture helper (e.g. `registerNewAccount`) fails intermittently because the server returns unexpected state (e.g. SSR cache serving stale data), the **correct fix is to fix the server**, not to make the fixture branch around the bad state. A flaky fixture exposes a real product bug; conditional logic hides it.
+
+## When tests flake: trace application code, then fix determinism
+
+Do **not** reach first for "handle both outcomes" in the spec or page object — e.g. checking whether `/teams/new` or the terms page is visible and branching, disjunctive `waitForURL`, or optional steps so something always passes. That encodes non-determinism as normal and hides real bugs.
+
+**Do** treat flakiness as a signal to read the **actual product code** (routes, onboarding handlers, auth callbacks, API order) until you understand the real sequence and what state the user must have (session, team, flags).
+
+Then fix the **root cause** in a **deterministic** way:
+
+- **Test data and lifecycle**: Generate unique emails, names, and tokens **per instance** (constructor, fixture factory, or per-test setup) — never reuse collision-prone values from **module scope**, static fields, or globals shared across workers/retries. A concrete lesson: registration flakiness was fixed by moving email uniqueness into each `Register` instance instead of shared module-level generation.
+- **Product or environment**: If the app or SSR truly mis-orders or races, fix that side when appropriate; do not permanently fork the test path in the UI layer to absorb it.
+
+The goal is **one honest path per test** with **stable preconditions** — not a smarter script that guesses which screen won the race.
 
 ## One user path per test — multiple real paths ⇒ multiple tests
 
@@ -99,3 +120,13 @@ Use the narrowest container that reflects what the user sees. If strict mode fir
 
 - GOOD: `page.locator('div[aria-label="journey-card"]', { hasText: journeyName }).getByRole('link', { name: 'Analytics' })`
 - BAD: `page.locator('div[data-testid="AnalyticsItem"] a').first()`
+
+## Learnings from recent journeys-admin-e2e work
+
+- **Unique synthetic accounts across parallel workers**: Emails and names used for registration must not collide when several Playwright workers run at once. Combine a fine-grained timestamp (e.g. `DDMMYYHHmmss` via dayjs) with random digits. Avoid module-level or static seeds that reuse the same value across instances — that produces flaky "email already taken" failures under parallelism. (See **When tests flake: trace application code, then fix determinism** — prefer reading app + fixing instance-scoped data over branching on which post-login screen appears.)
+
+- **Cold deployments and first-load slippage**: After login or heavy first paint (cold Vercel SSR, Apollo on first load), rely on `expect(...).toBeVisible({ timeout })` (or similar) with a justified timeout and comment — already covered above; prefer that over widening every default globally.
+
+- **Post-login waits differ by role**: Admin and user shells do not load the same chrome. Expose separate, explicit wait/assert helpers per role (each test calls the one that matches its fixture), instead of one generic wait that is too strict for one role or too loose for the other.
+
+- **Comments that anchor to product code**: When navigation order is fixed by the app (e.g. post-OTP always routes to terms), a short comment pointing to that behavior helps reviewers and future editors keep assertions in sync with production — without replacing assertions or adding conditional branches.

@@ -60,12 +60,16 @@ export class LoginPage {
     await this.waitUntilDiscoverPageLoadedAsAdmin()
   }
 
-  async logInWithCreatedNewUser(userName: string) {
-    await this.fillExistingEmail(userName)
+  async signInWithEmailAndPassword(email: string): Promise<void> {
+    await this.fillExistingEmail(email)
     await this.clickSubmitButton()
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
+  }
+
+  async logInWithCreatedNewUser(userName: string) {
+    await this.signInWithEmailAndPassword(userName)
     await this.waitUntilDiscoverPageLoadedAsUser()
   }
 }
