@@ -1,5 +1,5 @@
 ---
-title: "fix: Allow users to change poll selection on RadioQuestion"
+title: 'fix: Allow users to change poll selection on RadioQuestion'
 type: fix
 status: completed
 date: 2026-04-10
@@ -15,7 +15,7 @@ When a page contains one or more RadioQuestion poll blocks, clicking an option p
 
 After a user selects an option in a RadioQuestion (e.g., clicks "Yes" for "Dietary Restrictions"), they cannot select a different option in that same poll (e.g., "No"). The root cause is `RadioQuestion.tsx` line 204: `disabled={Boolean(selectedId)}`, which disables every option the moment any option is selected. This is problematic for polls (options with no navigation action) because the user remains on the page but cannot correct a mistake.
 
-For options *with* navigation actions, the disabling is irrelevant — `handleAction` navigates the user away immediately, and the `useEffect` resets `selectedId` to `null` when the block leaves the active history.
+For options _with_ navigation actions, the disabling is irrelevant — `handleAction` navigates the user away immediately, and the `useEffect` resets `selectedId` to `null` when the block leaves the active history.
 
 ## Requirements Trace
 
@@ -74,6 +74,7 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 **Requirements:** R1, R2, R6
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx`
 - Modify: `libs/journeys/ui/src/components/RadioOption/ListVariant/ListVariant.tsx`
 
@@ -84,6 +85,7 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 **Requirements:** R3
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx`
 
 - [x] **Unit 3: Add dimmed prop to RadioOption and GridVariant**
@@ -93,6 +95,7 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 **Requirements:** R6
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/RadioOption/RadioOption.tsx`
 - Modify: `libs/journeys/ui/src/components/RadioOption/GridVariant/GridVariant.tsx`
 
@@ -103,10 +106,12 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 **Requirements:** R1, R2, R3, R6
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.spec.tsx`
 - Modify: `libs/journeys/ui/src/components/RadioOption/ListVariant/ListVariant.spec.tsx`
 
 **Test scenarios covered:**
+
 - Happy path: Click option 1 -> option 1 is selected and NOT disabled; click option 2 -> option 2 is selected, option 1 is deselected, both remain enabled
 - Happy path: Click option 1 -> submission event fires; click option 2 -> second submission event fires
 - Edge case: Click option 1 twice -> only one submission event fires (early return guard)
@@ -126,10 +131,10 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
-| Analytics events fire on each selection *change* (not just first click) | Acceptable — each change represents a deliberate user action. Same-option re-clicks are guarded by early return. |
-| GridVariant disabled overlay code is now only reachable via editor/admin path | Pre-existing structural artifact. `disabled` prop still has legitimate use from admin `wrappers` path. |
+| Risk                                                                          | Mitigation                                                                                                       |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Analytics events fire on each selection _change_ (not just first click)       | Acceptable — each change represents a deliberate user action. Same-option re-clicks are guarded by early return. |
+| GridVariant disabled overlay code is now only reachable via editor/admin path | Pre-existing structural artifact. `disabled` prop still has legitimate use from admin `wrappers` path.           |
 
 ## Sources & References
 
