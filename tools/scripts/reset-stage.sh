@@ -368,21 +368,22 @@ EOF
 
     # ── Thread reply 1: merged PRs (clean + auto-resolved) ──
 
-    MERGED_TEXT="*Clean merges (${MERGED_COUNT}):*\n"
+    NL=$'\n'
+    MERGED_TEXT="*Clean merges (${MERGED_COUNT}):*${NL}"
     for entry in "${MERGED_PRS[@]}"; do
       PR_NUM=$(echo "$entry" | cut -d'|' -f1)
       PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
       PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-      MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+      MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}${NL}"
     done
 
     if [ "$AUTORESOLVED_COUNT" -gt 0 ]; then
-      MERGED_TEXT="${MERGED_TEXT}\n*Auto-resolved (${AUTORESOLVED_COUNT}):*\n"
+      MERGED_TEXT="${MERGED_TEXT}${NL}*Auto-resolved (${AUTORESOLVED_COUNT}):*${NL}"
       for entry in "${AUTORESOLVED_PRS[@]}"; do
         PR_NUM=$(echo "$entry" | cut -d'|' -f1)
         PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
         PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-        MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+        MERGED_TEXT="${MERGED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}${NL}"
       done
     fi
 
@@ -400,24 +401,24 @@ EOF
       FAILED_TEXT=""
 
       if [ "$FAILED_COUNT" -gt 0 ]; then
-        FAILED_TEXT="*Failed — could not auto-resolve (${FAILED_COUNT}):*\n"
+        FAILED_TEXT="*Failed — could not auto-resolve (${FAILED_COUNT}):*${NL}"
         for i in "${!FAILED_PRS[@]}"; do
           entry="${FAILED_PRS[$i]}"
           PR_NUM=$(echo "$entry" | cut -d'|' -f1)
           PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
           PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
-          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}\n"
+          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE}${NL}"
         done
       fi
 
       if [ "$MISSING_COUNT" -gt 0 ]; then
-        FAILED_TEXT="${FAILED_TEXT}\n*Missing branches (${MISSING_COUNT}):*\n"
+        FAILED_TEXT="${FAILED_TEXT}${NL}*Missing branches (${MISSING_COUNT}):*${NL}"
         for entry in "${MISSING_PRS[@]}"; do
           PR_NUM=$(echo "$entry" | cut -d'|' -f1)
           PR_AUTHOR=$(echo "$entry" | cut -d'|' -f3)
           PR_TITLE=$(echo "$entry" | cut -d'|' -f4)
           PR_BRANCH=$(echo "$entry" | cut -d'|' -f2)
-          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE} (branch: ${PR_BRANCH})\n"
+          FAILED_TEXT="${FAILED_TEXT}<https://github.com/$REPO/pull/$PR_NUM|#$PR_NUM>  ${PR_AUTHOR} — ${PR_TITLE} (branch: ${PR_BRANCH})${NL}"
         done
       fi
 
