@@ -3,6 +3,7 @@ import omit from 'lodash/omit'
 
 import { prisma } from '@core/prisma/journeys/client'
 
+import { recalculateJourneyCustomizable } from '../../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { builder } from '../../builder'
 import {
   authorizeBlockCreate,
@@ -28,7 +29,7 @@ builder.mutationField('imageBlockCreate', (t) =>
 
       await authorizeBlockCreate(input.journeyId, context.user)
 
-      return await prisma.$transaction(async (tx) => {
+      const block = await prisma.$transaction(async (tx) => {
         if (input.isCover === true) {
           if (input.parentBlockId == null) {
             throw new GraphQLError(
@@ -50,7 +51,7 @@ builder.mutationField('imageBlockCreate', (t) =>
           }
         }
 
-        const block = await tx.block.create({
+        const created = await tx.block.create({
           data: {
             ...omit(input, 'parentBlockId', 'journeyId', 'isCover'),
             id: input.id ?? undefined,
@@ -76,9 +77,13 @@ builder.mutationField('imageBlockCreate', (t) =>
                 : undefined
           }
         })
-        await setJourneyUpdatedAt(tx, block)
-        return block
+        await setJourneyUpdatedAt(tx, created)
+        return created
       })
+      if (input.customizable != null) {
+        await recalculateJourneyCustomizable(input.journeyId)
+      }
+      return block
     }
   })
 )
