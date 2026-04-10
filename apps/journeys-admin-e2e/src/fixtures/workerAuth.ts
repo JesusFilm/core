@@ -26,10 +26,7 @@ type WorkerFixtures = {
 const SS_KEY = 'journeys-admin:activeTeamId'
 
 const getStoragePath = () =>
-  join(
-    tmpdir(),
-    `e2e-worker-${process.env.TEST_WORKER_INDEX ?? '0'}.json`
-  )
+  join(tmpdir(), `e2e-worker-${process.env.TEST_WORKER_INDEX ?? '0'}.json`)
 
 /**
  * Creates a browser context with the worker auth snapshot and, when the worker
@@ -49,11 +46,7 @@ export async function newContextWithWorkerStorageState(
     storageState: storageStatePath
   })
   const teamId = process.env.PLAYWRIGHT_WORKER_ACTIVE_TEAM_ID
-  if (
-    teamId != null &&
-    teamId !== '' &&
-    teamId !== '__shared__'
-  ) {
+  if (teamId != null && teamId !== '' && teamId !== '__shared__') {
     await context.addInitScript(
       ({ key, value }: { key: string; value: string }) => {
         window.sessionStorage.setItem(key, value)

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { type Page, expect, test } from '@playwright/test'
 
 /**
  * Conductor next lives inside a Fade tied to `showNavigation`. VideoControls clears it while
@@ -6,8 +6,12 @@ import { expect, test, type Page } from '@playwright/test'
  * Playwright `click()` often synthesizes mouse only, so CI misses that path. We `tap()` the
  * controls region, then fire `mouseover` on the nav zone (same as desktop hover in app code).
  */
-async function tapVideoControlsAndClickConductorNext(targetPage: Page): Promise<void> {
-  const videoControls = targetPage.getByRole('region', { name: 'video-controls' })
+async function tapVideoControlsAndClickConductorNext(
+  targetPage: Page
+): Promise<void> {
+  const videoControls = targetPage.getByRole('region', {
+    name: 'video-controls'
+  })
   await expect(videoControls).toBeVisible()
   await videoControls.tap()
   await targetPage
@@ -24,6 +28,7 @@ Test a journey by following the journey's selection buttons
 test('journeys', async ({ page }) => {
   // Default project timeout is 60s; cold homepage + full journey can exceed it.
   test.setTimeout(120000)
+
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   // Wait for and click the Fact or Fiction entry using a stable href-based locator
   const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')

@@ -6,7 +6,10 @@ import {
 import { JourneyPage } from '../pages/journey-page'
 
 test('user can create a journey', async ({ browser, workerStorageState }) => {
-  const ctx = await newContextWithWorkerStorageState(browser, workerStorageState)
+  const ctx = await newContextWithWorkerStorageState(
+    browser,
+    workerStorageState
+  )
   try {
     const page = await ctx.newPage()
     await page.goto('/')
