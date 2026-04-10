@@ -17,14 +17,19 @@ const getSharedPage = (): Page => {
 test.describe('Verify Add member', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
-    sharedContext = await browser.newContext({ storageState: workerStorageState })
-    sharedPage = await sharedContext.newPage()
-    const landingPage = new LandingPage(sharedPage)
-    const teamsPage = new TeamsPage(sharedPage)
-    await landingPage.goToAdminUrl()
-    await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-  })
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await browser.newContext({
+        storageState: workerStorageState
+      })
+      sharedPage = await sharedContext.newPage()
+      const landingPage = new LandingPage(sharedPage)
+      const teamsPage = new TeamsPage(sharedPage)
+      await landingPage.goToAdminUrl()
+      await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
+    }
+  )
 
   test.beforeEach(async () => {
     await getSharedPage().goto('/')

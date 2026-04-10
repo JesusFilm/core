@@ -17,9 +17,14 @@ const getSharedPage = (): Page => {
 test.describe('verify journey sorting', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
-    sharedContext = await browser.newContext({ storageState: workerStorageState })
-  })
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await browser.newContext({
+        storageState: workerStorageState
+      })
+    }
+  )
 
   test.beforeEach(async () => {
     const context = sharedContext

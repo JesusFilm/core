@@ -72,9 +72,7 @@ test.describe('YouTube video section on Media screen', () => {
     expect(helperText).toBe('Please enter a valid YouTube URL')
   })
 
-  test('should render upload button at medium size', async ({
-    authedPage
-  }) => {
+  test('should render upload button at medium size', async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
     const uploadButton = authedPage.getByTestId('VideosSection-upload-button')
     await expect(uploadButton).toBeVisible()

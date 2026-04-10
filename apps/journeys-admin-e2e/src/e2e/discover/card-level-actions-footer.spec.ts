@@ -17,10 +17,15 @@ const getSharedPage = (): Page => {
 test.describe('verify card level actions - footer', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
-    sharedContext = await browser.newContext({ storageState: workerStorageState })
-    sharedPage = await sharedContext.newPage()
-  })
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await browser.newContext({
+        storageState: workerStorageState
+      })
+      sharedPage = await sharedContext.newPage()
+    }
+  )
 
   test.beforeEach(async () => {
     const page = getSharedPage()

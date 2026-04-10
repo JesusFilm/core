@@ -181,7 +181,9 @@ export class Register {
     await expect(agreeRow).toBeVisible({ timeout: thirtySecondsTimeout })
     await agreeRow.scrollIntoViewIfNeeded()
 
-    const agreeInput = termsRoot.locator('input[aria-labelledby="i-agree-label"]')
+    const agreeInput = termsRoot.locator(
+      'input[aria-labelledby="i-agree-label"]'
+    )
     await expect(async () => {
       await agreeRow.click()
       await expect(agreeInput).toBeChecked({ timeout: 5000 })
@@ -206,7 +208,9 @@ export class Register {
     })
     await expect(agreeRow).toBeVisible({ timeout: thirtySecondsTimeout })
     await agreeRow.scrollIntoViewIfNeeded()
-    const agreeInput = termsRoot.locator('input[aria-labelledby="i-agree-label"]')
+    const agreeInput = termsRoot.locator(
+      'input[aria-labelledby="i-agree-label"]'
+    )
     await expect(async () => {
       await agreeRow.click()
       await expect(agreeInput).toBeChecked({ timeout: 5000 })

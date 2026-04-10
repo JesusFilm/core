@@ -1,6 +1,6 @@
-import * as fs from 'fs'
-import * as os from 'os'
-import * as path from 'path'
+import { promises } from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
 
 import { test as base } from '@playwright/test'
 
@@ -33,8 +33,8 @@ type WorkerFixtures = {
 const SS_KEY = 'journeys-admin:activeTeamId'
 
 const getStoragePath = () =>
-  path.join(
-    os.tmpdir(),
+  join(
+    tmpdir(),
     `e2e-worker-${process.env.TEST_WORKER_INDEX ?? '0'}.json`
   )
 
@@ -83,14 +83,14 @@ export const test = base.extend<{}, WorkerFixtures>({
       if (teamId != null && teamId !== '__shared__') {
         for (const origin of rawState.origins) {
           ;(
-            origin as typeof origin & {
-              sessionStorage?: Array<{ name: string; value: string }>
-            }
+            origin
           ).sessionStorage = [{ name: SS_KEY, value: teamId }]
         }
         // If there are no origins yet, add one for the app origin
         if (rawState.origins.length === 0) {
-          const appOrigin = (await page.evaluate(() => window.location.origin)) as string
+          const appOrigin = (await page.evaluate(
+            () => window.location.origin
+          )) as string
           ;(
             rawState.origins as Array<{
               origin: string
@@ -105,7 +105,7 @@ export const test = base.extend<{}, WorkerFixtures>({
         }
       }
 
-      await fs.promises.writeFile(storagePath, JSON.stringify(rawState))
+      await promises.writeFile(storagePath, JSON.stringify(rawState))
       await page.close()
       await ctx.close()
       console.log(

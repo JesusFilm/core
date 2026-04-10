@@ -16,9 +16,14 @@ const getSharedPage = (): Page => {
 test.describe('verify profile page functionalities', () => {
   test.describe.configure({ mode: 'serial' })
 
-  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
-    sharedContext = await browser.newContext({ storageState: workerStorageState })
-  })
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await browser.newContext({
+        storageState: workerStorageState
+      })
+    }
+  )
 
   test.beforeEach(async () => {
     if (sharedContext == null) {

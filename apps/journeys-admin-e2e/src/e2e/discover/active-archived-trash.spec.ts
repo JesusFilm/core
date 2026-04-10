@@ -21,14 +21,19 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
 
   // Issue 1 : In Terms and Conditions page,The 'Next' button is not working properly
   // Issue 2 : The error toast message is displaying after registration new account
-  test.beforeAll('Register new account', async ({ browser, workerStorageState }) => {
-    sharedContext = await browser.newContext({ storageState: workerStorageState })
-    sharedPage = await sharedContext.newPage()
-    const landingPage = new LandingPage(sharedPage)
-    const teamsPage = new TeamsPage(sharedPage)
-    await landingPage.goToAdminUrl()
-    await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-  })
+  test.beforeAll(
+    'Register new account',
+    async ({ browser, workerStorageState }) => {
+      sharedContext = await browser.newContext({
+        storageState: workerStorageState
+      })
+      sharedPage = await sharedContext.newPage()
+      const landingPage = new LandingPage(sharedPage)
+      const teamsPage = new TeamsPage(sharedPage)
+      await landingPage.goToAdminUrl()
+      await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
+    }
+  )
 
   test.beforeEach(async () => {
     const page = getSharedPage()
