@@ -12,6 +12,12 @@ export class ProfilePage {
   }
 
   async clickProfileIconInNavBar() {
+    // Wait for TeamProvider (and the auth `me` query) to resolve so the
+    // profile nav item is rendered. Without this guard the locator times out
+    // on cold Vercel starts before `data.me` returns.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: thirtySecondsTimeout })
     await this.page
       .locator('div[data-testid="NavigationListItemProfile"]')
       .click()

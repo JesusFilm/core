@@ -263,23 +263,29 @@ export class JourneyPage {
       u.searchParams.set('activeTeam', teamFromWorker)
       discoverUrl = u.toString()
     }
-    await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    // Skip navigation when already on the target URL (e.g. beforeEach already
+    // called this method). Avoiding the round-trip reduces flakiness on cold
+    // Vercel deployments where a second SSR render can time out.
+    if (this.page.url() !== discoverUrl) {
+      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
+    }
 
+    // Wait for TeamProvider to finish resolving before asserting page state.
+    // The combobox is aria-disabled while query.loading is true and becomes
+    // enabled once the team (or SharedWithMe) has been resolved.
+    // 90s: cold Vercel SSR + Apollo query on CI.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
+
+    // The create button only renders when activeTeam != null (TeamMode).
+    // Fail loudly here if the user is in SharedWithMe rather than silently
+    // timing out later during the journey creation flow.
     const createBtn = this.page
       .getByTestId('JourneysAdminContainedIconButton')
       .getByRole('button')
+    await expect(createBtn).toBeEnabled({ timeout: ninetySecondsTimeout })
 
-    // If the button doesn't appear within 30s, the TeamProvider may not have
-    // received lastActiveTeamId yet (race between updateLastActiveTeamId mutation
-    // and SSR page load). A reload triggers a fresh SSR with committed team data.
-    try {
-      await expect(createBtn).toBeEnabled({ timeout: 30000 })
-    } catch {
-      await this.page.reload({ waitUntil: 'domcontentloaded' })
-      await expect(createBtn).toBeEnabled({ timeout: 90000 })
-    }
-    // Guard: createBtn being enabled proves we are on Discover, not Terms.
-    // Fail loudly here rather than later if SSR unexpectedly redirected.
     await expect(this.page).not.toHaveURL(/terms-and-conditions/, {
       timeout: thirtySecondsTimeout
     })
@@ -1026,11 +1032,16 @@ export class JourneyPage {
   }
 
   async verifySeeLinkHrefAttributeBesideUseTemplate() {
+    // Wait for the page to be fully loaded before checking the template section.
+    // Without this guard the locator resolves to 0 elements on cold Vercel starts.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
     await expect(
       this.page.locator('h6:has-text("Use Template") + a', {
         hasText: 'See all'
       })
-    ).toHaveAttribute('href', '/templates')
+    ).toHaveAttribute('href', '/templates', { timeout: thirtySecondsTimeout })
   }
 
   async verifySeeAllTemplateBelowUseTemplate() {

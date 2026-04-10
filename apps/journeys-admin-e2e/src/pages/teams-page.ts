@@ -65,6 +65,12 @@ export class TeamsPage {
   }
 
   async clickThreeDotOfTeams() {
+    // Wait for TeamProvider to finish resolving before asserting MoreIcon.
+    // TeamMenu (which contains MoreIcon) only renders once activeTeam is set.
+    // Without this guard count=0 on cold Vercel starts.
+    await expect(
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: ninetySecondsTimeout })
     const moreButton = this.page
       .getByTestId('MainPanelHeader')
       .locator('button')

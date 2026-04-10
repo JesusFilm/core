@@ -329,7 +329,11 @@ export class JourneyLevelActions {
   }
 
   async clickNavigateToGoalBtn(): Promise<void> {
-    await this.page.locator('div[data-testid="StrategyItem"] button').click()
+    // Use an explicit timeout beyond the default 20s action timeout because
+    // the journey detail page can be slow to render StrategyItem on cold Vercel.
+    await this.page
+      .locator('div[data-testid="StrategyItem"] button')
+      .click({ timeout: thirtySecondsTimeout })
   }
 
   async verifyPageIsNavigatedToGoalPage(): Promise<void> {

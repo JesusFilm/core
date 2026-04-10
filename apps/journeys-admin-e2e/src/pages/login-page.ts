@@ -30,15 +30,21 @@ export class LoginPage {
   }
 
   async waitUntilDiscoverPageLoadedAsAdmin(): Promise<void> {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow after login;
-    // admin accounts have no sessionStorage team ID so they land in Shared With Me mode.
+    // Admin accounts have no sessionStorage team ID so TeamProvider resolves
+    // their last active team from the DB. If none is set, they land in
+    // "Shared With Me" mode. Wait for the TeamSelect combobox to become
+    // enabled: it is disabled (aria-disabled="true") while query.loading is
+    // true and enabled in both Shared With Me and team mode once resolved.
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow on CI.
     await expect(
-      this.page.getByRole('button', { name: 'Shared With Me' })
-    ).toBeVisible({ timeout: 90000 })
+      this.page.getByTestId('TeamSelect').getByRole('combobox')
+    ).toBeEnabled({ timeout: 90000 })
   }
 
   async waitUntilDiscoverPageLoadedAsUser(): Promise<void> {
-    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow after login.
+    // Newly-created users complete onboarding with a team, so they always land
+    // in team mode with the "Create Custom Journey" button enabled.
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow on CI.
     await expect(
       this.page.getByRole('button', { name: 'Create Custom Journey' })
     ).toBeEnabled({ timeout: 90000 })
