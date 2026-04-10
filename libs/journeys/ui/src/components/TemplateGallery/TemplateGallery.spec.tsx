@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import {
+  getJourneyTemplateLanguageIdsMock,
   getJourneysMockWithAcceptanceTag,
   getJourneysMockWithoutTagsEnglish,
   getJourneysMockWithoutTagsFrench,
@@ -45,6 +46,7 @@ describe('TemplateGallery', () => {
       <MockedProvider
         mocks={[
           getJourneysWithoutLanguageIdsMock,
+          getJourneyTemplateLanguageIdsMock,
           getLanguagesMock,
           getTagsMock
         ]}
@@ -82,6 +84,7 @@ describe('TemplateGallery', () => {
     render(
       <MockedProvider
         mocks={[
+          getJourneyTemplateLanguageIdsMock,
           getLanguagesMock,
           getTagsMock,
           getJourneysMockWithAcceptanceTag
@@ -137,6 +140,7 @@ describe('TemplateGallery', () => {
         mocks={[
           getJourneysWithoutLanguageIdsMock,
           getJourneysMockWithoutTagsFrench,
+          getJourneyTemplateLanguageIdsMock,
           getLanguagesMock,
           getTagsMock
         ]}
@@ -181,6 +185,7 @@ describe('TemplateGallery', () => {
         mocks={[
           getJourneysMockWithoutTagsEnglish,
           getJourneysMockWithAcceptanceTag,
+          getJourneyTemplateLanguageIdsMock,
           getLanguagesMock,
           getTagsMock
         ]}
