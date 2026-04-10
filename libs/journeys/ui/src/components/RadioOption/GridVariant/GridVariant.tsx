@@ -117,6 +117,14 @@ export const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
     boxShadow: pollCustomTheme.selected[theme.palette.mode].boxShadow
   },
 
+  // Dimmed (unselected option when another is selected)
+  '&.dimmed': {
+    backgroundColor:
+      pollCustomTheme.disabled[theme.palette.mode].backgroundColor,
+    borderColor: pollCustomTheme.disabled[theme.palette.mode].borderColor,
+    boxShadow: pollCustomTheme.disabled[theme.palette.mode].boxShadow
+  },
+
   // Disabled
   '&.Mui-disabled': {
     backgroundColor:
@@ -131,6 +139,7 @@ interface GridVariantProps {
   pollOptionImageBlockId?: string | null
   selected?: boolean
   disabled?: boolean
+  dimmed?: boolean
   handleClick: (e: React.MouseEvent) => void
   editableLabel?: ReactElement
   children: TreeBlock<BlockFields>[]
@@ -141,6 +150,7 @@ export function GridVariant({
   pollOptionImageBlockId,
   selected = false,
   disabled = false,
+  dimmed = false,
   handleClick,
   editableLabel,
   children
@@ -153,7 +163,13 @@ export function GridVariant({
     (child) => child.id === pollOptionImageBlockId
   ) as TreeBlock<ImageFields>
 
-  const classNames = `${selected ? 'selected' : ''} ${disabled ? 'Mui-disabled' : ''}`
+  const classNames = [
+    selected ? 'selected' : '',
+    disabled ? 'Mui-disabled' : '',
+    dimmed ? 'dimmed' : ''
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <StyledGridRadioOption
@@ -201,7 +217,7 @@ export function GridVariant({
                 }}
                 sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 25vw"
               />
-              {disabled && (
+              {(disabled || dimmed) && (
                 <Box
                   sx={{
                     position: 'absolute',
@@ -236,7 +252,7 @@ export function GridVariant({
                   height: '34px'
                 }}
               />
-              {disabled && (
+              {(disabled || dimmed) && (
                 <Box
                   sx={{
                     position: 'absolute',
@@ -257,7 +273,7 @@ export function GridVariant({
             variant="body2"
             sx={{
               color: (theme) =>
-                disabled
+                disabled || dimmed
                   ? textTheme.disabled[theme.palette.mode].color
                   : textTheme.default[theme.palette.mode].color
             }}

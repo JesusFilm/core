@@ -104,6 +104,7 @@ export function RadioQuestion({
     radioOptionBlockId: string,
     radioOptionLabel: string
   ): void => {
+    if (radioOptionBlockId === selectedId) return
     if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       const input: RadioQuestionSubmissionEventCreateInput = {
@@ -201,6 +202,7 @@ export function RadioQuestion({
           {...option}
           key={option.id}
           selected={selectedId === option.id}
+          dimmed={selectedId != null && selectedId !== option.id}
           onClick={handleClick}
           gridView={gridView}
         />

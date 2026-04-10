@@ -50,4 +50,34 @@ describe('ListVariant', () => {
       'selected'
     )
   })
+
+  it('should apply dimmed class when dimmed', () => {
+    render(
+      <ListVariant label="label" dimmed={true} handleClick={jest.fn()} />
+    )
+
+    expect(screen.getByTestId('JourneysRadioOptionList')).toHaveClass('dimmed')
+  })
+
+  it('should not apply dimmed class when not dimmed', () => {
+    render(
+      <ListVariant label="label" dimmed={false} handleClick={jest.fn()} />
+    )
+
+    expect(screen.getByTestId('JourneysRadioOptionList')).not.toHaveClass(
+      'dimmed'
+    )
+  })
+
+  it('should still be clickable when dimmed', () => {
+    const handleClick = jest.fn()
+
+    render(
+      <ListVariant label="label" dimmed={true} handleClick={handleClick} />
+    )
+
+    fireEvent.click(screen.getByTestId('JourneysRadioOptionList'))
+
+    expect(handleClick).toHaveBeenCalled()
+  })
 })

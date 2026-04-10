@@ -83,6 +83,19 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
       opacity: 1
     },
 
+    // Dimmed state (unselected option when another is selected)
+    '&.dimmed': {
+      ...borderStyles['&.disabled'],
+      backgroundColor:
+        theme.palette.mode === 'dark'
+          ? 'rgba(255, 255, 255, 0.4)'
+          : 'rgba(0, 0, 0, 0.4)',
+      color:
+        theme.palette.mode === 'dark'
+          ? 'rgba(0, 0, 0, 0.5)'
+          : 'rgba(255, 255, 255, 0.7)'
+    },
+
     // Disabled state
     '&.Mui-disabled': {
       ...borderStyles['&.disabled'],
@@ -102,6 +115,7 @@ interface ListVariantProps {
   label: string
   selected?: boolean
   disabled?: boolean
+  dimmed?: boolean
   handleClick: (e: React.MouseEvent) => void
   editableLabel?: ReactElement
 }
@@ -110,9 +124,17 @@ export function ListVariant({
   label,
   selected = false,
   disabled = false,
+  dimmed = false,
   handleClick,
   editableLabel
 }: ListVariantProps): ReactElement {
+  const className = [
+    selected ? 'selected' : '',
+    dimmed ? 'dimmed' : ''
+  ]
+    .filter(Boolean)
+    .join(' ')
+
   return (
     <StyledListRadioOption
       variant="contained"
@@ -120,7 +142,7 @@ export function ListVariant({
       onClick={handleClick}
       fullWidth
       disableRipple
-      className={selected ? 'selected' : ''}
+      className={className}
       sx={
         editableLabel != null
           ? {
