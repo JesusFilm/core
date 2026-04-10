@@ -82,7 +82,9 @@ function VideoAdapterNote({ note }: VideoAdapterNoteProps): ReactElement {
       sx={{
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical'
       }}
     >
       {note}
