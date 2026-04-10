@@ -215,18 +215,6 @@ function JourneyVisitorsPage({
     if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
-          filter: {
-            journeyId,
-            hasChatStarted: chatStarted,
-            hasPollAnswers: withPollAnswers,
-            hasMultiselectSubmission: withMultiselectAnswers,
-            hasTextResponse:
-              withSubmittedText &&
-              availableBlockTypes.includes('TextResponseBlock'),
-            hasIcon: withIcon,
-            hideInactive: hideInteractive
-          },
-          first: 100,
           after: endCursor
         }
       })
