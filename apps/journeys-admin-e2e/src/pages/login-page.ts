@@ -29,19 +29,19 @@ export class LoginPage {
     await this.page.locator('button[type="submit"]').click()
   }
 
-  async waitUntilDiscoverPageLoaded() {
-    const sharedWithMeSelect = this.page
-      .getByRole('combobox')
-      .filter({ hasText: 'Shared With Me' })
+  async waitUntilDiscoverPageLoadedAsAdmin(): Promise<void> {
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow after login;
+    // admin accounts have no sessionStorage team ID so they land in Shared With Me mode.
+    await expect(
+      this.page.getByRole('button', { name: 'Shared With Me' })
+    ).toBeVisible({ timeout: 90000 })
+  }
 
-    // Discover page is ready when team selector resolves to Shared With Me.
-    try {
-      await expect(sharedWithMeSelect).toBeVisible({ timeout: 30000 })
-    } catch {
-      await this.page.reload({ waitUntil: 'domcontentloaded' })
-      // 90s: team/query hydration can be slow on CI after login and reload.
-      await expect(sharedWithMeSelect).toBeVisible({ timeout: 90000 })
-    }
+  async waitUntilDiscoverPageLoadedAsUser(): Promise<void> {
+    // 90s: cold Vercel SSR + TeamProvider Apollo query can be slow after login.
+    await expect(
+      this.page.getByRole('button', { name: 'Create Custom Journey' })
+    ).toBeEnabled({ timeout: 90000 })
   }
 
   async login(accountKey: string = 'admin'): Promise<void> {
@@ -51,7 +51,7 @@ export class LoginPage {
     const password = await getPassword(accountKey)
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilDiscoverPageLoadedAsAdmin()
   }
 
   async logInWithCreatedNewUser(userName: string) {
@@ -60,6 +60,6 @@ export class LoginPage {
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
-    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilDiscoverPageLoadedAsUser()
   }
 }
