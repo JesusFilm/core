@@ -5,7 +5,13 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { ComponentProps, MouseEvent, ReactElement, ReactNode } from 'react'
+import {
+  ComponentProps,
+  ElementType,
+  MouseEvent,
+  ReactElement,
+  ReactNode
+} from 'react'
 
 interface ItemProps {
   variant: 'icon-button' | 'button' | 'menu-item'
@@ -79,12 +85,16 @@ export function Item({
               </Button>
             ) : (
               <IconButton
-                component={href != null ? 'a' : 'button'}
-                target={href != null ? '_blank' : undefined}
-                href={href}
+                {...(href != null
+                  ? {
+                      component: 'a' as ElementType,
+                      href,
+                      target: '_blank'
+                    }
+                  : {})}
                 onClick={onClick}
                 aria-label={label}
-                {...ButtonProps}
+                disabled={ButtonProps?.disabled}
               >
                 {icon}
               </IconButton>
