@@ -211,16 +211,14 @@ export function ImageUpload({
         </Typography>
       </Stack>
       <Button
-        size="small"
-        color="secondary"
-        variant="outlined"
+        variant="blockOutlined"
+        color="solid"
         disabled={loading === true}
         onClick={open}
         sx={{
           mt: 4,
           height: 32,
-          width: '100%',
-          borderRadius: 2
+          width: '100%'
         }}
       >
         <Typography

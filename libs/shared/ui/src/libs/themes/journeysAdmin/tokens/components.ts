@@ -45,7 +45,19 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             fontWeight: 700,
             lineHeight: '20px',
             minHeight: '48px',
-            boxShadow: 'none'
+            boxShadow: 'none',
+            backgroundColor: 'var(--variant-containedBg)',
+            color: 'var(--variant-containedColor)',
+            '&.MuiButton-loading': {
+              color: 'transparent'
+            },
+            '& .MuiButton-loadingIndicator': {
+              color: 'var(--variant-containedColor)'
+            },
+            '&.Mui-disabled:not(.MuiButton-loading)': {
+              color: 'rgba(0, 0, 0, 0.26)',
+              backgroundColor: 'rgba(0, 0, 0, 0.12)'
+            }
           }
         },
         {
@@ -54,11 +66,11 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             color: 'solid' as const
           },
           style: {
-            backgroundColor: palette[900],
-            color: palette[0],
+            '--variant-containedBg': palette[900],
+            '--variant-containedColor': palette[0],
             '@media (hover: hover)': {
               '&:hover': {
-                backgroundColor: palette[800]
+                '--variant-containedBg': palette[800]
               }
             }
           }
@@ -69,11 +81,11 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             color: 'primary' as const
           },
           style: {
-            backgroundColor: '#C52D3A',
-            color: palette[0],
+            '--variant-containedBg': '#C52D3A',
+            '--variant-containedColor': palette[0],
             '@media (hover: hover)': {
               '&:hover': {
-                backgroundColor: '#9E2630'
+                '--variant-containedBg': '#9E2630'
               }
             }
           }
@@ -87,8 +99,7 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             fontWeight: 700,
             lineHeight: '20px',
             minHeight: '48px',
-            borderWidth: '2px',
-            borderStyle: 'solid',
+            border: '2px solid var(--variant-outlinedBorder, currentColor)',
             backgroundColor: palette[0]
           }
         },
@@ -98,12 +109,12 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             color: 'solid' as const
           },
           style: {
-            borderColor: palette[900],
+            '--variant-outlinedBorder': palette[700],
             color: palette[900],
             '@media (hover: hover)': {
               '&:hover': {
-                backgroundColor: palette[200],
-                borderWidth: '2px'
+                '--variant-outlinedBorder': palette[900],
+                backgroundColor: palette[0]
               }
             }
           }
@@ -114,12 +125,12 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             color: 'primary' as const
           },
           style: {
-            borderColor: '#C52D3A',
+            '--variant-outlinedBorder': '#E43343',
             color: '#C52D3A',
             '@media (hover: hover)': {
               '&:hover': {
-                backgroundColor: palette[100],
-                borderWidth: '2px'
+                '--variant-outlinedBorder': '#9E2630',
+                backgroundColor: palette[0]
               }
             }
           }

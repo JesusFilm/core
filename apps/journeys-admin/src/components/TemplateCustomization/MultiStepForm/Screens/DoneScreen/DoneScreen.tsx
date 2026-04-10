@@ -117,14 +117,14 @@ export function DoneScreen(): ReactElement {
       footer={
         <Button
           data-testid="ProjectsDashboardButton"
+          variant="blockContained"
+          color="solid"
           onClick={handleGoToProjectsDashboard}
           loading={navigating}
           endIcon={<ArrowRightContained1Icon />}
           sx={{ mt: 4 }}
         >
-          <Typography variant="subtitle2">
-            {t('Go To Projects Dashboard')}
-          </Typography>
+          {t('Go To Projects Dashboard')}
         </Button>
       }
     >
@@ -158,31 +158,25 @@ export function DoneScreen(): ReactElement {
         >
           <Button
             data-testid="DoneScreenPreviewButton"
-            variant="outlined"
-            color="secondary"
+            variant="blockOutlined"
+            color="solid"
             href={href}
             component={href != null ? 'a' : 'button'}
             target={href != null ? '_blank' : undefined}
             startIcon={<Play3Icon />}
-            sx={{
-              borderWidth: 2,
-              borderRadius: 2,
-              height: 48,
-              width: { xs: '100%', sm: 216 },
-              borderColor: 'secondary.light'
-            }}
+            sx={{ width: { xs: '100%', sm: 216 } }}
           >
-            <Typography variant="subtitle2">{t('Preview')}</Typography>
+            {t('Preview')}
           </Button>
           <ShareItem
             variant="button"
             journey={journey}
             buttonVariant="icon"
             buttonProps={{
+              variant: 'blockContained',
+              color: 'solid',
               sx: {
-                width: { xs: '100%', sm: 216 },
-                height: 48,
-                borderRadius: 2
+                width: { xs: '100%', sm: 216 }
               }
             }}
           />

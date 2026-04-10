@@ -231,16 +231,14 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         </Box>
       ) : (
         <Button
-          size="small"
-          color="secondary"
-          variant="outlined"
+          variant="blockOutlined"
+          color="solid"
           onClick={open}
           disabled={videoBlockId == null || uploadTask != null}
           sx={{
             mt: 4,
             height: 32,
-            width: '100%',
-            borderRadius: 2
+            width: '100%'
           }}
         >
           <Typography

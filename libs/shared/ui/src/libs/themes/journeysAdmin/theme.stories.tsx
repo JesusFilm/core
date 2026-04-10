@@ -1,4 +1,6 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import {
   PaletteColor,
   PaletteOptions,
@@ -8,6 +10,9 @@ import {
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
+
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { simpleComponentConfig } from '../../storybook'
 
@@ -206,10 +211,7 @@ interface ThemeStoryProps extends Omit<TypographyProps, 'css'> {
   variants: string[]
 }
 
-const PaletteTokens = ({
-  variants,
-  ...props
-}: ThemeStoryProps): ReactElement => {
+const PaletteTokens = ({ variants }: ThemeStoryProps): ReactElement => {
   return (
     <div
       style={{
@@ -251,6 +253,69 @@ export const FullPalette = {
   args: {
     variants: [...Object.keys(palette)]
   }
+}
+
+const buttonVariants = [
+  'contained',
+  'outlined',
+  'text',
+  'blockContained',
+  'blockOutlined'
+] as const
+
+const buttonColors = ['primary', 'secondary', 'solid'] as const
+
+const ButtonVariants = (): ReactElement => {
+  return (
+    <Stack spacing={6}>
+      {buttonVariants.map((variant) => (
+        <Stack key={variant} spacing={2}>
+          <Typography variant="overline">{variant}</Typography>
+          {buttonColors.map((color) => (
+            <Stack
+              key={color}
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              flexWrap="wrap"
+            >
+              <Button variant={variant} color={color}>
+                {color}
+              </Button>
+              <Button variant={variant} color={color} disabled>
+                Disabled
+              </Button>
+              <Button variant={variant} color={color} loading>
+                Loading
+              </Button>
+              <Button
+                variant={variant}
+                color={color}
+                startIcon={<Play3Icon />}
+              >
+                Start Icon
+              </Button>
+              <Button
+                variant={variant}
+                color={color}
+                endIcon={<ArrowRightIcon />}
+              >
+                End Icon
+              </Button>
+            </Stack>
+          ))}
+        </Stack>
+      ))}
+    </Stack>
+  )
+}
+
+const ButtonVariantsTemplate: StoryObj<typeof ButtonVariants> = {
+  render: () => <ButtonVariants />
+}
+
+export const Buttons = {
+  ...ButtonVariantsTemplate
 }
 
 export default AdminThemeDemo

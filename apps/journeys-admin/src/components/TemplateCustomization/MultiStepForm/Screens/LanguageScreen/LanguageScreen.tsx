@@ -423,7 +423,11 @@ export function LanguageScreen({
                       <JourneyCustomizeTeamSelect />
                     </Box>
                   )}
-                  <Button variant="blockContained" color="solid" size="large">
+                  <Button
+                    variant="blockOutlined"
+                    color="secondary"
+                    size="large"
+                  >
                     Test
                   </Button>
                 </Stack>

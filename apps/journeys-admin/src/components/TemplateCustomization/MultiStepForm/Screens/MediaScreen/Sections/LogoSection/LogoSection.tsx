@@ -123,15 +123,13 @@ export function LogoSection(): ReactElement {
         <Stack spacing={0.5} alignItems="flex-start">
           <input {...getInputProps()} data-testid="LogoSection-file-input" />
           <Button
-            size="small"
-            color="secondary"
-            variant="outlined"
+            variant="blockOutlined"
+            color="solid"
             disabled={loading}
             onClick={open}
             sx={{
               height: 32,
-              width: { xs: 160, sm: 220 },
-              borderRadius: 2
+              width: { xs: 160, sm: 220 }
             }}
           >
             <Typography

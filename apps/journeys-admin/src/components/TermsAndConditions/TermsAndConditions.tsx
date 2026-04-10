@@ -182,19 +182,13 @@ export function TermsAndConditions(): ReactElement {
       </List>
       <Button
         data-testid="TermsAndConditionsNextButton"
-        variant="contained"
+        variant="blockContained"
+        color="solid"
         disabled={!accepted || loading}
         onClick={handleJourneyProfileCreate}
         sx={{
           height: 54,
-          width: '100%',
-          borderRadius: '12px',
-          bgcolor: 'secondary.dark',
-          py: 3.25,
-          color: 'secondary.contrastText',
-          '&:hover': {
-            bgcolor: 'secondary.dark'
-          }
+          width: '100%'
         }}
         endIcon={!loading && <ArrowRightSmIcon />}
       >
