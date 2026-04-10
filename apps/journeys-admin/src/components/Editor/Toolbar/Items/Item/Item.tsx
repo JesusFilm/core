@@ -96,6 +96,7 @@ export function Item({
                 onClick={onClick}
                 aria-label={label}
                 disabled={ButtonProps?.disabled}
+                sx={ButtonProps?.sx}
               >
                 {icon}
               </IconButton>
