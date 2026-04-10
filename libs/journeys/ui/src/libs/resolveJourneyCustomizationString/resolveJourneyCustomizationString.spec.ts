@@ -111,9 +111,13 @@ describe('resolveJourneyCustomizationString', () => {
       ] as JourneyCustomizationField[]
 
       expect(
-        resolveJourneyCustomizationString('{{ greeting }}', fieldsWithNullDefault, {
-          useDefaultValue: true
-        })
+        resolveJourneyCustomizationString(
+          '{{ greeting }}',
+          fieldsWithNullDefault,
+          {
+            useDefaultValue: true
+          }
+        )
       ).toBe('Hello')
     })
 
