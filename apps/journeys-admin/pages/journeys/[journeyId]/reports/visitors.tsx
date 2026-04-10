@@ -28,7 +28,10 @@ import { useIntegrationGoogleCreate } from '../../../../src/components/Google/Go
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
-import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
+import {
+  FilterDrawer,
+  GET_JOURNEY_BLOCK_TYPENAMES
+} from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog'
 import { GoogleSheetsSyncButton } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncButton'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
@@ -155,6 +158,24 @@ function JourneyVisitorsPage({
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
+  const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
+    skip: journeyId == null,
+    variables: { id: journeyId! }
+  })
+  const availableBlockTypes: string[] =
+    blockTypesData?.journey?.blockTypenames ?? []
+
+  useEffect(() => {
+    const blockTypenames = blockTypesData?.journey?.blockTypenames
+    if (
+      blockTypenames != null &&
+      withSubmittedText &&
+      !blockTypenames.includes('TextResponseBlock')
+    ) {
+      setWithSubmittedText(false)
+    }
+  }, [blockTypesData?.journey?.blockTypenames, withSubmittedText])
+
   const { data: userRoleData } = useUserRoleQuery()
   const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
@@ -165,7 +186,9 @@ function JourneyVisitorsPage({
           hasChatStarted: chatStarted,
           hasPollAnswers: withPollAnswers,
           hasMultiselectSubmission: withMultiselectAnswers,
-          hasTextResponse: withSubmittedText,
+          hasTextResponse:
+            withSubmittedText &&
+            availableBlockTypes.includes('TextResponseBlock'),
           hasIcon: withIcon,
           hideInactive: hideInteractive
         },
@@ -192,7 +215,17 @@ function JourneyVisitorsPage({
     if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
-          filter: { journeyId },
+          filter: {
+            journeyId,
+            hasChatStarted: chatStarted,
+            hasPollAnswers: withPollAnswers,
+            hasMultiselectSubmission: withMultiselectAnswers,
+            hasTextResponse:
+              withSubmittedText &&
+              availableBlockTypes.includes('TextResponseBlock'),
+            hasIcon: withIcon,
+            hideInactive: hideInteractive
+          },
           first: 100,
           after: endCursor
         }
