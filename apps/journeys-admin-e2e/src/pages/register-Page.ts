@@ -78,7 +78,9 @@ export class Register {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
         { hasText: 'Verify Your Email' }
       )
-    ).toBeVisible({ timeout: 30000 })
+      // 90s: cold Vercel SSR on the daily-e2e environment can take >30s to
+      // render the verify page on the first request after a new registration.
+    ).toBeVisible({ timeout: 90000 })
   }
 
   /** Only act on verify-email UI after we know we are on that step. */

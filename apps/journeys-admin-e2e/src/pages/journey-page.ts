@@ -387,7 +387,13 @@ export class JourneyPage {
   }
 
   async backToHome() {
-    await this.page.locator('a[data-testid="NextStepsLogo"]').click()
+    await Promise.all([
+      this.page.waitForURL(/\/(\?.*)?$/, {
+        timeout: thirtySecondsTimeout,
+        waitUntil: 'commit'
+      }),
+      this.page.locator('a[data-testid="NextStepsLogo"]').click()
+    ])
   }
 
   async verifyCreatedCustomJourneyInActiveList() {

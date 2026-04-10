@@ -233,6 +233,11 @@ export class CardLevelActionPage {
   }
 
   async uploadImageInCustomTab() {
+    // Wait for the Custom tab panel to finish rendering before interacting
+    // with the file input — the panel loads asynchronously after tab click.
+    await expect(
+      this.page.locator('div[data-testid="ImageUpload"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
       .setInputFiles(
