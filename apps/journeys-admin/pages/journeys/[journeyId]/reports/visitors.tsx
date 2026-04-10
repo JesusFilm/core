@@ -28,7 +28,10 @@ import { useIntegrationGoogleCreate } from '../../../../src/components/Google/Go
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
 import { ExportEventsButton } from '../../../../src/components/JourneyVisitorsList/ExportEventsButton'
-import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
+import {
+  FilterDrawer,
+  GET_JOURNEY_BLOCK_TYPENAMES
+} from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog'
 import { GoogleSheetsSyncButton } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncButton'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
@@ -155,10 +158,32 @@ function JourneyVisitorsPage({
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
+  const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
+    skip: journeyId == null,
+    variables: { id: journeyId }
+  })
+  const blockTypesLoaded = blockTypesData?.journey?.blockTypenames != null
+  const availableBlockTypes: string[] =
+    blockTypesData?.journey?.blockTypenames ?? []
+
+  // Reset URL-driven withSubmittedText filter when journey has no TextResponseBlock (NES-1486)
+  useEffect(() => {
+    if (
+      blockTypesLoaded &&
+      withSubmittedText &&
+      !availableBlockTypes.includes('TextResponseBlock')
+    ) {
+      setWithSubmittedText(false)
+    }
+  }, [blockTypesLoaded, availableBlockTypes, withSubmittedText])
+
+  const waitingForBlockTypes = withSubmittedText && !blockTypesLoaded
+
   const { data: userRoleData } = useUserRoleQuery()
-  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading: queryLoading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
+      skip: waitingForBlockTypes,
       variables: {
         filter: {
           journeyId,
@@ -179,6 +204,8 @@ function JourneyVisitorsPage({
       }
     }
   )
+  const loading = queryLoading || waitingForBlockTypes
+
   const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
     journey?.team != null
       ? {
@@ -192,8 +219,6 @@ function JourneyVisitorsPage({
     if (visitorEdges != null && hasNextPage) {
       const response = await fetchMore({
         variables: {
-          filter: { journeyId },
-          first: 100,
           after: endCursor
         }
       })
