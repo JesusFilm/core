@@ -177,11 +177,13 @@ function JourneyVisitorsPage({
     }
   }, [blockTypesLoaded, availableBlockTypes, withSubmittedText])
 
+  const waitingForBlockTypes = withSubmittedText && !blockTypesLoaded
+
   const { data: userRoleData } = useUserRoleQuery()
-  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading: queryLoading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
-      skip: withSubmittedText && !blockTypesLoaded,
+      skip: waitingForBlockTypes,
       variables: {
         filter: {
           journeyId,
@@ -202,6 +204,8 @@ function JourneyVisitorsPage({
       }
     }
   )
+  const loading = queryLoading || waitingForBlockTypes
+
   const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
     journey?.team != null
       ? {
