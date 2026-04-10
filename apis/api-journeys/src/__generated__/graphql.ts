@@ -1039,6 +1039,7 @@ export type IntegrationGoogle = Integration & {
   team: Team;
   type: IntegrationType;
   user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type IntegrationGoogleCreateInput = {
@@ -1936,6 +1937,7 @@ export type Mutation = {
   journeyThemeCreate: JourneyTheme;
   journeyThemeDelete: JourneyTheme;
   journeyThemeUpdate: JourneyTheme;
+  journeyTransferFromAnonymous: Journey;
   journeyUpdate: Journey;
   /**
    * Creates a JourneyViewEvent, returns null if attempting to create another
@@ -2561,6 +2563,12 @@ export type MutationJourneyThemeDeleteArgs = {
 export type MutationJourneyThemeUpdateArgs = {
   id: Scalars['ID']['input'];
   input: JourneyThemeUpdateInput;
+};
+
+
+export type MutationJourneyTransferFromAnonymousArgs = {
+  journeyId: Scalars['ID']['input'];
+  teamId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -3793,6 +3801,11 @@ export type Query = {
   journeyEventsConnection: JourneyEventsConnection;
   journeyEventsCount: Scalars['Int']['output'];
   journeySimpleGet?: Maybe<Scalars['Json']['output']>;
+  /**
+   * Returns distinct language IDs from published global templates.
+   * Used to dynamically populate the language filter on the templates page.
+   */
+  journeyTemplateLanguageIds: Array<Scalars['String']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];

@@ -20,7 +20,8 @@ import { useTranslation } from 'next-i18next'
 import React, { ReactElement } from 'react'
 import { InferType, object, string } from 'yup'
 
-import { getFirebaseAuth, loginWithCredential } from '../../../libs/auth'
+import { getFirebaseAuth, login, loginWithCredential } from '../../../libs/auth'
+import { getPendingGuestJourney } from '../../../libs/pendingGuestJourney'
 import { useHandleNewAccountRedirect } from '../../../libs/useRedirectNewAccount'
 import { PageProps } from '../types'
 import { getJourneyIdFromRedirect } from '../utils'
@@ -99,16 +100,27 @@ export function RegisterPage({
     const userCredential = await linkWithCredential(currentUser, credential)
     await updateProfile(userCredential.user, { displayName: name })
 
-    const nameParts = name.trim().split(/\s+/).filter(Boolean)
-    const firstName = nameParts[0] ?? name.trim()
-    const lastName =
-      nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined
-
     const journeyId = getJourneyIdFromRedirect(
       router.query.redirect as string | undefined
     )
     if (journeyId != null) {
       await journeyPublish({ variables: { id: journeyId } })
+    }
+
+    const pending = getPendingGuestJourney()
+    if (pending != null) {
+      const signInCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      )
+      const idToken = await signInCredential.user.getIdToken()
+      await login(idToken)
+      const existingRedirect = router.query.redirect as string | undefined
+      const redirectUrl =
+        existingRedirect ?? `/templates/${pending.journeyId}/customize`
+      window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+      return
     }
 
     const signInCredential = await signInWithEmailAndPassword(
@@ -138,6 +150,34 @@ export function RegisterPage({
       }
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {
+        const auth = getFirebaseAuth()
+        if (auth.currentUser?.isAnonymous === true) {
+          try {
+            const credential = await signInWithEmailAndPassword(
+              auth,
+              values.email,
+              values.password
+            )
+            const idToken = await credential.user.getIdToken()
+            await login(idToken)
+
+            const pending = getPendingGuestJourney()
+            if (pending != null) {
+              const existingRedirect = router.query.redirect as
+                | string
+                | undefined
+              const redirectUrl =
+                existingRedirect ?? `/templates/${pending.journeyId}/customize`
+              window.location.href = `/users/sign-in?redirect=${encodeURIComponent(redirectUrl)}`
+              return
+            }
+
+            window.location.reload()
+            return
+          } catch {
+            // Password incorrect - show original error
+          }
+        }
         setFieldError(
           'email',
           t('The email address is already used by another account')
