@@ -1,5 +1,5 @@
 ---
-title: "fix: Allow users to change poll selection on RadioQuestion"
+title: 'fix: Allow users to change poll selection on RadioQuestion'
 type: fix
 status: completed
 date: 2026-04-10
@@ -15,7 +15,7 @@ When a page contains one or more RadioQuestion poll blocks, clicking an option p
 
 After a user selects an option in a RadioQuestion (e.g., clicks "Yes" for "Dietary Restrictions"), they cannot select a different option in that same poll (e.g., "No"). The root cause is `RadioQuestion.tsx` line 204: `disabled={Boolean(selectedId)}`, which disables every option the moment any option is selected. This is problematic for polls (options with no navigation action) because the user remains on the page but cannot correct a mistake.
 
-For options *with* navigation actions, the disabling is irrelevant — `handleAction` navigates the user away immediately, and the `useEffect` resets `selectedId` to `null` when the block leaves the active history.
+For options _with_ navigation actions, the disabling is irrelevant — `handleAction` navigates the user away immediately, and the `useEffect` resets `selectedId` to `null` when the block leaves the active history.
 
 ## Requirements Trace
 
@@ -73,14 +73,17 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.tsx`
 - Modify: `libs/journeys/ui/src/components/RadioOption/ListVariant/ListVariant.tsx`
 
 **Approach:**
+
 - In `RadioQuestion.tsx`, remove the `disabled={Boolean(selectedId)}` prop from the `<RadioOption>` element (line 204). Since `RadioOption` defaults `disabled` to `false`, omitting the prop is sufficient.
 - In ListVariant's `StyledListRadioOption`, add a `&.selected` CSS rule following the GridVariant pattern: use a more prominent background color (matching the existing `&:active` press-state styling), full opacity, and appropriate text color to visually distinguish the selected option from unselected ones.
 
 **Patterns to follow:**
+
 - GridVariant's `&.selected` CSS in `StyledGridRadioOption` — uses `pollCustomTheme.selected` values for background, border, and boxShadow
 - ListVariant's existing `&:active` CSS — the press-state styling is a natural basis for the persistent selected state
 
@@ -88,6 +91,7 @@ For options *with* navigation actions, the disabling is irrelevant — `handleAc
 Test expectation: none — these are CSS/styling changes with no behavioral logic to unit-test. Visual correctness is verified via manual QA.
 
 **Verification:**
+
 - ListVariant selected option is visually distinct from unselected options (manual check)
 - GridVariant selected option retains its existing `.selected` visual treatment
 
@@ -100,21 +104,26 @@ Test expectation: none — these are CSS/styling changes with no behavioral logi
 **Dependencies:** Unit 1
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/components/RadioQuestion/RadioQuestion.spec.tsx`
 
 **Approach:**
+
 - Replace the "should disable unselected options" test with a test that verifies a user can change their selection: click option 1, verify it is selected, click option 2, verify option 2 is now selected and option 1 is no longer selected. Both options should remain enabled throughout.
 - Update the "should select an option onClick" test to remove the assertion that the button is disabled after click (line 147: `expect(buttons[0]).toBeDisabled()`), replacing it with a check that the button is NOT disabled.
 
 **Patterns to follow:**
+
 - Existing test patterns in `RadioQuestion.spec.tsx` — MockedProvider setup, blockHistoryVar, fireEvent.click
 
 **Test scenarios:**
+
 - Happy path: Click option 1 -> option 1 is selected and NOT disabled; click option 2 -> option 2 is selected, option 1 is deselected, both remain enabled
 - Happy path: Click option 1 -> submission event mutation is called; click option 2 -> a second submission event mutation is called
 - Edge case: Click option 1 twice -> option 1 remains selected, no errors
 
 **Verification:**
+
 - All existing RadioQuestion tests pass (with updated assertions)
 - New test verifying selection change passes
 - No regressions in RadioOption, ListVariant, or GridVariant tests
@@ -129,8 +138,8 @@ Test expectation: none — these are CSS/styling changes with no behavioral logi
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                | Mitigation                                                                                          |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Multiple analytics events fired on selection change | Acceptable — each event represents a deliberate user action; mirrors how other form components work |
 
 ## Sources & References
