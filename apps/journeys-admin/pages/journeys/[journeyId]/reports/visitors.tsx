@@ -160,7 +160,7 @@ function JourneyVisitorsPage({
 
   const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
     skip: journeyId == null,
-    variables: { id: journeyId! }
+    variables: { id: journeyId }
   })
   const availableBlockTypes: string[] =
     blockTypesData?.journey?.blockTypenames ?? []
