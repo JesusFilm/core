@@ -128,10 +128,7 @@ export function ListVariant({
   handleClick,
   editableLabel
 }: ListVariantProps): ReactElement {
-  const className = [
-    selected ? 'selected' : '',
-    dimmed ? 'dimmed' : ''
-  ]
+  const className = [selected ? 'selected' : '', dimmed ? 'dimmed' : '']
     .filter(Boolean)
     .join(' ')
 
