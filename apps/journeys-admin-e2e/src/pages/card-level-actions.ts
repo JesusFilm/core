@@ -995,7 +995,7 @@ export class CardLevelActionPage {
         ).toBeVisible({ timeout: 3000 })
         found = true
         break
-      } catch (error) {
+      } catch {
         // Try next selector
         continue
       }
@@ -1461,7 +1461,7 @@ export class CardLevelActionPage {
         shareFound = true
 
         break
-      } catch (error) {
+      } catch {
         continue
       }
     }
@@ -1474,7 +1474,7 @@ export class CardLevelActionPage {
         })
         thumbsUpFound = true
         break
-      } catch (error) {
+      } catch {
         continue
       }
     }
@@ -1487,7 +1487,7 @@ export class CardLevelActionPage {
         })
         thumbsDownFound = true
         break
-      } catch (error) {
+      } catch {
         continue
       }
     }
@@ -1592,7 +1592,7 @@ export class CardLevelActionPage {
         await element.click()
         found = true
         break
-      } catch (error) {
+      } catch {
         continue
       }
     }
@@ -1654,7 +1654,7 @@ export class CardLevelActionPage {
       // Try more flexible approach - check if header has either logo OR menu, not necessarily both
       try {
         await expect(header.locator('img')).toBeVisible({ timeout: 2000 })
-      } catch (error) {
+      } catch {
         // Logo not found - this is expected for some website configurations
       }
 
@@ -1662,7 +1662,7 @@ export class CardLevelActionPage {
         await expect(
           header.locator('svg[data-testid="ChevronDownIcon"]')
         ).toBeVisible({ timeout: 2000 })
-      } catch (error) {
+      } catch {
         // ChevronDown not found - this is expected for some website configurations
       }
     }

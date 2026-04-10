@@ -2,7 +2,11 @@ import { promises } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 
-import { test as base } from '@playwright/test'
+import {
+  type Browser,
+  type BrowserContext,
+  test as base
+} from '@playwright/test'
 
 import { LandingPage } from '../pages/landing-page'
 import { Register } from '../pages/register-Page'
@@ -12,20 +16,9 @@ type WorkerFixtures = {
   workerEmail: string
   /**
    * Absolute path to a Playwright storage-state JSON for the worker-registered
-   * user. Unlike a plain `context.storageState()` snapshot, this file has the
-   * active teamId injected into `sessionStorage` so that new browser contexts
-   * created with `browser.newContext({ storageState })` start with the correct
-   * team pre-selected.
-   *
-   * Why this is needed:
-   *   - After registration, `TeamProvider` stores the active team ID only in
-   *     React state + sessionStorage (not in the DB — the `updateLastActiveTeamId`
-   *     mutation races with `router.push` and may not commit).
-   *   - Playwright's `context.storageState()` does not capture sessionStorage.
-   *   - We manually merge the sessionStorage value into the JSON file so
-   *     Playwright 1.39+ (which supports sessionStorage in storageState) can
-   *     restore it in fresh contexts, making the "Create Custom Journey" button
-   *     appear without a fresh login.
+   * user (cookies + localStorage). Session keys such as `journeys-admin:activeTeamId`
+   * are **not** restored from this file by Playwright — use
+   * {@link newContextWithWorkerStorageState} so an init script sets them before navigation.
    */
   workerStorageState: string
 }
@@ -39,10 +32,43 @@ const getStoragePath = () =>
   )
 
 /**
+ * Creates a browser context with the worker auth snapshot and, when the worker
+ * registered a real team id, injects `journeys-admin:activeTeamId` into
+ * `sessionStorage` before any document loads.
+ *
+ * Playwright persists cookies/localStorage/IndexedDB in `storageState`, but its
+ * restore path clears `sessionStorage` and does not apply ad-hoc `sessionStorage`
+ * entries from the JSON file — see
+ * https://playwright.dev/docs/auth#session-storage
+ */
+export async function newContextWithWorkerStorageState(
+  browser: Browser,
+  storageStatePath: string
+): Promise<BrowserContext> {
+  const context = await browser.newContext({
+    storageState: storageStatePath
+  })
+  const teamId = process.env.PLAYWRIGHT_WORKER_ACTIVE_TEAM_ID
+  if (
+    teamId != null &&
+    teamId !== '' &&
+    teamId !== '__shared__'
+  ) {
+    await context.addInitScript(
+      ({ key, value }: { key: string; value: string }) => {
+        window.sessionStorage.setItem(key, value)
+      },
+      { key: SS_KEY, value: teamId }
+    )
+  }
+  return context
+}
+
+/**
  * Extends Playwright's test with two worker-scoped fixtures:
  *
  * - `workerEmail`        — email for the worker's registered user (logging only)
- * - `workerStorageState` — path to a saved auth snapshot with sessionStorage injected
+ * - `workerStorageState` — path to a saved auth snapshot
  *
  * Registration and the storage-state snapshot are created ONCE per Playwright
  * worker. With workers=4 this means 4 total registrations instead of one per
@@ -65,44 +91,16 @@ export const test = base.extend<{}, WorkerFixtures>({
         SS_KEY
       )
 
-      // Capture auth cookies + localStorage.
+      // Capture auth cookies + localStorage (+ IndexedDB metadata).
       const rawState = await ctx.storageState()
 
-      // TeamProvider reads sessionStorage on first paint; Playwright's restore
-      // can still race SSR. URL `?activeTeam=` is highest priority (see
-      // TeamProvider) — expose team id to journey-page via env (per worker process).
+      // TeamProvider reads sessionStorage on first paint; URL `?activeTeam=` is
+      // highest priority (see TeamProvider) — expose team id via env for
+      // journey-page discover URL construction.
       if (teamId != null && teamId !== '__shared__') {
         process.env.PLAYWRIGHT_WORKER_ACTIVE_TEAM_ID = teamId
       } else {
         delete process.env.PLAYWRIGHT_WORKER_ACTIVE_TEAM_ID
-      }
-
-      // Inject teamId into sessionStorage so Playwright 1.39+ can restore it
-      // in new contexts. This ensures the "Create Custom Journey" button is
-      // available immediately without a fresh login or DB dependency.
-      if (teamId != null && teamId !== '__shared__') {
-        for (const origin of rawState.origins) {
-          ;(
-            origin
-          ).sessionStorage = [{ name: SS_KEY, value: teamId }]
-        }
-        // If there are no origins yet, add one for the app origin
-        if (rawState.origins.length === 0) {
-          const appOrigin = (await page.evaluate(
-            () => window.location.origin
-          )) as string
-          ;(
-            rawState.origins as Array<{
-              origin: string
-              localStorage: Array<{ name: string; value: string }>
-              sessionStorage?: Array<{ name: string; value: string }>
-            }>
-          ).push({
-            origin: appOrigin,
-            localStorage: [],
-            sessionStorage: [{ name: SS_KEY, value: teamId }]
-          })
-        }
       }
 
       await promises.writeFile(storagePath, JSON.stringify(rawState))
@@ -117,8 +115,8 @@ export const test = base.extend<{}, WorkerFixtures>({
   ],
 
   workerStorageState: [
-    // eslint-disable-next-line no-empty-pattern
-    async ({ workerEmail: _email }, use) => {
+    async ({ workerEmail }, use) => {
+      void workerEmail
       // workerEmail fixture has already run and saved the storage state file.
       await use(getStoragePath())
     },

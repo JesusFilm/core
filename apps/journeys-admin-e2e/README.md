@@ -42,7 +42,7 @@ If none of the URL variables are set, tests fall back to `http://localhost:4200`
 
 ## Project Structure
 
-```
+```text
 src/
 ├── e2e/
 │   ├── customization/      # Template customization flow (YouTube, media upload)
@@ -99,7 +99,7 @@ Playwright's `{ scope: 'worker' }` fixture option runs the setup code **once per
 process** and caches the result. All subsequent requests for `workerEmail` within the
 same worker return the cached value instantly — no re-registration.
 
-```
+```text
 Worker 1 starts
   ├─ spec A beforeAll → fixture runs: registers user → email cached
   ├─ spec B beforeAll → fixture cached: returns email immediately (login only)

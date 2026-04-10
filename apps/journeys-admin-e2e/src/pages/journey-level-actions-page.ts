@@ -6,6 +6,8 @@ import { journeyEditorUrlRegex } from '../e2e-constants'
 import { generateRandomNumber } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
+import type { JourneyPage } from './journey-page'
+
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
 const ninetySecondsTimeout = 90000
@@ -392,6 +394,24 @@ export class JourneyLevelActions {
     ).toHaveAttribute('value', this.selectedLanguage, {
       timeout: thirtySecondsTimeout
     })
+  }
+
+  /**
+   * After saving journey details, reopen Edit Details until the language field
+   * reflects the persisted value (avoids fixed sleeps while the mutation lands).
+   */
+  async assertPersistedLanguageWhenReopeningEditDetails(
+    journeyPage: JourneyPage,
+    language: string
+  ): Promise<void> {
+    await expect(async () => {
+      await this.page.keyboard.press('Escape')
+      await journeyPage.clickThreeDotBtnOfCustomJourney()
+      await this.clickThreeDotOptionsOfJourneyCreationPage('Edit Details')
+      await expect(
+        this.page.locator('input[placeholder="Search Language"]')
+      ).toHaveAttribute('value', language)
+    }).toPass({ timeout: ninetySecondsTimeout })
   }
 
   async sleep(ms): Promise<Promise<void>> {

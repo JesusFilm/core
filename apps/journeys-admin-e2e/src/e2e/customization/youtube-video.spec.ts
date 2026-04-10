@@ -1,8 +1,5 @@
 import { expect, test } from '../../fixtures/authenticated'
-import {
-  CustomizationMediaPage,
-  MediaCustomizeStepUnavailableError
-} from '../../pages/customization-media-page'
+import { CustomizationMediaPage } from '../../pages/customization-media-page'
 
 const TEMPLATE_ID = '00dc45d7-9d37-434e-bbc8-7c89eeb6229a'
 const YOUTUBE_URL =
@@ -13,17 +10,14 @@ test.use({
 })
 
 test.describe('YouTube video section on Media screen', () => {
+  /* eslint-disable playwright/expect-expect -- CustomizationMediaPage helpers call expect() */
   test.beforeEach(async ({ authedPage }) => {
     const mediaPage = new CustomizationMediaPage(authedPage)
     await mediaPage.navigateToCustomize(TEMPLATE_ID)
-    try {
-      await mediaPage.navigateToMediaScreen()
-    } catch (error) {
-      if (error instanceof MediaCustomizeStepUnavailableError) {
-        test.skip(true, error.message)
-      }
-      throw error
-    }
+    await mediaPage.navigateToMediaScreen()
+    await expect(authedPage.getByTestId('VideosSection')).toBeVisible({
+      timeout: 60000
+    })
   })
 
   test('should display VideosSection with input and upload button', async ({
@@ -73,7 +67,6 @@ test.describe('YouTube video section on Media screen', () => {
   })
 
   test('should render upload button at medium size', async ({ authedPage }) => {
-    const mediaPage = new CustomizationMediaPage(authedPage)
     const uploadButton = authedPage.getByTestId('VideosSection-upload-button')
     await expect(uploadButton).toBeVisible()
 

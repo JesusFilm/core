@@ -1,7 +1,10 @@
 /* eslint-disable playwright/expect-expect */
 import type { BrowserContext, Page } from 'playwright-core'
 
-import { test } from '../../fixtures/workerAuth'
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { LandingPage } from '../../pages/landing-page'
 import { TeamsPage } from '../../pages/teams-page'
 
@@ -20,9 +23,10 @@ test.describe('Verify Add member', () => {
   test.beforeAll(
     'Register new account',
     async ({ browser, workerStorageState }) => {
-      sharedContext = await browser.newContext({
-        storageState: workerStorageState
-      })
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
       sharedPage = await sharedContext.newPage()
       const landingPage = new LandingPage(sharedPage)
       const teamsPage = new TeamsPage(sharedPage)

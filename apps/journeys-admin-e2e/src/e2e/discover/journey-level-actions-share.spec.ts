@@ -1,7 +1,10 @@
 /* eslint-disable playwright/expect-expect */
 import type { BrowserContext, Page } from 'playwright-core'
 
-import { test } from '../../fixtures/workerAuth'
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
 
@@ -27,9 +30,10 @@ test.describe('Journey level actions - share', () => {
   test.beforeAll(
     'Register new account',
     async ({ browser, workerStorageState }) => {
-      sharedContext = await browser.newContext({
-        storageState: workerStorageState
-      })
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
     }
   )
 
@@ -84,7 +88,7 @@ test.describe('Journey level actions - share', () => {
     await journeyPage.clickShareButtonInJourneyPage()
     const urlSlug = await journeyPage.editUrlAndSave()
     await journeyPage.clickCopyIconInShareDialog()
-    await journeyLevelActions.verifySnackBarMsg('Link copied')
+    await journeyLevelActions.verifySnackBarMsg('Link Copied')
     await journeyPage.verifyUpdatedUrlSlugIsLoaded(urlSlug)
   })
 

@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+/* eslint-disable playwright/no-conditional-in-test -- env guard + defensive cleanup in Checkly monitor */
+
 /*  
 NS Admin: Monitoring
 https://www.checklyhq.com/docs/cli/

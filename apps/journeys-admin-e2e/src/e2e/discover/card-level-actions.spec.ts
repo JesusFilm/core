@@ -2,7 +2,10 @@
 /* eslint-disable playwright/expect-expect */
 import type { BrowserContext, Page } from 'playwright-core'
 
-import { test } from '../../fixtures/workerAuth'
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { CardLevelActionPage } from '../../pages/card-level-actions'
 import { JourneyPage } from '../../pages/journey-page'
 
@@ -21,9 +24,10 @@ test.describe('verify card level actions', () => {
   test.beforeAll(
     'Register new account',
     async ({ browser, workerStorageState }) => {
-      sharedContext = await browser.newContext({
-        storageState: workerStorageState
-      })
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
       sharedPage = await sharedContext.newPage()
     }
   )

@@ -1,5 +1,6 @@
 /* eslint-disable playwright/expect-expect */
 import { expect, test } from '@playwright/test'
+
 import { LandingPage } from '../../pages/landing-page'
 import { LoginPage } from '../../pages/login-page'
 import { ProfilePage } from '../../pages/profile-page'
@@ -81,6 +82,7 @@ test(
   'new user who leaves before accepting terms returns to Terms and Conditions after signing in again',
   async ({ browser }) => {
     test.setTimeout(3 * 60 * 1000)
+
     const ctx1 = await browser.newContext({ storageState: freshStorageState })
     const page1 = await ctx1.newPage()
     let userEmail: string
@@ -120,6 +122,7 @@ test(
     // 3 minutes: registration + OTP + T&C + workspace creation each have their
     // own 90s waits; the sum can exceed the default 3-minute test timeout.
     test.setTimeout(3 * 60 * 1000)
+
     const ctx = await browser.newContext({
       storageState: freshStorageState,
       // Pin i18n so the auto-created team title matches `en` "{{ displayName }} & Team".

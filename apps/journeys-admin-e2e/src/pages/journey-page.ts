@@ -263,12 +263,7 @@ export class JourneyPage {
       u.searchParams.set('activeTeam', teamFromWorker)
       discoverUrl = u.toString()
     }
-    // Skip navigation when already on the target URL (e.g. beforeEach already
-    // called this method). Avoiding the round-trip reduces flakiness on cold
-    // Vercel deployments where a second SSR render can time out.
-    if (this.page.url() !== discoverUrl) {
-      await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
-    }
+    await this.page.goto(discoverUrl, { waitUntil: 'domcontentloaded' })
 
     // Wait for TeamProvider to finish resolving before asserting page state.
     // The combobox is aria-disabled while query.loading is true and becomes

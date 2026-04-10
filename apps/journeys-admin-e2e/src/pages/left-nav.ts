@@ -1,7 +1,5 @@
 import type { Page } from 'playwright-core'
 
-const sixtySecondsTimeout = 60000
-
 export class LeftNav {
   readonly page: Page
 
@@ -18,7 +16,7 @@ export class LeftNav {
 
       // Click on Profile
       await profileListItem.click()
-    } catch (error) {
+    } catch {
       throw new Error(
         'Profile list item is not visible after waiting for a minute'
       )

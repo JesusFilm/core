@@ -14,12 +14,8 @@ export class MediaCustomizeStepUnavailableError extends Error {
   }
 }
 
-function getScreenFromUrl(url: string): string | null {
-  try {
-    return new URL(url).searchParams.get('screen')
-  } catch {
-    return null
-  }
+function readCustomizeScreenParam(pageUrl: string): string | null {
+  return new URL(pageUrl).searchParams.get('screen')
 }
 
 export class CustomizationMediaPage {
@@ -41,12 +37,16 @@ export class CustomizationMediaPage {
     await nextButton.click({ timeout: defaultTimeout })
   }
 
+  /**
+   * From the language customize entry (`navigateToCustomize`), advances with Next
+   * until `VideosSection` is shown or the flow ends on `screen=social` (no media step).
+   */
   async navigateToMediaScreen(): Promise<void> {
     const videosSection = this.page.getByTestId('VideosSection')
     for (let i = 0; i < maxNavigationClicks; i++) {
       if (await videosSection.isVisible()) return
 
-      const screen = getScreenFromUrl(this.page.url())
+      const screen = readCustomizeScreenParam(this.page.url())
       if (screen === 'social') {
         throw new MediaCustomizeStepUnavailableError()
       }
@@ -85,11 +85,9 @@ export class CustomizationMediaPage {
   }
 
   async waitForAutoSubmit(): Promise<void> {
-    const helperText = this.page
-      .getByTestId('VideosSection-youtube-input')
-      .locator('p')
-    await expect(helperText).toBeVisible({ timeout: defaultTimeout })
-    await this.page.waitForLoadState('load')
+    await expect(
+      this.page.getByTestId('VideosSection').locator('iframe, video')
+    ).toBeVisible({ timeout: defaultTimeout })
   }
 
   async waitForAutoSubmitError(): Promise<void> {

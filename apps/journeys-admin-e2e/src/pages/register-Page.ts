@@ -180,15 +180,12 @@ export class Register {
     await this.assertOnCreateYourWorkspacePage()
     await this.entetTeamName()
     await this.clickCreateBtn()
-    await this.assertOnTermsAndConditionsPage()
+    // TeamOnboarding pushes to `/?onboarding=true` or `redirect` — not terms.
+    await this.waitUntilDiscoverPageLoaded()
   }
 
   async verifyTermsAcceptedAndPersisted() {
-    // Wait for navigation away from Terms before checking the Discover page.
-    await this.page.waitForURL(
-      (url) => !url.toString().includes('terms-and-conditions'),
-      { timeout: 120000 }
-    )
+    // Positive wait: Discover shell + Create button (same signal as post-onboarding).
     await this.waitUntilDiscoverPageLoaded()
     await this.page.reload({ waitUntil: 'domcontentloaded' })
     await expect(this.page).not.toHaveURL(/terms-and-conditions/, {

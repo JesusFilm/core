@@ -7,7 +7,9 @@ async function waitForHealthy(url: string, timeoutMs: number): Promise<void> {
     try {
       const response = await fetch(url, { method: 'GET' })
       if (response.ok) return
-    } catch {}
+    } catch {
+      // Ignore transient fetch failures while polling for a healthy base URL.
+    }
     if (Date.now() - start > timeoutMs) {
       throw new Error(`Timed out waiting for ${url}`)
     }
@@ -15,7 +17,8 @@ async function waitForHealthy(url: string, timeoutMs: number): Promise<void> {
   }
 }
 
-export default async function globalSetup(config: FullConfig) {
+export default async function globalSetup(_config: FullConfig) {
+  void _config
   const baseURL =
     process.env.JOURNEYS_ADMIN_DAILY_E2E ??
     process.env.DEPLOYMENT_URL ??

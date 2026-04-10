@@ -130,3 +130,19 @@ Use the narrowest container that reflects what the user sees. If strict mode fir
 - **Post-login waits differ by role**: Admin and user shells do not load the same chrome. Expose separate, explicit wait/assert helpers per role (each test calls the one that matches its fixture), instead of one generic wait that is too strict for one role or too loose for the other.
 
 - **Comments that anchor to product code**: When navigation order is fixed by the app (e.g. post-OTP always routes to terms), a short comment pointing to that behavior helps reviewers and future editors keep assertions in sync with production — without replacing assertions or adding conditional branches.
+
+- **`sessionStorage` and `storageState`**: Playwright’s persisted `storageState` covers cookies, localStorage, and IndexedDB — not session keys. Official guidance is `context.addInitScript` to seed sessionStorage before navigation ([Authentication — Session storage](https://playwright.dev/docs/auth#session-storage)). Do not assume merging `sessionStorage` into the JSON file restores it; use a shared helper (e.g. `newContextWithWorkerStorageState`) plus `?activeTeam=` or env when the app reads team id from the URL.
+
+- **URL assertions for editor routes**: Regexes for `/journeys/:id` and `/journeys/:id/edit` should anchor the end of the path (allow optional trailing slash and query/hash) so paths like `/journeys/:id/analytics` do not false-match.
+
+- **Always close extra `BrowserContext`s**: If a test calls `browser.newContext()` manually, wrap the body in `try/finally` and `await context.close()` so failures do not leak contexts.
+
+- **Shared context vs shared page**: A worker- or suite-scoped `BrowserContext` may be reused, but give each test its own `Page` (`beforeEach` / `afterEach`) when UI state must not leak between cases; keep one page only when the suite truly continues a single linear session by design.
+
+- **Post-onboarding assertions**: Match the real product route (read app code). Example: after “Create Your Workspace”, `TeamOnboarding` routes to `/?onboarding=true` or a redirect — not back to terms; assert Discover readiness (e.g. `waitUntilDiscoverPageLoaded`) instead of the wrong screen.
+
+- **Post-terms / post-save waits**: Prefer a positive condition (Discover shell, snackbar, preview element, persisted field) over `waitForURL` with a negative predicate (“anything but X”). Keep explicit waits ≤ 90s with a comment when justified.
+
+- **Snackbar copy strings**: Match the product’s exact casing (e.g. `Link Copied` vs `Link copied`); `getByText` / locators are case-sensitive by default.
+
+- **Skips hide regressions**: Do not `test.skip` in `beforeEach` when a flow fails (e.g. missing media step); fix template/env or split specs so failures surface.

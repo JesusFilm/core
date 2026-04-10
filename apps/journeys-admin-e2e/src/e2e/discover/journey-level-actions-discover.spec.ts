@@ -1,7 +1,10 @@
 /* eslint-disable playwright/expect-expect */
 import type { BrowserContext, Page } from 'playwright-core'
 
-import { test } from '../../fixtures/workerAuth'
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
 import { TeamsPage } from '../../pages/teams-page'
@@ -28,9 +31,10 @@ test.describe('Journey level actions - discover', () => {
   test.beforeAll(
     'Register new account',
     async ({ browser, workerStorageState }) => {
-      sharedContext = await browser.newContext({
-        storageState: workerStorageState
-      })
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
     }
   )
 
@@ -94,8 +98,6 @@ test.describe('Journey level actions - discover', () => {
   test('Verify language option from three dot options on top right in the selected journey page', async () => {
     const page = getSharedPage()
 
-    test.setTimeout(120000)
-
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
     await journeyPage.clickCreateCustomJourney()
@@ -107,12 +109,10 @@ test.describe('Journey level actions - discover', () => {
     )
     await journeyLevelActions.enterLanguage('Adi')
     await journeyPage.clickSaveBtn()
-    await journeyLevelActions.sleep(2000)
-    await journeyPage.clickThreeDotBtnOfCustomJourney()
-    await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
-      'Edit Details'
+    await journeyLevelActions.assertPersistedLanguageWhenReopeningEditDetails(
+      journeyPage,
+      'Adi'
     )
-    await journeyLevelActions.verifySelectedLanguageInLanguagePopup()
     await journeyPage.clickSaveBtn()
   })
 
@@ -130,6 +130,7 @@ test.describe('Journey level actions - discover', () => {
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Copy Link'
     )
+    await journeyLevelActions.verifySnackBarMsg('Link Copied')
   })
 
   test('Navigate to journey goal page', async () => {

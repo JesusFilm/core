@@ -1,7 +1,10 @@
 /* eslint-disable playwright/expect-expect */
 import type { BrowserContext, Page } from 'playwright-core'
 
-import { test } from '../../fixtures/workerAuth'
+import {
+  newContextWithWorkerStorageState,
+  test
+} from '../../fixtures/workerAuth'
 import { generateRandomString } from '../../framework/helpers'
 import { JourneyLevelActions } from '../../pages/journey-level-actions-page'
 import { JourneyPage } from '../../pages/journey-page'
@@ -29,21 +32,30 @@ test.describe('Teams', () => {
   test.beforeAll(
     'Register new account',
     async ({ browser, workerStorageState }) => {
-      sharedContext = await browser.newContext({
-        storageState: workerStorageState
-      })
-      sharedPage = await sharedContext.newPage()
+      sharedContext = await newContextWithWorkerStorageState(
+        browser,
+        workerStorageState
+      )
     }
   )
 
   test.beforeEach(async () => {
-    await getSharedPage().goto('/')
+    if (sharedContext == null) {
+      throw new Error('Shared authenticated context was not initialized')
+    }
+    sharedPage = await sharedContext.newPage()
+    await sharedPage.goto('/')
+  })
+
+  test.afterEach(async () => {
+    if (sharedPage != null) {
+      await sharedPage.close()
+      sharedPage = undefined
+    }
   })
 
   test.afterAll(async () => {
-    if (sharedPage != null) await sharedPage.close()
     if (sharedContext != null) await sharedContext.close()
-    sharedPage = undefined
     sharedContext = undefined
   })
 
@@ -107,6 +119,7 @@ test.describe('Teams', () => {
   // ISSUE: The Growth Spaces card on /integrations/new is only rendered when the teamIntegrations
   // feature flag is on. When the flag is off, the test fails because the Growth Spaces link/button
   // is missing (0 elements). Re-enable this test when the flag is available in the test environment.
+  // eslint-disable-next-line playwright/no-skipped-test -- gated on teamIntegrations flag in the env
   test.skip('Verify Integrations option from Three dot menu', async ({}) => {
     const page = getSharedPage()
     const teamPage = new TeamsPage(page)
