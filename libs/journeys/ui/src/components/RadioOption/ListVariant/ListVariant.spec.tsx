@@ -30,4 +30,24 @@ describe('ListVariant', () => {
 
     expect(handleClick).toHaveBeenCalled()
   })
+
+  it('should apply selected class when selected', () => {
+    render(
+      <ListVariant label="label" selected={true} handleClick={jest.fn()} />
+    )
+
+    expect(screen.getByTestId('JourneysRadioOptionList')).toHaveClass(
+      'selected'
+    )
+  })
+
+  it('should not apply selected class when not selected', () => {
+    render(
+      <ListVariant label="label" selected={false} handleClick={jest.fn()} />
+    )
+
+    expect(screen.getByTestId('JourneysRadioOptionList')).not.toHaveClass(
+      'selected'
+    )
+  })
 })

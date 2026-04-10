@@ -144,12 +144,13 @@ describe('RadioQuestion', () => {
     const buttons = getAllByRole('button')
     fireEvent.click(buttons[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(buttons[0]).toBeDisabled()
+    expect(buttons[0]).not.toBeDisabled()
   })
 
-  it('should disable unselected options', async () => {
+  it('should allow changing selection between options', async () => {
     blockHistoryVar([activeBlock])
 
+    let callCount = 0
     const { getAllByRole } = render(
       <MockedProvider
         mocks={[
@@ -167,10 +168,38 @@ describe('RadioQuestion', () => {
                 }
               }
             },
-            result: {
-              data: {
-                radioQuestionSubmissionEventCreate: {
-                  id: 'uuid'
+            result: () => {
+              callCount++
+              return {
+                data: {
+                  radioQuestionSubmissionEventCreate: {
+                    id: 'uuid'
+                  }
+                }
+              }
+            }
+          },
+          {
+            request: {
+              query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'RadioQuestion1',
+                  radioOptionBlockId: 'RadioOption2',
+                  stepId: 'step.id',
+                  label: 'Untitled',
+                  value: 'Option 2'
+                }
+              }
+            },
+            result: () => {
+              callCount++
+              return {
+                data: {
+                  radioQuestionSubmissionEventCreate: {
+                    id: 'uuid'
+                  }
                 }
               }
             }
@@ -182,11 +211,16 @@ describe('RadioQuestion', () => {
       </MockedProvider>
     )
     const buttons = getAllByRole('button')
+
     fireEvent.click(buttons[0])
-    await waitFor(() => expect(buttons[0]).toBeDisabled())
-    expect(buttons[1]).toBeDisabled()
+    await waitFor(() => expect(callCount).toBe(1))
+    expect(buttons[0]).not.toBeDisabled()
+    expect(buttons[1]).not.toBeDisabled()
+
     fireEvent.click(buttons[1])
-    expect(buttons[1]).toBeDisabled()
+    await waitFor(() => expect(callCount).toBe(2))
+    expect(buttons[0]).not.toBeDisabled()
+    expect(buttons[1]).not.toBeDisabled()
   })
 
   it('should display list options with wrappers', async () => {

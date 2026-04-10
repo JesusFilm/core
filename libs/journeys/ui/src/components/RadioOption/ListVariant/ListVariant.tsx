@@ -9,6 +9,21 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
 }) => {
   const borderStyles = getPollOptionBorderStyles(theme, { important: true })
 
+  const activeSelectedColors = {
+    backgroundColor:
+      theme.palette.mode === 'dark'
+        ? 'rgba(255, 255, 255, 0.9)'
+        : 'rgba(0, 0, 0, 0.9)',
+    color:
+      theme.palette.mode === 'dark'
+        ? 'rgba(0, 0, 0, 0.9)'
+        : 'rgba(255, 255, 255, 0.95)',
+    boxShadow:
+      theme.palette.mode === 'dark'
+        ? '0 4px 16px rgba(0, 0, 0, 0.4)'
+        : '0 4px 16px rgba(0, 0, 0, 0.2)'
+  }
+
   return {
     fontFamily: theme.typography.button.fontFamily,
     fontSize: theme.typography.body1.fontSize,
@@ -55,21 +70,17 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
           : '0 4px 12px rgba(0, 0, 0, 0.15)'
     },
 
-    // Selected state
+    // Press state
     '&:active': {
       ...borderStyles['&:active'],
-      backgroundColor:
-        theme.palette.mode === 'dark'
-          ? 'rgba(255, 255, 255, 0.9)'
-          : 'rgba(0, 0, 0, 0.9)',
-      color:
-        theme.palette.mode === 'dark'
-          ? 'rgba(0, 0, 0, 0.9)'
-          : 'rgba(255, 255, 255, 0.95)',
-      boxShadow:
-        theme.palette.mode === 'dark'
-          ? '0 4px 16px rgba(0, 0, 0, 0.4)'
-          : '0 4px 16px rgba(0, 0, 0, 0.2)'
+      ...activeSelectedColors
+    },
+
+    // Selected state
+    '&.selected': {
+      ...borderStyles['&:active'],
+      ...activeSelectedColors,
+      opacity: 1
     },
 
     // Disabled state
