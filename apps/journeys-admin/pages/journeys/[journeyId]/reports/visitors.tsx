@@ -162,34 +162,33 @@ function JourneyVisitorsPage({
     skip: journeyId == null,
     variables: { id: journeyId }
   })
+  const blockTypesLoaded = blockTypesData?.journey?.blockTypenames != null
   const availableBlockTypes: string[] =
     blockTypesData?.journey?.blockTypenames ?? []
 
   // Reset URL-driven withSubmittedText filter when journey has no TextResponseBlock (NES-1486)
   useEffect(() => {
-    const blockTypenames = blockTypesData?.journey?.blockTypenames
     if (
-      blockTypenames != null &&
+      blockTypesLoaded &&
       withSubmittedText &&
-      !blockTypenames.includes('TextResponseBlock')
+      !availableBlockTypes.includes('TextResponseBlock')
     ) {
       setWithSubmittedText(false)
     }
-  }, [blockTypesData?.journey?.blockTypenames, withSubmittedText])
+  }, [blockTypesLoaded, availableBlockTypes, withSubmittedText])
 
   const { data: userRoleData } = useUserRoleQuery()
   const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
+      skip: withSubmittedText && !blockTypesLoaded,
       variables: {
         filter: {
           journeyId,
           hasChatStarted: chatStarted,
           hasPollAnswers: withPollAnswers,
           hasMultiselectSubmission: withMultiselectAnswers,
-          hasTextResponse:
-            withSubmittedText &&
-            availableBlockTypes.includes('TextResponseBlock'),
+          hasTextResponse: withSubmittedText,
           hasIcon: withIcon,
           hideInactive: hideInteractive
         },
