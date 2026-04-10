@@ -423,13 +423,6 @@ export function LanguageScreen({
                       <JourneyCustomizeTeamSelect />
                     </Box>
                   )}
-                  <Button
-                    variant="blockOutlined"
-                    color="secondary"
-                    size="large"
-                  >
-                    Test
-                  </Button>
                 </Stack>
               </FormControl>
             </Form>
