@@ -292,7 +292,7 @@ export function RegisterPage({
                   type="submit"
                   fullWidth
                   disabled={!isValid || isSubmitting}
-                >
+>
                   {t('Sign Up')}
                 </Button>
               </Stack>
