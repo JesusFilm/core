@@ -165,6 +165,7 @@ function JourneyVisitorsPage({
   const availableBlockTypes: string[] =
     blockTypesData?.journey?.blockTypenames ?? []
 
+  // Reset URL-driven withSubmittedText filter when journey has no TextResponseBlock (NES-1486)
   useEffect(() => {
     const blockTypenames = blockTypesData?.journey?.blockTypenames
     if (
