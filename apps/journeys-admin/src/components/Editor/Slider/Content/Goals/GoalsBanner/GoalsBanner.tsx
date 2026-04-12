@@ -105,7 +105,7 @@ export function GoalsBanner(): ReactElement {
             <InformationCircleContainedIcon sx={{ color: 'secondary.light' }} />
           }
           sx={{
-            display: { xs: 'block', sm: 'none' }
+            display: { xs: 'flex', sm: 'none' }
           }}
           onClick={handleClick}
         >

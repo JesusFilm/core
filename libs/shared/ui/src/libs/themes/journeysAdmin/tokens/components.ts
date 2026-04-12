@@ -54,10 +54,34 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             '& .MuiButton-loadingIndicator': {
               color: 'var(--variant-containedColor)'
             },
-            '&.Mui-disabled:not(.MuiButton-loading)': {
-              color: 'rgba(0, 0, 0, 0.26)',
+            '&.Mui-disabled': {
               backgroundColor: 'rgba(0, 0, 0, 0.12)'
+            },
+            '&.Mui-disabled:not(.MuiButton-loading)': {
+              color: palette[700]
             }
+          }
+        },
+        {
+          props: {
+            variant: 'blockContained' as const,
+            size: 'small' as const
+          },
+          style: {
+            padding: '6px 10px',
+            fontSize: '14px',
+            minHeight: '36px'
+          }
+        },
+        {
+          props: {
+            variant: 'blockContained' as const,
+            size: 'large' as const
+          },
+          style: {
+            padding: '12px 20px',
+            fontSize: '20px',
+            minHeight: '56px'
           }
         },
         {
@@ -92,11 +116,35 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
             '& .MuiButton-loadingIndicator': {
               color: 'var(--variant-outlinedColor, currentColor)'
             },
-            '&.Mui-disabled:not(.MuiButton-loading)': {
-              color: 'rgba(0, 0, 0, 0.26)',
+            '&.Mui-disabled': {
               borderColor: 'rgba(0, 0, 0, 0.12)',
               backgroundColor: palette[0]
+            },
+            '&.Mui-disabled:not(.MuiButton-loading)': {
+              color: palette[700]
             }
+          }
+        },
+        {
+          props: {
+            variant: 'blockOutlined' as const,
+            size: 'small' as const
+          },
+          style: {
+            padding: '4px 10px',
+            fontSize: '14px',
+            minHeight: '36px'
+          }
+        },
+        {
+          props: {
+            variant: 'blockOutlined' as const,
+            size: 'large' as const
+          },
+          style: {
+            padding: '10px 18px',
+            fontSize: '20px',
+            minHeight: '56px'
           }
         },
         {

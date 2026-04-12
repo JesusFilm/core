@@ -233,6 +233,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         <Button
           variant="blockOutlined"
           color="solid"
+          size="small"
           onClick={open}
           disabled={videoBlockId == null || uploadTask != null}
           sx={{

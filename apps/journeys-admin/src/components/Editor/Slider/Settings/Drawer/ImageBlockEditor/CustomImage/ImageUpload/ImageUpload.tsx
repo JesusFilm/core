@@ -213,6 +213,7 @@ export function ImageUpload({
       <Button
         variant="blockOutlined"
         color="solid"
+        size="small"
         disabled={loading === true}
         onClick={open}
         sx={{
