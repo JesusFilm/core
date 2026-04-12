@@ -1,5 +1,5 @@
 ---
-title: "feat: Add QR Code as analytics overlay source"
+title: 'feat: Add QR Code as analytics overlay source'
 type: feat
 status: active
 date: 2026-04-12
@@ -71,19 +71,23 @@ When users view the analytics overlay on a journey, they see traffic sources (Fa
 **Dependencies:** None
 
 **Files:**
+
 - Create: `libs/shared/ui/src/components/icons/QrCode2.tsx`
 
 **Approach:**
+
 - Follow the `FacebookIcon.tsx` pattern: export a named function component wrapping MUI `SvgIcon`
 - Use a standard QR code design (grid pattern with position markers)
 - Size to 16x16 viewBox to match `FacebookIcon`
 
 **Patterns to follow:**
+
 - `libs/shared/ui/src/components/icons/FacebookIcon.tsx` — SvgIcon wrapper pattern
 
 **Test expectation:** none — pure presentational SVG icon with no logic
 
 **Verification:**
+
 - Icon file exists and exports a React component
 - TypeScript compiles without errors
 
@@ -96,23 +100,28 @@ When users view the analytics overlay on a journey, they see traffic sources (Fa
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/libs/useJourneyAnalyticsQuery/transformJourneyAnalytics/transformJourneyAnalytics.ts`
 - Test: `libs/journeys/ui/src/libs/useJourneyAnalyticsQuery/transformJourneyAnalytics/transformJourneyAnalytics.spec.ts`
 
 **Approach:**
+
 - After destructuring `data`, sum all `journeyUtmCampaign` visitors into a single count
 - If total QR visitors > 0, create a referrer entry `{ property: 'QR Code', visitors: totalQrVisitors }` and append it to `journeyReferrer` before passing to `transformReferrers()`
 - The `__typename` field should match existing referrer entries (`'PlausibleStatsResponse'`)
 
 **Patterns to follow:**
+
 - Existing referrer data shape in mock: `{ __typename: 'PlausibleStatsResponse', property: string, visitors: number }`
 
 **Test scenarios:**
+
 - Happy path: QR campaigns with visitors are aggregated into a single "QR Code" referrer node in the output (existing test data has 3 campaigns totaling 10 visitors — update expected referrers to include QR Code)
 - Edge case: Empty `journeyUtmCampaign` array produces no QR Code referrer (verify existing tests with empty arrays still pass)
 - Edge case: Single QR campaign entry is still wrapped as "QR Code" referrer
 
 **Verification:**
+
 - `transformJourneyAnalytics` returns referrer nodes that include a "QR Code" entry when `journeyUtmCampaign` has data
 - Existing tests still pass with updated expectations
 - Tests pass via `npx jest --config libs/journeys/ui/jest.config.ts --no-coverage`
@@ -126,22 +135,27 @@ When users view the analytics overlay on a journey, they see traffic sources (Fa
 **Dependencies:** Unit 1
 
 **Files:**
+
 - Modify: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/nodes/ReferrerNode/BaseReferrer/BaseReferrer.tsx`
 - Test: `apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/nodes/ReferrerNode/BaseReferrer/BaseReferrer.spec.tsx`
 
 **Approach:**
+
 - Import `QrCode2` icon from `@core/shared/ui/icons/QrCode2`
 - Add a `'QR Code'` case to the switch statement, rendering the QR code icon with `iconStyles`
 
 **Patterns to follow:**
+
 - Existing `'Facebook'` case with `FacebookIcon`
 - Existing `'Direct / None'` case with `LinkAngled` and `iconStyles`
 
 **Test scenarios:**
+
 - Happy path: Rendering `BaseReferrer` with `property="QR Code"` displays the QR code icon (assert `QrCode2Icon` test ID present)
 - Happy path: Visitor count is displayed alongside the icon
 
 **Verification:**
+
 - QR Code referrer renders with correct icon in the analytics overlay
 - Tests pass via `npx jest --config apps/journeys-admin/jest.config.ts --no-coverage`
 
@@ -154,14 +168,17 @@ When users view the analytics overlay on a journey, they see traffic sources (Fa
 **Dependencies:** Unit 2
 
 **Files:**
+
 - Modify: `libs/journeys/ui/src/libs/useJourneyAnalyticsQuery/useJourneyAnalyticsQuery.mock.ts`
 
 **Approach:**
+
 - The mock already includes `journeyUtmCampaign` data. Verify it still works with the updated transformation. No structural changes expected unless downstream Storybook stories need updated mock shapes.
 
 **Test expectation:** none — mock data file, verified through Unit 2 and Unit 3 tests
 
 **Verification:**
+
 - Mock data aligns with the new transformation expectations
 - No TypeScript compilation errors
 
@@ -174,8 +191,8 @@ When users view the analytics overlay on a journey, they see traffic sources (Fa
 
 ## Risks & Dependencies
 
-| Risk | Mitigation |
-|------|------------|
+| Risk                                                                         | Mitigation                                                                             |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | QR Code node ID collision if a website referrer is literally named "QR Code" | Extremely unlikely; Plausible referrer properties are domain names, not display labels |
 
 ## Sources & References
